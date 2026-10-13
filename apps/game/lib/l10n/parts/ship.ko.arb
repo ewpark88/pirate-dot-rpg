@@ -1,0 +1,11 @@
+{
+  "shipPartCannon": "대포",
+  "shipPartHull": "선체",
+  "shipPartSail": "돛",
+  "shipPartCrowsnest": "망루",
+  "shipPartCargo": "화물칸",
+  "shipTierDinghy": "쪽배",
+  "shipTierSloop": "범선",
+  "shipTierWarship": "해적 군함",
+  "shipTierGhost": "유령선"
+}

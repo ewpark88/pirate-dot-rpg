@@ -1,0 +1,220 @@
+import 'package:game_core/src/bignum/big_num.dart';
+import 'package:meta/meta.dart';
+
+// 세이브 스키마 v1(docs/GAME_DESIGN.md 5.2)의 조각들. 모두 불변이고 JSON과 1:1.
+
+typedef Json = Map<String, dynamic>;
+
+@immutable
+class Wallet {
+  const Wallet({required this.gold, this.gems = 0, this.mapPieces = 0});
+
+  factory Wallet.fromJson(Json j) => Wallet(
+    gold: BigNum.parse(j['gold'] as String),
+    gems: j['gems'] as int,
+    mapPieces: j['mapPieces'] as int,
+  );
+
+  final BigNum gold;
+  final int gems;
+
+  /// 환생(보물지도) 조각.
+  final int mapPieces;
+
+  Wallet copyWith({BigNum? gold, int? gems, int? mapPieces}) =>
+      Wallet(gold: gold ?? this.gold, gems: gems ?? this.gems, mapPieces: mapPieces ?? this.mapPieces);
+
+  Json toJson() => {'gold': gold.toJson(), 'gems': gems, 'mapPieces': mapPieces};
+}
+
+@immutable
+class Progress {
+  const Progress({
+    this.stage = 1,
+    this.wave = 0,
+    this.bestStage = 1,
+    this.farming = false,
+    this.rebirths = 0,
+    this.rage = 0,
+  });
+
+  factory Progress.fromJson(Json j) => Progress(
+    stage: j['stage'] as int,
+    wave: j['wave'] as int,
+    bestStage: j['bestStage'] as int,
+    farming: j['farming'] as bool,
+    rebirths: j['rebirths'] as int,
+    rage: (j['rage'] as num).toDouble(),
+  );
+
+  final int stage;
+
+  /// 현재 스테이지에서 처치한 파 수 (0~wavesPerStage).
+  final int wave;
+  final int bestStage;
+
+  /// 보스 실패 후 제자리 항해 중.
+  final bool farming;
+  final int rebirths;
+
+  /// 함성 게이지 0~1.
+  final double rage;
+
+  Progress copyWith({int? stage, int? wave, int? bestStage, bool? farming, int? rebirths, double? rage}) => Progress(
+    stage: stage ?? this.stage,
+    wave: wave ?? this.wave,
+    bestStage: bestStage ?? this.bestStage,
+    farming: farming ?? this.farming,
+    rebirths: rebirths ?? this.rebirths,
+    rage: rage ?? this.rage,
+  );
+
+  Json toJson() => {
+    'stage': stage,
+    'wave': wave,
+    'bestStage': bestStage,
+    'farming': farming,
+    'rebirths': rebirths,
+    'rage': rage,
+  };
+}
+
+@immutable
+class ShipState {
+  const ShipState({this.parts = const {'cannon': 0, 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}});
+
+  factory ShipState.fromJson(Json j) => ShipState(parts: (j['parts'] as Map).cast<String, int>());
+
+  /// 부위 id → 레벨.
+  final Map<String, int> parts;
+
+  int level(String part) => parts[part] ?? 0;
+
+  ShipState withLevel(String part, int level) => ShipState(parts: {...parts, part: level});
+
+  Json toJson() => {'parts': parts};
+}
+
+@immutable
+class CrewState {
+  const CrewState({this.level = 1, this.exp = 0, this.cards = 0});
+
+  factory CrewState.fromJson(Json j) =>
+      CrewState(level: j['level'] as int, exp: j['exp'] as int, cards: j['cards'] as int);
+
+  /// 1~75. 등급은 레벨 구간으로 정해진다(rarities.json).
+  final int level;
+  final int exp;
+
+  /// 아직 합치지 않은 카드 수.
+  final int cards;
+
+  CrewState copyWith({int? level, int? exp, int? cards}) =>
+      CrewState(level: level ?? this.level, exp: exp ?? this.exp, cards: cards ?? this.cards);
+
+  Json toJson() => {'level': level, 'exp': exp, 'cards': cards};
+}
+
+@immutable
+class Buffs {
+  const Buffs({this.tailwindUntil});
+
+  factory Buffs.fromJson(Json j) => Buffs(tailwindUntil: parseTime(j['tailwindUntil']));
+
+  /// 순풍 버프 종료 시각(UTC).
+  final DateTime? tailwindUntil;
+
+  Json toJson() => {'tailwindUntil': tailwindUntil?.toUtc().toIso8601String()};
+}
+
+@immutable
+class DailyState {
+  const DailyState({
+    required this.date,
+    this.ads = const {},
+    this.quests = const {},
+    this.attendanceDay = 0,
+  });
+
+  factory DailyState.fromJson(Json j) => DailyState(
+    date: j['date'] as String,
+    ads: (j['ads'] as Map).cast<String, int>(),
+    quests: (j['quests'] as Map).cast<String, int>(),
+    attendanceDay: j['attendanceDay'] as int,
+  );
+
+  /// 기기 현지 날짜 `yyyy-mm-dd`. 바뀌면 일일 값 초기화.
+  final String date;
+
+  /// 광고 장치 id → 오늘 본 횟수.
+  final Map<String, int> ads;
+
+  /// 일일 퀘스트 id → 진행도.
+  final Map<String, int> quests;
+
+  /// 출석 1~7. 빠져도 초기화하지 않는다.
+  final int attendanceDay;
+
+  Json toJson() => {'date': date, 'ads': ads, 'quests': quests, 'attendanceDay': attendanceDay};
+}
+
+@immutable
+class Settings {
+  const Settings({
+    this.lang = 'system',
+    this.autoUpgrade = true,
+    this.autoBoss = true,
+    this.powerSave = true,
+    this.bgm = true,
+    this.sfx = true,
+    this.vibration = true,
+    this.shake = true,
+    this.flash = true,
+  });
+
+  factory Settings.fromJson(Json j) => Settings(
+    lang: j['lang'] as String,
+    autoUpgrade: j['autoUpgrade'] as bool,
+    autoBoss: j['autoBoss'] as bool,
+    powerSave: j['powerSave'] as bool,
+    bgm: j['bgm'] as bool,
+    sfx: j['sfx'] as bool,
+    vibration: j['vibration'] as bool,
+    shake: j['shake'] as bool,
+    flash: j['flash'] as bool,
+  );
+
+  /// `system` | `ko` | `en`.
+  final String lang;
+  final bool autoUpgrade;
+  final bool autoBoss;
+  final bool powerSave;
+  final bool bgm;
+  final bool sfx;
+  final bool vibration;
+  final bool shake;
+  final bool flash;
+
+  Json toJson() => {
+    'lang': lang,
+    'autoUpgrade': autoUpgrade,
+    'autoBoss': autoBoss,
+    'powerSave': powerSave,
+    'bgm': bgm,
+    'sfx': sfx,
+    'vibration': vibration,
+    'shake': shake,
+    'flash': flash,
+  };
+
+  /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].
+  Settings withValue(String key, Object value) {
+    final j = toJson();
+    if (!j.containsKey(key) || j[key].runtimeType != value.runtimeType) {
+      throw ArgumentError('설정 키/타입 오류: $key=$value');
+    }
+    return Settings.fromJson({...j, key: value});
+  }
+}
+
+DateTime? parseTime(Object? v) => v == null ? null : DateTime.parse(v as String).toUtc();

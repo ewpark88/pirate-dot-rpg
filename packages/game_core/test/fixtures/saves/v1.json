@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-01T12:34:56.000Z",
+  "playerId": "fixture-player",
+  "rngSeed": 913377,
+  "operator": false,
+  "wallet": {
+    "gold": "1.25e6",
+    "gems": 140,
+    "mapPieces": 0
+  },
+  "progress": {
+    "stage": 37,
+    "wave": 2,
+    "bestStage": 41,
+    "farming": false,
+    "rebirths": 0,
+    "rage": 0.4
+  },
+  "ship": {
+    "parts": {
+      "cannon": 52,
+      "hull": 40,
+      "sail": 18,
+      "crowsnest": 12,
+      "cargo": 9
+    }
+  },
+  "crews": {
+    "octo": {
+      "level": 15,
+      "exp": 0,
+      "cards": 2
+    },
+    "manta": {
+      "level": 46,
+      "exp": 3,
+      "cards": 0
+    },
+    "pang": {
+      "level": 8,
+      "exp": 0,
+      "cards": 1
+    },
+    "pingu": {
+      "level": 22,
+      "exp": 0,
+      "cards": 0
+    }
+  },
+  "tokens": 12,
+  "summon": {
+    "pityCount": 17
+  },
+  "buffs": {
+    "tailwindUntil": "2026-11-01T14:04:56.000Z"
+  },
+  "daily": {
+    "date": "2026-11-01",
+    "ads": {
+      "chest": 3,
+      "tailwind": 2
+    },
+    "quests": {
+      "kill_500": 140
+    },
+    "attendanceDay": 4
+  },
+  "collection": [
+    "manta",
+    "octo",
+    "pang",
+    "pingu"
+  ],
+  "settings": {
+    "lang": "system",
+    "autoUpgrade": true,
+    "autoBoss": true,
+    "powerSave": true,
+    "bgm": true,
+    "sfx": true,
+    "vibration": true,
+    "shake": true,
+    "flash": true
+  },
+  "checksum": "sha256:6e1a83ddc5c5c86a831e142e74fd0383fb84dbd9c00a999aa6ed05000f7553d5"
+}

@@ -1,0 +1,364 @@
+{
+  "crews": [
+    {
+      "id": "octo",
+      "num": 1,
+      "baseRarity": "common",
+      "family": "lob",
+      "fx": "explosion_aoe",
+      "portrait": "crews/octo.png",
+      "nameKey": "crewOctoName"
+    },
+    {
+      "id": "starry",
+      "num": 2,
+      "baseRarity": "common",
+      "family": "lob",
+      "fx": "explosion_aoe",
+      "portrait": "crews/starry.png",
+      "nameKey": "crewStarryName"
+    },
+    {
+      "id": "crabs",
+      "num": 3,
+      "baseRarity": "rare",
+      "family": "lob",
+      "fx": "explosion_aoe",
+      "portrait": "crews/crabs.png",
+      "nameKey": "crewCrabsName"
+    },
+    {
+      "id": "uni",
+      "num": 4,
+      "baseRarity": "hero",
+      "family": "lob",
+      "fx": "explosion_aoe",
+      "portrait": "crews/uni.png",
+      "nameKey": "crewUniName"
+    },
+    {
+      "id": "volke",
+      "num": 5,
+      "baseRarity": "legend",
+      "family": "lob",
+      "fx": "explosion_aoe",
+      "portrait": "crews/volke.png",
+      "nameKey": "crewVolkeName"
+    },
+    {
+      "id": "pang",
+      "num": 6,
+      "baseRarity": "common",
+      "family": "direct",
+      "fx": "hit_spark",
+      "portrait": "crews/pang.png",
+      "nameKey": "crewPangName"
+    },
+    {
+      "id": "hippo",
+      "num": 7,
+      "baseRarity": "common",
+      "family": "direct",
+      "fx": "hit_spark",
+      "portrait": "crews/hippo.png",
+      "nameKey": "crewHippoName"
+    },
+    {
+      "id": "bones",
+      "num": 8,
+      "baseRarity": "rare",
+      "family": "direct",
+      "fx": "hit_spark",
+      "portrait": "crews/bones.png",
+      "nameKey": "crewBonesName"
+    },
+    {
+      "id": "lion",
+      "num": 9,
+      "baseRarity": "hero",
+      "family": "direct",
+      "fx": "hit_spark",
+      "portrait": "crews/lion.png",
+      "nameKey": "crewLionName"
+    },
+    {
+      "id": "volt",
+      "num": 10,
+      "baseRarity": "legend",
+      "family": "direct",
+      "fx": "hit_spark",
+      "portrait": "crews/volt.png",
+      "nameKey": "crewVoltName"
+    },
+    {
+      "id": "sword",
+      "num": 11,
+      "baseRarity": "common",
+      "family": "pierce",
+      "fx": "slash",
+      "portrait": "crews/sword.png",
+      "nameKey": "crewSwordName"
+    },
+    {
+      "id": "nar",
+      "num": 12,
+      "baseRarity": "rare",
+      "family": "pierce",
+      "fx": "slash",
+      "portrait": "crews/nar.png",
+      "nameKey": "crewNarName"
+    },
+    {
+      "id": "walrus",
+      "num": 13,
+      "baseRarity": "rare",
+      "family": "pierce",
+      "fx": "slash",
+      "portrait": "crews/walrus.png",
+      "nameKey": "crewWalrusName"
+    },
+    {
+      "id": "saw",
+      "num": 14,
+      "baseRarity": "hero",
+      "family": "pierce",
+      "fx": "slash",
+      "portrait": "crews/saw.png",
+      "nameKey": "crewSawName"
+    },
+    {
+      "id": "moby",
+      "num": 15,
+      "baseRarity": "legend",
+      "family": "pierce",
+      "fx": "slash",
+      "portrait": "crews/moby.png",
+      "nameKey": "crewMobyName"
+    },
+    {
+      "id": "otter",
+      "num": 16,
+      "baseRarity": "common",
+      "family": "skip",
+      "fx": "hit_spark",
+      "portrait": "crews/otter.png",
+      "nameKey": "crewOtterName"
+    },
+    {
+      "id": "pingu",
+      "num": 17,
+      "baseRarity": "rare",
+      "family": "skip",
+      "fx": "hit_spark",
+      "portrait": "crews/pingu.png",
+      "nameKey": "crewPinguName"
+    },
+    {
+      "id": "sheldon",
+      "num": 18,
+      "baseRarity": "rare",
+      "family": "skip",
+      "fx": "hit_spark",
+      "portrait": "crews/sheldon.png",
+      "nameKey": "crewSheldonName"
+    },
+    {
+      "id": "dolphy",
+      "num": 19,
+      "baseRarity": "hero",
+      "family": "skip",
+      "fx": "hit_spark",
+      "portrait": "crews/dolphy.png",
+      "nameKey": "crewDolphyName"
+    },
+    {
+      "id": "orca",
+      "num": 20,
+      "baseRarity": "legend",
+      "family": "skip",
+      "fx": "hit_spark",
+      "portrait": "crews/orca.png",
+      "nameKey": "crewOrcaName"
+    },
+    {
+      "id": "puffer",
+      "num": 21,
+      "baseRarity": "common",
+      "family": "underwater",
+      "fx": "explosion_aoe",
+      "portrait": "crews/puffer.png",
+      "nameKey": "crewPufferName"
+    },
+    {
+      "id": "jelly",
+      "num": 22,
+      "baseRarity": "rare",
+      "family": "underwater",
+      "fx": "explosion_aoe",
+      "portrait": "crews/jelly.png",
+      "nameKey": "crewJellyName"
+    },
+    {
+      "id": "bara",
+      "num": 23,
+      "baseRarity": "rare",
+      "family": "underwater",
+      "fx": "explosion_aoe",
+      "portrait": "crews/bara.png",
+      "nameKey": "crewBaraName"
+    },
+    {
+      "id": "moray",
+      "num": 24,
+      "baseRarity": "hero",
+      "family": "underwater",
+      "fx": "explosion_aoe",
+      "portrait": "crews/moray.png",
+      "nameKey": "crewMorayName"
+    },
+    {
+      "id": "kraki",
+      "num": 25,
+      "baseRarity": "legend",
+      "family": "underwater",
+      "fx": "explosion_aoe",
+      "portrait": "crews/kraki.png",
+      "nameKey": "crewKrakiName"
+    },
+    {
+      "id": "polly",
+      "num": 26,
+      "baseRarity": "common",
+      "family": "air",
+      "fx": "explosion_aoe",
+      "portrait": "crews/polly.png",
+      "nameKey": "crewPollyName"
+    },
+    {
+      "id": "gull",
+      "num": 27,
+      "baseRarity": "common",
+      "family": "air",
+      "fx": "explosion_aoe",
+      "portrait": "crews/gull.png",
+      "nameKey": "crewGullName"
+    },
+    {
+      "id": "pelly",
+      "num": 28,
+      "baseRarity": "rare",
+      "family": "air",
+      "fx": "explosion_aoe",
+      "portrait": "crews/pelly.png",
+      "nameKey": "crewPellyName"
+    },
+    {
+      "id": "alba",
+      "num": 29,
+      "baseRarity": "hero",
+      "family": "air",
+      "fx": "explosion_aoe",
+      "portrait": "crews/alba.png",
+      "nameKey": "crewAlbaName"
+    },
+    {
+      "id": "manta",
+      "num": 30,
+      "baseRarity": "legend",
+      "family": "air",
+      "fx": "explosion_aoe",
+      "portrait": "crews/manta.png",
+      "nameKey": "crewMantaName"
+    },
+    {
+      "id": "shark",
+      "num": 31,
+      "baseRarity": "common",
+      "family": "assault",
+      "fx": "slash",
+      "portrait": "crews/shark.png",
+      "nameKey": "crewSharkName"
+    },
+    {
+      "id": "crabby",
+      "num": 32,
+      "baseRarity": "rare",
+      "family": "assault",
+      "fx": "slash",
+      "portrait": "crews/crabby.png",
+      "nameKey": "crewCrabbyName"
+    },
+    {
+      "id": "king",
+      "num": 33,
+      "baseRarity": "rare",
+      "family": "assault",
+      "fx": "slash",
+      "portrait": "crews/king.png",
+      "nameKey": "crewKingName"
+    },
+    {
+      "id": "lobster",
+      "num": 34,
+      "baseRarity": "hero",
+      "family": "assault",
+      "fx": "slash",
+      "portrait": "crews/lobster.png",
+      "nameKey": "crewLobsterName"
+    },
+    {
+      "id": "davy",
+      "num": 35,
+      "baseRarity": "legend",
+      "family": "assault",
+      "fx": "slash",
+      "portrait": "crews/davy.png",
+      "nameKey": "crewDavyName"
+    },
+    {
+      "id": "turtle",
+      "num": 36,
+      "baseRarity": "common",
+      "family": "support",
+      "fx": "level_up",
+      "portrait": "crews/turtle.png",
+      "nameKey": "crewTurtleName"
+    },
+    {
+      "id": "pumpum",
+      "num": 37,
+      "baseRarity": "common",
+      "family": "support",
+      "fx": "level_up",
+      "portrait": "crews/pumpum.png",
+      "nameKey": "crewPumpumName"
+    },
+    {
+      "id": "cook",
+      "num": 38,
+      "baseRarity": "rare",
+      "family": "support",
+      "fx": "level_up",
+      "portrait": "crews/cook.png",
+      "nameKey": "crewCookName"
+    },
+    {
+      "id": "corey",
+      "num": 39,
+      "baseRarity": "hero",
+      "family": "support",
+      "fx": "level_up",
+      "portrait": "crews/corey.png",
+      "nameKey": "crewCoreyName"
+    },
+    {
+      "id": "lamp",
+      "num": 40,
+      "baseRarity": "legend",
+      "family": "support",
+      "fx": "level_up",
+      "portrait": "crews/lamp.png",
+      "nameKey": "crewLampName"
+    }
+  ]
+}

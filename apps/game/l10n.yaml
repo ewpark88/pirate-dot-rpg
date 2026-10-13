@@ -1,0 +1,8 @@
+# 문구 원본은 lib/l10n/parts/<레인>.<언어>.arb. tool/merge_arb.dart가 merged/로 합친 뒤 gen-l10n이 읽는다.
+arb-dir: lib/l10n/merged
+template-arb-file: app_en.arb
+output-dir: lib/l10n/gen
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+required-resource-attributes: false

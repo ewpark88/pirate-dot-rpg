@@ -1,0 +1,11 @@
+name: game_data
+description: 밸런스 데이터 테이블(JSON)과 검증기. dart:core·dart:convert만 쓴다.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dev_dependencies:
+  test: ^1.25.0
+  very_good_analysis: ^10.3.0

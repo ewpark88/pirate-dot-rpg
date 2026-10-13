@@ -1,0 +1,9 @@
+# 하네스 자체 점검: 시나리오 러너·픽스처·운영자 명령이 엔진과 맞물리는지. 규칙과 무관해 항상 통과해야 한다.
+name: 하네스 스모크 — 픽스처 불러오기와 운영자 표식
+seed: 1
+state: fixtures/states/stage37_midgame.json
+steps:
+  - expect: { stage: 37, bestStage: 41, gems: 140, crews: 4, operator: false }
+  - advance: 1s
+  - input: { type: op.speed, speed: 1 }
+  - expect: { operator: true, stage: 37 }

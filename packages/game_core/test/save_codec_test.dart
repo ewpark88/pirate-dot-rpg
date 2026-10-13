@@ -1,0 +1,68 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:game_core/game_core.dart';
+import 'package:game_core/testing.dart';
+import 'package:test/test.dart';
+
+/// 과거 모든 버전의 세이브 픽스처. 스키마를 올리면 새 버전 파일을 추가하고, 옛 파일은 지우지 않는다.
+/// 갱신은 사람이: `dart run game_cli fixtures --saves`
+List<File> saveFixtures() =>
+    Directory('test/fixtures/saves').listSync().whereType<File>().where((f) => f.path.endsWith('.json')).toList();
+
+void main() {
+  final sample = GameState.newGame(playerId: 'p1', seed: 7, now: DateTime.utc(2026, 11));
+
+  test('픽스처가 버전마다 하나씩 있다 (v1 ~ 현재)', () {
+    final names = saveFixtures().map((f) => f.uri.pathSegments.last).toSet();
+    for (var v = 1; v <= currentSchemaVersion; v++) {
+      expect(names, contains('v$v.json'), reason: '스키마 v$v 픽스처가 없습니다 — 마이그레이션과 함께 추가하세요');
+    }
+  });
+
+  test('모든 과거 버전 픽스처를 현재 버전으로 불러온다', () {
+    for (final f in saveFixtures()) {
+      final state = SaveCodec.decode(f.readAsStringSync());
+      expect(state.playerId, isNotEmpty, reason: f.path);
+    }
+  });
+
+  test('직렬화 왕복', () {
+    final mid = SaveCodec.decode(File('test/fixtures/saves/v1.json').readAsStringSync());
+    final again = SaveCodec.decode(SaveCodec.encode(mid));
+    expect(again.toJson(), mid.toJson());
+    expect(mid.wallet.gold, BigNum.parse('1.25e6'));
+    expect(mid.crews['manta']!.level, 46);
+  });
+
+  test('본문을 고치면 체크섬이 깨진다', () {
+    final text = SaveCodec.encode(sample).replaceFirst('"gems": 0', '"gems": 999');
+    expect(() => SaveCodec.decode(text), throwsA(isA<SaveCorruptException>()));
+  });
+
+  test('모르는 미래 버전은 거부', () {
+    final j = jsonDecode(SaveCodec.encode(sample)) as Map<String, dynamic>
+      ..remove('checksum')
+      ..['schemaVersion'] = currentSchemaVersion + 1;
+    j['checksum'] = SaveCodec.checksumOf(j);
+    expect(() => SaveCodec.decode(jsonEncode(j)), throwsA(isA<SaveCorruptException>()));
+  });
+
+  group('loadSave', () {
+    test('본 파일이 깨지면 save.bak으로 복구', () async {
+      final store = MemorySaveStore(main: '{깨진', backup: SaveCodec.encode(sample));
+      expect((await loadSave(store))!.playerId, 'p1');
+    });
+
+    test('둘 다 없으면 새 게임(null)', () async {
+      expect(await loadSave(MemorySaveStore()), isNull);
+    });
+
+    test('쓰면 이전 본이 백업으로 간다', () async {
+      final store = MemorySaveStore();
+      await store.write('a');
+      await store.write('b');
+      expect((store.main, store.backup), ('b', 'a'));
+    });
+  });
+}

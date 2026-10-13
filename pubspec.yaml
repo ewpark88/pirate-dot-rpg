@@ -1,0 +1,12 @@
+name: pirate_dot_workspace
+publish_to: none
+environment:
+  sdk: ^3.12.0
+workspace:
+  - packages/game_data
+  - packages/game_core
+  - packages/game_cli
+  - apps/game
+  - tool
+dev_dependencies:
+  very_good_analysis: ^10.3.0

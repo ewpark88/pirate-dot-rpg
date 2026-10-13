@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-01T12:34:56.000Z",
+  "playerId": "fixture-player",
+  "rngSeed": 913377,
+  "operator": false,
+  "wallet": {
+    "gold": "3.2e2",
+    "gems": 30,
+    "mapPieces": 0
+  },
+  "progress": {
+    "stage": 5,
+    "wave": 3,
+    "bestStage": 5,
+    "farming": false,
+    "rebirths": 0,
+    "rage": 0.0
+  },
+  "ship": {
+    "parts": {
+      "cannon": 0,
+      "hull": 0,
+      "sail": 0,
+      "crowsnest": 0,
+      "cargo": 0
+    }
+  },
+  "crews": {
+    "octo": {
+      "level": 3,
+      "exp": 0,
+      "cards": 0
+    },
+    "pang": {
+      "level": 2,
+      "exp": 0,
+      "cards": 0
+    }
+  },
+  "tokens": 0,
+  "summon": {
+    "pityCount": 0
+  },
+  "buffs": {
+    "tailwindUntil": null
+  },
+  "daily": {
+    "date": "2026-11-01",
+    "ads": {},
+    "quests": {},
+    "attendanceDay": 0
+  },
+  "collection": [
+    "octo",
+    "pang"
+  ],
+  "settings": {
+    "lang": "system",
+    "autoUpgrade": true,
+    "autoBoss": true,
+    "powerSave": true,
+    "bgm": true,
+    "sfx": true,
+    "vibration": true,
+    "shake": true,
+    "flash": true
+  },
+  "battle": {
+    "tick": 0,
+    "shipHp": "3e2",
+    "shipHpMax": "3e2",
+    "bossActive": true,
+    "bossTicksLeft": 400,
+    "enemies": [
+      {
+        "id": 1,
+        "kind": "enemy_ship",
+        "x": 250.0,
+        "y": 80.0,
+        "hpRatio": 0.55,
+        "layer": "surface",
+        "boss": true
+      }
+    ],
+    "fleet": [
+      {
+        "crewId": "octo",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      },
+      {
+        "crewId": "pang",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      }
+    ],
+    "captainId": "octo",
+    "hitStopTicks": 0,
+    "speed": 1
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-01T12:34:56.000Z",
+  "playerId": "fixture-player",
+  "rngSeed": 913377,
+  "operator": false,
+  "wallet": {
+    "gold": "0e0",
+    "gems": 0,
+    "mapPieces": 0
+  },
+  "progress": {
+    "stage": 1,
+    "wave": 0,
+    "bestStage": 1,
+    "farming": false,
+    "rebirths": 0,
+    "rage": 0.0
+  },
+  "ship": {
+    "parts": {
+      "cannon": 0,
+      "hull": 0,
+      "sail": 0,
+      "crowsnest": 0,
+      "cargo": 0
+    }
+  },
+  "crews": {},
+  "tokens": 0,
+  "summon": {
+    "pityCount": 0
+  },
+  "buffs": {
+    "tailwindUntil": null
+  },
+  "daily": {
+    "date": "2026-11-01",
+    "ads": {},
+    "quests": {},
+    "attendanceDay": 0
+  },
+  "collection": [],
+  "settings": {
+    "lang": "system",
+    "autoUpgrade": true,
+    "autoBoss": true,
+    "powerSave": true,
+    "bgm": true,
+    "sfx": true,
+    "vibration": true,
+    "shake": true,
+    "flash": true
+  },
+  "battle": {
+    "tick": 0,
+    "shipHp": "6e1",
+    "shipHpMax": "6e1",
+    "bossActive": false,
+    "bossTicksLeft": 0,
+    "enemies": [
+      {
+        "id": 1,
+        "kind": "crab",
+        "x": 200.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "surface",
+        "boss": false
+      },
+      {
+        "id": 2,
+        "kind": "jelly",
+        "x": 222.0,
+        "y": 48.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 3,
+        "kind": "fish",
+        "x": 244.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 4,
+        "kind": "puffer",
+        "x": 266.0,
+        "y": 48.0,
+        "hpRatio": 1.0,
+        "layer": "surface",
+        "boss": false
+      },
+      {
+        "id": 5,
+        "kind": "urchin",
+        "x": 288.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 6,
+        "kind": "gull",
+        "x": 200.0,
+        "y": 78.0,
+        "hpRatio": 1.0,
+        "layer": "air",
+        "boss": false
+      }
+    ],
+    "fleet": [],
+    "captainId": null,
+    "hitStopTicks": 0,
+    "speed": 1
+  }
+}

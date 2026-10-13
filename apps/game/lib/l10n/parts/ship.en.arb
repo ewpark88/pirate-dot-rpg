@@ -1,0 +1,11 @@
+{
+  "shipPartCannon": "Cannon",
+  "shipPartHull": "Hull",
+  "shipPartSail": "Sail",
+  "shipPartCrowsnest": "Crow's Nest",
+  "shipPartCargo": "Cargo Hold",
+  "shipTierDinghy": "Dinghy",
+  "shipTierSloop": "Sloop",
+  "shipTierWarship": "Pirate Warship",
+  "shipTierGhost": "Ghost Ship"
+}

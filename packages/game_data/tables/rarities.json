@@ -1,0 +1,10 @@
+{
+  "rarities": [
+    { "id": "common", "stars": 1, "summonRate": 0.60, "levelMin": 1, "levelMax": 15, "color": "#9AA4B1", "nameKey": "crewRarityCommon" },
+    { "id": "rare", "stars": 2, "summonRate": 0.28, "levelMin": 16, "levelMax": 30, "color": "#4FA3FF", "nameKey": "crewRarityRare" },
+    { "id": "hero", "stars": 3, "summonRate": 0.10, "levelMin": 31, "levelMax": 45, "color": "#B36BFF", "nameKey": "crewRarityHero" },
+    { "id": "legend", "stars": 4, "summonRate": 0.02, "levelMin": 46, "levelMax": 60, "color": "#FFC53D", "nameKey": "crewRarityLegend" },
+    { "id": "mythic", "stars": 5, "summonRate": 0.0, "levelMin": 61, "levelMax": 75, "color": "#FF6FD8", "nameKey": "crewRarityMythic" }
+  ],
+  "pity": { "count": 50, "minRarity": "hero" }
+}

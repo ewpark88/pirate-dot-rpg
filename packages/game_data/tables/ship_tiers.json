@@ -1,0 +1,8 @@
+{
+  "tiers": [
+    { "id": "dinghy", "stage": 1, "slots": 3, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+  ]
+}

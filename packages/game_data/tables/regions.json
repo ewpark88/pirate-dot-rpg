@@ -1,0 +1,19 @@
+{
+  "stagesPerRegion": 50,
+  "regions": [
+    { "id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral" },
+    { "id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionStorm" },
+    { "id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier" },
+    { "id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano" },
+    { "id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss" },
+    { "id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom" }
+  ],
+  "enemies": [
+    { "id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14 },
+    { "id": "jelly", "layer": "underwater", "hpScale": 0.8, "speed": 10 },
+    { "id": "fish", "layer": "underwater", "hpScale": 0.7, "speed": 22 },
+    { "id": "puffer", "layer": "surface", "hpScale": 1.3, "speed": 9 },
+    { "id": "urchin", "layer": "underwater", "hpScale": 1.5, "speed": 7 },
+    { "id": "gull", "layer": "air", "hpScale": 0.6, "speed": 26 }
+  ]
+}

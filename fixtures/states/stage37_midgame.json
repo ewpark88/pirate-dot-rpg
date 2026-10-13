@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-01T12:34:56.000Z",
+  "playerId": "fixture-player",
+  "rngSeed": 913377,
+  "operator": false,
+  "wallet": {
+    "gold": "1.25e6",
+    "gems": 140,
+    "mapPieces": 0
+  },
+  "progress": {
+    "stage": 37,
+    "wave": 2,
+    "bestStage": 41,
+    "farming": false,
+    "rebirths": 0,
+    "rage": 0.4
+  },
+  "ship": {
+    "parts": {
+      "cannon": 52,
+      "hull": 40,
+      "sail": 18,
+      "crowsnest": 12,
+      "cargo": 9
+    }
+  },
+  "crews": {
+    "octo": {
+      "level": 15,
+      "exp": 0,
+      "cards": 2
+    },
+    "manta": {
+      "level": 46,
+      "exp": 3,
+      "cards": 0
+    },
+    "pang": {
+      "level": 8,
+      "exp": 0,
+      "cards": 1
+    },
+    "pingu": {
+      "level": 22,
+      "exp": 0,
+      "cards": 0
+    }
+  },
+  "tokens": 12,
+  "summon": {
+    "pityCount": 17
+  },
+  "buffs": {
+    "tailwindUntil": "2026-11-01T14:04:56.000Z"
+  },
+  "daily": {
+    "date": "2026-11-01",
+    "ads": {
+      "chest": 3,
+      "tailwind": 2
+    },
+    "quests": {
+      "kill_500": 140
+    },
+    "attendanceDay": 4
+  },
+  "collection": [
+    "manta",
+    "octo",
+    "pang",
+    "pingu"
+  ],
+  "settings": {
+    "lang": "system",
+    "autoUpgrade": true,
+    "autoBoss": true,
+    "powerSave": true,
+    "bgm": true,
+    "sfx": true,
+    "vibration": true,
+    "shake": true,
+    "flash": true
+  },
+  "battle": {
+    "tick": 0,
+    "shipHp": "2.22e3",
+    "shipHpMax": "2.22e3",
+    "bossActive": false,
+    "bossTicksLeft": 0,
+    "enemies": [
+      {
+        "id": 1,
+        "kind": "crab",
+        "x": 200.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "surface",
+        "boss": false
+      },
+      {
+        "id": 2,
+        "kind": "jelly",
+        "x": 222.0,
+        "y": 48.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 3,
+        "kind": "fish",
+        "x": 244.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 4,
+        "kind": "puffer",
+        "x": 266.0,
+        "y": 48.0,
+        "hpRatio": 1.0,
+        "layer": "surface",
+        "boss": false
+      },
+      {
+        "id": 5,
+        "kind": "urchin",
+        "x": 288.0,
+        "y": 40.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 6,
+        "kind": "gull",
+        "x": 200.0,
+        "y": 78.0,
+        "hpRatio": 1.0,
+        "layer": "air",
+        "boss": false
+      },
+      {
+        "id": 7,
+        "kind": "crab",
+        "x": 222.0,
+        "y": 70.0,
+        "hpRatio": 1.0,
+        "layer": "surface",
+        "boss": false
+      },
+      {
+        "id": 8,
+        "kind": "jelly",
+        "x": 244.0,
+        "y": 78.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      },
+      {
+        "id": 9,
+        "kind": "fish",
+        "x": 266.0,
+        "y": 70.0,
+        "hpRatio": 1.0,
+        "layer": "underwater",
+        "boss": false
+      }
+    ],
+    "fleet": [
+      {
+        "crewId": "manta",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      },
+      {
+        "crewId": "pingu",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      },
+      {
+        "crewId": "octo",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      },
+      {
+        "crewId": "pang",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      }
+    ],
+    "captainId": "manta",
+    "hitStopTicks": 0,
+    "speed": 1
+  }
+}

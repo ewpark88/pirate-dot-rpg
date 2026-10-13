@@ -1,0 +1,16 @@
+{
+  "maxLevel": 75,
+  "cardExp": { "common": 1, "rare": 4, "hero": 15, "legend": 60 },
+  "expToNext": { "base": 1, "growth": 1.12 },
+  "powerPerLevel": 0.08,
+  "promotionMultiplier": 1.35,
+  "ownedBonusPerLevel": 0.001,
+  "promotions": [
+    { "from": "common", "to": "rare", "level": 15, "cards": 3, "gold": "5e3", "tokens": 0 },
+    { "from": "rare", "to": "hero", "level": 30, "cards": 5, "gold": "5e5", "tokens": 0 },
+    { "from": "hero", "to": "legend", "level": 45, "cards": 8, "gold": "5e7", "tokens": 0 },
+    { "from": "legend", "to": "mythic", "level": 60, "cards": 12, "gold": "5e9", "tokens": 30 }
+  ],
+  "tokenPerSurplusCard": 1,
+  "tokenExchangeCost": 10
+}

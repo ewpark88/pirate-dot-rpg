@@ -1,0 +1,28 @@
+name: pirate_dot
+description: 해적도트 원정대 — 도트 방치형 RPG (Flutter + Flame).
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flame: ^1.38.2
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  game_core: any
+  game_data: any
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  uses-material-design: true
+  generate: true

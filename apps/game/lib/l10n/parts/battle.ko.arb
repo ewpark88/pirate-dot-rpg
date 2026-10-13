@@ -1,0 +1,20 @@
+{
+  "battleFamilyLob": "곡사",
+  "battleFamilyDirect": "직사",
+  "battleFamilyPierce": "관통",
+  "battleFamilySkip": "물수제비",
+  "battleFamilyUnderwater": "수중",
+  "battleFamilyAir": "공중",
+  "battleFamilyAssault": "돌격",
+  "battleFamilySupport": "지원",
+  "battleComboDouble": "더블",
+  "battleComboTriple": "트리플",
+  "battleComboMassacre": "학살!",
+  "battleComboPirateKing": "해적왕!",
+  "battleRegionCoral": "산호초",
+  "battleRegionStorm": "폭풍해",
+  "battleRegionGlacier": "빙하해",
+  "battleRegionVolcano": "화산해",
+  "battleRegionAbyss": "심해",
+  "battleRegionPhantom": "유령해"
+}

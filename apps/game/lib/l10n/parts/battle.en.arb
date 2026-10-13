@@ -1,0 +1,20 @@
+{
+  "battleFamilyLob": "Lob",
+  "battleFamilyDirect": "Direct",
+  "battleFamilyPierce": "Pierce",
+  "battleFamilySkip": "Skip",
+  "battleFamilyUnderwater": "Underwater",
+  "battleFamilyAir": "Air",
+  "battleFamilyAssault": "Assault",
+  "battleFamilySupport": "Support",
+  "battleComboDouble": "Double",
+  "battleComboTriple": "Triple",
+  "battleComboMassacre": "Massacre!",
+  "battleComboPirateKing": "Pirate King!",
+  "battleRegionCoral": "Coral Reef",
+  "battleRegionStorm": "Storm Sea",
+  "battleRegionGlacier": "Glacier Sea",
+  "battleRegionVolcano": "Volcanic Sea",
+  "battleRegionAbyss": "The Abyss",
+  "battleRegionPhantom": "Phantom Sea"
+}

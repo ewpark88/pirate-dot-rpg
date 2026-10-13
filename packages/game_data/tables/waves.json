@@ -1,0 +1,22 @@
+{
+  "tickMs": 50,
+  "wavesPerStage": 3,
+  "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
+  "waveHpPoolFactor": 0.6,
+  "monster": { "hpBase": 20, "hpGrowth": 1.16, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
+  "boss": { "hpMultiplier": 8, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1 },
+  "travelSec": 2,
+  "multiKill": {
+    "windowSec": 0.5,
+    "goldBonusPerKill": 0.1,
+    "tiers": [
+      { "kills": 2, "nameKey": "battleComboDouble" },
+      { "kills": 3, "nameKey": "battleComboTriple" },
+      { "kills": 5, "nameKey": "battleComboMassacre" },
+      { "kills": 10, "nameKey": "battleComboPirateKing" }
+    ]
+  },
+  "aoe": { "fullDamageTargets": 6, "overflowDamage": 0.5 },
+  "chainFalloff": 0.1,
+  "chainMax": 8
+}

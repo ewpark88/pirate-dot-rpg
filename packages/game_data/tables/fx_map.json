@@ -1,0 +1,26 @@
+{
+  "events": {
+    "damage": { "fx": "hit_spark", "sfx": "hit" },
+    "critHit": { "fx": "hit_spark", "sfx": "hit_crit" },
+    "kill": { "fx": "coin_burst", "sfx": "pop" },
+    "multiKill": { "fx": "coin_burst", "sfx": "combo" },
+    "skillCast": { "fx": null, "sfx": "skill" },
+    "ultimateCast": { "fx": "tidal_wave", "sfx": "ultimate" },
+    "bossSpawned": { "fx": null, "sfx": "boss_horn" },
+    "bossCleared": { "fx": "coin_burst", "sfx": "boss_clear" },
+    "bossFailed": { "fx": null, "sfx": "fail" },
+    "shipTierUp": { "fx": "level_up", "sfx": "fanfare" },
+    "partMilestone": { "fx": "level_up", "sfx": "fanfare_small" },
+    "crewPromoted": { "fx": "level_up", "sfx": "promote" }
+  },
+  "fxSheets": [
+    { "id": "slash", "w": 48, "h": 48, "frames": 5 },
+    { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },
+    { "id": "explosion_aoe", "w": 64, "h": 64, "frames": 8 },
+    { "id": "tidal_wave", "w": 96, "h": 56, "frames": 7 },
+    { "id": "lightning", "w": 32, "h": 80, "frames": 5 },
+    { "id": "hit_spark", "w": 24, "h": 24, "frames": 4 },
+    { "id": "coin_burst", "w": 32, "h": 40, "frames": 6 },
+    { "id": "level_up", "w": 32, "h": 64, "frames": 6 }
+  ]
+}

@@ -1,0 +1,17 @@
+name: game_core
+description: 게임 규칙. 순수 Dart, 결정론적 20Hz 시뮬레이션.
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  collection: ^1.18.0
+  crypto: ^3.0.7
+  game_data: any
+  meta: ^1.16.0
+
+dev_dependencies:
+  test: ^1.25.0
+  very_good_analysis: ^10.3.0

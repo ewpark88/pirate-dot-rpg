@@ -1,0 +1,12 @@
+{
+  "dailyCap": 25,
+  "firstOfferAfterSec": 180,
+  "placements": [
+    { "id": "chest", "dailyLimit": 10, "reward": { "type": "goldMultiplier", "value": 5, "altGems": 20 } },
+    { "id": "tailwind", "dailyLimit": 8, "reward": { "type": "buff", "durationSec": 1800, "goldMultiplier": 2, "speedMultiplier": 2, "maxStackSec": 14400 } },
+    { "id": "offline", "dailyLimit": null, "perReturn": 1, "reward": { "type": "goldMultiplier", "value": 2 } },
+    { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
+    { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } }
+  ],
+  "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
+}

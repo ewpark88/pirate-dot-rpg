@@ -1,0 +1,15 @@
+{
+  "families": [
+    { "id": "lob", "projectile": "cannonball", "attack": { "shape": "circle", "radius": 18, "targets": "cluster" }, "skill": { "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 1.0, "fx": "explosion_aoe" }, "ultimate": { "id": "ult_cannon_rain", "fx": "explosion_aoe" }, "nameKey": "battleFamilyLob" },
+    { "id": "direct", "projectile": "bullet", "attack": { "shape": "single", "targets": "nearest" }, "skill": { "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 1.0, "fx": "hit_spark", "targets": "strongest" }, "ultimate": { "id": "ult_volley", "fx": "muzzle" }, "nameKey": "battleFamilyDirect" },
+    { "id": "pierce", "projectile": "harpoon", "attack": { "shape": "line", "width": 6, "targets": "nearest" }, "skill": { "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 1.0, "fx": "slash" }, "ultimate": { "id": "ult_harpoon_storm", "fx": "slash" }, "nameKey": "battleFamilyPierce" },
+    { "id": "skip", "projectile": "stone", "attack": { "shape": "chain", "chains": 4, "targets": "nearest" }, "skill": { "id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 1.0, "fx": "hit_spark", "endFx": "tidal_wave" }, "ultimate": { "id": "ult_tidal_wave", "fx": "tidal_wave" }, "nameKey": "battleFamilySkip" },
+    { "id": "underwater", "projectile": "torpedo", "attack": { "shape": "circle", "radius": 14, "targets": "cluster", "dotSec": 2 }, "skill": { "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 1.0, "fx": "explosion_aoe", "dotSec": 4 }, "ultimate": { "id": "ult_kraken", "fx": "explosion_aoe" }, "nameKey": "battleFamilyUnderwater" },
+    { "id": "air", "projectile": "lightning", "attack": { "shape": "random", "count": 3, "targets": "random" }, "skill": { "id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 1.0, "fx": "lightning" }, "ultimate": { "id": "ult_thunderstorm", "fx": "lightning" }, "nameKey": "battleFamilyAir" },
+    { "id": "assault", "projectile": "hook", "attack": { "shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front" }, "skill": { "id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.0, "fx": "slash", "knockback": 6 }, "ultimate": { "id": "ult_ghost_charge", "fx": "slash" }, "nameKey": "battleFamilyAssault" },
+    { "id": "support", "projectile": null, "attack": { "shape": "ship", "targets": "self" }, "skill": { "id": "support_rally", "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.3, "buffSec": 5 }, "ultimate": { "id": "ult_blessing", "fx": "level_up" }, "nameKey": "battleFamilySupport" }
+  ],
+  "legendSkillScope": "screen",
+  "maxSameFamilyInFleet": 2,
+  "rage": { "perKill": 0.01, "max": 1.0, "autoTrigger": true }
+}

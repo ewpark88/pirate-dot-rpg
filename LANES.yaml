@@ -1,0 +1,120 @@
+# 레인별 소유 경로 (설계서 6.8절).
+# - 브랜치 lane/<레인>(또는 lane/<레인>/*)의 변경 파일은 아래 paths 밖이면 tool/check_lane.dart가 실패시킨다.
+# - 경로는 앞부분 일치. `*`는 `/`를 넘지 않는 글자 묶음.
+# - main(S1 통합 세션)은 검사하지 않는다. 계약·엔진·하네스(shared)는 main에서만 바꾼다.
+# - 세션 역할 교대(M2 관문 뒤)는 session 값만 바꾼다.
+version: 1
+mainBranch: main
+
+# 모든 레인이 쓸 수 있는 자기 이름 파일. {lane}은 레인 이름으로 바뀐다.
+laneOwnedDocs:
+  - docs/plans/active/{lane}-
+  - docs/plans/done/{lane}-
+  - docs/contracts/requests/{lane}-
+  - docs/progress/{lane}.md
+
+# 어느 레인이든 바꿀 수 있는 생성물. 머지 충돌이 나면 다시 생성한다(dart run tool/gen_tables.dart).
+allLanes:
+  - packages/game_data/lib/src/tables.g.dart
+
+lanes:
+  battle:
+    session: S1
+    phase: 1
+    paths:
+      - packages/game_core/lib/src/battle/
+      - packages/game_core/test/battle/
+      - packages/game_data/tables/skills.json
+      - packages/game_data/tables/waves.json
+      - packages/game_data/tables/regions.json
+      - packages/game_data/lib/src/models/battle_tables.dart
+      - packages/game_cli/lib/src/commands/replay.dart
+      - packages/game_cli/lib/src/commands/export_events.dart
+      - scenarios/
+      - fixtures/events/
+      - apps/game/lib/l10n/parts/battle.
+
+  economy:
+    session: S2
+    phase: 1
+    paths:
+      - packages/game_core/lib/src/economy/
+      - packages/game_core/test/economy/
+      - packages/game_data/tables/crews.json
+      - packages/game_data/tables/growth.json
+      - packages/game_data/tables/rarities.json
+      - packages/game_data/tables/ship_parts.json
+      - packages/game_data/tables/ship_tiers.json
+      - packages/game_data/tables/ads.json
+      - packages/game_data/tables/meta.json
+      - packages/game_data/lib/src/models/economy_tables.dart
+      - packages/game_data/lib/src/models/crew_tables.dart
+      - packages/game_cli/lib/src/commands/sim.dart
+      - packages/game_cli/lib/src/commands/balance.dart
+      - packages/game_cli/lib/src/sim/
+      - apps/game/lib/l10n/parts/crew.
+      - apps/game/lib/l10n/parts/ship.
+      - apps/game/lib/l10n/parts/econ.
+
+  render:
+    session: S3
+    phase: 1
+    paths:
+      - apps/game/lib/render/
+      - apps/game/test/render/
+      - packages/game_data/tables/juice.json
+      - packages/game_data/tables/fx_map.json
+      - packages/game_data/lib/src/models/render_tables.dart
+
+  ui:
+    session: S4
+    phase: 1
+    paths:
+      - apps/game/lib/ui/
+      - apps/game/lib/operator/
+      - apps/game/test/ui/
+      - apps/game/test/goldens/
+      - apps/game/lib/l10n/parts/ui.
+      - apps/game/lib/l10n/parts/op.
+      - fixtures/states/
+
+  platform:
+    session: S2
+    phase: 2
+    paths:
+      - apps/game/lib/adapters/
+      - apps/game/test/adapters/
+      - apps/game/android/
+      - apps/game/ios/
+      - .github/
+      - docs/store/
+      - apps/game/lib/l10n/parts/platform.
+
+  art:
+    session: S3
+    phase: 2
+    paths:
+      - apps/game/assets/
+      - tools/art/
+
+# 어느 레인 것도 아닌 경로: main(S1)에서만 바꾼다. 레인이 바꾸려면 docs/contracts/requests/에 요청서.
+shared:
+  - packages/game_core/lib/contracts.dart
+  - packages/game_core/lib/game_core.dart
+  - packages/game_core/lib/testing.dart
+  - packages/game_core/lib/src/testing/
+  - packages/game_data/lib/game_data.dart
+  - packages/game_data/lib/src/game_tables.dart
+  - packages/game_cli/lib/game_cli.dart
+  - packages/game_cli/lib/src/scenario/
+  - packages/game_cli/lib/src/fixtures/
+  - apps/game/lib/main.dart
+  - packages/game_core/lib/src/engine/
+  - packages/game_core/lib/src/save/
+  - packages/game_core/lib/src/ports/
+  - packages/game_core/lib/src/bignum/
+  - packages/game_data/lib/src/models/common.dart
+  - tool/
+  - AGENTS.md
+  - LANES.yaml
+  - docs/

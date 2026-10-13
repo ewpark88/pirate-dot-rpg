@@ -1,0 +1,19 @@
+{
+  "rebirth": { "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300 },
+  "summonCostGems": 30,
+  "dailyQuests": [
+    { "id": "kill_500", "type": "kill", "target": 500 },
+    { "id": "upgrade_30", "type": "upgrade", "target": 30 },
+    { "id": "summon_1", "type": "summon", "target": 1 },
+    { "id": "ad_1", "type": "ad", "target": 1 }
+  ],
+  "dailyQuestRewardGems": 40,
+  "attendance": { "days": 7, "finalRewardMinRarity": "hero", "resetOnMiss": false },
+  "collection": { "every": 5, "attackBonus": 0.03 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3 },
+  "autoUpgradeUnlockStage": 20,
+  "stuckHintSec": 180,
+  "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
+  "tutorial": { "firstTenSummonFree": true, "firstTenGuarantee": "hero" },
+  "notifications": { "dailyMax": 1 }
+}
