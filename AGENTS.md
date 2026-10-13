@@ -22,7 +22,8 @@
 - 에셋은 `apps/game/assets/LICENSES.json`에 등록(CC0·OFL·MIT·OWN만)
 
 ## 완료 조건
-- `tool\check.bat`(Windows) / `tool/check.sh`(CI) 통과 — Stop 훅이 자동으로 돌린다
+- `tool\check.bat`(Windows) / `tool/check.sh`(Linux·macOS) 통과 — Stop 훅이 자동으로 돌린다. 커밋·머지 전에는 `--full`
+  (GitHub Actions CI는 쓰지 않는다 — ADR-0006)
 - 스펙의 수용 기준마다 테스트 1개 이상 (로직은 `scenarios/*.yaml` 또는 단위 테스트)
 - 새 문구는 ko/en 둘 다, 영어 화면 골든 1장 포함
 - 새 기능은 운영자 모드에서 바로 불러볼 수 있게 (`docs/GAME_DESIGN.md` 6.10)

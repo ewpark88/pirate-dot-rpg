@@ -87,7 +87,6 @@ lanes:
       - apps/game/test/adapters/
       - apps/game/android/
       - apps/game/ios/
-      - .github/
       - docs/store/
       - apps/game/lib/l10n/parts/platform.
 

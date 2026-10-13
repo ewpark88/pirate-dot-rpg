@@ -1,9 +1,9 @@
 // 모든 검사. 빠른 것부터 돌고 첫 실패에서 멈춘다 (docs/GAME_DESIGN.md 6.4).
 //
 //   dart run tool/check.dart          # 매 작업 끝 (Stop 훅도 이것을 부른다)
-//   dart run tool/check.dart --full   # + Flutter 위젯·골든 테스트 (PR·CI)
+//   dart run tool/check.dart --full   # + Flutter 위젯·골든 테스트 (커밋·머지 전)
 //
-// Windows: tool\check.bat, Linux/CI: tool/check.sh — 둘 다 이 파일을 부른다.
+// Windows: tool\check.bat, Linux·macOS: tool/check.sh — 둘 다 이 파일을 부른다.
 import 'dart:convert';
 import 'dart:io';
 

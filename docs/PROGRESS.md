@@ -9,21 +9,20 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-13 · S1 (단일 세션) |
-| 바로 다음 할 일 | ① CI 녹색 확인 ② worktree 3개 생성 후 S2~S4 시작 ③ S1은 battle 레인 M1 착수 (무리 생성부터) |
+| 바로 다음 할 일 | ① worktree 3개 생성 후 S2~S4 시작 ② S1은 battle 레인 M1 착수 (무리 생성부터) |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
 
 ### M0 하네스 구축
 - [x] 모노레포 뼈대 (pub workspace: game_data · game_core · game_cli · apps/game · tool)
-- [x] AGENTS.md, CLAUDE.md, LANES.yaml, docs/ (ARCHITECTURE · QUALITY · lanes 6개 · ADR 5개 · 템플릿)
+- [x] AGENTS.md, CLAUDE.md, LANES.yaml, docs/ (ARCHITECTURE · QUALITY · lanes 6개 · ADR 6개 · 템플릿)
 - [x] `tool/check.dart` + `check.bat`/`check.sh` (생성물 → 포맷 → 분석 → 의존·금지 패턴·레인 → 단위 테스트 → 시나리오 → 밸런스 스모크 → `--full` Flutter)
 - [x] 의존·금지 패턴 검사: 의존 방향, 비결정성, 수치 리터럴, 하드코딩 문구, ko/en ARB, 테이블 l10n 키, 300줄, 라이선스, 운영자 가드, 레인 소유권
 - [x] 일부러 규칙을 어긴 코드가 실패하는지 확인 — `tool/test/harness_test.dart` 23개
 - [x] Claude Code 훅: PreToolUse(픽스처·골든 보호), PostToolUse(format+analyze, 테이블 재생성), Stop(진척 문서 + check)
 - [x] `/lane-start <레인>` 명령
-- [x] CI 워크플로 (`ci.yml`: check --full + main에서 debug APK, `nightly.yml`: 밸런스 자리)
-- [ ] CI 녹색 확인 — 첫 실행은 `flutter pub get` 실패(merged ARB 미커밋) → 수정 커밋으로 재확인 중
+- [x] ~~CI 워크플로~~ → GitHub Actions 제거, 로컬 check(Stop 훅 + 커밋 전 `--full`)로 대체 (ADR-0006)
 - [x] 0단계 계약 `contracts.dart`: GameState(세이브 v1과 1:1)·BattleView, Command 14 + OperatorCommand 16, GameEvent 24, 포트 7, GameEngine/GameSystem, RecordedTick
 - [x] 테이블 12개 + 스키마 검증기, 선원 40명은 도트 팩 `characters.json`에서 생성
 - [x] 픽스처: `fixtures/states` 4개, `fixtures/events/sample_battle.jsonl`(합성), 세이브 v1
@@ -89,13 +88,19 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-13 · S1 · GitHub Actions 제거
+- 한 일: 사용자 결정으로 `.github/workflows/`(ci·nightly)를 삭제하고 ADR-0006을 썼다. 검증은 Stop 훅과 커밋 전 `tool\check.bat --full`로 한다.
+  AGENTS.md, platform 레인 문서, LANES.yaml(platform의 `.github/`), QUALITY, check 주석에서 CI 언급을 정리했다.
+- 실수 기록: CI 결과를 보려고 인증 없이 GitHub API를 15초마다 조회해서 시간당 60회 한도를 다 썼다.
+  git push와는 관계없다. 앞으로 원격 상태를 반복 폴링하지 않는다.
+- 다음 할 일: worktree 3개 생성 → S2~S4 시작
+
 ### 2026-10-13 · S1 · 원격 연결과 CI 수정
 - 한 일: origin(`https://github.com/ewpark88/pirate-dot-rpg`) 연결, 첫 커밋 + `contracts-v1` 태그 push.
   첫 CI가 `flutter pub get`에서 실패 — `apps/game/lib/l10n/merged/`가 gitignore라 새 clone에 없어 `generate: true`의 gen-l10n이 실패.
   → merged ARB를 커밋하는 생성물로 전환(`allLanes`에 추가), check가 최신 여부 검사, ARB 조각 수정 시 PostToolUse 훅이 자동 병합. 새 clone에서 pub get 성공 재현.
   2차 CI는 `tool/check.sh`가 실행 권한 없이(100644) 커밋되어 실패 → `git update-index --chmod=+x`로 수정 (Windows git은 core.filemode=false라 chmod가 기록되지 않음).
-- 다음 할 일: CI 녹색 확인 → worktree 생성
-- 남은 문제: 로컬에 `gh` CLI가 없어 CI 로그는 웹에서만 볼 수 있음
+- 다음 할 일: (위 항목으로 대체)
 
 ### 2026-10-13 · S1 · M0 하네스 + 0단계 계약
 - 한 일:
@@ -111,4 +116,3 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 남은 문제:
   - `waves.json` 몬스터 곡선, `growth.json` 승급 골드는 임시값 (경제 레인 시뮬로 확정)
   - 스토어 빌드 운영자 코드 잔존 검사는 소스 가드 검사만 있음 — 빌드 산출물 검사는 플랫폼 레인(M4)
-  - CI는 원격 저장소가 없어 실행해 보지 못함
