@@ -75,9 +75,12 @@ Future<_Outcome> _generate() async {
   final stale = checkTablesFresh(_root);
   if (stale.isNotEmpty) return _Outcome(ok: false, output: stale.join('\n'));
   final arb = mergeArb(_root);
-  final problems = [...arb.violations, ...checkTableL10nKeys(_root, arb.keys)];
+  final problems = [
+    ...arb.violations,
+    ...checkTableL10nKeys(_root, arb.keys),
+    if (arb.violations.isEmpty) ...checkMergedArbFresh(_root, arb),
+  ];
   if (problems.isNotEmpty) return _Outcome(ok: false, output: problems.join('\n'));
-  writeMergedArb(_root, arb);
   return _run('flutter', ['gen-l10n'], cwd: 'apps/game');
 }
 

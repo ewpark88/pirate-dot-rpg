@@ -80,15 +80,26 @@ ArbMergeResult mergeArb(Directory root) {
   return ArbMergeResult(merged, out);
 }
 
-/// 합친 ARB를 merged/에 쓴다.
+/// 합친 ARB를 merged/에 쓴다. 커밋하는 생성물이다(새로 받은 저장소의 `flutter pub get`이 읽는다).
 void writeMergedArb(Directory root, ArbMergeResult result) {
-  const encoder = JsonEncoder.withIndent('  ');
   for (final lang in languages) {
     File(p.join(root.path, arbMergedDir, 'app_$lang.arb'))
       ..createSync(recursive: true)
-      ..writeAsStringSync('${encoder.convert(result.merged[lang])}\n');
+      ..writeAsStringSync(_encodeMerged(result, lang));
   }
 }
+
+/// merged/가 parts/와 맞는지 확인한다.
+List<Violation> checkMergedArbFresh(Directory root, ArbMergeResult result) => [
+  for (final lang in languages)
+    if (_readOrNull(File(p.join(root.path, arbMergedDir, 'app_$lang.arb'))) != _encodeMerged(result, lang))
+      Violation('$arbMergedDir/app_$lang.arb', 'ARB 조각과 합친 파일이 다릅니다 — `dart run tool/merge_arb.dart`를 실행하세요'),
+];
+
+String _encodeMerged(ArbMergeResult result, String lang) =>
+    '${const JsonEncoder.withIndent('  ').convert(result.merged[lang])}\n';
+
+String? _readOrNull(File f) => f.existsSync() ? f.readAsStringSync().replaceAll('\r\n', '\n') : null;
 
 final _nameKeyRe = RegExp(r'"(?:nameKey)"\s*:\s*"([^"]+)"');
 

@@ -10,8 +10,7 @@ pubspec_overrides.yaml
 .flutter-plugins-dependencies
 coverage/
 
-# 생성물 (tool/merge_arb.dart, flutter gen-l10n 이 다시 만든다)
-apps/game/lib/l10n/merged/
+# 생성물 (flutter gen-l10n 이 다시 만든다). l10n/merged/는 pub get에 필요해서 커밋한다.
 apps/game/lib/l10n/gen/
 
 # 로컬

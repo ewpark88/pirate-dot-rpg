@@ -13,9 +13,10 @@ laneOwnedDocs:
   - docs/contracts/requests/{lane}-
   - docs/progress/{lane}.md
 
-# 어느 레인이든 바꿀 수 있는 생성물. 머지 충돌이 나면 다시 생성한다(dart run tool/gen_tables.dart).
+# 어느 레인이든 바꿀 수 있는 생성물. 머지 충돌이 나면 다시 생성한다(tool/gen_tables.dart, tool/merge_arb.dart).
 allLanes:
   - packages/game_data/lib/src/tables.g.dart
+  - apps/game/lib/l10n/merged/
 
 lanes:
   battle:

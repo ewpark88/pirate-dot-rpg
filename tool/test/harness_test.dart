@@ -122,6 +122,15 @@ void main() {
       expect(v, violation('apps/game/lib/l10n/parts/ui.en.arb', 'battle에도 있습니다'));
     });
 
+    test('ARB 조각을 고치고 merge_arb를 안 돌리면 실패', () {
+      put('apps/game/lib/l10n/parts/ui.ko.arb', '{"uiA": "가"}');
+      put('apps/game/lib/l10n/parts/ui.en.arb', '{"uiA": "a"}');
+      writeMergedArb(root, mergeArb(root));
+      expect(checkMergedArbFresh(root, mergeArb(root)), isEmpty);
+      put('apps/game/lib/l10n/parts/ui.en.arb', '{"uiA": "b"}');
+      expect(checkMergedArbFresh(root, mergeArb(root)).single.path, endsWith('app_en.arb'));
+    });
+
     test('테이블의 nameKey가 ARB에 없으면 실패', () {
       put('packages/game_data/tables/x.json', '{"nameKey": "shipPartLaser"}');
       expect(

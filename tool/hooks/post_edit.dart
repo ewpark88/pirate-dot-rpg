@@ -19,6 +19,13 @@ Future<void> main() async {
     stdout.writeln('tables.g.dart 다시 생성함');
     exit(0);
   }
+  if (path.startsWith('$arbPartsDir/') && path.endsWith('.arb')) {
+    final arb = mergeArb(root);
+    if (arb.violations.isNotEmpty) block('ARB 문제 — 지금 고치세요:\n${arb.violations.join('\n')}');
+    writeMergedArb(root, arb);
+    stdout.writeln('l10n/merged 다시 합침');
+    exit(0);
+  }
   if (!path.endsWith('.dart') || isGenerated(path)) exit(0);
 
   ProcessResult run(List<String> args) => Process.runSync(
