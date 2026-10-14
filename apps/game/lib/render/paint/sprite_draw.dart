@@ -17,6 +17,9 @@ class SpriteDraw {
   static const _flash = ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcATop);
   static const _underwater = ColorFilter.mode(Color(0x730B2A44), BlendMode.srcATop);
 
+  /// 감속 색조 필터 (StatusPainter가 정한 색).
+  ColorFilter? slowed;
+
   SpriteSheet? sheet(String key) {
     final b = bank;
     return enabled && b != null ? b[key] : null;
@@ -33,6 +36,7 @@ class SpriteDraw {
     double? h,
     bool flash = false,
     bool underwater = false,
+    bool isSlowed = false,
     double alpha = 1,
   }) {
     final s = sheet(key);
@@ -42,7 +46,7 @@ class SpriteDraw {
     final dw = w ?? fw;
     final dh = h ?? fh;
     _paint
-      ..colorFilter = flash ? _flash : (underwater ? _underwater : null)
+      ..colorFilter = flash ? _flash : (isSlowed ? slowed : (underwater ? _underwater : null))
       ..color = Color.fromRGBO(0, 0, 0, alpha);
     c.drawImageRect(
       s.image,
