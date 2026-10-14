@@ -5,6 +5,7 @@ import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
 import 'package:game_core/src/economy/summon.dart';
+import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -21,7 +22,7 @@ class EconomySystem implements GameSystem {
   GameState? handle(GameState state, Command command, SystemContext ctx) => switch (command) {
     final UpgradePart c => upgradePart(state, c, ctx),
     final Summon c => summon(state, c, ctx),
-    final MergeAllCards c => mergeAllCards(state, c, ctx),
+    final MergeAllCards c => tutorialAfterMerge(mergeAllCards(state, c, ctx), ctx.tables),
     final PromoteCrew c => promoteCrew(state, c, ctx),
     final ClaimOffline c => claimOffline(state, c, ctx),
     final ClaimDaily c => claimDaily(state, c, ctx),
@@ -34,10 +35,14 @@ class EconomySystem implements GameSystem {
     final GrantAdReward c => grantAdReward(state, c, ctx),
     OpSpawnChest() => spawnChest(state, ctx),
     final OpGrantTailwind c => opGrantTailwind(state, c, ctx),
+    final TutorialAck c => tutorialAck(state, ctx.tables, c),
+    SkipTutorial() => state.copyWith(clearTutorial: true),
+    final OpSetTutorial c => opSetTutorial(state, c),
     // TODO(economy): Rebirth …
     _ => null,
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) => tickChest(rollDay(state, ctx.clock.now()), ctx);
+  GameState update(GameState state, SystemContext ctx) =>
+      tickChest(tutorialTick(rollDay(state, ctx.clock.now()), ctx.tables), ctx);
 }
