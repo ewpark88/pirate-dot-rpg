@@ -58,11 +58,11 @@ PromoteStatus promoteStatus(GameState state, GameTables t, String crewId) {
 
 bool canPromote(GameState state, GameTables t, String crewId) => promoteStatus(state, t, crewId) == PromoteStatus.ok;
 
-/// 카드 한 장 받기 (소환·보스·오프라인 공통, 스펙 결정 ①).
+/// 카드 한 장 받기 (소환·보스·오프라인 공통, 스펙 결정 ①, 사용자 결정 A).
 /// - 처음 보는 선원: 카드 등급 첫 레벨로 보유 + 도감
 /// - 카드 등급이 현재 등급보다 높음: 그 등급 첫 레벨로 점프(경험치 0)
 /// - 신화 최고 레벨: 증표
-/// - 그 외: 카드 등급 경험치 적립 + 승급용 장수 1
+/// - 그 외: 카드 등급 경험치 적립. 장수는 다음 승급에 필요한 만큼까지만 쌓고, 넘는 장수는 증표(신화는 모두 증표)
 GameState receiveCard(GameState state, GameTables t, String crewId, String rarity) {
   final card = t.rarities.byId(rarity);
   final crew = state.crews[crewId];
@@ -85,10 +85,16 @@ GameState receiveCard(GameState state, GameTables t, String crewId, String rarit
     );
   }
   if (crew.level >= t.growth.maxLevel) return state.copyWith(tokens: state.tokens + t.growth.tokenPerSurplusCard);
+  final need = nextPromotion(t, crew.level)?.cards ?? 0;
+  final surplus = crew.cards >= need;
   return state.copyWith(
+    tokens: surplus ? state.tokens + t.growth.tokenPerSurplusCard : null,
     crews: {
       ...state.crews,
-      crewId: crew.copyWith(exp: crew.exp + (t.growth.cardExp[rarity] ?? 0), cards: crew.cards + 1),
+      crewId: crew.copyWith(
+        exp: crew.exp + (t.growth.cardExp[rarity] ?? 0),
+        cards: surplus ? crew.cards : crew.cards + 1,
+      ),
     },
   );
 }
@@ -104,20 +110,20 @@ String rollRarity(Map<String, double> rates, Rng rng) {
 }
 
 /// 보스 처치 카드 (설계서 4.3.3, 스펙 결정 ②). 전투가 스테이지를 올리기 **전**에 부른다.
-/// - 장수: `growth.bossCards.countAt(잡은 스테이지)`
-/// - 대상: [fleet] 중 무작위. 첫 회차(환생 0)의 처음 `starterCount`장은 `starterCrew`에게
-/// - 등급: `rarities.bossDropRates`
+/// - 첫 회차(환생 0) 시작 구간: 첫 보스부터 `starterEvery`번째 보스마다 그 보스의 카드 대신 `starterCrew`에게 일반 카드 1장
+///   (사용자 결정 C). 사이 보스는 아래 규칙대로
+/// - 장수: `growth.bossCards.countAt(잡은 스테이지)`, 대상: [fleet] 중 무작위, 등급: `rarities.bossDropRates`
 GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet) {
   final t = ctx.tables;
   final b = t.growth.bossCards;
   final stage = state.progress.stage;
+  if (state.progress.rebirths == 0 && b.inStarterPhase(stage) && (stage - 1) % b.starterEvery == 0) {
+    return receiveCard(state, t, b.starterCrew, t.rarities.rarities.first.id);
+  }
+  if (fleet.isEmpty) return state;
   var s = state;
   for (var i = 0; i < b.countAt(stage); i++) {
-    final starter =
-        state.progress.rebirths == 0 && stage <= b.earlyStageMax && (stage - 1) * b.early + i < b.starterCount;
-    if (!starter && fleet.isEmpty) break;
-    final crewId = starter ? b.starterCrew : fleet[ctx.rng.nextInt(fleet.length)];
-    s = receiveCard(s, t, crewId, rollRarity(t.rarities.bossDropRates, ctx.rng));
+    s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));
   }
   return s;
 }

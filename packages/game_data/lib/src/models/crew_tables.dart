@@ -186,7 +186,8 @@ class GrowthTable {
 }
 
 /// 보스 처치 카드 (설계서 4.3.3): 스테이지 [earlyStageMax]까지 [early]장, 이후 `base + floor(stage / stagesPerExtra)`장.
-/// 처음 [starterCount]번의 보스 카드는 [starterCrew]에게 간다.
+/// 첫 회차 시작 구간(스테이지 `starterCount × starterEvery`까지)에는 첫 보스부터 [starterEvery]번째 보스마다
+/// [starterCrew]에게 그 보스의 카드 대신 일반 카드 1장을 준다(사용자 결정 2026-10-14, 첫 승급 30~40분).
 class BossCardsDef {
   BossCardsDef.fromJson(JsonReader j)
     : earlyStageMax = j.integer('earlyStageMax'),
@@ -194,7 +195,8 @@ class BossCardsDef {
       base = j.integer('base'),
       stagesPerExtra = j.integer('stagesPerExtra'),
       starterCrew = j.str('starterCrew'),
-      starterCount = j.integer('starterCount');
+      starterCount = j.integer('starterCount'),
+      starterEvery = j.integer('starterEvery');
 
   final int earlyStageMax;
   final int early;
@@ -202,6 +204,10 @@ class BossCardsDef {
   final int stagesPerExtra;
   final String starterCrew;
   final int starterCount;
+  final int starterEvery;
+
+  /// 첫 회차에서 [stage]가 시작 구간인가.
+  bool inStarterPhase(int stage) => stage <= starterCount * starterEvery;
 
   /// [stage] 보스를 잡았을 때 받는 카드 수.
   int countAt(int stage) => stage <= earlyStageMax ? early : base + stage ~/ stagesPerExtra;
