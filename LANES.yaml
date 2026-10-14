@@ -57,7 +57,6 @@ lanes:
       - packages/game_data/lib/src/models/economy_tables.dart
       - packages/game_data/lib/src/models/crew_tables.dart
       - packages/game_cli/lib/src/commands/sim.dart
-      - packages/game_cli/lib/src/commands/balance.dart
       - packages/game_cli/lib/src/sim/
       - packages/game_cli/test/sim/
       - apps/game/lib/l10n/parts/crew.
@@ -73,6 +72,10 @@ lanes:
       # art 레인(2단계)도 같은 S3 세션이 한다 — worktree 하나로 하도록 render가 함께 소유 (2026-10-14)
       - apps/game/assets/
       - tools/art/
+      # 선원 균형 검사(설계서 4.8)는 S3가 맡는다 (2026-10-14, S2는 환생 작업 중)
+      - packages/game_cli/lib/src/commands/balance.dart
+      - packages/game_cli/lib/src/balance/
+      - packages/game_cli/test/balance/
       - packages/game_data/tables/juice.json
       - packages/game_data/tables/fx_map.json
       - packages/game_data/lib/src/models/render_tables.dart
