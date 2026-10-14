@@ -163,4 +163,4 @@ dart run release_check.dart --marker op.invincible
 없음(수동: 문서의 절차대로 사람이 확인).
 
 ## 처리 결과 (S1 작성)
-- [ ] 반영 / 거절 / 수정 반영 — 커밋:
+- [x] 반영(2026-10-14, S1) — tool/release_check.dart(코드 그대로), AGENTS.md 명령표. check에는 넣지 않음(빌드 2회, 수 분) — 스토어 업로드 전에 사람이/S1이 실행.
