@@ -158,5 +158,23 @@ void main() {
       expect(p.bufferedTicks, lessThan(64));
       expect(p.position, greaterThan(400));
     });
+
+    test('순풍(speed 2): 엔진이 주기마다 2틱 넣어도 같은 속도로 소비해 밀리지 않는다', () {
+      final p = live();
+      var t = 0;
+      for (var period = 0; period < 300; period++) {
+        for (var k = 0; k < 2; k++) {
+          p.push(tickOf(t, enemies: [(1, 300 - t * 0.5)], speed: 2));
+          t++;
+        }
+        // 화면 60Hz: 한 주기(50ms) = 3프레임.
+        for (var f = 0; f < 3; f++) {
+          p.advance(tickMs / 3);
+        }
+      }
+      expect(p.bufferedTicks, lessThan(64));
+      // 따라잡기 없이 lookahead 근처에서 따라간다.
+      expect(t - 1 - p.position, inInclusiveRange(2, 2 + 6));
+    });
   });
 }

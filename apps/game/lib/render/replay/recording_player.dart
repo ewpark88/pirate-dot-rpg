@@ -14,6 +14,11 @@ class EnemyPose {
   /// 보호막 (청록 테두리)과 무한 항해 테두리 단계 0~3.
   bool shielded = false;
   int tier = 0;
+
+  /// 감속·화상·취약 (전설 능력).
+  bool slowed = false;
+  bool burning = false;
+  bool vulnerable = false;
   double x = 0;
   double y = 0;
 
@@ -31,6 +36,9 @@ class EnemyPose {
     stunned = v.stunned;
     shielded = v.shielded;
     tier = v.tier;
+    slowed = v.slowed;
+    burning = v.burning;
+    vulnerable = v.vulnerable;
     x = nx;
     y = ny;
     drawX = nx;

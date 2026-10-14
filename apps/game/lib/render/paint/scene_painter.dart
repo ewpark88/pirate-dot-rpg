@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
@@ -6,6 +5,7 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/hud_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/paint/stage_painter.dart';
+import 'package:pirate_dot/render/paint/status_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
@@ -15,12 +15,14 @@ import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 ///
 /// 그리는 순서: 배경 → 물속 적 → 배 → 물위 적 → 공중 적 → 발사체 → 이펙트 → 코인 → 숫자 → (흔들림 밖) 슬롯·플래시.
 class ScenePainter {
-  ScenePainter(this.scene) : _stage = StagePainter(scene) {
+  ScenePainter(this.scene) : _stage = StagePainter(scene), _status = StatusPainter(scene) {
     _hud = HudPainter(scene, _sprite);
+    _sprite.slowed = ColorFilter.mode(Color(_status.slowedTint), BlendMode.srcATop);
   }
 
   final BattleScene scene;
   final StagePainter _stage;
+  final StatusPainter _status;
   final _sprite = SpriteDraw();
   late final HudPainter _hud;
 
@@ -143,10 +145,12 @@ class ScenePainter {
       frame: _animFrame(e.id),
       flash: e.flash,
       underwater: under,
+      isSlowed: e.slowed,
       alpha: alpha,
     )) {
       var color = bossShape?.color ?? looks.colorOf(e.kind);
       if (under) color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
+      if (e.slowed) color = _status.tintColor(color);
       color = ((alpha * 0xFF).round() << 24) | (color & 0xFFFFFF);
       _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);
     }
@@ -157,7 +161,7 @@ class ScenePainter {
     final tierColor = looks.tierColor(e.tier);
     if (tierColor != null) _outline(c, l, t, w, h, 1, 1, tierColor);
     if (e.shielded) _outline(c, l, t, w, h, _shieldGap, _shieldPx, _shieldColor);
-    if (e.stunned) _stars(c, e.drawX, t - 4);
+    _status.paint(c, e, t, t + h);
     if (showHitboxes) {
       _stroke.color = _hitbox;
       c.drawRect(Rect.fromLTWH(l, t, w, h), _stroke);
@@ -178,19 +182,6 @@ class ScenePainter {
     final o = gap - px / 2;
     c.drawRect(Rect.fromLTWH(l - o, t - o, w + o * 2, h + o * 2), _stroke);
     _stroke.strokeWidth = 1;
-  }
-
-  late final int _starColor = parseArgb(scene.fx.stun.str('color'), 'stun.color');
-  late final double _starOrbit = scene.fx.stun.number('orbitPx');
-  late final double _starPeriod = scene.fx.stun.number('periodMs');
-
-  /// 기절: 머리 위에서 별 2개가 돈다.
-  void _stars(Canvas c, double cx, double cy) {
-    final a = scene.clockMs / _starPeriod * 2 * math.pi;
-    for (var k = 0; k < 2; k++) {
-      final ang = a + k * math.pi;
-      _fill(c, cx + math.cos(ang) * _starOrbit - 1, cy + math.sin(ang) * _starOrbit / 2 - 1, 2, 2, _starColor);
-    }
   }
 
   void _projectiles(Canvas c) {
