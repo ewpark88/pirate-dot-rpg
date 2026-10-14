@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
@@ -11,7 +12,9 @@ import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
+import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_result.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 import 'package:pirate_dot/ui/tabs/ship_tab.dart';
@@ -34,6 +37,23 @@ const _panelFlex = 37;
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _tab = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // 이탈 분석(설계서 4.9): 마지막으로 본 화면·스테이지. 시작할 때, 탭을 바꿀 때, 스테이지가 바뀔 때 남긴다.
+    ref.listenManual(gameStateProvider.select((s) => s.progress.stage), (_, _) => _reportLastSeen());
+    _reportLastSeen();
+  }
+
+  void _reportLastSeen() => ref
+      .read(analyticsPortProvider)
+      .setLastSeen(screen: analyticsTabIds[_tab], stage: ref.read(gameStateProvider).progress.stage);
+
+  void _selectTab(int i) {
+    setState(() => _tab = i);
+    _reportLastSeen();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +99,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         left: 8,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [TailwindBadge(), SizedBox(height: 4), DailyIcon()],
+                          children: [TailwindBadge(), TailwindAdButton(), SizedBox(height: 4), DailyIcon()],
                         ),
                       ),
                     ],
@@ -104,7 +124,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: _tab,
-            onDestinationSelected: (i) => setState(() => _tab = i),
+            onDestinationSelected: _selectTab,
             destinations: [
               NavigationDestination(icon: const Icon(Icons.sailing), label: l10n.uiTabVoyage),
               NavigationDestination(

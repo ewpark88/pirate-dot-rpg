@@ -4,10 +4,18 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-rebirth-boss.md` |
-| 상태 | 항해 탭·환생 카드 커밋 (골든 5장 S1 승인, 환생 숫자 규칙 미정). 다음: 광고·오디오 포트 자리 |
-| 기다리는 것 | S2 환생 미리보기 함수 |
+| 상태 | 광고 버튼·오디오·분석 포트 자리 커밋 (스펙 `ui-ads-audio.md`) |
+| 기다리는 것 | S5 NoAds·NoopAnalytics 어댑터(main) → ui 임시 클래스 삭제 · `Settings.notifications`(세이브 v4) → 설정 토글 · S2 환생 함수 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 광고·오디오·분석 포트 자리 (S5 요청서 platform-ui-ports)
+- 한 일: b75f8b2(항해 탭·환생) 커밋. 스펙 `ui-ads-audio.md`(S1 지시). `adsPortProvider`(기본 NoAds)·`audioPortProvider`(null)·`analyticsPortProvider`(Noop).
+  광고 버튼 = `adOfferProvider(placement)`(포트 isReady && 경제 canWatchAd && 튜토리얼 아님) → `show` → rewarded일 때만 GrantAdReward. 버튼마다 이득 숫자:
+  상자 ×5·젬30(상자 아래), 순풍 30분×2(배지 아래), 함포 지원(보스 도전 아래), 무료 소환(소환 탭), 오프라인 ×2(받기 뒤 광고가 준비됐으면 창을 열어 둠).
+  `battleGameProvider` → `BattleGame(audio:)` + 설정 효과음·배경음 → setVolumes. 이탈 분석: 시작·탭 전환·스테이지 변경 → setLastSeen.
+  광고가 없으면 자리도 차지하지 않아 골든 변화 없음. `check --full` 통과(78.4s, 위젯 142개).
+- 다음 할 일: S5 어댑터·세이브 v4 오면 교체·알림 토글, S2 환생 함수
 
 ### 2026-10-14 · S4 · 항해 탭·환생(보물지도)
 - 한 일: 71c9509(보스 약점) 커밋. 비어 있던 항해 탭에 해역 이름·스테이지·최고 스테이지 + 환생 카드(조각·보너스, 가능하면 이번 획득·다음 조각까지·보물지도 버튼, 불가면 해금 안내와 막대).

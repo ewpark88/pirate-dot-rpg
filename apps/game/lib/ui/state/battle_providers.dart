@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 전장 위젯 주입점. null이면 Flame 전장([battleGameProvider]). UI 테스트·골든은 빈 상자로 바꿔
@@ -20,11 +21,21 @@ final battleGameProvider = Provider<BattleGame>((ref) {
     feed: ref.read(battleFeedProvider),
     tables: ref.read(tablesProvider),
     settings: juiceSettingsOf(ref.read(gameStateProvider).settings),
+    audio: ref.read(audioPortProvider),
   );
-  ref.listen(
-    gameStateProvider.select((s) => (s.settings.shake, s.settings.flash, s.settings.vibration, s.settings.powerSave)),
-    (_, _) => game.settings = juiceSettingsOf(ref.read(gameStateProvider).settings),
-  );
+  // 설정의 배경음·효과음 끄기 → 음량 0 (켜면 1).
+  void applyVolumes() {
+    final s = ref.read(gameStateProvider).settings;
+    ref.read(audioPortProvider)?.setVolumes(sfx: s.sfx ? 1 : 0, bgm: s.bgm ? 1 : 0);
+  }
+
+  applyVolumes();
+  ref
+    ..listen(gameStateProvider.select((s) => (s.settings.sfx, s.settings.bgm)), (_, _) => applyVolumes())
+    ..listen(
+      gameStateProvider.select((s) => (s.settings.shake, s.settings.flash, s.settings.vibration, s.settings.powerSave)),
+      (_, _) => game.settings = juiceSettingsOf(ref.read(gameStateProvider).settings),
+    );
   return game;
 });
 

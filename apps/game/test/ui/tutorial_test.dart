@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 import 'ui_harness.dart';
@@ -67,12 +69,21 @@ void main() {
     for (final (step, expected) in [(2, false), (null, true)]) {
       final container = ProviderContainer(
         overrides: [
+          initialGameStateProvider.overrideWithValue(loadFixture('stage37_midgame').copyWith(clearTutorial: true)),
           tutorialStepProvider.overrideWithValue(step),
-          adsReadyProvider.overrideWithValue(true),
+          adsPortProvider.overrideWithValue(_ReadyAds()),
         ],
       );
-      expect(container.read(adOffersAllowedProvider), expected, reason: 'step $step');
+      expect(container.read(adOfferProvider(AdPlacement.tailwind)), expected, reason: 'step $step');
       container.dispose();
     }
   });
+}
+
+class _ReadyAds implements AdsPort {
+  @override
+  bool isReady(AdPlacement placement) => true;
+
+  @override
+  Future<AdResult> show(AdPlacement placement) async => AdResult.rewarded;
 }
