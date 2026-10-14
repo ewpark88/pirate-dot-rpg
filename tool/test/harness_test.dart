@@ -185,6 +185,15 @@ void main() {
     });
   });
 
+  test('git status 첫 줄이 unstaged 수정(" M")이어도 경로를 자르지 않는다', () {
+    expect(parsePorcelain(' M docs/plans/a.md\nA  lib/b.dart\nR  old.dart -> new.dart\n?? "c d.md"'), [
+      'docs/plans/a.md',
+      'lib/b.dart',
+      'new.dart',
+      'c d.md',
+    ]);
+  });
+
   test('실제 저장소는 모든 검사를 통과한다', () {
     expect([...checkDeps(realRoot), ...checkRules(realRoot), ...checkTablesFresh(realRoot)], isEmpty);
   });
