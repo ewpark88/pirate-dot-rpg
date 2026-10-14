@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-balance-crews.md`(구현 완료, 결과 S1 검토) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원·어댑터 대기) |
-| 상태 | 원뿔 버그 수정(main f897484) 뒤 balance crews 재측정 — 강습만 크게 벗어남(×3.4~6.0), 조합 ×2.245 |
-| 막힌 것 | 강습 수치 재조정(S1) · 렌더 외부 대기(승급 그림·음원·실기기 측정) |
+| 현재 계획 | render-quality-v1(스펙 `docs/specs/render-quality-v1.md`, 구현 완료·골든 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 상태 | 기준 battle_ship.gif 수준으로 렌더 재작업(미커밋, check --full 통과). UI 아이콘·젬 d22e591 |
+| 막힌 것 | 골든 7장 승인(S1) · pubspec assets/ui/(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,15 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 렌더 품질 v1 (사용자 지시: battle_ship.gif 수준)
+- 스펙 `render-quality-v1`(S1 승인) + 계약 H(BattleView wave·rage·gold, main 13cbb0b). 팩 `tools/scene3.py`는 읽기만, gif 프레임은 PIL로 비교용 추출.
+- 공용 글리프 `paint/pixel_glyphs.dart` 492bda0(UI도 사용), `PixelText`(글자 바뀔 때만 Picture로 굽기).
+- 배경: 하늘 4단·타원 구름(흐름)·바다 3단·물결 대시(움직임), 해역 6종은 같은 구조에 팔레트만. 배 (2,70)+출렁임·포구 화염(투척). 적 발밑 기준·출렁임·y순, 일반 HP 바 제거.
+  도트 데미지 숫자·xN COMBO·캔버스 HUD(코인+골드·스테이지-파·함성 게이지)·슬롯 6칸(계열색 테두리). 시트 67ms·lightning 아래 끝 기준·궁극기 해일 2배+화면 번쩍임·코인 튐→(30,96).
+  `battle_scene.dart` 300줄 맞추려고 발사체·피격 갱신을 `motion.dart`로.
+- 골든: `battle_reference.png`(gif 장면 재현) 새로 + 기존 6장 갱신 — 비교 이미지와 함께 S1 승인 대기.
+- art: `tools/art/gen_ui_icons.py` → `assets/ui/` 탭 아이콘 4·젬 3프레임(OWN) d22e591. pubspec 등록은 S1.
 
 ### 2026-10-14 · S3 · κ 0.25 + 충격 재조정
 - κ 기본 0.5 → 0.25(S1). 충격 사다리 power [0.4993, 0.3726, 0.2219×3] → [0.7275, 0.7037, 0.6343×3](자기 피해 = a·power + k 두 점 맞춤),
