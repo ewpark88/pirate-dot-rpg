@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md`, `plans/done/render-m3-fx.md` |
-| 상태 | render-m3-fx 완료 — 계약 A·B·C 반영(어댑터 제거, 기절 별), main e883272까지 머지, check --full 통과. 다음: render-regions 스펙 |
-| 막힌 것 | 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
+| 현재 계획 | `plans/active/render-regions.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx` |
+| 상태 | render-regions 진행 — 배경 6종·해역 전환·보스 등장/처치(코인 비)/실패·보스 모양 구현(미커밋). 골든 2장 재승인 대기 |
+| 막힌 것 | 골든 재승인(S1) · 계약 D(stage)·shielded·tier main 반영 대기 · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · render-regions (해역 배경·보스 연출)
+- 한 일: 스펙 승인(S1)·계약 D 수용, 해역 보스·shielded·tier를 규칙 7~10으로 추가. 테스트 먼저(`regions_test.dart` 수용 기준 1~7) →
+  fx_map backgrounds·bossEntrance·bossFailed·bossLook·shield·tierColors, juice bossKill.coinRain + 모델·검증,
+  `Backdrop`(stage→배경, 1초 색 섞기), `StagePainter`(배경·원경 장식·보스 경고·실패 덮개), 보스 모양(`EnemyLooks.bossOf`), 코인 비.
+  `scene_state.dart`로 HitState·SceneStats 분리(300줄).
+- 검증: `tool\check.bat --full` 통과(29.9s).
+- 다음 할 일: 골든 재승인 → 커밋 → 계약 필드 오면 stage 연결·보호막·tier·보스 골든.
 
 ### 2026-10-14 · S3 · render-m3-fx (스킬·궁극기·적 역할 연출)
 - 한 일: 스펙 승인(S1)·계약 A·B·C 수용 기록. 테스트 먼저(수용 기준 1~9, 5는 계약 B 대기 skip) →

@@ -103,11 +103,18 @@ class EventDirector implements ReplayListener {
             ..shipHpRatio = e.hpRatio;
         case BossCleared():
           _bossKill();
+        case BossSpawned():
+          if (scene.settings.flash) scene.bossWarnMs = scene.fx.bossEntrance.number('ms');
+          scene.shake.trigger(_juice.shake['aoe']!);
+        case BossFailed():
+          scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:
           break;
       }
     }
-    _m3.detectSplitRevive(tick, index);
+    _m3
+      ..detectSplitRevive(tick, index)
+      ..detectShieldBreak(tick, index);
   }
 
   void _damage(Damage e, RecordedTick tick, int index) {
@@ -167,6 +174,7 @@ class EventDirector implements ReplayListener {
         ..toY = kShipCenterY
         ..spread = spread
         ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
+        ..fallPx = 0
         ..ageMs = 0
         ..flyMs = _juice.coinFlyMs
         ..x = e.x
@@ -185,6 +193,32 @@ class EventDirector implements ReplayListener {
     scene.slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
     _fx('bossCleared', kUltimateX, kUltimateY);
+    _coinRain();
+  }
+
+  // 코인 비: 화면 위 결정론적 x에서 떨어진다 (render-regions 규칙 5).
+  static const _rainLeft = 70.0;
+  static const _rainSpan = 240;
+  static const _rainPrime = 37;
+  static const _rainTopY = -4.0;
+  static const _rainFallMin = 60.0;
+  static const _rainFallSpread = 40;
+
+  void _coinRain() {
+    for (var i = 0; i < _juice.bossCoinRain; i++) {
+      scene.coins.obtain()
+        ..fromX = _rainLeft + i * _rainPrime % _rainSpan
+        ..fromY = _rainTopY
+        ..toX = kShipCenterX
+        ..toY = kShipCenterY
+        ..spread = 0
+        ..lift = 0
+        ..fallPx = _rainFallMin + i * _rainPrime % _rainFallSpread
+        ..ageMs = -(i * _juice.coinFlyMs / _juice.bossCoinRain)
+        ..flyMs = _juice.coinFlyMs * 2
+        ..x = _rainLeft + i * _rainPrime % _rainSpan
+        ..y = _rainTopY;
+    }
   }
 
   void _fx(String event, double x, double y) {

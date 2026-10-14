@@ -30,6 +30,10 @@ void placeProjectile(Projectile p) {
 /// 코인: 분수처럼 튀었다가(앞 40%) 배로 빨려간다.
 void moveCoin(Coin c) {
   final t = (c.ageMs / c.flyMs).clamp(0.0, 1.0);
+  if (c.fallPx > 0) {
+    _rainCoin(c, t);
+    return;
+  }
   if (t < _fountainEnd) {
     final f = t / _fountainEnd;
     c
@@ -43,6 +47,24 @@ void moveCoin(Coin c) {
       ..x = sx + (c.toX - sx) * ease
       ..y = c.fromY + (c.toY - c.fromY) * ease;
   }
+}
+
+const _rainFallEnd = 0.5;
+
+/// 코인 비: 앞 절반은 곧장 떨어지고, 뒤 절반은 배로 빨려간다.
+void _rainCoin(Coin c, double t) {
+  if (t < _rainFallEnd) {
+    c
+      ..x = c.fromX
+      ..y = c.fromY + c.fallPx * (t / _rainFallEnd);
+    return;
+  }
+  final f = (t - _rainFallEnd) / (1 - _rainFallEnd);
+  final ease = f * f;
+  final sy = c.fromY + c.fallPx;
+  c
+    ..x = c.fromX + (c.toX - c.fromX) * ease
+    ..y = sy + (c.toY - sy) * ease;
 }
 
 /// 이펙트: 지연 뒤 시작하고, 쓸고 지나가는 패턴이면 x가 움직인다.

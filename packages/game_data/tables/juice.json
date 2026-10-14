@@ -12,7 +12,7 @@
     "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D",
     "lifeMs": 700, "risePx": 14, "critBouncePx": 6
   },
-  "bossKill": { "slowMoMs": 300, "slowMoRate": 0.3, "flash": true },
+  "bossKill": { "slowMoMs": 300, "slowMoRate": 0.3, "flash": true, "coinRain": 30 },
   "kill": { "coinCount": 5, "coinFlyMs": 600 },
   "vibration": { "crit": "light", "ultimate": "medium" },
   "sound": { "hitVariants": 3, "pitchJitter": 0.08 },

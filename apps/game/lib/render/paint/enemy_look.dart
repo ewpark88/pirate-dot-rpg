@@ -34,4 +34,28 @@ class EnemyLooks {
   int colorOf(String kind) => _lookOf(kind).color;
   double alphaOf(String kind) => _lookOf(kind).alpha;
   double sizeOf(String kind) => kind.endsWith(_smallSuffix) ? _fx.enemySmallSize : _lookOf(kind).size;
+
+  final Map<String, BossShape> _bossCache = {};
+  BossShape? _defaultBoss;
+
+  /// 보스 모양 (`fx_map.bossLook`). 표에 있는 종류(예: 크라켄 촉수)는 [boss] 표시가 없어도 보스 모양,
+  /// 표에 없는 보스는 기본 보스 모양, 보스가 아니면 null.
+  BossShape? bossOf(String kind, {required bool boss}) {
+    final j = _fx.bossLook[kind];
+    if (j != null) return _bossCache[kind] ??= _shape(j);
+    return boss ? _defaultBoss ??= _shape(_fx.bossLook[_fx.bossLookDefault]!) : null;
+  }
+
+  /// 무한 항해 테두리 색. tier 0이면 없음, 3을 넘으면 마지막 색.
+  int? tierColor(int tier) {
+    if (tier <= 0) return null;
+    final colors = _fx.tierColors;
+    return colors[(tier > colors.length ? colors.length : tier) - 1];
+  }
+
+  static BossShape _shape(JsonReader j) =>
+      (color: parseArgb(j.str('color'), '${j.path}.color'), w: j.number('w'), h: j.number('h'));
 }
+
+/// 보스 플레이스홀더 모양.
+typedef BossShape = ({int color, double w, double h});
