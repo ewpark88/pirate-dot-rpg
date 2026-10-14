@@ -1,5 +1,4 @@
 import 'package:game_core/game_core.dart';
-import 'package:game_core/src/economy/cards.dart';
 import 'package:test/test.dart';
 
 import 'harness.dart';

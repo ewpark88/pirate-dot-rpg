@@ -32,8 +32,12 @@ void main() {
     for (final f in files) {
       final ticks = decodeRecording(f.readAsStringSync());
       expect(ticks, isNotEmpty, reason: f.path);
+      // 틱은 1씩 오른다. 히트스톱 중(hitStopTicks > 0)에는 같은 틱 프레임이 이어진다.
       for (var i = 1; i < ticks.length; i++) {
-        expect(ticks[i].frame.tick, greaterThan(ticks[i - 1].frame.tick), reason: '${f.path} 틱 순서');
+        final prev = ticks[i - 1].frame;
+        final cur = ticks[i].frame;
+        final expected = prev.hitStopTicks > 0 ? prev.tick : prev.tick + 1;
+        expect(cur.tick, expected, reason: '${f.path} ${i + 1}번째 줄 틱 순서');
       }
     }
   });
