@@ -38,6 +38,10 @@ class WavesTable {
   /// 튜토리얼 3단계(설계서 4.12 '실패 → 강화' 학습): 이 스테이지의 첫 보스는 HP × [tutorialFailHpMultiplier].
   int get tutorialFailStage => _boss.integer('tutorialFailStage');
   double get tutorialFailHpMultiplier => _boss.number('tutorialFailHpMultiplier');
+
+  /// 첫 회차 스테이지 1~[earlyStageMax] 보스는 HP × [earlyHpMultiplier] — 입력 없이도 시작 편성으로 잡히게 (설계서 4.12 1~2단계).
+  int get earlyStageMax => _boss.integer('earlyStageMax');
+  double get earlyHpMultiplier => _boss.number('earlyHpMultiplier');
   double get travelSec => raw.number('travelSec');
   double get multiKillWindowSec => raw.obj('multiKill').number('windowSec');
   double get multiKillGoldBonusPerKill => raw.obj('multiKill').number('goldBonusPerKill');

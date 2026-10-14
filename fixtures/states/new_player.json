@@ -184,6 +184,9 @@
     "hitStopTicks": 0,
     "speed": 1,
     "stage": 1,
-    "chest": null
+    "chest": null,
+    "wave": 0,
+    "rage": 0.0,
+    "gold": "0e0"
   }
 }

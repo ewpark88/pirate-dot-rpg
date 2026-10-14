@@ -136,6 +136,9 @@ class BattleView {
     this.speed = 1,
     this.stage = 1,
     this.chest,
+    this.wave = 0,
+    this.rage = 0,
+    this.gold = BigNum.zero,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -151,6 +154,9 @@ class BattleView {
     speed: j['speed'] as int? ?? 1,
     stage: j['stage'] as int? ?? 1,
     chest: j['chest'] == null ? null : ChestView.fromJson(j['chest'] as Json),
+    wave: j['wave'] as int? ?? 0,
+    rage: (j['rage'] as num?)?.toDouble() ?? 0,
+    gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -179,6 +185,11 @@ class BattleView {
   /// 떠 있는 보물상자. 없으면 null.
   final ChestView? chest;
 
+  /// 캔버스 HUD용 (기록 재생에서도 그리게): 이번 스테이지에서 잡은 파 수, 함성 게이지 0~1, 지갑 골드.
+  final int wave;
+  final double rage;
+  final BigNum gold;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -194,6 +205,9 @@ class BattleView {
     int? stage,
     ChestView? chest,
     bool clearChest = false,
+    int? wave,
+    double? rage,
+    BigNum? gold,
   }) => BattleView(
     tick: tick ?? this.tick,
     shipHp: shipHp ?? this.shipHp,
@@ -207,6 +221,9 @@ class BattleView {
     speed: speed ?? this.speed,
     stage: stage ?? this.stage,
     chest: clearChest ? null : chest ?? this.chest,
+    wave: wave ?? this.wave,
+    rage: rage ?? this.rage,
+    gold: gold ?? this.gold,
   );
 
   Json toJson() => {
@@ -222,5 +239,8 @@ class BattleView {
     'speed': speed,
     'stage': stage,
     'chest': chest?.toJson(),
+    'wave': wave,
+    'rage': rage,
+    'gold': gold.toJson(),
   };
 }
