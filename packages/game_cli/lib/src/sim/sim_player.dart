@@ -105,7 +105,9 @@ class SimPlayer {
 
   void _decide() {
     final s = engine.state;
-    if (s.wallet.gems >= summonCost(t.meta, 1)) result.firstSummonReady ??= _elapsed;
+    if (canSummon(s, t, 1) || canSummon(s, t, t.meta.raw.obj('tutorial').integer('firstTenCount'))) {
+      result.firstSummonReady ??= _elapsed;
+    }
 
     engine.enqueue(const MergeAllCards());
     for (final id in s.crews.keys) {
