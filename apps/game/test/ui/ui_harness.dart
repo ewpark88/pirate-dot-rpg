@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 샘플 상태 4개: new_player, stage37_midgame, boss_fight, all_crews_mythic.
@@ -33,6 +34,8 @@ Future<CommandLog> pumpGame(
       overrides: [
         initialGameStateProvider.overrideWithValue(state),
         commandSinkProvider.overrideWithValue(log),
+        // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.
+        battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
       ],
       child: PirateDotApp(locale: locale),
     ),
@@ -40,7 +43,7 @@ Future<CommandLog> pumpGame(
   await tester.pump();
   if (tab != 0) {
     await tester.tap(find.byType(NavigationDestination).at(tab));
-    // 탭 표시 애니메이션을 끝까지 (전장 게임 루프 때문에 pumpAndSettle은 끝나지 않는다).
+    // 탭 표시 애니메이션을 끝까지.
     await tester.pump(); // 탭 상태 반영 → 애니메이션 시작
     await tester.pump(_tabAnimation);
   }

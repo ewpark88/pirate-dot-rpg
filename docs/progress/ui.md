@@ -5,9 +5,15 @@
 | --- | --- |
 | 계획 | `docs/plans/done/ui-tabs.md` 완료 → 다음: 운영자 패널 1차 |
 | 상태 | 단계 1~6 커밋 (골든 S1 승인) |
-| 기다리는 것 | S1의 `sample_states.g.dart` 생성물(운영자 샘플 상태) |
+| 기다리는 것 | S1의 골든 재생성 승인, 운영자 패널 스펙(`docs/specs/ui-operator-panel.md`) 승인 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 전장 분리와 운영자 패널 스펙
+- 한 일: 렌더 레인의 새 전장 그림이 들어오며 UI 골든 4장이 깨짐(전장 영역만 22% 차이). S1 결정 B — UI 골든은 HUD와 탭 패널만 본다.
+  home_screen에 `battleViewBuilderProvider` 주입점, UI 테스트는 빈 상자로 바꿈. `BattleGame(feed, tables)` 전달. 골든 재생성(미커밋, S1 승인 대기).
+  운영자 패널 1차 스펙 초안 작성. main 머지(`sample_states.g.dart` 포함) 후 `check --full` 통과.
+- 다음 할 일: 승인 → 골든·home_screen·스펙 커밋 → 운영자 패널 테스트 먼저 → 구현
 
 ### 2026-10-14 · S4 · 탭 화면 1차 구현
 - 한 일:
