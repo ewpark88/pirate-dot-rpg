@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge.dart';
+import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
@@ -45,10 +46,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Center(
                       child: AspectRatio(
+                        key: const Key('battle.area'),
                         aspectRatio: kLogicalWidth / kLogicalHeight,
-                        child:
+                        // 전장(렌더) 위에 UI의 탭 영역(보물상자)을 같은 좌표로 겹친다.
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
                             ref.watch(battleViewBuilderProvider)?.call(context) ??
-                            GameWidget(game: ref.watch(battleGameProvider)),
+                                GameWidget(game: ref.watch(battleGameProvider)),
+                            const ChestLayer(),
+                          ],
+                        ),
                       ),
                     ),
                     const Positioned(top: 8, right: 8, child: BossChallenge()),

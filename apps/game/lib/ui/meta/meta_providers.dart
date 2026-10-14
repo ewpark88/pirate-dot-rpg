@@ -45,3 +45,10 @@ final collectionBonusProvider = Provider<CollectionBonusView? Function(GameState
   (_) =>
       (_) => null,
 );
+
+/// 상태 → 떠 있는 보물상자의 기본 보상(골드). null이면 금액을 숨긴다.
+// TODO(economy): S2 chestReward(B3)가 main에 오면 본문을 그 함수로. 그 전엔 숨김.
+final chestRewardProvider = Provider<BigNum? Function(GameState state)>(
+  (_) =>
+      (_) => null,
+);
