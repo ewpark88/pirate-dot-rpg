@@ -14,13 +14,15 @@ class NotifyTexts {
 }
 
 /// [lang]은 `settings.lang`: `system` | `ko` | `en`. 위젯 밖이라 `lookupAppLocalizations`로 찾는다.
-NotifyTexts notifyTextsFor(String lang) {
+/// [hours]는 가득 차는 시간(`meta.offline.maxSec`) — 문구에 숫자를 박지 않는다.
+/// 톤(설계서 4.9): 재촉·손해 강조 없이 "모아 뒀다"만 알린다.
+NotifyTexts notifyTextsFor(String lang, {required int hours}) {
   final code = lang == 'system' ? PlatformDispatcher.instance.locale.languageCode : lang;
   final supported = AppLocalizations.supportedLocales.any((l) => l.languageCode == code);
   final l = lookupAppLocalizations(Locale(supported ? code : 'en'));
   return NotifyTexts(
     title: l.platformNotifyOfflineFullTitle,
-    body: l.platformNotifyOfflineFullBody,
+    body: l.platformNotifyOfflineFullBody(hours),
     channelName: l.platformNotifyChannelName,
   );
 }
