@@ -33,7 +33,7 @@
 - [x] 세이브 v1 코덱·체크섬·마이그레이션 틀·백업 복구 — 0단계에 선행
 - [x] 전투: 무리·발사·피해·동시 처치·궁극기(공통)·보스 타이머·파밍 (`BattleSystem`) — 경제 수치는 임시 `combat_stats`
 - [ ] 강화·소환·천장·카드·승급·오프라인 (`EconomySystem`)
-- [ ] `game_cli sim`이 7.2 목표 리포트, check 밸런스 스모크 활성화
+- [x] `game_cli sim`이 7.2 목표 리포트, check 밸런스 스모크 활성화 (목표 벗어남 4건 — economy 조정 대기)
 - [x] `scenarios/boss_timeout_farming.yaml` skip 해제, `boss_clear_advances.yaml` 추가 · 화면 없이 돈다(강화가 없어 스테이지 1 파밍에서 멈춤)
 - [x] `game_cli export-events` 실제 엔진 출력 (+ 앱 데모 상수 `render/demo/sample_battle.g.dart`, allLanes)
 
@@ -104,7 +104,11 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
   render·ui 스펙은 S1이 승인(사용자 위임) — 레인 세션은 자기 사용자에게 위임 확인 후 시작.
 - 추가2: economy 99445f3 머지(합치기·승급·보스 카드·오프라인), 보스 처치에 `grantBossCards`+`SaveRequested` 연결, offline.dart export.
 - 추가3: lane/ui 3f6fa8c 1차 머지(HUD·배 탭). 앱에 엔진 연결: `apps/game/lib/engine_host.dart`(20Hz, 배속, RecordedTick 스트림), main.dart가 ProviderScope override로 상태·명령 통로를 꽂는다(ui 파일 무변경). 세이브 불러오기는 platform(TODO).
-- 다음 할 일: 렌더 라이브 입력 연결, economy 운영자 명령·sim 머지
+- 추가4: economy 운영자 명령·`game_cli sim` 머지(check 밸런스 스모크 활성). 전투 테이블 조정(sim 20명×3시간):
+  `hpBase` 20→10, `hpGrowth` 1.16→1.19 → 스테이지 10: 18.7→7.6분(OK), 처음 10분 한 파 33→9.4초, 첫 보스 실패 1.3분(OK), 가장 긴 벽 1.5분.
+  스테이지 40은 0.4시간(목표 1.5~3시간) — hpGrowth로는 거의 안 변함, 첫 전설 0.08일 등 경제 성장 속도가 결정 → economy(사용자 결정 대기).
+  boss_timeout_farming 시나리오는 op.setFleet[octo]로 약한 편성 고정.
+- 다음 할 일: 렌더 라이브 입력 연결, economy 밸런스(사용자 결정) 후 sim 재확인
 - 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
 
 ### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안
