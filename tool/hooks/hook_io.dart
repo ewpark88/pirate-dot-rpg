@@ -10,6 +10,23 @@ Future<Map<String, dynamic>> readHookInput() async {
   return text.trim().isEmpty ? const {} : jsonDecode(text) as Map<String, dynamic>;
 }
 
+/// 훅이 검사할 저장소 루트.
+///
+/// 훅 명령은 `$CLAUDE_PROJECT_DIR`(세션을 연 폴더)에서 돌지만, 레인 세션은 worktree(`D:\Projects\pde-<레인>`)로
+/// 옮겨 가서 일할 수 있다. 그래서 고친 파일 → 세션의 현재 폴더(`cwd`) 순서로 실제 저장소를 찾는다.
+Directory hookRoot(Map<String, dynamic> input) {
+  final toolInput = input['tool_input'] as Map<String, dynamic>? ?? const {};
+  final file = (toolInput['file_path'] ?? toolInput['notebook_path']) as String?;
+  final cwd = input['cwd'] as String?;
+  for (final start in [if (file != null && p.isAbsolute(file)) p.dirname(file), ?cwd]) {
+    for (var dir = Directory(start).absolute; ; dir = dir.parent) {
+      if (File(p.join(dir.path, 'LANES.yaml')).existsSync()) return dir;
+      if (dir.parent.path == dir.path) break;
+    }
+  }
+  return findRepoRoot();
+}
+
 /// 수정 대상 파일의 저장소 기준 상대 경로 (없으면 null).
 String? editedPath(Map<String, dynamic> input, Directory root) {
   final toolInput = input['tool_input'] as Map<String, dynamic>? ?? const {};

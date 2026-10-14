@@ -2,8 +2,6 @@
 // 테스트를 통과시키려고 기대값을 바꾸는 것을 막기 위해서다. 갱신은 사람이 명령으로만 한다.
 import 'dart:io';
 
-import 'package:pde_tool/harness.dart';
-
 import 'hook_io.dart';
 
 const protected = {
@@ -12,8 +10,9 @@ const protected = {
 };
 
 Future<void> main() async {
-  final root = findRepoRoot();
-  final path = editedPath(await readHookInput(), root);
+  final input = await readHookInput();
+  final root = hookRoot(input);
+  final path = editedPath(input, root);
   if (path == null) exit(0);
   for (final e in protected.entries) {
     if (path.contains(e.key)) {
