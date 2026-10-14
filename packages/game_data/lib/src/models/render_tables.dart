@@ -239,6 +239,10 @@ class FxMapTable {
   JsonReader get audio => _o('audio');
   JsonReader get zone => _o('zone');
   JsonReader get status => _o('status');
+  JsonReader get cutIn => _o('cutIn');
+  JsonReader get pillar => _o('pillar');
+  JsonReader get shipLook => _o('shipLook');
+  JsonReader get regionSweep => _o('regionSweep');
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
   ProjectileStyle projectileFor(String family) =>

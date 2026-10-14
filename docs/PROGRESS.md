@@ -66,7 +66,7 @@
 | economy | S2 | lane/economy | 스펙 승인, 강화 효과 함수·UpgradePart (cf0f333) | 뼈대 `EconomySystem` | - |
 | render | S3 | lane/render | 스펙 초안 `render-battle-replay` | 빈 `BattleGame`, 합성 전투 기록 준비됨 | - |
 | ui | S4 | lane/ui | 스펙 `ui-tabs` 승인 대기 | 탭 4개 자리, 샘플 상태 4개 준비됨 | - |
-| platform | S2 (2단계) | - | M3부터 | - | - |
+| platform | S5 | lane/platform | 세션 시작 대기 (`D:\Projects\pde-platform`) | - | - |
 | art | S3 (2단계) | - | M3부터 | - | - |
 
 ## 사람이 해야 할 일 (S1이 모아 둔다)

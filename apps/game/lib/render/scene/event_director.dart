@@ -106,8 +106,11 @@ class EventDirector implements ReplayListener {
         case BossCleared():
           _bossKill();
         case BossSpawned():
+          scene.moments.onBossSpawned(e.kind, tick.frame.stage);
           if (scene.settings.flash) scene.bossWarnMs = scene.fx.bossEntrance.number('ms');
           scene.shake.trigger(_juice.shake['aoe']!);
+        case ShipTierUp():
+          scene.moments.onTierUp(e.tierId);
         case BossFailed():
           scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:

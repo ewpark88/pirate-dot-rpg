@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-moments.md`(스펙 초안) · `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
-| 상태 | 상태 표시 완료(7cb5af9). 순풍 speed 2 라이브 확인 테스트. '큰 순간' 스펙 초안 + 계약 요청 G |
-| 막힌 것 | render-moments 승인·계약 G · 승급 그림 ship_t2~t4(아트, M4) · CC0 음원(사람) · 실기기 측정(M2) |
+| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기, 최적화 후보 기록) · `plans/active/render-audio.md`(음원·어댑터 대기) |
+| 상태 | '큰 순간' 완료(44783d4, S1 머지 대기). 최적화 조사 결과 render-perf 계획에 기록(코드 변경 없음) |
+| 막힌 것 | 승급 그림(아트, M4) · CC0 음원(사람) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,17 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 최적화 조사
+- 한 일: 골든 2장 승인 → 44783d4(머지 해시 S1에 전달). 임시 측정(커밋 안 함): 부하 장면 60초·실제 엔진 120초에서 풀 상한 도달 0%,
+  최고 이펙트 34/40·숫자 17/24·코인 40/60. 스프라이트 그리기 평균 71번/프레임이 이미지 약 11장으로 묶임 → drawAtlas 후보(필터 쓰는 적은 따로).
+  결과·후보 3개를 `plans/active/render-perf.md`에 기록. 코드 변경은 실기기 측정 뒤.
+
+### 2026-10-14 · S3 · '큰 순간' 연출
+- 한 일: render-moments 승인, 계약 G 거절(배 등급은 stage 파생) → 요청서에 결과 기록. `Backdrop`을 `regions.regionAt(stage)`로 바꿔 무한 항해 반복 반영(stage 400 → 폭풍해).
+  테스트 먼저(`moments_test.dart` 7개) → `Moments`(해역 보스 = regionAt(stage).regionBoss 첫 등장 컷인 1.2초·세션당 1번, 배 등급 = shipTiers.tierAt(stage)·바뀌면 빛기둥+level_up,
+  ShipTierUp과 중복 1번, 해역 이동 해일 sweep), `ShipPainter`(등급 스프라이트 `ship:<tierId>`·플레이스홀더 shipLook·빛기둥), 컷인 띠(StagePainter).
+- 검증: `tool\check.bat --full` 통과. 골든 `battle_cutin.png` 새로, `battle_boss_storm.png`는 stage 75 배가 sloop가 되어 갱신(미커밋).
 
 ### 2026-10-14 · S3 · 적 상태 표시
 - 한 일: render-status 승인·계약 F(main 286c687) → 테스트 먼저(`status_test.dart` 4개, 픽셀 확인) → `StatusPainter`(감속 색조·물방울, 화상 불꽃 깜빡임(번쩍임 끄기면 고정), 취약 화살표,

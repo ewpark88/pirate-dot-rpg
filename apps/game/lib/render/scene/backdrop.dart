@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:game_data/game_data.dart';
 
 /// 해역 배경 한 벌 (아트 전 플레이스홀더): 하늘·바다·깊은 바다 색 + 원경 장식.
@@ -21,47 +19,26 @@ class BackgroundPalette {
 }
 
 /// 스테이지 → 해역 배경, 해역이 바뀌면 `fx_map.backgroundFadeMs` 동안 색을 섞는다 (docs/specs/render-regions.md 규칙 1~3).
+/// 해역은 `regions.regionAt(stage)` — 무한 항해 반복(loopStages)까지 테이블이 정한다.
 class Backdrop {
-  Backdrop(this._fx, String regionsJson) : _regions = _parse(regionsJson) {
+  Backdrop(this._fx, this._regions) {
     _current = _prev = paletteOf(backgroundFor(1));
     _fadeAge = _fx.backgroundFadeMs;
   }
 
   final FxMapTable _fx;
 
-  /// (fromStage, background, bgm) — fromStage 오름차순.
-  final List<(int, String, String?)> _regions;
+  final RegionsTable _regions;
   final Map<String, BackgroundPalette> _palettes = {};
   late BackgroundPalette _current;
   late BackgroundPalette _prev;
   String _currentId = '';
   double _fadeAge = 0;
 
-  static List<(int, String, String?)> _parse(String json) {
-    final root = jsonDecode(json) as Map<String, dynamic>;
-    final list = [
-      for (final r in (root['regions'] as List? ?? const []).cast<Map<String, dynamic>>())
-        ((r['fromStage'] as num).toInt(), r['background'] as String, r['bgm'] as String?),
-    ]..sort((a, b) => a.$1.compareTo(b.$1));
-    return list;
-  }
+  String backgroundFor(int stage) => _regions.regionAt(stage).background;
 
-  String backgroundFor(int stage) {
-    var id = _fx.backgroundDefault;
-    for (final (from, bg, _) in _regions) {
-      if (stage >= from) id = bg;
-    }
-    return id;
-  }
-
-  /// 해역 배경음 id (regions.json bgm). 없으면 null.
-  String? bgmFor(int stage) {
-    String? id;
-    for (final (from, _, bgm) in _regions) {
-      if (stage >= from) id = bgm;
-    }
-    return id;
-  }
+  /// 해역 배경음 id (regions.json bgm).
+  String bgmFor(int stage) => _regions.regionAt(stage).bgm;
 
   BackgroundPalette paletteOf(String id) => _palettes[id] ??= BackgroundPalette.fromJson(
     _fx.backgrounds[id] ?? _fx.backgrounds[_fx.backgroundDefault]!,

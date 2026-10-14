@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/backdrop.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/event_director.dart';
+import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
 import 'package:pirate_dot/render/scene/scene_state.dart';
 import 'package:pirate_dot/render/scene/sound_director.dart';
@@ -46,7 +47,7 @@ class BattleScene {
     hits = Pool(_maxHits, HitState.new);
     zones = Pool(fx.zone.integer('max'), Zone.new);
     this.looks = looks ?? EnemyLooks.fromTables(tables);
-    backdrop = Backdrop(fx, rawTables['regions']!);
+    backdrop = Backdrop(fx, tables.regions);
     player.listener = EventDirector(this);
     this.settings = settings;
   }
@@ -71,6 +72,7 @@ class BattleScene {
   final stats = SceneStats();
   final chest = ChestPose();
   late final sound = SoundDirector(fx, juice);
+  late final moments = Moments(this);
 
   /// 효과음·배경음 포트. null이면 무음.
   AudioPort? get audio => sound.audio;
@@ -144,14 +146,13 @@ class BattleScene {
     if (bossWarnMs > 0) bossWarnMs -= dtMs;
     if (bossFailMs > 0) bossFailMs -= dtMs;
     backdrop.update(dtMs);
+    moments.update(dtMs);
     _applyHits(fxDt);
     _updateStats();
   }
 
   void _updateStage() {
-    final f = frame;
-    if (backdrop.setStage(f.stage)) sound.bgm(backdrop.bgmFor(f.stage));
-    chest.update(f.chest, fx.chest, clockMs);
+    if (!player.isEmpty) moments.onFrame(frame);
   }
 
   static bool _effectDone(Effect e) => e.done;
@@ -241,6 +242,7 @@ class BattleScene {
     shipBuffMs = 0;
     bossWarnMs = 0;
     bossFailMs = 0;
+    moments.reset();
   }
 
   void _updateProjectiles() {
