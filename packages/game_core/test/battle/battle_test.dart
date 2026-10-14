@@ -143,6 +143,9 @@ void main() {
     expect(kills, isNotEmpty);
     expect(e.state.wallet.gold.isZero, isFalse);
     expect(e.state.progress.rage, greaterThan(0));
+    // 일일 퀘스트 '처치' 진행 (경제 addQuestProgress를 전투가 부른다).
+    final killQuest = tables.meta.dailyQuests.firstWhere((q) => q.str('type') == 'kill');
+    expect(e.state.daily.quests[killQuest.str('id')], kills.length.clamp(0, killQuest.integer('target')));
   });
 
   test('9. 보스를 잡으면 스테이지 +1·젬·보스 카드(스테이지 올리기 전 기준)·저장 요청', () {
@@ -183,6 +186,22 @@ void main() {
         );
     final e = engineOf(s)..advance(60 * 1000 ~/ w.tickMs);
     expect(e.drainEvents().whereType<BossFailed>(), isNotEmpty);
+  });
+
+  test('버프: 순풍 중 골드 ×goldMultiplier·배속 ×speedMultiplier, 함포 지원 중 피해 +damageBonus', () {
+    final reward = {for (final p in tables.ads.placements) p.id: p.reward};
+    final buffs = Buffs(
+      tailwindUntil: start.add(const Duration(hours: 1)),
+      bossSupportUntil: start.add(const Duration(minutes: 1)),
+    );
+    final s = game(crews: {crewOf('direct'): const CrewState(level: 5)}).copyWith(buffs: buffs);
+    final on = CombatStats.of(s, tables, now: start);
+    final off = CombatStats.of(s, tables, now: start.add(const Duration(hours: 2)));
+    expect(on.goldMultiplier, closeTo(off.goldMultiplier * reward['tailwind']!.number('goldMultiplier'), 1e-9));
+    expect(on.bonus, reward['bossSupport']!.number('damageBonus'));
+    expect(off.bonus, 0);
+    final e = engineOf(s)..tick();
+    expect(e.state.battle!.speed, reward['tailwind']!.integer('speedMultiplier'));
   });
 
   test('10. 같은 시드·같은 명령이면 600틱 이벤트가 완전히 같다', () {

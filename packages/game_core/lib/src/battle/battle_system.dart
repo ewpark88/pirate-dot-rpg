@@ -8,6 +8,7 @@ import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
+import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -95,7 +96,7 @@ class BattleSystem implements GameSystem {
     final after = _resolve(next, _field!, ctx);
     // 보스 처치는 새 스테이지의 Field를 만든다. 그래서 _resolve 뒤의 Field를 다시 읽는다.
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
-    return _project(after, f);
+    return _tailwindSpeed(_project(after, f), ctx);
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스.
@@ -106,6 +107,27 @@ class BattleSystem implements GameSystem {
     } else {
       spawnWave(f, p.stage, ctx);
     }
+  }
+
+  bool _tailwindBoost = false;
+
+  /// 순풍 중에는 배속을 tailwind.speedMultiplier로 (BattleView.speed — 앱이 주기마다 그만큼 틱을 돈다).
+  /// 운영자가 배속을 바꿨으면(1이 아니면) 건드리지 않는다.
+  GameState _tailwindSpeed(GameState s, SystemContext ctx) {
+    final b = s.battle;
+    if (b == null) return s;
+    final until = s.buffs.tailwindUntil;
+    final on = until != null && until.isAfter(ctx.clock.now());
+    final boost = ctx.tables.ads.placements.firstWhere((p) => p.id == 'tailwind').reward.integer('speedMultiplier');
+    if (on && !_tailwindBoost && b.speed == 1) {
+      _tailwindBoost = true;
+      return s.copyWith(battle: b.copyWith(speed: boost));
+    }
+    if (!on && _tailwindBoost) {
+      _tailwindBoost = false;
+      return b.speed == boost ? s.copyWith(battle: b.copyWith(speed: 1)) : s;
+    }
+    return s;
   }
 
   /// 튜토리얼 3단계의 첫 보스는 일부러 못 잡게 (설계서 4.12). 실패 후 재도전(파밍 → ChallengeBoss)은 보통 보스.
@@ -195,13 +217,14 @@ class BattleSystem implements GameSystem {
     final r = Round(
       f,
       ctx,
-      CombatStats.of(state, ctx.tables),
+      CombatStats.of(state, ctx.tables, now: ctx.clock.now()),
       rage: state.progress.rage,
       invincible: _invincible,
       zeroCooldown: _zeroCooldown,
     );
     body(r);
-    final s = state.copyWith(
+    final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
+    final s = counted.copyWith(
       wallet: r.gold.isZero ? null : state.wallet.copyWith(gold: state.wallet.gold + r.gold),
       progress: r.rage == state.progress.rage ? null : state.progress.copyWith(rage: r.rage),
     );

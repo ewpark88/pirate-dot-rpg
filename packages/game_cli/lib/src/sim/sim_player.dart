@@ -130,6 +130,7 @@ class SimPlayer {
     }
 
     engine.enqueue(const MergeAllCards());
+    if (s.battle?.chest != null) engine.enqueue(const TapChest());
     for (final id in s.crews.keys) {
       if (canPromote(s, t, id)) engine.enqueue(PromoteCrew(id));
     }
@@ -141,6 +142,10 @@ class SimPlayer {
       }
     }
     _buyCheapest(s);
+    // 튜토리얼: UI 확인 단계(첫 연출·소환 결과·마지막 말풍선)는 바로 넘긴다. 나머지는 코어가 판정.
+    final step = s.tutorialStep;
+    final acks = t.meta.raw.obj('tutorial').obj('steps').raw['ack'] as List;
+    if (step != null && acks.contains(step)) engine.enqueue(TutorialAck(step));
 
     if (s.progress.farming) {
       _farmSince ??= _elapsed;

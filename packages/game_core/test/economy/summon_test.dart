@@ -37,6 +37,25 @@ void main() {
     expect(h.of<SaveRequested>(), hasLength(1));
   });
 
+  test('lastSummon: 이번 소환 결과로 덮어쓰고, 처음 얻은 선원은 isNew', () {
+    final s0 = h
+        .newGame(gems: t.meta.summonCostGems * 11)
+        .copyWith(
+          summonsTotal: 10,
+          crews: {'octo': const CrewState()},
+          collection: {'octo'},
+          lastSummon: const [SummonResult(crewId: 'old', rarity: 'common')],
+        );
+    final s = sys.handle(s0, const Summon(count: 10), h.ctx)!;
+    final results = h.of<CrewSummoned>().single.results;
+    expect(s.lastSummon!.map((r) => (r.crewId, r.rarity)).toList(), results.map((r) => (r.crewId, r.rarity)).toList());
+    final seen = <String>{'octo'};
+    for (final r in s.lastSummon!) {
+      expect(r.isNew, !seen.contains(r.crewId), reason: r.crewId);
+      seen.add(r.crewId);
+    }
+  });
+
   test('젬이 모자라면 상태·이벤트 변화 없음', () {
     final s0 = h.newGame(gems: t.meta.summonCostGems - 1);
     final s = sys.handle(s0, const Summon(), h.ctx)!;

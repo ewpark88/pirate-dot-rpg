@@ -5,12 +5,27 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | UI 요청 B 목록(ui-m3-meta): 보물상자 → 퀘스트·출석 → 순풍 → 목표·도감·튜토리얼 → 환생 |
-| 막힌 것 | 없음 (스테이지 40·첫 소환 5.5분은 S1 전투 곡선 조정 대기) |
+| 바로 다음 할 일 | 환생(M3) 스펙 → 구현. M3 메타는 완료(export 요청 중) |
+| 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-14 · S2 · M3 메타 구현 (UI 요청 B1~B10)
+- 한 일(스펙 `economy-m3-meta` 승인, 결정 ①~④): `daily.dart`(rollDay·addQuestProgress·dailyQuests·ClaimDaily(questId)·출석),
+  `chest.dart`(주기 스폰·가라앉음·TapChest·chestReward·OpSpawnChest), `ads.dart`(canWatchAd·GrantAdReward 5종·순풍·OpGrantTailwind),
+  `meta_views.dart`(nextGoal·collectionBonus), `tutorial.dart`(단계 판정, 숫자는 meta.tutorial.steps), lastOfflineGold, summonCards 분리.
+  테이블: ads.chest xMin·xMax, meta.attendance.rewards, dailyQuestRewardGems 10, tutorial.steps, sim 스테이지 40은 daily 판정. game_core 테스트 167개.
+- sim: 가상 플레이어가 튜토리얼 확인 단계를 넘기고 상자를 탭. 하루 40분 60일 — 첫 전설 2.0일·승급 전설 4.36일·첫 신화 55일 OK, 스테이지 40 8.4시간(전투 조정 대기).
+- 남은 문제: 함포 지원(bossSupport) 광고는 경제가 먼저 받아 한도만 센다 — 전투가 버프를 걸 상태 필드가 없음(S1에 알림).
+- 실수 기록: check 실패를 확인하지 않고 같은 명령에서 커밋(ef80bc9) → 포맷 수정 후속 커밋. PowerShell Set-Content가 계획 파일에 BOM을 붙임 → 제거.
+
+### 2026-10-14 · S2 · M3 메타 스펙 초안
+- 한 일: UI 요청 B1~B10(ui-m3-meta)을 스펙 초안으로 — `docs/specs/economy-m3-meta.md`(규칙 10, 수용 기준 13). 사람 승인 대기.
+- 결정 필요: 상자 광고 보상(×5 골드/젬 30 선택), 퀘스트 보상 방식, 출석 1~6일차 보상, 오프라인 ×2 광고의 복귀 기록.
+- 전투에 필요한 것(요청서 예정): 처치 수 퀘스트 집계 호출, 튜토리얼 스테이지 3 보스 ‘일부러 실패’.
+
 ### 2026-10-14 · S2 · 사용자 결정 A·B·C 반영 (조정 3)
+- 추가: main(세이브 v3, lastSummon) 머지, Summon이 `GameState.lastSummon`(isNew 포함)을 채움 — 6d28657
 - 한 일: A 남는 장수 → 증표(모든 등급), C 옥토 일반 카드 4보스마다 1장(starterEvery 4), B 영웅 expToNext 6 → 8. sim 지표 ‘옥토 첫 승급’ 추가.
 - 결과: 계속 접속 — 옥토 첫 승급 32.8분 OK, 스테이지 10 8.7분 OK, 첫 소환 5.5분·스테이지 40 0.40시간은 벗어남(전투 쪽).
   하루 40분 60일(10명) — 첫 전설 보유 2.35일, 승급 전설 4.36일, 첫 신화 49일 모두 OK.

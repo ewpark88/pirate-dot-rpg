@@ -28,6 +28,9 @@ class Round {
   /// 함성 게이지 0~rageMax.
   double rage;
 
+  /// 이번 틱에 처치한 수 (일일 퀘스트 '처치').
+  int kills = 0;
+
   GameTables get t => ctx.tables;
   WavesTable get w => t.waves;
   double get dt => w.tickMs * secondsPerMillisecond;
@@ -40,7 +43,7 @@ class Round {
       crewId == null ? null : t.crews.crews.where((c) => c.id == crewId).firstOrNull?.family;
 
   /// 4.8 공식의 앞 네 항: 대포 × 선원 파워 × 배 등급 × [k](계열 배율·치명타 등).
-  BigNum damageOf(Gun g, double k) => stats.attack.times(g.power * stats.tierDamage * k);
+  BigNum damageOf(Gun g, double k) => stats.attack.times(g.power * stats.tierDamage * (1 + stats.bonus) * k);
 
   /// 적 이동·기절·배 접촉 피해 (규칙 3), 지원 버프 시간.
   void moveFoes() {
@@ -243,6 +246,7 @@ class Round {
   void _kill(Foe e) {
     final g = e.gold.times(stats.goldMultiplier);
     gold = gold + g;
+    kills += 1;
     ctx.emit(Kill(ctx.tick, targetId: e.id, gold: g, x: e.x, y: e.y));
     rage = rage + t.skills.ragePerKill > t.skills.rageMax ? t.skills.rageMax : rage + t.skills.ragePerKill;
     field
