@@ -7,13 +7,13 @@
 
 ## 단계
 - [x] 0. 스펙 승인 (2026-10-14, S1)
-- [ ] 1. 테스트 먼저: 수용 기준 1~6 → 실패 확인
-- [ ] 2. `PerfMonitor`(링 버퍼, p50·p95·최대)
-- [ ] 3. `stressRecording()` 결정론적 부하 기록
-- [ ] 4. `BattleGame.loadStress/loadDemo/resumeLive`, `perf` 노출
-- [ ] 5. 절전 Picture 재사용
-- [ ] 6. 정수배 확대 뷰포트 (Q1: 렌더 담당 확정)
-- [ ] 6b. 측정 스위치 BATTLE_SCENE·PERF_OVERLAY·POWER_SAVE + 콘솔 요약
+- [x] 1. 테스트 먼저: 수용 기준 1~6 → 실패 확인
+- [x] 2. `PerfMonitor`(링 버퍼, p50·p95·최대)
+- [x] 3. `stressRecording()` 결정론적 부하 기록
+- [x] 4. `BattleGame.loadStress/loadDemo/resumeLive`, `perf` 노출
+- [x] 5. 절전 Picture 재사용
+- [x] 6. 정수배 확대 뷰포트 (Q1: 렌더 담당 확정)
+- [x] 6b. 측정 스위치 BATTLE_SCENE·PERF_OVERLAY·POWER_SAVE + 콘솔 요약
 - [ ] 7. `tool\check.bat --full` → 진척·계획 갱신 → 커밋 → S4에 측정 절차 전달
 
 ## 검증 방법

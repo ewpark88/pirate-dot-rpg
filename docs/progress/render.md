@@ -2,11 +2,26 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (초안, 승인 대기) · 끝남: `plans/done/render-battle-replay.md` |
-| 상태 | 전투 기록 재생 완료(골든 ce4dddf, main 556ab67 머지 75683a0, check --full 통과). render-perf 스펙 초안 2690d98 |
-| 막힌 것 | render-perf 스펙 승인 · Q1 정수배 확대 담당(렌더 vs UI) |
+| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (승인됨 S1) · 끝남: `plans/done/render-battle-replay.md` |
+| 상태 | render-perf 구현 완료(측정 도구). 실기기 측정 대기 — 절차는 스펙 "실기기 측정 절차" |
+| 막힌 것 | 실기기 측정은 사람(S4) 몫 — 결과가 오면 아래 표에 기록 후 계획을 done/으로 |
+
+## 실기기 측정
+
+| 날짜 | 기기 · Android | 모드 | 10초 요약 6줄 | 판정 |
+| --- | --- | --- | --- | --- |
+| (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · render-perf (실기기 측정 준비)
+- 한 일: 스펙 승인(S1)·Q1 결정(정수배는 렌더 뷰포트) 반영, 실기기 측정 절차를 복사 가능한 명령으로 스펙에 기록.
+  테스트 먼저(수용 기준 1~7) → `PerfMonitor`(링 버퍼 p50·p95·최대·fps, 10초 콘솔 요약), `stressRecording()`(적 27·0.5초마다 범위 처치·히트스톱·궁극기),
+  `BattleGame.loadStress/loadDemo/resumeLive`·`mode`·`perf`, 절전 `PowerSaveCache`(Picture 재사용), `integerScale`로 카메라 정수배 확대,
+  측정 스위치 `--dart-define=BATTLE_SCENE=stress|demo`·`PERF_OVERLAY=true`·`POWER_SAVE=true`, 오버레이 `PerfOverlay`.
+- 검증: `tool\check.bat --full` 통과(28.8s), 렌더 테스트 34개.
+- 다음 할 일: 실기기 측정 결과 받기 → 표 기록 → 넘으면 원인(이펙트·숫자·그리기) 최적화 스펙.
+- 남은 문제: `flutter run -d chrome` 눈 확인은 아직 안 함(위젯 테스트로만 확인). 정수배 확대는 물리 픽셀 기준이라 dpr이 소수면 논리 배율이 소수일 수 있다(정상).
 
 ### 2026-10-14 · S3 · 전투 기록 재생 구현
 - 한 일:
