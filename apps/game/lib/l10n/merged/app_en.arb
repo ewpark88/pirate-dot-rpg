@@ -137,5 +137,11 @@
   "uiSettingsPowerSave": "Power Saving",
   "uiSettingsAutoBoss": "Auto Boss",
   "uiSettingsAutoUpgrade": "Auto Upgrade",
-  "uiSummonFree": "Free"
+  "uiSummonFree": "Free",
+  "uiGoalShipTier": "{tier} in {count} stages",
+  "uiGoalPartMilestone": "{part} boost in {count} levels",
+  "uiGoalCollection": "Collection bonus in {count} crew",
+  "uiGoalRebirth": "Rebirth unlocks in {count} stages",
+  "uiCollectionBonus": "Attack +{percent}",
+  "uiCollectionNext": "Next bonus in {count}"
 }
