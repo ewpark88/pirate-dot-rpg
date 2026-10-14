@@ -11,7 +11,7 @@ Future<void> main() async {
   final input = await readHookInput();
   if (input['stop_hook_active'] == true) exit(0); // 이미 한 번 막았다. 무한 반복 방지.
 
-  final root = findRepoRoot();
+  final root = hookRoot(input);
   final lanes = LaneConfig.load(root);
   final git = gitChanges(root, lanes.mainBranch);
   final uncommitted = Process.runSync('git', ['status', '--porcelain'], workingDirectory: root.path).stdout as String;

@@ -10,8 +10,9 @@ import 'package:pde_tool/harness.dart';
 import 'hook_io.dart';
 
 Future<void> main() async {
-  final root = findRepoRoot();
-  final path = editedPath(await readHookInput(), root);
+  final input = await readHookInput();
+  final root = hookRoot(input);
+  final path = editedPath(input, root);
   if (path == null || !File(p.join(root.path, path)).existsSync()) exit(0);
 
   if (path.startsWith('$tablesDir/') && path.endsWith('.json')) {
