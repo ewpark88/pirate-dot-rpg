@@ -9,7 +9,7 @@ const crewFamilies = [
   'underwater',
   'air',
   'assault',
-  'support',
+  'shock',
 ];
 
 /// 등급 5단계, 낮은 것부터.
@@ -22,6 +22,7 @@ class CrewDef {
       baseRarity = j.str('baseRarity'),
       family = j.str('family'),
       fx = j.str('fx'),
+      skill = j.strOrNull('skill'),
       portrait = j.str('portrait'),
       nameKey = j.str('nameKey');
 
@@ -32,6 +33,9 @@ class CrewDef {
   final String baseRarity;
   final String family;
   final String fx;
+
+  /// 계열 스킬 대신 쓰는 스킬 id (skills.json crewSkills). 없으면 계열 스킬.
+  final String? skill;
   final String portrait;
   final String nameKey;
 }

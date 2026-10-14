@@ -1,5 +1,6 @@
 {
   "rebirth": { "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300 },
+  "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "dailyQuests": [
     { "id": "kill_500", "type": "kill", "target": 500 },

@@ -26,7 +26,18 @@
       "cargo": 0
     }
   },
-  "crews": {},
+  "crews": {
+    "octo": {
+      "level": 1,
+      "exp": 0,
+      "cards": 0
+    },
+    "turtle": {
+      "level": 1,
+      "exp": 0,
+      "cards": 0
+    }
+  },
   "tokens": 0,
   "summon": {
     "pityCount": 0
@@ -40,7 +51,10 @@
     "quests": {},
     "attendanceDay": 0
   },
-  "collection": [],
+  "collection": [
+    "octo",
+    "turtle"
+  ],
   "settings": {
     "lang": "system",
     "autoUpgrade": true,
@@ -114,8 +128,19 @@
         "boss": false
       }
     ],
-    "fleet": [],
-    "captainId": null,
+    "fleet": [
+      {
+        "crewId": "octo",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      },
+      {
+        "crewId": "turtle",
+        "cooldown": 0.3,
+        "skillCooldown": 0.0
+      }
+    ],
+    "captainId": "octo",
     "hitStopTicks": 0,
     "speed": 1
   }

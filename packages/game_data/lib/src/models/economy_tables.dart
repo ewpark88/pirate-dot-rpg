@@ -139,6 +139,7 @@ class MetaTable {
   MetaTable.fromJson(JsonReader j)
     : raw = j,
       rebirth = j.obj('rebirth'),
+      startingCrews = j.strs('startingCrews'),
       summonCostGems = j.integer('summonCostGems'),
       offlineMaxSec = j.obj('offline').integer('maxSec'),
       offlineCardsPerMax = j.obj('offline').integer('cardsPerMax'),
@@ -148,6 +149,9 @@ class MetaTable {
 
   final JsonReader raw;
   final JsonReader rebirth;
+
+  /// 새 게임의 선원 (설계서 4.3.3: 옥토·톡).
+  final List<String> startingCrews;
   final int summonCostGems;
   final int offlineMaxSec;
   final int offlineCardsPerMax;

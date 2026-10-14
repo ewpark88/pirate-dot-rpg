@@ -8,8 +8,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
-| 마지막 갱신 | 2026-10-13 · S1 (단일 세션) |
-| 바로 다음 할 일 | ① worktree 3개 생성 후 S2~S4 시작 ② S1은 battle 레인 M1 착수 (무리 생성부터) |
+| 마지막 갱신 | 2026-10-14 · S1 |
+| 바로 다음 할 일 | S1: `export-events` 실제 엔진 출력(렌더 통지) → economy 머지 후 `combat_stats` 교체·`grantBossCards` 연결 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -31,10 +31,10 @@
 ### M1 코어 규칙 (S1 battle · S2 economy)
 - [x] BigNum (속성 테스트 포함) — 0단계에 선행
 - [x] 세이브 v1 코덱·체크섬·마이그레이션 틀·백업 복구 — 0단계에 선행
-- [ ] 전투: 무리·발사·피해·동시 처치·보스 타이머·파밍 (`BattleSystem`)
+- [x] 전투: 무리·발사·피해·동시 처치·궁극기(공통)·보스 타이머·파밍 (`BattleSystem`) — 경제 수치는 임시 `combat_stats`
 - [ ] 강화·소환·천장·카드·승급·오프라인 (`EconomySystem`)
 - [ ] `game_cli sim`이 7.2 목표 리포트, check 밸런스 스모크 활성화
-- [ ] `scenarios/boss_timeout_farming.yaml` skip 해제 · 화면 없이 게임이 끝까지 돈다
+- [x] `scenarios/boss_timeout_farming.yaml` skip 해제, `boss_clear_advances.yaml` 추가 · 화면 없이 돈다(강화가 없어 스테이지 1 파밍에서 멈춤)
 - [ ] `game_cli export-events` 실제 엔진 출력
 
 ### M2 화면 연결 (S3 render · S4 ui) — 관문: 실기기 손맛 승인
@@ -51,10 +51,10 @@
 
 | 레인 | 세션 | 브랜치 | 상태 | 마지막 작업 | 막힌 것 |
 | --- | --- | --- | --- | --- | --- |
-| battle | S1 | main | 대기 (M1 첫 작업: 무리 생성) | 뼈대 `BattleSystem` | - |
-| economy | S2 | lane/economy | 대기 (worktree 생성 전) | 뼈대 `EconomySystem` | - |
-| render | S3 | lane/render | 대기 | 빈 `BattleGame`, 합성 전투 기록 준비됨 | - |
-| ui | S4 | lane/ui | 대기 | 탭 4개 자리, 샘플 상태 4개 준비됨 | - |
+| battle | S1 | main | M1 코어 완료, export-events 남음 | `battle/` 6개 파일, 테스트 9 + 시나리오 2 | - |
+| economy | S2 | lane/economy | 스펙 승인, 강화 효과 함수·UpgradePart (cf0f333) | 뼈대 `EconomySystem` | - |
+| render | S3 | lane/render | 스펙 초안 `render-battle-replay` | 빈 `BattleGame`, 합성 전투 기록 준비됨 | - |
+| ui | S4 | lane/ui | 스펙 `ui-tabs` 승인 대기 | 탭 4개 자리, 샘플 상태 4개 준비됨 | - |
 | platform | S2 (2단계) | - | M3부터 | - | - |
 | art | S3 (2단계) | - | M3부터 | - | - |
 
@@ -87,6 +87,27 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ```
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S1 · 전투 M1 코어 + 레인 지원
+- 한 일:
+  - 스펙 승인(8번째 계열 = `shock`, 쿡·램프만 선원별 스킬 `support_rally`; 골드·젬은 전투가 지갑에 직접).
+  - 테이블: skills(`shock`, `crewSkills`, 발사 간격·배율·제외 층), waves(`field`, `boss.speed`, `multiKill.hitStopMinKills`), crews(`skill`), meta(`startingCrews`).
+  - `battle/`: `field`(내부 시뮬 상태 ↔ BattleView), `spawner`, `targeting`(모양 8종), `combat`(발사·피해·처치·동시 처치·궁극기·접촉), `fleet`, `combat_stats`(임시), `battle_system`.
+  - `engine/units.dart`: 단위 상수(half·도→라디안·ms→초) — battle/의 숫자 리터럴 0 유지.
+  - 테스트 `test/battle/battle_test.dart` 9개, 시나리오 boss_timeout_farming(skip 해제)·boss_clear_advances.
+  - 레인 세션 3개에 작업 배정(e4=economy, 43=render, de=ui). 레인 보고로 고친 하네스 버그: 레인이 `docs/specs/<레인>-` 소유(e4edf73),
+    훅이 worktree 세션의 실제 저장소를 검사(7a4df03), git status 첫 줄 경로 잘림(136244a).
+- 실수: 7a4df03에 포맷 안 된 pre_edit.dart를 커밋해 레인 check가 깨짐(7156ca6 수정). shared 커밋 전에는 check를 먼저 돌린다.
+  전투 테스트를 구현 뒤에 썼다(계획의 순서 위반).
+- 발견: 새 게임에 선원이 0명이라 전투가 안 돌았다 → `meta.startingCrews`(옥토·톡). 첫 보스 실패 약 1분 40초(목표 1~3분).
+- 다음 할 일: export-events 실제 출력 → 렌더 통지, economy 머지 → combat_stats 교체·grantBossCards 연결
+- 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
+
+### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안
+- 한 일: worktree 3개(`pde-economy`·`pde-render`·`pde-ui`, 브랜치 `lane/*`, `dc021c4` 기준) 생성, 각각 `flutter pub get`, economy에서 check 통과.
+  전투 M1 스펙 초안 작성 — 수용 기준 11개, 내부 시뮬 상태는 `BattleSystem` 인스턴스가 들고 BattleView로 투영(계약 변경 없음).
+- 발견: `skills.json` 8번째 계열이 `support`인데 설계서는 `shock`; 계열별 발사 간격이 테이블에 없음; `rarities.json` 소환 확률이 설계서와 다름.
+- 다음 할 일: 스펙 승인 → `docs/plans/active/battle-m1-core.md` → 테스트 먼저
 
 ### 2026-10-13 · S1 · GitHub Actions 제거
 - 한 일: 사용자 결정으로 `.github/workflows/`(ci·nightly)를 삭제하고 ADR-0006을 썼다. 검증은 Stop 훅과 커밋 전 `tool\check.bat --full`로 한다.

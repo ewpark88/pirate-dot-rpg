@@ -27,12 +27,20 @@ class GameState {
   });
 
   /// 새 게임. [now]는 Clock에서, [seed]는 플랫폼 난수에서 받는다.
-  factory GameState.newGame({required String playerId, required int seed, required DateTime now}) => GameState(
+  /// [crews]는 시작 선원 (`tables.meta.startingCrews`, 설계서 4.3.3) — 레벨 1로 보유·도감 등록.
+  factory GameState.newGame({
+    required String playerId,
+    required int seed,
+    required DateTime now,
+    Iterable<String> crews = const [],
+  }) => GameState(
     playerId: playerId,
     rngSeed: seed,
     savedAt: now.toUtc(),
     wallet: const Wallet(gold: BigNum.zero),
     daily: DailyState(date: localDate(now)),
+    crews: {for (final id in crews) id: const CrewState()},
+    collection: crews.toSet(),
   );
 
   /// 세이브 본문(체크섬·schemaVersion 제외)에서 만든다. 형식 오류는 TypeError/FormatException.

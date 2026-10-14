@@ -12,8 +12,8 @@ import 'package:game_core/src/ports/ports.dart';
 import 'package:game_core/src/ports/xorshift_rng.dart';
 import 'package:game_data/game_data.dart';
 
-/// 기본 시스템 순서: 경제(명령 대부분) → 전투(틱 대부분).
-List<GameSystem> defaultSystems() => [const EconomySystem(), const BattleSystem()];
+/// 기본 시스템 순서: 경제(명령 대부분) → 전투(틱 대부분). 전투는 시뮬 내부 상태를 가지므로 엔진마다 새로 만든다.
+List<GameSystem> defaultSystems() => [const EconomySystem(), BattleSystem()];
 
 /// [GameEngine] 구현. 명령 큐·틱·히트스톱·운영자 공통 명령만 직접 다루고,
 /// 게임 규칙은 [GameSystem]에 맡긴다.
