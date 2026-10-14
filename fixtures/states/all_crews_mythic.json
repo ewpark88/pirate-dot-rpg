@@ -310,7 +310,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 2,
@@ -320,7 +322,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 3,
@@ -330,7 +334,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 4,
@@ -340,7 +346,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 5,
@@ -350,7 +358,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 6,
@@ -360,7 +370,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 7,
@@ -370,7 +382,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 8,
@@ -380,7 +394,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 9,
@@ -390,7 +406,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 10,
@@ -400,7 +418,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 11,
@@ -410,7 +430,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 12,
@@ -420,7 +442,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 13,
@@ -430,7 +454,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 14,
@@ -440,7 +466,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       }
     ],
     "fleet": [

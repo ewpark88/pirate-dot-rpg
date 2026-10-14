@@ -82,7 +82,9 @@
         "hpRatio": 0.55,
         "layer": "surface",
         "boss": true,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       }
     ],
     "fleet": [

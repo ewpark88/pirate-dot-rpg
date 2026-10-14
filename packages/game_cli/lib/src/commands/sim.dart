@@ -21,7 +21,7 @@ class SimCommand extends Command<int> {
         'schedule',
         defaultsTo: 'continuous',
         allowed: ['continuous', 'daily'],
-        help: 'continuous: 계속 접속 · daily: 20분 접속 + 8시간 오프라인 반복(설계서 4.3.3 하루 40분)',
+        help: 'continuous: 계속 접속 · daily: 하루 40분(20분씩 두 번) + 오프라인(설계서 4.3.3)',
       )
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로');
@@ -40,12 +40,10 @@ class SimCommand extends Command<int> {
     final seed = int.parse(a['seed'] as String);
     final players = int.parse(a['players'] as String);
     final total = Duration(minutes: (double.parse(a['hours'] as String) * Duration.minutesPerHour).round());
-    final schedule = a['schedule'] == 'daily'
-        ? const SimSchedule(online: Duration(minutes: 20), offline: Duration(hours: 8))
-        : SimSchedule(online: total);
+    final schedule = a['schedule'] == 'daily' ? SimSchedule.daily : SimSchedule(online: total);
 
     final results = [for (var i = 0; i < players; i++) SimPlayer(t, seed: seed + i).run(total, schedule)];
-    final checks = judge(t, results);
+    final checks = judge(t, results, schedule: a['schedule'] as String);
     stdout.write(formatReport(t, results, checks));
 
     final out = a['out'] as String?;

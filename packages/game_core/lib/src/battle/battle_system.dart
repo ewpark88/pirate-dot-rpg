@@ -1,3 +1,4 @@
+import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
@@ -83,6 +84,7 @@ class BattleSystem implements GameSystem {
       }
       r
         ..moveFoes()
+        ..tickBoss()
         ..fireGuns()
         ..castSkills()
         ..tickZones()

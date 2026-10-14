@@ -15,5 +15,11 @@
   "opJumpStageHint": "Stage",
   "opZeroCooldown": "Zero Cooldown",
   "opGrantGold": "Gold +{amount}",
-  "opGrantGems": "Gems +{amount}"
+  "opGrantGems": "Gems +{amount}",
+  "opGroupRender": "Render",
+  "opModeLive": "Live",
+  "opModeDemo": "Demo",
+  "opModeStress": "Stress",
+  "opPerfOverlay": "Perf Overlay",
+  "opHitboxes": "Hitboxes"
 }

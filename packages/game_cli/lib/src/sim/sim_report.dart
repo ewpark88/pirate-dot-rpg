@@ -4,7 +4,16 @@ import 'package:game_data/game_data.dart';
 
 /// 지표 하나의 판정. [value]가 null이면 시뮬 시간 안에 도달하지 못함.
 class SimCheck {
-  SimCheck(this.key, this.label, this.value, this.min, this.max, {required this.unit, this.requiredWithin});
+  SimCheck(
+    this.key,
+    this.label,
+    this.value,
+    this.min,
+    this.max, {
+    required this.unit,
+    this.requiredWithin,
+    this.applies = true,
+  });
 
   final String key;
   final String label;
@@ -16,7 +25,10 @@ class SimCheck {
   /// 이 지표를 판정하려면 시뮬이 이만큼은 돌아야 한다. 더 짧으면 미도달을 ‘판정 안 함’으로 본다.
   final Duration? requiredWithin;
 
-  bool judged(Duration played) => value != null || requiredWithin == null || played >= requiredWithin!;
+  /// 목표가 이 접속 일정용인가 (`schedule` 키, 없으면 모든 일정).
+  final bool applies;
+
+  bool judged(Duration played) => applies && (value != null || requiredWithin == null || played >= requiredWithin!);
   bool ok(Duration played) => !judged(played) || (value != null && value! >= min && value! <= max);
 
   Map<String, Object?> toJson(Duration played) => {
@@ -25,6 +37,7 @@ class SimCheck {
     'min': min,
     'max': max,
     'unit': unit,
+    'applies': applies,
     'judged': judged(played),
     'ok': ok(played),
   };
@@ -41,7 +54,7 @@ double? median(List<double?> xs) {
 }
 
 /// 설계서 7.2 목표 판정 (범위는 meta.json sim.targets).
-List<SimCheck> judge(GameTables t, List<SimResult> rs) {
+List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule}) {
   final tg = t.meta.raw.obj('sim').obj('targets');
   SimCheck c(String key, String label, double? Function(SimResult) f, String unit, {Duration? within}) {
     final r = tg.obj(key);
@@ -53,6 +66,7 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs) {
       r.number('max'),
       unit: unit,
       requiredWithin: within ?? Duration(milliseconds: (r.number('max') * _unitMs(unit)).round()),
+      applies: !r.has('schedule') || r.str('schedule') == schedule,
     );
   }
 
@@ -66,12 +80,17 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs) {
     c('wallMaxMin', '가장 긴 벽(파밍) 구간', (r) => _min(r.wallMax), '분', within: Duration.zero),
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
+    c('firstRarityUpMin', '첫 승급(등급 상승)', (r) => _min(r.firstRarityUp), '분'),
+    c('firstLegendOwnedDays', '첫 전설 보유', (r) => _days(r.firstLegendOwned), '일'),
+    c('firstLegendPromotedDays', '승급으로 만든 첫 전설', (r) => _days(r.firstLegendPromoted), '일'),
+    c('firstMythicDays', '첫 신화', (r) => _days(r.firstMythic), '일'),
   ];
 }
 
 int _unitMs(String unit) => switch (unit) {
   '분' => Duration.millisecondsPerMinute,
   '시간' => Duration.millisecondsPerHour,
+  '일' => Duration.millisecondsPerDay,
   _ => 0,
 };
 
@@ -87,7 +106,11 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
     ..writeln('| 지표 | 값 | 목표 | 판정 |')
     ..writeln('| --- | --- | --- | --- |');
   for (final c in checks) {
-    final verdict = !c.judged(played) ? '판정 안 함(시뮬 짧음)' : (c.ok(played) ? 'OK' : '벗어남');
+    final verdict = !c.applies
+        ? '다른 일정 기준'
+        : !c.judged(played)
+        ? '판정 안 함(시뮬 짧음)'
+        : (c.ok(played) ? 'OK' : '벗어남');
     b.writeln('| ${c.label} | ${_fmt(c.value, ' ${c.unit}')} | ${_fmt(c.min)}~${_fmt(c.max)} | $verdict |');
   }
   double? m(double? Function(SimResult) f) => median([for (final r in rs) f(r)]);
@@ -103,11 +126,6 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 오프라인 추정 ÷ 실제 초당 골드(마지막 10분) | '
       '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
     )
-    ..writeln('| 첫 승급 | ${_fmt(m((r) => _min(r.firstPromotion)), '분')} |')
-    ..writeln(
-      '| 첫 전설 보유 / 승급으로 전설 | ${_fmt(m((r) => _days(r.firstLegendOwned)), '일')} / ${_fmt(m((r) => _days(r.firstLegendPromoted)), '일')} |',
-    )
-    ..writeln('| 첫 신화 | ${_fmt(m((r) => _days(r.firstMythic)), '일')} |')
     ..writeln('| 강화·소환 횟수 | ${_fmt(m((r) => r.upgrades.toDouble()))} · ${_fmt(m((r) => r.summons.toDouble()))} |');
   return b.toString();
 }
@@ -131,7 +149,10 @@ Map<String, Object?> reportJson(List<SimResult> rs, List<SimCheck> checks) {
           'offline8hUpgrades': r.offline8hUpgrades,
           'waveSecFirst10Min': r.waveSecFirst10Min,
           'waveSecAll': r.waveSecAll,
-          'firstPromotionMin': _min(r.firstPromotion),
+          'firstRarityUpMin': _min(r.firstRarityUp),
+          'firstLegendOwnedDays': _days(r.firstLegendOwned),
+          'firstLegendPromotedDays': _days(r.firstLegendPromoted),
+          'firstMythicDays': _days(r.firstMythic),
           'upgrades': r.upgrades,
           'summons': r.summons,
           'gold': r.gold.toJson(),
