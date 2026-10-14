@@ -16,6 +16,8 @@ flutter devices
 ```bat
 flutter run --profile -d <기기id> --dart-define=OPERATOR=true --dart-define=PERF_OVERLAY=true
 ```
+- `BATTLE_SCENE`을 안 주면 전장은 **실제 엔진 전투(live)**, `PERF_OVERLAY=true`면 live에서도 왼쪽 위 fps·p95 숫자와 터미널 `[perf]` 요약이 나온다.
+
 새 게임으로 시작한다(옥토·톡). 아무것도 누르지 않고 1분 지켜본 뒤, 아래를 차례로 해 본다.
 
 | # | 볼 것 | 기대 |
