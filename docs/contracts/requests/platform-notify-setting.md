@@ -19,6 +19,10 @@ class Settings {
 - 끄면 platform 어댑터가 남은 예약을 즉시 취소해야 하므로, main.dart에서 `gameStateProvider.select((s) => s.settings.notifications)`를
   listen → `notifier.onSettingChanged(v)` 한 줄(머지 때 함께).
 
+## 함께: `MetaTable.notificationsDailyMax`
+`meta.json`의 `"notifications": { "dailyMax": 1 }`이 `MetaTable`(game_data, economy_tables.dart)에 파싱되지 않는다 →
+`notificationsDailyMax = j.obj('notifications').integer('dailyMax')` 필드 1개. 그동안 main.dart가 `dailyMax: 1`을 넘긴다.
+
 ## 그동안 쓰는 임시 어댑터
 `OfflineFullNotifier(enabled: () => true)` — 항상 켜짐.
 
