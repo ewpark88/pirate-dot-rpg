@@ -3,7 +3,7 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/ui-tabs.md` — 하단 탭 1차(배·소환·선원) + 상단 HUD |
+| 계획 | `docs/plans/done/ui-tabs.md` 완료 → 다음: 운영자 패널 1차 |
 | 상태 | 단계 1~6 커밋 (골든 S1 승인) |
 | 기다리는 것 | S1의 `sample_states.g.dart` 생성물(운영자 샘플 상태) |
 
