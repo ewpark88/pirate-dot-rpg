@@ -702,7 +702,7 @@ const Map<String, String> rawTables = {
     {"id": "underwater", "projectile": "torpedo", "attack": {"shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.4736, 0.5227, 0.5251, 0.5251, 0.5251]}},
     {"id": "air", "projectile": "lightning", "attack": {"shape": "random", "count": 2, "targets": "random", "intervalSec": 2.2, "power": 1.332, "excludeLayers": []}, "skill": {"id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 0.666, "fx": "lightning"}, "ultimate": {"id": "ult_thunderstorm", "fx": "lightning"}, "nameKey": "battleFamilyAir", "ladder": {"count": [2, 3, 3, 4, 5], "power": [1.4739, 1.2402, 1.2525, 1.2525, 1.2525]}},
     {"id": "assault", "projectile": "hook", "attack": {"shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 2.425, "excludeLayers": ["air"]}, "skill": {"id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.2074, 0.2496, 0.2536, 0.2536, 0.2536]}},
-    {"id": "shock", "projectile": "shockwave", "attack": {"shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.379, "excludeLayers": []}, "skill": {"id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.4993, 0.3726, 0.2219, 0.2219, 0.2219]}}
+    {"id": "shock", "projectile": "shockwave", "attack": {"shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.379, "excludeLayers": []}, "skill": {"id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.7275, 0.7037, 0.6343, 0.6343, 0.6343]}}
   ],
   "crewSkills": [{"id": "support_rally", "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
@@ -746,11 +746,11 @@ const Map<String, String> rawTables = {
     "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.1545}, "powerScale": 1.0465},
     "lobster": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2864}, "powerScale": 1.0611},
     "davy": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.8287}, "powerScale": 1.1536},
-    "turtle": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.6973}, "powerScale": 0.7549},
-    "pumpum": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.037}, "powerScale": 0.9201},
-    "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 0.3051}, "powerScale": 0.7877},
-    "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 0.6608}, "powerScale": 0.5607},
-    "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 0.0273}, "powerScale": 0.4825}
+    "turtle": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 1.5633}, "powerScale": 1.397},
+    "pumpum": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 2.3267}, "powerScale": 1.6166},
+    "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 0.7429}, "powerScale": 0.7496},
+    "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 1.5154}, "powerScale": 1.0562},
+    "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 0.6431}, "powerScale": 0.7416}
   }
 }
 ''',
