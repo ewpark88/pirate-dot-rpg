@@ -7,6 +7,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -102,5 +103,29 @@ void main() {
     await tester.pumpAndSettle();
     await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_summon_result.png'));
+  });
+
+  // 환생 기준 5: 항해 탭 환생 카드(가능) + 확인 창. S2 함수 전이라 미리보기는 가짜 값.
+  final rebirth = rebirthPreviewProvider.overrideWithValue(
+    (_) => const RebirthPreviewView(
+      unlockStage: 40,
+      available: true,
+      currentPieces: 2,
+      gainPieces: 7,
+      nextPieceInStages: 3,
+      bonusPerPiece: 0.05,
+    ),
+  );
+
+  testWidgets('골든: en_rebirth_card', (tester) async {
+    await pump(tester, base, extra: [rebirth]);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_card.png'));
+  });
+
+  testWidgets('골든: en_rebirth_dialog', (tester) async {
+    await pump(tester, base, extra: [rebirth]);
+    await tester.tap(find.byKey(const Key('rebirth.open')));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_dialog.png'));
   });
 }

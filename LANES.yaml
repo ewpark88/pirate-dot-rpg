@@ -93,8 +93,8 @@ lanes:
       - fixtures/states/
 
   platform:
-    session: S2
-    phase: 2
+    session: S5   # 2026-10-14: 전용 세션 추가 (worktree D:\Projects\pde-platform)
+    phase: 1
     paths:
       - apps/game/lib/adapters/
       - apps/game/test/adapters/

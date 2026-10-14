@@ -20,3 +20,9 @@ save.tmp
 save.bak
 .claude/settings.local.json
 reports/
+
+# platform 비밀·계정 파일 (docs/contracts/requests/platform-deps-init.md)
+apps/game/android/app/google-services.json
+apps/game/ios/Runner/GoogleService-Info.plist
+apps/game/android/key.properties
+*.jks
