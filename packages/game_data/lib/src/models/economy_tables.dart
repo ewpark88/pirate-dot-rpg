@@ -168,6 +168,7 @@ class MetaTable {
   /// 이보다 짧게 떠나 있었으면 복귀 보상(팝업) 없음.
   final int offlineMinSec;
   final List<JsonReader> dailyQuests;
+
   /// 일일 퀘스트 하나 끝낼 때마다 받는 젬 (사용자 결정 2026-10-14: 퀘스트마다 10).
   final int dailyQuestRewardGems;
   final int autoUpgradeUnlockStage;

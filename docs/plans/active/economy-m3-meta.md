@@ -1,4 +1,4 @@
-﻿# economy: M3 硫뷀? (蹂대Ъ?곸옄쨌?섏뒪?맞룹텧?씲룰킅怨졖룹닚?띉룸ぉ?쑣룸룄媛먃룻뒠?좊━??
+# economy: M3 硫뷀? (蹂대Ъ?곸옄쨌?섏뒪?맞룹텧?씲룰킅怨졖룹닚?띉룸ぉ?쑣룸룄媛먃룻뒠?좊━??
 
 - ?ㅽ럺: `docs/specs/economy-m3-meta.md` (?뱀씤 2026-10-14) 쨌 ?붿껌: `docs/contracts/requests/ui-m3-meta.md` B1~B10
 
