@@ -206,4 +206,12 @@ void main() {
       expect(roles, contains(role), reason: '스테이지 $stage');
     }
   });
+
+  test('강습 부채꼴: 배에 붙은 적(dx = 0, 레인 흔들림 dy)은 맞는다 (각도 90° 버그)', () {
+    final f = w.field;
+    final touching = foe(f.shipX, f.shipY + f.laneJitter * 0.5);
+    final g = gun(crewOf('assault'))..cooldown = 0;
+    round(field([touching])..guns = [g]).fireGuns();
+    expect(events.whereType<Damage>().map((d) => d.targetId), contains(touching.id));
+  });
 }
