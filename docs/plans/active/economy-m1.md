@@ -8,7 +8,7 @@
 - [x] 0. 스펙 승인 (사람) · 결정 ①②③
 - [x] 1. `ship_stats.dart` 순수 함수 + 테스트 → `docs/contracts/requests/economy-stats.md`로 S1에 시그니처 공유
 - [x] 2. 테이블 정리(rarities·growth) + 모델(`crew_tables.dart`) + `gen_tables`
-- [ ] 3. UpgradePart (기준 1~4)
+- [x] 3. UpgradePart (기준 1~4)
 - [ ] 4. Summon + 천장 + receiveCard (기준 5~8, 11)
 - [ ] 5. MergeAllCards · PromoteCrew (기준 9~10)
 - [ ] 6. ClaimOffline + 보스 카드 (기준 12)

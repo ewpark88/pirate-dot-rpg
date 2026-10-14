@@ -36,10 +36,11 @@ double crewPowerMultiplier(GrowthTable g, RarityTable t, int level); // (1+0.08(
 
 ```dart
 // package:game_core/src/economy/cards.dart (6단계에서 구현 예정)
-GameState grantBossCards(GameState state, SystemContext ctx); // 스테이지 1~10은 2장, 이후 1+floor(stage/150)장
+GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet);
+// 스테이지 1~10은 2장, 이후 1+floor(stage/150)장 — state.progress.stage(잡은 스테이지) 기준
+// 카드 대상 = fleet(출전 선원) 중 무작위, 처음 10번은 옥토. 등급은 rarities.bossDropRates.
 ```
-`BossCleared`를 낸 직후(스테이지 올리기 전/후 중 하나 — 전투가 정해서 알려 주면 맞춘다) 호출해 주면 된다.
-그때까지 전투는 아무것도 하지 않아도 된다.
+합의(S1, 2026-10-14): 스테이지를 올리기 **전**에 부른다. 순서: `BossCleared` emit → 젬 지급 → `grantBossCards` → 스테이지+1·`StageAdvanced`.
 
 ## 그동안 쓰는 임시 어댑터
 없음. 전투는 머지 전까지 `combat_stats.dart` 임시 공식을 쓰고, 머지 후 위 함수로 교체.
