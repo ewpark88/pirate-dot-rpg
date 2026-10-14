@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-art-pack-v02.md`(5단계 남음) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
-| 상태 | 아트 팩 에셋 11f3c8c + SpriteBank 4d537e1 커밋. pubspec 등록(S1 머지) 대기 |
-| 막힌 것 | pubspec `flutter: assets:`(S1) · 실기기 측정(M2 관문) |
+| 현재 계획 | `plans/active/render-art-pack-v02.md`(골든 승인 대기) · `plans/active/render-audio.md`(스펙 초안) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 상태 | pubspec 에셋 등록 후 실제 이미지 골든 생성(미커밋), 그리기 비용 비교 0b16bdb. 사운드 스펙·계약 요청 초안 |
+| 막힌 것 | `battle_sprites.png` 승인 · render-audio 승인·계약 E · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -20,7 +20,10 @@
   렌더: `SpriteBank`·`SpriteDraw`(nearest·흰 번쩍임·물속 색조), `HudPainter` 분리, `BattleGame.loadSprites/useSprites/spriteCount` 4d537e1.
 - 검증: `tool\check.bat --full` 통과(42.3s), 렌더 테스트 67개, `python -I tools/art/test_import_pack.py` OK.
 - 커버리지: 적 27종 중 6, 보스 14 중 1(enemy_ship), 발사체 8 중 5(shock·assault·air 없음), 해역 배경 0/6 — 나머지는 플레이스홀더.
-- 다음 할 일: pubspec 등록 후 실제 이미지 골든 `battle_sprites.png`, 부하 장면 프레임 시간 비교.
+- 추가: main(pubspec assets 7개) 머지 → SpriteBank가 AssetManifest에 있는 것만 읽게 수정(없는 종류 읽기 오류 제거) 0b16bdb.
+  부하 장면 그리기 비용(테스트 환경·소프트웨어 래스터, 600프레임): 플레이스홀더 record 0.238ms·raster 0.614ms → 스프라이트 record 0.212ms·raster 0.811ms.
+  실제 이미지 골든 `battle_sprites.png` 생성(S1 확인 대기, 미커밋). 사운드 스펙 `render-audio` + 계약 요청 E(AudioPort) 초안.
+- 다음 할 일: 골든 승인 → 커밋 → render-audio 승인 후 테스트 먼저.
 
 ### 2026-10-14 · S3 · M2 관문 준비 + 아트 팩 스펙
 - 한 일: 보스 골든 커밋(7bc4922, storm_pirate·deep_sub 색 밝게). `live_engine_test.dart` — EngineHost(실제 엔진) 30초를 60Hz로 라이브 재생:
