@@ -3,11 +3,21 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | 완료: `done/ui-tabs.md`, `done/ui-operator-panel.md` → 다음: 스펙 `ui-core-loop` |
-| 상태 | 운영자 패널 1차 커밋 (골든 S1 승인) |
-| 기다리는 것 | `ui-core-loop` 스펙 승인, S2 `offlinePreview` 함수, savedAt 갱신 확인 |
+| 계획 | 완료: `done/ui-core-loop.md` → 다음: 스펙 `ui-m3-meta` |
+| 상태 | 코어 루프 커밋 (골든 7장 S1 승인) |
+| 기다리는 것 | - |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 코어 루프 화면
+- 한 일: 스펙 승인(3e6bb84) → 3b8e377 보스 도전·파밍 표시. 설정 화면(HUD 톱니, 9항목 → SetSetting, 앱 언어 = settings.lang),
+  `battleGameProvider`가 BattleGame을 만들고 설정 4개를 JuiceSettings로 넘김, 운영자 ‘렌더’ 묶음(라이브·데모·부하, 성능 표시, 히트박스),
+  복귀 오프라인 팝업(`OfflineRewardGate`: 시작 첫 프레임 + resume 다음 프레임, 중복 금지, 받기만). `check --full` 통과(위젯 60개).
+- 다음 할 일: M3 메타 화면 스펙(`ui-m3-meta`)
+- 마무리: main e883272 머지 → `offlinePreviewProvider`를 경제 `offlinePreview`로 연결(TODO 제거), 소환 비용 `summonCostFor`(첫 10연이면 ‘무료’)
+- 남은 문제:
+  - 골든 글꼴(SDK Roboto)에 한글이 없어 설정의 ‘한국어’ 버튼이 네모로 그려진다 — Galmuri 도입 때 해소
+  - resume 직후 프레임이 없을 수 있어 `ensureVisualUpdate`로 직접 요청한다
 
 ### 2026-10-14 · S4 · 운영자 패널 커밋, 코어 루프 스펙
 - 한 일: dbb986f 운영자 패널(골든 S1 승인), main 298b02c(저장·복원) 머지 315e0ab — `flutter pub get` 후 `check --full` 통과.

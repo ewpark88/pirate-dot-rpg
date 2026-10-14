@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/operator/render_group.dart';
 import 'package:pirate_dot/operator/sample_states.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -108,6 +109,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
             },
           ),
         ]),
+        _Group(l10n.opGroupRender, const [RenderGroup()]),
         _Group(l10n.opGroupEconomy, [
           for (final e in _goldExponents)
             OutlinedButton(

@@ -20,8 +20,17 @@ class SummonTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final (canOne, canTen, pity) = ref.watch(
-      gameStateProvider.select((s) => (canSummon(s, tables, 1), canSummon(s, tables, _summonTen), s.pityCount)),
+    // 비용은 상태에 따라 달라진다 (첫 10연 무료) — 경제 summonCostFor로만 구한다.
+    final (costOne, costTen, canOne, canTen, pity) = ref.watch(
+      gameStateProvider.select(
+        (s) => (
+          summonCostFor(s, tables, 1),
+          summonCostFor(s, tables, _summonTen),
+          canSummon(s, tables, 1),
+          canSummon(s, tables, _summonTen),
+          s.pityCount,
+        ),
+      ),
     );
     final rarities = tables.rarities;
     final pityRarity = rarities.rarities.firstWhere((r) => r.id == rarities.pityMinRarity);
@@ -39,7 +48,7 @@ class SummonTab extends ConsumerWidget {
                 child: _SummonButton(
                   buttonKey: Key(key),
                   label: label,
-                  cost: summonCost(tables.meta, count),
+                  cost: count == 1 ? costOne : costTen,
                   onPressed: (count == 1 ? canOne : canTen)
                       ? () => ref.read(commandSinkProvider).send(Summon(count: count))
                       : null,
@@ -83,14 +92,17 @@ class _SummonButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(label),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.diamond, size: 14),
-            const SizedBox(width: 2),
-            Text(cost.toString()),
-          ],
-        ),
+        if (cost == 0)
+          Text(AppLocalizations.of(context).uiSummonFree, key: const Key('summon.free'))
+        else
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.diamond, size: 14),
+              const SizedBox(width: 2),
+              Text(cost.toString()),
+            ],
+          ),
       ],
     ),
   );

@@ -5,11 +5,11 @@
 
 ## 단계
 - [x] 1. 보스 도전 버튼·파밍 표시 (기준 1~2)
-- [ ] 2. 설정 화면 + 앱 언어 + 전장 JuiceSettings 연결 (기준 7~9)
-- [ ] 3. `battleGameProvider` + 운영자 렌더 묶음 (기준 10~11)
-- [ ] 4. `clockProvider`·`offlinePreviewProvider`(가짜 → S2 함수로 교체) + 복귀 팝업 (기준 3~6)
-- [ ] 5. 영어 골든 2장(팝업·설정) → S1 승인 후 커밋 (기준 12)
-- [ ] 6. `check --full` → 진척 문서 → 커밋 → S1 보고
+- [x] 2. 설정 화면 + 앱 언어 + 전장 JuiceSettings 연결 (기준 7~9)
+- [x] 3. `battleGameProvider` + 운영자 렌더 묶음 (기준 10~11)
+- [x] 4. `clockProvider`·`offlinePreviewProvider`(가짜 → S2 함수로 교체) + 복귀 팝업 (기준 3~6)
+- [x] 5. 영어 골든 2장(팝업·설정) + HUD 톱니·렌더 묶음으로 바뀐 5장 재생성 — S1 승인 (기준 12)
+- [x] 6. `check --full` → 진척 문서 → 커밋 → S1 보고
 
 ## 검증 방법
 - `apps/game/test/ui/*_test.dart` 위젯 테스트, `tool\check.bat --full`
