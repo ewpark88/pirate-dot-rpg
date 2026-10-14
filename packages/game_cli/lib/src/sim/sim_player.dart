@@ -12,7 +12,9 @@ class SimResult {
   Duration? firstSummonReady;
   Duration? stage10;
   Duration? stage40;
-  Duration? firstPromotion;
+
+  /// 이미 보유한 선원의 등급이 처음 오른 시점 (승급·높은 등급 카드 점프 모두, 설계서 4.3.3 ‘첫 승급’).
+  Duration? firstRarityUp;
   Duration? firstLegendOwned;
   Duration? firstLegendPromoted;
   Duration? firstMythic;
@@ -36,11 +38,20 @@ class SimResult {
 }
 
 /// 접속 일정. [online]마다 [offline]만큼 쉰다. [offline]이 0이면 계속 접속.
+/// [then]이 있으면 다음 접속은 그 일정을 따르고, 마지막 뒤에는 처음으로 돌아간다.
 class SimSchedule {
-  const SimSchedule({required this.online, this.offline = Duration.zero});
+  const SimSchedule({required this.online, this.offline = Duration.zero, this.then});
+
+  /// 설계서 4.3.3 기준 하루: 20분 접속 → 8시간 오프라인 → 20분 접속 → 나머지(15시간 20분) 오프라인.
+  static const daily = SimSchedule(
+    online: Duration(minutes: 20),
+    offline: Duration(hours: 8),
+    then: SimSchedule(online: Duration(minutes: 20), offline: Duration(hours: 15, minutes: 20)),
+  );
 
   final Duration online;
   final Duration offline;
+  final SimSchedule? then;
 }
 
 /// 설계서 7.2의 가상 플레이어: 가장 싼 강화 구매, 젬이 모이면 소환, 합치기·승급,
@@ -69,11 +80,13 @@ class SimPlayer {
   Duration? _farmSince;
   Duration? _wallSince;
   Duration? _lastWave;
+  Map<String, int> _rarityIndex = const {};
   final _waveGaps = <(Duration at, Duration gap)>[];
   final _killGold = <(Duration at, BigNum gold)>[];
 
   /// 일정대로 [total]만큼 (오프라인 포함) 돈다.
-  SimResult run(Duration total, SimSchedule schedule) {
+  SimResult run(Duration total, SimSchedule first) {
+    var schedule = first;
     final tick = Duration(milliseconds: t.waves.tickMs);
     while (_elapsed < total) {
       final sessionEnd = _elapsed + schedule.online;
@@ -87,6 +100,7 @@ class SimPlayer {
         _observe(engine.drainEvents());
       }
       if (schedule.offline > Duration.zero && _elapsed < total) _goOffline(schedule.offline);
+      schedule = schedule.then ?? first;
     }
     return _finish();
   }
@@ -105,6 +119,9 @@ class SimPlayer {
 
   void _decide() {
     final s = engine.state;
+    final now = {for (final e in s.crews.entries) e.key: promotionCount(t.rarities, e.value.level)};
+    if (now.entries.any((e) => e.value > (_rarityIndex[e.key] ?? e.value))) result.firstRarityUp ??= _elapsed;
+    _rarityIndex = now;
     if (canSummon(s, t, 1) || canSummon(s, t, t.meta.raw.obj('tutorial').integer('firstTenCount'))) {
       result.firstSummonReady ??= _elapsed;
     }
@@ -167,7 +184,6 @@ class SimPlayer {
           _wallSince = null;
           _lastWave = _elapsed;
         case CrewPromoted(:final rarity):
-          result.firstPromotion ??= _elapsed;
           if (rarity == 'legend') result.firstLegendPromoted ??= _elapsed;
           if (rarity == 'mythic') result.firstMythic ??= _elapsed;
         default:

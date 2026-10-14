@@ -526,10 +526,14 @@ const Map<String, String> rawTables = {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "stage10Min": { "min": 6, "max": 12 },
-      "stage40Hours": { "min": 1.5, "max": 3 },
+      "stage40Hours": { "min": 1.5, "max": 3, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
-      "adSummonsPerGemAd": { "min": 1, "max": 1.5 }
+      "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
+      "firstRarityUpMin": { "min": 30, "max": 40, "schedule": "continuous" },
+      "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
+      "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
+      "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" }
     }
   }
 }
