@@ -27,6 +27,10 @@ class SimResult {
   BigNum gold = BigNum.zero;
   int gems = 0;
 
+  /// 마지막 10분(접속 중) 실제 초당 처치 골드와 끝 상태의 오프라인 추정치. 추정식 보정용.
+  BigNum goldPerSecActual = BigNum.zero;
+  BigNum goldPerSecEstimated = BigNum.zero;
+
   /// 끝 상태에서 오프라인 8시간 보상으로 살 수 있는 ‘가장 싼 강화’ 횟수.
   int offline8hUpgrades = 0;
 }
@@ -66,6 +70,7 @@ class SimPlayer {
   Duration? _wallSince;
   Duration? _lastWave;
   final _waveGaps = <(Duration at, Duration gap)>[];
+  final _killGold = <(Duration at, BigNum gold)>[];
 
   /// 일정대로 [total]만큼 (오프라인 포함) 돈다.
   SimResult run(Duration total, SimSchedule schedule) {
@@ -143,6 +148,8 @@ class SimPlayer {
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       switch (e) {
+        case Kill(:final gold):
+          _killGold.add((_elapsed, gold));
         case WaveCleared():
           final last = _lastWave;
           if (last != null) _waveGaps.add((_elapsed, _elapsed - last));
@@ -177,12 +184,19 @@ class SimPlayer {
     double avg(Iterable<Duration> xs) =>
         xs.isEmpty ? 0 : xs.fold(0, (a, d) => a + d.inMilliseconds) / xs.length / Duration.millisecondsPerSecond;
     const early = Duration(minutes: 10);
+    final recent = [
+      for (final (at, g) in _killGold)
+        if (at > _elapsed - early) g,
+    ];
+    final estimate = goldPerSecEstimate(s, t, offlineFleet(s, t));
     result
       ..waveSecFirst10Min = avg([
         for (final (at, gap) in _waveGaps)
           if (at <= early) gap,
       ])
       ..waveSecAll = avg([for (final (_, gap) in _waveGaps) gap])
+      ..goldPerSecActual = recent.fold(BigNum.zero, (a, g) => a + g) / BigNum.from(early.inSeconds)
+      ..goldPerSecEstimated = estimate
       ..played = _elapsed
       ..bestStage = s.progress.bestStage
       ..gold = s.wallet.gold
@@ -190,7 +204,7 @@ class SimPlayer {
       ..offline8hUpgrades = upgradesAffordable(
         t,
         s.ship.parts,
-        goldPerSecEstimate(s, t, offlineFleet(s, t)).times(t.meta.offlineMaxSec),
+        estimate.times(t.meta.offlineMaxSec),
       );
     return result;
   }

@@ -99,6 +99,10 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
     ..writeln(
       '| 한 파 소요(처음 10분 / 전체) | ${_fmt(m((r) => r.waveSecFirst10Min), '초')} / ${_fmt(m((r) => r.waveSecAll), '초')} |',
     )
+    ..writeln(
+      '| 오프라인 추정 ÷ 실제 초당 골드(마지막 10분) | '
+      '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
+    )
     ..writeln('| 첫 승급 | ${_fmt(m((r) => _min(r.firstPromotion)), '분')} |')
     ..writeln(
       '| 첫 전설 보유 / 승급으로 전설 | ${_fmt(m((r) => _days(r.firstLegendOwned)), '일')} / ${_fmt(m((r) => _days(r.firstLegendPromoted)), '일')} |',
