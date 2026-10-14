@@ -3,6 +3,7 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
+import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
@@ -88,6 +89,7 @@ class BattleSystem implements GameSystem {
         ..fireGuns()
         ..castSkills()
         ..tickZones()
+        ..tickStatus()
         ..tickCombo();
     });
     final after = _resolve(next, _field!, ctx);

@@ -65,7 +65,19 @@ extension SkillRound on Round {
         for (final e in field.foes)
           if (e.alive && !z.excludeLayers.contains(e.layer) && _within(e, z)) e,
       ];
-      if (inside.isNotEmpty) strike((x: z.x, y: z.y, hits: spread(inside, w)), z.perTick, crewId: z.crewId);
+      if (inside.isNotEmpty && !z.perTick.isZero) {
+        strike((x: z.x, y: z.y, hits: spread(inside, w)), z.perTick, crewId: z.crewId);
+      }
+      z.age += 1;
+      for (final e in inside) {
+        final k = e.boss ? t.skills.bossControlFactor : 1.0;
+        if (z.slow > 0) {
+          e
+            ..slow = math.max(e.slow, z.slow * k)
+            ..slowTimer = math.max(e.slowTimer, dt);
+        }
+        if (z.stunEveryTicks > 0 && z.age % z.stunEveryTicks == 0) e.stunTimer = math.max(e.stunTimer, z.stunSec * k);
+      }
       z.ticksLeft -= 1;
       if (z.ticksLeft <= 0) field.zones.remove(z);
     }

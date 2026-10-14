@@ -61,6 +61,19 @@ class Foe {
   /// 부활을 이미 썼다.
   bool revived = false;
 
+  /// 감속(이동 × (1 − slow))과 남은 초.
+  double slow = 0;
+  double slowTimer = 0;
+
+  /// 받는 피해 +비율과 남은 초 (같은 종류는 큰 것 하나 — 4.8).
+  double vulnerable = 0;
+  double vulnerableTimer = 0;
+
+  /// 화상: 남은 틱, 틱당 피해, 건 선원.
+  int burnTicks = 0;
+  BigNum burnPerTick = BigNum.zero;
+  String? burnCrewId;
+
   bool get alive => !hp.isZero && !hp.isNegative;
   bool get stunned => stunTimer > 0;
 
@@ -80,8 +93,14 @@ class Foe {
 
 /// 무기 슬롯 하나 (출전 선원).
 class Gun {
-  Gun({required this.crewId, required this.family, required this.power, required this.skill, this.rarity = 0})
-    : attack = family.attackAt(rarity);
+  Gun({
+    required this.crewId,
+    required this.family,
+    required this.power,
+    required this.skill,
+    this.rarity = 0,
+    this.legend,
+  }) : attack = family.attackAt(rarity);
 
   /// [crewId]의 계열·등급 사다리·스킬(선원 `skill`이 있으면 그것)로 만든다.
   factory Gun.of(GameTables t, String crewId, {required double power, int rarity = 0}) {
@@ -94,6 +113,7 @@ class Gun {
       power: power,
       rarity: rarity,
       skill: skillId == null ? family.skill : t.skills.skillById(skillId),
+      legend: t.skills.legendFor(crewId, rarity, t.rarities.rarities.indexWhere((r) => r.id == 'legend')),
     );
   }
 
@@ -109,6 +129,9 @@ class Gun {
   /// 등급 사다리를 적용한 기본 공격.
   final AttackDef attack;
   final SkillDef skill;
+
+  /// 전설 고유 능력 (전설 미만이면 null).
+  final LegendDef? legend;
 
   /// 다음 발사까지 남은 초 (공격 속도 배율 적용 전 기준).
   double cooldown = 0;
@@ -136,6 +159,9 @@ class Zone {
     required this.ticksLeft,
     required this.perTick,
     required this.excludeLayers,
+    this.slow = 0,
+    this.stunEveryTicks = 0,
+    this.stunSec = 0,
   });
 
   final String crewId;
@@ -145,6 +171,12 @@ class Zone {
   int ticksLeft;
   final BigNum perTick;
   final Set<String> excludeLayers;
+
+  /// 전설 장판: 안의 적 감속, [stunEveryTicks]마다 [stunSec] 기절.
+  final double slow;
+  final int stunEveryTicks;
+  final double stunSec;
+  int age = 0;
 }
 
 /// 전투 시뮬 내부 상태. 세이브에 들어가지 않고, 매 틱 [BattleView]로 투영된다.
