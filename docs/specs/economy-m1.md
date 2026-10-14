@@ -54,7 +54,11 @@
 M1은 코어·CLI만이라 화면 문구 없음. 강화·소환 탭 문구는 M2(ui 레인)와 함께 `ship.`·`crew.`·`econ.` ARB에.
 
 ## 운영자 모드에서 불러보는 법
-M1 범위: `OpGrant`(골드·젬·카드), `OpSetShip`, `OpSetCrew`, `OpAdvanceClock`(오프라인 확인)을 EconomySystem이 처리.
+M1 범위: EconomySystem이 처리한다.
+- `OpSetCrew(id, level)`: 1~75로 잘라 지정, 미보유면 보유 + 도감
+- `OpGrant(gold, gems, tokens, cards)`: 카드는 현재 등급으로 카드 받기 규칙
+- `OpSetShip(parts)`: 0~maxLevel로 자름
+- `OpAdvanceClock(by)`: 시계 포트는 그대로, `savedAt`을 by만큼 과거로 → 다음 `ClaimOffline`이 그 시간을 보상
 
 ## 결정 (2026-10-14 사용자 승인)
 - ① **카드 저장 = 계약 유지**: 카드를 받는 순간 등급별 경험치(`cardExp`)를 `CrewState.exp`에 적립하고, `cards`는 승급에 쓸 장수만 센다.

@@ -5,10 +5,14 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` (승인 2026-10-14) · `docs/plans/active/economy-m1.md` |
-| 바로 다음 할 일 | 7단계: 운영자 명령 4종 → 8단계 game_cli sim |
+| 바로 다음 할 일 | 8단계: game_cli sim + 7.2 리포트, check 밸런스 스모크 활성화 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 운영자 명령
+- 한 일: `economy/operator.dart` — OpSetCrew·OpGrant·OpSetShip·OpAdvanceClock(savedAt을 과거로). economy 테스트 58개
+- 남은 문제: `OpRebirthNow`·`OpReset`은 환생 구현(M1 밖, 계획 7번 이후)과 함께
 
 ### 2026-10-14 · S2 · 보스 카드·오프라인
 - 한 일: `cards.dart`에 rollRarity·grantBossCards(state, ctx, fleet), `offline.dart`(fleetDps·goldPerSecEstimate·offlineFleet·ClaimOffline).
