@@ -72,6 +72,16 @@ void main() {
     expect(canClaimDaily(s, t), isTrue);
   });
 
+  test('ClaimDaily(questId)는 그 퀘스트만 받는다', () {
+    var s = addQuestProgress(h.newGame(), t, 'upgrade', target('upgrade'));
+    s = addQuestProgress(s, t, 'summon', target('summon'));
+    s = sys.handle(s, ClaimDaily(id('summon')), h.ctx)!;
+    expect(s.wallet.gems, t.meta.dailyQuestRewardGems);
+    expect(s.daily.questsClaimed, {id('summon')});
+    final notDone = sys.handle(s, ClaimDaily(id('kill')), h.ctx)!;
+    expect(notDone.wallet.gems, s.wallet.gems);
+  });
+
   test('기준 9: 출석은 빠져도 이어서, 같은 날 두 번 불가, 7일 다음은 1일', () {
     final rewards = t.meta.raw.obj('attendance').objs('rewards');
     var s = h.newGame().copyWith(daily: DailyState(date: localDate(h.clock.now()), attendanceDay: 3));

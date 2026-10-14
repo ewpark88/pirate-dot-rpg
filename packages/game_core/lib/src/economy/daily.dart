@@ -71,12 +71,13 @@ List<QuestView> dailyQuests(GameState state, GameTables t) => [
 /// 끝났고 아직 안 받은 퀘스트가 있나.
 bool canClaimDaily(GameState state, GameTables t) => dailyQuests(state, t).any((q) => q.done && !q.claimed);
 
-/// 끝난 퀘스트마다 `dailyQuestRewardGems` (사용자 결정 ②). 받을 것이 없으면 상태 그대로.
+/// 끝난 퀘스트마다 `dailyQuestRewardGems` (사용자 결정 ②). [ClaimDaily.questId]가 있으면 그 퀘스트만.
+/// 받을 것이 없으면 상태 그대로.
 GameState claimDaily(GameState state, ClaimDaily command, SystemContext ctx) {
   final t = ctx.tables;
   final ready = [
     for (final q in dailyQuests(state, t))
-      if (q.done && !q.claimed) q.id,
+      if (q.done && !q.claimed && (command.questId == null || command.questId == q.id)) q.id,
   ];
   if (ready.isEmpty) return state;
   ctx.emit(SaveRequested(ctx.tick, reason: command.type));
