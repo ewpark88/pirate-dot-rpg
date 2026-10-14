@@ -36,7 +36,7 @@ void main() {
     final fx = paths.firstWhere((p) => p.key == 'fx:explosion_aoe');
     expect((fx.path, fx.frames), ('fx/explosion_aoe.png', tables.fxMap.sheet('explosion_aoe')!.frames));
     expect(paths.firstWhere((p) => p.key == 'projectile:lob').path, 'projectiles/cannonball.png');
-    expect(paths.firstWhere((p) => p.key == 'ship').path, 'ship/ship_t1.png');
+    expect(paths.firstWhere((p) => p.key == 'ship:dinghy').path, 'ship/ship_t1.png');
     expect(paths.firstWhere((p) => p.key == 'boss:enemy_ship').path, 'bosses/enemy_ship.png');
     expect(paths.firstWhere((p) => p.key == 'coin').frames, tables.fxMap.sprites.integer('coinFrames'));
   });
