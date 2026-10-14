@@ -469,7 +469,7 @@ const Map<String, String> rawTables = {
   "vibration": { "crit": "light", "ultimate": "medium" },
   "sound": { "hitVariants": 3, "pitchJitter": 0.08 },
   "limits": { "effects": 40, "damageNumbers": 24, "projectiles": 48, "coins": 60 },
-  "replay": { "lookaheadTicks": 2 },
+  "replay": { "lookaheadTicks": 2, "liveMaxLagTicks": 6 },
   "powerSave": { "idleSec": 120, "fps": 30 }
 }
 ''',

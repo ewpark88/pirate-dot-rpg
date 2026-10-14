@@ -56,6 +56,7 @@ class JuiceTable {
       coinCount = raw.obj('kill').integer('coinCount'),
       coinFlyMs = raw.obj('kill').number('coinFlyMs'),
       lookaheadTicks = raw.obj('replay').integer('lookaheadTicks'),
+      liveMaxLagTicks = raw.obj('replay').integer('liveMaxLagTicks'),
       powerSaveFps = raw.obj('powerSave').integer('fps');
 
   final JsonReader raw;
@@ -77,6 +78,9 @@ class JuiceTable {
 
   /// 표시 시각을 최신 틱보다 늦추는 틱 수 (발사체 비행 연출용).
   final int lookaheadTicks;
+
+  /// 라이브 재생에서 lookahead보다 더 뒤처져도 되는 틱 수 (넘으면 따라잡는다).
+  final int liveMaxLagTicks;
   final int powerSaveFps;
 
   List<String> validate() {
