@@ -96,17 +96,20 @@ String _ownerHint(LaneConfig cfg, String path) {
 ({String branch, List<String> changed}) gitChanges(Directory root, String mainBranch) {
   String git(List<String> args) {
     final r = Process.runSync('git', args, workingDirectory: root.path);
-    return r.exitCode == 0 ? (r.stdout as String).trim() : '';
+    // 앞 공백은 지우지 않는다: porcelain 첫 줄 ' M path'의 상태 칸이 잘리면 경로 첫 글자가 사라진다.
+    return r.exitCode == 0 ? (r.stdout as String).trimRight() : '';
   }
 
   final branch = git(['rev-parse', '--abbrev-ref', 'HEAD']);
   final changed = <String>{
     ...git(['diff', '--name-only', '$mainBranch...HEAD']).split('\n'),
-    ...git([
-      'status',
-      '--porcelain',
-      '--untracked-files=all',
-    ]).split('\n').where((l) => l.length > 3).map((l) => l.substring(3).split(' -> ').last.replaceAll('"', '')),
+    ...parsePorcelain(git(['status', '--porcelain', '--untracked-files=all'])),
   }..remove('');
   return (branch: branch, changed: changed.toList()..sort());
 }
+
+/// `git status --porcelain` 출력 → 경로 목록. 각 줄은 상태 2칸 + 공백 + 경로(이름 변경은 `old -> new`).
+List<String> parsePorcelain(String out) => [
+  for (final l in out.split('\n'))
+    if (l.length > 3) l.substring(3).trimRight().split(' -> ').last.replaceAll('"', ''),
+];
