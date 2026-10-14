@@ -111,6 +111,8 @@ shared:
   - packages/game_cli/lib/src/scenario/
   - packages/game_cli/lib/src/fixtures/
   - apps/game/lib/main.dart
+  - apps/game/lib/engine_host.dart
+  - apps/game/test/engine_host_test.dart
   - packages/game_core/lib/src/engine/
   - packages/game_core/lib/src/save/
   - packages/game_core/lib/src/ports/
