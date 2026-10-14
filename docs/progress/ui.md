@@ -4,10 +4,16 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-m3-meta.md` |
-| 상태 | 선원 초상 커밋 (골든 2장 S1 승인). 다음: 운영자 패널 2차 |
+| 상태 | 운영자 패널 2차 커밋 (골든 S1 승인). 다음: 경제 B 함수로 provider 교체 |
 | 기다리는 것 | 골든 4장 승인 · S2 B1·B3·B5·B7·B8·B9·B10 + lastSummon 채우기 → provider 본문 교체 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 운영자 패널 2차
+- 한 일: 스펙 ‘2차’ 절(S1 승인). 선원 묶음: 출전 선원마다 스킬 즉시(OpCastSkill), 출전 전원 전설/신화 첫 레벨(OpSetCrew, rarities levelMin 46·61).
+  튜토리얼 묶음: 1~6단계·끝(OpSetTutorial). 경제 묶음: 보물상자(OpSpawnChest)·순풍 +30분(OpGrantTailwind, ads.json durationSec). `operator/meta_group.dart`.
+  패널이 길어져 테스트는 scrollUntilVisible, 골든은 400×1300. ‘→’ 글리프가 글꼴에 없어 문구에서 뺌. `check --full` 통과(61.2s, 위젯 122개).
+- 다음 할 일: 골든 승인 → 커밋. 경제 B 함수 교체 대기
 
 ### 2026-10-14 · S4 · 선원 초상
 - 한 일: a75054d 커밋(출석 가짜 값 = 결정 20·20·30·30·40·50 + 영웅 확정). main c3e96fa(도트 팩 v0.2) 머지 →

@@ -21,5 +21,12 @@
   "opModeDemo": "데모",
   "opModeStress": "부하",
   "opPerfOverlay": "성능 표시",
-  "opHitboxes": "히트박스"
+  "opHitboxes": "히트박스",
+  "opCastSkill": "스킬: {crew}",
+  "opSetFleetLevel": "출전 전원 {rarity} Lv{level}로",
+  "opSpawnChest": "보물상자",
+  "opGrantTailwind": "순풍 +{minutes}분",
+  "opGroupTutorial": "튜토리얼",
+  "opTutorialStep": "{step}단계",
+  "opTutorialEnd": "끝"
 }
