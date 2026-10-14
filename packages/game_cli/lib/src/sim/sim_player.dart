@@ -18,6 +18,10 @@ class SimResult {
   Duration? firstMythic;
   Duration wallMax = Duration.zero;
   int bestStage = 1;
+
+  /// 파 처치 간격(초) 평균 — 처음 10분 / 전체. 전투 테이블 조정용(S1 요청).
+  double waveSecFirst10Min = 0;
+  double waveSecAll = 0;
   int summons = 0;
   int upgrades = 0;
   BigNum gold = BigNum.zero;
@@ -60,6 +64,8 @@ class SimPlayer {
   Duration _elapsed = Duration.zero;
   Duration? _farmSince;
   Duration? _wallSince;
+  Duration? _lastWave;
+  final _waveGaps = <(Duration at, Duration gap)>[];
 
   /// 일정대로 [total]만큼 (오프라인 포함) 돈다.
   SimResult run(Duration total, SimSchedule schedule) {
@@ -82,11 +88,13 @@ class SimPlayer {
 
   void _goOffline(Duration away) {
     // 앱이 꺼질 때 저장 = savedAt 갱신. 돌아오면 복귀 보상.
-    engine.enqueue(OpLoadState(engine.state.copyWith(savedAt: clock.now())));
-    engine.tick();
-    engine.drainEvents();
+    engine
+      ..enqueue(OpLoadState(engine.state.copyWith(savedAt: clock.now())))
+      ..tick()
+      ..drainEvents();
     clock.advance(away);
     _elapsed += away;
+    _lastWave = null;
     engine.enqueue(const ClaimOffline());
   }
 
@@ -135,6 +143,10 @@ class SimPlayer {
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       switch (e) {
+        case WaveCleared():
+          final last = _lastWave;
+          if (last != null) _waveGaps.add((_elapsed, _elapsed - last));
+          _lastWave = _elapsed;
         case BossFailed():
           result.firstBossFail ??= _elapsed;
           _wallSince ??= _elapsed;
@@ -144,6 +156,7 @@ class SimPlayer {
           final since = _wallSince;
           if (since != null && _elapsed - since > result.wallMax) result.wallMax = _elapsed - since;
           _wallSince = null;
+          _lastWave = _elapsed;
         case CrewPromoted(:final rarity):
           result.firstPromotion ??= _elapsed;
           if (rarity == 'legend') result.firstLegendPromoted ??= _elapsed;
@@ -161,7 +174,15 @@ class SimPlayer {
     final s = engine.state;
     final since = _wallSince;
     if (since != null && _elapsed - since > result.wallMax) result.wallMax = _elapsed - since;
+    double avg(Iterable<Duration> xs) =>
+        xs.isEmpty ? 0 : xs.fold(0, (a, d) => a + d.inMilliseconds) / xs.length / Duration.millisecondsPerSecond;
+    const early = Duration(minutes: 10);
     result
+      ..waveSecFirst10Min = avg([
+        for (final (at, gap) in _waveGaps)
+          if (at <= early) gap,
+      ])
+      ..waveSecAll = avg([for (final (_, gap) in _waveGaps) gap])
       ..played = _elapsed
       ..bestStage = s.progress.bestStage
       ..gold = s.wallet.gold
