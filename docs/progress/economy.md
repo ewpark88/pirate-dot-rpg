@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | UI 요청 B 목록(ui-m3-meta): 보물상자 → 퀘스트·출석 → 순풍 → 목표·도감·튜토리얼 → 환생 |
+| 바로 다음 할 일 | M3 메타 스펙(`docs/specs/economy-m3-meta.md`) 승인 + 결정 4건 받기 → 구현 |
 | 막힌 것 | 없음 (스테이지 40·첫 소환 5.5분은 S1 전투 곡선 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · M3 메타 스펙 초안
+- 한 일: UI 요청 B1~B10(ui-m3-meta)을 스펙 초안으로 — `docs/specs/economy-m3-meta.md`(규칙 10, 수용 기준 13). 사람 승인 대기.
+- 결정 필요: 상자 광고 보상(×5 골드/젬 30 선택), 퀘스트 보상 방식, 출석 1~6일차 보상, 오프라인 ×2 광고의 복귀 기록.
+- 전투에 필요한 것(요청서 예정): 처치 수 퀘스트 집계 호출, 튜토리얼 스테이지 3 보스 ‘일부러 실패’.
 
 ### 2026-10-14 · S2 · 사용자 결정 A·B·C 반영 (조정 3)
 - 추가: main(세이브 v3, lastSummon) 머지, Summon이 `GameState.lastSummon`(isNew 포함)을 채움 — 6d28657
