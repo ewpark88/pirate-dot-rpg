@@ -86,7 +86,7 @@ class _SummonButton extends StatelessWidget {
           children: [
             const Icon(Icons.diamond, size: 14),
             const SizedBox(width: 2),
-            Text('$cost'),
+            Text(cost.toString()),
           ],
         ),
       ],
