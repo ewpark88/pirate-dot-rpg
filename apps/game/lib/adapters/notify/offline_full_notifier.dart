@@ -51,7 +51,11 @@ class OfflineFullNotifier {
     log.pausedAt = now;
     final at = now.add(fullAfter);
     if (enabled() && _countOn(log, at) < dailyMax) {
-      await _sdk.schedule(id: _id, at: at, texts: notifyTextsFor(lang()));
+      await _sdk.schedule(
+        id: _id,
+        at: at,
+        texts: notifyTextsFor(lang(), hours: fullAfter.inHours),
+      );
       log.rings.add(at);
     }
     await log.write(dir);

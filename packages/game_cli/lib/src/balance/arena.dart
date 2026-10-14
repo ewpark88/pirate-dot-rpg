@@ -5,7 +5,7 @@ import 'package:game_data/game_data.dart';
 /// 측정 장면 (설계서 4.8): (A) 무리전 12마리, (B) 보스전.
 enum Scene { swarm, boss }
 
-/// 측정이 성립하지 않을 때 (적이 죽음, 배가 가라앉음, 잘못된 스테이지). 종료 코드 2.
+/// 측정이 성립하지 않을 때 (적이 죽음, 배가 가라앉음, 잘못된 스테이지). 종료 코드 3.
 class MeasureError implements Exception {
   MeasureError(this.message);
 

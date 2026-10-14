@@ -75,13 +75,16 @@
 | **M2 관문 실기기 확인** (손맛 + 60fps) | 손맛은 sim으로 못 잰다. 통과 전엔 M3 이후를 '다듬기'로만 진행 | `docs/DEVICE_TEST.md` |
 | CC0 효과음·배경음 고르기 | 사운드 연출은 됐지만 음원이 없다(무음) | `docs/specs/render-audio.md`, `fx_map.json` sfx id 목록 |
 | 배 등급 그림 ship_t2~t4 | 도트 팩에 ship_t1만 있다(승급은 플레이스홀더) | 아트 팩 |
-| 광고·분석 계정(AdMob·Firebase) + platform 레인 세션 | M4 광고·Crashlytics | `docs/lanes/platform.md` |
+| 광고·분석 계정(AdMob·Firebase 프로젝트, google-services.json) | M4 광고·Crashlytics (platform 세션 S5는 열림) | `docs/store/firebase.md`, `docs/store/admob.md` |
+| 업로드 키(릴리스 서명) | M5 Play 업로드 | `docs/store/android-release.md` |
+| **Analytics 보존 기간 (2개월/14개월) — 보류** | 개인정보처리방침·데이터 보안 양식 | 사용자가 나중에 정함 |
+| app-ads.txt를 https://rich-fire.blogspot.com/ 루트에 올릴 수 있는지 | AdMob 판매자 확인 | `docs/store/app-ads.md` (S5 조사) |
 
 ## 미결 사항 (설계서 12장) → ADR
 
 | 항목 | 상태 |
 | --- | --- |
-| 게임 이름·패키지 ID | 임시 `repo.dot.pirate` (ADR-0002), M5 전 확정 |
+| 게임 이름·패키지 ID | 이름 **해적도트 원정대** 확정(2026-10-14). 패키지 ID는 임시 `repo.dot.pirate` (ADR-0002), M5 전 확정. 개발자 박은우 · repo.dev88@gmail.com · 웹사이트 https://rich-fire.blogspot.com/ |
 | 화면 방향·태블릿 | 미정 (세로 고정 가정) |
 | 최소 지원 OS | 미정 (Android 7.0 / iOS 13 제안) |
 | 환생 해금 스테이지 | 테이블은 40 (설계서 본문), 미결 목록은 30 제안 — 밸런스 시뮬 후 확정 |
