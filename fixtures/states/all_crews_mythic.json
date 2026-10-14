@@ -233,7 +233,7 @@
     "pityCount": 0,
     "total": 900
   },
-  "tutorialStep": 1,
+  "tutorialStep": null,
   "buffs": {
     "tailwindUntil": null
   },

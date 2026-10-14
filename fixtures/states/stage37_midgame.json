@@ -53,7 +53,7 @@
     "pityCount": 17,
     "total": 67
   },
-  "tutorialStep": 1,
+  "tutorialStep": null,
   "buffs": {
     "tailwindUntil": "2026-11-01T14:04:56.000Z"
   },
