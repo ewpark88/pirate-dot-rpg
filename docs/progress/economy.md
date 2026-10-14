@@ -10,6 +10,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-14 · S2 · 함포 지원 버프·스테이지 40 판정·옥토 첫 승급 재조정 (조정 4)
+- 한 일: GrantAdReward(bossSupport) → Buffs.bossSupportUntil, 순풍은 copyWith. sim 스테이지 40 = 첫날 안(하루 일정) + 계속 접속 20분 이상(설계서 7.2, S1 정리).
+  `bossCards.starterFirstStage` 3 추가(옥토 첫 승급 39.9분). 계속 접속 지표 모두 OK, 하루 60일 성장 목표 모두 OK.
+- 남은 문제: 환생이 없어 장기 sim 후반 벽 192시간 — 환생 구현 뒤 sim 정책에 환생.
+- 참고: ‘스테이지 40 = 하루 일정 경과 1.5~3시간’(사용자 결정)을 S1이 ‘첫날 안’으로 다시 정리했다(첫 오프라인 구간이라 그 사이 스테이지가 오를 수 없음). 사용자 확인 권장.
+
 ### 2026-10-14 · S2 · M3 메타 구현 (UI 요청 B1~B10)
 - 한 일(스펙 `economy-m3-meta` 승인, 결정 ①~④): `daily.dart`(rollDay·addQuestProgress·dailyQuests·ClaimDaily(questId)·출석),
   `chest.dart`(주기 스폰·가라앉음·TapChest·chestReward·OpSpawnChest), `ads.dart`(canWatchAd·GrantAdReward 5종·순풍·OpGrantTailwind),

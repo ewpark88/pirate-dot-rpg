@@ -504,7 +504,7 @@ const Map<String, String> rawTables = {
     { "from": "hero", "to": "legend", "level": 45, "cards": 10, "goldKills": 1000, "tokens": 0 },
     { "from": "legend", "to": "mythic", "level": 60, "cards": 20, "goldKills": 3000, "tokens": 50 }
   ],
-  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14, "starterEvery": 4 },
+  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14, "starterEvery": 4, "starterFirstStage": 3 },
   "tokenPerSurplusCard": 1,
   "tokenExchangeCost": 10
 }
@@ -573,7 +573,8 @@ const Map<String, String> rawTables = {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "stage10Min": { "min": 6, "max": 12 },
-      "stage40Hours": { "min": 1.5, "max": 3, "schedule": "daily" },
+      "stage40DayHours": { "min": 0, "max": 8.67, "schedule": "daily" },
+      "stage40OnlineMin": { "min": 20, "max": 100000, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
       "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
