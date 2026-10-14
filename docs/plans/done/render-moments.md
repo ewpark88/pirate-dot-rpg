@@ -9,7 +9,7 @@
 - [x] 2. 테스트 먼저: 수용 기준 1~5
 - [x] 3. 해역 보스 판정·컷인(`BattleGame.cutIn`, `resetSeenBosses`)
 - [x] 4. 승급 빛기둥·배 모양(등급 스프라이트 키 `ship:<tierId>`), 해역 이동 sweep
-- [ ] 5. 골든 `battle_cutin.png`(새)·`battle_boss_storm.png`(stage 75 → sloop 배로 갱신) S1 확인 대기
+- [x] 5. 골든 battle_cutin.png(새)·battle_boss_storm.png(sloop) S1 승인 → 커밋
 
 ## 검증 방법
 `tool\check.bat --full`, `flutter test apps/game/test/render`.
