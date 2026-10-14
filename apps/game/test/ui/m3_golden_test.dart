@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/clock_provider.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
+
+import 'ui_harness.dart';
+
+/// M3 메타 기준 10·11: 영어 골든 4장. 경제 함수(B1·B3·B7·B8)가 오기 전이라 provider는 가짜 값.
+/// 갱신은 사람이 --update-goldens로만.
+void main() {
+  setUpAll(loadGoldenFonts);
+
+  Future<void> pump(WidgetTester tester, GameState state, {List<Override> extra = const []}) async {
+    tester.view
+      ..physicalSize = const Size(400, 800)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          initialGameStateProvider.overrideWithValue(state),
+          battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+          clockProvider.overrideWithValue(FixedClock(state.savedAt)),
+          ...extra,
+        ],
+        child: const PirateDotApp(locale: Locale('en')),
+      ),
+    );
+    await tester.pump();
+  }
+
+  final base = loadFixture('stage37_midgame');
+  final quests = [
+    const QuestView(id: 'kill_500', type: 'kill', progress: 500, target: 500),
+    const QuestView(id: 'upgrade_30', type: 'upgrade', progress: 30, target: 30),
+    const QuestView(id: 'summon_1', type: 'summon', progress: 1, target: 1),
+    const QuestView(id: 'ad_1', type: 'ad', progress: 0, target: 1),
+  ];
+  final daily = [
+    dailyQuestsProvider.overrideWithValue(
+      (_) => DailyQuestsView(quests: quests, rewardGems: 40, canClaim: false, claimed: false),
+    ),
+    attendanceProvider.overrideWithValue(
+      (_, _) => AttendanceView(
+        day: 4,
+        claimedToday: false,
+        rewards: [
+          for (var d = 1; d <= 6; d++) AttendanceReward(gems: d * 10),
+          const AttendanceReward(ticket: true),
+        ],
+      ),
+    ),
+  ];
+
+  testWidgets('골든: en_m3_hud (목표 막대 + 상자 + 순풍 + 퀘스트 아이콘)', (tester) async {
+    final state = base.copyWith(battle: base.battle!.copyWith(chest: const ChestView(x: 220, y: 110, ticksLeft: 500)));
+    await pump(
+      tester,
+      state,
+      extra: [
+        nextGoalProvider.overrideWithValue(
+          (_) => const GoalView(kind: GoalKind.shipTier, id: 'warship', remaining: 43, progress: 0.15),
+        ),
+        chestRewardProvider.overrideWithValue((_) => BigNum.parse('2.5e5')),
+        ...daily,
+      ],
+    );
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_m3_hud.png'));
+  });
+
+  testWidgets('골든: en_daily_sheet', (tester) async {
+    await pump(tester, base, extra: daily);
+    await tester.tap(find.byKey(const Key('daily.icon')));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_daily_sheet.png'));
+  });
+
+  testWidgets('골든: en_tutorial_step2', (tester) async {
+    await pump(tester, base.copyWith(tutorialStep: 2));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_tutorial_step2.png'));
+  });
+
+  testWidgets('골든: en_summon_result (10연, 모두 뒤집음)', (tester) async {
+    const ten = [
+      SummonResult(crewId: 'octo', rarity: 'common', isNew: true),
+      SummonResult(crewId: 'starry', rarity: 'common'),
+      SummonResult(crewId: 'pang', rarity: 'common'),
+      SummonResult(crewId: 'pingu', rarity: 'common'),
+      SummonResult(crewId: 'manta', rarity: 'legend'),
+      SummonResult(crewId: 'crabs', rarity: 'rare'),
+      SummonResult(crewId: 'pang', rarity: 'common'),
+      SummonResult(crewId: 'pingu', rarity: 'common'),
+      SummonResult(crewId: 'starry', rarity: 'common'),
+      SummonResult(crewId: 'uni', rarity: 'hero'),
+    ];
+    await pump(tester, base.copyWith(lastSummon: ten));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('summon.revealAll')));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_summon_result.png'));
+  });
+}

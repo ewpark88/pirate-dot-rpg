@@ -68,5 +68,9 @@
   "uiAttendanceTitle": "Attendance",
   "uiAttendanceDay": "Day {day}",
   "uiAttendanceTicket": "Hero+ Summon",
-  "uiAttendanceClaim": "Claim"
+  "uiAttendanceClaim": "Claim",
+  "uiSummonResultTitle": "Summon Results",
+  "uiSummonRevealAll": "Reveal All",
+  "uiSummonResultOk": "OK",
+  "uiSummonNew": "NEW"
 }
