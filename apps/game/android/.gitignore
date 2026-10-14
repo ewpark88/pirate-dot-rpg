@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Firebase 설정 파일 — 사람이 넣고 커밋하지 않는다 (docs/store/firebase.md)
+app/google-services.json
