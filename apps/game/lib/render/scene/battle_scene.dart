@@ -68,6 +68,7 @@ class BattleScene {
   late final Backdrop backdrop;
   final shake = ScreenShake();
   final stats = SceneStats();
+  final chest = ChestPose();
 
   /// 선원 슬롯 발사 번쩍임 남은 시간(ms), 슬롯 순서.
   final slotFlashMs = List<double>.filled(kMaxSlots, 0);
@@ -109,6 +110,7 @@ class BattleScene {
     final rate = slowMoMs > 0 ? juice.bossSlowMoRate : 1.0;
     if (slowMoMs > 0) slowMoMs -= dtMs;
     player.advance(dtMs * rate);
+    _updateStage();
     // 히트스톱 구간은 이펙트 시계도 멈춘다. 흔들림은 실제 시간으로 돈다.
     final fxDt = player.inHitStop ? 0.0 : dtMs * rate;
     _updateProjectiles();
@@ -137,6 +139,12 @@ class BattleScene {
     backdrop.update(dtMs);
     _applyHits(fxDt);
     _updateStats();
+  }
+
+  void _updateStage() {
+    final f = frame;
+    backdrop.setStage(f.stage);
+    chest.update(f.chest, fx.chest, clockMs);
   }
 
   static bool _effectDone(Effect e) => e.done;

@@ -203,6 +203,7 @@ class FxMapTable {
       bossLookDefault = j.str('bossLookDefault'),
       shield = j.obj('shield'),
       tierColors = [for (final c in j.strs('tierColors')) parseArgb(c, 'tierColors')],
+      chest = j.obj('chest'),
       zone = j.obj('zone');
 
   final Map<String, JsonReader> events;
@@ -240,6 +241,9 @@ class FxMapTable {
 
   /// 무한 항해 테두리 tier 1~3 색.
   final List<int> tierColors;
+
+  /// 보물상자 그림 (BattleView.chest).
+  final JsonReader chest;
   final JsonReader zone;
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.

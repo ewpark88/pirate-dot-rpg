@@ -177,4 +177,44 @@ void main() {
     }
     expect(looks.tierColor(9), fx.tierColors.last);
   });
+
+  test('수용 기준 11: 프레임 stage로 배경이 바뀐다', () {
+    RecordedTick at(int t, int stage) =>
+        RecordedTick(BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), stage: stage), const []);
+    final ticks = [at(0, 50), at(1, 50), at(2, 51), for (var t = 3; t < 60; t++) at(t, 51)];
+    final storm = Backdrop(fx, rawTables['regions']!).paletteOf('bg_storm').sky;
+    final coral = Backdrop(fx, rawTables['regions']!).paletteOf('bg_coral').sky;
+    expect(_play(ticks, 1).backdrop.sky, coral);
+    expect(_play(ticks, 2 + (fx.backgroundFadeMs + 100) / tickMs).backdrop.sky, storm);
+  });
+
+  group('수용 기준 12: 보물상자', () {
+    RecordedTick at(int t, {ChestView? chest}) => RecordedTick(
+      BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), chest: chest),
+      const [],
+    );
+    final bob = fx.chest.number('bobPx');
+    final sinkTicks = fx.chest.integer('sinkTicks');
+
+    test('떠 있을 때는 (x, y±bobPx), 가라앉지 않음', () {
+      final s = _play([
+        for (var t = 0; t < 10; t++) at(t, chest: ChestView(x: 160, y: 104, ticksLeft: 400 - t)),
+      ], 3);
+      expect(s.chest.visible, isTrue);
+      expect(s.chest.x, 160);
+      expect(s.chest.y, inInclusiveRange(104 - bob, 104 + bob));
+      expect(s.chest.sink, 0);
+    });
+
+    test('남은 틱이 sinkTicks보다 적으면 가라앉는다', () {
+      final s = _play([
+        for (var t = 0; t < 10; t++) at(t, chest: ChestView(x: 160, y: 104, ticksLeft: sinkTicks ~/ 2 - t)),
+      ], 3);
+      expect(s.chest.sink, greaterThan(0));
+    });
+
+    test('chest가 없으면 안 보인다', () {
+      expect(_play([for (var t = 0; t < 5; t++) at(t)], 2).chest.visible, isFalse);
+    });
+  });
 }
