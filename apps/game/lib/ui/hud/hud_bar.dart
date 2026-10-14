@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/operator/flags.dart';
+import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 상단 HUD: 골드 · 젬 · 스테이지 · 보스 타이머, 그 아래 함성 게이지와 궁극기 버튼 (설계서 4.12).
@@ -49,7 +51,11 @@ class HudBar extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                 ],
-                Text(l10n.uiHudStage(stage, wave)),
+                // 운영자 빌드에서만 스테이지 글자 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
+                if (kOperator)
+                  OperatorTapGate(child: Text(l10n.uiHudStage(stage, wave)))
+                else
+                  Text(l10n.uiHudStage(stage, wave)),
               ],
             ),
             const SizedBox(height: 4),
