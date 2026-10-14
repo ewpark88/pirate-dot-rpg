@@ -4,10 +4,15 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-m3-meta.md` |
-| 상태 | M3 ①③⑤ 커밋 (골든 4장 S1 승인), ②④⑥ 대기 |
-| 기다리는 것 | S1 세이브 v3(A1~A6) · S2 B2·B3 → B7·B8 → B5 → B1·B9·B10 |
+| 상태 | M3 ①②③⑤ 커밋, ④⑥ 대기 |
+| 기다리는 것 | S2 B7·B8(퀘스트·출석) → B5 → B1·B9·B10, B3(chestReward) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · M3 ② 보물상자
+- 한 일: cb9482f(①③⑤) 머지됨. 세이브 v3(main 16dda02) 머지. 상자: `battle.chest`가 있으면 전장 논리 좌표에 탭 영역(→ TapChest) + 가라앉기 링
+  (ticksLeft / (ads.chest.floatSec × 1000 / tickMs)), 금액은 `chestRewardProvider`(기본 숨김). 전장 상자(`battle.area`) 안에 렌더와 같은 좌표로 겹침. `check --full` 통과(위젯 77개).
+- 다음 할 일: S2 B7·B8 오면 ④ 퀘스트·출석 시트
 
 ### 2026-10-14 · S4 · M3 ①③⑤
 - 한 일: b56dde8 스펙(승인)·요청서·계획. 순풍 배지(전장 왼쪽 위, 1초마다 다시 그림, h:mm/mm:ss, 배율은 ads.json),
