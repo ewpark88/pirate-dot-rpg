@@ -1,7 +1,7 @@
 # 계획: platform-m4 (스펙 `docs/specs/platform-m4.md`)
 
 - [x] 0. 레인 시작, main 따라잡기(b306250), 스펙 초안 → S1 보고
-- [ ] 1. S1 승인 → 요청서 4개(`platform-deps-init`·`platform-notify-setting`·`platform-ui-ports`·`platform-release-check`)
+- [x] 1. S1 승인 → 요청서 4개(`platform-deps-init`·`platform-notify-setting`·`platform-ui-ports`·`platform-release-check`)
 - [ ] 2. 테스트 먼저(가짜 SDK): ads 1~8 → 실패 확인 → `adapters/ads/` 구현
 - [ ] 3. 알림 9~14 → `adapters/notify/` + `parts/platform.*.arb`
 - [ ] 4. 분석 15~17 → `adapters/analytics/`

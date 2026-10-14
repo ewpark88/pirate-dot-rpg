@@ -1,6 +1,6 @@
 # 스펙: 플랫폼 M4 — 광고·알림·분석·소리·Android 내부 테스트 빌드
 
-- 상태: 초안 (2026-10-14, S5) · 레인: platform · 설계서 절: 3.2 포트, 4.6 광고, 4.9 이탈 분석, 4.4 소리, 9장 수익화·규정
+- 상태: 승인됨(2026-10-14, S1 — 사용자 위임). 결정: 알림 권한 = 첫 오프라인 복귀, EU Analytics = UMP 동의에 묶음, iOS = M6까지 no-op · 레인: platform · 설계서 절: 3.2 포트, 4.6 광고, 4.9 이탈 분석, 4.4 소리, 9장 수익화·규정
 - 범위: 포트 어댑터 4개(`AdsPort`·알림·`AnalyticsPort`+Crashlytics·`AudioPort`) + Android 릴리스 서명·빌드 절차.
   pubspec 의존성·`main.dart` 연결·`tool/check` 단계는 **S1**(요청서 `docs/contracts/requests/platform-*.md`), 사람 할 일은 `docs/store/*.md`.
 
