@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (승인됨 S1) · 끝남: `plans/done/render-battle-replay.md` |
-| 상태 | render-perf 구현 완료(측정 도구). 실기기 측정 대기 — 절차는 스펙 "실기기 측정 절차" |
-| 막힌 것 | 실기기 측정은 사람(S4) 몫 — 결과가 오면 아래 표에 기록 후 계획을 done/으로 |
+| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md`, `plans/done/render-m3-fx.md` |
+| 상태 | render-m3-fx 완료 — 계약 A·B·C 반영(어댑터 제거, 기절 별), main e883272까지 머지, check --full 통과. 다음: render-regions 스펙 |
+| 막힌 것 | 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
 
 ## 실기기 측정
 
@@ -13,6 +13,16 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · render-m3-fx (스킬·궁극기·적 역할 연출)
+- 한 일: 스펙 승인(S1)·계약 A·B·C 수용 기록. 테스트 먼저(수용 기준 1~9, 5는 계약 B 대기 skip) →
+  fx_map M3 데이터(skillFxScale·screenSkill·shipSkill·ultimates 8종·enemyLook·split·revive·zone)+모델·검증,
+  `M3Director`(스킬·화면 스킬 어댑터·궁극기 sweep/rain/strikes/volley·분열/부활 감지·장판 어댑터), `EnemyLooks`(regions.json 원문 role),
+  이펙트 지연·이동(`Effect.delayMs/vx`), 장판 풀, 슬롯 스킬 막대·준비 깜빡임, 배 회복·버프. `scene/motion.dart`로 움직임 계산 분리.
+- 검증: `tool\check.bat --full` 통과(33.5s), 렌더 테스트 47개 + skip 1.
+- 추가: 골든 승인(S1) → 108a680 커밋. main(전투 M3 12abe88, 계약 A·B·C) 머지 → 어댑터 제거, `scope`·`ZoneSpawned`·`stunned`(별 2개 회전) 사용. 골든 그대로 통과.
+- 다음 할 일: 해역 배경 6종 플레이스홀더 + 보스 등장·처치 연출 점검(render-regions 스펙).
+- 남은 문제: 기존 골든 `battle_aoe.png`가 적 색(역할 표)·스킬 막대 때문에 바뀜 — 갱신 승인 필요.
 
 ### 2026-10-14 · S3 · render-perf (실기기 측정 준비)
 - 한 일: 스펙 승인(S1)·Q1 결정(정수배는 렌더 뷰포트) 반영, 실기기 측정 절차를 복사 가능한 명령으로 스펙에 기록.

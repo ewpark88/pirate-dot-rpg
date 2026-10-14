@@ -4,6 +4,7 @@ import 'package:game_data/src/models/battle_tables.dart';
 import 'package:game_data/src/models/common.dart';
 import 'package:game_data/src/models/crew_tables.dart';
 import 'package:game_data/src/models/economy_tables.dart';
+import 'package:game_data/src/models/region_tables.dart';
 import 'package:game_data/src/models/render_tables.dart';
 import 'package:game_data/src/models/skill_tables.dart';
 import 'package:game_data/src/tables.g.dart';

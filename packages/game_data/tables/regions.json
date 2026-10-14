@@ -1,12 +1,30 @@
 {
   "stagesPerRegion": 50,
+  "midBossEvery": 25,
+  "loopStages": 300,
+  "maxLoopTier": 3,
   "regions": [
-    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral"},
-    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm"},
-    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier"},
-    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano"},
-    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss"},
-    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom"}
+    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
+    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
+    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
+    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
+    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
+    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
+  ],
+  "bosses": [
+    {"id": "enemy_ship", "hpMultiplier": 1.0, "weakFamilies": []},
+    {"id": "raider_ship", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "storm_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "icebreaker", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "fire_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "deep_sub", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "ghost_ship", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "giant_hermit", "hpMultiplier": 2.5, "weakFamilies": ["lob", "air"], "mechanic": {"type": "frontArmor", "factor": 0.5, "bypassFamilies": ["lob", "air"]}},
+    {"id": "thunder_ray", "hpMultiplier": 2.5, "weakFamilies": ["pierce"], "mechanic": {"type": "shield", "intervalSec": 10, "factor": 0.25, "breakerFamilies": ["pierce"]}},
+    {"id": "iceberg_walrus", "hpMultiplier": 2.5, "weakFamilies": ["shock"], "mechanic": {"type": "shield", "intervalSec": 12, "factor": 0.25, "breakerFamilies": ["shock"]}},
+    {"id": "lava_whale", "hpMultiplier": 2.5, "weakFamilies": ["direct", "lob"], "mechanic": {"type": "lava", "intervalSec": 5, "shipDamageMultiplier": 1.0}},
+    {"id": "kraken", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "skip"], "mechanic": {"type": "tentacles", "count": 4, "hpRatio": 0.15}},
+    {"id": "ghost_admiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}}
   ],
   "enemies": [
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},

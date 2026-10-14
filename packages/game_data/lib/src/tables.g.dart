@@ -418,6 +418,32 @@ const Map<String, String> rawTables = {
     "lightning": "#C9F0FF", "hit_spark": "#FFFFFF", "coin_burst": "#FFD23F", "level_up": "#8EF07A"
   },
   "sheetFrameMs": 60,
+  "skillFxScale": 1.5,
+  "screenSkill": { "flashMs": 120, "shakeScale": 0.5 },
+  "shipSkill": { "healFlashMs": 200, "healColor": "#5BD75B", "buffColor": "#FFE14D" },
+  "ultimates": {
+    "ult_cannon_rain": { "pattern": "rain", "fx": "explosion_aoe", "count": 8, "durationMs": 600 },
+    "ult_volley": { "pattern": "volley", "fx": "muzzle", "count": 6, "durationMs": 400 },
+    "ult_harpoon_storm": { "pattern": "strikes", "fx": "slash", "count": 6, "durationMs": 500 },
+    "ult_tidal_wave": { "pattern": "sweep", "fx": "tidal_wave", "count": 1, "durationMs": 700 },
+    "ult_kraken": { "pattern": "rain", "fx": "explosion_aoe", "count": 6, "durationMs": 700 },
+    "ult_thunderstorm": { "pattern": "strikes", "fx": "lightning", "count": 8, "durationMs": 600 },
+    "ult_ghost_charge": { "pattern": "sweep", "fx": "slash", "count": 1, "durationMs": 500 },
+    "ult_great_wave": { "pattern": "sweep", "fx": "tidal_wave", "count": 1, "durationMs": 900 }
+  },
+  "enemyLook": {
+    "basic": { "color": "#E74C3C", "size": 12, "alpha": 1 },
+    "fast": { "color": "#F1C40F", "size": 10, "alpha": 1 },
+    "tough": { "color": "#95A5A6", "size": 14, "alpha": 1 },
+    "air": { "color": "#F5F5F5", "size": 10, "alpha": 1 },
+    "split": { "color": "#2ECC71", "size": 12, "alpha": 1 },
+    "revive": { "color": "#9B59B6", "size": 12, "alpha": 0.7 }
+  },
+  "enemySmallSize": 8,
+  "split": { "nearPx": 6, "fx": "hit_spark" },
+  "revive": { "minRise": 0.2, "fx": "level_up" },
+  "stun": { "color": "#FFE14D", "orbitPx": 5, "periodMs": 600 },
+  "zone": { "color": "#2E86C1", "alpha": 0.35, "max": 8 },
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },
     { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },
@@ -500,10 +526,14 @@ const Map<String, String> rawTables = {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "stage10Min": { "min": 6, "max": 12 },
-      "stage40Hours": { "min": 1.5, "max": 3 },
+      "stage40Hours": { "min": 1.5, "max": 3, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
-      "adSummonsPerGemAd": { "min": 1, "max": 1.5 }
+      "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
+      "firstRarityUpMin": { "min": 30, "max": 40, "schedule": "continuous" },
+      "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
+      "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
+      "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" }
     }
   }
 }
@@ -524,13 +554,31 @@ const Map<String, String> rawTables = {
   'regions': r'''
 {
   "stagesPerRegion": 50,
+  "midBossEvery": 25,
+  "loopStages": 300,
+  "maxLoopTier": 3,
   "regions": [
-    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral"},
-    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm"},
-    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier"},
-    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano"},
-    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss"},
-    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom"}
+    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
+    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
+    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
+    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
+    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
+    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
+  ],
+  "bosses": [
+    {"id": "enemy_ship", "hpMultiplier": 1.0, "weakFamilies": []},
+    {"id": "raider_ship", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "storm_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "icebreaker", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "fire_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "deep_sub", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "ghost_ship", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "giant_hermit", "hpMultiplier": 2.5, "weakFamilies": ["lob", "air"], "mechanic": {"type": "frontArmor", "factor": 0.5, "bypassFamilies": ["lob", "air"]}},
+    {"id": "thunder_ray", "hpMultiplier": 2.5, "weakFamilies": ["pierce"], "mechanic": {"type": "shield", "intervalSec": 10, "factor": 0.25, "breakerFamilies": ["pierce"]}},
+    {"id": "iceberg_walrus", "hpMultiplier": 2.5, "weakFamilies": ["shock"], "mechanic": {"type": "shield", "intervalSec": 12, "factor": 0.25, "breakerFamilies": ["shock"]}},
+    {"id": "lava_whale", "hpMultiplier": 2.5, "weakFamilies": ["direct", "lob"], "mechanic": {"type": "lava", "intervalSec": 5, "shipDamageMultiplier": 1.0}},
+    {"id": "kraken", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "skip"], "mechanic": {"type": "tentacles", "count": 4, "hpRatio": 0.15}},
+    {"id": "ghost_admiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}}
   ],
   "enemies": [
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},

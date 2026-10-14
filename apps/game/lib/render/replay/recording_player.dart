@@ -7,6 +7,9 @@ class EnemyPose {
   String layer = 'surface';
   bool boss = false;
   double hpRatio = 1;
+
+  /// 기절 중 (머리 위 별).
+  bool stunned = false;
   double x = 0;
   double y = 0;
 
@@ -21,6 +24,7 @@ class EnemyPose {
     layer = v.layer;
     boss = v.boss;
     hpRatio = v.hpRatio;
+    stunned = v.stunned;
     x = nx;
     y = ny;
     drawX = nx;

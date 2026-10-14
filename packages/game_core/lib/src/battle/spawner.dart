@@ -32,36 +32,62 @@ void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}
         attack: attack,
         gold: gold,
         def: def,
+        tier: t.regions.tierAt(stage),
       ),
     );
   }
 }
 
-/// 보스 등장 (규칙 8). HP = 단일 HP × `boss.hpMultiplier`, 타이머 `boss.timeLimitSec`.
+/// 보스 등장 (규칙 8, battle-m3-bosses). HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율, 타이머 `boss.timeLimitSec`.
+/// 해역 보스 패턴: 보호막은 켠 채로, 크라켄은 촉수와 함께 나온다.
 /// 상태 불러오기로 다시 만들 때는 [emit]=false, 남은 HP 비율 [hpRatio]와 위치 [x]를 이어받는다.
 void startBoss(Field f, int stage, SystemContext ctx, {bool emit = true, double hpRatio = 1, double? x}) {
   final t = ctx.tables;
   final w = t.waves;
-  final kind = t.regions.regionAt(stage).boss;
+  final def = t.regions.bossAt(stage);
   final boss = Foe(
     id: f.nextId(),
-    kind: kind,
+    kind: def.id,
     layer: 'surface',
     x: x ?? w.field.spawnX,
     y: w.field.laneY['surface'] ?? w.field.shipY,
-    maxHp: stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier),
+    maxHp: stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier * def.hpMultiplier),
     speed: w.bossSpeed,
     attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
     gold: stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier),
     boss: true,
+    bossDef: def,
+    tier: t.regions.tierAt(stage),
   );
   boss.hp = boss.maxHp.times(hpRatio);
   f.foes.add(boss);
+  final m = def.mechanic;
+  if (m != null) {
+    boss.shielded = m.type == 'shield' || m.type == 'tentacles';
+    f.bossTimerTicks = (m.intervalSec / (w.tickMs * secondsPerMillisecond)).round();
+    for (var i = 0; i < (m.type == 'tentacles' ? m.count : 0); i++) {
+      f.foes.add(
+        Foe(
+          id: f.nextId(),
+          kind: '${def.id}_tentacle',
+          layer: i.isEven ? 'surface' : 'underwater',
+          x: boss.x - (i + 1) * w.field.spawnSpacing,
+          y: w.field.laneY[i.isEven ? 'surface' : 'underwater'] ?? w.field.shipY,
+          maxHp: boss.maxHp.times(m.hpRatio),
+          speed: 0,
+          attack: BigNum.zero,
+          gold: BigNum.zero,
+          ownerId: boss.id,
+          tier: boss.tier,
+        ),
+      );
+    }
+  }
   f
     ..bossActive = true
     ..bossTicksLeft = bossTimeLimitTicks(ctx)
     ..travelLeft = 0;
-  if (emit) ctx.emit(BossSpawned(ctx.tick, kind: kind, timeLimitTicks: f.bossTicksLeft));
+  if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }
 
 /// 보스 제한 시간(초) → 틱.
