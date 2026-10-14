@@ -23,7 +23,10 @@ sealed class Command {
       'challengeBoss' => const ChallengeBoss(),
       'triggerUltimate' => const TriggerUltimate(),
       'tapChest' => const TapChest(),
-      'grantAdReward' => GrantAdReward(AdPlacement.values.byName(j['placement'] as String)),
+      'grantAdReward' => GrantAdReward(
+        AdPlacement.values.byName(j['placement'] as String),
+        choice: j['choice'] as String?,
+      ),
       'claimOffline' => const ClaimOffline(),
       'claimDaily' => const ClaimDaily(),
       'claimAttendance' => const ClaimAttendance(),
@@ -124,15 +127,18 @@ class TapChest extends Command {
 
 /// 보상형 광고의 보상 콜백이 온 뒤에만 보낸다.
 class GrantAdReward extends Command {
-  const GrantAdReward(this.placement);
+  const GrantAdReward(this.placement, {this.choice});
 
   final AdPlacement placement;
+
+  /// 보상을 고르는 장치의 선택 (보물상자: `gold` | `gems`, 설계서 4.6). 없으면 기본 보상.
+  final String? choice;
 
   @override
   String get type => 'grantAdReward';
 
   @override
-  Json _fields() => {'placement': placement.name};
+  Json _fields() => {'placement': placement.name, if (choice != null) 'choice': choice};
 }
 
 /// 복귀 팝업에서 오프라인 보상 받기 (광고 ×2는 GrantAdReward(offline)).
