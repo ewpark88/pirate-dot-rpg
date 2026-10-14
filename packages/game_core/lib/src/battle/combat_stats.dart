@@ -15,9 +15,13 @@ class CombatStats {
     required this.goldMultiplier,
     required this.tierDamage,
     required this.slots,
+    this.bonus = 0,
   });
 
-  factory CombatStats.of(GameState s, GameTables t) {
+  /// [now]가 있으면 버프(순풍 골드, 함포 지원 피해)를 반영한다 (ads.json 보상 값).
+  factory CombatStats.of(GameState s, GameTables t, {DateTime? now}) {
+    bool active(DateTime? until) => now != null && until != null && until.isAfter(now);
+    JsonReader reward(String id) => t.ads.placements.firstWhere((p) => p.id == id).reward;
     final ship = ShipStats.of(t.shipParts, s.ship);
     final tier = t.shipTiers.tierAt(s.progress.stage);
     return CombatStats._(
@@ -26,8 +30,10 @@ class CombatStats {
       attackSpeed: ship.attackSpeed,
       critChance: ship.critChance,
       critMultiplier: ship.critMultiplier,
-      goldMultiplier: ship.goldMultiplier,
+      goldMultiplier:
+          ship.goldMultiplier * (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
       tierDamage: 1 + tier.damageBonus,
+      bonus: active(s.buffs.bossSupportUntil) ? reward('bossSupport').number('damageBonus') : 0,
       slots: tier.slots,
     );
   }
@@ -46,6 +52,9 @@ class CombatStats {
 
   /// 배 등급 피해 배율 = 1 + damageBonus.
   final double tierDamage;
+
+  /// 설계서 4.8 곱셈 마지막 항의 % 보너스 합 (함포 지원 등). 피해 × (1 + bonus).
+  final double bonus;
 
   /// 무기 슬롯 수.
   final int slots;

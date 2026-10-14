@@ -87,7 +87,10 @@
         "boss": true,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       }
     ],
     "fleet": [

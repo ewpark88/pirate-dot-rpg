@@ -87,6 +87,7 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
   var s = state.copyWith(
     savedAt: now,
     wallet: state.wallet.copyWith(gold: state.wallet.gold + p.gold),
+    lastOfflineGold: p.gold,
   );
   for (var i = 0; i < p.cards; i++) {
     s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));

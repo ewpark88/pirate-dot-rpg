@@ -117,14 +117,26 @@ class CrewState {
 
 @immutable
 class Buffs {
-  const Buffs({this.tailwindUntil});
+  const Buffs({this.tailwindUntil, this.bossSupportUntil});
 
-  factory Buffs.fromJson(Json j) => Buffs(tailwindUntil: parseTime(j['tailwindUntil']));
+  factory Buffs.fromJson(Json j) =>
+      Buffs(tailwindUntil: parseTime(j['tailwindUntil']), bossSupportUntil: parseTime(j['bossSupportUntil']));
 
-  /// 순풍 버프 종료 시각(UTC).
+  /// 순풍 버프 종료 시각(UTC): 골드·전투 속도 (ads.json tailwind).
   final DateTime? tailwindUntil;
 
-  Json toJson() => {'tailwindUntil': tailwindUntil?.toUtc().toIso8601String()};
+  /// 함포 지원 종료 시각(UTC): 보스 재도전 피해 + (ads.json bossSupport). 세이브에 없어도 된다(선택 키).
+  final DateTime? bossSupportUntil;
+
+  Buffs copyWith({DateTime? tailwindUntil, DateTime? bossSupportUntil}) => Buffs(
+    tailwindUntil: tailwindUntil ?? this.tailwindUntil,
+    bossSupportUntil: bossSupportUntil ?? this.bossSupportUntil,
+  );
+
+  Json toJson() => {
+    'tailwindUntil': tailwindUntil?.toUtc().toIso8601String(),
+    if (bossSupportUntil != null) 'bossSupportUntil': bossSupportUntil!.toUtc().toIso8601String(),
+  };
 }
 
 @immutable

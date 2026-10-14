@@ -17,6 +17,9 @@ class EnemyView {
     this.stunned = false,
     this.shielded = false,
     this.tier = 0,
+    this.slowed = false,
+    this.burning = false,
+    this.vulnerable = false,
   });
 
   factory EnemyView.fromJson(Json j) => EnemyView(
@@ -30,6 +33,9 @@ class EnemyView {
     stunned: j['stunned'] as bool? ?? false,
     shielded: j['shielded'] as bool? ?? false,
     tier: j['tier'] as int? ?? 0,
+    slowed: j['slowed'] as bool? ?? false,
+    burning: j['burning'] as bool? ?? false,
+    vulnerable: j['vulnerable'] as bool? ?? false,
   );
 
   /// 전투 동안 유일한 id. 이벤트가 이 id로 대상을 가리킨다.
@@ -54,6 +60,11 @@ class EnemyView {
   /// 무한 항해 등급 테두리: 0 없음, 1 희귀, 2 영웅, 3 전설.
   final int tier;
 
+  /// 상태 표시 (전설 능력): 감속 중, 화상 중, 받는 피해 증가 중.
+  final bool slowed;
+  final bool burning;
+  final bool vulnerable;
+
   Json toJson() => {
     'id': id,
     'kind': kind,
@@ -65,6 +76,9 @@ class EnemyView {
     'stunned': stunned,
     'shielded': shielded,
     'tier': tier,
+    'slowed': slowed,
+    'burning': burning,
+    'vulnerable': vulnerable,
   };
 }
 
