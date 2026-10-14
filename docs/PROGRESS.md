@@ -9,7 +9,7 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-14 · S1 |
-| 바로 다음 할 일 | S1: 레인 머지·통합 (ui 배 탭 끝나면 1차 머지, render 재생기) |
+| 바로 다음 할 일 | S1: 렌더 라이브 입력(S3 API 대기)을 `EngineHost.ticks`에 연결, 레인 머지 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -38,7 +38,7 @@
 - [x] `game_cli export-events` 실제 엔진 출력 (+ 앱 데모 상수 `render/demo/sample_battle.g.dart`, allLanes)
 
 ### M2 화면 연결 (S3 render · S4 ui) — 관문: 실기기 손맛 승인
-- [ ] Flame 전투 화면(기록 재생 → 실제 엔진) · 타격감
+- [ ] Flame 전투 화면(기록 재생 → 실제 엔진) · 타격감 — 엔진은 앱에 연결됨(`EngineHost`), 렌더 라이브 입력 대기
 - [ ] 강화·소환·원정대 탭, ko/en 골든
 - [ ] 저장·복원 (SaveStore 파일 구현)
 - [ ] 운영자 모드 패널
@@ -103,7 +103,8 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 추가: lane/economy(735a528) main 머지, `combat_stats`를 경제의 `ShipStats.of`·`crewPowerMultiplier`로 교체, 경제 함수를 `game_core.dart`로 export(UI용).
   render·ui 스펙은 S1이 승인(사용자 위임) — 레인 세션은 자기 사용자에게 위임 확인 후 시작.
 - 추가2: economy 99445f3 머지(합치기·승급·보스 카드·오프라인), 보스 처치에 `grantBossCards`+`SaveRequested` 연결, offline.dart export.
-- 다음 할 일: ui 배 탭 → 1차 머지, render 재생기 머지, economy 운영자 명령·sim
+- 추가3: lane/ui 3f6fa8c 1차 머지(HUD·배 탭). 앱에 엔진 연결: `apps/game/lib/engine_host.dart`(20Hz, 배속, RecordedTick 스트림), main.dart가 ProviderScope override로 상태·명령 통로를 꽂는다(ui 파일 무변경). 세이브 불러오기는 platform(TODO).
+- 다음 할 일: 렌더 라이브 입력 연결, economy 운영자 명령·sim 머지
 - 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
 
 ### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안
