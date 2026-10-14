@@ -40,7 +40,7 @@
 ### M2 화면 연결 (S3 render · S4 ui) — 관문: 실기기 손맛 승인
 - [ ] Flame 전투 화면(기록 재생 → 실제 엔진) · 타격감 — 엔진은 앱에 연결됨(`EngineHost`), 렌더 라이브 입력 대기
 - [ ] 강화·소환·원정대 탭, ko/en 골든
-- [ ] 저장·복원 (SaveStore 파일 구현)
+- [x] 저장·복원: `FileSaveStore`(save.tmp→rename, save.bak), 저장 시점 SaveRequested·10초·백그라운드, 시작 시 loadSave(백업 복구) — 통합 테스트(전투 1분→저장→복원)
 - [ ] 운영자 모드 패널
 - [ ] 실기기 60fps (저사양 1대)
 
