@@ -44,3 +44,11 @@ flutter:
     - assets/ship/
     - assets/projectiles/
     - assets/coin.png
+    - assets/fonts/Galmuri-OFL.txt
+  # 한글 도트 폰트 (OFL-1.1, assets/fonts/Galmuri-OFL.txt 원문 동봉)
+  fonts:
+    - family: Galmuri11
+      fonts:
+        - asset: assets/fonts/Galmuri11.ttf
+        - asset: assets/fonts/Galmuri11-Bold.ttf
+          weight: 700

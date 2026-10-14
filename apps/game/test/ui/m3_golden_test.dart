@@ -124,6 +124,8 @@ void main() {
 
   testWidgets('골든: en_rebirth_dialog', (tester) async {
     await pump(tester, base, extra: [rebirth]);
+    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_dialog.png'));

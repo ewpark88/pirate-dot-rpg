@@ -247,6 +247,18 @@
     "ship/ship_t1.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
       "license": "OWN"
+    },
+    "fonts/Galmuri11.ttf": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
+      "license": "OFL-1.1"
+    },
+    "fonts/Galmuri11-Bold.ttf": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
+      "license": "OFL-1.1"
+    },
+    "fonts/Galmuri-OFL.txt": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo) — 라이선스 원문",
+      "license": "OFL-1.1"
     }
   }
 }
