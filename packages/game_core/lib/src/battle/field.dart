@@ -88,6 +88,9 @@ class Foe {
     stunned: stunned,
     shielded: shielded,
     tier: tier,
+    slowed: slowTimer > 0,
+    burning: burnTicks > 0,
+    vulnerable: vulnerableTimer > 0,
   );
 }
 

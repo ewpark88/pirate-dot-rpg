@@ -315,7 +315,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 2,
@@ -327,7 +330,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 3,
@@ -339,7 +345,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 4,
@@ -351,7 +360,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 5,
@@ -363,7 +375,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 6,
@@ -375,7 +390,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 7,
@@ -387,7 +405,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 8,
@@ -399,7 +420,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 9,
@@ -411,7 +435,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 10,
@@ -423,7 +450,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 11,
@@ -435,7 +465,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 12,
@@ -447,7 +480,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 13,
@@ -459,7 +495,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       },
       {
         "id": 14,
@@ -471,7 +510,10 @@
         "boss": false,
         "stunned": false,
         "shielded": false,
-        "tier": 0
+        "tier": 0,
+        "slowed": false,
+        "burning": false,
+        "vulnerable": false
       }
     ],
     "fleet": [
