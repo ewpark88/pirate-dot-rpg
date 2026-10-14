@@ -25,6 +25,7 @@ Future<CommandLog> pumpGame(
   Locale? locale = const Locale('en'), // null이면 settings.lang → OS 언어
   int tab = 0,
   FixedClock? clock,
+  bool keepTutorial = false,
 }) async {
   tester.view
     ..physicalSize = const Size(400, 800)
@@ -34,7 +35,8 @@ Future<CommandLog> pumpGame(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        initialGameStateProvider.overrideWithValue(state),
+        // 샘플은 모두 tutorialStep=1이다. 튜토리얼을 시험하는 테스트만 그대로 두고, 나머지는 끝난 상태로 그린다.
+        initialGameStateProvider.overrideWithValue(keepTutorial ? state : state.copyWith(clearTutorial: true)),
         commandSinkProvider.overrideWithValue(log),
         // 시계는 샘플의 저장 시각에 고정 — 순풍 남은 시간 등이 매번 같게 (복귀 팝업도 안 뜬다).
         clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),

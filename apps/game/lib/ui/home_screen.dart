@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 import 'package:pirate_dot/ui/tabs/summon_tab.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 세로 화면 하나: 위는 HUD와 전장(항상 보임), 아래 절반만 탭에 따라 바뀐다 (설계서 4.12).
 /// 탭 4개 고정: 항해(전투)·배·선원·소환 (4.9 피로 금지 규칙). 버튼은 Command만 보낸다.
@@ -64,6 +65,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
               ),
+              // 튜토리얼 중에만 자리를 차지한다 — 전장도 탭 패널도 가리지 않는다.
+              const TutorialBubble(),
               Expanded(
                 flex: _panelFlex,
                 child: IndexedStack(
@@ -84,9 +87,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onDestinationSelected: (i) => setState(() => _tab = i),
           destinations: [
             NavigationDestination(icon: const Icon(Icons.sailing), label: l10n.uiTabVoyage),
-            NavigationDestination(icon: const Icon(Icons.directions_boat), label: l10n.uiTabShip),
-            NavigationDestination(icon: const Icon(Icons.groups), label: l10n.uiTabCrew),
-            NavigationDestination(icon: const Icon(Icons.auto_awesome), label: l10n.uiTabSummon),
+            NavigationDestination(
+              icon: const TutorialSpot(id: 'tab.ship', child: Icon(Icons.directions_boat)),
+              label: l10n.uiTabShip,
+            ),
+            NavigationDestination(
+              icon: const TutorialSpot(id: 'tab.crew', child: Icon(Icons.groups)),
+              label: l10n.uiTabCrew,
+            ),
+            NavigationDestination(
+              icon: const TutorialSpot(id: 'tab.summon', child: Icon(Icons.auto_awesome)),
+              label: l10n.uiTabSummon,
+            ),
           ],
         ),
       ),

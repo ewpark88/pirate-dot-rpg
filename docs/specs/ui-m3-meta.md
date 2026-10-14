@@ -52,6 +52,12 @@
 - 단계 넘김 조건(대포 Lv3, 보스 일부러 실패, 강화 2번 후 도전, 소환 결과 닫기, 일괄 합치기 1번)은 **코어가 판정**하고 상태를 바꾼다. UI는 단계만 보고 그린다. 예외: ‘소환 결과 닫기’는 UI 동작이라 `TutorialAck` 같은 명령이 필요(요청).
 - 튜토리얼 중에는 광고 제안을 숨긴다(4.6). 운영자 패널에 ‘튜토리얼 단계 N부터’(요청: `OpSetTutorial`).
 
+### ⑦ 소환 결과 연출 (4.12 팝업 3가지 중 하나, S1 추가 2026-10-14)
+- `Summon` 직후 엔진이 내는 결과를 카드 뒤집기 화면으로 보인다. 1회 = 카드 1장, 10회 = 2줄×5장. 탭하면 한 장씩(또는 ‘모두 뒤집기’), 다 뒤집으면 닫기.
+- 등급 색 테두리·별(`rarities.json`), 전설은 금빛, 10연의 영웅 이상 확정 카드는 강조. 새 선원은 ‘NEW’.
+- 결과는 상태로 받아야 한다(화면은 GameState만 구독) → 요청: `GameState.lastSummon: List<({crewId, rarity, isNew})>?`(세이브 밖, 닫으면 지움) 또는 결과 확인 명령 `AckSummonResult()`.
+- 닫을 때 튜토리얼 4단계면 `TutorialAck(4)` (지금은 10회 소환 직후에 보내는 임시 처리).
+
 ## 수용 기준 (Given / When / Then) — 각각 위젯 테스트
 1. Given 경제 `nextGoal`이 (범선, 남은 스테이지 4)를 주는 상태 Then 목표 막대 문구와 막대가 보인다.
 2. Given 상자가 떠 있는 상태 Then 전장 위 탭 영역이 있고 누르면 `TapChest`. 상자가 없으면 탭 영역 없음.
@@ -63,6 +69,7 @@
 8. Given 튜토리얼 2단계 Then 말풍선 문구와 손가락이 배 탭·대포 버튼을 가리킨다. ‘건너뛰기’ → 튜토리얼 건너뛰기 명령.
 9. Given 튜토리얼 중 Then 광고 제안 자리가 숨는다.
 10. 영어 골든 3장: 목표 막대+상자+순풍 HUD, 퀘스트·출석 시트, 튜토리얼 2단계.
+11. ⑦ Given 10연 결과(영웅 1장 포함) Then 카드 10장이 뒷면, ‘모두 뒤집기’ → 등급 테두리·영웅 강조, 닫기 → 결과 확인 명령(+ 튜토리얼 4단계면 TutorialAck(4)). 골든 1장.
 
 ## 문구 (ko / en) — 확정은 구현 때, 키 목록
 `uiGoalShipTier`·`uiGoalPartMilestone`·`uiGoalCollection`·`uiGoalRebirth`, `uiChestTap`, `uiTailwind`, `uiQuestTitle`·`uiQuestKill`·`uiQuestUpgrade`·`uiQuestSummon`·`uiQuestAd`·`uiQuestClaim`·`uiQuestClaimed`,

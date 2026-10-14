@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 격자 한 줄에 선원 수.
@@ -62,10 +63,13 @@ class CrewTab extends ConsumerWidget {
                 ],
               ),
             ),
-            FilledButton(
-              key: const Key('crew.mergeAll'),
-              onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
-              child: Text(l10n.uiCrewMergeAll),
+            TutorialSpot(
+              id: 'crew.mergeAll',
+              child: FilledButton(
+                key: const Key('crew.mergeAll'),
+                onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                child: Text(l10n.uiCrewMergeAll),
+              ),
             ),
           ],
         ),

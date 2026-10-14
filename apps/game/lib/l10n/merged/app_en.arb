@@ -143,5 +143,13 @@
   "uiGoalCollection": "Collection bonus in {count} crew",
   "uiGoalRebirth": "Rebirth unlocks in {count} stages",
   "uiCollectionBonus": "Attack +{percent}",
-  "uiCollectionNext": "Next bonus in {count}"
+  "uiCollectionNext": "Next bonus in {count}",
+  "uiTutStep1": "Sea monsters incoming! Your ship fights on its own.",
+  "uiTutStep2": "Try upgrading the Cannon.",
+  "uiTutStep3": "The boss is tough. Upgrade your ship a bit more?",
+  "uiTutStep4": "Use gems to summon crew.",
+  "uiTutStep5": "Merge cards of the same crew to make them stronger.",
+  "uiTutStep6": "Your ship fights by itself now. Gold piles up even when the app is closed!",
+  "uiTutSkip": "Skip",
+  "uiTutOk": "Got it"
 }
