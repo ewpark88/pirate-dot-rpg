@@ -47,10 +47,15 @@
 ### M3 콘텐츠 (진행 중 — M2 관문 전이지만 엔진·테이블 작업은 병행)
 - [x] 전투: 스킬 8계열 자동 시전·전설 화면 스킬·지원 스킬, 계열별 궁극기(밀어내기·기절·회복), 등급 사다리, 수중 장판, 적 역할 6종·해역별 적 27종 (`docs/specs/battle-m3-skills.md`)
 - [x] 해역 보스 패턴(25·50스테이지), 300 이후 등급 테두리 (`battle-m3-bosses`), 튜토리얼 3단계 보스
-- [ ] 선원별 전설 고유 스킬 40종(설계서 4.10) — 다음 battle 스펙
+- [x] 선원별 전설 고유 능력·신화 강화 40명 (`battle-m3-legend`, 효과 부품 9개)
 - [~] 보물상자·순풍·퀘스트·출석·도감·튜토리얼·소환 결과: UI 완료(가짜 provider), 경제 규칙 S2 진행 중 / 환생은 그다음
 
-### M4 아트·광고 · M5 AOS 출시 · M6 iOS·랭킹
+### M4 아트·광고 (일부 선행)
+- [x] 도트 팩 v0.2 적용: 에셋 62개 + LICENSES.json(OWN), SpriteBank(배·적·보스·발사체·fx·코인), 선원 초상
+- [~] 소리: AudioPort 계약·렌더 연결 진행, **CC0 음원 고르기는 사람**
+- [ ] AdMob 보상형 + UMP, Crashlytics·Analytics, 개인정보처리방침·app-ads.txt (platform 레인 — 세션 필요)
+
+### M5 AOS 출시 · M6 iOS·랭킹
 - 설계서 11장 DoD 그대로.
 
 ## 레인 상태
@@ -100,7 +105,8 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
   M2 관문 안내 `docs/DEVICE_TEST.md`, profile APK 빌드 확인. LANES: render가 art 경로(assets/, tools/art/) 함께 소유(같은 S3 세션).
 - 사용자 결정: 증표 조건 확대, 성장 수치 목표에 맞춤, 옥토 카드 나눠 지급(보스 4번마다), 스테이지 40 = 경과 시간 기준(재결정), 상자 광고 골드/젬 선택, 퀘스트마다 젬 10, 출석 20·20·30·30·40·50 + 영웅.
 - 발견: 보호막 피해 0이면 깨는 계열 없는 편성이 150에서 영원히 막힘(sim) → 25% 부분 피해. 보스 HP 1e21대에서 테스트 피해 100은 double 정밀도 밖.
-- 다음 할 일: 사람 기기 확인, 처치 퀘스트 연결, 전설 고유 스킬, 아트 팩(S3) 머지 시 pubspec assets
+- 추가: 전설 고유 능력 40명(19aa020), 도트 팩 v0.2 + pubspec assets(c3e96fa), AudioPort(5b8ef89), boss HP 16→12(49de15b — 계속 접속 sim 7.2 지표 전부 OK).
+- 다음 할 일: 사람 기기 확인, 처치 퀘스트 연결(S2 addQuestProgress 대기), 스테이지 40 하루 일정 판정(S2), platform 레인(광고·분석) 세션
 
 ### 2026-10-14 · S1 · 저장·복원, 전투 M3, 레인 지휘
 - 한 일: 저장·복원(FileSaveStore·자동 저장·pause/resume으로 savedAt 보정), 운영자 패널·ui 탭·렌더 perf 머지, 세이브 v2(ADR-0007).
