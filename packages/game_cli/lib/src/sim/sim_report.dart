@@ -80,7 +80,7 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('wallMaxMin', '가장 긴 벽(파밍) 구간', (r) => _min(r.wallMax), '분', within: Duration.zero),
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
-    c('firstRarityUpMin', '첫 승급(등급 상승)', (r) => _min(r.firstRarityUp), '분'),
+    c('starterPromotionMin', '옥토 첫 승급(운과 무관)', (r) => _min(r.starterPromotion), '분'),
     c('firstLegendOwnedDays', '첫 전설 보유', (r) => _days(r.firstLegendOwned), '일'),
     c('firstLegendPromotedDays', '승급으로 만든 첫 전설', (r) => _days(r.firstLegendPromoted), '일'),
     c('firstMythicDays', '첫 신화', (r) => _days(r.firstMythic), '일'),
@@ -118,6 +118,7 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
     ..writeln()
     ..writeln('| 참고 | 값 |')
     ..writeln('| --- | --- |')
+    ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
     ..writeln(
       '| 한 파 소요(처음 10분 / 전체) | ${_fmt(m((r) => r.waveSecFirst10Min), '초')} / ${_fmt(m((r) => r.waveSecAll), '초')} |',
@@ -150,6 +151,7 @@ Map<String, Object?> reportJson(List<SimResult> rs, List<SimCheck> checks) {
           'waveSecFirst10Min': r.waveSecFirst10Min,
           'waveSecAll': r.waveSecAll,
           'firstRarityUpMin': _min(r.firstRarityUp),
+          'starterPromotionMin': _min(r.starterPromotion),
           'firstLegendOwnedDays': _days(r.firstLegendOwned),
           'firstLegendPromotedDays': _days(r.firstLegendPromoted),
           'firstMythicDays': _days(r.firstMythic),

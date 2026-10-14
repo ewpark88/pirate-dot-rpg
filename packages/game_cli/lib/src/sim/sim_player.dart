@@ -15,6 +15,9 @@ class SimResult {
 
   /// 이미 보유한 선원의 등급이 처음 오른 시점 (승급·높은 등급 카드 점프 모두, 설계서 4.3.3 ‘첫 승급’).
   Duration? firstRarityUp;
+
+  /// 튜토리얼 선원(`bossCards.starterCrew`, 옥토)의 첫 승급 — 운과 상관없는 첫 승급(설계서 4.3.3).
+  Duration? starterPromotion;
   Duration? firstLegendOwned;
   Duration? firstLegendPromoted;
   Duration? firstMythic;
@@ -183,7 +186,8 @@ class SimPlayer {
           if (since != null && _elapsed - since > result.wallMax) result.wallMax = _elapsed - since;
           _wallSince = null;
           _lastWave = _elapsed;
-        case CrewPromoted(:final rarity):
+        case CrewPromoted(:final crewId, :final rarity):
+          if (crewId == t.growth.bossCards.starterCrew) result.starterPromotion ??= _elapsed;
           if (rarity == 'legend') result.firstLegendPromoted ??= _elapsed;
           if (rarity == 'mythic') result.firstMythic ??= _elapsed;
         default:

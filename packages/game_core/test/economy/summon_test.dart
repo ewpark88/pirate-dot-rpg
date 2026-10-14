@@ -116,6 +116,23 @@ void main() {
       expect(c.cards, 2);
     });
 
+    test('결정 A: 다음 승급 장수를 넘는 카드는 경험치는 주고 장수 대신 증표', () {
+      final need = t.growth.promotions.first.cards;
+      final s0 = h.newGame().copyWith(crews: {'octo': CrewState(level: 15, exp: 2, cards: need)});
+      final s = receiveCard(s0, t, 'octo', 'common');
+      expect(s.crews['octo']!.cards, need);
+      expect(s.crews['octo']!.exp, 2 + t.growth.cardExp['common']!);
+      expect(s.tokens, t.growth.tokenPerSurplusCard);
+    });
+
+    test('결정 A: 신화(다음 승급 없음)는 경험치만, 장수는 모두 증표', () {
+      final s0 = h.newGame().copyWith(crews: {'octo': const CrewState(level: 62)});
+      final s = receiveCard(s0, t, 'octo', 'legend');
+      expect(s.crews['octo']!.cards, 0);
+      expect(s.crews['octo']!.exp, t.growth.cardExp['legend']);
+      expect(s.tokens, t.growth.tokenPerSurplusCard);
+    });
+
     test('기준 11: 신화 Lv75 선원의 카드는 증표가 된다', () {
       final s0 = h.newGame().copyWith(crews: {'octo': CrewState(level: t.growth.maxLevel)});
       final s = receiveCard(s0, t, 'octo', 'hero');

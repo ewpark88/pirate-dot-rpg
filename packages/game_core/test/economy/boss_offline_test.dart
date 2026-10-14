@@ -26,25 +26,32 @@ void main() {
   );
 
   group('보스 카드 grantBossCards', () {
-    test('첫 회차 처음 starterCount장(스테이지 1~7, 14장)은 출전과 상관없이 옥토에게 일반 이상 2장씩', () {
-      // 신화 Lv75 옥토 → 받은 카드가 모두 증표로 바뀌어 장수를 정확히 센다.
+    test('첫 회차 시작 구간: 첫 보스부터 starterEvery번째 보스마다 옥토에게 일반 카드 1장 (사용자 결정 C)', () {
+      final b = t.growth.bossCards;
       var s = starter().copyWith(
         crews: {
-          'octo': CrewState(level: t.growth.maxLevel),
-          'turtle': const CrewState(level: 5),
+          'octo': const CrewState(),
+          'turtle': CrewState(level: t.growth.maxLevel),
         },
       );
-      final b = t.growth.bossCards;
-      for (var stage = 1; stage * b.early <= b.starterCount; stage++) {
+      for (var stage = 1; stage <= b.starterCount * b.starterEvery; stage++) {
         s = grantBossCards(atStage(s, stage), h.ctx, ['turtle']);
       }
-      expect(s.tokens, b.starterCount * t.growth.tokenPerSurplusCard);
-      expect(s.crews['turtle']!.cards, 0);
-      expect(s.crews['turtle']!.level, 5);
+      final octo = s.crews['octo']!;
+      expect(octo.exp, b.starterCount * t.growth.cardExp['common']!);
+      expect(octo.level, 1); // 일반 고정 — 점프 없음
+      // 승급 카드(3장)를 넘는 옥토 카드는 증표 (사용자 결정 A), 사이 보스 카드는 신화 Lv75 거북이에게 → 모두 증표
+      final need = t.growth.promotions.first.cards;
+      expect(octo.cards, need);
+      var between = 0;
+      for (var stage = 1; stage <= b.starterCount * b.starterEvery; stage++) {
+        if ((stage - 1) % b.starterEvery != 0) between += b.countAt(stage);
+      }
+      expect(s.tokens, (b.starterCount - need + between) * t.growth.tokenPerSurplusCard);
     });
 
-    test('스테이지 8~10은 2장, 출전 선원에게', () {
-      final s0 = atStage(starter(), 8).copyWith(
+    test('환생 뒤 스테이지 1~10은 2장, 출전 선원에게', () {
+      final s0 = atStage(starter(), 8, rebirths: 1).copyWith(
         crews: {
           'octo': const CrewState(level: 5),
           'turtle': CrewState(level: t.growth.maxLevel),
@@ -59,7 +66,11 @@ void main() {
       for (final (stage, n) in [(11, 1), (150, 2), (300, 3)]) {
         final hs = EconomyHarness();
         // 신화 선원 → 카드가 모두 증표로 바뀌어 장수를 정확히 셀 수 있다.
-        final s0 = atStage(hs.newGame(), stage).copyWith(crews: {'octo': CrewState(level: t.growth.maxLevel)});
+        final s0 = atStage(
+          hs.newGame(),
+          stage,
+          rebirths: 1,
+        ).copyWith(crews: {'octo': CrewState(level: t.growth.maxLevel)});
         expect(grantBossCards(s0, hs.ctx, ['octo']).tokens, n * t.growth.tokenPerSurplusCard, reason: 'stage $stage');
       }
     });
@@ -69,8 +80,8 @@ void main() {
       expect(s.crews['octo']!.cards, 0);
     });
 
-    test('출전이 비면 아무것도 주지 않는다 (스테이지 11 이후)', () {
-      final s0 = atStage(starter(), 20);
+    test('출전이 비면 시작 카드 외에는 주지 않는다', () {
+      final s0 = atStage(starter(), 20, rebirths: 1);
       expect(totalCards(grantBossCards(s0, h.ctx, const <String>[])), 0);
     });
   });
