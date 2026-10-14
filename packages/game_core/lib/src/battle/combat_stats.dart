@@ -1,5 +1,6 @@
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
+import 'package:game_core/src/economy/rebirth.dart' show rebirthBonus;
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
@@ -23,6 +24,8 @@ class CombatStats {
     bool active(DateTime? until) => now != null && until != null && until.isAfter(now);
     JsonReader reward(String id) => t.ads.placements.firstWhere((p) => p.id == id).reward;
     final ship = ShipStats.of(t.shipParts, s.ship);
+    // 환생 조각 보너스: 피해·골드의 % 합에 더한다 (설계서 4.5·4.8).
+    final rebirth = rebirthBonus(s, t);
     final tier = t.shipTiers.tierAt(s.progress.stage);
     return CombatStats._(
       attack: ship.attack,
@@ -31,9 +34,11 @@ class CombatStats {
       critChance: ship.critChance,
       critMultiplier: ship.critMultiplier,
       goldMultiplier:
-          ship.goldMultiplier * (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
+          ship.goldMultiplier *
+          (1 + rebirth) *
+          (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
       tierDamage: 1 + tier.damageBonus,
-      bonus: active(s.buffs.bossSupportUntil) ? reward('bossSupport').number('damageBonus') : 0,
+      bonus: rebirth + (active(s.buffs.bossSupportUntil) ? reward('bossSupport').number('damageBonus') : 0),
       slots: tier.slots,
     );
   }

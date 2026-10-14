@@ -10,6 +10,7 @@ export 'src/economy/daily.dart'
     show AttendanceView, QuestView, addQuestProgress, attendance, canClaimDaily, dailyQuests;
 export 'src/economy/meta_views.dart' show CollectionBonus, GoalKind, NextGoal, collectionBonus, nextGoal;
 export 'src/economy/offline.dart';
+export 'src/economy/rebirth.dart' show RebirthPreview, piecesFor, rebirthBonus, rebirthPreview;
 export 'src/economy/ship_stats.dart';
 export 'src/engine/core_engine.dart' show CoreEngine, defaultSystems;
 export 'src/ports/xorshift_rng.dart';
