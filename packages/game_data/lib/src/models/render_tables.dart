@@ -1,21 +1,94 @@
 import 'package:game_data/src/models/common.dart';
 
+/// `#RRGGBB` → 불투명 ARGB 정수 (dart:ui 없이 색을 넘긴다).
+int parseArgb(String hex, String path) {
+  final m = RegExp(r'^#([0-9A-Fa-f]{6})$').firstMatch(hex);
+  if (m == null) throw TableFormatException(path, '#RRGGBB 색이어야 하는데 $hex');
+  return 0xFF000000 | int.parse(m.group(1)!, radix: 16);
+}
+
+/// 흔들림 한 종류: 진폭(px)과 길이(ms).
+class ShakeSpec {
+  ShakeSpec.fromJson(JsonReader j) : px = j.number('px'), ms = j.number('ms');
+
+  final double px;
+  final double ms;
+}
+
+/// 데미지 숫자 모양 (일반/치명/범위 합산).
+class DamageNumberSpec {
+  DamageNumberSpec.fromJson(JsonReader j)
+    : normalScale = j.number('normalScale'),
+      critScale = j.number('critScale'),
+      normalColor = parseArgb(j.str('normalColor'), '${j.path}.normalColor'),
+      critColor = parseArgb(j.str('critColor'), '${j.path}.critColor'),
+      sumColor = parseArgb(j.str('sumColor'), '${j.path}.sumColor'),
+      lifeMs = j.number('lifeMs'),
+      risePx = j.number('risePx'),
+      critBouncePx = j.number('critBouncePx');
+
+  final double normalScale;
+  final double critScale;
+  final int normalColor;
+  final int critColor;
+  final int sumColor;
+  final double lifeMs;
+  final double risePx;
+  final double critBouncePx;
+}
+
 /// 타격감 수치(juice.json). 렌더 레인이 읽고, 운영자 모드에서 슬라이더로 조절한다.
 class JuiceTable {
   JuiceTable.fromJson(this.raw)
     : maxEffects = raw.obj('limits').integer('effects'),
       maxDamageNumbers = raw.obj('limits').integer('damageNumbers'),
-      hitStopMs = raw.numberMap('hitStopMs');
+      maxProjectiles = raw.obj('limits').integer('projectiles'),
+      maxCoins = raw.obj('limits').integer('coins'),
+      hitStopMs = raw.numberMap('hitStopMs'),
+      shake = {for (final k in raw.obj('shake').raw.keys) k: ShakeSpec.fromJson(raw.obj('shake').obj(k))},
+      flashFrames = raw.integer('flashFrames'),
+      knockbackPx = raw.numberMap('knockbackPx'),
+      knockbackMs = raw.number('knockbackMs'),
+      damageNumber = DamageNumberSpec.fromJson(raw.obj('damageNumber')),
+      bossSlowMoMs = raw.obj('bossKill').number('slowMoMs'),
+      bossSlowMoRate = raw.obj('bossKill').number('slowMoRate'),
+      bossFlash = raw.obj('bossKill').boolean('flash'),
+      coinCount = raw.obj('kill').integer('coinCount'),
+      coinFlyMs = raw.obj('kill').number('coinFlyMs'),
+      lookaheadTicks = raw.obj('replay').integer('lookaheadTicks'),
+      powerSaveFps = raw.obj('powerSave').integer('fps');
 
   final JsonReader raw;
   final int maxEffects;
   final int maxDamageNumbers;
+  final int maxProjectiles;
+  final int maxCoins;
   final Map<String, double> hitStopMs;
+  final Map<String, ShakeSpec> shake;
+  final int flashFrames;
+  final Map<String, double> knockbackPx;
+  final double knockbackMs;
+  final DamageNumberSpec damageNumber;
+  final double bossSlowMoMs;
+  final double bossSlowMoRate;
+  final bool bossFlash;
+  final int coinCount;
+  final double coinFlyMs;
+
+  /// 표시 시각을 최신 틱보다 늦추는 틱 수 (발사체 비행 연출용).
+  final int lookaheadTicks;
+  final int powerSaveFps;
 
   List<String> validate() {
     final e = <String>[];
     expect(e, that: maxEffects > 0 && maxEffects <= 64, message: 'juice: limits.effects는 1~64');
-    expect(e, that: maxDamageNumbers > 0, message: 'juice: limits.damageNumbers > 0');
+    expect(e, that: maxDamageNumbers > 1, message: 'juice: limits.damageNumbers > 1 (넘치면 둘을 합친다)');
+    expect(e, that: maxProjectiles > 0 && maxCoins > 0, message: 'juice: limits.projectiles·coins > 0');
+    for (final k in ['aoe', 'ultimate', 'bossKill']) {
+      expect(e, that: shake.containsKey(k), message: 'juice: shake.$k 없음');
+    }
+    expect(e, that: lookaheadTicks >= 1, message: 'juice: replay.lookaheadTicks >= 1');
+    expect(e, that: bossSlowMoRate > 0 && bossSlowMoRate <= 1, message: 'juice: bossKill.slowMoRate는 0~1');
     return e;
   }
 }
@@ -33,16 +106,73 @@ class FxSheetDef {
   final int frames;
 }
 
+/// 발사체 비행 모양.
+enum ProjectilePath { line, arc, skip, drop }
+
+/// 계열 하나의 발사체 모양 (fx_map.json projectiles).
+class ProjectileStyle {
+  ProjectileStyle.fromJson(JsonReader j)
+    : color = parseArgb(j.str('color'), '${j.path}.color'),
+      size = j.number('size'),
+      path = ProjectilePath.values.byName(j.str('path')),
+      arcPx = j.numberOr('arcPx', 0),
+      burst = j.intOrNull('burst') ?? 1,
+      burstGapMs = j.numberOr('burstGapMs', 0);
+
+  final int color;
+  final double size;
+  final ProjectilePath path;
+
+  /// 포물선·낙하 높이(px).
+  final double arcPx;
+
+  /// 한 대상에 쏘는 연사 수와 간격.
+  final int burst;
+  final double burstGapMs;
+}
+
 /// 게임 이벤트 → 이펙트·효과음 (fx_map.json).
 class FxMapTable {
   FxMapTable.fromJson(JsonReader j)
     : events = {
         for (final k in j.obj('events').raw.keys) k: j.obj('events').obj(k),
       },
-      sheets = j.objs('fxSheets').map(FxSheetDef.fromJson).toList();
+      sheets = j.objs('fxSheets').map(FxSheetDef.fromJson).toList(),
+      projectiles = {
+        for (final k in j.obj('projectiles').raw.keys) k: ProjectileStyle.fromJson(j.obj('projectiles').obj(k)),
+      },
+      projectileAliases = {
+        for (final e in j.obj('projectileAliases').raw.entries) e.key: e.value as String,
+      },
+      projectileDefault = j.str('projectileDefault'),
+      sheetColors = {
+        for (final e in j.obj('sheetColors').raw.entries) e.key: parseArgb(e.value as String, 'sheetColors.${e.key}'),
+      },
+      sheetFrameMs = j.number('sheetFrameMs');
 
   final Map<String, JsonReader> events;
   final List<FxSheetDef> sheets;
+  final Map<String, ProjectileStyle> projectiles;
+  final Map<String, String> projectileAliases;
+  final String projectileDefault;
+
+  /// 아트가 없을 때 시트를 대신 그리는 단색.
+  final Map<String, int> sheetColors;
+  final double sheetFrameMs;
+
+  /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
+  ProjectileStyle projectileFor(String family) =>
+      projectiles[projectileAliases[family] ?? family] ?? projectiles[projectileDefault]!;
+
+  FxSheetDef? sheet(String id) {
+    for (final s in sheets) {
+      if (s.id == id) return s;
+    }
+    return null;
+  }
+
+  /// 이벤트 키(`damage`, `kill` …)의 이펙트 시트 id.
+  String? fxFor(String event) => events[event]?.strOrNull('fx');
 
   List<String> validate() {
     final e = <String>[];
@@ -50,6 +180,13 @@ class FxMapTable {
     for (final ev in events.entries) {
       final fx = ev.value.strOrNull('fx');
       expect(e, that: fx == null || ids.contains(fx), message: 'fx_map: ${ev.key}의 fx $fx가 fxSheets에 없음');
+    }
+    expect(e, that: projectiles.containsKey(projectileDefault), message: 'fx_map: projectileDefault가 projectiles에 없음');
+    for (final a in projectileAliases.entries) {
+      expect(e, that: projectiles.containsKey(a.value), message: 'fx_map: 별칭 ${a.key} → ${a.value}가 projectiles에 없음');
+    }
+    for (final id in ids) {
+      expect(e, that: sheetColors.containsKey(id), message: 'fx_map: sheetColors에 $id 없음');
     }
     return e;
   }
