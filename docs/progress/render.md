@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기, 최적화 후보 기록) · `plans/active/render-audio.md`(음원·어댑터 대기) |
-| 상태 | '큰 순간' 완료(44783d4, S1 머지 대기). 최적화 조사 결과 render-perf 계획에 기록(코드 변경 없음) |
-| 막힌 것 | 승급 그림(아트, M4) · CC0 음원(사람) · 실기기 측정(M2) |
+| 현재 계획 | `plans/active/render-balance-crews.md`(스펙 초안) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원·어댑터 대기) |
+| 상태 | 새 작업: `game_cli balance crews`(main 8f6bf78에서 넘겨받음) 스펙 초안 |
+| 막힌 것 | balance 스펙 승인·Q1(배 보호분 측정) · 승급 그림(아트) · 음원(사람) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · balance crews 스펙 초안
+- 한 일: main 8f6bf78 머지(LANES: balance.dart·lib/src/balance/·test/balance/를 render로). 설계서 4.8·운영자 명령·엔진 경로 조사 →
+  `docs/specs/render-balance-crews.md` 초안: 단단한 스테이지(2001, 일반 보스)에서 Damage 합, A 무리전 12마리 60초, B 보스 제한 시간 피해 ×(60/제한),
+  점수 (A+B)/2, 레벨 15~75 중앙값 ±10%, 지원 환산(파트너 증가분 + κ×배 보호분), 같은 계열 2명 이하 6명 조합 N개 상위 1% ≤ 중앙값×1.3, 마크다운+JSON, 종료 코드.
+- 발견: 무적이면 엔진이 `ShipDamaged`를 안 낸다 → 배 보호분 측정 방법을 Q1로 S1에 질문.
 
 ### 2026-10-14 · S3 · 최적화 조사
 - 한 일: 골든 2장 승인 → 44783d4(머지 해시 S1에 전달). 임시 측정(커밋 안 함): 부하 장면 60초·실제 엔진 120초에서 풀 상한 도달 0%,
