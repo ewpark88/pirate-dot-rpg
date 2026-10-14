@@ -1,7 +1,7 @@
 # 스펙: 전투 기록 재생 + 타격감
 
 - 상태: 승인됨 (2026-10-14, S1 — 사용자가 S1에 위임했다는 S1 전달) · 레인: render(S3) · 설계서 절: 4.4 타격감 규칙, 10장 아트 규격
-- 계획: `docs/plans/active/render-battle-replay.md`
+- 계획: `docs/plans/done/render-battle-replay.md`
 
 ## 목적
 전투 기록(`RecordedTick` JSONL)만 보고 Flame 전장이 “계속 터지는” 장면을 그린다. 엔진을 기다리지 않는다.

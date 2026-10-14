@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/active/render-battle-replay.md` · 스펙 `docs/specs/render-battle-replay.md` (승인됨, S1 위임) |
+| 현재 계획 | `docs/plans/done/render-battle-replay.md` · 스펙 `docs/specs/render-battle-replay.md` (승인됨, S1 위임) |
 | 상태 | M2 1단계(전투 기록 재생) 완료 — 골든 승인·커밋. 다음: render-perf 스펙 |
 | 막힌 것 | 없음 |
 
