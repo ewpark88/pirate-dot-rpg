@@ -213,5 +213,13 @@
   "uiOk": "확인",
   "uiSettingsPrivacy": "개인정보 옵션",
   "uiRebirthDoneTitle": "보물지도를 펼쳤어요!",
-  "uiRebirthDoneGain": "지도 조각 +{count} · 피해·골드 +{percent}"
+  "uiRebirthDoneGain": "지도 조각 +{count} · 피해·골드 +{percent}",
+  "uiRegionProgress": "{stage}/{total}",
+  "uiRegionBossIn": "해역 보스까지 스테이지 {count}",
+  "uiRegionBossNow": "해역 보스 스테이지!",
+  "uiNextRegion": "다음 해역: {region}",
+  "uiOfflineRate": "오프라인 골드 시간당 ~{amount} · 최대 {hours}시간",
+  "uiTailwindStatus": "순풍 {time} ×{mult}",
+  "uiTailwindOff": "순풍 없음",
+  "uiDailyTooltip": "퀘스트·출석"
 }

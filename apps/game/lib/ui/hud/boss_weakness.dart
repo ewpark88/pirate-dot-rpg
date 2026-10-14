@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -38,23 +39,38 @@ class BossWeakness extends ConsumerWidget {
         children: [
           Text(tableText(l10n, boss.nameKey), style: small?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 2),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.uiBossWeak, style: small),
-              for (final f in boss.weakFamilies) ...[
-                const SizedBox(width: 4),
-                Chip(
-                  visualDensity: VisualDensity.compact,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: EdgeInsets.zero,
-                  label: Text(tableText(l10n, tables.skills.byId(f).nameKey)),
-                ),
-              ],
-            ],
-          ),
+          WeakChips(boss: boss, labelStyle: small),
         ],
       ),
+    );
+  }
+}
+
+/// ‘약점’ + 계열 칩들 (보스전 HUD와 항해 탭 해역 보스 미리보기가 같이 쓴다).
+class WeakChips extends ConsumerWidget {
+  const WeakChips({required this.boss, this.labelStyle, super.key});
+
+  final BossDef boss;
+  final TextStyle? labelStyle;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final tables = ref.watch(tablesProvider);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(l10n.uiBossWeak, style: labelStyle),
+        for (final f in boss.weakFamilies) ...[
+          const SizedBox(width: 4),
+          Chip(
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: EdgeInsets.zero,
+            label: Text(tableText(l10n, tables.skills.byId(f).nameKey)),
+          ),
+        ],
+      ],
     );
   }
 }

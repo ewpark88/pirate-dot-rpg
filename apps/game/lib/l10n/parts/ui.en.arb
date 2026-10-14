@@ -94,5 +94,13 @@
   "uiOk": "OK",
   "uiSettingsPrivacy": "Privacy Options",
   "uiRebirthDoneTitle": "The map is open!",
-  "uiRebirthDoneGain": "+{count} map pieces · Damage·Gold +{percent}"
+  "uiRebirthDoneGain": "+{count} map pieces · Damage·Gold +{percent}",
+  "uiRegionProgress": "{stage}/{total}",
+  "uiRegionBossIn": "Region boss in {count} stages",
+  "uiRegionBossNow": "Region boss stage!",
+  "uiNextRegion": "Next: {region}",
+  "uiOfflineRate": "Offline gold ~{amount}/h · up to {hours}h",
+  "uiTailwindStatus": "Tailwind {time} ×{mult}",
+  "uiTailwindOff": "No tailwind",
+  "uiDailyTooltip": "Quests & Attendance"
 }

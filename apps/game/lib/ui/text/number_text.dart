@@ -20,3 +20,12 @@ String partEffectText(AppLocalizations l10n, ShipPartDef def, BigNum effect) => 
   'critChance' => percentText(l10n, effect.toDouble()),
   _ => effect.format(),
 };
+
+/// 남은 시간: 1시간 이상은 h:mm, 그 아래는 mm:ss (언어와 무관한 숫자 표기).
+String remainingText(Duration d) {
+  String two(int n) => n.toString().padLeft(2, '0');
+  final minutes = d.inMinutes % Duration.minutesPerHour;
+  return d.inHours > 0
+      ? '${d.inHours}:${two(minutes)}'
+      : '${two(d.inMinutes)}:${two(d.inSeconds % Duration.secondsPerMinute)}';
+}

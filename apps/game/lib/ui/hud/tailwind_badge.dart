@@ -66,7 +66,7 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
             const Icon(Icons.sailing, color: Colors.white, size: 16),
             if (active) ...[
               const SizedBox(width: 4),
-              Text(_remaining(left), style: const TextStyle(color: Colors.white)),
+              Text(remainingText(left), style: const TextStyle(color: Colors.white)),
               const SizedBox(width: 4),
               Text(
                 l10n.uiEffectMultiplier(shortDecimal(multiplier)),
@@ -78,13 +78,4 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
       ),
     );
   }
-}
-
-/// 1시간 이상은 h:mm, 그 아래는 mm:ss (언어와 무관한 숫자 표기).
-String _remaining(Duration d) {
-  String two(int n) => n.toString().padLeft(2, '0');
-  final minutes = d.inMinutes % Duration.minutesPerHour;
-  return d.inHours > 0
-      ? '${d.inHours}:${two(minutes)}'
-      : '${two(d.inMinutes)}:${two(d.inSeconds % Duration.secondsPerMinute)}';
 }
