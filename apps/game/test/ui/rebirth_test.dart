@@ -29,10 +29,13 @@ const _locked = RebirthPreview(
   bonusPerPiece: 0.05,
 );
 
+/// 항해 탭이 길어 환생 카드가 첫 화면 아래에 있다 → 세로로 긴 화면.
+const _tall = Size(400, 1100);
+
 /// 특정 화면 상태를 만들려고 provider를 가짜로 덮는다. 항해 탭(0)이 기본.
 Future<CommandLog> _pump(WidgetTester tester, RebirthPreview? preview, {GameState? state}) async {
   tester.view
-    ..physicalSize = const Size(400, 800)
+    ..physicalSize = _tall
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final s = state ?? loadFixture('stage37_midgame');
@@ -74,6 +77,8 @@ void main() {
 
   testWidgets('기준 3: 확인 창 3줄 → 펼치기 → Rebirth', (tester) async {
     final log = await _pump(tester, _available);
+    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
     expect(find.text('Reset: stage, gold, ship upgrades'), findsOneWidget);
@@ -86,6 +91,8 @@ void main() {
 
   testWidgets('기준 3: 취소 → 명령 없음', (tester) async {
     final log = await _pump(tester, _available);
+    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('rebirth.cancel')));
@@ -94,7 +101,7 @@ void main() {
   });
 
   testWidgets('기본값은 경제 rebirthPreview — 샘플(스테이지 37)은 잠김, 최고 스테이지 표시', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'));
+    await pumpGame(tester, loadFixture('stage37_midgame'), size: _tall);
     expect(find.byKey(const Key('rebirth.card')), findsOneWidget);
     expect(find.text('Rebirth unlocks at stage 40'), findsOneWidget);
     expect(find.text('Best stage 41'), findsOneWidget);
