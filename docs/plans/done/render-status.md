@@ -7,7 +7,7 @@
 - [x] 1. fx_map `status` + 모델
 - [x] 2. 테스트 먼저: 수용 기준 1~4
 - [x] 3. EnemyPose 상태 필드, 그리기(색조 필터·불꽃·화살표, 머리 위 한 줄 배치)
-- [ ] 4. 골든 `battle_status.png` S1 확인 대기 → 커밋
+- [x] 4. 골든 `battle_status.png` (S1 승인) → 커밋
 
 ## 검증 방법
 `tool\check.bat --full`, `flutter test apps/game/test/render`.
