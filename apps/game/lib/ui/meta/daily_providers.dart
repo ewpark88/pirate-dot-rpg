@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:game_core/economy_views.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
