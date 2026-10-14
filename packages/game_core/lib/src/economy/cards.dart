@@ -1,8 +1,10 @@
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
+import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/state_parts.dart';
+import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
 // 소환 비용·승급 판정·카드 받기 (설계서 4.3.1, 4.3.3). UI가 버튼 상태에 그대로 쓴다.
@@ -74,4 +76,33 @@ GameState receiveCard(GameState state, GameTables t, String crewId, String rarit
       crewId: crew.copyWith(exp: crew.exp + (t.growth.cardExp[rarity] ?? 0), cards: crew.cards + 1),
     },
   );
+}
+
+/// 등급 확률표 [rates]로 한 번 굴린다 (보스·오프라인 드롭).
+String rollRarity(Map<String, double> rates, Rng rng) {
+  var u = rng.nextDouble();
+  for (final e in rates.entries) {
+    u -= e.value;
+    if (u < 0) return e.key;
+  }
+  return rates.keys.last;
+}
+
+/// 보스 처치 카드 (설계서 4.3.3, 스펙 결정 ②). 전투가 스테이지를 올리기 **전**에 부른다.
+/// - 장수: `growth.bossCards.countAt(잡은 스테이지)`
+/// - 대상: [fleet] 중 무작위. 첫 회차(환생 0)의 처음 `starterCount`장은 `starterCrew`에게
+/// - 등급: `rarities.bossDropRates`
+GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet) {
+  final t = ctx.tables;
+  final b = t.growth.bossCards;
+  final stage = state.progress.stage;
+  var s = state;
+  for (var i = 0; i < b.countAt(stage); i++) {
+    final starter =
+        state.progress.rebirths == 0 && stage <= b.earlyStageMax && (stage - 1) * b.early + i < b.starterCount;
+    if (!starter && fleet.isEmpty) break;
+    final crewId = starter ? b.starterCrew : fleet[ctx.rng.nextInt(fleet.length)];
+    s = receiveCard(s, t, crewId, rollRarity(t.rarities.bossDropRates, ctx.rng));
+  }
+  return s;
 }

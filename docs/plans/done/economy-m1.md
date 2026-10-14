@@ -10,10 +10,10 @@
 - [x] 2. 테이블 정리(rarities·growth) + 모델(`crew_tables.dart`) + `gen_tables`
 - [x] 3. UpgradePart (기준 1~4)
 - [x] 4. Summon + 천장 + receiveCard (기준 5~8, 11)
-- [ ] 5. MergeAllCards · PromoteCrew (기준 9~10)
-- [ ] 6. ClaimOffline + 보스 카드 (기준 12)
-- [ ] 7. 운영자 명령 4종
-- [ ] 8. `game_cli sim` + 7.2 리포트, check 스모크 활성화 (기준 13)
+- [x] 5. MergeAllCards · PromoteCrew (기준 9~10)
+- [x] 6. ClaimOffline + 보스 카드 (기준 12)
+- [x] 7. 운영자 명령 4종
+- [x] 8. `game_cli sim` + 7.2 리포트, check 스모크 활성화 (기준 13)
 
 ## 검증
 - 단계마다 테스트 먼저(실패 확인) → 구현 → `tool\check.bat`. 커밋 전 `--full`.
@@ -22,3 +22,6 @@
 ## 메모
 - 경제가 쓰는 숫자는 전부 테이블에서(0·1 외 리터럴 금지).
 - `crews.json`의 `family` 값은 건드리지 않는다(main에서 support→shock, `skill` 필드 추가 머지 예정).
+
+## 결과 (2026-10-14)
+- M1 단계 0~8 완료. 밸런스 수치 조정은 별도 계획(`economy-balance-m1`)으로 — sim 결과 7.2 목표 5개 벗어남(진척 문서 참고).

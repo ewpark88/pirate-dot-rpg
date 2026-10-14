@@ -1,7 +1,7 @@
 # 스펙: economy M1 — 강화·소환·카드·승급·오프라인·sim
 
 - 상태: 승인됨(2026-10-14, 사용자) · 레인: economy · 설계서 절: 4.2 · 4.3.1 · 4.3.3 · 4.7 · 4.8 · 7.2 · 9.3
-- 계획: `docs/plans/active/economy-m1.md`
+- 계획: `docs/plans/done/economy-m1.md` (완료)
 
 ## 목적
 - 시원한가: 25레벨 도약(×2), 높은 등급 카드 즉시 점프, 소환 대박.
@@ -29,8 +29,8 @@
    - 레벨 1 올리는 경험치는 등급별 표(설계서 4.3.3: 1·3·6·20·30) — `growth.json expToNext`를 등급별 값으로 바꾼다.
 6. **승급** `PromoteCrew(id)` — 등급 마지막 레벨 + 카드 N장 + 골드(+증표). 다음 등급 첫 레벨로.
    - 승급 골드 = 현재 스테이지 일반 몬스터 처치 골드(`waves.json monster`) × 배수(100·300·1,000·3,000). 결정 ③
-7. **보스 카드** `grantBossCards(state, ctx)` — 결정 ②, 전투가 호출. 스테이지 1~10은 2장, 이후 `1 + floor(stage / 150)`장, 출전 선원 중 무작위(처음 10번은 옥토), 카드 등급 80/17/2.8/0.2%.
-8. **오프라인 보상** `ClaimOffline` — `초당 골드 추정 × min(now − savedAt, offline.maxSec)`. 역행이면 0. 카드 `cardsPerMax`장 비례(내림), 출전 선원에게.
+7. **보스 카드** `grantBossCards(state, ctx)` — 결정 ②, 전투가 호출. 스테이지 1~10은 2장, 이후 `1 + floor(stage / 150)`장, 출전 선원 중 무작위(첫 회차의 처음 10장은 옥토, 출전과 무관), 카드 등급 80/17/2.8/0.2%.
+8. **오프라인 보상** `ClaimOffline` — `초당 골드 추정 × min(now − savedAt, offline.maxSec)`. 역행이면 0. 카드 `cardsPerMax`장 비례(내림), 출전 선원(지금 슬롯으로 `autoFleet`)에게, 등급은 보스 드롭 확률. 받으면 `savedAt = now`.
    - 초당 골드 추정 = `한 파 골드 / (한 파 HP ÷ 원정대 DPS + 이동 시간)` — DPS 추정은 `ship_stats` 함수로.
 9. **game_cli sim** — 가상 플레이어(가장 싼 강화, 젬 쌓이면 소환, 보스 실패 시 60초 파밍 후 재도전).
    전투 엔진이 머지되기 전에는 DPS·보스 판정을 추정식으로. `--smoke`(1명 × 2시간)는 30초 안, 7.2 지표 표를 출력하고 목표를 벗어나면 경고.
@@ -54,7 +54,11 @@
 M1은 코어·CLI만이라 화면 문구 없음. 강화·소환 탭 문구는 M2(ui 레인)와 함께 `ship.`·`crew.`·`econ.` ARB에.
 
 ## 운영자 모드에서 불러보는 법
-M1 범위: `OpGrant`(골드·젬·카드), `OpSetShip`, `OpSetCrew`, `OpAdvanceClock`(오프라인 확인)을 EconomySystem이 처리.
+M1 범위: EconomySystem이 처리한다.
+- `OpSetCrew(id, level)`: 1~75로 잘라 지정, 미보유면 보유 + 도감
+- `OpGrant(gold, gems, tokens, cards)`: 카드는 현재 등급으로 카드 받기 규칙
+- `OpSetShip(parts)`: 0~maxLevel로 자름
+- `OpAdvanceClock(by)`: 시계 포트는 그대로, `savedAt`을 by만큼 과거로 → 다음 `ClaimOffline`이 그 시간을 보상
 
 ## 결정 (2026-10-14 사용자 승인)
 - ① **카드 저장 = 계약 유지**: 카드를 받는 순간 등급별 경험치(`cardExp`)를 `CrewState.exp`에 적립하고, `cards`는 승급에 쓸 장수만 센다.

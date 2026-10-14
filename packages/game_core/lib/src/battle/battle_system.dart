@@ -4,6 +4,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -136,11 +137,14 @@ class BattleSystem implements GameSystem {
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);
     if (tier.stage == stage) ctx.emit(ShipTierUp(ctx.tick, tierId: tier.id));
+    // 보스 카드: 잡은 스테이지 기준이라 스테이지를 올리기 전에 (경제 레인, docs/contracts/requests/economy-stats.md).
+    final carded = grantBossCards(s, ctx, [for (final g in f.guns) g.crewId]);
+    ctx.emit(SaveRequested(ctx.tick, reason: 'bossCleared'));
     // 새 스테이지는 빈 바다·가득 찬 배에서 시작한다(옛 뷰의 보스를 이어받지 않게 뷰도 비운다).
     _field = null;
     final old = s.battle ?? BattleView.empty;
-    final next = s.copyWith(
-      wallet: s.wallet.copyWith(gems: s.wallet.gems + t.waves.bossGems),
+    final next = carded.copyWith(
+      wallet: carded.wallet.copyWith(gems: carded.wallet.gems + t.waves.bossGems),
       progress: p.copyWith(stage: stage, wave: 0, farming: false, bestStage: stage > p.bestStage ? stage : null),
       battle: BattleView(
         tick: old.tick,
