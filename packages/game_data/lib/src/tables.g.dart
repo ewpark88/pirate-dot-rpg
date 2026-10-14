@@ -418,6 +418,32 @@ const Map<String, String> rawTables = {
     "lightning": "#C9F0FF", "hit_spark": "#FFFFFF", "coin_burst": "#FFD23F", "level_up": "#8EF07A"
   },
   "sheetFrameMs": 60,
+  "skillFxScale": 1.5,
+  "screenSkill": { "flashMs": 120, "shakeScale": 0.5 },
+  "shipSkill": { "healFlashMs": 200, "healColor": "#5BD75B", "buffColor": "#FFE14D" },
+  "ultimates": {
+    "ult_cannon_rain": { "pattern": "rain", "fx": "explosion_aoe", "count": 8, "durationMs": 600 },
+    "ult_volley": { "pattern": "volley", "fx": "muzzle", "count": 6, "durationMs": 400 },
+    "ult_harpoon_storm": { "pattern": "strikes", "fx": "slash", "count": 6, "durationMs": 500 },
+    "ult_tidal_wave": { "pattern": "sweep", "fx": "tidal_wave", "count": 1, "durationMs": 700 },
+    "ult_kraken": { "pattern": "rain", "fx": "explosion_aoe", "count": 6, "durationMs": 700 },
+    "ult_thunderstorm": { "pattern": "strikes", "fx": "lightning", "count": 8, "durationMs": 600 },
+    "ult_ghost_charge": { "pattern": "sweep", "fx": "slash", "count": 1, "durationMs": 500 },
+    "ult_great_wave": { "pattern": "sweep", "fx": "tidal_wave", "count": 1, "durationMs": 900 }
+  },
+  "enemyLook": {
+    "basic": { "color": "#E74C3C", "size": 12, "alpha": 1 },
+    "fast": { "color": "#F1C40F", "size": 10, "alpha": 1 },
+    "tough": { "color": "#95A5A6", "size": 14, "alpha": 1 },
+    "air": { "color": "#F5F5F5", "size": 10, "alpha": 1 },
+    "split": { "color": "#2ECC71", "size": 12, "alpha": 1 },
+    "revive": { "color": "#9B59B6", "size": 12, "alpha": 0.7 }
+  },
+  "enemySmallSize": 8,
+  "split": { "nearPx": 6, "fx": "hit_spark" },
+  "revive": { "minRise": 0.2, "fx": "level_up" },
+  "stun": { "color": "#FFE14D", "orbitPx": 5, "periodMs": 600 },
+  "zone": { "color": "#2E86C1", "alpha": 0.35, "max": 8 },
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },
     { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },
