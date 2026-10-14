@@ -12,7 +12,8 @@
 - [x] 6. ⑥ 튜토리얼 — 말풍선(전장·탭 사이 줄)·손가락(TutorialSpot)·건너뛰기·확인(1·6단계 TutorialAck), 4단계는 10회 소환 직후 Ack(임시) (기준 8·9)
 - [x] 6-1. ⑦ 소환 결과 연출 — `lastSummon`(main 8e7567d) → 카드 뒤집기 창, 확인 → AckSummonResult(+튜토리얼 4단계 Ack) (기준 11)
 - [x] 7. 영어 골든 4장(en_m3_hud·en_daily_sheet·en_tutorial_step2·en_summon_result) — S1 승인 (기준 10·11)
-- [ ] 8. `check --full` → 진척 문서 → 커밋 → S1 보고 (단계마다)
+- [x] 8. `check --full` → 진척 문서 → 커밋 → S1 보고 (단계마다)
+- [x] 9. 경제 B1~B10 연결 — 가짜 provider 본문을 실제 함수로, ui 임시 타입 삭제(economy_views)
 
 ## 메모
 - 가짜 provider 방식: 기본값은 “없음”(화면에 안 나옴) → 앱 동작은 그대로, 테스트는 provider를 덮어 화면을 시험한다. 경제 함수가 오면 provider 본문만 바꾼다.

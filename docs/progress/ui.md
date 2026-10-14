@@ -3,11 +3,19 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/ui-m3-meta.md` |
-| 상태 | 운영자 패널 2차 커밋 (골든 S1 승인). 다음: 경제 B 함수로 provider 교체 |
-| 기다리는 것 | 골든 4장 승인 · S2 B1·B3·B5·B7·B8·B9·B10 + lastSummon 채우기 → provider 본문 교체 |
+| 계획 | 완료: `done/ui-m3-meta.md` → 다음: 환생·보스 약점 |
+| 상태 | M3 메타 완료(`done/ui-m3-meta.md`), 경제 함수 연결 커밋 (골든 8장 S1 승인). 다음: 환생 화면·보스 약점 |
+| 기다리는 것 | S2 환생 스펙(함수 이름) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 경제 함수 연결 (가짜 provider → 실제)
+- 한 일: c772b68(운영자 패널 2차) 커밋. main 4d480ff(경제 B1~B10)·c4aed47(`game_core/economy_views.dart`) 머지.
+  ui 임시 타입(GoalView·GoalKind·CollectionBonusView·QuestView·AttendanceView·AttendanceReward) 삭제 → 경제 타입 사용.
+  provider 본문: nextGoal·collectionBonus·chestReward·dailyQuests·attendance, 순풍 배지는 tailwindRemaining. 퀘스트 보상은 meta.dailyQuestRewardGems,
+  출석 칸은 JsonReader(gems | summon+minRarity), 도감 ‘다음까지’ = nextAt − owned. 테스트 가짜 값은 경제 타입 + 실제 테이블 출석 보상.
+  샘플 화면에 실제 목표 막대·퀘스트 아이콘이 나와 골든 8장 재생성. `check --full` 통과(66.8s, 위젯 122개). TODO(economy) 0개.
+- 다음 할 일: 골든 승인 → 커밋 → 계획 ui-m3-meta 완료 처리
 
 ### 2026-10-14 · S4 · 운영자 패널 2차
 - 한 일: 스펙 ‘2차’ 절(S1 승인). 선원 묶음: 출전 선원마다 스킬 즉시(OpCastSkill), 출전 전원 전설/신화 첫 레벨(OpSetCrew, rarities levelMin 46·61).

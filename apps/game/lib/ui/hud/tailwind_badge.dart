@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -15,7 +16,6 @@ const _inactiveOpacity = 0.4;
 
 /// 순풍 버프 표시 (설계서 4.6): 켜져 있으면 남은 시간과 배율, 아니면 흐린 돛 아이콘.
 // TODO(ui): 누르면 ‘광고 보고 30분 ×2’ 버튼 — 광고 포트(AdsPort)가 생기면. 로드 안 되면 숨김.
-// TODO(economy): S2 tailwindRemaining(B5)이 오면 남은 시간을 그 함수로 (최대 누적 반영).
 class TailwindBadge extends ConsumerStatefulWidget {
   const TailwindBadge({super.key});
 
@@ -42,9 +42,10 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final until = ref.watch(gameStateProvider.select((s) => s.buffs.tailwindUntil));
-    final left = until?.difference(ref.watch(clockProvider).now());
-    final active = left != null && left > Duration.zero;
+    final now = ref.watch(clockProvider).now();
+    // 남은 시간은 경제 tailwindRemaining (끝났으면 zero).
+    final left = ref.watch(gameStateProvider.select((s) => tailwindRemaining(s, now)));
+    final active = left > Duration.zero;
     final multiplier = ref
         .watch(tablesProvider)
         .ads

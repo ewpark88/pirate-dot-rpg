@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/economy_views.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
@@ -38,10 +40,10 @@ void main() {
 
   final base = loadFixture('stage37_midgame');
   final quests = [
-    const QuestView(id: 'kill_500', type: 'kill', progress: 500, target: 500, rewardGems: 10, claimed: true),
-    const QuestView(id: 'upgrade_30', type: 'upgrade', progress: 30, target: 30, rewardGems: 10),
-    const QuestView(id: 'summon_1', type: 'summon', progress: 0, target: 1, rewardGems: 10),
-    const QuestView(id: 'ad_1', type: 'ad', progress: 0, target: 1, rewardGems: 10),
+    const QuestView(id: 'kill_500', type: 'kill', progress: 500, target: 500, claimed: true),
+    const QuestView(id: 'upgrade_30', type: 'upgrade', progress: 30, target: 30, claimed: false),
+    const QuestView(id: 'summon_1', type: 'summon', progress: 0, target: 1, claimed: false),
+    const QuestView(id: 'ad_1', type: 'ad', progress: 0, target: 1, claimed: false),
   ];
   final daily = [
     dailyQuestsProvider.overrideWithValue((_) => quests),
@@ -49,11 +51,7 @@ void main() {
       (_, _) => AttendanceView(
         day: 4,
         claimedToday: false,
-        rewards: [
-          // 사용자 결정(2026-10-14): 20·20·30·30·40·50 + 7일차 영웅 확정 소환
-          for (final g in const [20, 20, 30, 30, 40, 50]) AttendanceReward(gems: g),
-          const AttendanceReward(ticket: true),
-        ],
+        rewards: GameTables.load().meta.raw.obj('attendance').objs('rewards'), // 사용자 결정 그대로
       ),
     ),
   ];
@@ -65,7 +63,7 @@ void main() {
       state,
       extra: [
         nextGoalProvider.overrideWithValue(
-          (_) => const GoalView(kind: GoalKind.shipTier, id: 'warship', remaining: 43, progress: 0.15),
+          (_) => const NextGoal(kind: GoalKind.shipTier, id: 'warship', remaining: 43, progress: 0.15),
         ),
         chestRewardProvider.overrideWithValue((_) => BigNum.parse('2.5e5')),
         ...daily,
