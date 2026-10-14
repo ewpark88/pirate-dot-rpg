@@ -123,9 +123,11 @@ adsPortProvider.overrideWithValue(ads),        // ← ui 레인에 아직 없음
 ## 문구 (ko / en) — `parts/platform.*.arb`
 | 키 | ko | en |
 | --- | --- | --- |
-| `platformNotifyOfflineFullTitle` | 보물창고가 가득 찼어요! | Your treasure hold is full! |
-| `platformNotifyOfflineFullBody` | 8시간 동안 모은 전리품이 기다려요. 받으러 오세요. | 8 hours of loot is waiting. Come claim it! |
+| `platformNotifyOfflineFullTitle` | 보물창고가 가득 찼어요 | Your treasure hold is full |
+| `platformNotifyOfflineFullBody` | 원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요. | Your crew saved up {hours} hours of gold for you. |
 | `platformNotifyChannelName` | 오프라인 보상 | Offline rewards |
+
+(최종 2026-10-14: 설계서 4.9 톤 — 재촉·손해 강조 없이. `{hours}` = `meta.offline.maxSec` ÷ 3600, 숫자를 문구에 박지 않는다.)
 
 ## 운영자 모드에서 불러보는 법 (operator/ 소유 레인에 요청 — 이 스펙 범위 밖, 선택)
 - "광고 테스트": 현재 `ready`·동의 상태 표시, `show(chest)` 결과 표시. "알림 테스트": 10초 뒤 알림 1건(일일 한도 무시).

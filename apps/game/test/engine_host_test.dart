@@ -66,4 +66,34 @@ void main() {
     expect(host.state.savedAt, start.add(const Duration(minutes: 30)));
     await host.dispose();
   });
+
+  test('저장이 한 번 던져도 다음 저장은 계속된다', () async {
+    final store = _FlakyStore();
+    final host = EngineHost(
+      tables: tables,
+      initial: GameState.newGame(playerId: 't', seed: 1, now: start),
+      clock: ManualClock(start),
+      store: store,
+    );
+    await host.save(); // 던짐
+    await host.save(); // 이어서 써야 한다
+    expect(store.writes, 2);
+    await host.dispose();
+  });
+}
+
+class _FlakyStore implements SaveStore {
+  int writes = 0;
+
+  @override
+  Future<String?> read() async => null;
+
+  @override
+  Future<String?> readBackup() async => null;
+
+  @override
+  Future<void> write(String json) async {
+    writes += 1;
+    if (writes == 1) throw StateError('디스크 오류');
+  }
 }

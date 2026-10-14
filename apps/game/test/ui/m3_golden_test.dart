@@ -105,13 +105,13 @@ void main() {
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_summon_result.png'));
   });
 
-  // 환생 기준 5: 항해 탭 환생 카드(가능) + 확인 창. S2 함수 전이라 미리보기는 가짜 값.
+  // 환생 기준 5: 항해 탭 환생 카드(가능) + 확인 창. 샘플(스테이지 37)은 잠김이라 미리보기를 가짜 값으로.
   final rebirth = rebirthPreviewProvider.overrideWithValue(
-    (_) => const RebirthPreviewView(
-      unlockStage: 40,
-      available: true,
+    (_) => const RebirthPreview(
+      locked: false,
+      minStage: 40,
       currentPieces: 2,
-      gainPieces: 7,
+      gain: 7,
       nextPieceInStages: 3,
       bonusPerPiece: 0.05,
     ),
@@ -124,6 +124,8 @@ void main() {
 
   testWidgets('골든: en_rebirth_dialog', (tester) async {
     await pump(tester, base, extra: [rebirth]);
+    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_dialog.png'));

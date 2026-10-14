@@ -130,12 +130,15 @@ class BattleSystem implements GameSystem {
     return s;
   }
 
+  /// 첫 회차 초반(1~earlyStageMax) 보스는 입력 없이도 시작 편성으로 잡히게 약하게,
   /// 튜토리얼 3단계의 첫 보스는 일부러 못 잡게 (설계서 4.12). 실패 후 재도전(파밍 → ChallengeBoss)은 보통 보스.
   double _tutorialBossScale(GameState s, SystemContext ctx) {
     final w = ctx.tables.waves;
-    return s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
+    final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
+    final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
         ? w.tutorialFailHpMultiplier
-        : 1;
+        : 1.0;
+    return early * fail;
   }
 
   /// 이번 틱 결과로 진행 상태를 바꾼다: 파 정리, 보스 처치·시간 초과, 배 침몰.
@@ -273,5 +276,9 @@ class BattleSystem implements GameSystem {
       ..captainId = captainOf(ids, s, t);
   }
 
-  GameState _project(GameState s, Field f) => s.copyWith(battle: f.view(s.battle ?? BattleView.empty));
+  GameState _project(GameState s, Field f) => s.copyWith(
+    battle: f
+        .view(s.battle ?? BattleView.empty)
+        .copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),
+  );
 }

@@ -179,9 +179,15 @@ class _Face extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
             style: small,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [for (var s = 0; s < rarity.stars; s++) Icon(Icons.star, size: 8, color: rarityColor(rarity))],
+          // 좁은 화면(360dp)에서 별 5개가 카드보다 넓어질 수 있다 → 줄여서 넣는다.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var s = 0; s < rarity.stars; s++) Icon(Icons.star, size: 8, color: rarityColor(rarity)),
+              ],
+            ),
           ),
         ],
       ),

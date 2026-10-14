@@ -45,6 +45,8 @@
 | `dart run game_cli export-events` | 렌더 레인용 전투 기록 갱신 (`--synthetic`: 합성본) |
 | `dart run game_cli fixtures` | `fixtures/states`, `fixtures/events` 다시 만들기 |
 | `dart run game_cli save inspect <파일>` | 세이브 검증·마이그레이션 결과 |
+| `dart run game_cli balance crews` | 선원 균형 점수표(±10%)·조합 검사 (`--quick`은 check --full이 돌림) |
+| `dart run tool/release_check.dart` | 배포 빌드(aab)에 운영자 코드가 없는지 + 운영자 빌드엔 있는지 (약 3~5분, 스토어 업로드 전) |
 
 ## 폴더
 - `packages/game_data` 테이블+검증 · `packages/game_core` 규칙·계약·엔진 · `packages/game_cli` 헤드리스 도구

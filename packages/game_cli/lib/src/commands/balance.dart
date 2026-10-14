@@ -23,7 +23,7 @@ class BalanceCommand extends Command<int> {
   String get description => '밸런스 검사·리포트';
 }
 
-/// 종료 코드: 0 통과, 1 위반(±10% 밖 또는 조합 폭주), 2 측정 오류.
+/// 종료 코드: 0 통과, 1 위반(±10% 밖 또는 조합 폭주), 3 측정 오류 (2는 game_cli 공통 "미구현"이라 쓰지 않는다).
 class _CrewsCommand extends Command<int> {
   _CrewsCommand() {
     argParser
@@ -66,7 +66,7 @@ class _CrewsCommand extends Command<int> {
       );
     } on MeasureError catch (e) {
       stderr.writeln('✗ $e');
-      return 2;
+      return 3;
     }
     stdout
       ..write(balanceMarkdown(report))

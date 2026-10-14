@@ -1,11 +1,11 @@
 # Store listing — English (draft)
 
-- Status: draft (2026-10-14, S5) · Source: design doc ch. 1 & 4 · Final game name and package ID are decided before M5 (ADR-0002); the name below is a placeholder.
+- Status: draft (2026-10-14, S5) · Source: design doc ch. 1 & 4 · Korean name confirmed: 해적도트 원정대. **English name is a proposal awaiting confirmation.** Package ID before M5 (ADR-0002).
 - Google Play limits: title 30 · short description 80 · full description 4000 characters.
 - Rules (design 9, 4.9): no ranking claims ("#1"), gacha only as "odds disclosed", nothing that contradicts the no-fatigue rules ("log in every day!").
 
 ## Title (30)
-Pirate Dot Expedition
+Pirate Dot Expedition  ← proposal, awaiting confirmation (확정 대기)
 
 ## Short description (≤80)
 Blast whole monster swarms in one shot! Pixel pirate idle RPG. Upgrade & summon.
@@ -63,6 +63,7 @@ Same assets and screenshot order as `listing.ko.md`, with English UI (set the de
 8. "Rebirth and set sail stronger"
 
 ## Contact & website
-- Developer email: `<to be entered by a person>` (public on the store)
-- Website: GitHub Pages — same domain as the privacy policy and app-ads.txt
-- Privacy policy URL: `<Pages URL>/privacy` (`docs/store/privacy-policy.en.md`)
+- Developer name: 박은우 (romanized spelling for the English listing: to be confirmed — 확인 필요)
+- Developer email: repo.dev88@gmail.com (public on the store)
+- Website: https://rich-fire.blogspot.com/ — AdMob looks for app-ads.txt at this domain's root (open questions in `docs/store/app-ads.md`)
+- Privacy policy URL: a page on the same blog, `https://rich-fire.blogspot.com/p/<…>.html` — fill in after publishing (`privacy-policy.en.md`)

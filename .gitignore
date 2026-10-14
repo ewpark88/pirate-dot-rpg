@@ -26,3 +26,4 @@ apps/game/android/app/google-services.json
 apps/game/ios/Runner/GoogleService-Info.plist
 apps/game/android/key.properties
 *.jks
+save.bak2

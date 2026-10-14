@@ -1,5 +1,5 @@
 {
-  "platformNotifyOfflineFullTitle": "Your treasure hold is full!",
-  "platformNotifyOfflineFullBody": "8 hours of loot is waiting. Come claim it!",
+  "platformNotifyOfflineFullTitle": "Your treasure hold is full",
+  "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards"
 }

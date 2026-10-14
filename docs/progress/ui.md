@@ -4,10 +4,25 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-rebirth-boss.md` |
-| 상태 | 광고 버튼·오디오·분석 포트 자리 커밋 (스펙 `ui-ads-audio.md`) |
-| 기다리는 것 | S5 NoAds·NoopAnalytics 어댑터(main) → ui 임시 클래스 삭제 · `Settings.notifications`(세이브 v4) → 설정 토글 · S2 환생 함수 |
+| 상태 | 항해 탭 보강·한국어 확인 커밋 (골든 5장 S1 승인). 진행: ui-quality-v1(도트 UI, 사용자 최우선) |
+| 기다리는 것 | `Settings.notifications`(세이브 v4) → 알림 토글 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 항해 탭 보강·한국어 확인 (접근성은 뒤로)
+- 한 일: 4cf1060 커밋. 스펙 `ui-voyage-a11y.md`. 항해 탭: 해역 카드(이름·n/50 막대·해역 보스까지·해역 보스 이름+약점 칩·다음 해역),
+  오프라인 시간당(offlinePreview(savedAt+1h))·최대 8시간, 순풍 남은 시간. `WeakChips`·`remainingText` 공용으로 뺌.
+  한국어 넘침 테스트(360×640·400×800: 시트·소환 결과·환생 창·복귀 팝업·운영자 패널·튜토리얼·항해 탭) — 360에서 소환 결과 별 줄 0.4px 넘침 찾아 고침.
+  접근성(48dp·라벨) 점검은 첫 실행에서 탭 4개 모두 실패 → S1 지시로 도트 UI(ui-quality-v1) 뒤로 미룸(테스트 묶음은 보관).
+  `check --full` 통과(64.6s, 위젯 164개).
+- 다음 할 일: 골든 승인 → 커밋 → ui-quality-v1 스펙(기준: 이미지참고용 전투 v0.3·도트 v0.2)
+
+### 2026-10-14 · S4 · 개인정보 옵션·운영자 표식·환생 실제 함수
+- 한 일: main(S5 어댑터·a9ffda0 환생) 머지. ui 임시 NoAds·NoopAnalytics 삭제 → `adapters/` 것 사용. `adOfferProvider`가 AdMobAds.ready를 구독(광고가 뒤늦게 로드돼도 버튼이 뜸).
+  ① 설정 ‘개인정보 옵션’(AdMobAds.privacyOptionsRequired일 때만 → showPrivacyOptions). ② `operatorMarker = '__OPERATOR_PANEL__'`를 운영자 패널 루트 ValueKey로 실제 참조.
+  ③ 환생 카드 = 경제 `rebirthPreview`(임시 타입 삭제), 잠김 막대는 이번 회차 스테이지/minStage. 환생 결과 팝업(환생 횟수 증가 → 조각 +N·보너스, 상태 차이로 판단).
+  `check --full` 통과(67.8s, 위젯 146개). 항해 탭이 보이는 골든 3장 변경.
+- 다음 할 일: 골든 승인 → 커밋. 세이브 v4 오면 알림 토글
 
 ### 2026-10-14 · S4 · 광고·오디오·분석 포트 자리 (S5 요청서 platform-ui-ports)
 - 한 일: b75f8b2(항해 탭·환생) 커밋. 스펙 `ui-ads-audio.md`(S1 지시). `adsPortProvider`(기본 NoAds)·`audioPortProvider`(null)·`analyticsPortProvider`(Noop).
