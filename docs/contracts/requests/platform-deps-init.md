@@ -63,4 +63,4 @@ AppLifecycleListener(
 SDK 호출 없는 순수 로직 + 가짜 SDK 테스트로 진행. SDK 연결 파일(`*_sdk.dart`)은 이 요청 머지 뒤.
 
 ## 처리 결과 (S1 작성)
-- [ ] 반영 / 거절 / 수정 반영 — 커밋:
+- [x] 수정 반영(2026-10-14, S1): pubspec 7개는 `flutter pub add`로 **정확한 버전 고정**(^ 없음), 루트 .gitignore 4줄. main.dart 초기화·override는 platform 어댑터 머지 때 S1이 넣는다.
