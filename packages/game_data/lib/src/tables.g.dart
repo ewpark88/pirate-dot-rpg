@@ -475,6 +475,7 @@ const Map<String, String> rawTables = {
   "bossLookDefault": "enemy_ship",
   "shield": { "color": "#48E5E5", "px": 2, "breakFx": "hit_spark", "breakCount": 3 },
   "tierColors": ["#CD7F32", "#C0C0C0", "#FFD700"],
+  "audio": { "sfxMinGapMs": 40, "sfxMaxPerFrame": 6 },
   "sprites": { "enemyFrames": 2, "coinFrames": 3, "animMs": 250 },
   "chest": { "color": "#B9770E", "lidColor": "#F4D03F", "w": 14, "h": 10, "bobPx": 1.5, "bobMs": 900, "sinkTicks": 20, "sinkPx": 10 },
   "fxSheets": [
@@ -735,7 +736,7 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 10, "hpGrowth": 1.19, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 16, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 6, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4 },
+  "boss": { "hpMultiplier": 12, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 6, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4 },
   "travelSec": 3,
   "field": {
     "width": 320,

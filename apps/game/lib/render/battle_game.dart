@@ -43,6 +43,7 @@ class BattleGame extends FlameGame {
     this.onHaptic,
     bool? perfOverlay,
     this.loadSprites = true,
+    this.audio,
   }) : _feed = feed,
        _tables = tables ?? GameTables.load(),
        _settings = _powerSaveSwitch ? settings.copyWith(powerSave: true) : settings,
@@ -62,6 +63,12 @@ class BattleGame extends FlameGame {
 
   /// 측정 오버레이·10초 콘솔 요약.
   bool perfOverlay;
+
+  /// 효과음·배경음 (flame_audio 어댑터). null이면 무음.
+  final AudioPort? audio;
+
+  /// 운영자 패널용 최근 효과음.
+  List<String> get audioLog => scene.audioLog;
 
   /// onLoad에서 아트 팩(assets/)을 읽을지. 없는 이미지는 플레이스홀더.
   final bool loadSprites;
@@ -131,7 +138,7 @@ class BattleGame extends FlameGame {
       BattleMode.demo => _recording ?? decodeRecording(sampleBattleJsonl),
     };
     mode = m;
-    scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic);
+    scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic)..audio = audio;
     painter = ScenePainter(scene)
       ..showHitboxes = _showHitboxes
       ..sprites = _sprites

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flame/cache.dart';
+import 'package:flutter/services.dart' show AssetBundle, AssetManifest, rootBundle;
 import 'package:game_data/game_data.dart';
 
 /// 스프라이트 시트 한 장: 가로로 [frames]장.
@@ -46,10 +47,12 @@ class SpriteBank {
     ];
   }
 
-  /// 목록의 에셋을 읽는다. 없거나 읽지 못한 것은 건너뛴다(플레이스홀더).
-  static Future<SpriteBank> load(Images images, GameTables tables) async {
+  /// 목록의 에셋 중 앱 에셋 목록(AssetManifest)에 있는 것만 읽는다. 없거나 읽지 못한 것은 플레이스홀더.
+  static Future<SpriteBank> load(Images images, GameTables tables, {AssetBundle? bundle}) async {
     final bank = SpriteBank();
+    final present = (await AssetManifest.loadFromAssetBundle(bundle ?? rootBundle)).listAssets().toSet();
     for (final e in manifest(tables)) {
+      if (!present.contains('${images.prefix}${e.path}')) continue;
       try {
         bank.put(e.key, await images.load(e.path), frames: e.frames);
       } on Object {

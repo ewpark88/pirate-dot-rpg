@@ -29,27 +29,36 @@ class Backdrop {
 
   final FxMapTable _fx;
 
-  /// (fromStage, background) — fromStage 오름차순.
-  final List<(int, String)> _regions;
+  /// (fromStage, background, bgm) — fromStage 오름차순.
+  final List<(int, String, String?)> _regions;
   final Map<String, BackgroundPalette> _palettes = {};
   late BackgroundPalette _current;
   late BackgroundPalette _prev;
   String _currentId = '';
   double _fadeAge = 0;
 
-  static List<(int, String)> _parse(String json) {
+  static List<(int, String, String?)> _parse(String json) {
     final root = jsonDecode(json) as Map<String, dynamic>;
     final list = [
       for (final r in (root['regions'] as List? ?? const []).cast<Map<String, dynamic>>())
-        ((r['fromStage'] as num).toInt(), r['background'] as String),
+        ((r['fromStage'] as num).toInt(), r['background'] as String, r['bgm'] as String?),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
     return list;
   }
 
   String backgroundFor(int stage) {
     var id = _fx.backgroundDefault;
-    for (final (from, bg) in _regions) {
+    for (final (from, bg, _) in _regions) {
       if (stage >= from) id = bg;
+    }
+    return id;
+  }
+
+  /// 해역 배경음 id (regions.json bgm). 없으면 null.
+  String? bgmFor(int stage) {
+    String? id;
+    for (final (from, _, bgm) in _regions) {
+      if (stage >= from) id = bgm;
     }
     return id;
   }
@@ -58,15 +67,16 @@ class Backdrop {
     _fx.backgrounds[id] ?? _fx.backgrounds[_fx.backgroundDefault]!,
   );
 
-  /// 프레임의 스테이지를 알린다. 해역이 바뀌면 섞기를 시작한다.
-  void setStage(int stage) {
+  /// 프레임의 스테이지를 알린다. 해역이 바뀌면 섞기를 시작하고 true.
+  bool setStage(int stage) {
     final id = backgroundFor(stage);
-    if (id == _currentId) return;
+    if (id == _currentId) return false;
     final first = _currentId.isEmpty;
     _currentId = id;
     _prev = _current;
     _current = paletteOf(id);
     _fadeAge = first ? _fx.backgroundFadeMs : 0;
+    return true;
   }
 
   void update(double dtMs) {

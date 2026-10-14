@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-art-pack-v02.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
-| 상태 | 실제 엔진 라이브 재생 통합 테스트 ab11e7d(PERF_OVERLAY live 확인). 아트 팩 v0.2 스펙 초안 |
-| 막힌 것 | art-pack 승인·Q1(lane/art 작업 위치)·Q2(pubspec assets) · 실기기 측정(M2 관문) |
+| 현재 계획 | `plans/active/render-status.md`(스펙 초안) · `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 상태 | 스프라이트 골든 d3c03e1. 사운드 연결(SoundDirector·BattleGame(audio:)) 구현, 렌더 테스트 74개 |
+| 막힌 것 | render-status 승인·계약 F · CC0 음원(사람, M4) · flame_audio 어댑터(S1) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,24 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 사운드 연결
+- 한 일: 골든 `battle_sprites.png` 승인·커밋(d3c03e1). render-audio 승인·계약 E(AudioPort, main 5b8ef89) → 테스트 먼저(`audio_test.dart` 5개) →
+  `SoundDirector`(이벤트→fx_map sfx, 타격음 변형·피치 결정론, 같은 id 40ms·프레임당 6개 상한, 해역 bgm), `Backdrop.bgmFor`, `BattleGame(audio:)`·`audioLog`.
+- 검증: `tool\check.bat --full` 통과, 렌더 테스트 74개.
+- 남은 문제: 어댑터(adapters/, flame_audio)·pubspec 의존은 S1/플랫폼. 음원은 사람이 고른 뒤.
+- 추가: 아트 팩 계획 done/. 전설 능력(main 19aa020)의 감속·화상·취약 표시용 계약 요청 F + `render-status` 스펙 초안.
+
+### 2026-10-14 · S3 · 아트 팩 v0.2 적용
+- 한 일: S1 결정(Q1 render가 assets·tools/art 소유, Q2 pubspec은 S1 머지 때). `tools/art/import_pack.py`(zip 이미지·json만 읽음, 크기 검증, overrides 우선,
+  LICENSES.json 자동, `--check` 재실행 동일) + 테스트 3개 → 에셋 62개(초상 40·fx 8·적 6·보스선·배·발사체 5·코인) 11f3c8c.
+  렌더: `SpriteBank`·`SpriteDraw`(nearest·흰 번쩍임·물속 색조), `HudPainter` 분리, `BattleGame.loadSprites/useSprites/spriteCount` 4d537e1.
+- 검증: `tool\check.bat --full` 통과(42.3s), 렌더 테스트 67개, `python -I tools/art/test_import_pack.py` OK.
+- 커버리지: 적 27종 중 6, 보스 14 중 1(enemy_ship), 발사체 8 중 5(shock·assault·air 없음), 해역 배경 0/6 — 나머지는 플레이스홀더.
+- 추가: main(pubspec assets 7개) 머지 → SpriteBank가 AssetManifest에 있는 것만 읽게 수정(없는 종류 읽기 오류 제거) 0b16bdb.
+  부하 장면 그리기 비용(테스트 환경·소프트웨어 래스터, 600프레임): 플레이스홀더 record 0.238ms·raster 0.614ms → 스프라이트 record 0.212ms·raster 0.811ms.
+  실제 이미지 골든 `battle_sprites.png` 생성(S1 확인 대기, 미커밋). 사운드 스펙 `render-audio` + 계약 요청 E(AudioPort) 초안.
+- 다음 할 일: 골든 승인 → 커밋 → render-audio 승인 후 테스트 먼저.
 
 ### 2026-10-14 · S3 · M2 관문 준비 + 아트 팩 스펙
 - 한 일: 보스 골든 커밋(7bc4922, storm_pirate·deep_sub 색 밝게). `live_engine_test.dart` — EngineHost(실제 엔진) 30초를 60Hz로 라이브 재생:
