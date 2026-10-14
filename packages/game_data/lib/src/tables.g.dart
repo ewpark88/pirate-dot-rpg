@@ -559,7 +559,12 @@ const Map<String, String> rawTables = {
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
-  "tutorial": { "firstTenSummonFree": true, "firstTenCount": 10, "firstTenGuarantee": "hero" },
+  "tutorial": {
+    "firstTenSummonFree": true,
+    "firstTenCount": 10,
+    "firstTenGuarantee": "hero",
+    "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 3 }, "boss": 3, "merge": 5, "last": 6 }
+  },
   "notifications": { "dailyMax": 1 },
   "sim": {
     "decisionSec": 1,
