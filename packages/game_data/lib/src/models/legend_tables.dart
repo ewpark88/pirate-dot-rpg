@@ -7,6 +7,7 @@ class LegendDef {
       extraChains = j.intOrNull('extraChains') ?? 0,
       noFalloff = j.raw['noFalloff'] == true,
       critBurst = j.numberOr('critBurst', 0),
+      powerScale = j.numberOr('powerScale', 1),
       onHit = j.has('onHit') ? OnHitDef.fromJson(j.obj('onHit')) : const OnHitDef(),
       zone = j.has('zone') ? LegendZoneDef.fromJson(j.obj('zone')) : null;
 
@@ -17,7 +18,16 @@ class LegendDef {
         : raw,
   );
 
-  static const keys = {'extraProjectiles', 'extraChains', 'noFalloff', 'critBurst', 'onHit', 'zone', 'mythic'};
+  static const keys = {
+    'extraProjectiles',
+    'extraChains',
+    'noFalloff',
+    'critBurst',
+    'powerScale',
+    'onHit',
+    'zone',
+    'mythic',
+  };
 
   final int extraProjectiles;
   final int extraChains;
@@ -25,6 +35,9 @@ class LegendDef {
 
   /// 치명타일 때 맞은 자리 원형 범위(반경, 0 = 없음).
   final double critBurst;
+
+  /// 이 선원의 피해 배율 (balance crews로 4.8 예산 ±10%에 맞춘 값, 기본 1).
+  final double powerScale;
   final OnHitDef onHit;
   final LegendZoneDef? zone;
 }

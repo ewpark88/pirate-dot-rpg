@@ -116,8 +116,10 @@ void main() {
     final g0 = gun(crewOf('lob'))..cooldown = 0;
     round(field([foe(100, 100)])..guns = [g0]).fireGuns();
     final one = events.whereType<Damage>().first.amount;
-    // 같은 파워로 비교: 한 발 피해는 일반 1발 ÷ 3 (치명타 없음 기준)
-    expect(single.toDouble(), closeTo(one.toDouble() / 3, one.toDouble() * 1e-6));
+    // 한 발 피해는 일반 1발 ÷ 3 × (신화 power / 일반 power) (치명타 없음 기준)
+    // 등급별 사다리 power(balance crews로 맞춘 값)가 다르므로 그 비율을 곱한다.
+    final powerRatio = g.attack.power * (g.legend?.powerScale ?? 1) / g0.attack.power;
+    expect(single.toDouble(), closeTo(one.toDouble() / 3 * powerRatio, one.toDouble() * 1e-6));
   });
 
   test('7. 수중 장판: ZoneSpawned, dotSec 동안 피해 후 사라짐, 즉시+장판 = 단일 피해(±1%)', () {
@@ -134,7 +136,7 @@ void main() {
     final crit = events.whereType<Damage>().first.crit; // 시드에 따라 치명타면 장판까지 같은 배율
     final expected =
         CombatStats.of(game(), tables).attack.toDouble() *
-        tables.skills.byId('underwater').attack.power *
+        g.attack.power *
         (crit ? tables.shipParts.critMultiplier : 1);
     expect(total, closeTo(expected, expected * 0.01));
   });

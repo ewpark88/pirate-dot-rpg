@@ -43,7 +43,8 @@ class Round {
       crewId == null ? null : t.crews.crews.where((c) => c.id == crewId).firstOrNull?.family;
 
   /// 4.8 공식의 앞 네 항: 대포 × 선원 파워 × 배 등급 × [k](계열 배율·치명타 등).
-  BigNum damageOf(Gun g, double k) => stats.attack.times(g.power * stats.tierDamage * (1 + stats.bonus) * k);
+  BigNum damageOf(Gun g, double k) =>
+      stats.attack.times(g.power * stats.tierDamage * (1 + stats.bonus) * (g.legend?.powerScale ?? 1) * k);
 
   /// 적 이동·기절·배 접촉 피해 (규칙 3), 지원 버프 시간.
   void moveFoes() {

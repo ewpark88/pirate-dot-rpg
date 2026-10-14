@@ -75,6 +75,9 @@ void main() {
       final fam = (skills['families'] as List).cast<Map<String, dynamic>>().firstWhere((f) => f['id'] == 'direct');
       final attack = fam['attack'] as Map<String, dynamic>;
       attack['power'] = (attack['power'] as num) * 1.2;
+      // 등급별 사다리 power가 있으면 그것이 attack.power를 덮어쓴다 — 같이 올린다.
+      final ladder = fam['ladder'] as Map<String, dynamic>?;
+      if (ladder?['power'] case final List<dynamic> p) ladder!['power'] = [for (final v in p) (v as num) * 1.2];
       raw['skills'] = jsonEncode(skills);
       final boosted = GameTables.load(raw);
       final base = arena.run(Scene.boss, [direct], 45).damageOf(direct);
