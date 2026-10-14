@@ -578,6 +578,7 @@ const Map<String, String> rawTables = {
   "sim": {
     "decisionSec": 1,
     "farmRetrySec": 60,
+    "rebirthWallSec": 600,
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
@@ -590,7 +591,8 @@ const Map<String, String> rawTables = {
       "starterPromotionMin": { "min": 30, "max": 40, "schedule": "continuous" },
       "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
-      "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" }
+      "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
+      "rebirthRecoverSec": { "min": 0, "max": 300 }
     }
   }
 }
