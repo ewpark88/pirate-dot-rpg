@@ -1,22 +1,39 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:flutter/painting.dart' show FontWeight, Shadow, TextPainter, TextSpan, TextStyle;
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/hud_painter.dart';
+import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/paint/stage_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
-import 'package:pirate_dot/render/scene/damage_numbers.dart';
+import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 
-/// [BattleScene]을 캔버스에 그린다 (아트 전 단색 플레이스홀더). Flame 컴포넌트와 골든 테스트가 같이 쓴다.
+/// [BattleScene]을 캔버스에 그린다. 스프라이트([sprites])가 있으면 그것으로, 없으면 단색 플레이스홀더.
+/// Flame 컴포넌트와 골든 테스트가 같이 쓴다.
 ///
 /// 그리는 순서: 배경 → 물속 적 → 배 → 물위 적 → 공중 적 → 발사체 → 이펙트 → 코인 → 숫자 → (흔들림 밖) 슬롯·플래시.
 class ScenePainter {
-  ScenePainter(this.scene) : _stage = StagePainter(scene);
+  ScenePainter(this.scene) : _stage = StagePainter(scene) {
+    _hud = HudPainter(scene, _sprite);
+  }
 
   final BattleScene scene;
   final StagePainter _stage;
+  final _sprite = SpriteDraw();
+  late final HudPainter _hud;
+
+  /// 아트 팩 이미지. null이거나 키가 없으면 플레이스홀더.
+  SpriteBank? get sprites => _sprite.bank;
+  set sprites(SpriteBank? v) => _sprite.bank = v;
+
+  /// 운영자 "스프라이트 끄기".
+  bool get useSprites => _sprite.enabled;
+  set useSprites(bool v) => _sprite.enabled = v;
+
+  late final double _animMs = scene.fx.sprites.number('animMs');
+  int _animFrame(int salt) => (scene.clockMs / _animMs).floor() + salt;
 
   /// 운영자 모드: 적 히트박스 표시.
   bool showHitboxes = false;
@@ -26,19 +43,12 @@ class ScenePainter {
     ..isAntiAlias = false
     ..style = PaintingStyle.stroke
     ..strokeWidth = 1;
-  final _layerPaint = Paint();
-  final Map<String, int> _kindColor = {};
-
-  static const _slotBar = Color(0xFF2B1D14);
   static const _ship = Color(0xFF8B5A2B);
   static const _shipDeck = Color(0xFFC49A6C);
-  static const _white = Color(0xFFFFFFFF);
   static const _hpBack = Color(0xFF3A0D0D);
   static const _hpFront = Color(0xFF5BD75B);
-  static const _cooldown = Color(0xB0000000);
   static const _hitbox = Color(0xFFFF00FF);
   static const _underwaterTint = Color(0xFF0B2A44);
-  static const _palette = [0xFFE74C3C, 0xFFF39C12, 0xFF9B59B6, 0xFF1ABC9C, 0xFFE67E22, 0xFFECF0F1, 0xFF2ECC71];
 
   void paint(Canvas canvas) {
     canvas
@@ -54,10 +64,10 @@ class ScenePainter {
     _projectiles(canvas);
     _effects(canvas);
     _coins(canvas);
-    _numbers(canvas);
+    _hud.paintNumbers(canvas);
     canvas.restore();
     _stage.paintOverlays(canvas);
-    _slots(canvas);
+    _hud.paintSlots(canvas);
     if (scene.screenFlashMs > 0) _fill(canvas, 0, 0, kLogicalWidth, kFieldBottom, 0x99FFFFFF);
   }
 
@@ -68,9 +78,18 @@ class ScenePainter {
 
   void _shipBody(Canvas c) {
     final flash = scene.shipFlashMs > 0 && scene.settings.flash;
-    _fill(c, kShipLeft, kShipTop + kShipHeight / 2, kShipWidth, kShipHeight / 2, flash ? 0xFFFFFFFF : _ship.toARGB32());
-    _fill(c, kShipLeft + 8, kShipTop, 4, kShipHeight / 2, flash ? 0xFFFFFFFF : _shipDeck.toARGB32());
-    _fill(c, kShipLeft + 28, kShipTop + 4, 18, 14, flash ? 0xFFFFFFFF : _shipDeck.toARGB32());
+    if (!_sprite.draw(c, 'ship', kShipCenterX, kShipTop + kShipHeight / 2, flash: flash)) {
+      _fill(
+        c,
+        kShipLeft,
+        kShipTop + kShipHeight / 2,
+        kShipWidth,
+        kShipHeight / 2,
+        flash ? 0xFFFFFFFF : _ship.toARGB32(),
+      );
+      _fill(c, kShipLeft + 8, kShipTop, 4, kShipHeight / 2, flash ? 0xFFFFFFFF : _shipDeck.toARGB32());
+      _fill(c, kShipLeft + 28, kShipTop + 4, 18, 14, flash ? 0xFFFFFFFF : _shipDeck.toARGB32());
+    }
     // 배 HP 바.
     _fill(c, kShipLeft + 2, kShipTop - 5, kShipWidth - 4, 2, _hpBack.toARGB32());
     _fill(c, kShipLeft + 2, kShipTop - 5, (kShipWidth - 4) * scene.shipHpRatio, 2, _hpFront.toARGB32());
@@ -97,8 +116,6 @@ class ScenePainter {
     }
   }
 
-  int _colorOf(String kind) => _kindColor[kind] ??= _palette[kind.codeUnits.fold(0, (a, b) => a + b) % _palette.length];
-
   void _enemies(Canvas c, String layer) {
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -110,14 +127,29 @@ class ScenePainter {
   void _enemy(Canvas c, EnemyPose e) {
     final looks = scene.looks;
     final bossShape = looks.bossOf(e.kind, boss: e.boss);
-    final w = bossShape?.w ?? looks.sizeOf(e.kind);
-    final h = bossShape?.h ?? w;
+    final key = bossShape != null ? 'boss:${e.kind}' : 'enemy:${e.kind}';
+    final sheet = _sprite.sheet(key);
+    final w = sheet?.frameW ?? bossShape?.w ?? looks.sizeOf(e.kind);
+    final h = sheet?.frameH ?? bossShape?.h ?? w;
     final l = e.drawX - w / 2;
     final t = e.drawY - h / 2;
-    var color = bossShape?.color ?? looks.colorOf(e.kind);
-    if (e.layer == 'underwater') color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
-    if (bossShape == null) color = ((looks.alphaOf(e.kind) * 0xFF).round() << 24) | (color & 0xFFFFFF);
-    _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);
+    final under = e.layer == 'underwater';
+    final alpha = bossShape == null ? looks.alphaOf(e.kind) : 1.0;
+    if (!_sprite.draw(
+      c,
+      key,
+      e.drawX,
+      e.drawY,
+      frame: _animFrame(e.id),
+      flash: e.flash,
+      underwater: under,
+      alpha: alpha,
+    )) {
+      var color = bossShape?.color ?? looks.colorOf(e.kind);
+      if (under) color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
+      color = ((alpha * 0xFF).round() << 24) | (color & 0xFFFFFF);
+      _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);
+    }
     if (bossShape != null || e.hpRatio < 1) {
       _fill(c, l, t - 3, w, 1, _hpBack.toARGB32());
       _fill(c, l, t - 3, w * e.hpRatio, 1, _hpFront.toARGB32());
@@ -164,6 +196,7 @@ class ScenePainter {
   void _projectiles(Canvas c) {
     for (final p in scene.projectiles.active) {
       if (scene.player.position < p.startIndex) continue;
+      if (_sprite.draw(c, 'projectile:${p.family}', p.x, p.y)) continue;
       final s = p.style.size;
       _fill(c, p.x - s / 2, p.y - s / 2, s, s, p.style.color);
     }
@@ -172,6 +205,7 @@ class ScenePainter {
   void _effects(Canvas c) {
     for (final e in scene.effects.active) {
       if (!e.visible) continue;
+      if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, e.y, frame: e.frame, w: e.w, h: e.h)) continue;
       final t = e.frame / e.frames;
       final scale = 0.5 + 0.5 * t;
       final alpha = ((1 - t) * 0xCC).round() << 24;
@@ -196,78 +230,8 @@ class ScenePainter {
   void _coins(Canvas c) {
     for (final coin in scene.coins.active) {
       if (coin.ageMs < 0) continue;
+      if (_sprite.draw(c, 'coin', coin.x, coin.y, frame: _animFrame(0))) continue;
       _fill(c, coin.x - 1, coin.y - 1, 2, 2, 0xFFFFD23F);
     }
-  }
-
-  void _numbers(Canvas c) {
-    final layer = scene.numbers;
-    for (final n in layer.active) {
-      final text = (n.cache ??= _NumberText()) as _NumberText;
-      if (text.version != n.version || text.kind != n.kind) text.layout(n, layer);
-      final fade = n.ageMs / layer.spec.lifeMs;
-      final dy = layer.riseOf(n);
-      if (fade > _fadeStart) {
-        _layerPaint.color = Color.fromRGBO(0, 0, 0, (1 - fade) / (1 - _fadeStart));
-        c.saveLayer(null, _layerPaint);
-      }
-      text.painter.paint(
-        c,
-        Offset((n.x - text.painter.width / 2).roundToDouble(), (n.y - dy - text.painter.height).roundToDouble()),
-      );
-      if (fade > _fadeStart) c.restore();
-    }
-  }
-
-  static const _fadeStart = 0.7;
-  static const _skillBarPx = 3.0;
-  static const _blinkMs = 250;
-
-  void _slots(Canvas c) {
-    _fill(c, 0, kFieldBottom, kLogicalWidth, kLogicalHeight - kFieldBottom, _slotBar.toARGB32());
-    final fleet = scene.frame.fleet;
-    for (var i = 0; i < fleet.length && i < kMaxSlots; i++) {
-      final x = kSlotGap + i * (kSlotSize + kSlotGap);
-      final slot = fleet[i];
-      _fill(c, x, kSlotTop, kSlotSize, kSlotSize, _colorOf(slot.crewId));
-      _fill(c, x, kSlotTop, kSlotSize, kSlotSize * slot.cooldown.clamp(0.0, 1.0), _cooldown.toARGB32());
-      // 스킬 쿨타임: 초상 아래 막대가 차오르고, 다 차면 금색 테두리가 깜빡인다.
-      final skillReady = 1 - slot.skillCooldown.clamp(0.0, 1.0);
-      _fill(c, x, kSlotTop + kSlotSize - _skillBarPx, kSlotSize, _skillBarPx, _cooldown.toARGB32());
-      _fill(c, x, kSlotTop + kSlotSize - _skillBarPx, kSlotSize * skillReady, _skillBarPx, _buffColor);
-      if (slot.skillCooldown <= 0 && (scene.clockMs ~/ _blinkMs).isEven) {
-        _stroke.color = Color(_buffColor);
-        c.drawRect(Rect.fromLTWH(x - 1, kSlotTop - 1, kSlotSize + 2, kSlotSize + 2), _stroke);
-      }
-      if (scene.slotFlashMs[i] > 0) {
-        _stroke.color = _white;
-        c.drawRect(Rect.fromLTWH(x, kSlotTop, kSlotSize, kSlotSize), _stroke);
-      }
-    }
-  }
-}
-
-/// 데미지 숫자 하나의 배치된 글자. [DamageNumber.cache]에 붙어 풀과 함께 재사용된다.
-class _NumberText {
-  final painter = TextPainter(textDirection: TextDirection.ltr);
-  int version = -1;
-  DamageKind? kind;
-
-  static const _basePx = 4.0;
-
-  void layout(DamageNumber n, DamageNumbers layer) {
-    version = n.version;
-    kind = n.kind;
-    painter
-      ..text = TextSpan(
-        text: n.text,
-        style: TextStyle(
-          fontSize: _basePx * layer.scaleOf(n),
-          fontWeight: FontWeight.bold,
-          color: Color(layer.colorOf(n)),
-          shadows: const [Shadow(offset: Offset(1, 1))],
-        ),
-      )
-      ..layout();
   }
 }

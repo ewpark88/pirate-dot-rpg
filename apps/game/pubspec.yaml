@@ -28,3 +28,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  # 도트 팩 v0.2 (tools/art/import_pack.py가 채움, 라이선스는 assets/LICENSES.json)
+  assets:
+    - assets/crews/
+    - assets/fx/
+    - assets/enemies/
+    - assets/bosses/
+    - assets/ship/
+    - assets/projectiles/
+    - assets/coin.png

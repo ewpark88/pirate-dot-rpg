@@ -19,7 +19,7 @@ void main() {
       initial: GameState.newGame(playerId: 'test', seed: 7, now: clock.now(), crews: tables.meta.startingCrews),
       clock: clock,
     );
-    final game = BattleGame(feed: host.ticks, tables: tables, perfOverlay: true)
+    final game = BattleGame(feed: host.ticks, tables: tables, perfOverlay: true, loadSprites: false)
       ..onGameResize(Vector2(kLogicalWidth * 3, kLogicalHeight * 3));
     await game.onLoad();
     expect(game.mode, BattleMode.live);

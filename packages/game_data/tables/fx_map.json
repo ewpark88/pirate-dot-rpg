@@ -87,6 +87,7 @@
   "bossLookDefault": "enemy_ship",
   "shield": { "color": "#48E5E5", "px": 2, "breakFx": "hit_spark", "breakCount": 3 },
   "tierColors": ["#CD7F32", "#C0C0C0", "#FFD700"],
+  "sprites": { "enemyFrames": 2, "coinFrames": 3, "animMs": 250 },
   "chest": { "color": "#B9770E", "lidColor": "#F4D03F", "w": 14, "h": 10, "bobPx": 1.5, "bobMs": 900, "sinkTicks": 20, "sinkPx": 10 },
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },

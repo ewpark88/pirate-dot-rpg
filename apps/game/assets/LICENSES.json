@@ -1,3 +1,252 @@
 {
-  "files": {}
+  "files": {
+    "bosses/enemy_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/enemy_ship.png",
+      "license": "OWN"
+    },
+    "coin.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/coin.png",
+      "license": "OWN"
+    },
+    "crews/alba.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/alba.png",
+      "license": "OWN"
+    },
+    "crews/bara.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/bara.png",
+      "license": "OWN"
+    },
+    "crews/bones.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/bones.png",
+      "license": "OWN"
+    },
+    "crews/cook.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/cook.png",
+      "license": "OWN"
+    },
+    "crews/corey.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/corey.png",
+      "license": "OWN"
+    },
+    "crews/crabby.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/crabby.png",
+      "license": "OWN"
+    },
+    "crews/crabs.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/crabs.png",
+      "license": "OWN"
+    },
+    "crews/davy.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/davy.png",
+      "license": "OWN"
+    },
+    "crews/dolphy.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/dolphy.png",
+      "license": "OWN"
+    },
+    "crews/gull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/gull.png",
+      "license": "OWN"
+    },
+    "crews/hippo.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/hippo.png",
+      "license": "OWN"
+    },
+    "crews/jelly.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/jelly.png",
+      "license": "OWN"
+    },
+    "crews/king.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/king.png",
+      "license": "OWN"
+    },
+    "crews/kraki.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/kraki.png",
+      "license": "OWN"
+    },
+    "crews/lamp.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/lamp.png",
+      "license": "OWN"
+    },
+    "crews/lion.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/lion.png",
+      "license": "OWN"
+    },
+    "crews/lobster.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/lobster.png",
+      "license": "OWN"
+    },
+    "crews/manta.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/manta.png",
+      "license": "OWN"
+    },
+    "crews/moby.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/moby.png",
+      "license": "OWN"
+    },
+    "crews/moray.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/moray.png",
+      "license": "OWN"
+    },
+    "crews/nar.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/nar.png",
+      "license": "OWN"
+    },
+    "crews/octo.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/octo.png",
+      "license": "OWN"
+    },
+    "crews/orca.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/orca.png",
+      "license": "OWN"
+    },
+    "crews/otter.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/otter.png",
+      "license": "OWN"
+    },
+    "crews/pang.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/pang.png",
+      "license": "OWN"
+    },
+    "crews/pelly.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/pelly.png",
+      "license": "OWN"
+    },
+    "crews/pingu.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/pingu.png",
+      "license": "OWN"
+    },
+    "crews/polly.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/polly.png",
+      "license": "OWN"
+    },
+    "crews/puffer.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/puffer.png",
+      "license": "OWN"
+    },
+    "crews/pumpum.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/pumpum.png",
+      "license": "OWN"
+    },
+    "crews/saw.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/saw.png",
+      "license": "OWN"
+    },
+    "crews/shark.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/shark.png",
+      "license": "OWN"
+    },
+    "crews/sheldon.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/sheldon.png",
+      "license": "OWN"
+    },
+    "crews/starry.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/starry.png",
+      "license": "OWN"
+    },
+    "crews/sword.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/sword.png",
+      "license": "OWN"
+    },
+    "crews/turtle.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/turtle.png",
+      "license": "OWN"
+    },
+    "crews/uni.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/uni.png",
+      "license": "OWN"
+    },
+    "crews/volke.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/volke.png",
+      "license": "OWN"
+    },
+    "crews/volt.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/volt.png",
+      "license": "OWN"
+    },
+    "crews/walrus.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/walrus.png",
+      "license": "OWN"
+    },
+    "enemies/crab.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/crab.png",
+      "license": "OWN"
+    },
+    "enemies/gull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/gull.png",
+      "license": "OWN"
+    },
+    "enemies/jelly.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/jelly.png",
+      "license": "OWN"
+    },
+    "enemies/piranha.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/fish.png",
+      "license": "OWN"
+    },
+    "enemies/puffer.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/puffer.png",
+      "license": "OWN"
+    },
+    "enemies/urchin.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/urchin.png",
+      "license": "OWN"
+    },
+    "fx/coin_burst.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/coin_burst.png",
+      "license": "OWN"
+    },
+    "fx/explosion_aoe.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/explosion_aoe.png",
+      "license": "OWN"
+    },
+    "fx/hit_spark.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/hit_spark.png",
+      "license": "OWN"
+    },
+    "fx/level_up.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/level_up.png",
+      "license": "OWN"
+    },
+    "fx/lightning.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/lightning.png",
+      "license": "OWN"
+    },
+    "fx/muzzle.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/muzzle.png",
+      "license": "OWN"
+    },
+    "fx/slash.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/slash.png",
+      "license": "OWN"
+    },
+    "fx/tidal_wave.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/tidal_wave.png",
+      "license": "OWN"
+    },
+    "projectiles/bullet.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/bullet.png",
+      "license": "OWN"
+    },
+    "projectiles/cannonball.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/cannonball.png",
+      "license": "OWN"
+    },
+    "projectiles/harpoon.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/harpoon.png",
+      "license": "OWN"
+    },
+    "projectiles/stone.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/stone.png",
+      "license": "OWN"
+    },
+    "projectiles/torpedo.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/torpedo.png",
+      "license": "OWN"
+    },
+    "ship/ship_t1.png": {
+      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
+      "license": "OWN"
+    }
+  }
 }
