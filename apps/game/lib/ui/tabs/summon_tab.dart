@@ -78,17 +78,8 @@ class SummonTab extends ConsumerWidget {
   }
 }
 
-/// 소환 명령. 튜토리얼 4단계(‘젬으로 선원을 불러 보세요’)는 10회 소환 직후 TutorialAck(4)로 끝낸다.
-// TODO(ui): 소환 결과 연출(카드 뒤집기)이 생기면 그 화면을 닫을 때 TutorialAck(4)를 보낸다.
-void _summon(WidgetRef ref, int count) {
-  final sink = ref.read(commandSinkProvider)..send(Summon(count: count));
-  if (count == _summonTen && ref.read(tutorialStepProvider) == _summonTutorialStep) {
-    sink.send(const TutorialAck(_summonTutorialStep));
-  }
-}
-
-/// 튜토리얼에서 소환을 배우는 단계 (설계서 4.12 표).
-const _summonTutorialStep = 4;
+/// 소환 명령. 튜토리얼 4단계는 결과 창(SummonResultDialog)을 닫을 때 끝난다.
+void _summon(WidgetRef ref, int count) => ref.read(commandSinkProvider).send(Summon(count: count));
 
 class _SummonButton extends StatelessWidget {
   const _SummonButton({required this.buttonKey, required this.label, required this.cost, required this.onPressed});

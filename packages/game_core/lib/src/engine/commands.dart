@@ -28,7 +28,7 @@ sealed class Command {
         choice: j['choice'] as String?,
       ),
       'claimOffline' => const ClaimOffline(),
-      'claimDaily' => const ClaimDaily(),
+      'claimDaily' => ClaimDaily(j['questId'] as String?),
       'claimAttendance' => const ClaimAttendance(),
       'rebirth' => const Rebirth(),
       'exchangeToken' => ExchangeToken(j['crewId'] as String),
@@ -149,12 +149,17 @@ class ClaimOffline extends Command {
   String get type => 'claimOffline';
 }
 
-/// 일일 퀘스트 보상 받기.
+/// 일일 퀘스트 보상 받기 (설계서 4.9: 퀘스트마다 젬). [questId]가 없으면 완료한 퀘스트를 모두 받는다.
 class ClaimDaily extends Command {
-  const ClaimDaily();
+  const ClaimDaily([this.questId]);
+
+  final String? questId;
 
   @override
   String get type => 'claimDaily';
+
+  @override
+  Json _fields() => {if (questId != null) 'questId': questId};
 }
 
 class ClaimAttendance extends Command {

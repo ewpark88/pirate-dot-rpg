@@ -34,6 +34,10 @@ class WavesTable {
   double get bossGoldMultiplier => _boss.number('goldMultiplier');
   int get bossGems => _boss.integer('gems');
   double get bossSpeed => _boss.number('speed');
+
+  /// 튜토리얼 3단계(설계서 4.12 '실패 → 강화' 학습): 이 스테이지의 첫 보스는 HP × [tutorialFailHpMultiplier].
+  int get tutorialFailStage => _boss.integer('tutorialFailStage');
+  double get tutorialFailHpMultiplier => _boss.number('tutorialFailHpMultiplier');
   double get travelSec => raw.number('travelSec');
   double get multiKillWindowSec => raw.obj('multiKill').number('windowSec');
   double get multiKillGoldBonusPerKill => raw.obj('multiKill').number('goldBonusPerKill');

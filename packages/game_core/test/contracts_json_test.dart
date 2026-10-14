@@ -16,6 +16,7 @@ void main() {
     const GrantAdReward(AdPlacement.chest),
     const ClaimOffline(),
     const ClaimDaily(),
+    const ClaimDaily('kill_500'),
     const ClaimAttendance(),
     const SkipTutorial(),
     const TutorialAck(3),

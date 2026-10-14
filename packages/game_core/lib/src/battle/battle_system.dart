@@ -100,10 +100,18 @@ class BattleSystem implements GameSystem {
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
     if (!p.farming && p.wave >= ctx.tables.waves.wavesPerStage) {
-      startBoss(f, p.stage, ctx);
+      startBoss(f, p.stage, ctx, hpScale: _tutorialBossScale(s, ctx));
     } else {
       spawnWave(f, p.stage, ctx);
     }
+  }
+
+  /// 튜토리얼 3단계의 첫 보스는 일부러 못 잡게 (설계서 4.12). 실패 후 재도전(파밍 → ChallengeBoss)은 보통 보스.
+  double _tutorialBossScale(GameState s, SystemContext ctx) {
+    final w = ctx.tables.waves;
+    return s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
+        ? w.tutorialFailHpMultiplier
+        : 1;
   }
 
   /// 이번 틱 결과로 진행 상태를 바꾼다: 파 정리, 보스 처치·시간 초과, 배 침몰.
@@ -156,12 +164,14 @@ class BattleSystem implements GameSystem {
     final next = carded.copyWith(
       wallet: carded.wallet.copyWith(gems: carded.wallet.gems + t.waves.bossGems),
       progress: p.copyWith(stage: stage, wave: 0, farming: false, bestStage: stage > p.bestStage ? stage : null),
+      // 떠 있던 보물상자는 이어진다(경제 레인이 띄우고 치운다).
       battle: BattleView(
         tick: old.tick,
         shipHp: BigNum.one,
         shipHpMax: BigNum.one,
         hitStopTicks: old.hitStopTicks,
         speed: old.speed,
+        chest: old.chest,
       ),
     );
     final nf = _sync(next, ctx)..travelLeft = t.waves.travelSec;
