@@ -1,5 +1,4 @@
 import 'package:game_core/game_core.dart';
-import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';

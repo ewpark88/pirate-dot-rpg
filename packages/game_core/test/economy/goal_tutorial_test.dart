@@ -1,6 +1,6 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/economy/economy_system.dart';
-import 'package:game_core/src/economy/meta_views.dart';
+import 'package:game_core/src/economy/meta_views.dart' show GoalKind;
 import 'package:test/test.dart';
 
 import 'harness.dart';
