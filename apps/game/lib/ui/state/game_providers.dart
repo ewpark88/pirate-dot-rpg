@@ -8,8 +8,7 @@ import 'package:pirate_dot/adapters/system_clock.dart';
 /// 앱에 심은 테이블.
 final tablesProvider = Provider<GameTables>((ref) => GameTables.load());
 
-/// 첫 상태. 테스트·운영자 모드는 fixtures/states 샘플로 덮어쓴다.
-// TODO(main): 엔진을 앱에 연결하면 세이브(SaveStore)에서 읽은 상태로 바꾼다.
+/// 첫 상태. 앱은 main.dart가 엔진의 새 게임으로, 테스트·운영자 모드는 fixtures/states 샘플로 덮어쓴다.
 final initialGameStateProvider = Provider<GameState>(
   (ref) => GameState.newGame(playerId: 'local', seed: 0, now: const SystemClock().now()),
 );
@@ -26,8 +25,7 @@ class GameStateController extends Notifier<GameState> {
   void replace(GameState next) => state = next;
 }
 
-/// 버튼이 Command를 보내는 곳.
-// TODO(main): 엔진을 앱에 연결하면 GameEngine.enqueue로 보내는 구현으로 바꾼다.
+/// 버튼이 Command를 보내는 곳. 앱은 main.dart가 EngineHost로 덮어쓴다.
 final commandSinkProvider = Provider<CommandSink>((ref) => CommandLog());
 
 /// UI → 엔진 입력 통로. UI는 상태를 직접 바꾸지 않는다.
