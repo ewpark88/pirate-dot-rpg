@@ -3,8 +3,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | `plans/active/render-regions.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx` |
-| 상태 | render-regions: 배경·보스 연출 d640aad, 보호막·tier 2e9ccae 커밋(check --full 통과). 남은 것: stage 연결·보스 골든 |
-| 막힌 것 | `BattleView.stage` main 반영 대기(S1) · 실기기 측정(M2 관문) |
+| 상태 | render-regions: stage 연결·보물상자 b78d0fe 커밋. 보스 골든 `battle_boss_storm.png` S1 확인 대기(미커밋) |
+| 막힌 것 | 보스 골든 승인(S1) · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -21,7 +21,8 @@
   `scene_state.dart`로 HitState·SceneStats 분리(300줄).
 - 검증: `tool\check.bat --full` 통과(29.9s).
 - 추가: 골든 재승인 → d640aad. main(해역 보스) 머지 → 보호막 테두리·깨짐·tier 테두리 2e9ccae, 렌더 테스트 58개.
-- 다음 할 일: `BattleView.stage` 오면 Backdrop 연결 + 보스 골든 `battle_boss_storm.png`.
+- 추가: main(16dda02 stage·chest) 머지 → b78d0fe 프레임 stage로 배경, 보물상자(둥둥·가라앉기·흐려짐). 렌더 테스트 62개.
+- 다음 할 일: 보스 골든 승인 → 커밋 → 계획 done/.
 
 ### 2026-10-14 · S3 · render-m3-fx (스킬·궁극기·적 역할 연출)
 - 한 일: 스펙 승인(S1)·계약 A·B·C 수용 기록. 테스트 먼저(수용 기준 1~9, 5는 계약 B 대기 skip) →
