@@ -16,6 +16,7 @@ import 'package:pirate_dot/ui/summon/summon_result.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 import 'package:pirate_dot/ui/tabs/summon_tab.dart';
+import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 세로 화면 하나: 위는 HUD와 전장(항상 보임), 아래 절반만 탭에 따라 바뀐다 (설계서 4.12).
@@ -91,7 +92,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: IndexedStack(
                     index: _tab,
                     children: const [
-                      SizedBox.shrink(), // 항해 탭: 다음 계획 (해역 지도·환생)
+                      VoyageTab(),
                       ShipTab(),
                       CrewTab(),
                       SummonTab(),
