@@ -79,6 +79,7 @@ class FieldDef {
       spawnSpacing = j.number('spawnSpacing'),
       laneY = j.numberMap('laneY'),
       laneJitter = j.number('laneJitter'),
+      coneNearPx = j.number('coneNearPx'),
       contactIntervalSec = j.number('contactIntervalSec');
 
   final double width;
@@ -94,5 +95,9 @@ class FieldDef {
   /// 층(surface·underwater·air)별 기준 y.
   final Map<String, double> laneY;
   final double laneJitter;
+
+  /// 부채꼴(강습) 근접 거리: 배 앞머리에서 이만큼 안의 적은 각도와 상관없이 맞는다.
+  /// 배에 닿은 적은 x가 shipX로 멈춰 각도가 90°가 되므로 이게 없으면 강습이 붙은 적을 못 친다.
+  final double coneNearPx;
   final double contactIntervalSec;
 }

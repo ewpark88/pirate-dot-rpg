@@ -769,6 +769,7 @@ const Map<String, String> rawTables = {
     "spawnSpacing": 12,
     "laneY": { "surface": 100, "underwater": 124, "air": 44 },
     "laneJitter": 14,
+    "coneNearPx": 16,
     "contactIntervalSec": 1
   },
   "multiKill": {

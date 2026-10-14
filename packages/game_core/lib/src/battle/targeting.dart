@@ -91,7 +91,10 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid 
       final halfAngle = a.angleDeg * half * radiansPerDegree;
       hit = [
         for (final e in targets)
-          if (e.x - f.shipX <= a.range && math.atan2((e.y - f.shipY).abs(), math.max(e.x - f.shipX, 0)) <= halfAngle) e,
+          if (e.x - f.shipX <= a.range &&
+              (e.x - f.shipX <= f.coneNearPx ||
+                  math.atan2((e.y - f.shipY).abs(), math.max(e.x - f.shipX, 0)) <= halfAngle))
+            e,
       ]..sort((p, q) => fromShip(p).compareTo(fromShip(q)));
       if (hit.isEmpty) return null;
       (ax, ay) = (hit.first.x, hit.first.y);
