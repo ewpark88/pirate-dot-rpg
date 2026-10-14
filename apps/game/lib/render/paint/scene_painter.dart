@@ -121,11 +121,30 @@ class ScenePainter {
       _fill(c, l, t - 3, w, 1, _hpBack.toARGB32());
       _fill(c, l, t - 3, w * e.hpRatio, 1, _hpFront.toARGB32());
     }
+    final tierColor = looks.tierColor(e.tier);
+    if (tierColor != null) _outline(c, l, t, w, h, 1, 1, tierColor);
+    if (e.shielded) _outline(c, l, t, w, h, _shieldGap, _shieldPx, _shieldColor);
     if (e.stunned) _stars(c, e.drawX, t - 4);
     if (showHitboxes) {
       _stroke.color = _hitbox;
       c.drawRect(Rect.fromLTWH(l, t, w, h), _stroke);
     }
+  }
+
+  late final int _shieldColor = parseArgb(scene.fx.shield.str('color'), 'shield.color');
+  late final double _shieldPx = scene.fx.shield.number('px');
+
+  /// tier 테두리(1px) 바깥에 보호막이 오도록 띄우는 간격.
+  static const _shieldGap = 3.0;
+
+  /// 적 사각형 바깥 [gap]px에 [px] 두께 테두리.
+  void _outline(Canvas c, double l, double t, double w, double h, double gap, double px, int color) {
+    _stroke
+      ..color = Color(color)
+      ..strokeWidth = px;
+    final o = gap - px / 2;
+    c.drawRect(Rect.fromLTWH(l - o, t - o, w + o * 2, h + o * 2), _stroke);
+    _stroke.strokeWidth = 1;
   }
 
   late final int _starColor = parseArgb(scene.fx.stun.str('color'), 'stun.color');

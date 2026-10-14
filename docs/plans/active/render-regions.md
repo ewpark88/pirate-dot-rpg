@@ -8,7 +8,8 @@
 - [x] 2. 테스트 먼저: 수용 기준 1~7 (`regions_test.dart`) — 8·9(shielded·tier)는 계약 main 반영 후
 - [x] 3. 해역 결정·배경 그리기·전환 섞기 (`scene/backdrop.dart`, `paint/stage_painter.dart`)
 - [x] 4. 보스 등장 경고·처치 코인 비·실패 어두움
-- [ ] 4b. 보스 모양 13종+촉수 ✔ / 보호막 테두리·깨짐, tier 테두리, scene이 frame.stage로 Backdrop 갱신 (계약 대기)
+- [x] 4b. 보스 모양 13종+촉수, 보호막 테두리·깨짐, tier 테두리
+- [ ] 4c. scene이 frame.stage로 Backdrop 갱신 (계약 D main 반영 대기)
 - [ ] 5. 기존 골든 2장 재생성(산호초 원경 장식) S1 재승인 대기 · 보스 골든 `battle_boss_storm.png`(계약 후) → 승인 → 커밋
 
 ## 검증 방법

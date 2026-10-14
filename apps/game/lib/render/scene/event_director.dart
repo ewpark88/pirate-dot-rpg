@@ -112,7 +112,9 @@ class EventDirector implements ReplayListener {
           break;
       }
     }
-    _m3.detectSplitRevive(tick, index);
+    _m3
+      ..detectSplitRevive(tick, index)
+      ..detectShieldBreak(tick, index);
   }
 
   void _damage(Damage e, RecordedTick tick, int index) {

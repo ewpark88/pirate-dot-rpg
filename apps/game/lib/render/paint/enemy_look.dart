@@ -46,6 +46,13 @@ class EnemyLooks {
     return boss ? _defaultBoss ??= _shape(_fx.bossLook[_fx.bossLookDefault]!) : null;
   }
 
+  /// 무한 항해 테두리 색. tier 0이면 없음, 3을 넘으면 마지막 색.
+  int? tierColor(int tier) {
+    if (tier <= 0) return null;
+    final colors = _fx.tierColors;
+    return colors[(tier > colors.length ? colors.length : tier) - 1];
+  }
+
   static BossShape _shape(JsonReader j) =>
       (color: parseArgb(j.str('color'), '${j.path}.color'), w: j.number('w'), h: j.number('h'));
 }

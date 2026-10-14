@@ -24,6 +24,7 @@ class SceneStats {
   /// 지금까지 본 분열·부활 연출 수 (M3 확인용).
   int splitPops = 0;
   int revives = 0;
+  int shieldBreaks = 0;
 
   /// 풀·재사용 버퍼가 만든 객체 수. 워밍업 뒤에는 변하지 않아야 한다.
   int pooledObjects = 0;

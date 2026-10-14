@@ -127,6 +127,24 @@ class M3Director {
     }
   }
 
+  /// 보호막이 깨진 적(앞 틱 shielded → 지금 아님)에 깨짐 연출.
+  void detectShieldBreak(RecordedTick tick, int index) {
+    final shield = _fx.shield;
+    for (final en in tick.frame.enemies) {
+      if (en.shielded || !(scene.player.enemyAt(index - 1, en.id)?.shielded ?? false)) continue;
+      scene.stats.shieldBreaks++;
+      final color = _shieldColor ??= parseArgb(shield.str('color'), 'shield.color');
+      final n = shield.integer('breakCount');
+      for (var k = 0; k < n; k++) {
+        final dx = (k - (n - 1) / 2) * _shardGapPx;
+        scene.spawnEffect(shield.str('breakFx'), en.x + dx, en.y - dx.abs() / 2)?.color = color;
+      }
+    }
+  }
+
+  int? _shieldColor;
+  static const _shardGapPx = 8.0;
+
   static bool _killed(RecordedTick tick, int id) {
     for (final ev in tick.events) {
       if (ev is Kill && ev.targetId == id) return true;

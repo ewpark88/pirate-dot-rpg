@@ -148,4 +148,33 @@ void main() {
     expect(looks.bossOf('crab', boss: false), isNull);
     expect(looks.bossOf('kraken_tentacle', boss: false), isNotNull, reason: '촉수는 boss 표시가 없어도 보스 모양');
   });
+
+  test('수용 기준 8: 보호막이 깨지면 깨짐 연출 1번, 그 뒤 테두리 없음', () {
+    RecordedTick at(int t, {required bool shielded}) => RecordedTick(
+      BattleView(
+        tick: t,
+        shipHp: BigNum.from(60),
+        shipHpMax: BigNum.from(60),
+        enemies: [
+          EnemyView(id: 99, kind: 'storm_pirate', x: 260, y: 100, hpRatio: 0.8, boss: true, shielded: shielded),
+        ],
+      ),
+      const [],
+    );
+    final ticks = [at(0, shielded: true), at(1, shielded: true), at(2, shielded: false), at(3, shielded: false)];
+    final before = _play(ticks, 0.5);
+    expect(before.poseOf(99)!.shielded, isTrue);
+    final s = _play(ticks, 2.5);
+    expect(s.stats.shieldBreaks, 1);
+    expect(s.poseOf(99)!.shielded, isFalse);
+  });
+
+  test('수용 기준 9: tier 0은 테두리 없음, 1~3은 tierColors', () {
+    final looks = EnemyLooks.fromTables(tables);
+    expect(looks.tierColor(0), isNull);
+    for (var t = 1; t <= 3; t++) {
+      expect(looks.tierColor(t), fx.tierColors[t - 1]);
+    }
+    expect(looks.tierColor(9), fx.tierColors.last);
+  });
 }
