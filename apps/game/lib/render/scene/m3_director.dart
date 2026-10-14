@@ -5,27 +5,16 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 
 /// 전투 M3 연출: 스킬·화면 스킬·계열별 궁극기·분열·부활·수중 장판 (docs/specs/render-m3-fx.md).
 ///
-/// 계약 요청 A·C가 main에 들어오기 전까지 임시 어댑터를 쓴다:
-/// - 화면 스킬: 같은 틱 그 선원의 Damage 대상 수 ≥ 화면 안 적 × `screenSkill.adapterRatio`.
-/// - 장판: underwater 계열 AttackFired 조준점에 계열 `attack.radius`, `zone.fallbackSec`.
+/// 화면 스킬은 `SkillCast.scope == 'screen'`, 장판은 `ZoneSpawned`로 받는다 (계약 render-m3-events A·C).
 class M3Director {
   M3Director(this.scene)
     : _skills = {
         for (final f in scene.tables.skills.families) f.skill.id: f.skill,
         for (final s in scene.tables.skills.crewSkills) s.id: s,
-      },
-      _underwaterRadius = _radiusOf(scene.tables, 'underwater');
+      };
 
   final BattleScene scene;
   final Map<String, SkillDef> _skills;
-  final double _underwaterRadius;
-
-  static double _radiusOf(GameTables t, String family) {
-    for (final f in t.skills.families) {
-      if (f.id == family) return f.attack.radius;
-    }
-    return 0;
-  }
 
   FxMapTable get _fx => scene.fx;
 
@@ -39,8 +28,9 @@ class M3Director {
   static const _rainTickX = 31;
   static const _rainTickY = 17;
   static const _splitPopScale = 0.5;
+  static const _screenScope = 'screen';
 
-  void onSkill(SkillCast e, RecordedTick tick) {
+  void onSkill(SkillCast e) {
     final skill = _skills[e.skillId];
     if (skill?.shape == 'ship') {
       scene
@@ -50,23 +40,11 @@ class M3Director {
       return;
     }
     final sheet = skill?.fx;
-    if (_isScreenSkill(e, tick)) {
+    if (e.scope == _screenScope) {
       _screenSkill(sheet);
       return;
     }
     if (sheet != null) scene.spawnEffect(sheet, e.x, e.y, scale: _fx.skillFxScale);
-  }
-
-  bool _isScreenSkill(SkillCast e, RecordedTick tick) {
-    var onScreen = 0;
-    for (final en in tick.frame.enemies) {
-      if (en.x <= kLogicalWidth) onScreen++;
-    }
-    var hits = 0;
-    for (final ev in tick.events) {
-      if (ev is Damage && ev.crewId == e.crewId) hits++;
-    }
-    return onScreen > 1 && hits >= onScreen * _fx.screenSkill.number('adapterRatio');
   }
 
   void _screenSkill(String? sheet) {
@@ -117,12 +95,8 @@ class M3Director {
     }
   }
 
-  /// 임시 어댑터(계약 C 전): 수중 공격 조준점에 장판.
-  void zoneFromAttack(AttackFired e) {
-    if (e.family != 'underwater' || _underwaterRadius <= 0) return;
-    final ticks = _fx.zone.number('fallbackSec') * Duration.millisecondsPerSecond / scene.player.tickMs;
-    scene.spawnZone(e.x, e.y, _underwaterRadius, ticks);
-  }
+  /// 수중 장판: 남은 틱 동안 원을 그린다.
+  void onZone(ZoneSpawned e) => scene.spawnZone(e.x, e.y, e.radius, e.ticks.toDouble());
 
   /// 분열(처치 자리 근처 새 id)과 부활(Kill 없이 hpRatio 상승)을 앞 틱과 비교해 찾는다.
   void detectSplitRevive(RecordedTick tick, int index) {

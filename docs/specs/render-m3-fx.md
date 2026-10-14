@@ -53,7 +53,7 @@
 S1의 `OpCastSkill`·`OpSetWave(enemyKind)`로 엔진이 이벤트를 내면 라이브 재생으로 보인다. 렌더 단독 확인은 `BATTLE_SCENE=demo`에 M3 기록이 들어온 뒤.
 
 ## 결정 기록 (2026-10-14, S1)
-- 계약 요청 A·B·C 모두 수용 — S1 전투 M3 커밋과 함께 main에 들어온다. 임시 어댑터(규칙 2·9)는 그때까지만, 기절 별(규칙 5)은 그 뒤에 켠다.
+- 계약 요청 A·B·C 모두 수용 — main 12abe88(전투 M3)에 반영. 렌더는 임시 어댑터(규칙 2·9)를 지우고 `scope`·`ZoneSpawned`·`stunned`를 직접 쓴다(기절 별 켬).
   - A: `SkillCast.scope`('normal'|'screen', 기본 normal). circle·line·single이 count>1이면 중심/대상마다 SkillCast(같은 틱).
   - B: `EnemyView.stunned`(bool, 기본 false). C: `ZoneSpawned(crewId, x, y, radius, ticks)`, JSON type `zoneSpawned`.
 - `regions.json enemies[]`: `role`(basic|fast|tough|air|split|revive), 선택 `splitInto`·`splitCount`·`splitHpRatio`·`reviveHpRatio`.

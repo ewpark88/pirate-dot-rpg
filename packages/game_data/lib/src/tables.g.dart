@@ -419,7 +419,7 @@ const Map<String, String> rawTables = {
   },
   "sheetFrameMs": 60,
   "skillFxScale": 1.5,
-  "screenSkill": { "flashMs": 120, "shakeScale": 0.5, "adapterRatio": 0.8 },
+  "screenSkill": { "flashMs": 120, "shakeScale": 0.5 },
   "shipSkill": { "healFlashMs": 200, "healColor": "#5BD75B", "buffColor": "#FFE14D" },
   "ultimates": {
     "ult_cannon_rain": { "pattern": "rain", "fx": "explosion_aoe", "count": 8, "durationMs": 600 },
@@ -442,7 +442,8 @@ const Map<String, String> rawTables = {
   "enemySmallSize": 8,
   "split": { "nearPx": 6, "fx": "hit_spark" },
   "revive": { "minRise": 0.2, "fx": "level_up" },
-  "zone": { "color": "#2E86C1", "alpha": 0.35, "max": 8, "fallbackSec": 2 },
+  "stun": { "color": "#FFE14D", "orbitPx": 5, "periodMs": 600 },
+  "zone": { "color": "#2E86C1", "alpha": 0.35, "max": 8 },
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },
     { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },

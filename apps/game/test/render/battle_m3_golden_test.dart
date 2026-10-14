@@ -40,7 +40,7 @@ const _fleet = [
   FleetSlot(crewId: 'starry', cooldown: 1, skillCooldown: 0.8),
 ];
 
-/// 틱 0 해일 궁극기, 틱 1 수중 공격(장판), 틱 3 투척 스킬 + 분열 적 처치(작은 적 2마리).
+/// 틱 0 해일 궁극기, 틱 1 수중 공격 + ZoneSpawned(장판), 틱 3 투척 스킬 + 분열 적 처치(작은 적 2마리).
 List<RecordedTick> _recording() {
   EnemyView en(int id, String kind, double x, double y, {String layer = 'surface'}) =>
       EnemyView(id: id, kind: kind, x: x, y: y, hpRatio: 1, layer: layer);
@@ -72,6 +72,7 @@ List<RecordedTick> _recording() {
     tick(0, const [UltimateCast(0, crewId: 'octo', ultimateId: 'ult_tidal_wave')]),
     tick(1, const [
       AttackFired(1, crewId: 'starry', family: 'underwater', targetIds: [5], x: 228, y: 124),
+      ZoneSpawned(1, crewId: 'starry', x: 228, y: 124, radius: 16, ticks: 40),
     ]),
     tick(2, const []),
     tick(3, [

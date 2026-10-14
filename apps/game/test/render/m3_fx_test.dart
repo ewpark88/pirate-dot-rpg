@@ -59,29 +59,29 @@ void main() {
     });
   });
 
-  group('수용 기준 2: 화면 스킬 (임시 어댑터)', () {
-    List<RecordedTick> cast(int hits) => [
+  group('수용 기준 2: 화면 스킬 (SkillCast.scope)', () {
+    List<RecordedTick> cast(String scope) => [
       _crowd(0, 10),
       _crowd(
         1,
         10,
         events: [
-          const SkillCast(1, crewId: 'pang', skillId: 'direct_snipe', x: 150, y: 100),
-          for (var i = 1; i <= hits; i++) Damage(1, targetId: i, amount: BigNum.from(5), crewId: 'pang'),
+          SkillCast(1, crewId: 'pang', skillId: 'direct_snipe', x: 150, y: 100, scope: scope),
+          for (var i = 1; i <= 10; i++) Damage(1, targetId: i, amount: BigNum.from(5), crewId: 'pang'),
         ],
       ),
       _crowd(2, 10),
     ];
 
-    test('화면 안 적 80% 이상을 맞히면 화면 전체 연출', () {
-      final s = _play(cast(9));
+    test('scope screen이면 화면 전체 연출', () {
+      final s = _play(cast('screen'));
       expect(s.screenFlashMs, greaterThan(0));
-      expect(s.effects.active.where((e) => e.sheetId == 'hit_spark').length, greaterThanOrEqualTo(9));
+      expect(s.effects.active.where((e) => e.sheetId == 'hit_spark').length, greaterThanOrEqualTo(10));
       expect(s.effects.active.length, lessThanOrEqualTo(tables.juice.maxEffects));
     });
 
-    test('일부만 맞히면 보통 스킬', () {
-      final s = _play(cast(2));
+    test('scope normal이면 보통 스킬 (대상이 많아도)', () {
+      final s = _play(cast('normal'));
       expect(s.screenFlashMs, lessThanOrEqualTo(0));
     });
   });
@@ -127,7 +127,31 @@ void main() {
     });
   });
 
-  test('수용 기준 5: 기절 별 — 계약 B(EnemyView.stunned) main 반영 후', () {}, skip: '계약 B 대기 (render-m3-events)');
+  test('수용 기준 5: 기절한 적은 별 표시 대상이고, 풀리면 꺼진다', () {
+    RecordedTick at(int t, {required bool stunned}) => RecordedTick(
+      BattleView(
+        tick: t,
+        shipHp: BigNum.from(60),
+        shipHpMax: BigNum.from(60),
+        enemies: [EnemyView(id: 1, kind: 'crab', x: 200, y: 100, hpRatio: 1, stunned: stunned)],
+      ),
+      const [],
+    );
+    final s = _play([
+      at(0, stunned: true),
+      at(1, stunned: true),
+      at(2, stunned: false),
+      at(3, stunned: false),
+    ], ticksToPlay: 0.5);
+    expect(s.poseOf(1)!.stunned, isTrue);
+    final later = _play([
+      at(0, stunned: true),
+      at(1, stunned: true),
+      at(2, stunned: false),
+      at(3, stunned: false),
+    ], ticksToPlay: 2.5);
+    expect(later.poseOf(1)!.stunned, isFalse);
+  });
 
   group('수용 기준 6: 적 역할 모양', () {
     test('regions.json의 모든 적 종류에 모양이 있고 모르는 종류는 basic', () {
@@ -180,23 +204,21 @@ void main() {
     expect(s.poseOf(1), isNotNull);
   });
 
-  test('수용 기준 9: 수중 장판 (임시 어댑터) — 지속 시간 뒤 사라진다', () {
-    final fallbackTicks = (fx.zone.number('fallbackSec') * 1000 / tickMs).round();
+  test('수용 기준 9: 수중 장판 (ZoneSpawned) — ticks 뒤 사라진다', () {
+    const zoneTicks = 40;
     final ticks = [
       _crowd(0, 3),
       _crowd(
         1,
         3,
-        events: [
-          const AttackFired(1, crewId: 'octo', family: 'underwater', targetIds: [1], x: 150, y: 124),
-        ],
+        events: [const ZoneSpawned(1, crewId: 'octo', x: 150, y: 124, radius: 20, ticks: zoneTicks)],
       ),
-      for (var t = 2; t < fallbackTicks + 10; t++) _crowd(t, 3),
+      for (var t = 2; t < zoneTicks + 10; t++) _crowd(t, 3),
     ];
     final s = _play(ticks, ticksToPlay: 2);
     expect(s.zones.active, hasLength(1));
-    expect(s.zones.active.single.radius, tables.skills.families.firstWhere((f) => f.id == 'underwater').attack.radius);
-    final later = _play(ticks, ticksToPlay: fallbackTicks + 4.0);
+    expect(s.zones.active.single.radius, 20);
+    final later = _play(ticks, ticksToPlay: zoneTicks + 4.0);
     expect(later.zones.active, isEmpty);
   });
 }

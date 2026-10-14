@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/painting.dart' show FontWeight, Shadow, TextPainter, TextSpan, TextStyle;
@@ -125,9 +126,23 @@ class ScenePainter {
       _fill(c, l, t - 3, size, 1, _hpBack.toARGB32());
       _fill(c, l, t - 3, size * e.hpRatio, 1, _hpFront.toARGB32());
     }
+    if (e.stunned) _stars(c, e.drawX, t - 4);
     if (showHitboxes) {
       _stroke.color = _hitbox;
       c.drawRect(Rect.fromLTWH(l, t, size, size), _stroke);
+    }
+  }
+
+  late final int _starColor = parseArgb(scene.fx.stun.str('color'), 'stun.color');
+  late final double _starOrbit = scene.fx.stun.number('orbitPx');
+  late final double _starPeriod = scene.fx.stun.number('periodMs');
+
+  /// 기절: 머리 위에서 별 2개가 돈다.
+  void _stars(Canvas c, double cx, double cy) {
+    final a = scene.clockMs / _starPeriod * 2 * math.pi;
+    for (var k = 0; k < 2; k++) {
+      final ang = a + k * math.pi;
+      _fill(c, cx + math.cos(ang) * _starOrbit - 1, cy + math.sin(ang) * _starOrbit / 2 - 1, 2, 2, _starColor);
     }
   }
 

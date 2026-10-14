@@ -189,6 +189,7 @@ class FxMapTable {
       enemySmallSize = j.number('enemySmallSize'),
       split = j.obj('split'),
       revive = j.obj('revive'),
+      stun = j.obj('stun'),
       zone = j.obj('zone');
 
   final Map<String, JsonReader> events;
@@ -210,6 +211,9 @@ class FxMapTable {
   final double enemySmallSize;
   final JsonReader split;
   final JsonReader revive;
+
+  /// 기절 별 (EnemyView.stunned).
+  final JsonReader stun;
   final JsonReader zone;
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.

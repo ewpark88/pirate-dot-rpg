@@ -81,9 +81,10 @@ class EventDirector implements ReplayListener {
         case AttackFired():
           final fxId = _crewFx[e.crewId];
           if (fxId != null) scene.spawnEffect(fxId, e.x, e.y);
-          _m3.zoneFromAttack(e);
+        case ZoneSpawned():
+          _m3.onZone(e);
         case SkillCast():
-          _m3.onSkill(e, tick);
+          _m3.onSkill(e);
           _flashSlot(tick.frame, e.crewId);
         case Damage():
           _damage(e, tick, index);

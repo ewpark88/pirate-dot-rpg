@@ -12,8 +12,8 @@
 - [x] 3. 스킬 시전·화면 스킬(임시 어댑터 포함)
 - [x] 4. 궁극기 패턴 sweep·rain·strikes·volley
 - [x] 5. 슬롯 스킬 막대, 적 역할 모양, 분열·부활 감지
-- [ ] 6. 장판 임시 어댑터 완료 → ZoneSpawned 전환, 화면 스킬 scope 전환, 기절 별(계약 A·B·C main 반영 후)
-- [ ] 7. 골든 `battle_m3.png`(새)·`battle_aoe.png`(갱신) 생성 완료 → S1 승인 대기 → `tool\check.bat --full` → 커밋
+- [x] 6. 계약 A·B·C 반영: 화면 스킬 `scope`, 장판 `ZoneSpawned`, 기절 별 `stunned` — 어댑터 제거
+- [x] 7. 골든 `battle_m3.png`(새)·`battle_aoe.png`(갱신) S1 승인 → 커밋 108a680
 
 ## 검증 방법
 `tool\check.bat --full`, `flutter test apps/game/test/render`.

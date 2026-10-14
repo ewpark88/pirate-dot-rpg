@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-m3-fx.md`(승인됨) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md` |
-| 상태 | render-m3-fx 구현 완료(임시 어댑터 포함), 골든 2장(새 `battle_m3.png`, 갱신 `battle_aoe.png`) S1 확인 대기 — 미커밋 |
-| 막힌 것 | 골든 승인 · 계약 A·B·C main 반영(S1 전투 M3와 함께) · 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
+| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md`, `plans/done/render-m3-fx.md` |
+| 상태 | render-m3-fx 완료 — 계약 A·B·C 반영(어댑터 제거, 기절 별), main e883272까지 머지, check --full 통과. 다음: render-regions 스펙 |
+| 막힌 것 | 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
 
 ## 실기기 측정
 
@@ -20,7 +20,8 @@
   `M3Director`(스킬·화면 스킬 어댑터·궁극기 sweep/rain/strikes/volley·분열/부활 감지·장판 어댑터), `EnemyLooks`(regions.json 원문 role),
   이펙트 지연·이동(`Effect.delayMs/vx`), 장판 풀, 슬롯 스킬 막대·준비 깜빡임, 배 회복·버프. `scene/motion.dart`로 움직임 계산 분리.
 - 검증: `tool\check.bat --full` 통과(33.5s), 렌더 테스트 47개 + skip 1.
-- 다음 할 일: 골든 승인 → 커밋 → 계약 A·B·C가 main에 오면 어댑터를 실제 필드로 바꾸고 기절 별 켜기.
+- 추가: 골든 승인(S1) → 108a680 커밋. main(전투 M3 12abe88, 계약 A·B·C) 머지 → 어댑터 제거, `scope`·`ZoneSpawned`·`stunned`(별 2개 회전) 사용. 골든 그대로 통과.
+- 다음 할 일: 해역 배경 6종 플레이스홀더 + 보스 등장·처치 연출 점검(render-regions 스펙).
 - 남은 문제: 기존 골든 `battle_aoe.png`가 적 색(역할 표)·스킬 막대 때문에 바뀜 — 갱신 승인 필요.
 
 ### 2026-10-14 · S3 · render-perf (실기기 측정 준비)
