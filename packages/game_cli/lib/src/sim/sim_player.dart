@@ -44,6 +44,7 @@ class SimResult {
   int rebirths = 0;
   int mapPieces = 0;
   Duration? firstRebirth;
+  int? firstRebirthStage;
   Duration? rebirthRecoverMax;
 }
 
@@ -168,6 +169,7 @@ class SimPlayer {
       _recovering = (at: _online, stage: (s.progress.stage * t.meta.rebirth.number('recoverTargetRatio')).ceil());
       result.rebirths++;
       result.firstRebirth ??= _elapsed;
+      result.firstRebirthStage ??= s.progress.stage;
       return;
     }
     if (s.progress.farming) {

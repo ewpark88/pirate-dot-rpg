@@ -75,7 +75,11 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
   final p = rebirthPreview(s, t);
   if (p.locked && !force) return s;
   final old = s.battle ?? BattleView.empty;
-  ctx.emit(SaveRequested(ctx.tick, reason: 'rebirth'));
+  ctx
+    ..emit(
+      RebirthDone(ctx.tick, gain: p.gain, pieces: p.currentPieces + p.gain, rebirths: s.progress.rebirths + 1),
+    )
+    ..emit(SaveRequested(ctx.tick, reason: 'rebirth'));
   return s.copyWith(
     wallet: s.wallet.copyWith(gold: BigNum.zero, mapPieces: p.currentPieces + p.gain),
     progress: Progress(bestStage: s.progress.bestStage, rebirths: s.progress.rebirths + 1),

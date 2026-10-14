@@ -58,6 +58,8 @@ void main() {
     expect(s.tokens, 4);
     expect(s.collection, {'octo'});
     expect(h.of<SaveRequested>().map((e) => e.reason), contains('rebirth'));
+    final done = h.of<RebirthDone>().single;
+    expect((done.gain, done.pieces, done.rebirths), (pieces(50), 3 + pieces(50), 1));
   });
 
   test('기준 3: 미리보기 = 처리와 같은 계산, 잠겨 있어도 값을 준다', () {
