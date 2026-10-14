@@ -86,21 +86,25 @@ void main() {
 
   // 설계서 4.12: 스테이지 1·2 보스는 입력 없이 시작 편성(옥토·톡)으로 잡혀야 한다(3단계 실패는 tutorialFailHpMultiplier가 따로 만든다).
   // 2026-10-14 측정: 스테이지 1 보스가 30초 뒤 체력 44% 남음 — 일반 등급 ±10% 안에서는 못 맞춘다 → 보스 HP(waves, S2) 조정 대기.
-  test('튜토리얼: 입력 없이 3분 안에 스테이지 1·2 보스 처치, 스테이지 3 도달', () {
-    final clock = ManualClock(DateTime.utc(2026, 10, 14));
-    final host = EngineHost(
-      tables: tables,
-      initial: GameState.newGame(playerId: 'first', seed: 3, now: clock.now(), crews: tables.meta.startingCrews),
-      clock: clock,
-    );
-    var cleared = 0;
-    host.ticks.listen((t) => cleared += t.events.whereType<BossCleared>().length);
-    for (var i = 0; i < 20 * 180; i++) {
-      clock.advance(host.engine.tickLength);
-      host.step();
-    }
-    host.stop();
-    expect(cleared, greaterThanOrEqualTo(2), reason: '스테이지 1·2 보스 처치');
-    expect(host.state.progress.stage, greaterThanOrEqualTo(3), reason: '스테이지 3 도달');
-  }, skip: '보스 HP 조정 대기 (S2 waves) — 시작 편성이 스테이지 1 보스를 30초에 56%만 깎는다');
+  test(
+    '튜토리얼: 입력 없이 3분 안에 스테이지 1·2 보스 처치, 스테이지 3 도달',
+    () {
+      final clock = ManualClock(DateTime.utc(2026, 10, 14));
+      final host = EngineHost(
+        tables: tables,
+        initial: GameState.newGame(playerId: 'first', seed: 3, now: clock.now(), crews: tables.meta.startingCrews),
+        clock: clock,
+      );
+      var cleared = 0;
+      host.ticks.listen((t) => cleared += t.events.whereType<BossCleared>().length);
+      for (var i = 0; i < 20 * 180; i++) {
+        clock.advance(host.engine.tickLength);
+        host.step();
+      }
+      host.stop();
+      expect(cleared, greaterThanOrEqualTo(2), reason: '스테이지 1·2 보스 처치');
+      expect(host.state.progress.stage, greaterThanOrEqualTo(3), reason: '스테이지 3 도달');
+    },
+    skip: '초반 보스 HP(waves boss.earlyHpMultiplier) 조정 대기 — S2가 sim·튜토리얼과 같이 맞춘다',
+  );
 }
