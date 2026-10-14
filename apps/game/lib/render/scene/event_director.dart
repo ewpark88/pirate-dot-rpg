@@ -50,6 +50,7 @@ class EventDirector implements ReplayListener {
       for (var b = 0; b < style.burst; b++) {
         scene.projectiles.obtain()
           ..style = style
+          ..family = e.family
           ..fromX = kShipNoseX
           ..fromY = kShipNoseY
           ..toX = target?.x ?? e.x

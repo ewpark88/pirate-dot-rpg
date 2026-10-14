@@ -124,7 +124,8 @@ void main() {
 
   test('수용 기준 6: 부하 장면 → 라이브 복귀', () async {
     final feed = StreamController<RecordedTick>.broadcast(sync: true);
-    final g = BattleGame(feed: feed.stream)..onGameResize(Vector2(kLogicalWidth * 2, kLogicalHeight * 2));
+    final g = BattleGame(feed: feed.stream, loadSprites: false)
+      ..onGameResize(Vector2(kLogicalWidth * 2, kLogicalHeight * 2));
     await g.onLoad();
     expect(g.mode, BattleMode.live);
     g.loadStress();

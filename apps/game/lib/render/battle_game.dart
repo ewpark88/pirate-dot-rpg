@@ -14,6 +14,7 @@ import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/viewport/integer_scale.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
@@ -41,6 +42,7 @@ class BattleGame extends FlameGame {
     JuiceSettings settings = const JuiceSettings(),
     this.onHaptic,
     bool? perfOverlay,
+    this.loadSprites = true,
   }) : _feed = feed,
        _tables = tables ?? GameTables.load(),
        _settings = _powerSaveSwitch ? settings.copyWith(powerSave: true) : settings,
@@ -60,6 +62,18 @@ class BattleGame extends FlameGame {
 
   /// 측정 오버레이·10초 콘솔 요약.
   bool perfOverlay;
+
+  /// onLoad에서 아트 팩(assets/)을 읽을지. 없는 이미지는 플레이스홀더.
+  final bool loadSprites;
+  SpriteBank? _sprites;
+  bool _useSprites = true;
+
+  /// 운영자 "스프라이트 끄기" (플레이스홀더와 비교).
+  bool get useSprites => _useSprites;
+  set useSprites(bool v) => painter.useSprites = _useSprites = v;
+
+  /// 읽은 스프라이트 수 (0이면 전부 플레이스홀더).
+  int get spriteCount => _sprites?.length ?? 0;
 
   late BattleScene scene;
   late ScenePainter painter;
@@ -118,7 +132,10 @@ class BattleGame extends FlameGame {
     };
     mode = m;
     scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic);
-    painter = ScenePainter(scene)..showHitboxes = _showHitboxes;
+    painter = ScenePainter(scene)
+      ..showHitboxes = _showHitboxes
+      ..sprites = _sprites
+      ..useSprites = _useSprites;
     _cache.dispose();
     _dirty = true;
   }
@@ -135,6 +152,11 @@ class BattleGame extends FlameGame {
     camera.viewfinder.anchor = Anchor.topLeft;
     world.add(_SceneLayer(this));
     _sub = _feed?.listen(_onTick);
+    if (loadSprites) {
+      images.prefix = 'assets/';
+      _sprites = await SpriteBank.load(images, _tables);
+      painter.sprites = _sprites;
+    }
   }
 
   @override
