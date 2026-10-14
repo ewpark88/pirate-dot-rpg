@@ -1,8 +1,7 @@
 # 스펙: 아트 팩 v0.2 적용 준비 (art 레인 2단계 + 렌더 스프라이트 로더)
 
-- 상태: 초안 — 승인 대기 · 레인: art(에셋·도구) + render(로더·그리기) — 둘 다 S3 · 설계서 절: 10장 아트·사운드 조달, 6.3 라이선스 검사
-- 파일 이름 메모: `docs/specs/art-*`·`apps/game/assets/`는 art 레인 소유라 `lane/render`에서 쓸 수 없다. 이 스펙은 렌더 이름으로 두고,
-  에셋 작업은 `lane/art` 브랜치(worktree)에서 한다(아래 결정 필요).
+- 상태: 승인됨 (2026-10-14, S1) · 레인: art(에셋·도구) + render(로더·그리기) — 둘 다 S3 · 설계서 절: 10장 아트·사운드 조달, 6.3 라이선스 검사
+- 파일 이름: render 레인 이름으로 둔다(S1 결정).
 
 ## 목적
 - 시원한가: 단색 사각을 실제 도트(선원 초상·적·배·발사체·이펙트 시트)로 바꿔 M2 실기기 손맛 확인 때 "게임처럼" 보이게 한다.
@@ -20,7 +19,8 @@
 1. **에셋 배치**(`apps/game/assets/`, art 레인):
    - `crews/<id>.png` 32×32 — `crews.json`의 `portrait` 경로와 같다(40명 모두 있음).
    - `fx/<sheetId>.png` — `fx_map.json fxSheets`의 id·w·h·frames와 크기가 맞아야 한다(가로로 프레임).
-   - `enemies/<kind>.png` 16px 안 — v0.3에 있는 6종(crab·jelly·fish·puffer·urchin·gull)만. 2프레임은 렌더가 1px 위아래 흔들기로 만든다.
+   - `enemies/<kind>.png` — v0.3에 있는 6종(crab·jelly·fish→piranha·puffer·urchin·gull)만. 팩이 이미 가로 2프레임 시트(한 장 9~17px)라 그대로 쓴다.
+   - `coin.png`는 4×4 3프레임 시트.
    - `bosses/enemy_ship.png`, `ship/ship_t1.png`(약 60×46), `projectiles/<name>.png`(cannonball·bullet·harpoon·stone·torpedo), `coin.png`.
    - 없는 것(적 21종, 보스 12종, 해역 배경 6장, 발사체 shock·assault·air): 지금 플레이스홀더 유지. 커버리지 표를 진척 문서에 둔다.
 2. **가져오기 도구**(`tools/art/import_pack.py`, art 레인): 두 zip을 풀어 규칙 1대로 복사·이름 바꿈 → 크기 검증(틀리면 실패) →
@@ -35,7 +35,7 @@
 6. **성능**: 스프라이트 그리기는 이미지 캐시 + `drawImageRect`. 부하 장면에서 프레임 시간을 플레이스홀더 대비 비교해 진척 문서에 남긴다.
 
 ## 수용 기준 (Given / When / Then)
-1. Given 두 zip When `import_pack.py` 두 번 Then `apps/game/assets/` 결과가 같고, 크기 검증 통과(초상 32×32, 적 ≤16px, fx 시트 = fx_map 크기).
+1. Given 두 zip When `import_pack.py` 두 번 Then `apps/game/assets/` 결과가 같고, 크기 검증 통과(초상 32×32, 적 2프레임·한 장 ≤17px, fx 시트 = fx_map 크기, 코인 3프레임).
 2. Given 가져온 에셋 When `tool\check.bat` Then 라이선스 검사 통과 — 모든 파일이 `LICENSES.json`에 `OWN` 등록.
 3. Given `overrides/crews/octo.png` When 가져오기 Then 그 파일이 쓰인다.
 4. Given 스프라이트가 없는 종류 When 그림 Then 플레이스홀더(기존 골든 4장 그대로 통과).
@@ -48,7 +48,8 @@
 ## 운영자 모드
 "스프라이트 끄기" 토글(플레이스홀더로 비교) — 값만 `BattleGame.useSprites`로 노출, 패널은 UI.
 
-## 열린 질문 (S1)
-- Q1. art 레인 작업 위치: `lane/art` worktree를 새로 만들지, 아니면 render 브랜치에서 art 경로를 잠시 허용할지(LANES.yaml).
-- Q2. pubspec `flutter: assets:` 추가(규칙 4) — S1이 main에서.
-- Q3. 원본 팩은 저장소 밖(`D:\Projects\이미지참고용`). 도구가 그 경로를 인자로 받는다 — 다른 PC에서 다시 굽기는 팩 zip 경로만 바꾸면 된다.
+## 결정 기록 (2026-10-14, S1)
+- Q1: render 레인이 `apps/game/assets/`·`tools/art/`를 영구 소유(main c691a83, 같은 S3 세션). lane/render에서 작업.
+- Q2: pubspec `flutter: assets:`는 S1이 에셋 커밋을 머지하면서 같은 머지 커밋에 추가.
+- 원본 팩은 저장소 밖 — 도구가 zip 경로를 인자로 받는다. zip 안 스크립트는 실행하지 않고 이미지·json만 읽는다.
+- 실행: `python -I tools/art/import_pack.py --dot <pirate_dot_v0.2_32px.zip> --battle <pirate_battle_v0.3.zip> [--check]`, 테스트 `python -I tools/art/test_import_pack.py`.

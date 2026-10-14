@@ -5,6 +5,9 @@ import 'package:game_data/game_data.dart';
 /// 배 앞머리에서 목표로 날아가는 발사체. 진행률은 재생기의 표시 위치로 정한다(히트스톱이면 멈춘다).
 class Projectile {
   late ProjectileStyle style;
+
+  /// 발사한 계열 (스프라이트 키 `projectile:<family>`).
+  String family = '';
   double fromX = 0;
   double fromY = 0;
   double toX = 0;
