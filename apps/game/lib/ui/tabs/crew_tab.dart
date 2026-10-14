@@ -47,7 +47,10 @@ class CrewTab extends ConsumerWidget {
     final bonus = ref.watch(
       gameStateProvider.select((s) {
         final b = bonusOf(s);
-        return b == null ? null : (b.attackBonus, b.nextIn);
+        if (b == null) return null;
+        // 경제는 다음 보너스가 붙는 보유 수(nextAt)를 준다 → 남은 명 수. 다 모았으면(null) 0.
+        final next = b.nextAt;
+        return (b.attackBonus, next == null ? 0 : next - b.owned);
       }),
     );
 

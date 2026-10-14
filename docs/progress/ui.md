@@ -3,11 +3,30 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/ui-m3-meta.md` |
-| 상태 | 선원 초상 커밋 (골든 2장 S1 승인). 다음: 운영자 패널 2차 |
-| 기다리는 것 | 골든 4장 승인 · S2 B1·B3·B5·B7·B8·B9·B10 + lastSummon 채우기 → provider 본문 교체 |
+| 계획 | `docs/plans/active/ui-rebirth-boss.md` |
+| 상태 | 보스 약점 칩 커밋, 환생 화면 진행 |
+| 기다리는 것 | S2 환생 미리보기 함수 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 환생·보스 약점 스펙
+- 한 일: 46f958f 커밋(경제 함수 연결, 골든 8장, M3 계획 done). 스펙 초안 `docs/specs/ui-rebirth-boss.md` — 항해 탭 환생 카드·확인 창, 보스전 약점 칩.
+- 다음 할 일: 승인 → 계획 → 가짜 provider로 환생 화면, 약점 칩(테이블만으로 가능)
+- 진행: 스펙 승인(S1), main 553e883(경제 타입 game_core.dart로) 머지. 보스 약점 칩(보스 이름 + 약점 계열, 전장 오른쪽 위) 구현 — 약점 없는 보스·보스전 아님이면 숨김. tableText에 보스 이름 13개 추가.
+
+### 2026-10-14 · S4 · 경제 함수 연결 (가짜 provider → 실제)
+- 한 일: c772b68(운영자 패널 2차) 커밋. main 4d480ff(경제 B1~B10)·c4aed47(`game_core/economy_views.dart`) 머지.
+  ui 임시 타입(GoalView·GoalKind·CollectionBonusView·QuestView·AttendanceView·AttendanceReward) 삭제 → 경제 타입 사용.
+  provider 본문: nextGoal·collectionBonus·chestReward·dailyQuests·attendance, 순풍 배지는 tailwindRemaining. 퀘스트 보상은 meta.dailyQuestRewardGems,
+  출석 칸은 JsonReader(gems | summon+minRarity), 도감 ‘다음까지’ = nextAt − owned. 테스트 가짜 값은 경제 타입 + 실제 테이블 출석 보상.
+  샘플 화면에 실제 목표 막대·퀘스트 아이콘이 나와 골든 8장 재생성. `check --full` 통과(66.8s, 위젯 122개). TODO(economy) 0개.
+- 다음 할 일: 골든 승인 → 커밋 → 계획 ui-m3-meta 완료 처리
+
+### 2026-10-14 · S4 · 운영자 패널 2차
+- 한 일: 스펙 ‘2차’ 절(S1 승인). 선원 묶음: 출전 선원마다 스킬 즉시(OpCastSkill), 출전 전원 전설/신화 첫 레벨(OpSetCrew, rarities levelMin 46·61).
+  튜토리얼 묶음: 1~6단계·끝(OpSetTutorial). 경제 묶음: 보물상자(OpSpawnChest)·순풍 +30분(OpGrantTailwind, ads.json durationSec). `operator/meta_group.dart`.
+  패널이 길어져 테스트는 scrollUntilVisible, 골든은 400×1300. ‘→’ 글리프가 글꼴에 없어 문구에서 뺌. `check --full` 통과(61.2s, 위젯 122개).
+- 다음 할 일: 골든 승인 → 커밋. 경제 B 함수 교체 대기
 
 ### 2026-10-14 · S4 · 선원 초상
 - 한 일: a75054d 커밋(출석 가짜 값 = 결정 20·20·30·30·40·50 + 영웅 확정). main c3e96fa(도트 팩 v0.2) 머지 →

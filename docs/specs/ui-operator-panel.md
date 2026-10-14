@@ -59,3 +59,18 @@
 
 ## 기다리는 것
 - S1: `sample_states.g.dart` 생성물(allLanes 등록). 오기 전에는 테스트에서 `fixtures/states`를 읽는 임시 소스로 진행하고, 받으면 교체.
+
+## 2차 (승인됨 2026-10-14, S1 — 전투 M3·메타 확인용)
+| 묶음 | 버튼 | 보내는 명령 | 값의 출처 |
+| --- | --- | --- | --- |
+| 선원 | 출전 선원마다 ‘스킬: 이름’ | `OpCastSkill(crewId)` | `battle.fleet` |
+| 선원 | 출전 전원 → 전설 첫 레벨 / 신화 첫 레벨 | 출전 선원마다 `OpSetCrew(id, level:)` | `rarities.json` legend·mythic의 levelMin (46·61) |
+| 전장 | 보물상자 띄우기 | `OpSpawnChest()` | - |
+| 경제 | 순풍 +30분 | `OpGrantTailwind(Duration)` | `ads.json` tailwind.durationSec |
+| 튜토리얼 | 단계 1~6, 끝 | `OpSetTutorial(step)` / `OpSetTutorial(null)` | - |
+
+### 2차 수용 기준
+10. Given 출전 4명(stage37) Then 스킬 버튼 4개, 망타 스킬 → `OpCastSkill('manta')`.
+11. ‘출전 전원 → 전설’ → 출전 선원마다 `OpSetCrew(id, level: 46)` (신화는 61). 레벨은 테이블에서 읽는다.
+12. 보물상자 → `OpSpawnChest`, 순풍 → `OpGrantTailwind(30분)`, 튜토리얼 3 → `OpSetTutorial(3)`, 끝 → `OpSetTutorial(null)`.
+13. 패널 골든 갱신.

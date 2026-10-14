@@ -16,5 +16,18 @@
   "battleRegionGlacier": "Glacier Sea",
   "battleRegionVolcano": "Volcanic Sea",
   "battleRegionAbyss": "The Abyss",
-  "battleRegionPhantom": "Phantom Sea"
+  "battleRegionPhantom": "Phantom Sea",
+  "battleBossEnemyShip": "Enemy Pirate Ship",
+  "battleBossRaiderShip": "Raider Ship",
+  "battleBossStormPirate": "Storm Pirate Ship",
+  "battleBossIcebreaker": "Icebreaker",
+  "battleBossFirePirate": "Fire Pirate Ship",
+  "battleBossDeepSub": "Deep Submarine",
+  "battleBossGhostShip": "Ghost Ship",
+  "battleBossGiantHermit": "Giant Hermit Crab",
+  "battleBossThunderRay": "Thunder Ray",
+  "battleBossIcebergWalrus": "Iceberg Walrus",
+  "battleBossLavaWhale": "Lava Whale",
+  "battleBossKraken": "Kraken",
+  "battleBossGhostAdmiral": "Ghost Fleet Admiral"
 }

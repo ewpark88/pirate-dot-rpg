@@ -71,5 +71,18 @@
   "uiSummonRevealAll": "모두 뒤집기",
   "uiSummonResultOk": "확인",
   "uiSummonNew": "NEW",
-  "uiQuestClaimGems": "+{gems}"
+  "uiQuestClaimGems": "+{gems}",
+  "uiBossWeak": "약점",
+  "uiBestStage": "최고 스테이지 {stage}",
+  "uiRebirthTitle": "보물지도",
+  "uiRebirthPieces": "지도 조각 {count}개 · 피해·골드 +{percent}",
+  "uiRebirthGain": "지금 환생하면 조각 +{count}",
+  "uiRebirthNext": "다음 조각까지 스테이지 {count}",
+  "uiRebirthLocked": "스테이지 {stage}부터 환생할 수 있어요",
+  "uiRebirthButton": "보물지도",
+  "uiRebirthLose": "초기화: 스테이지·골드·배 강화",
+  "uiRebirthKeep": "그대로: 선원·도감·젬",
+  "uiRebirthGainLine": "얻음: 조각 +{count}, 보너스 {from}에서 {to}로",
+  "uiRebirthConfirm": "보물지도 펼치기",
+  "uiCancel": "취소"
 }

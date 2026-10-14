@@ -2,13 +2,15 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 
 /// 해역 배경(하늘·바다·깊은 바다 + 원경 장식)과 보스 경고·실패 덮개 (docs/specs/render-regions.md).
 class StagePainter {
-  StagePainter(this.scene);
+  StagePainter(this.scene, this.sprites);
 
   final BattleScene scene;
+  final SpriteDraw sprites;
   final _paint = Paint()..isAntiAlias = false;
 
   void _rect(Canvas c, double l, double t, double w, double h, int argb) {
@@ -59,8 +61,44 @@ class StagePainter {
     _rect(c, l, t, w, (h * _lidRatio).roundToDouble(), a | (_lidColor & 0xFFFFFF));
   }
 
-  /// 흔들림 밖에서 그리는 덮개: 보스 실패 어두움, 보스 등장 붉은 테두리(깜빡임).
+  /// 해역 보스 첫 등장 컷인: 어두운 띠가 오른쪽에서 들어와 머물다 왼쪽으로 빠진다(render-moments 규칙 2).
+  void paintCutIn(Canvas c) {
+    final cut = scene.moments.cutIn;
+    if (!cut.active) return;
+    final cfg = scene.fx.cutIn;
+    final inMs = cfg.number('inMs');
+    final holdMs = cfg.number('holdMs');
+    final outMs = cfg.number('outMs');
+    final age = cut.ageMs;
+    final x = age < inMs
+        ? kLogicalWidth * (1 - age / inMs)
+        : age < inMs + holdMs
+        ? 0.0
+        : -kLogicalWidth * ((age - inMs - holdMs) / outMs);
+    final h = cfg.number('bandH');
+    final top = kFieldBottom / 2 - h / 2;
+    final band = parseArgb(cfg.str('bandColor'), 'cutIn.bandColor');
+    _rect(c, x, top, kLogicalWidth, h, ((cfg.number('bandAlpha') * 0xFF).round() << 24) | (band & 0xFFFFFF));
+    final line = parseArgb(cfg.str('lineColor'), 'cutIn.lineColor');
+    _rect(c, x, top, kLogicalWidth, 1, line);
+    _rect(c, x, top + h - 1, kLogicalWidth, 1, line);
+    final kind = cut.kind!;
+    final scale = cfg.number('bossScale');
+    final cx = x + kLogicalWidth / 2;
+    final sheet = sprites.sheet('boss:$kind');
+    if (sheet != null) {
+      sprites.draw(c, 'boss:$kind', cx, top + h / 2, w: sheet.frameW * scale / 2, h: sheet.frameH * scale / 2);
+      return;
+    }
+    final shape = scene.looks.bossOf(kind, boss: true)!;
+    final bw = (shape.w * scale / 2).clamp(0.0, h * 2);
+    final bh = (shape.h * scale / 2).clamp(0.0, h - 4);
+    _rect(c, cx - bw / 2, top + h / 2 - bh / 2, bw, bh, shape.color);
+  }
+
+  /// 흔들림 밖에서 그리는 덮개: 보스 실패 어두움, 보스 등장 붉은 테두리(깜빡임), 컷인.
   void paintOverlays(Canvas c) {
+    paintCutIn(c);
     final fx = scene.fx;
     if (scene.bossFailMs > 0) {
       final a = (fx.bossFailed.number('alpha') * 0xFF).round();

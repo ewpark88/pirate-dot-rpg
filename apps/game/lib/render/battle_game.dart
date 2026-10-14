@@ -14,11 +14,13 @@ import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/viewport/integer_scale.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
 export 'package:pirate_dot/render/layout.dart' show kLogicalHeight, kLogicalWidth;
+export 'package:pirate_dot/render/scene/moments.dart' show CutInState;
 
 /// 전장이 무엇을 재생하는가.
 enum BattleMode { live, demo, stress }
@@ -66,6 +68,12 @@ class BattleGame extends FlameGame {
 
   /// 효과음·배경음 (flame_audio 어댑터). null이면 무음.
   final AudioPort? audio;
+
+  /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
+  CutInState get cutIn => scene.moments.cutIn;
+
+  /// 운영자: 컷인 다시 보기.
+  void resetSeenBosses() => scene.moments.resetSeenBosses();
 
   /// 운영자 패널용 최근 효과음.
   List<String> get audioLog => scene.audioLog;

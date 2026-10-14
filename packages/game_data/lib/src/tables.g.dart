@@ -475,6 +475,15 @@ const Map<String, String> rawTables = {
   "bossLookDefault": "enemy_ship",
   "shield": { "color": "#48E5E5", "px": 2, "breakFx": "hit_spark", "breakCount": 3 },
   "tierColors": ["#CD7F32", "#C0C0C0", "#FFD700"],
+  "status": { "slowedTint": "#5DADE2", "slowedAlpha": 0.45, "dropColor": "#AED6F1", "dropPeriodMs": 500, "burnColors": ["#FF7A2F", "#FFD23F"], "burnBlinkMs": 120, "vulnerableColor": "#E74C3C", "iconGap": 4 },
+  "cutIn": { "inMs": 300, "holdMs": 600, "outMs": 300, "bandH": 40, "bandColor": "#101820", "bandAlpha": 0.85, "lineColor": "#FF3030", "bossScale": 2 },
+  "pillar": { "ms": 900, "w": 20, "color": "#FFF6B0", "fxScale": 2 },
+  "shipLook": {
+    "sloop": { "color": "#A0522D", "w": 56, "h": 40 },
+    "warship": { "color": "#5D4037", "w": 60, "h": 46 },
+    "ghost": { "color": "#7F8C8D", "w": 60, "h": 46 }
+  },
+  "regionSweep": { "fx": "tidal_wave", "durationMs": 900 },
   "audio": { "sfxMinGapMs": 40, "sfxMaxPerFrame": 6 },
   "sprites": { "enemyFrames": 2, "coinFrames": 3, "animMs": 250 },
   "chest": { "color": "#B9770E", "lidColor": "#F4D03F", "w": 14, "h": 10, "bobPx": 1.5, "bobMs": 900, "sinkTicks": 20, "sinkPx": 10 },
@@ -614,19 +623,19 @@ const Map<String, String> rawTables = {
     {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
   ],
   "bosses": [
-    {"id": "enemy_ship", "hpMultiplier": 1.0, "weakFamilies": []},
-    {"id": "raider_ship", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "storm_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "icebreaker", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "fire_pirate", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "deep_sub", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "ghost_ship", "hpMultiplier": 1.5, "weakFamilies": []},
-    {"id": "giant_hermit", "hpMultiplier": 2.5, "weakFamilies": ["lob", "air"], "mechanic": {"type": "frontArmor", "factor": 0.5, "bypassFamilies": ["lob", "air"]}},
-    {"id": "thunder_ray", "hpMultiplier": 2.5, "weakFamilies": ["pierce"], "mechanic": {"type": "shield", "intervalSec": 10, "factor": 0.25, "breakerFamilies": ["pierce"]}},
-    {"id": "iceberg_walrus", "hpMultiplier": 2.5, "weakFamilies": ["shock"], "mechanic": {"type": "shield", "intervalSec": 12, "factor": 0.25, "breakerFamilies": ["shock"]}},
-    {"id": "lava_whale", "hpMultiplier": 2.5, "weakFamilies": ["direct", "lob"], "mechanic": {"type": "lava", "intervalSec": 5, "shipDamageMultiplier": 1.0}},
-    {"id": "kraken", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "skip"], "mechanic": {"type": "tentacles", "count": 4, "hpRatio": 0.15}},
-    {"id": "ghost_admiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}}
+    {"id": "enemy_ship", "nameKey": "battleBossEnemyShip", "hpMultiplier": 1.0, "weakFamilies": []},
+    {"id": "raider_ship", "nameKey": "battleBossRaiderShip", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "storm_pirate", "nameKey": "battleBossStormPirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "icebreaker", "nameKey": "battleBossIcebreaker", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "fire_pirate", "nameKey": "battleBossFirePirate", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "deep_sub", "nameKey": "battleBossDeepSub", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "ghost_ship", "nameKey": "battleBossGhostShip", "hpMultiplier": 1.5, "weakFamilies": []},
+    {"id": "giant_hermit", "nameKey": "battleBossGiantHermit", "hpMultiplier": 2.5, "weakFamilies": ["lob", "air"], "mechanic": {"type": "frontArmor", "factor": 0.5, "bypassFamilies": ["lob", "air"]}},
+    {"id": "thunder_ray", "nameKey": "battleBossThunderRay", "hpMultiplier": 2.5, "weakFamilies": ["pierce"], "mechanic": {"type": "shield", "intervalSec": 10, "factor": 0.25, "breakerFamilies": ["pierce"]}},
+    {"id": "iceberg_walrus", "nameKey": "battleBossIcebergWalrus", "hpMultiplier": 2.5, "weakFamilies": ["shock"], "mechanic": {"type": "shield", "intervalSec": 12, "factor": 0.25, "breakerFamilies": ["shock"]}},
+    {"id": "lava_whale", "nameKey": "battleBossLavaWhale", "hpMultiplier": 2.5, "weakFamilies": ["direct", "lob"], "mechanic": {"type": "lava", "intervalSec": 5, "shipDamageMultiplier": 1.0}},
+    {"id": "kraken", "nameKey": "battleBossKraken", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "skip"], "mechanic": {"type": "tentacles", "count": 4, "hpRatio": 0.15}},
+    {"id": "ghost_admiral", "nameKey": "battleBossGhostAdmiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}}
   ],
   "enemies": [
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -20,6 +21,8 @@ const _sheetMaxHeight = 0.7;
   );
 }
 
+bool _claimable(QuestView q) => q.done && !q.claimed;
+
 /// 전장 위 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
 class DailyIcon extends ConsumerWidget {
   const DailyIcon({super.key});
@@ -28,7 +31,7 @@ class DailyIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
-    final claimable = (quests?.any((q) => q.canClaim) ?? false) || (attendance?.canClaim ?? false);
+    final claimable = (quests?.any(_claimable) ?? false) || (attendance != null && !attendance.claimedToday);
     final icon = IconButton.filledTonal(
       key: const Key('daily.icon'),
       visualDensity: VisualDensity.compact,
@@ -97,9 +100,9 @@ class _Quests extends ConsumerWidget {
                 ? Text(l10n.uiQuestClaimed)
                 : FilledButton.icon(
                     key: Key('daily.claim.${q.id}'),
-                    onPressed: q.canClaim ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
+                    onPressed: _claimable(q) ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
                     icon: const Icon(Icons.diamond, size: 14),
-                    label: Text(l10n.uiQuestClaimGems(q.rewardGems)),
+                    label: Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
                   ),
           ),
       ],
@@ -132,7 +135,7 @@ class _Attendance extends ConsumerWidget {
             ],
           ),
         ),
-        if (view.canClaim)
+        if (!view.claimedToday)
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton(
@@ -150,13 +153,16 @@ class _DayCell extends StatelessWidget {
   const _DayCell({required this.day, required this.reward, required this.view});
 
   final int day;
-  final AttendanceReward reward;
+
+  /// `meta.attendance.rewards`의 한 칸: `gems` 또는 `summon`+`minRarity`(영웅 이상 확정 소환).
+  final JsonReader reward;
   final AttendanceView view;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final today = day == view.day;
+    final ticket = !reward.has('gems');
     // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
     final checked = day < view.day || (today && view.claimedToday);
     final scheme = Theme.of(context).colorScheme;
@@ -173,18 +179,18 @@ class _DayCell extends StatelessWidget {
         children: [
           Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
           Icon(
-            checked ? Icons.check : (reward.ticket ? Icons.auto_awesome : Icons.diamond),
+            checked ? Icons.check : (ticket ? Icons.auto_awesome : Icons.diamond),
             size: 18,
             color: checked ? Colors.green : null,
           ),
-          if (reward.ticket)
+          if (ticket)
             Text(
               l10n.uiAttendanceTicket,
               style: Theme.of(context).textTheme.labelSmall,
               textAlign: TextAlign.center,
             )
           else
-            Text(reward.gems.toString(), style: Theme.of(context).textTheme.labelSmall),
+            Text(reward.integer('gems').toString(), style: Theme.of(context).textTheme.labelSmall),
         ],
       ),
     );

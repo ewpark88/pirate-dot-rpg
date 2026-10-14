@@ -21,5 +21,12 @@
   "opModeDemo": "Demo",
   "opModeStress": "Stress",
   "opPerfOverlay": "Perf Overlay",
-  "opHitboxes": "Hitboxes"
+  "opHitboxes": "Hitboxes",
+  "opCastSkill": "Skill: {crew}",
+  "opSetFleetLevel": "Fleet to {rarity} Lv{level}",
+  "opSpawnChest": "Spawn Chest",
+  "opGrantTailwind": "Tailwind +{minutes}m",
+  "opGroupTutorial": "Tutorial",
+  "opTutorialStep": "Step {step}",
+  "opTutorialEnd": "End"
 }

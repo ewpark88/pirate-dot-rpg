@@ -32,7 +32,7 @@
 
 ## 수용 기준 (Given / When / Then) — `apps/game/test/render/`
 1. Given `regions.json`의 배경 id 6개 When 조회 Then 모두 `fx_map.backgrounds`에 있고, 모르는 id는 `bg_coral`.
-2. Given stage 1·50·51·150·251·400 When 해역 결정 Then coral·coral·storm·glacier·phantom·phantom.
+2. Given stage 1·50·51·150·251·400 When 해역 결정 Then coral·coral·storm·glacier·phantom·storm(무한 항해 300 반복 — `regions.regionAt`, 2026-10-14 수정).
 3. Given stage 50 → 51 When 재생 Then `backgroundFadeMs`의 절반에서 하늘색이 두 해역 색의 중간, 끝나면 storm 색.
 4. Given `BossSpawned` When 재생 Then 경고 테두리가 켜지고 `bossEntrance.ms` 뒤 꺼진다. 번쩍임 끄기면 켜지지 않는다.
 5. Given 보스 `Kill` 다음 틱 `BossCleared` When 재생 Then 처치 연출은 한 번, 코인 비 `coinRain`개(코인 상한 이하), 슬로모션 동안 재생 속도 = `slowMoRate`.

@@ -20,7 +20,7 @@ typedef SpriteEntry = ({String key, String path, int frames});
 
 /// 아트 팩 이미지 (docs/specs/render-art-pack-v02.md 규칙 5). 없는 키는 null → 그리는 쪽이 플레이스홀더를 쓴다.
 ///
-/// 키: `crew:<id>` · `enemy:<kind>` · `boss:<kind>` · `ship` · `projectile:<family>` · `fx:<sheetId>` · `coin`.
+/// 키: `crew:<id>` · `enemy:<kind>` · `boss:<kind>` · `ship:<tierId>` · `projectile:<family>` · `fx:<sheetId>` · `coin`.
 class SpriteBank {
   final Map<String, SpriteSheet> _sheets = {};
 
@@ -39,7 +39,7 @@ class SpriteBank {
       for (final c in t.crews.crews) (key: 'crew:${c.id}', path: c.portrait, frames: 1),
       for (final k in t.regions.enemies.keys) (key: 'enemy:$k', path: 'enemies/$k.png', frames: enemyFrames),
       for (final b in fx.bossLook.keys) (key: 'boss:$b', path: 'bosses/$b.png', frames: 1),
-      (key: 'ship', path: 'ship/ship_t1.png', frames: 1),
+      for (final tier in t.shipTiers.tiers) (key: 'ship:${tier.id}', path: 'ship/${tier.sprite}.png', frames: 1),
       for (final f in t.skills.families)
         if (f.projectile != null) (key: 'projectile:${f.id}', path: 'projectiles/${f.projectile}.png', frames: 1),
       for (final s in fx.sheets) (key: 'fx:${s.id}', path: 'fx/${s.id}.png', frames: s.frames),

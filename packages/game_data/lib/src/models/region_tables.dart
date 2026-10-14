@@ -31,11 +31,15 @@ class RegionDef {
 class BossDef {
   BossDef.fromJson(JsonReader j)
     : id = j.str('id'),
+      nameKey = j.str('nameKey'),
       hpMultiplier = j.number('hpMultiplier'),
       weakFamilies = j.strs('weakFamilies'),
       mechanic = j.has('mechanic') ? BossMechanic.fromJson(j.obj('mechanic')) : null;
 
   final String id;
+
+  /// 보스 이름 ARB 키 (battle 레인).
+  final String nameKey;
   final double hpMultiplier;
 
   /// 약점 표시용 계열 (UI·렌더가 아이콘으로).

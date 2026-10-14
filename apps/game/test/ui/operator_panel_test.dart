@@ -12,9 +12,13 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'ui_harness.dart';
 
 /// kOperator는 상수라 테스트에서 켤 수 없다 → 패널을 직접 띄운다.
-Future<CommandLog> _pumpPanel(WidgetTester tester, {Widget home = const Scaffold(body: OperatorPanel())}) async {
+Future<CommandLog> _pumpPanel(
+  WidgetTester tester, {
+  Widget home = const Scaffold(body: OperatorPanel()),
+  Size size = const Size(400, 800),
+}) async {
   tester.view
-    ..physicalSize = const Size(400, 800)
+    ..physicalSize = size
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final log = CommandLog();
@@ -38,7 +42,8 @@ Future<CommandLog> _pumpPanel(WidgetTester tester, {Widget home = const Scaffold
 }
 
 Future<void> _tap(WidgetTester tester, String key) async {
-  await tester.ensureVisible(find.byKey(Key(key)));
+  // 패널이 길어 아래 묶음은 아직 안 만들어졌을 수 있다 → 보일 때까지 스크롤.
+  await tester.scrollUntilVisible(find.byKey(Key(key)), 200, scrollable: find.byType(Scrollable).first);
   await tester.pump();
   await tester.tap(find.byKey(Key(key)));
   await tester.pump();
@@ -156,7 +161,8 @@ void main() {
 
   testWidgets('기준 9: 골든 — 운영자 패널 (en)', (tester) async {
     await loadGoldenFonts();
-    await _pumpPanel(tester);
+    // 패널 전체가 보이게 세로로 길게.
+    await _pumpPanel(tester, size: const Size(400, 1300));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_operator_panel.png'));
   });
 }

@@ -71,5 +71,18 @@
   "uiSummonRevealAll": "Reveal All",
   "uiSummonResultOk": "OK",
   "uiSummonNew": "NEW",
-  "uiQuestClaimGems": "+{gems}"
+  "uiQuestClaimGems": "+{gems}",
+  "uiBossWeak": "Weak",
+  "uiBestStage": "Best stage {stage}",
+  "uiRebirthTitle": "Treasure Map",
+  "uiRebirthPieces": "Map pieces {count} · Damage·Gold +{percent}",
+  "uiRebirthGain": "Rebirth now: +{count} pieces",
+  "uiRebirthNext": "Next piece in {count} stages",
+  "uiRebirthLocked": "Rebirth unlocks at stage {stage}",
+  "uiRebirthButton": "Treasure Map",
+  "uiRebirthLose": "Reset: stage, gold, ship upgrades",
+  "uiRebirthKeep": "Kept: crew, collection, gems",
+  "uiRebirthGainLine": "Gain: +{count} pieces, bonus {from} to {to}",
+  "uiRebirthConfirm": "Open the Map",
+  "uiCancel": "Cancel"
 }

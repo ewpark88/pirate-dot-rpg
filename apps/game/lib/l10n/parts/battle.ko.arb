@@ -16,5 +16,18 @@
   "battleRegionGlacier": "빙하해",
   "battleRegionVolcano": "화산해",
   "battleRegionAbyss": "심해",
-  "battleRegionPhantom": "유령해"
+  "battleRegionPhantom": "유령해",
+  "battleBossEnemyShip": "적 해적선",
+  "battleBossRaiderShip": "약탈선",
+  "battleBossStormPirate": "폭풍 해적선",
+  "battleBossIcebreaker": "쇄빙선",
+  "battleBossFirePirate": "화염 해적선",
+  "battleBossDeepSub": "심해 잠수함",
+  "battleBossGhostShip": "유령선",
+  "battleBossGiantHermit": "대왕 소라게",
+  "battleBossThunderRay": "번개 가오리",
+  "battleBossIcebergWalrus": "빙산 바다코끼리",
+  "battleBossLavaWhale": "용암 고래",
+  "battleBossKraken": "크라켄",
+  "battleBossGhostAdmiral": "유령 함대 제독"
 }
