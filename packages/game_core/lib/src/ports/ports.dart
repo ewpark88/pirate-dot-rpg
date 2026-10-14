@@ -108,3 +108,18 @@ class NoopLeaderboard implements LeaderboardPort {
   @override
   Future<RankEntry?> me(Board board) async => null;
 }
+
+/// 효과음·배경음 (설계서 4.4 소리, 10장). 렌더가 이벤트를 보고 부르고, 앱 어댑터가 실제로 재생한다.
+/// 엔진(코어)에는 주입하지 않는다 — 소리는 결정론 밖이다.
+abstract interface class AudioPort {
+  /// [id]는 fx_map.json의 sfx id. [variant]는 변형 번호(0부터), [pitch]는 재생 속도 배율(1 = 원래).
+  void playSfx(String id, {int variant = 0, double pitch = 1});
+
+  /// regions.json의 bgm id. 같은 곡이면 이어서 튼다.
+  void playBgm(String id);
+
+  void stopBgm();
+
+  /// 0~1. 설정의 효과음·배경음 끄기는 0.
+  void setVolumes({required double sfx, required double bgm});
+}
