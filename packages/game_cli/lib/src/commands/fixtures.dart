@@ -29,10 +29,13 @@ class FixturesCommand extends Command<int> {
     final tables = GameTables.load();
     const encoder = JsonEncoder.withIndent('  ');
 
+    final samples = <String, String>{};
     for (final e in sampleStates(tables).entries) {
       final body = {'schemaVersion': currentSchemaVersion, ...e.value.toJson(includeBattle: true)};
       _write(root, 'fixtures/states/${e.key}.json', '${encoder.convert(body)}\n');
+      samples[e.key] = jsonEncode(body);
     }
+    _write(root, operatorSamplesPath, operatorSamplesSource(samples));
     final jsonl = encodeRecording(engineBattle(tables));
     _write(root, 'fixtures/events/sample_battle.jsonl', jsonl);
     _write(root, demoRecordingPath, recordingDartSource(jsonl));
@@ -54,4 +57,24 @@ class FixturesCommand extends Command<int> {
       ..writeAsStringSync(text);
     stdout.writeln('wrote $rel');
   }
+}
+
+/// 운영자 패널의 '샘플 상태 불러오기'가 읽는 생성물 (LANES.yaml allLanes).
+const operatorSamplesPath = 'apps/game/lib/operator/sample_states.g.dart';
+
+String operatorSamplesSource(Map<String, String> samples) {
+  final b = StringBuffer()
+    ..writeln('// 생성물 — 고치지 마세요. `dart run game_cli fixtures`가 fixtures/states/*.json과 함께 씁니다.')
+    ..writeln()
+    ..writeln('/// 샘플 상태 이름 → 세이브 본문 JSON (schemaVersion 포함).')
+    ..writeln('/// `GameState.fromJson(SaveCodec.migrate(jsonDecode(v) as Map<String, dynamic>))`로 읽는다.')
+    ..writeln('const Map<String, String> sampleStatesJson = {');
+  for (final e in samples.entries) {
+    // dart format이 바꾸지 않는 모양: 키 다음 줄에 6칸 들여 쓴 값.
+    b
+      ..writeln("  '${e.key}':")
+      ..writeln("      r'''${e.value}''',");
+  }
+  b.writeln('};');
+  return b.toString();
 }

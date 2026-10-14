@@ -19,6 +19,7 @@ allLanes:
   - packages/game_data/lib/src/tables.g.dart
   - apps/game/lib/l10n/merged/
   - apps/game/lib/render/demo/sample_battle.g.dart
+  - apps/game/lib/operator/sample_states.g.dart
 
 lanes:
   battle:
