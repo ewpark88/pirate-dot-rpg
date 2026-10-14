@@ -3,11 +3,57 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | 완료: `done/ui-tabs.md`, `done/ui-operator-panel.md` → 다음: 스펙 `ui-core-loop` |
-| 상태 | 운영자 패널 1차 커밋 (골든 S1 승인) |
-| 기다리는 것 | - |
+| 계획 | `docs/plans/active/ui-m3-meta.md` |
+| 상태 | M3 ①~⑥ 커밋(①④⑤와 상자 금액은 경제 함수 전까지 숨김), ⑦ 소환 결과 남음 |
+| 기다리는 것 | ⑦ 소환 결과 계약(S1) · S2 B1·B3·B5·B7·B8·B9·B10 → 각 provider 본문 교체 · 골든 3~4장 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · M3 ④ 퀘스트·출석
+- 한 일: 전장 왼쪽 위(순풍 아래) 퀘스트·출석 아이콘 1개, 받을 것이 있으면 빨간 점 → 하단 시트(최대 70%, HUD 안 가림):
+  퀘스트 4줄(종류별 문구·진행·완료), 모두 달성 보상·받기(ClaimDaily)/받음, 출석 7칸(지난 날 체크·오늘 강조·7일차 소환권)·받기(ClaimAttendance).
+  값은 `dailyQuestsProvider`·`attendanceProvider`(기본 null = 아이콘 숨김) — S2 B7·B8 오면 본문 교체. `check --full` 통과(위젯 90개).
+- 다음 할 일: ⑦ 소환 결과(계약 대기), 경제 함수가 오는 대로 provider 교체, 골든
+
+### 2026-10-14 · S4 · M3 ⑥ 튜토리얼
+- 한 일: b2adadb(상자) 머지됨, main 8196057(new_player만 tutorialStep 1) 머지. 튜토리얼 말풍선(전장과 탭 패널 사이 줄, 건너뛰기 항상, 1·6단계 확인 → TutorialAck),
+  가리킬 위젯을 `TutorialSpot`으로 감쌈(탭 아이콘·대포 강화·보스 도전·10회 소환·일괄 합치기·목표 막대). 4단계는 10회 소환 직후 TutorialAck(4) — 소환 결과 화면이 생기면 닫을 때로.
+  `adOffersAllowedProvider` = 광고 준비됨(`adsReadyProvider`, 지금 false) && 튜토리얼 아님. 테스트 하네스는 기본으로 튜토리얼을 끝낸 상태로 그림(`keepTutorial`).
+  스펙에 ⑦ 소환 결과 연출 추가(S1 요청). `check --full` 통과(위젯 84개).
+- 다음 할 일: S2 B7·B8 오면 ④, 소환 결과 계약 오면 ⑦, 그 뒤 골든 3~4장
+
+### 2026-10-14 · S4 · M3 ② 보물상자
+- 한 일: cb9482f(①③⑤) 머지됨. 세이브 v3(main 16dda02) 머지. 상자: `battle.chest`가 있으면 전장 논리 좌표에 탭 영역(→ TapChest) + 가라앉기 링
+  (ticksLeft / (ads.chest.floatSec × 1000 / tickMs)), 금액은 `chestRewardProvider`(기본 숨김). 전장 상자(`battle.area`) 안에 렌더와 같은 좌표로 겹침. `check --full` 통과(위젯 77개).
+- 다음 할 일: S2 B7·B8 오면 ④ 퀘스트·출석 시트
+
+### 2026-10-14 · S4 · M3 ①③⑤
+- 한 일: b56dde8 스펙(승인)·요청서·계획. 순풍 배지(전장 왼쪽 위, 1초마다 다시 그림, h:mm/mm:ss, 배율은 ads.json),
+  목표 막대(HUD 아래, `nextGoalProvider`), 선원 탭 도감 보너스 줄(`collectionBonusProvider`) — 둘 다 기본값 null(숨김), S2 B1·B9 오면 본문 교체.
+  `clockProvider`를 `ui/state/clock_provider.dart`로 옮기고 테스트 하네스가 샘플 savedAt으로 고정. `check --full` 통과(위젯 70개대).
+- 다음 할 일: 골든 승인 → 커밋 → S1 세이브 v3·S2 상자 규칙 오면 ② 상자
+
+### 2026-10-14 · S4 · M3 메타 스펙
+- 한 일: 3e45c65 코어 루프 커밋(골든 7장 승인, 경제 offlinePreview·summonCostFor 연결). `docs/specs/ui-m3-meta.md` 초안(목표 막대·상자·순풍·퀘스트/출석·도감·튜토리얼)과
+  요청서 `docs/contracts/requests/ui-m3-meta.md` — 상자·튜토리얼 단계·‘받았나’가 GameState에 없어서 계약·세이브 v3 필요.
+- 다음 할 일: 승인 → 계약·경제 함수가 오는 순서대로, 그 전엔 가짜 provider로 화면·테스트
+- 남은 문제: 튜토리얼 문구 키 `tut.*`(설계서) vs 레인 접두어 규칙 — S1에 질문
+
+### 2026-10-14 · S4 · 코어 루프 화면
+- 한 일: 스펙 승인(3e6bb84) → 3b8e377 보스 도전·파밍 표시. 설정 화면(HUD 톱니, 9항목 → SetSetting, 앱 언어 = settings.lang),
+  `battleGameProvider`가 BattleGame을 만들고 설정 4개를 JuiceSettings로 넘김, 운영자 ‘렌더’ 묶음(라이브·데모·부하, 성능 표시, 히트박스),
+  복귀 오프라인 팝업(`OfflineRewardGate`: 시작 첫 프레임 + resume 다음 프레임, 중복 금지, 받기만). `check --full` 통과(위젯 60개).
+- 다음 할 일: M3 메타 화면 스펙(`ui-m3-meta`)
+- 마무리: main e883272 머지 → `offlinePreviewProvider`를 경제 `offlinePreview`로 연결(TODO 제거), 소환 비용 `summonCostFor`(첫 10연이면 ‘무료’)
+- 남은 문제:
+  - 골든 글꼴(SDK Roboto)에 한글이 없어 설정의 ‘한국어’ 버튼이 네모로 그려진다 — Galmuri 도입 때 해소
+  - resume 직후 프레임이 없을 수 있어 `ensureVisualUpdate`로 직접 요청한다
+
+### 2026-10-14 · S4 · 운영자 패널 커밋, 코어 루프 스펙
+- 한 일: dbb986f 운영자 패널(골든 S1 승인), main 298b02c(저장·복원) 머지 315e0ab — `flutter pub get` 후 `check --full` 통과.
+  `docs/specs/ui-core-loop.md` 초안(보스 도전·복귀 오프라인 팝업·설정 화면·운영자 렌더 묶음). main 1c31c32 다시 머지 — main이 옛 커밋(dbb986f)을 머지한 뒤 레인 검사가 main 파일을 ui 변경으로 잡던 문제 해소.
+- 다음 할 일: 승인 → 계획 → 테스트 먼저 → 구현
+- 남은 문제: 오프라인 미리보기 함수가 없어 S2에 `offlinePreview` 요청(S1 중계). 일시정지 저장 때 savedAt 갱신 여부 확인 요청
 
 ### 2026-10-14 · S4 · 운영자 패널 1차
 - 한 일: b5aa3e6 (전장 주입점·골든 재생성·스펙, S1이 main 머지). 운영자 패널: 샘플 4개 → `OpLoadState`(SaveCodec.migrate 경유),

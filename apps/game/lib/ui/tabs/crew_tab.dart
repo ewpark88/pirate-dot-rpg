@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 격자 한 줄에 선원 수.
@@ -31,17 +34,42 @@ class CrewTab extends ConsumerWidget {
     final collected = ref.watch(gameStateProvider.select((s) => (s.collection.length, s.crews.length))).$1;
     final owned = ref.read(gameStateProvider).crews.keys.toSet();
     final crews = [...ref.watch(tablesProvider).crews.crews]..sort((a, b) => a.num.compareTo(b.num));
+    final bonusOf = ref.watch(collectionBonusProvider);
+    final bonus = ref.watch(
+      gameStateProvider.select((s) {
+        final b = bonusOf(s);
+        return b == null ? null : (b.attackBonus, b.nextIn);
+      }),
+    );
 
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
         Row(
           children: [
-            Expanded(child: Text(l10n.uiCrewCollection(collected, crews.length))),
-            FilledButton(
-              key: const Key('crew.mergeAll'),
-              onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
-              child: Text(l10n.uiCrewMergeAll),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.uiCrewCollection(collected, crews.length)),
+                  // 도감 보너스 (5명마다 공격력, 설계서 4.5) — 경제 함수가 오기 전엔 없음.
+                  if (bonus case (final attack, final nextIn)) ...[
+                    Text(
+                      l10n.uiCollectionBonus(percentText(l10n, attack)),
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    if (nextIn > 0) Text(l10n.uiCollectionNext(nextIn), style: Theme.of(context).textTheme.labelSmall),
+                  ],
+                ],
+              ),
+            ),
+            TutorialSpot(
+              id: 'crew.mergeAll',
+              child: FilledButton(
+                key: const Key('crew.mergeAll'),
+                onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                child: Text(l10n.uiCrewMergeAll),
+              ),
             ),
           ],
         ),

@@ -7,6 +7,13 @@ class EnemyPose {
   String layer = 'surface';
   bool boss = false;
   double hpRatio = 1;
+
+  /// 기절 중 (머리 위 별).
+  bool stunned = false;
+
+  /// 보호막 (청록 테두리)과 무한 항해 테두리 단계 0~3.
+  bool shielded = false;
+  int tier = 0;
   double x = 0;
   double y = 0;
 
@@ -21,6 +28,9 @@ class EnemyPose {
     layer = v.layer;
     boss = v.boss;
     hpRatio = v.hpRatio;
+    stunned = v.stunned;
+    shielded = v.shielded;
+    tier = v.tier;
     x = nx;
     y = ny;
     drawX = nx;

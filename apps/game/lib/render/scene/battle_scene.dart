@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/fx/pool.dart';
@@ -7,32 +5,15 @@ import 'package:pirate_dot/render/fx/transients.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/juice/screen_shake.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/enemy_look.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
+import 'package:pirate_dot/render/scene/backdrop.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/event_director.dart';
+import 'package:pirate_dot/render/scene/motion.dart';
+import 'package:pirate_dot/render/scene/scene_state.dart';
 
-/// 맞은 적의 번쩍임·넉백 상태.
-class HitState {
-  int id = 0;
-  double flashMs = 0;
-  double knockAgeMs = 0;
-  double knockMs = 0;
-  double dirX = 0;
-  double dirY = 0;
-  double px = 0;
-}
-
-/// 운영자 모드·테스트가 읽는 숫자들. 객체 하나를 계속 고쳐 쓴다.
-class SceneStats {
-  int enemies = 0;
-  int projectiles = 0;
-  int effects = 0;
-  int numbers = 0;
-  int coins = 0;
-
-  /// 풀·재사용 버퍼가 만든 객체 수. 워밍업 뒤에는 변하지 않아야 한다.
-  int pooledObjects = 0;
-}
+export 'package:pirate_dot/render/scene/scene_state.dart';
 
 /// 그릴 것 전부의 상태. Flame을 모르는 순수 Dart라 테스트가 직접 돌린다.
 ///
@@ -45,6 +26,7 @@ class BattleScene {
     JuiceSettings settings = const JuiceSettings(),
     bool loop = true,
     this.onHaptic,
+    EnemyLooks? looks,
   }) : juice = tables.juice,
        fx = tables.fxMap,
        _settings = settings {
@@ -61,6 +43,9 @@ class BattleScene {
     coins = Pool(juice.maxCoins, Coin.new);
     numbers = DamageNumbers(juice.damageNumber, juice.maxDamageNumbers);
     hits = Pool(_maxHits, HitState.new);
+    zones = Pool(fx.zone.integer('max'), Zone.new);
+    this.looks = looks ?? EnemyLooks.fromTables(tables);
+    backdrop = Backdrop(fx, rawTables['regions']!);
     player.listener = EventDirector(this);
     this.settings = settings;
   }
@@ -78,15 +63,30 @@ class BattleScene {
   late final Pool<Coin> coins;
   late final DamageNumbers numbers;
   late final Pool<HitState> hits;
+  late final Pool<Zone> zones;
+  late final EnemyLooks looks;
+  late final Backdrop backdrop;
   final shake = ScreenShake();
   final stats = SceneStats();
+  final chest = ChestPose();
 
   /// 선원 슬롯 발사 번쩍임 남은 시간(ms), 슬롯 순서.
   final slotFlashMs = List<double>.filled(kMaxSlots, 0);
   double shipFlashMs = 0;
+
+  /// 배 스킬: 회복 번쩍임·버프 테두리 남은 시간(ms).
+  double shipHealMs = 0;
+  double shipBuffMs = 0;
   double screenFlashMs = 0;
+
+  /// 보스 등장 경고·보스 실패 어두움 남은 시간(ms).
+  double bossWarnMs = 0;
+  double bossFailMs = 0;
   double slowMoMs = 0;
   double shipHpRatio = 1;
+
+  /// 실제 경과 시간(ms) — 깜빡임 같은 장식용.
+  double clockMs = 0;
 
   JuiceSettings _settings;
   JuiceSettings get settings => _settings;
@@ -106,47 +106,90 @@ class BattleScene {
 
   /// 한 화면 프레임. [dtMs]는 실제 경과 시간.
   void update(double dtMs) {
+    clockMs += dtMs;
     final rate = slowMoMs > 0 ? juice.bossSlowMoRate : 1.0;
     if (slowMoMs > 0) slowMoMs -= dtMs;
     player.advance(dtMs * rate);
+    _updateStage();
     // 히트스톱 구간은 이펙트 시계도 멈춘다. 흔들림은 실제 시간으로 돈다.
     final fxDt = player.inHitStop ? 0.0 : dtMs * rate;
     _updateProjectiles();
     for (final e in effects.active) {
       e.ageMs += fxDt;
+      moveEffect(e);
     }
     effects.releaseWhere(_effectDone);
-    _updateCoins(fxDt);
+    zones.releaseWhere(_zoneDone);
+    for (final c in coins.active) {
+      c.ageMs += fxDt;
+      moveCoin(c);
+    }
+    coins.releaseWhere(_coinDone);
     numbers.update(fxDt);
     shake.update(dtMs);
     for (var i = 0; i < kMaxSlots; i++) {
       if (slotFlashMs[i] > 0) slotFlashMs[i] -= dtMs;
     }
     if (shipFlashMs > 0) shipFlashMs -= fxDt;
+    if (shipHealMs > 0) shipHealMs -= fxDt;
+    if (shipBuffMs > 0) shipBuffMs -= dtMs;
     if (screenFlashMs > 0) screenFlashMs -= dtMs;
+    if (bossWarnMs > 0) bossWarnMs -= dtMs;
+    if (bossFailMs > 0) bossFailMs -= dtMs;
+    backdrop.update(dtMs);
     _applyHits(fxDt);
     _updateStats();
+  }
+
+  void _updateStage() {
+    final f = frame;
+    backdrop.setStage(f.stage);
+    chest.update(f.chest, fx.chest, clockMs);
   }
 
   static bool _effectDone(Effect e) => e.done;
   static bool _coinDone(Coin c) => c.done;
   static bool _projectileDone(Projectile p) => p.progress >= 1;
+  // 장면 위치를 읽는 술어라 필드 클로저로 한 번만 만든다(프레임당 할당 0).
+  // ignore: prefer_function_declarations_over_variables
+  late final bool Function(Zone) _zoneDone = (z) => player.position >= z.endIndex;
   static bool _hitDone(HitState h) => h.flashMs <= 0 && h.knockAgeMs >= h.knockMs;
 
   /// 이펙트 시트 한 번 재생. 상한을 넘으면 가장 오래된 것을 회수한다.
-  void spawnEffect(String sheetId, double x, double y) {
+  /// [scale]배 크기, [delayMs] 뒤 시작, [durationMs]가 있으면 그 시간에 맞춰 프레임을 늘리고 [vx](px/ms)로 움직인다.
+  Effect? spawnEffect(
+    String sheetId,
+    double x,
+    double y, {
+    double scale = 1,
+    double delayMs = 0,
+    double? durationMs,
+    double vx = 0,
+  }) {
     final sheet = fx.sheet(sheetId);
-    if (sheet == null) return;
-    effects.obtain()
+    if (sheet == null) return null;
+    return effects.obtain()
       ..sheetId = sheetId
       ..x = x
+      ..startX = x
       ..y = y
-      ..w = sheet.w.toDouble()
-      ..h = sheet.h.toDouble()
+      ..w = sheet.w * scale
+      ..h = sheet.h * scale
       ..frames = sheet.frames
-      ..frameMs = fx.sheetFrameMs
+      ..frameMs = durationMs == null ? fx.sheetFrameMs : durationMs / sheet.frames
       ..ageMs = 0
+      ..delayMs = delayMs
+      ..vx = vx
       ..color = fx.sheetColors[sheetId] ?? 0xFFFFFFFF;
+  }
+
+  /// 수중 장판을 [ticks] 동안 남긴다.
+  void spawnZone(double x, double y, double radius, double ticks) {
+    zones.obtain()
+      ..x = x
+      ..y = y
+      ..radius = radius
+      ..endIndex = player.position + ticks;
   }
 
   /// 적 [id]가 맞았다: 번쩍임(설정이 켜져 있으면)과 넉백(방향 dirX·dirY, [px]).
@@ -182,10 +225,15 @@ class BattleScene {
     coins.clear();
     numbers.clear();
     hits.clear();
+    zones.clear();
     shake.reset();
     slowMoMs = 0;
     screenFlashMs = 0;
     shipFlashMs = 0;
+    shipHealMs = 0;
+    shipBuffMs = 0;
+    bossWarnMs = 0;
+    bossFailMs = 0;
   }
 
   void _updateProjectiles() {
@@ -197,53 +245,10 @@ class BattleScene {
       }
       final total = player.motionBetween(p.startIndex, p.impactIndex);
       p.progress = total <= 0 ? 1 : (player.motionBetween(p.startIndex, pos) / total).clamp(0.0, 1.0);
-      _placeProjectile(p);
+      placeProjectile(p);
     }
     projectiles.releaseWhere(_projectileDone);
   }
-
-  static void _placeProjectile(Projectile p) {
-    final t = p.progress;
-    final s = p.style;
-    switch (s.path) {
-      case ProjectilePath.drop:
-        p
-          ..x = p.toX
-          ..y = p.toY - s.arcPx * (1 - t);
-      case ProjectilePath.line || ProjectilePath.arc || ProjectilePath.skip:
-        p
-          ..x = p.fromX + (p.toX - p.fromX) * t
-          ..y = p.fromY + (p.toY - p.fromY) * t;
-        if (s.path == ProjectilePath.arc) p.y -= s.arcPx * 4 * t * (1 - t);
-        if (s.path == ProjectilePath.skip) p.y -= s.arcPx * math.sin(t * math.pi * _skipBounces).abs();
-    }
-  }
-
-  static const _skipBounces = 3;
-
-  void _updateCoins(double dtMs) {
-    for (final c in coins.active) {
-      c.ageMs += dtMs;
-      final t = (c.ageMs / c.flyMs).clamp(0.0, 1.0);
-      if (t < _fountainEnd) {
-        final f = t / _fountainEnd;
-        c
-          ..x = c.fromX + c.spread * _fountainSpreadPx * f
-          ..y = c.fromY - c.lift * math.sin(f * math.pi);
-      } else {
-        final f = (t - _fountainEnd) / (1 - _fountainEnd);
-        final sx = c.fromX + c.spread * _fountainSpreadPx;
-        final ease = f * f;
-        c
-          ..x = sx + (c.toX - sx) * ease
-          ..y = c.fromY + (c.toY - c.fromY) * ease;
-      }
-    }
-    coins.releaseWhere(_coinDone);
-  }
-
-  static const _fountainEnd = 0.4;
-  static const _fountainSpreadPx = 10;
 
   void _applyHits(double dtMs) {
     for (final h in hits.active) {
@@ -273,12 +278,14 @@ class BattleScene {
       ..effects = effects.active.length
       ..numbers = numbers.active.length
       ..coins = coins.active.length
+      ..zones = zones.active.length
       ..pooledObjects =
           projectiles.created +
           effects.created +
           coins.created +
           numbers.pool.created +
           hits.created +
+          zones.created +
           player.poses.length;
   }
 }

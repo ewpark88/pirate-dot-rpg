@@ -15,6 +15,8 @@ class EnemyView {
     this.layer = 'surface',
     this.boss = false,
     this.stunned = false,
+    this.shielded = false,
+    this.tier = 0,
   });
 
   factory EnemyView.fromJson(Json j) => EnemyView(
@@ -26,6 +28,8 @@ class EnemyView {
     layer: j['layer'] as String? ?? 'surface',
     boss: j['boss'] as bool? ?? false,
     stunned: j['stunned'] as bool? ?? false,
+    shielded: j['shielded'] as bool? ?? false,
+    tier: j['tier'] as int? ?? 0,
   );
 
   /// 전투 동안 유일한 id. 이벤트가 이 id로 대상을 가리킨다.
@@ -44,6 +48,12 @@ class EnemyView {
   /// 기절 중 (머리 위 별).
   final bool stunned;
 
+  /// 보호막 중 (보스 패턴: 피해 0).
+  final bool shielded;
+
+  /// 무한 항해 등급 테두리: 0 없음, 1 희귀, 2 영웅, 3 전설.
+  final int tier;
+
   Json toJson() => {
     'id': id,
     'kind': kind,
@@ -53,6 +63,8 @@ class EnemyView {
     'layer': layer,
     'boss': boss,
     'stunned': stunned,
+    'shielded': shielded,
+    'tier': tier,
   };
 }
 
@@ -78,6 +90,23 @@ class FleetSlot {
   Json toJson() => {'crewId': crewId, 'cooldown': cooldown, 'skillCooldown': skillCooldown};
 }
 
+/// 바다에 떠 있는 보물상자 (설계서 4.6). 탭하면 TapChest. 경제 레인이 띄우고 치운다.
+@immutable
+class ChestView {
+  const ChestView({required this.x, required this.y, required this.ticksLeft});
+
+  factory ChestView.fromJson(Json j) =>
+      ChestView(x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble(), ticksLeft: j['ticksLeft'] as int);
+
+  final double x;
+  final double y;
+
+  /// 가라앉을 때까지 남은 틱.
+  final int ticksLeft;
+
+  Json toJson() => {'x': x, 'y': y, 'ticksLeft': ticksLeft};
+}
+
 @immutable
 class BattleView {
   const BattleView({
@@ -91,6 +120,8 @@ class BattleView {
     this.captainId,
     this.hitStopTicks = 0,
     this.speed = 1,
+    this.stage = 1,
+    this.chest,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -104,6 +135,8 @@ class BattleView {
     captainId: j['captainId'] as String?,
     hitStopTicks: j['hitStopTicks'] as int,
     speed: j['speed'] as int? ?? 1,
+    stage: j['stage'] as int? ?? 1,
+    chest: j['chest'] == null ? null : ChestView.fromJson(j['chest'] as Json),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -126,6 +159,42 @@ class BattleView {
   /// 배속 (운영자·순풍). 1, 2, 4.
   final int speed;
 
+  /// 지금 스테이지 (기록 재생에서도 해역 배경을 알 수 있게).
+  final int stage;
+
+  /// 떠 있는 보물상자. 없으면 null.
+  final ChestView? chest;
+
+  /// [chest]를 없애려면 [clearChest].
+  BattleView copyWith({
+    int? tick,
+    BigNum? shipHp,
+    BigNum? shipHpMax,
+    bool? bossActive,
+    int? bossTicksLeft,
+    List<EnemyView>? enemies,
+    List<FleetSlot>? fleet,
+    String? captainId,
+    int? hitStopTicks,
+    int? speed,
+    int? stage,
+    ChestView? chest,
+    bool clearChest = false,
+  }) => BattleView(
+    tick: tick ?? this.tick,
+    shipHp: shipHp ?? this.shipHp,
+    shipHpMax: shipHpMax ?? this.shipHpMax,
+    bossActive: bossActive ?? this.bossActive,
+    bossTicksLeft: bossTicksLeft ?? this.bossTicksLeft,
+    enemies: enemies ?? this.enemies,
+    fleet: fleet ?? this.fleet,
+    captainId: captainId ?? this.captainId,
+    hitStopTicks: hitStopTicks ?? this.hitStopTicks,
+    speed: speed ?? this.speed,
+    stage: stage ?? this.stage,
+    chest: clearChest ? null : chest ?? this.chest,
+  );
+
   Json toJson() => {
     'tick': tick,
     'shipHp': shipHp.toJson(),
@@ -137,5 +206,7 @@ class BattleView {
     'captainId': captainId,
     'hitStopTicks': hitStopTicks,
     'speed': speed,
+    'stage': stage,
+    'chest': chest?.toJson(),
   };
 }

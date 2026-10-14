@@ -27,6 +27,9 @@ sealed class OperatorCommand extends Command {
     'op.rebirthNow' => const OpRebirthNow(),
     'op.loadState' => OpLoadState(GameState.fromJson(j['state'] as Json)),
     'op.reset' => const OpReset(),
+    'op.spawnChest' => const OpSpawnChest(),
+    'op.setTutorial' => OpSetTutorial(j['step'] as int?),
+    'op.grantTailwind' => OpGrantTailwind(Duration(seconds: j['seconds'] as int)),
     _ => throw FormatException('알 수 없는 운영자 명령', type),
   };
 }
@@ -222,4 +225,38 @@ class OpReset extends OperatorCommand {
 
   @override
   String get type => 'op.reset';
+}
+
+/// 보물상자를 지금 띄운다.
+class OpSpawnChest extends OperatorCommand {
+  const OpSpawnChest();
+
+  @override
+  String get type => 'op.spawnChest';
+}
+
+/// 튜토리얼 단계를 지정한다 (null = 끝).
+class OpSetTutorial extends OperatorCommand {
+  const OpSetTutorial(this.step);
+
+  final int? step;
+
+  @override
+  String get type => 'op.setTutorial';
+
+  @override
+  Json _fields() => {'step': step};
+}
+
+/// 순풍 버프를 [duration]만큼 준다 (광고 없이).
+class OpGrantTailwind extends OperatorCommand {
+  const OpGrantTailwind(this.duration);
+
+  final Duration duration;
+
+  @override
+  String get type => 'op.grantTailwind';
+
+  @override
+  Json _fields() => {'seconds': duration.inSeconds};
 }

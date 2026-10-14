@@ -23,10 +23,12 @@ class ScreenShake {
   static const _freqY = 0.13;
 
   /// 더 센 흔들림만 덮어쓴다 (약한 흔들림이 강한 것을 끊지 않게).
-  void trigger(ShakeSpec spec) {
-    if (!enabled || spec.px < amplitude) return;
-    _px = spec.px;
-    _ms = spec.ms;
+  void trigger(ShakeSpec spec) => triggerPx(spec.px, spec.ms);
+
+  void triggerPx(double px, double ms) {
+    if (!enabled || px < amplitude) return;
+    _px = px;
+    _ms = ms;
     _age = 0;
   }
 

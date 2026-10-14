@@ -29,6 +29,9 @@ class PerfOverlay {
       ..layout();
   }
 
+  /// 한 번이라도 숫자를 배치했는가 (측정 확인용).
+  bool get hasText => _painter.text != null;
+
   void paint(Canvas canvas) {
     if (_painter.text == null) return;
     canvas.drawRect(Rect.fromLTWH(0, 0, _painter.width + _pad * 2, _painter.height + _pad), _back);

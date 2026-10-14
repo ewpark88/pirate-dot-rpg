@@ -49,4 +49,17 @@ void main() {
     }
     expect(find.byKey(const Key('summon.rate.mythic')), findsNothing); // 신화는 소환에 없다
   });
+
+  testWidgets('첫 10연 무료면 10회 버튼에 Free, 젬이 없어도 활성', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final state = base.copyWith(summonsTotal: 0, wallet: base.wallet.copyWith(gems: 0));
+    expect(isFreeFirstTen(state, tables, 10), isTrue, reason: '테이블 meta.tutorial.firstTenSummonFree');
+    final log = await pumpGame(tester, state, tab: summonTab);
+    expect(find.byKey(const Key('summon.free')), findsOneWidget);
+    expect(_button(tester, 'summon.one').onPressed, isNull); // 1회는 무료가 아니고 젬 0
+    await tester.tap(find.byKey(const Key('summon.ten')));
+    expect(log.sent.map((c) => c.toJson()), [
+      {'type': 'summon', 'count': 10},
+    ]);
+  });
 }

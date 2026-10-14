@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "savedAt": "2026-11-01T12:34:56.000Z",
   "playerId": "fixture-player",
   "rngSeed": 913377,
@@ -43,6 +43,7 @@
     "pityCount": 0,
     "total": 0
   },
+  "tutorialStep": 1,
   "buffs": {
     "tailwindUntil": null
   },
@@ -50,7 +51,9 @@
     "date": "2026-11-01",
     "ads": {},
     "quests": {},
-    "attendanceDay": 0
+    "attendanceDay": 0,
+    "questsClaimed": [],
+    "attendanceClaimed": false
   },
   "collection": [
     "octo",
@@ -82,7 +85,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 2,
@@ -92,7 +97,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 3,
@@ -102,7 +109,9 @@
         "hpRatio": 1.0,
         "layer": "underwater",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 4,
@@ -112,7 +121,9 @@
         "hpRatio": 1.0,
         "layer": "air",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 5,
@@ -122,7 +133,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 6,
@@ -132,7 +145,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       }
     ],
     "fleet": [
@@ -149,6 +164,8 @@
     ],
     "captainId": "octo",
     "hitStopTicks": 0,
-    "speed": 1
+    "speed": 1,
+    "stage": 1,
+    "chest": null
   }
 }

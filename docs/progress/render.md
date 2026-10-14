@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (승인됨 S1) · 끝남: `plans/done/render-battle-replay.md` |
-| 상태 | render-perf 구현 완료(측정 도구). 실기기 측정 대기 — 절차는 스펙 "실기기 측정 절차" |
-| 막힌 것 | 실기기 측정은 사람(S4) 몫 — 결과가 오면 아래 표에 기록 후 계획을 done/으로 |
+| 현재 계획 | `plans/active/render-art-pack-v02.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
+| 상태 | 실제 엔진 라이브 재생 통합 테스트 ab11e7d(PERF_OVERLAY live 확인). 아트 팩 v0.2 스펙 초안 |
+| 막힌 것 | art-pack 승인·Q1(lane/art 작업 위치)·Q2(pubspec assets) · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -13,6 +13,33 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · M2 관문 준비 + 아트 팩 스펙
+- 한 일: 보스 골든 커밋(7bc4922, storm_pirate·deep_sub 색 밝게). `live_engine_test.dart` — EngineHost(실제 엔진) 30초를 60Hz로 라이브 재생:
+  적 등장·처치·버퍼 64틱 미만·fps 60·오버레이 숫자·콘솔 `[perf]` 요약이 live에서도 나옴(ab11e7d). 앱은 `battle_providers.dart`가 `battleFeedProvider`로 연결돼 있음.
+  아트 팩 v0.2 스펙 초안 `docs/specs/render-art-pack-v02.md`(에셋 배치·import_pack.py·LICENSES OWN 규칙·SpriteBank·pubspec 요청).
+- 남은 문제: `flutter run -d chrome` 눈 확인은 아직(테스트로만). art 경로는 lane/render에서 쓸 수 없음 → Q1.
+
+### 2026-10-14 · S3 · render-regions (해역 배경·보스 연출)
+- 한 일: 스펙 승인(S1)·계약 D 수용, 해역 보스·shielded·tier를 규칙 7~10으로 추가. 테스트 먼저(`regions_test.dart` 수용 기준 1~7) →
+  fx_map backgrounds·bossEntrance·bossFailed·bossLook·shield·tierColors, juice bossKill.coinRain + 모델·검증,
+  `Backdrop`(stage→배경, 1초 색 섞기), `StagePainter`(배경·원경 장식·보스 경고·실패 덮개), 보스 모양(`EnemyLooks.bossOf`), 코인 비.
+  `scene_state.dart`로 HitState·SceneStats 분리(300줄).
+- 검증: `tool\check.bat --full` 통과(29.9s).
+- 추가: 골든 재승인 → d640aad. main(해역 보스) 머지 → 보호막 테두리·깨짐·tier 테두리 2e9ccae, 렌더 테스트 58개.
+- 추가: main(16dda02 stage·chest) 머지 → b78d0fe 프레임 stage로 배경, 보물상자(둥둥·가라앉기·흐려짐). 렌더 테스트 62개.
+- 추가: 보스 골든 승인(S1) — storm_pirate #8E3B2E·deep_sub #D4AC0D로 밝게(바다와 겹침) 후 커밋, 계획 done/.
+- 다음 할 일: live 모드 실기기 확인 준비(PERF_OVERLAY live), art-pack-v02 스펙 초안.
+
+### 2026-10-14 · S3 · render-m3-fx (스킬·궁극기·적 역할 연출)
+- 한 일: 스펙 승인(S1)·계약 A·B·C 수용 기록. 테스트 먼저(수용 기준 1~9, 5는 계약 B 대기 skip) →
+  fx_map M3 데이터(skillFxScale·screenSkill·shipSkill·ultimates 8종·enemyLook·split·revive·zone)+모델·검증,
+  `M3Director`(스킬·화면 스킬 어댑터·궁극기 sweep/rain/strikes/volley·분열/부활 감지·장판 어댑터), `EnemyLooks`(regions.json 원문 role),
+  이펙트 지연·이동(`Effect.delayMs/vx`), 장판 풀, 슬롯 스킬 막대·준비 깜빡임, 배 회복·버프. `scene/motion.dart`로 움직임 계산 분리.
+- 검증: `tool\check.bat --full` 통과(33.5s), 렌더 테스트 47개 + skip 1.
+- 추가: 골든 승인(S1) → 108a680 커밋. main(전투 M3 12abe88, 계약 A·B·C) 머지 → 어댑터 제거, `scope`·`ZoneSpawned`·`stunned`(별 2개 회전) 사용. 골든 그대로 통과.
+- 다음 할 일: 해역 배경 6종 플레이스홀더 + 보스 등장·처치 연출 점검(render-regions 스펙).
+- 남은 문제: 기존 골든 `battle_aoe.png`가 적 색(역할 표)·스킬 막대 때문에 바뀜 — 갱신 승인 필요.
 
 ### 2026-10-14 · S3 · render-perf (실기기 측정 준비)
 - 한 일: 스펙 승인(S1)·Q1 결정(정수배는 렌더 뷰포트) 반영, 실기기 측정 절차를 복사 가능한 명령으로 스펙에 기록.

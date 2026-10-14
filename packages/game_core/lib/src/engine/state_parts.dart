@@ -134,6 +134,8 @@ class DailyState {
     this.ads = const {},
     this.quests = const {},
     this.attendanceDay = 0,
+    this.questsClaimed = const {},
+    this.attendanceClaimed = false,
   });
 
   factory DailyState.fromJson(Json j) => DailyState(
@@ -141,6 +143,8 @@ class DailyState {
     ads: (j['ads'] as Map).cast<String, int>(),
     quests: (j['quests'] as Map).cast<String, int>(),
     attendanceDay: j['attendanceDay'] as int,
+    questsClaimed: (j['questsClaimed'] as List).cast<String>().toSet(),
+    attendanceClaimed: j['attendanceClaimed'] as bool,
   );
 
   /// 기기 현지 날짜 `yyyy-mm-dd`. 바뀌면 일일 값 초기화.
@@ -155,7 +159,36 @@ class DailyState {
   /// 출석 1~7. 빠져도 초기화하지 않는다.
   final int attendanceDay;
 
-  Json toJson() => {'date': date, 'ads': ads, 'quests': quests, 'attendanceDay': attendanceDay};
+  /// 오늘 보상을 받은 일일 퀘스트 id (세이브 v3).
+  final Set<String> questsClaimed;
+
+  /// 오늘 출석 보상을 받았다 (세이브 v3).
+  final bool attendanceClaimed;
+
+  DailyState copyWith({
+    String? date,
+    Map<String, int>? ads,
+    Map<String, int>? quests,
+    int? attendanceDay,
+    Set<String>? questsClaimed,
+    bool? attendanceClaimed,
+  }) => DailyState(
+    date: date ?? this.date,
+    ads: ads ?? this.ads,
+    quests: quests ?? this.quests,
+    attendanceDay: attendanceDay ?? this.attendanceDay,
+    questsClaimed: questsClaimed ?? this.questsClaimed,
+    attendanceClaimed: attendanceClaimed ?? this.attendanceClaimed,
+  );
+
+  Json toJson() => {
+    'date': date,
+    'ads': ads,
+    'quests': quests,
+    'attendanceDay': attendanceDay,
+    'questsClaimed': (questsClaimed.toList()..sort()),
+    'attendanceClaimed': attendanceClaimed,
+  };
 }
 
 @immutable
@@ -218,3 +251,17 @@ class Settings {
 }
 
 DateTime? parseTime(Object? v) => v == null ? null : DateTime.parse(v as String).toUtc();
+
+/// 소환 1장의 결과 (설계서 4.3 소환 연출).
+@immutable
+class SummonResult {
+  const SummonResult({required this.crewId, required this.rarity, this.isNew = false});
+
+  final String crewId;
+
+  /// 카드 등급 id (rarities.json).
+  final String rarity;
+
+  /// 처음 얻은 선원(도감 새로 등록).
+  final bool isNew;
+}

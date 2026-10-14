@@ -30,6 +30,9 @@ sealed class Command {
       'rebirth' => const Rebirth(),
       'exchangeToken' => ExchangeToken(j['crewId'] as String),
       'setSetting' => SetSetting(j['key'] as String, j['value'] as Object),
+      'skipTutorial' => const SkipTutorial(),
+      'tutorialAck' => TutorialAck(j['step'] as int),
+      'ackSummonResult' => const AckSummonResult(),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
@@ -188,4 +191,33 @@ class SetSetting extends Command {
 
   @override
   Json _fields() => {'key': key, 'value': value};
+}
+
+/// 튜토리얼 건너뛰기 (설계서 4.12). tutorialStep = null.
+class SkipTutorial extends Command {
+  const SkipTutorial();
+
+  @override
+  String get type => 'skipTutorial';
+}
+
+/// 튜토리얼 말풍선을 확인했다 → 다음 단계 판정은 경제 레인.
+class TutorialAck extends Command {
+  const TutorialAck(this.step);
+
+  final int step;
+
+  @override
+  String get type => 'tutorialAck';
+
+  @override
+  Json _fields() => {'step': step};
+}
+
+/// 소환 결과 연출을 닫았다 → GameState.lastSummon = null.
+class AckSummonResult extends Command {
+  const AckSummonResult();
+
+  @override
+  String get type => 'ackSummonResult';
 }

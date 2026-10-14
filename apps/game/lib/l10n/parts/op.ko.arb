@@ -15,5 +15,11 @@
   "opJumpStageHint": "스테이지",
   "opZeroCooldown": "쿨타임 0",
   "opGrantGold": "골드 +{amount}",
-  "opGrantGems": "젬 +{amount}"
+  "opGrantGems": "젬 +{amount}",
+  "opGroupRender": "렌더",
+  "opModeLive": "라이브",
+  "opModeDemo": "데모",
+  "opModeStress": "부하",
+  "opPerfOverlay": "성능 표시",
+  "opHitboxes": "히트박스"
 }

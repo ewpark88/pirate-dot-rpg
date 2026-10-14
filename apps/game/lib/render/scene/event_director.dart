@@ -7,15 +7,20 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
+import 'package:pirate_dot/render/scene/m3_director.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (docs/GAME_DESIGN.md 4.4 타격감 규칙, 수치는 juice.json·fx_map.json).
 ///
 /// - 앞서 알림(onAhead, lookahead 틱 전): 발사체를 띄우고 슬롯을 번쩍인다.
 /// - 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
 class EventDirector implements ReplayListener {
-  EventDirector(this.scene) : _crewFamily = _familyByCrew(scene.tables), _crewFx = _fxByCrew(scene.tables);
+  EventDirector(this.scene)
+    : _crewFamily = _familyByCrew(scene.tables),
+      _crewFx = _fxByCrew(scene.tables),
+      _m3 = M3Director(scene);
 
   final BattleScene scene;
+  final M3Director _m3;
   final Map<String, String> _crewFamily;
   final Map<String, String?> _crewFx;
 
@@ -56,8 +61,12 @@ class EventDirector implements ReplayListener {
           ..y = kShipNoseY;
       }
     }
+    _flashSlot(frame, e.crewId);
+  }
+
+  void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {
-      if (frame.fleet[i].crewId == e.crewId) scene.slotFlashMs[i] = _slotFlashMs;
+      if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = _slotFlashMs;
     }
   }
 
@@ -72,6 +81,11 @@ class EventDirector implements ReplayListener {
         case AttackFired():
           final fxId = _crewFx[e.crewId];
           if (fxId != null) scene.spawnEffect(fxId, e.x, e.y);
+        case ZoneSpawned():
+          _m3.onZone(e);
+        case SkillCast():
+          _m3.onSkill(e);
+          _flashSlot(tick.frame, e.crewId);
         case Damage():
           _damage(e, tick, index);
         case AoeDamageSum():
@@ -80,7 +94,7 @@ class EventDirector implements ReplayListener {
         case Kill():
           _kill(e, index);
         case UltimateCast():
-          _fx('ultimateCast', kUltimateX, kUltimateY);
+          _m3.onUltimate(e, index);
           scene.shake.trigger(_juice.shake['ultimate']!);
           scene.haptic(HapticLevel.medium);
         case ShipDamaged():
@@ -89,10 +103,18 @@ class EventDirector implements ReplayListener {
             ..shipHpRatio = e.hpRatio;
         case BossCleared():
           _bossKill();
+        case BossSpawned():
+          if (scene.settings.flash) scene.bossWarnMs = scene.fx.bossEntrance.number('ms');
+          scene.shake.trigger(_juice.shake['aoe']!);
+        case BossFailed():
+          scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:
           break;
       }
     }
+    _m3
+      ..detectSplitRevive(tick, index)
+      ..detectShieldBreak(tick, index);
   }
 
   void _damage(Damage e, RecordedTick tick, int index) {
@@ -152,6 +174,7 @@ class EventDirector implements ReplayListener {
         ..toY = kShipCenterY
         ..spread = spread
         ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
+        ..fallPx = 0
         ..ageMs = 0
         ..flyMs = _juice.coinFlyMs
         ..x = e.x
@@ -170,6 +193,32 @@ class EventDirector implements ReplayListener {
     scene.slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
     _fx('bossCleared', kUltimateX, kUltimateY);
+    _coinRain();
+  }
+
+  // 코인 비: 화면 위 결정론적 x에서 떨어진다 (render-regions 규칙 5).
+  static const _rainLeft = 70.0;
+  static const _rainSpan = 240;
+  static const _rainPrime = 37;
+  static const _rainTopY = -4.0;
+  static const _rainFallMin = 60.0;
+  static const _rainFallSpread = 40;
+
+  void _coinRain() {
+    for (var i = 0; i < _juice.bossCoinRain; i++) {
+      scene.coins.obtain()
+        ..fromX = _rainLeft + i * _rainPrime % _rainSpan
+        ..fromY = _rainTopY
+        ..toX = kShipCenterX
+        ..toY = kShipCenterY
+        ..spread = 0
+        ..lift = 0
+        ..fallPx = _rainFallMin + i * _rainPrime % _rainFallSpread
+        ..ageMs = -(i * _juice.coinFlyMs / _juice.bossCoinRain)
+        ..flyMs = _juice.coinFlyMs * 2
+        ..x = _rainLeft + i * _rainPrime % _rainSpan
+        ..y = _rainTopY;
+    }
   }
 
   void _fx(String event, double x, double y) {

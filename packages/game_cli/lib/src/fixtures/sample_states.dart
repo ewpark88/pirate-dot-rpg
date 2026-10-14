@@ -4,7 +4,8 @@ import 'package:game_data/game_data.dart';
 /// UI 레인용 샘플 상태 (fixtures/states/*.json). 운영자 모드의 ‘샘플 상태 불러오기’도 쓴다.
 Map<String, GameState> sampleStates(GameTables t) {
   final now = DateTime.utc(2026, 11, 1, 12, 34, 56);
-  final base = GameState.newGame(playerId: 'fixture-player', seed: 913377, now: now);
+  // 중후반 샘플은 튜토리얼을 끝낸 상태(null). 튜토리얼은 new_player만.
+  final base = GameState.newGame(playerId: 'fixture-player', seed: 913377, now: now).copyWith(clearTutorial: true);
   final starter = GameState.newGame(playerId: 'fixture-player', seed: 913377, now: now, crews: t.meta.startingCrews);
   return {
     'new_player': starter.copyWith(battle: _battle(t, stage: 1, fleet: t.meta.startingCrews)),

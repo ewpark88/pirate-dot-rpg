@@ -17,6 +17,9 @@ void main() {
     const ClaimOffline(),
     const ClaimDaily(),
     const ClaimAttendance(),
+    const SkipTutorial(),
+    const TutorialAck(3),
+    const AckSummonResult(),
     const Rebirth(),
     const ExchangeToken('manta'),
     const SetSetting('shake', false),
@@ -37,6 +40,9 @@ void main() {
     const OpRebirthNow(),
     OpLoadState(state),
     const OpReset(),
+    const OpSpawnChest(),
+    const OpSetTutorial(null),
+    const OpGrantTailwind(Duration(minutes: 30)),
   ];
 
   test('모든 명령 JSON 왕복', () {

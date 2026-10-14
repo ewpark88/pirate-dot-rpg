@@ -16,6 +16,9 @@ class Foe {
     required this.gold,
     this.boss = false,
     this.def,
+    this.bossDef,
+    this.ownerId,
+    this.tier = 0,
   }) : hp = maxHp;
 
   final int id;
@@ -36,6 +39,18 @@ class Foe {
 
   /// 잡몹 정의 (역할: 분열·부활). 보스는 null.
   final EnemyDef? def;
+
+  /// 보스 정의 (패턴). 잡몹은 null.
+  final BossDef? bossDef;
+
+  /// 크라켄 촉수처럼 보스에 딸린 적이면 그 보스의 id.
+  final int? ownerId;
+
+  /// 무한 항해 등급 테두리 (0 없음).
+  final int tier;
+
+  /// 보호막 중 (보스 패턴).
+  bool shielded = false;
 
   /// 다음 접촉 피해까지 남은 초. 0이면 닿자마자 때린다.
   double contactTimer = 0;
@@ -58,6 +73,8 @@ class Foe {
     layer: layer,
     boss: boss,
     stunned: stunned,
+    shielded: shielded,
+    tier: tier,
   );
 }
 
@@ -161,6 +178,9 @@ class Field {
   double buffValue = 0;
   double buffLeft = 0;
 
+  /// 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱.
+  int bossTimerTicks = 0;
+
   int nextId() => _nextId++;
 
   Iterable<Foe> get living => foes.where((f) => f.alive);
@@ -176,5 +196,7 @@ class Field {
     captainId: captainId,
     hitStopTicks: prev.hitStopTicks,
     speed: prev.speed,
+    stage: stage,
+    chest: prev.chest,
   );
 }
