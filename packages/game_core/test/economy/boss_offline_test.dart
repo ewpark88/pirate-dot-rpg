@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:test/test.dart';
@@ -24,7 +26,7 @@ void main() {
   );
 
   group('보스 카드 grantBossCards', () {
-    test('스테이지 1~5(처음 10장)는 출전과 상관없이 옥토에게 일반 이상 2장씩', () {
+    test('첫 회차 처음 starterCount장(스테이지 1~7, 14장)은 출전과 상관없이 옥토에게 일반 이상 2장씩', () {
       // 신화 Lv75 옥토 → 받은 카드가 모두 증표로 바뀌어 장수를 정확히 센다.
       var s = starter().copyWith(
         crews: {
@@ -32,16 +34,17 @@ void main() {
           'turtle': const CrewState(level: 5),
         },
       );
-      for (var stage = 1; stage <= 5; stage++) {
+      final b = t.growth.bossCards;
+      for (var stage = 1; stage * b.early <= b.starterCount; stage++) {
         s = grantBossCards(atStage(s, stage), h.ctx, ['turtle']);
       }
-      expect(s.tokens, 10 * t.growth.tokenPerSurplusCard);
+      expect(s.tokens, b.starterCount * t.growth.tokenPerSurplusCard);
       expect(s.crews['turtle']!.cards, 0);
       expect(s.crews['turtle']!.level, 5);
     });
 
-    test('스테이지 6~10은 2장, 출전 선원에게', () {
-      final s0 = atStage(starter(), 7).copyWith(
+    test('스테이지 8~10은 2장, 출전 선원에게', () {
+      final s0 = atStage(starter(), 8).copyWith(
         crews: {
           'octo': const CrewState(level: 5),
           'turtle': CrewState(level: t.growth.maxLevel),
@@ -75,7 +78,7 @@ void main() {
   group('오프라인 보상 ClaimOffline', () {
     GameState away(Duration d) => starter().copyWith(savedAt: EconomyHarness.start.subtract(d));
 
-    test('초당 골드 추정 = 한 파 골드 / (한 파 HP ÷ DPS + 이동 시간)', () {
+    test('초당 골드 추정 = 한 파 골드 / (max(한 파 HP ÷ DPS, 최소 파 시간) + 이동 시간)', () {
       final s = starter();
       final fleet = ['octo', 'turtle'];
       final dps = fleetDps(s, t, fleet);
@@ -84,18 +87,19 @@ void main() {
       final n = w.mobCountAt(1);
       final waveGold = BigNum.from(w.goldBase * n);
       final waveHp = BigNum.from(w.hpBase * w.waveHpPoolFactor * n);
-      final expected = waveGold / BigNum.from((waveHp / dps).toDouble() + w.travelSec);
+      final waveSec = math.max((waveHp / dps).toDouble(), t.meta.offlineMinWaveSec);
+      final expected = waveGold / BigNum.from(waveSec + w.travelSec);
       expect(goldPerSecEstimate(s, t, fleet).closeTo(expected), isTrue);
     });
 
-    test('기준 12: 10시간 떠나 있었으면 8시간분 골드와 카드 3장', () {
+    test('기준 12: 10시간 떠나 있었으면 8시간분 골드(× 효율)와 카드 3장', () {
       final s0 = away(const Duration(hours: 10));
       final s = sys.handle(s0, const ClaimOffline(), h.ctx)!;
       final e = h.of<OfflineReward>().single;
       expect(e.seconds, t.meta.offlineMaxSec);
       expect(e.cards, t.meta.offlineCardsPerMax);
       final gps = goldPerSecEstimate(s0, t, offlineFleet(s0, t));
-      expect(e.gold.closeTo(gps.times(t.meta.offlineMaxSec)), isTrue);
+      expect(e.gold.closeTo(gps.times(t.meta.offlineMaxSec * t.meta.offlineEfficiency)), isTrue);
       expect(s.wallet.gold.closeTo(e.gold), isTrue);
       expect(s.savedAt, EconomyHarness.start);
       expect(h.of<SaveRequested>(), hasLength(1));

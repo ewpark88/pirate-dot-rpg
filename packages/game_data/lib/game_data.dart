@@ -7,4 +7,5 @@ export 'src/models/common.dart' show JsonReader, TableFormatException, TableVali
 export 'src/models/crew_tables.dart';
 export 'src/models/economy_tables.dart';
 export 'src/models/render_tables.dart';
+export 'src/models/skill_tables.dart';
 export 'src/tables.g.dart' show rawTables;

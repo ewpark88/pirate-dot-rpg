@@ -41,7 +41,7 @@
   "tokens": 0,
   "summon": {
     "pityCount": 0,
-    "total": 0
+    "total": 10
   },
   "buffs": {
     "tailwindUntil": null
@@ -81,7 +81,8 @@
         "y": 80.0,
         "hpRatio": 0.55,
         "layer": "surface",
-        "boss": true
+        "boss": true,
+        "stunned": false
       }
     ],
     "fleet": [

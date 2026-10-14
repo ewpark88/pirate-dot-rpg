@@ -2,6 +2,7 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
+import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
@@ -53,6 +54,11 @@ class BattleSystem implements GameSystem {
       case OpSetInvincible(:final on):
         _invincible = on;
         return state;
+      case OpCastSkill(:final crewId):
+        return _round(state, ctx, (r) {
+          final g = r.field.guns.where((g) => g.crewId == crewId).firstOrNull;
+          if (g != null) r.castSkill(g);
+        });
       case OpZeroCooldown(:final on):
         _zeroCooldown = on;
         return state;
@@ -78,6 +84,8 @@ class BattleSystem implements GameSystem {
       r
         ..moveFoes()
         ..fireGuns()
+        ..castSkills()
+        ..tickZones()
         ..tickCombo();
     });
     final after = _resolve(next, _field!, ctx);
@@ -217,12 +225,13 @@ class BattleSystem implements GameSystem {
       for (final id in _fixedFleet ?? autoFleet(s, t, slots))
         if (s.crews.containsKey(id)) id,
     ];
-    final old = {for (final g in f.guns) g.crewId: g.cooldown};
+    final old = {for (final g in f.guns) g.crewId: (g.cooldown, g.skillCooldown)};
     f
       ..guns = [
         for (final id in ids)
-          Gun(crewId: id, family: t.skills.byId(t.crews.byId(id).family), power: crewPower(t, s.crews[id]!.level))
-            ..cooldown = old[id] ?? 0,
+          Gun.of(t, id, power: crewPower(t, s.crews[id]!.level), rarity: rarityIndexAt(t.rarities, s.crews[id]!.level))
+            ..cooldown = old[id]?.$1 ?? 0
+            ..skillCooldown = old[id]?.$2 ?? 0,
       ]
       ..captainId = captainOf(ids, s, t);
   }
