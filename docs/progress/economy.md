@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` (승인 2026-10-14) · `docs/plans/active/economy-m1.md` |
-| 바로 다음 할 일 | 5단계: MergeAllCards · PromoteCrew (기준 9~10) |
+| 바로 다음 할 일 | 6단계: grantBossCards · ClaimOffline (기준 12) |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 합치기·승급
+- 한 일: `economy/merge.dart` — mergeCrew·MergeAllCards(승급 문에서 멈춤, 남는 경험치·장수 보존)·PromoteCrew(카드·골드·증표 차감, `CrewPromoted`). 수용 기준 9~10, economy 테스트 43개
+- 남은 문제: 합치기로 레벨이 오를 때 낼 계약 이벤트가 없다(UI는 상태 변화로 표시). 필요하면 `CrewLeveled` 요청
+- 다음 할 일: 6단계 grantBossCards·오프라인
 
 ### 2026-10-14 · S2 · 소환·천장·카드 받기 + UI용 판정 함수
 - 한 일: main(3b28d2c, S1이 lane/economy 머지 후 combat_stats를 ShipStats로 교체) 머지.
