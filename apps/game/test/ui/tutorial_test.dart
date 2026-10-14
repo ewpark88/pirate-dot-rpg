@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+
+import 'ui_harness.dart';
+
+GameState _step(int step) => loadFixture('new_player').copyWith(tutorialStep: step);
+
+void main() {
+  testWidgets('기준 8: 2단계 — 말풍선 문구, 배 탭과 대포 버튼을 가리킨다', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame').copyWith(tutorialStep: 2), keepTutorial: true);
+    expect(find.text('Try upgrading the Cannon.'), findsOneWidget);
+    expect(find.byKey(const Key('tutorial.spot.tab.ship')), findsOneWidget);
+    await tester.tap(find.byType(NavigationDestination).at(shipTab));
+    await tester.pump();
+    expect(find.byKey(const Key('tutorial.spot.ship.upgrade.cannon')), findsOneWidget);
+    expect(find.byKey(const Key('tutorial.spot.tab.summon')), findsNothing);
+  });
+
+  testWidgets('기준 8: 건너뛰기는 항상 보이고 → SkipTutorial', (tester) async {
+    for (final step in [1, 2, 3, 4, 5, 6]) {
+      final log = await pumpGame(tester, _step(step), keepTutorial: true);
+      expect(find.byKey(const Key('tutorial.skip')), findsOneWidget, reason: 'step $step');
+      await tester.tap(find.byKey(const Key('tutorial.skip')));
+      expect(log.sent.last, isA<SkipTutorial>());
+    }
+  });
+
+  testWidgets('1·6단계는 확인 버튼 → TutorialAck(단계), 2단계는 확인 버튼 없음', (tester) async {
+    var log = await pumpGame(tester, _step(1), keepTutorial: true);
+    await tester.tap(find.byKey(const Key('tutorial.ok')));
+    expect(log.sent.single.toJson(), const TutorialAck(1).toJson());
+
+    log = await pumpGame(tester, _step(6), keepTutorial: true);
+    await tester.tap(find.byKey(const Key('tutorial.ok')));
+    expect(log.sent.single.toJson(), const TutorialAck(6).toJson());
+
+    await pumpGame(tester, _step(2), keepTutorial: true);
+    expect(find.byKey(const Key('tutorial.ok')), findsNothing);
+  });
+
+  testWidgets('4단계: 10회 소환 직후 TutorialAck(4) (소환 결과 화면이 생기면 닫을 때로)', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final state = base.copyWith(tutorialStep: 4, wallet: base.wallet.copyWith(gems: 1000));
+    final log = await pumpGame(tester, state, tab: summonTab, keepTutorial: true);
+    expect(find.byKey(const Key('tutorial.spot.summon.ten')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('summon.one')));
+    expect(log.sent.map((c) => c.toJson()), [const Summon().toJson()]); // 1회는 단계와 무관
+    await tester.tap(find.byKey(const Key('summon.ten')));
+    expect(log.sent.skip(1).map((c) => c.toJson()), [
+      const Summon(count: 10).toJson(),
+      const TutorialAck(4).toJson(),
+    ]);
+  });
+
+  testWidgets('말풍선은 전장과 탭 패널을 가리지 않는다', (tester) async {
+    await pumpGame(tester, _step(2), keepTutorial: true);
+    final bubble = tester.getRect(find.byKey(const Key('tutorial.bubble')));
+    final battle = tester.getRect(find.byKey(const Key('battle.area')));
+    expect(bubble.top, greaterThanOrEqualTo(battle.bottom));
+  });
+
+  testWidgets('튜토리얼이 끝나면 말풍선·손가락 없음', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'));
+    expect(find.byKey(const Key('tutorial.bubble')), findsNothing);
+    expect(find.byIcon(Icons.touch_app), findsNothing);
+  });
+
+  test('기준 9: 튜토리얼 중에는 광고 제안을 숨긴다 (광고가 준비돼도)', () {
+    for (final (step, expected) in [(2, false), (null, true)]) {
+      final container = ProviderContainer(
+        overrides: [
+          tutorialStepProvider.overrideWithValue(step),
+          adsReadyProvider.overrideWithValue(true),
+        ],
+      );
+      expect(container.read(adOffersAllowedProvider), expected, reason: 'step $step');
+      container.dispose();
+    }
+  });
+}

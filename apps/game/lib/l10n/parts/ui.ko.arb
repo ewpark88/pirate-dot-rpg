@@ -47,5 +47,13 @@
   "uiGoalCollection": "도감 보너스까지 {count}명",
   "uiGoalRebirth": "환생 가능까지 스테이지 {count}",
   "uiCollectionBonus": "공격력 +{percent}",
-  "uiCollectionNext": "다음 보너스까지 {count}명"
+  "uiCollectionNext": "다음 보너스까지 {count}명",
+  "uiTutStep1": "바다 괴물이 몰려와요! 해적선이 알아서 싸워요.",
+  "uiTutStep2": "대포를 강화해 보세요.",
+  "uiTutStep3": "보스가 강해요. 배를 더 강화해 볼까요?",
+  "uiTutStep4": "젬으로 선원을 불러 보세요.",
+  "uiTutStep5": "같은 선원 카드를 합치면 강해져요.",
+  "uiTutStep6": "이제 배가 알아서 싸워요. 앱을 꺼도 골드가 쌓여요!",
+  "uiTutSkip": "건너뛰기",
+  "uiTutOk": "좋아요"
 }

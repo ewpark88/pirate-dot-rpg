@@ -4,6 +4,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// HUD 아래 ‘다음 목표’ 한 줄 (설계서 4.5, 4.12 목표 막대). 목표가 없으면 아무것도 그리지 않는다.
 class GoalBar extends ConsumerWidget {
@@ -35,17 +36,20 @@ class GoalBar extends ConsumerWidget {
       GoalKind.rebirth => l10n.uiGoalRebirth(remaining),
     };
 
-    return Padding(
-      key: const Key('goal'),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      child: Row(
-        children: [
-          const Icon(Icons.flag_outlined, size: 14),
-          const SizedBox(width: 4),
-          Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)),
-          const SizedBox(width: 8),
-          SizedBox(width: 80, child: LinearProgressIndicator(value: progress, minHeight: 6)),
-        ],
+    return TutorialSpot(
+      id: 'goal',
+      child: Padding(
+        key: const Key('goal'),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Row(
+          children: [
+            const Icon(Icons.flag_outlined, size: 14),
+            const SizedBox(width: 4),
+            Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            const SizedBox(width: 8),
+            SizedBox(width: 80, child: LinearProgressIndicator(value: progress, minHeight: 6)),
+          ],
+        ),
       ),
     );
   }

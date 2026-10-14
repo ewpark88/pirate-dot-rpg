@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 파밍 중(보스를 못 잡아 제자리 항해)이면 전장 위에 ‘파밍 중’과 보스 도전 버튼 (설계서 4.1-4).
 class BossChallenge extends ConsumerWidget {
@@ -25,12 +26,15 @@ class BossChallenge extends ConsumerWidget {
           label: Text(l10n.uiFarming),
         ),
         const SizedBox(height: 4),
-        FilledButton.icon(
-          key: const Key('boss.challenge'),
-          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-          onPressed: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
-          icon: const Icon(Icons.flag),
-          label: Text(l10n.uiBossChallenge),
+        TutorialSpot(
+          id: 'boss.challenge',
+          child: FilledButton.icon(
+            key: const Key('boss.challenge'),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
+            icon: const Icon(Icons.flag),
+            label: Text(l10n.uiBossChallenge),
+          ),
         ),
       ],
     );
