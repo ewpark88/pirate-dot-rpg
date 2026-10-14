@@ -1,3 +1,4 @@
+import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -28,8 +29,9 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
   if (level == start) return state;
 
   ctx.emit(SaveRequested(ctx.tick, reason: command.type));
-  return state.copyWith(
+  final s = state.copyWith(
     wallet: state.wallet.copyWith(gold: gold),
     ship: state.ship.withLevel(def.id, level),
   );
+  return addQuestProgress(s, ctx.tables, 'upgrade', level - start);
 }

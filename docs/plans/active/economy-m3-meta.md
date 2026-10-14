@@ -1,0 +1,12 @@
+﻿# economy: M3 硫뷀? (蹂대Ъ?곸옄쨌?섏뒪?맞룹텧?씲룰킅怨졖룹닚?띉룸ぉ?쑣룸룄媛먃룻뒠?좊━??
+
+- ?ㅽ럺: `docs/specs/economy-m3-meta.md` (?뱀씤 2026-10-14) 쨌 ?붿껌: `docs/contracts/requests/ui-m3-meta.md` B1~B10
+
+## ?④퀎
+- [ ] 1. ?쇱씪 珥덇린?붋룻섏뒪??addQuestProgress쨌dailyQuests쨌ClaimDaily)쨌異쒖꽍 ??湲곗? 7~9
+- [ ] 2. 蹂대Ъ?곸옄(update ?ㅽ룿쨌媛?쇱븠?? TapChest, chestReward, OpSpawnChest) ??湲곗? 1~3
+- [ ] 3. 愿묎퀬 蹂댁긽(GrantAdReward 5醫끒룻븳??쨌?쒗뭾(tailwindRemaining, OpGrantTailwind)쨌lastOfflineGold ??湲곗? 4~6
+- [ ] 4. nextGoal쨌collectionBonus ??湲곗? 10~11
+- [ ] 5. ?쒗넗由ъ뼹 ?④퀎 ?먯젙쨌SkipTutorial쨌TutorialAck쨌OpSetTutorial ??湲곗? 12~13
+- [ ] 6. sim: ?쒗넗由ъ뼹 Ack, ?ㅽ뀒?댁? 40???섎（ ?쇱젙 湲곗??쇰줈, 寃곌낵??
+## 寃利?- ?④퀎留덈떎 ?뚯뒪??癒쇱? ??援ы쁽 ??check. ?앹뿉 `--full` + sim 20紐끖??쒓컙쨌?섎（ ?쇱젙.

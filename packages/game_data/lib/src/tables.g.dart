@@ -14,7 +14,7 @@ const Map<String, String> rawTables = {
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } }
   ],
-  "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
+  "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120, "xMin": 0.45, "xMax": 0.85 }
 }
 ''',
   'crews': r'''
@@ -542,8 +542,16 @@ const Map<String, String> rawTables = {
     { "id": "summon_1", "type": "summon", "target": 1 },
     { "id": "ad_1", "type": "ad", "target": 1 }
   ],
-  "dailyQuestRewardGems": 40,
-  "attendance": { "days": 7, "finalRewardMinRarity": "hero", "resetOnMiss": false },
+  "dailyQuestRewardGems": 10,
+  "attendance": {
+    "days": 7,
+    "finalRewardMinRarity": "hero",
+    "resetOnMiss": false,
+    "rewards": [
+      { "gems": 20 }, { "gems": 20 }, { "gems": 30 }, { "gems": 30 }, { "gems": 40 }, { "gems": 50 },
+      { "summon": 1, "minRarity": "hero" }
+    ]
+  },
   "collection": { "every": 5, "attackBonus": 0.03 },
   "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 60 },
   "autoUpgradeUnlockStage": 20,
@@ -558,7 +566,7 @@ const Map<String, String> rawTables = {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "stage10Min": { "min": 6, "max": 12 },
-      "stage40Hours": { "min": 1.5, "max": 3, "schedule": "continuous" },
+      "stage40Hours": { "min": 1.5, "max": 3, "schedule": "daily" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
       "adSummonsPerGemAd": { "min": 1, "max": 1.5 },

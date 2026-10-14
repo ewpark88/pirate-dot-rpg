@@ -1,3 +1,4 @@
+import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
@@ -21,6 +22,8 @@ class EconomySystem implements GameSystem {
     final MergeAllCards c => mergeAllCards(state, c, ctx),
     final PromoteCrew c => promoteCrew(state, c, ctx),
     final ClaimOffline c => claimOffline(state, c, ctx),
+    final ClaimDaily c => claimDaily(state, c, ctx),
+    final ClaimAttendance c => claimAttendance(state, c, ctx),
     final OpSetCrew c => opSetCrew(state, c, ctx),
     final OpGrant c => opGrant(state, c, ctx),
     final OpSetShip c => opSetShip(state, c, ctx),
@@ -30,5 +33,5 @@ class EconomySystem implements GameSystem {
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) => state;
+  GameState update(GameState state, SystemContext ctx) => rollDay(state, ctx.clock.now());
 }
