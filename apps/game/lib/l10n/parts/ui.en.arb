@@ -91,5 +91,8 @@
   "uiAdTailwind": "{minutes}m ×{mult}",
   "uiAdBossSupport": "Damage +{percent} · {seconds}s",
   "uiAdFreeSummon": "Free summon · {left} left",
-  "uiOk": "OK"
+  "uiOk": "OK",
+  "uiSettingsPrivacy": "Privacy Options",
+  "uiRebirthDoneTitle": "The map is open!",
+  "uiRebirthDoneGain": "+{count} map pieces · Damage·Gold +{percent}"
 }

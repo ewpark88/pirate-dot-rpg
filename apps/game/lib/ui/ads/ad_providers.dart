@@ -3,20 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderFamily;
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/adapters/ads/admob_ads.dart';
+import 'package:pirate_dot/adapters/ads/no_ads.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
-
-/// 광고가 없는 기본 포트 (스토어 빌드 전·테스트). 언제나 준비 안 됨 → 광고 버튼은 숨는다.
-// TODO(platform): S5의 NoAds(adapters/ads/no_ads.dart)가 main에 오면 그것으로 바꾸고 이 클래스는 지운다.
-class NoAds implements AdsPort {
-  const NoAds();
-
-  @override
-  bool isReady(AdPlacement placement) => false;
-
-  @override
-  Future<AdResult> show(AdPlacement placement) async => AdResult.notLoaded;
-}
 
 /// 보상형 광고 포트. 앱·platform 레인이 실제 어댑터로 덮는다.
 final adsPortProvider = Provider<AdsPort>((_) => const NoAds());
@@ -25,12 +15,18 @@ final adsPortProvider = Provider<AdsPort>((_) => const NoAds());
 final audioPortProvider = Provider<AudioPort?>((_) => null);
 
 /// 이 장치(`AdPlacement`)의 광고 버튼을 보여도 되나 = 광고 로드됨 && 경제가 허락(하루 한도·장치 조건) && 튜토리얼 아님 (설계서 4.6).
-// TODO(platform): 광고 로드 상태가 바뀌면 다시 그리도록 포트가 알림을 주면 여기서 구독한다(S5 요청서 대기).
 final ProviderFamily<bool, AdPlacement> adOfferProvider = Provider.family<bool, AdPlacement>((ref, placement) {
   if (ref.watch(tutorialStepProvider) != null) return false;
+  final port = ref.watch(adsPortProvider);
+  // AdMob 광고는 뒤늦게 로드된다 → 준비 상태가 바뀌면 다시 계산한다.
+  if (port is AdMobAds) {
+    void changed() => ref.invalidateSelf();
+    port.ready.addListener(changed);
+    ref.onDispose(() => port.ready.removeListener(changed));
+  }
   final tables = ref.watch(tablesProvider);
   final allowed = ref.watch(gameStateProvider.select((s) => canWatchAd(s, tables, placement)));
-  return allowed && ref.watch(adsPortProvider).isReady(placement);
+  return allowed && port.isReady(placement);
 });
 
 /// 광고를 보여 주고, 보상 콜백(rewarded)이 왔을 때만 GrantAdReward를 보낸다. 그 밖의 결과는 아무것도 하지 않는다.
