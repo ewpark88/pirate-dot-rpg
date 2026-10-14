@@ -7,6 +7,10 @@ import 'package:pirate_dot/operator/render_group.dart';
 import 'package:pirate_dot/operator/sample_states.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
+/// 배포 빌드 잔존 검사용 표식 — 지우지 말 것 (tool/check --release, 요청서 platform-release-check A).
+/// 패널 루트 위젯의 Key로 실제로 참조해서 트리 셰이킹에 남으면 검사가 잡는다.
+const operatorMarker = '__OPERATOR_PANEL__';
+
 /// 배속 버튼 (OpSetSpeed는 0·1·2·4를 받는다. 일시정지는 2차).
 const _speeds = [1, 2, 4];
 
@@ -51,6 +55,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
     };
 
     return ListView(
+      key: const ValueKey(operatorMarker),
       padding: const EdgeInsets.all(12),
       children: [
         Text(l10n.opPanelTitle, style: Theme.of(context).textTheme.titleLarge),

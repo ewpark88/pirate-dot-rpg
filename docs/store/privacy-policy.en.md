@@ -1,9 +1,9 @@
-# Privacy Policy — Pirate Dot Expedition (draft)
+# Privacy Policy — 해적도트 원정대 / Pirate Dot Expedition (draft; English name awaiting confirmation)
 
-> Draft (2026-10-14, S5). Published on GitHub Pages by a person. Fill in `<…>`. Not legal advice — have a person review before release.
+> Draft (2026-10-14, S5). Published as a page on https://rich-fire.blogspot.com/ by a person (`app-ads.md` §5). Fill in `<…>`. Not legal advice — have a person review before release.
 > Mirrors what the app actually does: no accounts or servers, saves stay on the device, ads via AdMob (+UMP), analytics via Firebase Analytics & Crashlytics, local notifications.
 
-Effective date: `<publish date>` · Developer: `<developer name>` · Contact: `<contact email>`
+Effective date: `<publish date>` · Developer: 박은우 `<romanized name — to be confirmed>` · Contact: repo.dev88@gmail.com
 
 ## 1. What we don't collect
 - There is no sign-up or login. We do not collect your name, email, phone number, location, contacts or photos.
@@ -29,8 +29,8 @@ Effective date: `<publish date>` · Developer: `<developer name>` · Contact: `<
 
 ## 4. Retention and deletion
 - Save data: on your device until you uninstall the app.
-- Analytics: deleted automatically after the Firebase retention period `<2 or 14 months>`. Crashlytics crash reports: 90 days.
-- To request deletion of analytics data, email `<contact email>` and we will help you find your app instance ID.
+- Analytics: deleted automatically after the Firebase retention period `<undecided — 2 or 14 months, awaiting the owner's decision>`. Crashlytics crash reports: 90 days.
+- To request deletion of analytics data, email repo.dev88@gmail.com and we will help you find your app instance ID.
 
 ## 5. Children
 This game is not directed at children under 13, and we do not knowingly collect personal information from children.
@@ -39,4 +39,4 @@ This game is not directed at children under 13, and we do not knowingly collect 
 We will post any changes on this page and update the effective date. Significant changes will also be announced in the game.
 
 ## 7. Contact
-`<contact email>`
+repo.dev88@gmail.com

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 설정 화면 (설계서 4.12). 바꾸면 SetSetting만 보낸다 — 화면은 엔진이 돌려준 상태로 다시 그린다.
@@ -19,6 +23,7 @@ class SettingsScreen extends ConsumerWidget {
         return (v.lang, v.bgm, v.sfx, v.vibration, v.shake, v.flash, v.powerSave, v.autoBoss, v.autoUpgrade);
       }),
     );
+    final ads = ref.watch(adsPortProvider);
     void set(String key, Object value) => ref.read(commandSinkProvider).send(SetSetting(key, value));
 
     final switches = [
@@ -54,6 +59,14 @@ class SettingsScreen extends ConsumerWidget {
           ),
           for (final (key, label, value) in switches)
             SwitchListTile(key: Key('settings.$key'), title: Text(label), value: value, onChanged: (v) => set(key, v)),
+          // 개인정보 옵션(UMP 재동의) — AdMob이 필요하다고 할 때만 (개인정보처리방침의 약속, 스펙 platform-m4).
+          if (ads is AdMobAds && ads.privacyOptionsRequired)
+            ListTile(
+              key: const Key('settings.privacy'),
+              title: Text(l10n.uiSettingsPrivacy),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => unawaited(ads.showPrivacyOptions()),
+            ),
         ],
       ),
     );

@@ -69,19 +69,26 @@
 | platform | S5 | lane/platform | 세션 시작 대기 (`D:\Projects\pde-platform`) | - | - |
 | art | S3 (2단계) | - | M3부터 | - | - |
 
+## 그래픽 품질 기준 (사용자, 2026-10-14)
+**최소 기준 = `D:\Projects\이미지참고용attle_ship.gif`**(640×360, 142프레임). 앞으로 계속 높인다. 렌더·UI·아트 작업은 이 화면과 나란히 비교해 못 미치면 끝난 것이 아니다.
+기준의 특징: 층진 하늘 띠·도트 구름, 깊이별 바다 띠와 가로 물결 줄, 디테일 있는 범선과 포구 화염, 촘촘한 컬러 무리, 도트 비트맵 숫자(흰 글자·어두운 외곽선)와 큰 노란 '×4 COMBO' 배너, 배로 날아가는 코인 반짝임, 캔버스 안 도트 HUD(왼쪽 위 골드·가운데 '12-2'·오른쪽 위 붉은 막대), 아래 선원 바(등급 색 테두리 큰 초상).
+
 ## 사람이 해야 할 일 (S1이 모아 둔다)
 | 무엇 | 왜 | 어디 |
 | --- | --- | --- |
 | **M2 관문 실기기 확인** (손맛 + 60fps) | 손맛은 sim으로 못 잰다. 통과 전엔 M3 이후를 '다듬기'로만 진행 | `docs/DEVICE_TEST.md` |
 | CC0 효과음·배경음 고르기 | 사운드 연출은 됐지만 음원이 없다(무음) | `docs/specs/render-audio.md`, `fx_map.json` sfx id 목록 |
 | 배 등급 그림 ship_t2~t4 | 도트 팩에 ship_t1만 있다(승급은 플레이스홀더) | 아트 팩 |
-| 광고·분석 계정(AdMob·Firebase) + platform 레인 세션 | M4 광고·Crashlytics | `docs/lanes/platform.md` |
+| 광고·분석 계정(AdMob·Firebase 프로젝트, google-services.json) | M4 광고·Crashlytics (platform 세션 S5는 열림) | `docs/store/firebase.md`, `docs/store/admob.md` |
+| 업로드 키(릴리스 서명) | M5 Play 업로드 | `docs/store/android-release.md` |
+| **Analytics 보존 기간 (2개월/14개월) — 보류** | 개인정보처리방침·데이터 보안 양식 | 사용자가 나중에 정함 |
+| app-ads.txt를 https://rich-fire.blogspot.com/ 루트에 올릴 수 있는지 | AdMob 판매자 확인 | `docs/store/app-ads.md` (S5 조사) |
 
 ## 미결 사항 (설계서 12장) → ADR
 
 | 항목 | 상태 |
 | --- | --- |
-| 게임 이름·패키지 ID | 임시 `repo.dot.pirate` (ADR-0002), M5 전 확정 |
+| 게임 이름·패키지 ID | 이름 **해적도트 원정대** 확정(2026-10-14). 패키지 ID는 임시 `repo.dot.pirate` (ADR-0002), M5 전 확정. 개발자 박은우 · repo.dev88@gmail.com · 웹사이트 https://rich-fire.blogspot.com/ |
 | 화면 방향·태블릿 | 미정 (세로 고정 가정) |
 | 최소 지원 OS | 미정 (Android 7.0 / iOS 13 제안) |
 | 환생 해금 스테이지 | 테이블은 40 (설계서 본문), 미결 목록은 30 제안 — 밸런스 시뮬 후 확정 |

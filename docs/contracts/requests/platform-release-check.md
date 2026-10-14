@@ -25,6 +25,7 @@
 ## 옮길 코드 (S5가 실제 빌드로 확인함, 2026-10-14)
 
 ### A. 표식 상수 — `apps/game/lib/operator/operator_panel.dart`
+**반영됨**(main 4cf1060): `const operatorMarker = '__OPERATOR_PANEL__'`, 패널 루트 `ValueKey(operatorMarker)`로 참조.
 패널 제목(또는 루트) 위젯의 Key로 **실제로 참조**해야 운영자 빌드에 남는다(참조 안 하면 양쪽 다 트리 셰이킹돼 양성 대조가 실패 = 검사가 알려 준다).
 ```dart
 /// 배포 빌드 검사 표식 (tool/release_check.dart). 지우거나 바꾸지 말 것.
@@ -139,6 +140,16 @@ int _count(Uint8List hay, String marker) {
 ```
 
 ### 확인 결과
+**표식 반영 뒤 (2026-10-14, lane/platform = main 4cf1060 이후 머지)** — 기본 표식으로:
+```
+dart run tool/release_check.dart
+✓ Built app-release.aab (51.9MB) / ✓ Built app-release.apk (21.8MB, OPERATOR=true, arm64)
+표식 "__OPERATOR_PANEL__": 배포 aab 0회 · 운영자 apk 1회
+✓ 배포 빌드에 운영자 코드 없음        (5분 30초 — 다른 세션 빌드와 겹침, 단독이면 약 2분 40초)
+```
+→ 아래 B 코드는 그대로 `tool/release_check.dart`로 옮기면 된다(수정 없음).
+
+이전 확인(표식 전, 기존 Key로):
 표식 대신 기존 운영자 전용 Key `op.invincible`로 돌림(표식 상수가 아직 없어서):
 ```
 dart run release_check.dart --marker op.invincible
