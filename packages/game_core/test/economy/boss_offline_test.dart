@@ -1,6 +1,5 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/economy/economy_system.dart';
-import 'package:game_core/src/economy/offline.dart';
 import 'package:test/test.dart';
 
 import 'harness.dart';

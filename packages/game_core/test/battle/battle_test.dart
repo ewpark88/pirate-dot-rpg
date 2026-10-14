@@ -144,6 +144,23 @@ void main() {
     expect(e.state.progress.rage, greaterThan(0));
   });
 
+  test('9. 보스를 잡으면 스테이지 +1·젬·보스 카드(스테이지 올리기 전 기준)·저장 요청', () {
+    final crews = {crewOf('direct'): const CrewState(level: 40), crewOf('lob'): const CrewState(level: 40)};
+    final s = game(stage: 5, crews: crews).copyWith(ship: const ShipState(parts: {'cannon': 30}));
+    final e = engineOf(s)..enqueue(const OpSpawnBoss());
+    final ev = <GameEvent>[];
+    for (var i = 0; i < 30 * 1000 ~/ w.tickMs && e.state.progress.stage == 5; i++) {
+      ev.addAll((e..tick()).drainEvents());
+    }
+    expect(ev.whereType<BossCleared>().single.stage, 5);
+    expect(ev.whereType<SaveRequested>().map((x) => x.reason), contains('bossCleared'));
+    expect(e.state.progress.stage, 6);
+    expect(e.state.wallet.gems, w.bossGems);
+    final cards =
+        e.state.crews.values.fold(0, (n, c) => n + c.cards) + e.state.crews.values.fold(0, (n, c) => n + c.exp);
+    expect(cards, greaterThan(0));
+  });
+
   test('10. 같은 시드·같은 명령이면 600틱 이벤트가 완전히 같다', () {
     String run() {
       final e = engineOf(game(stage: 12, crews: {for (final f in crewFamilies) crewOf(f): const CrewState(level: 10)}))
