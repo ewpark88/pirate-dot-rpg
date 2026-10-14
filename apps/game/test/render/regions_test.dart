@@ -43,12 +43,12 @@ void main() {
     for (final r in (regions['regions'] as List).cast<Map<String, dynamic>>()) {
       expect(fx.backgrounds.containsKey(r['background']), isTrue, reason: '${r['background']}');
     }
-    final b = Backdrop(fx, rawTables['regions']!);
+    final b = Backdrop(fx, tables.regions);
     expect(b.paletteOf('bg_nowhere').sky, b.paletteOf(fx.backgroundDefault).sky);
   });
 
   test('수용 기준 2: 스테이지 → 해역 배경', () {
-    final b = Backdrop(fx, rawTables['regions']!);
+    final b = Backdrop(fx, tables.regions);
     expect(
       [
         for (final s in [1, 50, 51, 150, 251, 400]) b.backgroundFor(s),
@@ -59,13 +59,13 @@ void main() {
         'bg_storm',
         'bg_glacier',
         'bg_phantom',
-        'bg_phantom',
+        'bg_storm', // 무한 항해: 400 → 100 (loopStages 300)
       ],
     );
   });
 
   test('수용 기준 3: 해역 전환은 backgroundFadeMs 동안 섞인다', () {
-    final b = Backdrop(fx, rawTables['regions']!)..setStage(50);
+    final b = Backdrop(fx, tables.regions)..setStage(50);
     final coral = b.paletteOf('bg_coral').sky;
     final storm = b.paletteOf('bg_storm').sky;
     b
@@ -182,8 +182,8 @@ void main() {
     RecordedTick at(int t, int stage) =>
         RecordedTick(BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), stage: stage), const []);
     final ticks = [at(0, 50), at(1, 50), at(2, 51), for (var t = 3; t < 60; t++) at(t, 51)];
-    final storm = Backdrop(fx, rawTables['regions']!).paletteOf('bg_storm').sky;
-    final coral = Backdrop(fx, rawTables['regions']!).paletteOf('bg_coral').sky;
+    final storm = Backdrop(fx, tables.regions).paletteOf('bg_storm').sky;
+    final coral = Backdrop(fx, tables.regions).paletteOf('bg_coral').sky;
     expect(_play(ticks, 1).backdrop.sky, coral);
     expect(_play(ticks, 2 + (fx.backgroundFadeMs + 100) / tickMs).backdrop.sky, storm);
   });

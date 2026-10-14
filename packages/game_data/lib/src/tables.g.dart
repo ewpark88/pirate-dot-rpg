@@ -476,6 +476,14 @@ const Map<String, String> rawTables = {
   "shield": { "color": "#48E5E5", "px": 2, "breakFx": "hit_spark", "breakCount": 3 },
   "tierColors": ["#CD7F32", "#C0C0C0", "#FFD700"],
   "status": { "slowedTint": "#5DADE2", "slowedAlpha": 0.45, "dropColor": "#AED6F1", "dropPeriodMs": 500, "burnColors": ["#FF7A2F", "#FFD23F"], "burnBlinkMs": 120, "vulnerableColor": "#E74C3C", "iconGap": 4 },
+  "cutIn": { "inMs": 300, "holdMs": 600, "outMs": 300, "bandH": 40, "bandColor": "#101820", "bandAlpha": 0.85, "lineColor": "#FF3030", "bossScale": 2 },
+  "pillar": { "ms": 900, "w": 20, "color": "#FFF6B0", "fxScale": 2 },
+  "shipLook": {
+    "sloop": { "color": "#A0522D", "w": 56, "h": 40 },
+    "warship": { "color": "#5D4037", "w": 60, "h": 46 },
+    "ghost": { "color": "#7F8C8D", "w": 60, "h": 46 }
+  },
+  "regionSweep": { "fx": "tidal_wave", "durationMs": 900 },
   "audio": { "sfxMinGapMs": 40, "sfxMaxPerFrame": 6 },
   "sprites": { "enemyFrames": 2, "coinFrames": 3, "animMs": 250 },
   "chest": { "color": "#B9770E", "lidColor": "#F4D03F", "w": 14, "h": 10, "bobPx": 1.5, "bobMs": 900, "sinkTicks": 20, "sinkPx": 10 },

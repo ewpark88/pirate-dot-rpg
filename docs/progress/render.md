@@ -3,8 +3,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | `plans/active/render-moments.md`(스펙 초안) · `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
-| 상태 | 상태 표시 완료(7cb5af9). 순풍 speed 2 라이브 확인 테스트. '큰 순간' 스펙 초안 + 계약 요청 G |
-| 막힌 것 | render-moments 승인·계약 G · 승급 그림 ship_t2~t4(아트, M4) · CC0 음원(사람) · 실기기 측정(M2) |
+| 상태 | '큰 순간' 연출 구현(컷인·승급 빛기둥·해역 해일), Backdrop을 regionAt(무한 항해)로. 골든 2장 S1 확인 대기(미커밋) |
+| 막힌 것 | 골든 승인(battle_cutin·battle_boss_storm) · 승급 그림(아트, M4) · CC0 음원(사람) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · '큰 순간' 연출
+- 한 일: render-moments 승인, 계약 G 거절(배 등급은 stage 파생) → 요청서에 결과 기록. `Backdrop`을 `regions.regionAt(stage)`로 바꿔 무한 항해 반복 반영(stage 400 → 폭풍해).
+  테스트 먼저(`moments_test.dart` 7개) → `Moments`(해역 보스 = regionAt(stage).regionBoss 첫 등장 컷인 1.2초·세션당 1번, 배 등급 = shipTiers.tierAt(stage)·바뀌면 빛기둥+level_up,
+  ShipTierUp과 중복 1번, 해역 이동 해일 sweep), `ShipPainter`(등급 스프라이트 `ship:<tierId>`·플레이스홀더 shipLook·빛기둥), 컷인 띠(StagePainter).
+- 검증: `tool\check.bat --full` 통과. 골든 `battle_cutin.png` 새로, `battle_boss_storm.png`는 stage 75 배가 sloop가 되어 갱신(미커밋).
 
 ### 2026-10-14 · S3 · 적 상태 표시
 - 한 일: render-status 승인·계약 F(main 286c687) → 테스트 먼저(`status_test.dart` 4개, 픽셀 확인) → `StatusPainter`(감속 색조·물방울, 화상 불꽃 깜빡임(번쩍임 끄기면 고정), 취약 화살표,
