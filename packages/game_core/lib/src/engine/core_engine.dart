@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:game_core/src/battle/battle_system.dart';
-import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -130,15 +129,5 @@ class CoreEngine implements GameEngine {
   void _setBattle(BattleView b) => _state = _state.copyWith(battle: b);
 }
 
-BattleView _copyBattle(BattleView b, {int? tick, int? hitStopTicks, int? speed, BigNum? shipHp}) => BattleView(
-  tick: tick ?? b.tick,
-  shipHp: shipHp ?? b.shipHp,
-  shipHpMax: b.shipHpMax,
-  bossActive: b.bossActive,
-  bossTicksLeft: b.bossTicksLeft,
-  enemies: b.enemies,
-  fleet: b.fleet,
-  captainId: b.captainId,
-  hitStopTicks: hitStopTicks ?? b.hitStopTicks,
-  speed: speed ?? b.speed,
-);
+BattleView _copyBattle(BattleView b, {int? tick, int? hitStopTicks, int? speed}) =>
+    b.copyWith(tick: tick, hitStopTicks: hitStopTicks, speed: speed);

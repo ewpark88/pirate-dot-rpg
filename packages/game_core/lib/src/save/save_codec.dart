@@ -6,11 +6,11 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 
 /// 현재 세이브 스키마 버전. 올리면 [migrations]에 함수 + test/fixtures/saves/에 픽스처 필수.
-const currentSchemaVersion = 2;
+const currentSchemaVersion = 3;
 
 /// `migrations[i]`는 v(i+1) → v(i+2). 순수 함수만 둔다.
 /// 예: `Json migrateV1ToV2(Json j) => {...j, 'schemaVersion': 2, 'newField': 0};`
-const List<Json Function(Json)> migrations = [migrateV1ToV2];
+const List<Json Function(Json)> migrations = [migrateV1ToV2, migrateV2ToV3];
 
 /// v1 → v2: `summon.total`(누적 소환 횟수) 추가. 출시 전이라 실제 플레이어 세이브가 없어 0으로 둔다
 /// → v1에서 올라온 세이브도 첫 10연 무료를 한 번 받는다 (docs/decisions/0007-save-v2-summon-total.md).
@@ -83,3 +83,12 @@ Future<GameState?> loadSave(SaveStore store) async {
   final backup = await store.readBackup();
   return backup == null ? null : SaveCodec.decode(backup);
 }
+
+/// v2 → v3: 일일 퀘스트·출석 '받음' 기록, 튜토리얼 단계 (docs/decisions/0008-save-v3-meta.md).
+/// 기존 세이브는 튜토리얼을 끝낸 것으로(null) 본다.
+Json migrateV2ToV3(Json j) => {
+  ...j,
+  'schemaVersion': 3,
+  'daily': {...(j['daily'] as Json), 'questsClaimed': <String>[], 'attendanceClaimed': false},
+  'tutorialStep': null,
+};

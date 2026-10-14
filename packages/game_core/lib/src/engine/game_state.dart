@@ -20,6 +20,7 @@ class GameState {
     this.tokens = 0,
     this.pityCount = 0,
     this.summonsTotal = 0,
+    this.tutorialStep,
     this.buffs = const Buffs(),
     this.collection = const {},
     this.settings = const Settings(),
@@ -42,6 +43,7 @@ class GameState {
     daily: DailyState(date: localDate(now)),
     crews: {for (final id in crews) id: const CrewState()},
     collection: crews.toSet(),
+    tutorialStep: 1,
   );
 
   /// 세이브 본문(체크섬·schemaVersion 제외)에서 만든다. 형식 오류는 TypeError/FormatException.
@@ -59,6 +61,7 @@ class GameState {
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
     summonsTotal: (j['summon'] as Json)['total'] as int,
+    tutorialStep: j['tutorialStep'] as int?,
     buffs: Buffs.fromJson(j['buffs'] as Json),
     daily: DailyState.fromJson(j['daily'] as Json),
     collection: (j['collection'] as List).cast<String>().toSet(),
@@ -86,6 +89,9 @@ class GameState {
 
   /// 누적 소환 횟수. 0이면 첫 10연 무료(설계서 4.12, 세이브 v2).
   final int summonsTotal;
+
+  /// 튜토리얼 단계(설계서 4.12, 1부터). null이면 끝냈거나 건너뜀 (세이브 v3).
+  final int? tutorialStep;
   final Buffs buffs;
   final DailyState daily;
 
@@ -109,6 +115,8 @@ class GameState {
     int? tokens,
     int? pityCount,
     int? summonsTotal,
+    int? tutorialStep,
+    bool clearTutorial = false,
     Buffs? buffs,
     DailyState? daily,
     Set<String>? collection,
@@ -126,6 +134,7 @@ class GameState {
     tokens: tokens ?? this.tokens,
     pityCount: pityCount ?? this.pityCount,
     summonsTotal: summonsTotal ?? this.summonsTotal,
+    tutorialStep: clearTutorial ? null : tutorialStep ?? this.tutorialStep,
     buffs: buffs ?? this.buffs,
     daily: daily ?? this.daily,
     collection: collection ?? this.collection,
@@ -146,6 +155,7 @@ class GameState {
     'crews': {for (final e in crews.entries) e.key: e.value.toJson()},
     'tokens': tokens,
     'summon': {'pityCount': pityCount, 'total': summonsTotal},
+    'tutorialStep': tutorialStep,
     'buffs': buffs.toJson(),
     'daily': daily.toJson(),
     'collection': collection.toList()..sort(),

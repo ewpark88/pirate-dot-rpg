@@ -196,5 +196,7 @@ class Field {
     captainId: captainId,
     hitStopTicks: prev.hitStopTicks,
     speed: prev.speed,
+    stage: stage,
+    chest: prev.chest,
   );
 }

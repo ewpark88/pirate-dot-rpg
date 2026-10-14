@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "savedAt": "2026-11-01T12:34:56.000Z",
   "playerId": "fixture-player",
   "rngSeed": 913377,
@@ -53,6 +53,7 @@
     "pityCount": 17,
     "total": 67
   },
+  "tutorialStep": 1,
   "buffs": {
     "tailwindUntil": "2026-11-01T14:04:56.000Z"
   },
@@ -65,7 +66,9 @@
     "quests": {
       "kill_500": 140
     },
-    "attendanceDay": 4
+    "attendanceDay": 4,
+    "questsClaimed": [],
+    "attendanceClaimed": false
   },
   "collection": [
     "manta",
@@ -224,6 +227,8 @@
     ],
     "captainId": "manta",
     "hitStopTicks": 0,
-    "speed": 1
+    "speed": 1,
+    "stage": 1,
+    "chest": null
   }
 }
