@@ -97,6 +97,10 @@ class CoreEngine implements GameEngine {
       _state = _state.copyWith(operator: true);
       if (_applyEngineOperator(c)) return;
     }
+    if (c is AckSummonResult) {
+      _state = _state.copyWith(clearLastSummon: true);
+      return;
+    }
     if (c is SetSetting) {
       _state = _state.copyWith(settings: _state.settings.withValue(c.key, c.value));
       return;

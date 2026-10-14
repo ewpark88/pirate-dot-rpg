@@ -87,6 +87,9 @@ class BattleGame extends FlameGame {
   static const _periodSlackMs = 0.5;
 
   double get fps => perf.fps;
+
+  /// 측정 오버레이가 숫자를 갖고 있는가 (PERF_OVERLAY 확인용).
+  bool get overlayReady => _overlay.hasText;
   SceneStats get stats => scene.stats;
 
   JuiceSettings _settings;

@@ -251,3 +251,17 @@ class Settings {
 }
 
 DateTime? parseTime(Object? v) => v == null ? null : DateTime.parse(v as String).toUtc();
+
+/// 소환 1장의 결과 (설계서 4.3 소환 연출).
+@immutable
+class SummonResult {
+  const SummonResult({required this.crewId, required this.rarity, this.isNew = false});
+
+  final String crewId;
+
+  /// 카드 등급 id (rarities.json).
+  final String rarity;
+
+  /// 처음 얻은 선원(도감 새로 등록).
+  final bool isNew;
+}

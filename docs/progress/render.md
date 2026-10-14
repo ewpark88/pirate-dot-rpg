@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
-| 상태 | render-regions 완료(보스 골든 포함). 다음: live 실기기 확인 준비, art-pack-v02 스펙 |
-| 막힌 것 | 실기기 측정(M2 관문, S1이 docs/DEVICE_TEST.md 작성) |
+| 현재 계획 | `plans/active/render-art-pack-v02.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
+| 상태 | 실제 엔진 라이브 재생 통합 테스트 ab11e7d(PERF_OVERLAY live 확인). 아트 팩 v0.2 스펙 초안 |
+| 막힌 것 | art-pack 승인·Q1(lane/art 작업 위치)·Q2(pubspec assets) · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · M2 관문 준비 + 아트 팩 스펙
+- 한 일: 보스 골든 커밋(7bc4922, storm_pirate·deep_sub 색 밝게). `live_engine_test.dart` — EngineHost(실제 엔진) 30초를 60Hz로 라이브 재생:
+  적 등장·처치·버퍼 64틱 미만·fps 60·오버레이 숫자·콘솔 `[perf]` 요약이 live에서도 나옴(ab11e7d). 앱은 `battle_providers.dart`가 `battleFeedProvider`로 연결돼 있음.
+  아트 팩 v0.2 스펙 초안 `docs/specs/render-art-pack-v02.md`(에셋 배치·import_pack.py·LICENSES OWN 규칙·SpriteBank·pubspec 요청).
+- 남은 문제: `flutter run -d chrome` 눈 확인은 아직(테스트로만). art 경로는 lane/render에서 쓸 수 없음 → Q1.
 
 ### 2026-10-14 · S3 · render-regions (해역 배경·보스 연출)
 - 한 일: 스펙 승인(S1)·계약 D 수용, 해역 보스·shielded·tier를 규칙 7~10으로 추가. 테스트 먼저(`regions_test.dart` 수용 기준 1~7) →
