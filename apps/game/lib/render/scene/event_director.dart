@@ -78,6 +78,7 @@ class EventDirector implements ReplayListener {
     final f = tick.frame;
     scene.shipHpRatio = f.shipHpMax.isZero ? 0 : (f.shipHp / f.shipHpMax).toDouble().clamp(0.0, 1.0);
     for (final e in tick.events) {
+      _sound(e);
       switch (e) {
         case AttackFired():
           final fxId = _crewFx[e.crewId];
@@ -116,6 +117,24 @@ class EventDirector implements ReplayListener {
     _m3
       ..detectSplitRevive(tick, index)
       ..detectShieldBreak(tick, index);
+  }
+
+  /// 이벤트 → fx_map 효과음 키.
+  void _sound(GameEvent e) {
+    final key = switch (e) {
+      Damage(:final crit) => crit ? 'critHit' : 'damage',
+      Kill() => 'kill',
+      MultiKill() => 'multiKill',
+      SkillCast() => 'skillCast',
+      UltimateCast() => 'ultimateCast',
+      BossSpawned() => 'bossSpawned',
+      BossCleared() => 'bossCleared',
+      BossFailed() => 'bossFailed',
+      _ => null,
+    };
+    if (key == null) return;
+    final salt = e is Damage ? e.targetId : 0;
+    scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: salt);
   }
 
   void _damage(Damage e, RecordedTick tick, int index) {

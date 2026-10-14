@@ -205,6 +205,7 @@ class FxMapTable {
       tierColors = [for (final c in j.strs('tierColors')) parseArgb(c, 'tierColors')],
       chest = j.obj('chest'),
       sprites = j.obj('sprites'),
+      audio = j.obj('audio'),
       zone = j.obj('zone');
 
   final Map<String, JsonReader> events;
@@ -248,6 +249,9 @@ class FxMapTable {
 
   /// 스프라이트 시트 프레임 수·애니 간격 (아트 팩).
   final JsonReader sprites;
+
+  /// 효과음 겹침 상한.
+  final JsonReader audio;
   final JsonReader zone;
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
