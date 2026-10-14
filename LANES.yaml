@@ -111,6 +111,7 @@ lanes:
 shared:
   - packages/game_core/lib/contracts.dart
   - packages/game_core/lib/game_core.dart
+  - packages/game_core/lib/economy_views.dart
   - packages/game_core/lib/testing.dart
   - packages/game_core/lib/src/testing/
   - packages/game_data/lib/game_data.dart
