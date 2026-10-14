@@ -5,9 +5,9 @@
 
 ## 단계
 - [x] 1. ② 보스 약점 칩 — 보스 이름(BossDef.nameKey) + 약점 계열(skills families nameKey), 테이블만으로 (기준 4)
-- [ ] 2. ① 항해 탭 환생 카드 — `rebirthPreviewProvider`(기본 null, S2 함수 오면 교체) (기준 1·2)
-- [ ] 3. 환생 확인 창 → Rebirth (기준 3)
-- [ ] 4. 영어 골든 2장 + 보스전 골든 갱신 → S1 승인 (기준 5)
+- [x] 2. ① 항해 탭 환생 카드 — `rebirthPreviewProvider`(기본 null, S2 함수 오면 교체) (기준 1·2)
+- [x] 3. 환생 확인 창 → Rebirth (기준 3)
+- [x] 4. 영어 골든 2장(en_rebirth_card·en_rebirth_dialog) + 항해 탭이 보이는 3장 갱신 — S1 승인(환생 숫자 규칙은 미정, S2 함수 교체 때 재승인) (기준 5)
 - [ ] 5. `check --full` → 진척 문서 → 커밋 → S1 보고
 
 ## 메모
