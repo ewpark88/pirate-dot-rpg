@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md`, `plans/done/render-m3-fx.md` |
-| 상태 | render-m3-fx 완료 — 계약 A·B·C 반영(어댑터 제거, 기절 별), main e883272까지 머지, check --full 통과. 다음: render-regions 스펙 |
-| 막힌 것 | 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
+| 현재 계획 | `plans/active/render-regions.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx` |
+| 상태 | render-m3-fx 완료(d223b7f). render-regions 스펙 초안 + 계약 요청 `render-stage`(D: BattleView.stage) |
+| 막힌 것 | render-regions 승인·계약 D 결정(S1) · 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
 
 ## 실기기 측정
 
