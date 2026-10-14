@@ -7,10 +7,16 @@
   },
   "flashFrames": 2,
   "knockbackPx": { "assault": 4, "explosion": 6 },
-  "damageNumber": { "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D" },
-  "bossKill": { "slowMoMs": 300, "flash": true },
+  "knockbackMs": 120,
+  "damageNumber": {
+    "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D",
+    "lifeMs": 700, "risePx": 14, "critBouncePx": 6
+  },
+  "bossKill": { "slowMoMs": 300, "slowMoRate": 0.3, "flash": true },
+  "kill": { "coinCount": 5, "coinFlyMs": 600 },
   "vibration": { "crit": "light", "ultimate": "medium" },
   "sound": { "hitVariants": 3, "pitchJitter": 0.08 },
-  "limits": { "effects": 40, "damageNumbers": 24 },
+  "limits": { "effects": 40, "damageNumbers": 24, "projectiles": 48, "coins": 60 },
+  "replay": { "lookaheadTicks": 2, "liveMaxLagTicks": 6 },
   "powerSave": { "idleSec": 120, "fps": 30 }
 }

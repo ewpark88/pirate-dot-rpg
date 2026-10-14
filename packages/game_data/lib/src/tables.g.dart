@@ -401,6 +401,23 @@ const Map<String, String> rawTables = {
     "partMilestone": { "fx": "level_up", "sfx": "fanfare_small" },
     "crewPromoted": { "fx": "level_up", "sfx": "promote" }
   },
+  "projectiles": {
+    "lob": { "color": "#2B2B2B", "size": 4, "path": "arc", "arcPx": 28 },
+    "direct": { "color": "#FFE14D", "size": 2, "path": "line", "burst": 3, "burstGapMs": 25 },
+    "pierce": { "color": "#C9CED6", "size": 3, "path": "line" },
+    "skip": { "color": "#9E8B6B", "size": 3, "path": "skip", "arcPx": 8 },
+    "underwater": { "color": "#5DADE2", "size": 4, "path": "line" },
+    "air": { "color": "#F5F5F5", "size": 3, "path": "drop", "arcPx": 60 },
+    "assault": { "color": "#E74C3C", "size": 5, "path": "line" },
+    "shock": { "color": "#A569BD", "size": 6, "path": "line" }
+  },
+  "projectileAliases": { "support": "shock" },
+  "projectileDefault": "direct",
+  "sheetColors": {
+    "slash": "#F5F5F5", "muzzle": "#FFE14D", "explosion_aoe": "#FF7A2F", "tidal_wave": "#3FA7E0",
+    "lightning": "#C9F0FF", "hit_spark": "#FFFFFF", "coin_burst": "#FFD23F", "level_up": "#8EF07A"
+  },
+  "sheetFrameMs": 60,
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },
     { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },
@@ -442,11 +459,17 @@ const Map<String, String> rawTables = {
   },
   "flashFrames": 2,
   "knockbackPx": { "assault": 4, "explosion": 6 },
-  "damageNumber": { "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D" },
-  "bossKill": { "slowMoMs": 300, "flash": true },
+  "knockbackMs": 120,
+  "damageNumber": {
+    "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D",
+    "lifeMs": 700, "risePx": 14, "critBouncePx": 6
+  },
+  "bossKill": { "slowMoMs": 300, "slowMoRate": 0.3, "flash": true },
+  "kill": { "coinCount": 5, "coinFlyMs": 600 },
   "vibration": { "crit": "light", "ultimate": "medium" },
   "sound": { "hitVariants": 3, "pitchJitter": 0.08 },
-  "limits": { "effects": 40, "damageNumbers": 24 },
+  "limits": { "effects": 40, "damageNumbers": 24, "projectiles": 48, "coins": 60 },
+  "replay": { "lookaheadTicks": 2, "liveMaxLagTicks": 6 },
   "powerSave": { "idleSec": 120, "fps": 30 }
 }
 ''',
