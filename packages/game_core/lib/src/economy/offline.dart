@@ -30,7 +30,7 @@ BigNum fleetDps(GameState s, GameTables t, List<String> fleet) {
   return ship.attack.times(perAttack * tier * crit * ship.attackSpeed);
 }
 
-/// 초당 골드 추정 = 한 파 골드 / (한 파 HP ÷ DPS + 이동 시간). 보스는 넘지 않는다.
+/// 초당 골드 추정 = 한 파 골드 / (max(한 파 HP ÷ DPS, offline.minWaveSec) + 이동 시간). 보스는 넘지 않는다.
 BigNum goldPerSecEstimate(GameState s, GameTables t, List<String> fleet) {
   final dps = fleetDps(s, t, fleet);
   if (dps <= BigNum.zero) return BigNum.zero;
@@ -43,13 +43,14 @@ BigNum goldPerSecEstimate(GameState s, GameTables t, List<String> fleet) {
     stage,
   ).times(n * goldMultiplier(t.shipParts, s.ship.level('cargo')));
   final waveHp = stageCurve(w.hpBase, w.hpGrowth, stage).times(n * w.waveHpPoolFactor);
-  return waveGold / BigNum.from((waveHp / dps).toDouble() + w.travelSec);
+  final waveSec = math.max((waveHp / dps).toDouble(), t.meta.offlineMinWaveSec);
+  return waveGold / BigNum.from(waveSec + w.travelSec);
 }
 
 /// 오프라인 동안의 출전 선원 = 지금 배 등급 슬롯으로 자동 편성.
 List<String> offlineFleet(GameState s, GameTables t) => autoFleet(s, t, t.shipTiers.tierAt(s.progress.stage).slots);
 
-/// 복귀 보상 받기. 경과 = `now − savedAt`을 0~`offline.maxSec`로 자른다(시계 역행 0).
+/// 복귀 보상 받기. 경과 = `now − savedAt`을 0~`offline.maxSec`로 자른다(시계 역행 0). 골드는 × `offline.efficiency`.
 /// 카드는 `cardsPerMax × 경과 / maxSec`장(내림), 출전 선원에게 보스 드롭 확률로.
 /// 받고 나면 savedAt = now (두 번 받기 방지). 받을 것이 없으면 상태 그대로, 이벤트 없음.
 GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx) {
@@ -59,7 +60,7 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
   if (seconds <= 0) return state;
 
   final fleet = offlineFleet(state, t);
-  final gold = goldPerSecEstimate(state, t, fleet).times(seconds);
+  final gold = goldPerSecEstimate(state, t, fleet).times(seconds * t.meta.offlineEfficiency);
   final cards = fleet.isEmpty ? 0 : t.meta.offlineCardsPerMax * seconds ~/ t.meta.offlineMaxSec;
   var s = state.copyWith(
     savedAt: now,

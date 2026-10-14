@@ -11,7 +11,7 @@
   "dailyQuestRewardGems": 40,
   "attendance": { "days": 7, "finalRewardMinRarity": "hero", "resetOnMiss": false },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.003, "minWaveSec": 30 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },

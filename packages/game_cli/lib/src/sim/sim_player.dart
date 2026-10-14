@@ -204,7 +204,7 @@ class SimPlayer {
       ..offline8hUpgrades = upgradesAffordable(
         t,
         s.ship.parts,
-        estimate.times(t.meta.offlineMaxSec),
+        estimate.times(t.meta.offlineMaxSec * t.meta.offlineEfficiency),
       );
     return result;
   }

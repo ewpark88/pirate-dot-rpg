@@ -143,6 +143,8 @@ class MetaTable {
       summonCostGems = j.integer('summonCostGems'),
       offlineMaxSec = j.obj('offline').integer('maxSec'),
       offlineCardsPerMax = j.obj('offline').integer('cardsPerMax'),
+      offlineEfficiency = j.obj('offline').number('efficiency'),
+      offlineMinWaveSec = j.obj('offline').number('minWaveSec'),
       dailyQuests = j.objs('dailyQuests'),
       dailyQuestRewardGems = j.integer('dailyQuestRewardGems'),
       autoUpgradeUnlockStage = j.integer('autoUpgradeUnlockStage');
@@ -155,6 +157,12 @@ class MetaTable {
   final int summonCostGems;
   final int offlineMaxSec;
   final int offlineCardsPerMax;
+
+  /// 오프라인 골드 = 온라인 추정 × 이 비율 (사용자 결정 2026-10-14, 8시간 = 강화 3~8회가 되게 sim으로 맞춘다).
+  final double offlineEfficiency;
+
+  /// 초당 골드 추정에서 한 파의 최소 시간(초). 화력이 압도적이면 적이 들어오는 시간이 한 파를 정한다.
+  final double offlineMinWaveSec;
   final List<JsonReader> dailyQuests;
   final int dailyQuestRewardGems;
   final int autoUpgradeUnlockStage;
