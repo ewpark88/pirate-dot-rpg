@@ -89,3 +89,25 @@ class MemoryLeaderboard implements LeaderboardPort {
     return t.isEmpty ? null : t.first;
   }
 }
+
+/// 소리를 내지 않고 호출만 기록한다 (렌더 테스트용).
+class SilentAudio implements AudioPort {
+  final List<String> calls = [];
+  double sfx = 1;
+  double bgm = 1;
+
+  @override
+  void playSfx(String id, {int variant = 0, double pitch = 1}) => calls.add('sfx:$id:$variant');
+
+  @override
+  void playBgm(String id) => calls.add('bgm:$id');
+
+  @override
+  void stopBgm() => calls.add('bgm:stop');
+
+  @override
+  void setVolumes({required double sfx, required double bgm}) {
+    this.sfx = sfx;
+    this.bgm = bgm;
+  }
+}
