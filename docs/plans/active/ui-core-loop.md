@@ -4,7 +4,7 @@
 - 스펙: `docs/specs/ui-core-loop.md` (승인됨 2026-10-14, S1)
 
 ## 단계
-- [ ] 1. 보스 도전 버튼·파밍 표시 (기준 1~2)
+- [x] 1. 보스 도전 버튼·파밍 표시 (기준 1~2)
 - [ ] 2. 설정 화면 + 앱 언어 + 전장 JuiceSettings 연결 (기준 7~9)
 - [ ] 3. `battleGameProvider` + 운영자 렌더 묶음 (기준 10~11)
 - [ ] 4. `clockProvider`·`offlinePreviewProvider`(가짜 → S2 함수로 교체) + 복귀 팝업 (기준 3~6)

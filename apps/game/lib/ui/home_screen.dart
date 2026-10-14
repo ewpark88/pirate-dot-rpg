@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/ui/hud/boss_challenge.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
@@ -43,11 +44,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const HudBar(),
             Expanded(
               flex: _battleFlex,
-              child: Center(
-                child: AspectRatio(
-                  aspectRatio: kLogicalWidth / kLogicalHeight,
-                  child: ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: _game),
-                ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: AspectRatio(
+                      aspectRatio: kLogicalWidth / kLogicalHeight,
+                      child: ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: _game),
+                    ),
+                  ),
+                  const Positioned(top: 8, right: 8, child: BossChallenge()),
+                ],
               ),
             ),
             Expanded(
