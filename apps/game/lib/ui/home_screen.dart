@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
+import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 
 /// 세로 화면 하나: 위는 HUD와 전장(항상 보임), 아래 절반만 탭에 따라 바뀐다 (설계서 4.12).
 /// 탭 4개 고정: 항해(전투)·배·선원·소환 (4.9 피로 금지 규칙). 버튼은 Command만 보낸다.
@@ -44,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 index: _tab,
                 children: const [
                   SizedBox.shrink(), // 항해 탭: 다음 계획 (해역 지도·환생)
-                  SizedBox.shrink(),
+                  ShipTab(),
                   SizedBox.shrink(),
                   SizedBox.shrink(),
                 ],
