@@ -24,7 +24,8 @@ void main() {
   });
 
   test('기준 5: 10연 소환 — 카드 10장, 젬 0, CrewSummoned 결과 10개', () {
-    final s0 = h.newGame(gems: t.meta.summonCostGems * 10);
+    // 첫 10연 무료는 preview_free_summon_test에서 — 여기는 유료 10연.
+    final s0 = h.newGame(gems: t.meta.summonCostGems * 10).copyWith(summonsTotal: 10);
     final s = sys.handle(s0, const Summon(count: 10), h.ctx)!;
     expect(s.wallet.gems, 0);
     final results = h.of<CrewSummoned>().single.results;
