@@ -1,6 +1,6 @@
 # 스펙: 렌더 — 효과음·배경음 연결 (M4 사운드 자리)
 
-- 상태: 초안 — 승인 대기 · 레인: render(S3, 호출) + platform(어댑터) + art(에셋, S3) · 설계서 절: 4.4 타격감(소리), 10장 효과음·BGM(CC0)
+- 상태: 승인됨 (2026-10-14, S1) · 레인: render(S3, 호출) + platform(어댑터) + art(에셋, S3) · 설계서 절: 4.4 타격감(소리), 10장 효과음·BGM(CC0)
 - 계약 요청: `docs/contracts/requests/render-audio.md` (AudioPort)
 
 ## 목적
@@ -33,6 +33,7 @@
 ## 운영자 모드
 `BattleGame.audioLog`(최근 sfx 20개)를 패널에 표시할 수 있게 값만 노출.
 
-## 열린 질문 (S1)
-- 계약 E(AudioPort) 채택 여부, `SilentAudio` 위치(testing.dart).
-- 어댑터 패키지(flame_audio vs audioplayers)와 pubspec 의존 추가는 S1/플랫폼 결정.
+## 결정 기록 (2026-10-14, S1)
+- 계약 E 수용(main 5b8ef89): 볼륨은 setter 대신 `setVolumes({required sfx, required bgm})`, `SilentAudio`는 testing.dart.
+- 어댑터는 flame_audio(`apps/game/lib/adapters/`, platform 레인 경로) — 사운드 파일이 생길 때 S1이 pubspec 의존과 함께. 렌더는 포트만 부른다.
+- CC0 음원 선정은 M4 사용자 확인 목록(사람 몫). 그 전엔 무음, 테스트만.

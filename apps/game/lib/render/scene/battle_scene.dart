@@ -12,6 +12,7 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/event_director.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
 import 'package:pirate_dot/render/scene/scene_state.dart';
+import 'package:pirate_dot/render/scene/sound_director.dart';
 
 export 'package:pirate_dot/render/scene/scene_state.dart';
 
@@ -69,6 +70,12 @@ class BattleScene {
   final shake = ScreenShake();
   final stats = SceneStats();
   final chest = ChestPose();
+  late final sound = SoundDirector(fx, juice);
+
+  /// 효과음·배경음 포트. null이면 무음.
+  AudioPort? get audio => sound.audio;
+  set audio(AudioPort? v) => sound.audio = v;
+  List<String> get audioLog => sound.log;
 
   /// 선원 슬롯 발사 번쩍임 남은 시간(ms), 슬롯 순서.
   final slotFlashMs = List<double>.filled(kMaxSlots, 0);
@@ -143,7 +150,7 @@ class BattleScene {
 
   void _updateStage() {
     final f = frame;
-    backdrop.setStage(f.stage);
+    if (backdrop.setStage(f.stage)) sound.bgm(backdrop.bgmFor(f.stage));
     chest.update(f.chest, fx.chest, clockMs);
   }
 
