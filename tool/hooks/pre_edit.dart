@@ -2,7 +2,6 @@
 // 테스트를 통과시키려고 기대값을 바꾸는 것을 막기 위해서다. 갱신은 사람이 명령으로만 한다.
 import 'dart:io';
 
-
 import 'hook_io.dart';
 
 const protected = {
