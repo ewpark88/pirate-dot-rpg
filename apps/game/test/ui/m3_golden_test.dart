@@ -38,21 +38,20 @@ void main() {
 
   final base = loadFixture('stage37_midgame');
   final quests = [
-    const QuestView(id: 'kill_500', type: 'kill', progress: 500, target: 500),
-    const QuestView(id: 'upgrade_30', type: 'upgrade', progress: 30, target: 30),
-    const QuestView(id: 'summon_1', type: 'summon', progress: 1, target: 1),
-    const QuestView(id: 'ad_1', type: 'ad', progress: 0, target: 1),
+    const QuestView(id: 'kill_500', type: 'kill', progress: 500, target: 500, rewardGems: 10, claimed: true),
+    const QuestView(id: 'upgrade_30', type: 'upgrade', progress: 30, target: 30, rewardGems: 10),
+    const QuestView(id: 'summon_1', type: 'summon', progress: 0, target: 1, rewardGems: 10),
+    const QuestView(id: 'ad_1', type: 'ad', progress: 0, target: 1, rewardGems: 10),
   ];
   final daily = [
-    dailyQuestsProvider.overrideWithValue(
-      (_) => DailyQuestsView(quests: quests, rewardGems: 40, canClaim: false, claimed: false),
-    ),
+    dailyQuestsProvider.overrideWithValue((_) => quests),
     attendanceProvider.overrideWithValue(
       (_, _) => AttendanceView(
         day: 4,
         claimedToday: false,
         rewards: [
-          for (var d = 1; d <= 6; d++) AttendanceReward(gems: d * 10),
+          // 사용자 결정(2026-10-14): 20·20·30·30·40·50 + 7일차 영웅 확정 소환
+          for (final g in const [20, 20, 30, 30, 40, 50]) AttendanceReward(gems: g),
           const AttendanceReward(ticket: true),
         ],
       ),
