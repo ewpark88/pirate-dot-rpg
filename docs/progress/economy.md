@@ -5,10 +5,14 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 환생 밸런스 결정(조각 규모·sim 환생 시점) → RebirthDone 이벤트 |
+| 바로 다음 할 일 | 초반 흐름(S1 요청: 스테이지 1·2 보스 무입력 처치, 첫 실패는 튜토리얼 3단계) → 환생 규칙 결정 2건 |
 | 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 환생 밸런스 (c) + RebirthDone
+- 한 일: RebirthDone 이벤트. waves.json(LANES 개방 1f02e8a) monster.hpGrowth 1.32, 옥토 시작 카드 2보스마다·스테이지 5부터. sim 리포트에 첫 환생 스테이지.
+- 결과(하루 40분 60일): 첫 환생 32.7시간·스테이지 50, 첫 전설 2.35일, 승급 전설 4.35일 OK. 첫 신화 13일·회복 1,611초는 규칙 문제(계획 파일 ‘환생 2’).
 
 ### 2026-10-14 · S2 · 환생 구현
 - 한 일: `rebirth.dart`(piecesFor·rebirthBonus·RebirthPreview·Rebirth·OpRebirthNow·OpReset), 추정식에 rebirthBonus, sim 환생 정책(벽 10분)·회복 지표.

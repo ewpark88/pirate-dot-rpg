@@ -513,7 +513,7 @@ const Map<String, String> rawTables = {
     { "from": "hero", "to": "legend", "level": 45, "cards": 10, "goldKills": 1000, "tokens": 0 },
     { "from": "legend", "to": "mythic", "level": 60, "cards": 20, "goldKills": 3000, "tokens": 50 }
   ],
-  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14, "starterEvery": 4, "starterFirstStage": 3 },
+  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14, "starterEvery": 2, "starterFirstStage": 5 },
   "tokenPerSurplusCard": 1,
   "tokenExchangeCost": 10
 }
@@ -760,7 +760,7 @@ const Map<String, String> rawTables = {
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
   "waveHpPoolFactor": 0.6,
-  "monster": { "hpBase": 10, "hpGrowth": 1.19, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
+  "monster": { "hpBase": 10, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 10, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4 },
   "travelSec": 3,
   "field": {

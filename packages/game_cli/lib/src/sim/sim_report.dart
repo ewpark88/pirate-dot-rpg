@@ -141,8 +141,9 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
     ..writeln('| 참고 | 값 |')
     ..writeln('| --- | --- |')
     ..writeln(
-      '| 환생 횟수 · 첫 환생 · 지도 조각 | ${_fmt(m((r) => r.rebirths.toDouble()))} · '
-      '${_fmt(m((r) => _hours(r.firstRebirth)), '시간')} · ${_fmt(m((r) => r.mapPieces.toDouble()))} |',
+      '| 환생 횟수 · 첫 환생(경과·스테이지) · 지도 조각 | ${_fmt(m((r) => r.rebirths.toDouble()))} · '
+      '${_fmt(m((r) => _hours(r.firstRebirth)), '시간')}·${_fmt(m((r) => r.firstRebirthStage?.toDouble()))} · '
+      '${_fmt(m((r) => r.mapPieces.toDouble()))} |',
     )
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
