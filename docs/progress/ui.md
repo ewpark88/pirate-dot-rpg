@@ -4,10 +4,16 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 완료: `done/ui-core-loop.md` → 다음: 스펙 `ui-m3-meta` |
-| 상태 | 코어 루프 커밋 (골든 7장 S1 승인) |
-| 기다리는 것 | - |
+| 상태 | 코어 루프 커밋 3e45c65. M3 메타 스펙·요청서 초안(미커밋) |
+| 기다리는 것 | `ui-m3-meta` 스펙 승인, 요청서 `docs/contracts/requests/ui-m3-meta.md`(S1 계약 A1~A6, S2 경제 B1~B10) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · M3 메타 스펙
+- 한 일: 3e45c65 코어 루프 커밋(골든 7장 승인, 경제 offlinePreview·summonCostFor 연결). `docs/specs/ui-m3-meta.md` 초안(목표 막대·상자·순풍·퀘스트/출석·도감·튜토리얼)과
+  요청서 `docs/contracts/requests/ui-m3-meta.md` — 상자·튜토리얼 단계·‘받았나’가 GameState에 없어서 계약·세이브 v3 필요.
+- 다음 할 일: 승인 → 계약·경제 함수가 오는 순서대로, 그 전엔 가짜 provider로 화면·테스트
+- 남은 문제: 튜토리얼 문구 키 `tut.*`(설계서) vs 레인 접두어 규칙 — S1에 질문
 
 ### 2026-10-14 · S4 · 코어 루프 화면
 - 한 일: 스펙 승인(3e6bb84) → 3b8e377 보스 도전·파밍 표시. 설정 화면(HUD 톱니, 9항목 → SetSetting, 앱 언어 = settings.lang),
