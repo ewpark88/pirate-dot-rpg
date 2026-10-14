@@ -11,7 +11,7 @@
 - [x] 3. UpgradePart (기준 1~4)
 - [x] 4. Summon + 천장 + receiveCard (기준 5~8, 11)
 - [x] 5. MergeAllCards · PromoteCrew (기준 9~10)
-- [ ] 6. ClaimOffline + 보스 카드 (기준 12)
+- [x] 6. ClaimOffline + 보스 카드 (기준 12)
 - [ ] 7. 운영자 명령 4종
 - [ ] 8. `game_cli sim` + 7.2 리포트, check 스모크 활성화 (기준 13)
 

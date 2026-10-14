@@ -5,10 +5,16 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` (승인 2026-10-14) · `docs/plans/active/economy-m1.md` |
-| 바로 다음 할 일 | 6단계: grantBossCards · ClaimOffline (기준 12) |
+| 바로 다음 할 일 | 7단계: 운영자 명령 4종 → 8단계 game_cli sim |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 보스 카드·오프라인
+- 한 일: `cards.dart`에 rollRarity·grantBossCards(state, ctx, fleet), `offline.dart`(fleetDps·goldPerSecEstimate·offlineFleet·ClaimOffline).
+  수용 기준 12 + 보스 카드 장수·옥토 몰아주기·환생 후 해제. economy 테스트 53개
+- 정한 것(스펙에 반영): 오프라인 카드 등급 = 보스 드롭 확률, 대상 = 지금 슬롯 autoFleet, 받으면 savedAt = now
+- 남은 문제: DPS 추정은 범위 이득을 뺀 단일 대상 기준 — sim에서 실제 엔진과 비교해 보정 필요
 
 ### 2026-10-14 · S2 · 합치기·승급
 - 한 일: `economy/merge.dart` — mergeCrew·MergeAllCards(승급 문에서 멈춤, 남는 경험치·장수 보존)·PromoteCrew(카드·골드·증표 차감, `CrewPromoted`). 수용 기준 9~10, economy 테스트 43개
