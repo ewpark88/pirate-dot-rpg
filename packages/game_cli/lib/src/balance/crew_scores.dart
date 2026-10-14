@@ -15,7 +15,7 @@ const comboLimit = 1.3;
 const comboLevel = 45;
 
 /// 지원 환산 κ 기본값 — 배 피해를 모두 막으면 같은 레벨 중앙 선원의 무리전 점수 × κ. 기획 판단, 조정 가능.
-const defaultKappa = 0.5;
+const defaultKappa = 0.25;
 
 /// 지원 선원(충격 계열·배 스킬) 점수의 구성 (render-balance-crews 규칙 7).
 class SupportParts {
