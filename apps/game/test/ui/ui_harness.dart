@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
-import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 샘플 상태 4개: new_player, stage37_midgame, boss_fight, all_crews_mythic.
@@ -21,7 +21,7 @@ GameState loadFixture(String name) {
 Future<CommandLog> pumpGame(
   WidgetTester tester,
   GameState state, {
-  Locale locale = const Locale('en'),
+  Locale? locale = const Locale('en'), // null이면 settings.lang → OS 언어
   int tab = 0,
 }) async {
   tester.view

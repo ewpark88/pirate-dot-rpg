@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
+import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 상단 HUD: 골드 · 젬 · 스테이지 · 보스 타이머, 그 아래 함성 게이지와 궁극기 버튼 (설계서 4.12).
@@ -42,20 +45,40 @@ class HudBar extends ConsumerWidget {
                 _Amount(icon: Icons.monetization_on, color: Colors.amber, text: gold.format()),
                 const SizedBox(width: 12),
                 _Amount(icon: Icons.diamond, color: Colors.lightBlue, text: '$gems'),
-                const Spacer(),
-                if (bossSeconds != null) ...[
-                  Text(
-                    l10n.uiHudBossTimer(bossSeconds),
-                    key: const Key('hud.bossTimer'),
-                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontWeight: FontWeight.bold),
+                const SizedBox(width: 12),
+                // 긴 문구(영어·보스 타이머)는 줄여서 넣는다 — 골드·젬·톱니는 줄이지 않는다.
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      children: [
+                        if (bossSeconds != null) ...[
+                          Text(
+                            l10n.uiHudBossTimer(bossSeconds),
+                            key: const Key('hud.bossTimer'),
+                            style: TextStyle(color: Theme.of(context).colorScheme.error, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        // 운영자 빌드에서만 스테이지 글자 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
+                        if (kOperator)
+                          OperatorTapGate(child: Text(l10n.uiHudStage(stage, wave)))
+                        else
+                          Text(l10n.uiHudStage(stage, wave)),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                ],
-                // 운영자 빌드에서만 스테이지 글자 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
-                if (kOperator)
-                  OperatorTapGate(child: Text(l10n.uiHudStage(stage, wave)))
-                else
-                  Text(l10n.uiHudStage(stage, wave)),
+                ),
+                IconButton(
+                  key: const Key('hud.settings'),
+                  visualDensity: VisualDensity.compact,
+                  tooltip: l10n.uiSettingsTitle,
+                  icon: const Icon(Icons.settings),
+                  onPressed: () => unawaited(
+                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen())),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
