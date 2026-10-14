@@ -8,6 +8,7 @@ mainBranch: main
 
 # 모든 레인이 쓸 수 있는 자기 이름 파일. {lane}은 레인 이름으로 바뀐다.
 laneOwnedDocs:
+  - docs/specs/{lane}-
   - docs/plans/active/{lane}-
   - docs/plans/done/{lane}-
   - docs/contracts/requests/{lane}-

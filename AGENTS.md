@@ -31,7 +31,7 @@
 - **진척 문서 갱신**: main은 `docs/PROGRESS.md`, 레인은 `docs/progress/<레인>.md`. 안 하면 Stop 훅이 막는다
 
 ## 작업 흐름 (docs/GAME_DESIGN.md 6.7)
-스펙(`docs/specs/`, 사람 승인) → 계획(`docs/plans/active/<레인>-<주제>.md`) → 테스트 먼저(실패 확인)
+스펙(`docs/specs/<레인>-<주제>.md`, 사람 승인) → 계획(`docs/plans/active/<레인>-<주제>.md`) → 테스트 먼저(실패 확인)
 → 구현 → check 통과 → 진척 문서·계획 갱신 → 커밋(자기 브랜치) → 계획을 `plans/done/`으로
 
 ## 자주 쓰는 명령
