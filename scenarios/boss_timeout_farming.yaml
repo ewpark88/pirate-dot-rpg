@@ -3,7 +3,9 @@
 name: 보스 시간 초과 시 파밍 모드로 전환된다
 seed: 42
 state: fixtures/states/boss_fight.json
+# 편성을 옥토(Lv3) 한 명으로 줄여 확실히 약하게 만든다 (픽스처는 UI 레인도 쓰므로 그대로 둔다).
 steps:
+  - input: { type: op.setFleet, crewIds: [octo] }
   - expect: { bossActive: true, stage: 5 }
   - advance: 31s
   - expect: { bossActive: false, farming: true, stage: 5 }

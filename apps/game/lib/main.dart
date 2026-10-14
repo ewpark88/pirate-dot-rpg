@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -25,6 +26,7 @@ void main() {
       tablesProvider.overrideWithValue(tables),
       initialGameStateProvider.overrideWithValue(host.state),
       commandSinkProvider.overrideWithValue(host),
+      battleFeedProvider.overrideWithValue(host.ticks),
     ],
   );
   final controller = container.read(gameStateProvider.notifier);
