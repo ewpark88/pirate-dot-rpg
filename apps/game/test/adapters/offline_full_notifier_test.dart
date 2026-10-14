@@ -104,8 +104,11 @@ void main() {
   test('13. lang=en이면 영어 문구', () async {
     lang = 'en';
     await make().onPause();
-    expect(sdk.titles, ['Your treasure hold is full!']);
-    expect(notifyTextsFor('ko').title, '보물창고가 가득 찼어요!');
+    expect(sdk.titles, ['Your treasure hold is full']);
+    final ko = notifyTextsFor('ko', hours: 8);
+    expect(ko.title, '보물창고가 가득 찼어요');
+    expect(ko.body, '원정대가 8시간 동안 모은 골드가 기다리고 있어요.');
+    expect(notifyTextsFor('en', hours: 6).body, 'Your crew saved up 6 hours of gold for you.');
   });
 
   test('14. 60초 이상 비운 첫 복귀에 권한 1회, 다시 안 묻는다', () async {
