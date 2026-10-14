@@ -3,8 +3,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | `plans/active/render-balance-crews.md`(구현 완료, 결과 S1 검토) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원·어댑터 대기) |
-| 상태 | `game_cli balance crews` 구현·첫 점수표(실패 — 계열 편차, 수치 조정은 S1) |
-| 막힌 것 | 없음(렌더 외부 대기: 승급 그림·음원·실기기 측정) |
+| 상태 | balance crews 조합 ×1.65 원인 조사 완료 — 강습 원뿔 조준 버그(배에 붙은 적 각도 90°), 수정은 S1(battle) |
+| 막힌 것 | 원뿔 버그 수정(S1) 후 balance crews 재측정 · 렌더 외부 대기(승급 그림·음원·실기기 측정) |
 
 ## 실기기 측정
 
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 조합 시너지 조사
+- 한 일: main 897938c(1차 조정) 머지, balance 테스트 통과. 레벨 45 조합 상위 1% ×1.655 재현. 임시 조사(커밋 안 함)로 조합 안 선원별 피해 ÷ 단독 피해:
+  강습(crabby)만 무리전 ×5~7, 충격 선원(cook·turtle 둘 다)과 함께일 때. 보스전은 시너지 없음. 지원 버프와 무관.
+- 원인: 배에 닿은 적은 `x = shipX`에 멈춤 → cone 각도 `atan2(|dy|, max(dx,0))`이 90° → 원뿔 밖. 충격이 밀어내면 dx>0이 되어 강습이 다시 맞힘.
+  조합 점수는 함대 Damage 합만 쓰므로 이중 계산 아님. 수정 제안(근접 거리 규칙 coneNearPx)을 S1에 전달 — battle 레인.
+- 다음 할 일: S1 수정 뒤 `balance crews` 재측정·보고.
 
 ### 2026-10-14 · S3 · balance crews 구현
 - 한 일: 스펙 승인(Q1 (b) 선체 레벨로 실제 ShipDamaged, Q2 κ 0.5, Q3 시간 보고). 테스트 먼저(`packages/game_cli/test/balance/` 9개) →
