@@ -13,8 +13,8 @@ Flame `BattleGame`이 합성 전투 기록을 재생해 배·적·발사체·이
 - [x] 4. `RecordingPlayer`(보간·lookahead·히트스톱·반복 + 라이브 push 모드, S1 요청) — 순수 Dart
 - [x] 5. 풀 + 상한(`FxPool`, `DamageNumberLayer`)
 - [x] 6. Flame 컴포넌트: 배·적·발사체·이펙트·숫자·흔들림 카메라, `JuiceSettings`
-- [ ] 7. `BattleGame(recording:, juice:, settings:)` 조립, 골든 1장(수용 기준 10)
-- [ ] 8. `tool\check.bat --full` → 진척·계획 갱신 → lane/render 커밋
+- [x] 7. `BattleGame(recording:, juice:, settings:)` 조립, 골든 1장(수용 기준 10)
+- [x] 8. `tool\check.bat --full` → 진척·계획 갱신 → lane/render 커밋
 
 ## 검증 방법
 `tool\check.bat --full`, `flutter test apps/game/test/render`, 눈 확인은 `flutter run -d chrome`(데모 기록 상수로).

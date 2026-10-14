@@ -44,7 +44,7 @@
 7. Given shake·flash off When `AoeDamageSum`/`Damage` Then 카메라 오프셋 0, 번쩍임 없음.
 8. Given `UltimateCast` When 처리 Then 흔들림 진폭 = juice ultimate px.
 9. Given family 8종 + `support` When 발사 Then 모두 발사체 스타일이 있다(`support`는 경고 없이 shock으로, 미지 계열은 기본 스타일).
-10. 골든: 샘플 기록 tick 24(범위 처치 직후) 화면 1장 `apps/game/test/render/goldens/` (새 골든 → 사람 승인).
+10. 골든: 테스트 안 고정 기록(물위 6·공중 2·물속 1, 틱 4 투척 범위 처치)의 틱 4.4 화면 1장 `apps/game/test/render/goldens/battle_aoe.png` (승인 2026-10-14 S1). 샘플 기록은 생성물이라 수치가 바뀔 때마다 변하므로 골든에 쓰지 않는다.
 11. Given `sample_battle.g.dart` When `decodeRecording` Then `fixtures/events/sample_battle.jsonl`과 같은 틱 수·내용.
 
 ## 문구 (ko / en)

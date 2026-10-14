@@ -3,8 +3,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | `docs/plans/active/render-battle-replay.md` · 스펙 `docs/specs/render-battle-replay.md` (승인됨, S1 위임) |
-| 상태 | 재생기·장면·연출·BattleGame·라이브 입력 완료(main 머지됨 8f10d56). 골든 1장 생성, S1 이미지 확인 대기 |
-| 막힌 것 | 골든 PNG 승인 대기 (`apps/game/test/render/goldens/battle_aoe.png`, 미커밋) |
+| 상태 | M2 1단계(전투 기록 재생) 완료 — 골든 승인·커밋. 다음: render-perf 스펙 |
+| 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
 
