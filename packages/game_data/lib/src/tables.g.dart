@@ -415,16 +415,17 @@ const Map<String, String> rawTables = {
 {
   "maxLevel": 75,
   "cardExp": { "common": 1, "rare": 4, "hero": 15, "legend": 60 },
-  "expToNext": { "base": 1, "growth": 1.12 },
+  "expToNext": { "common": 1, "rare": 3, "hero": 6, "legend": 20, "mythic": 30 },
   "powerPerLevel": 0.08,
   "promotionMultiplier": 1.35,
   "ownedBonusPerLevel": 0.001,
   "promotions": [
-    { "from": "common", "to": "rare", "level": 15, "cards": 3, "gold": "5e3", "tokens": 0 },
-    { "from": "rare", "to": "hero", "level": 30, "cards": 5, "gold": "5e5", "tokens": 0 },
-    { "from": "hero", "to": "legend", "level": 45, "cards": 8, "gold": "5e7", "tokens": 0 },
-    { "from": "legend", "to": "mythic", "level": 60, "cards": 12, "gold": "5e9", "tokens": 30 }
+    { "from": "common", "to": "rare", "level": 15, "cards": 3, "goldKills": 100, "tokens": 0 },
+    { "from": "rare", "to": "hero", "level": 30, "cards": 6, "goldKills": 300, "tokens": 0 },
+    { "from": "hero", "to": "legend", "level": 45, "cards": 10, "goldKills": 1000, "tokens": 0 },
+    { "from": "legend", "to": "mythic", "level": 60, "cards": 20, "goldKills": 3000, "tokens": 50 }
   ],
+  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 10 },
   "tokenPerSurplusCard": 1,
   "tokenExchangeCost": 10
 }
@@ -471,13 +472,14 @@ const Map<String, String> rawTables = {
   'rarities': r'''
 {
   "rarities": [
-    { "id": "common", "stars": 1, "summonRate": 0.60, "levelMin": 1, "levelMax": 15, "color": "#9AA4B1", "nameKey": "crewRarityCommon" },
-    { "id": "rare", "stars": 2, "summonRate": 0.28, "levelMin": 16, "levelMax": 30, "color": "#4FA3FF", "nameKey": "crewRarityRare" },
-    { "id": "hero", "stars": 3, "summonRate": 0.10, "levelMin": 31, "levelMax": 45, "color": "#B36BFF", "nameKey": "crewRarityHero" },
-    { "id": "legend", "stars": 4, "summonRate": 0.02, "levelMin": 46, "levelMax": 60, "color": "#FFC53D", "nameKey": "crewRarityLegend" },
+    { "id": "common", "stars": 1, "summonRate": 0.65, "levelMin": 1, "levelMax": 15, "color": "#9AA4B1", "nameKey": "crewRarityCommon" },
+    { "id": "rare", "stars": 2, "summonRate": 0.27, "levelMin": 16, "levelMax": 30, "color": "#4FA3FF", "nameKey": "crewRarityRare" },
+    { "id": "hero", "stars": 3, "summonRate": 0.07, "levelMin": 31, "levelMax": 45, "color": "#B36BFF", "nameKey": "crewRarityHero" },
+    { "id": "legend", "stars": 4, "summonRate": 0.01, "levelMin": 46, "levelMax": 60, "color": "#FFC53D", "nameKey": "crewRarityLegend" },
     { "id": "mythic", "stars": 5, "summonRate": 0.0, "levelMin": 61, "levelMax": 75, "color": "#FF6FD8", "nameKey": "crewRarityMythic" }
   ],
-  "pity": { "count": 50, "minRarity": "hero" }
+  "pity": { "count": 50, "minRarity": "hero" },
+  "bossDropRates": { "common": 0.8, "rare": 0.17, "hero": 0.028, "legend": 0.002 }
 }
 ''',
   'regions': r'''

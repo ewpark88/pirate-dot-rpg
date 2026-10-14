@@ -84,11 +84,15 @@ class RarityTable {
   RarityTable.fromJson(JsonReader j)
     : rarities = j.objs('rarities').map(RarityDef.fromJson).toList(),
       pityCount = j.obj('pity').integer('count'),
-      pityMinRarity = j.obj('pity').str('minRarity');
+      pityMinRarity = j.obj('pity').str('minRarity'),
+      bossDropRates = j.numberMap('bossDropRates');
 
   final List<RarityDef> rarities;
   final int pityCount;
   final String pityMinRarity;
+
+  /// 보스 드롭 카드의 등급 확률 (설계서 4.3.3).
+  final Map<String, double> bossDropRates;
 
   RarityDef byId(String id) => rarities.firstWhere((r) => r.id == id);
 
@@ -110,6 +114,9 @@ class RarityTable {
     }
     expect(e, that: rarities.last.summonRate == 0, message: 'rarities: 신화는 소환에 없어야 함');
     expect(e, that: rarityOrder.contains(pityMinRarity), message: 'rarities: pity.minRarity 오류');
+    final dropSum = bossDropRates.values.fold<double>(0, (s, v) => s + v);
+    expect(e, that: (dropSum - 1).abs() < probabilityEpsilon, message: 'rarities: bossDropRates 합 $dropSum ≠ 1.0');
+    expect(e, that: !bossDropRates.containsKey('mythic'), message: 'rarities: 신화는 보스 드롭에 없어야 함');
     return e;
   }
 }
@@ -120,7 +127,7 @@ class PromotionDef {
       to = j.str('to'),
       level = j.integer('level'),
       cards = j.integer('cards'),
-      gold = j.str('gold'),
+      goldKills = j.number('goldKills'),
       tokens = j.integer('tokens');
 
   final String from;
@@ -128,8 +135,8 @@ class PromotionDef {
   final int level;
   final int cards;
 
-  /// BigNum 문자열 (`"5e3"`).
-  final String gold;
+  /// 승급 골드 = 그때 스테이지 일반 몬스터 처치 골드 × [goldKills].
+  final double goldKills;
   final int tokens;
 }
 
@@ -137,34 +144,61 @@ class GrowthTable {
   GrowthTable.fromJson(JsonReader j)
     : maxLevel = j.integer('maxLevel'),
       cardExp = j.numberMap('cardExp').map((k, v) => MapEntry(k, v.toInt())),
-      expBase = j.obj('expToNext').number('base'),
-      expGrowth = j.obj('expToNext').number('growth'),
+      expToNext = j.numberMap('expToNext').map((k, v) => MapEntry(k, v.toInt())),
       powerPerLevel = j.number('powerPerLevel'),
       promotionMultiplier = j.number('promotionMultiplier'),
       ownedBonusPerLevel = j.number('ownedBonusPerLevel'),
       promotions = j.objs('promotions').map(PromotionDef.fromJson).toList(),
+      bossCards = BossCardsDef.fromJson(j.obj('bossCards')),
       tokenPerSurplusCard = j.integer('tokenPerSurplusCard'),
       tokenExchangeCost = j.integer('tokenExchangeCost');
 
   final int maxLevel;
   final Map<String, int> cardExp;
-  final double expBase;
-  final double expGrowth;
+
+  /// 등급 id → 레벨 1 올리는 경험치.
+  final Map<String, int> expToNext;
   final double powerPerLevel;
   final double promotionMultiplier;
   final double ownedBonusPerLevel;
   final List<PromotionDef> promotions;
+  final BossCardsDef bossCards;
   final int tokenPerSurplusCard;
   final int tokenExchangeCost;
 
   List<String> validate(RarityTable rarities) {
     final e = <String>[];
-    expect(e, that: expGrowth > 1, message: 'growth: expToNext.growth는 1보다 커야 함');
+    for (final r in rarityOrder) {
+      expect(e, that: (expToNext[r] ?? 0) > 0, message: 'growth: expToNext.$r 없음');
+    }
     expect(e, that: promotionMultiplier > 1, message: 'growth: promotionMultiplier는 1보다 커야 함');
     expect(e, that: maxLevel == rarities.rarities.last.levelMax, message: 'growth: maxLevel ≠ 신화 levelMax');
     for (final p in promotions) {
       expect(e, that: rarities.byId(p.from).levelMax == p.level, message: 'growth: ${p.from} 승급 레벨 불일치');
+      expect(e, that: p.goldKills > 0, message: 'growth: ${p.from} goldKills > 0');
     }
     return e;
   }
+}
+
+/// 보스 처치 카드 (설계서 4.3.3): 스테이지 [earlyStageMax]까지 [early]장, 이후 `base + floor(stage / stagesPerExtra)`장.
+/// 처음 [starterCount]번의 보스 카드는 [starterCrew]에게 간다.
+class BossCardsDef {
+  BossCardsDef.fromJson(JsonReader j)
+    : earlyStageMax = j.integer('earlyStageMax'),
+      early = j.integer('early'),
+      base = j.integer('base'),
+      stagesPerExtra = j.integer('stagesPerExtra'),
+      starterCrew = j.str('starterCrew'),
+      starterCount = j.integer('starterCount');
+
+  final int earlyStageMax;
+  final int early;
+  final int base;
+  final int stagesPerExtra;
+  final String starterCrew;
+  final int starterCount;
+
+  /// [stage] 보스를 잡았을 때 받는 카드 수.
+  int countAt(int stage) => stage <= earlyStageMax ? early : base + stage ~/ stagesPerExtra;
 }
