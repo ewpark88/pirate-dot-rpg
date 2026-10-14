@@ -11,13 +11,21 @@ class HudBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final state = ref.watch(gameStateProvider);
     final tables = ref.watch(tablesProvider);
-    final battle = state.battle;
-    final bossSeconds = battle != null && battle.bossActive
-        ? (battle.bossTicksLeft * tables.waves.tickMs / Duration.millisecondsPerSecond).ceil()
-        : null;
-    final rageRatio = (state.progress.rage / tables.skills.rageMax).clamp(0.0, 1.0);
+    // 상태는 틱마다(20Hz) 바뀐다 — 보이는 값만 골라 구독해서 값이 같으면 다시 그리지 않는다.
+    final (gold, gems, stage, wave, rage) = ref.watch(
+      gameStateProvider.select(
+        (s) => (s.wallet.gold, s.wallet.gems, s.progress.stage, s.progress.wave, s.progress.rage),
+      ),
+    );
+    final bossSeconds = ref.watch(
+      gameStateProvider.select((s) {
+        final battle = s.battle;
+        if (battle == null || !battle.bossActive) return null;
+        return (battle.bossTicksLeft * tables.waves.tickMs / Duration.millisecondsPerSecond).ceil();
+      }),
+    );
+    final rageRatio = (rage / tables.skills.rageMax).clamp(0.0, 1.0);
     final rageFull = rageRatio >= 1;
 
     return Material(
@@ -29,9 +37,9 @@ class HudBar extends ConsumerWidget {
           children: [
             Row(
               children: [
-                _Amount(icon: Icons.monetization_on, color: Colors.amber, text: state.wallet.gold.format()),
+                _Amount(icon: Icons.monetization_on, color: Colors.amber, text: gold.format()),
                 const SizedBox(width: 12),
-                _Amount(icon: Icons.diamond, color: Colors.lightBlue, text: '${state.wallet.gems}'),
+                _Amount(icon: Icons.diamond, color: Colors.lightBlue, text: '$gems'),
                 const Spacer(),
                 if (bossSeconds != null) ...[
                   Text(
@@ -41,7 +49,7 @@ class HudBar extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                 ],
-                Text(l10n.uiHudStage(state.progress.stage, state.progress.wave)),
+                Text(l10n.uiHudStage(stage, wave)),
               ],
             ),
             const SizedBox(height: 4),

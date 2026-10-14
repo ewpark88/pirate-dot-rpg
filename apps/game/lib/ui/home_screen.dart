@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
+import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 import 'package:pirate_dot/ui/tabs/summon_tab.dart';
 
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: const [
                   SizedBox.shrink(), // 항해 탭: 다음 계획 (해역 지도·환생)
                   ShipTab(),
-                  SizedBox.shrink(),
+                  CrewTab(),
                   SummonTab(),
                 ],
               ),

@@ -29,12 +29,16 @@ class _PartRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final state = ref.watch(gameStateProvider);
-    final level = state.ship.parts[def.id] ?? 0;
+    // 골드는 틱마다 바뀌므로 "살 수 있나"만 구독한다.
+    final (level, affordable) = ref.watch(
+      gameStateProvider.select((s) {
+        final lv = s.ship.parts[def.id] ?? 0;
+        return (lv, s.wallet.gold >= partCost(def, lv));
+      }),
+    );
     final max = def.maxLevel;
     final maxed = max != null && level >= max;
     final cost = partCost(def, level);
-    final affordable = state.wallet.gold >= cost;
 
     return ListTile(
       dense: true,

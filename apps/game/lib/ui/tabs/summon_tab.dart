@@ -19,8 +19,10 @@ class SummonTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final state = ref.watch(gameStateProvider);
     final tables = ref.watch(tablesProvider);
+    final (canOne, canTen, pity) = ref.watch(
+      gameStateProvider.select((s) => (canSummon(s, tables, 1), canSummon(s, tables, _summonTen), s.pityCount)),
+    );
     final rarities = tables.rarities;
     final pityRarity = rarities.rarities.firstWhere((r) => r.id == rarities.pityMinRarity);
 
@@ -38,7 +40,7 @@ class SummonTab extends ConsumerWidget {
                   buttonKey: Key(key),
                   label: label,
                   cost: summonCost(tables.meta, count),
-                  onPressed: canSummon(state, tables, count)
+                  onPressed: (count == 1 ? canOne : canTen)
                       ? () => ref.read(commandSinkProvider).send(Summon(count: count))
                       : null,
                 ),
@@ -52,9 +54,9 @@ class SummonTab extends ConsumerWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            Expanded(child: LinearProgressIndicator(value: state.pityCount / rarities.pityCount, minHeight: 8)),
+            Expanded(child: LinearProgressIndicator(value: pity / rarities.pityCount, minHeight: 8)),
             const SizedBox(width: 8),
-            Text(l10n.uiSummonPityProgress(state.pityCount, rarities.pityCount)),
+            Text(l10n.uiSummonPityProgress(pity, rarities.pityCount)),
           ],
         ),
         const SizedBox(height: 12),
