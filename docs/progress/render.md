@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-art-pack-v02.md`(완료 직전) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | 스프라이트 골든 d3c03e1. 사운드 연결(SoundDirector·BattleGame(audio:)) 구현, 렌더 테스트 74개 |
 | 막힌 것 | CC0 음원 선정(사람, M4) · flame_audio 어댑터(platform 경로, S1) · 실기기 측정(M2 관문) |
 

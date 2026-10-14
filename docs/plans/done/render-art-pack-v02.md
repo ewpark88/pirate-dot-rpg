@@ -8,7 +8,7 @@
 - [x] 2. (render) `SpriteBank` + 그리기(nearest·필터·시트 프레임), `BattleGame.useSprites`
 - [x] 3. (art) `tools/art/import_pack.py` + overrides + 크기 검증, 수용 기준 1·3
 - [x] 4. (art) 에셋 가져오기 + `LICENSES.json` → check 통과(수용 기준 2)
-- [ ] 5. (pubspec 등록 후) 골든 `battle_sprites.png` → 승인 → 부하 장면 성능 비교 기록 → 커밋
+- [x] 5. 골든 battle_sprites.png(S1 승인 d3c03e1), 부하 장면 그리기 비용 비교 0b16bdb
 
 ## 메모
 - 커밋: 11f3c8c 에셋 62개+LICENSES+도구, 4d537e1 SpriteBank·그리기.
