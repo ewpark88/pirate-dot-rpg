@@ -1,6 +1,6 @@
 # 스펙: economy 환생(보물지도)
 
-- 상태: **초안 — 승인 대기** · 레인: economy · 설계서 절: 4.5 ‘환생: 보물지도’, 7.2, 6.10 · 테이블: `meta.rebirth`
+- 상태: **승인됨** (2026-10-14, S1·사용자: ① 매번 전부 지급 ② RebirthDone 이벤트는 S1이 계약에 추가) · 레인: economy · 설계서 절: 4.5 ‘환생: 보물지도’, 7.2, 6.10 · 테이블: `meta.rebirth`
 - 계약: 기존 `Rebirth`·`OpRebirthNow`·`OpReset` 명령, `Wallet.mapPieces`, `Progress.rebirths`를 쓴다. 계약 변경 없음.
 
 ## 목적

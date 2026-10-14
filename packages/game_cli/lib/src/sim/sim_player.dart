@@ -1,3 +1,4 @@
+import 'package:game_cli/src/sim/sim_upgrades.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
@@ -38,6 +39,12 @@ class SimResult {
 
   /// 끝 상태에서 오프라인 8시간 보상으로 살 수 있는 ‘가장 싼 강화’ 횟수.
   int offline8hUpgrades = 0;
+
+  /// 환생 (스펙 economy-rebirth 규칙 8): 횟수, 첫 환생, 환생 뒤 이전 스테이지의 recoverTargetRatio까지 걸린 가장 긴 시간.
+  int rebirths = 0;
+  int mapPieces = 0;
+  Duration? firstRebirth;
+  Duration? rebirthRecoverMax;
 }
 
 /// 접속 일정. [online]마다 [offline]만큼 쉰다. [offline]이 0이면 계속 접속.
@@ -80,8 +87,14 @@ class SimPlayer {
   late final Duration farmRetry;
 
   Duration _elapsed = Duration.zero;
+
+  /// 접속 중 시간만 (벽·환생 회복은 플레이 시간 기준 — 설계서 4.5·7.2).
+  Duration _online = Duration.zero;
   Duration? _farmSince;
   Duration? _wallSince;
+
+  /// 환생 뒤 회복 측정 중: 환생 시각과 목표 스테이지.
+  ({Duration at, int stage})? _recovering;
   Duration? _lastWave;
   Map<String, int> _rarityIndex = const {};
   final _waveGaps = <(Duration at, Duration gap)>[];
@@ -100,6 +113,7 @@ class SimPlayer {
         engine.tick();
         clock.advance(tick);
         _elapsed += tick;
+        _online += tick;
         _observe(engine.drainEvents());
       }
       if (schedule.offline > Duration.zero && _elapsed < total) _goOffline(schedule.offline);
@@ -147,6 +161,15 @@ class SimPlayer {
     final acks = t.meta.raw.obj('tutorial').obj('steps').raw['ack'] as List;
     if (step != null && acks.contains(step)) engine.enqueue(TutorialAck(step));
 
+    if (_shouldRebirth(s)) {
+      engine.enqueue(const Rebirth());
+      _endWall();
+      _farmSince = null;
+      _recovering = (at: _online, stage: (s.progress.stage * t.meta.rebirth.number('recoverTargetRatio')).ceil());
+      result.rebirths++;
+      result.firstRebirth ??= _elapsed;
+      return;
+    }
     if (s.progress.farming) {
       _farmSince ??= _elapsed;
       if (_elapsed - _farmSince! >= farmRetry) {
@@ -156,6 +179,20 @@ class SimPlayer {
     } else {
       _farmSince = null;
     }
+  }
+
+  /// 해금 스테이지 이상에서 한 벽이 `meta.sim.rebirthWallSec`를 넘으면 환생.
+  bool _shouldRebirth(GameState s) {
+    final since = _wallSince;
+    return since != null &&
+        s.progress.stage >= t.meta.rebirth.integer('minStage') &&
+        (_online - since).inSeconds >= t.meta.raw.obj('sim').number('rebirthWallSec');
+  }
+
+  void _endWall() {
+    final since = _wallSince;
+    if (since != null && _online - since > result.wallMax) result.wallMax = _online - since;
+    _wallSince = null;
   }
 
   /// 골드가 되는 만큼 가장 싼 부위부터 산다 (승급 골드는 남기지 않는다 — 단순 정책).
@@ -183,14 +220,19 @@ class SimPlayer {
           _lastWave = _elapsed;
         case BossFailed():
           result.firstBossFail ??= _elapsed;
-          _wallSince ??= _elapsed;
+          _wallSince ??= _online;
         case StageAdvanced(:final stage):
           if (stage >= 10) result.stage10 ??= _elapsed;
           if (stage >= 40) result.stage40 ??= _elapsed;
-          final since = _wallSince;
-          if (since != null && _elapsed - since > result.wallMax) result.wallMax = _elapsed - since;
-          _wallSince = null;
+          _endWall();
           _lastWave = _elapsed;
+          final rec = _recovering;
+          if (rec != null && stage >= rec.stage) {
+            final took = _online - rec.at;
+            final worst = result.rebirthRecoverMax;
+            if (worst == null || took > worst) result.rebirthRecoverMax = took;
+            _recovering = null;
+          }
         case CrewPromoted(:final crewId, :final rarity):
           if (crewId == t.growth.bossCards.starterCrew) result.starterPromotion ??= _elapsed;
           if (rarity == 'legend') result.firstLegendPromoted ??= _elapsed;
@@ -207,7 +249,7 @@ class SimPlayer {
   SimResult _finish() {
     final s = engine.state;
     final since = _wallSince;
-    if (since != null && _elapsed - since > result.wallMax) result.wallMax = _elapsed - since;
+    if (since != null && _online - since > result.wallMax) result.wallMax = _online - since;
     double avg(Iterable<Duration> xs) =>
         xs.isEmpty ? 0 : xs.fold(0, (a, d) => a + d.inMilliseconds) / xs.length / Duration.millisecondsPerSecond;
     const early = Duration(minutes: 10);
@@ -216,6 +258,7 @@ class SimPlayer {
         if (at > _elapsed - early) g,
     ];
     final estimate = goldPerSecEstimate(s, t, offlineFleet(s, t));
+    result.mapPieces = s.wallet.mapPieces;
     result
       ..waveSecFirst10Min = avg([
         for (final (at, gap) in _waveGaps)
@@ -234,32 +277,5 @@ class SimPlayer {
         estimate.times(t.meta.offlineMaxSec * t.meta.offlineEfficiency),
       );
     return result;
-  }
-}
-
-/// 지금 레벨에서 가장 싼 강화 (최대 레벨 부위 제외).
-({String part, BigNum cost})? cheapestUpgrade(GameTables t, Map<String, int> levels) {
-  ({String part, BigNum cost})? best;
-  for (final p in t.shipParts.parts) {
-    final lv = levels[p.id] ?? 0;
-    final max = p.maxLevel;
-    if (max != null && lv >= max) continue;
-    final cost = partCost(p, lv);
-    if (best == null || cost < best.cost) best = (part: p.id, cost: cost);
-  }
-  return best;
-}
-
-/// [gold]로 가장 싼 강화를 몇 번 살 수 있나.
-int upgradesAffordable(GameTables t, Map<String, int> levels, BigNum gold) {
-  final lv = {...levels};
-  var left = gold;
-  var n = 0;
-  while (true) {
-    final next = cheapestUpgrade(t, lv);
-    if (next == null || left < next.cost) return n;
-    left = left - next.cost;
-    lv[next.part] = (lv[next.part] ?? 0) + 1;
-    n++;
   }
 }

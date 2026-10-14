@@ -4,6 +4,7 @@ import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
+import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
@@ -38,7 +39,9 @@ class EconomySystem implements GameSystem {
     final TutorialAck c => tutorialAck(state, ctx.tables, c),
     SkipTutorial() => state.copyWith(clearTutorial: true),
     final OpSetTutorial c => opSetTutorial(state, c),
-    // TODO(economy): Rebirth …
+    final Rebirth c => onRebirth(state, c, ctx),
+    final OpRebirthNow c => opRebirthNow(state, c, ctx),
+    final OpReset c => opReset(state, c, ctx),
     _ => null,
   };
 

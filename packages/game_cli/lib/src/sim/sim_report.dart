@@ -13,6 +13,7 @@ class SimCheck {
     required this.unit,
     this.requiredWithin,
     this.applies = true,
+    this.onlyIfReached = false,
   });
 
   final String key;
@@ -28,7 +29,11 @@ class SimCheck {
   /// 목표가 이 접속 일정용인가 (`schedule` 키, 없으면 모든 일정).
   final bool applies;
 
-  bool judged(Duration played) => applies && (value != null || requiredWithin == null || played >= requiredWithin!);
+  /// 값이 없으면(그 일이 일어나지 않았으면) 판정하지 않는다.
+  final bool onlyIfReached;
+
+  bool judged(Duration played) =>
+      applies && (value != null || (!onlyIfReached && (requiredWithin == null || played >= requiredWithin!)));
   bool ok(Duration played) => !judged(played) || (value != null && value! >= min && value! <= max);
 
   Map<String, Object?> toJson(Duration played) => {
@@ -56,7 +61,14 @@ double? median(List<double?> xs) {
 /// 설계서 7.2 목표 판정 (범위는 meta.json sim.targets).
 List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule}) {
   final tg = t.meta.raw.obj('sim').obj('targets');
-  SimCheck c(String key, String label, double? Function(SimResult) f, String unit, {Duration? within}) {
+  SimCheck c(
+    String key,
+    String label,
+    double? Function(SimResult) f,
+    String unit, {
+    Duration? within,
+    bool onlyIfReached = false,
+  }) {
     final r = tg.obj(key);
     return SimCheck(
       key,
@@ -67,6 +79,7 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
       unit: unit,
       requiredWithin: within ?? Duration(milliseconds: (r.number('max') * _unitMs(unit)).round()),
       applies: !r.has('schedule') || r.str('schedule') == schedule,
+      onlyIfReached: onlyIfReached,
     );
   }
 
@@ -78,18 +91,26 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('stage10Min', '스테이지 10', (r) => _min(r.stage10), '분'),
     c('stage40DayHours', '스테이지 40 (첫날 안, 하루 일정 경과)', (r) => _hours(r.stage40), '시간'),
     c('stage40OnlineMin', '스테이지 40 (계속 접속, 20분 이상)', (r) => _min(r.stage40), '분', within: Duration.zero),
-    c('wallMaxMin', '가장 긴 벽(파밍) 구간', (r) => _min(r.wallMax), '분', within: Duration.zero),
+    c('wallMaxMin', '가장 긴 벽(파밍, 접속 시간)', (r) => _min(r.wallMax), '분', within: Duration.zero),
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
     c('starterPromotionMin', '옥토 첫 승급(운과 무관)', (r) => _min(r.starterPromotion), '분'),
     c('firstLegendOwnedDays', '첫 전설 보유', (r) => _days(r.firstLegendOwned), '일'),
     c('firstLegendPromotedDays', '승급으로 만든 첫 전설', (r) => _days(r.firstLegendPromoted), '일'),
     c('firstMythicDays', '첫 신화', (r) => _days(r.firstMythic), '일'),
+    c(
+      'rebirthRecoverSec',
+      '환생 뒤 30% 회복(접속 시간, 가장 느린 것)',
+      (r) => r.rebirthRecoverMax == null ? null : r.rebirthRecoverMax!.inMilliseconds / Duration.millisecondsPerSecond,
+      '초',
+      onlyIfReached: true,
+    ),
   ];
 }
 
 int _unitMs(String unit) => switch (unit) {
   '분' => Duration.millisecondsPerMinute,
+  '초' => Duration.millisecondsPerSecond,
   '시간' => Duration.millisecondsPerHour,
   '일' => Duration.millisecondsPerDay,
   _ => 0,
@@ -119,6 +140,10 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
     ..writeln()
     ..writeln('| 참고 | 값 |')
     ..writeln('| --- | --- |')
+    ..writeln(
+      '| 환생 횟수 · 첫 환생 · 지도 조각 | ${_fmt(m((r) => r.rebirths.toDouble()))} · '
+      '${_fmt(m((r) => _hours(r.firstRebirth)), '시간')} · ${_fmt(m((r) => r.mapPieces.toDouble()))} |',
+    )
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
     ..writeln(

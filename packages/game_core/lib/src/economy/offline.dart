@@ -5,6 +5,7 @@ import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
+import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -28,7 +29,7 @@ BigNum fleetDps(GameState s, GameTables t, List<String> fleet) {
     final a = t.skills.byId(t.crews.byId(id).family).attack;
     perAttack += crewPowerMultiplier(t.growth, t.rarities, crew.level) * a.power / a.intervalSec;
   }
-  return ship.attack.times(perAttack * tier * crit * ship.attackSpeed);
+  return ship.attack.times(perAttack * tier * crit * ship.attackSpeed * (1 + rebirthBonus(s, t)));
 }
 
 /// 초당 골드 추정 = 한 파 골드 / (max(한 파 HP ÷ DPS, offline.minWaveSec) + 이동 시간). 보스는 넘지 않는다.
@@ -42,7 +43,7 @@ BigNum goldPerSecEstimate(GameState s, GameTables t, List<String> fleet) {
     w.goldBase,
     w.goldGrowth,
     stage,
-  ).times(n * goldMultiplier(t.shipParts, s.ship.level('cargo')));
+  ).times(n * goldMultiplier(t.shipParts, s.ship.level('cargo')) * (1 + rebirthBonus(s, t)));
   final waveHp = stageCurve(w.hpBase, w.hpGrowth, stage).times(n * w.waveHpPoolFactor);
   final waveSec = math.max((waveHp / dps).toDouble(), t.meta.offlineMinWaveSec);
   return waveGold / BigNum.from(waveSec + w.travelSec);

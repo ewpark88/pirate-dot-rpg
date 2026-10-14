@@ -1,5 +1,6 @@
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
+import 'package:game_cli/src/sim/sim_upgrades.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
