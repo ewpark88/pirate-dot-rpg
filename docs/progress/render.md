@@ -3,8 +3,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | `plans/active/render-status.md`(스펙 초안) · `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
-| 상태 | 스프라이트 골든 d3c03e1. 사운드 연결(SoundDirector·BattleGame(audio:)) 구현, 렌더 테스트 74개 |
-| 막힌 것 | render-status 승인·계약 F · CC0 음원(사람, M4) · flame_audio 어댑터(S1) · 실기기 측정(M2) |
+| 상태 | 적 상태 표시 구현(렌더 테스트 78개), 골든 `battle_status.png` S1 확인 대기(미커밋) |
+| 막힌 것 | 상태 골든 승인 · CC0 음원(사람, M4) · flame_audio 어댑터(S1, 음원 후) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,11 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 적 상태 표시
+- 한 일: render-status 승인·계약 F(main 286c687) → 테스트 먼저(`status_test.dart` 4개, 픽셀 확인) → `StatusPainter`(감속 색조·물방울, 화상 불꽃 깜빡임(번쩍임 끄기면 고정), 취약 화살표,
+  기절 별까지 머리 위 한 줄 가운데 정렬), 스프라이트 감속 필터. fx_map `status`. render_tables는 설정 묶음을 캐시 getter로 바꿔 284줄.
+- 검증: `tool\check.bat --full` 통과, 렌더 테스트 78개. 골든 `battle_status.png` 생성(미커밋).
 
 ### 2026-10-14 · S3 · 사운드 연결
 - 한 일: 골든 `battle_sprites.png` 승인·커밋(d3c03e1). render-audio 승인·계약 E(AudioPort, main 5b8ef89) → 테스트 먼저(`audio_test.dart` 5개) →

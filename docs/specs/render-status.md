@@ -1,6 +1,6 @@
 # 스펙: 렌더 — 적 상태 표시 (감속·화상·취약)
 
-- 상태: 초안 — 승인 대기 · 레인: render(S3) · 설계서 절: 4.4 타격감, 4.3 전설 고유 능력(엔진 `battle-m3-legend`)
+- 상태: 승인됨 (2026-10-14, S1) · 레인: render(S3) · 설계서 절: 4.4 타격감, 4.3 전설 고유 능력(엔진 `battle-m3-legend`)
 - 계약 요청: `docs/contracts/requests/render-status.md` (EnemyView.slowed·burning·vulnerable)
 
 ## 목적
@@ -27,5 +27,5 @@
 ## 운영자 모드
 S1 `OpSetWave`·전설 선원 출전으로 엔진이 상태를 내면 라이브로 보인다.
 
-## 열린 질문 (S1)
-- 계약 F 채택 여부(필드 이름).
+## 결정 기록 (2026-10-14, S1)
+- 계약 F 수용(main 286c687): `EnemyView.slowed·burning·vulnerable`(bool, 기본 false, JSON 생략 가능). 전투가 Foe 상태로 채운다.

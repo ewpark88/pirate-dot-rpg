@@ -170,7 +170,8 @@ class EnemyLook {
 /// 게임 이벤트 → 이펙트·효과음 (fx_map.json).
 class FxMapTable {
   FxMapTable.fromJson(JsonReader j)
-    : events = {
+    : raw = j,
+      events = {
         for (final k in j.obj('events').raw.keys) k: j.obj('events').obj(k),
       },
       sheets = j.objs('fxSheets').map(FxSheetDef.fromJson).toList(),
@@ -186,27 +187,15 @@ class FxMapTable {
       },
       sheetFrameMs = j.number('sheetFrameMs'),
       skillFxScale = j.number('skillFxScale'),
-      screenSkill = j.obj('screenSkill'),
-      shipSkill = j.obj('shipSkill'),
       ultimates = {for (final k in j.obj('ultimates').raw.keys) k: UltimatePattern.fromJson(j.obj('ultimates').obj(k))},
       enemyLook = {for (final k in j.obj('enemyLook').raw.keys) k: EnemyLook.fromJson(j.obj('enemyLook').obj(k))},
       enemySmallSize = j.number('enemySmallSize'),
-      split = j.obj('split'),
-      revive = j.obj('revive'),
-      stun = j.obj('stun'),
       backgrounds = {for (final k in j.obj('backgrounds').raw.keys) k: j.obj('backgrounds').obj(k)},
       backgroundDefault = j.str('backgroundDefault'),
       backgroundFadeMs = j.number('backgroundFadeMs'),
-      bossEntrance = j.obj('bossEntrance'),
-      bossFailed = j.obj('bossFailed'),
       bossLook = {for (final k in j.obj('bossLook').raw.keys) k: j.obj('bossLook').obj(k)},
       bossLookDefault = j.str('bossLookDefault'),
-      shield = j.obj('shield'),
-      tierColors = [for (final c in j.strs('tierColors')) parseArgb(c, 'tierColors')],
-      chest = j.obj('chest'),
-      sprites = j.obj('sprites'),
-      audio = j.obj('audio'),
-      zone = j.obj('zone');
+      tierColors = [for (final c in j.strs('tierColors')) parseArgb(c, 'tierColors')];
 
   final Map<String, JsonReader> events;
   final List<FxSheetDef> sheets;
@@ -218,41 +207,38 @@ class FxMapTable {
   final Map<String, int> sheetColors;
   final double sheetFrameMs;
 
-  /// M3 스킬·궁극기·적 역할 연출 (docs/specs/render-m3-fx.md).
+  /// M3·해역·아트·사운드 연출 (render-m3-fx · render-regions · render-art-pack-v02 · render-audio · render-status 스펙).
   final double skillFxScale;
-  final JsonReader screenSkill;
-  final JsonReader shipSkill;
+  final double enemySmallSize;
+  final double backgroundFadeMs;
   final Map<String, UltimatePattern> ultimates;
   final Map<String, EnemyLook> enemyLook;
-  final double enemySmallSize;
-  final JsonReader split;
-  final JsonReader revive;
-
-  /// 기절 별 (EnemyView.stunned).
-  final JsonReader stun;
-
-  /// 해역 배경·보스 (docs/specs/render-regions.md).
   final Map<String, JsonReader> backgrounds;
-  final String backgroundDefault;
-  final double backgroundFadeMs;
-  final JsonReader bossEntrance;
-  final JsonReader bossFailed;
   final Map<String, JsonReader> bossLook;
+  final String backgroundDefault;
   final String bossLookDefault;
-  final JsonReader shield;
 
   /// 무한 항해 테두리 tier 1~3 색.
   final List<int> tierColors;
 
-  /// 보물상자 그림 (BattleView.chest).
-  final JsonReader chest;
+  /// fx_map.json 원문. 아래 설정 묶음은 처음 읽을 때 한 번만 만든다(프레임당 할당 없음).
+  final JsonReader raw;
+  final Map<String, JsonReader> _objs = {};
+  JsonReader _o(String key) => _objs[key] ??= raw.obj(key);
 
-  /// 스프라이트 시트 프레임 수·애니 간격 (아트 팩).
-  final JsonReader sprites;
-
-  /// 효과음 겹침 상한.
-  final JsonReader audio;
-  final JsonReader zone;
+  JsonReader get screenSkill => _o('screenSkill');
+  JsonReader get shipSkill => _o('shipSkill');
+  JsonReader get split => _o('split');
+  JsonReader get revive => _o('revive');
+  JsonReader get stun => _o('stun');
+  JsonReader get bossEntrance => _o('bossEntrance');
+  JsonReader get bossFailed => _o('bossFailed');
+  JsonReader get shield => _o('shield');
+  JsonReader get chest => _o('chest');
+  JsonReader get sprites => _o('sprites');
+  JsonReader get audio => _o('audio');
+  JsonReader get zone => _o('zone');
+  JsonReader get status => _o('status');
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
   ProjectileStyle projectileFor(String family) =>
