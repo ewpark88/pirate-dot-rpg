@@ -9,7 +9,7 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-14 · S1 |
-| 바로 다음 할 일 | S1: 레인 머지·통합, economy의 `grantBossCards`가 오면 보스 처치에 연결 |
+| 바로 다음 할 일 | S1: 레인 머지·통합 (ui 배 탭 끝나면 1차 머지, render 재생기) |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -102,7 +102,8 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 발견: 새 게임에 선원이 0명이라 전투가 안 돌았다 → `meta.startingCrews`(옥토·톡). 첫 보스 실패 약 1분 40초(목표 1~3분).
 - 추가: lane/economy(735a528) main 머지, `combat_stats`를 경제의 `ShipStats.of`·`crewPowerMultiplier`로 교체, 경제 함수를 `game_core.dart`로 export(UI용).
   render·ui 스펙은 S1이 승인(사용자 위임) — 레인 세션은 자기 사용자에게 위임 확인 후 시작.
-- 다음 할 일: export-events 실제 출력 → 렌더 통지, grantBossCards 연결
+- 추가2: economy 99445f3 머지(합치기·승급·보스 카드·오프라인), 보스 처치에 `grantBossCards`+`SaveRequested` 연결, offline.dart export.
+- 다음 할 일: ui 배 탭 → 1차 머지, render 재생기 머지, economy 운영자 명령·sim
 - 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
 
 ### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안
