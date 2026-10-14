@@ -13,5 +13,5 @@
 2. 광고 단위: **보상형 1개**(모든 장치가 공유 — chest·tailwind·offline·bossSupport·freeSummon).
 3. 개인정보 및 메시지 → **GDPR 동의 메시지**(UMP) 만들기·게시. (없으면 EU 기기에 동의 창이 안 뜨고 광고가 안 나온다.)
 4. ID 교체는 platform 레인에 요청(테스트 `admob_ads_test.dart`가 테스트 ID를 고정하고 있어서, 배포용 ID는 빌드 설정으로 분리하는 작업이 함께 필요).
-5. `app-ads.txt`를 개발자 웹사이트(GitHub Pages)에 게시 — Play 스토어 등록정보의 웹사이트와 같은 도메인.
+5. `app-ads.txt`: 개발자 웹사이트 https://rich-fire.blogspot.com/ (Blogger 맞춤 ads.txt) — 절차·확인 필요 항목은 `app-ads.md`.
 6. 실기기 테스트는 테스트 ID 또는 AdMob의 "테스트 기기" 등록으로만. 자기 광고를 실제로 누르지 않는다.
