@@ -110,14 +110,14 @@ String rollRarity(Map<String, double> rates, Rng rng) {
 }
 
 /// 보스 처치 카드 (설계서 4.3.3, 스펙 결정 ②). 전투가 스테이지를 올리기 **전**에 부른다.
-/// - 첫 회차(환생 0) 시작 구간: 첫 보스부터 `starterEvery`번째 보스마다 그 보스의 카드 대신 `starterCrew`에게 일반 카드 1장
+/// - 첫 회차(환생 0): 스테이지 `starterFirstStage`부터 `starterEvery`번째 보스마다 그 보스의 카드 대신 `starterCrew`에게 일반 카드 1장
 ///   (사용자 결정 C). 사이 보스는 아래 규칙대로
 /// - 장수: `growth.bossCards.countAt(잡은 스테이지)`, 대상: [fleet] 중 무작위, 등급: `rarities.bossDropRates`
 GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet) {
   final t = ctx.tables;
   final b = t.growth.bossCards;
   final stage = state.progress.stage;
-  if (state.progress.rebirths == 0 && b.inStarterPhase(stage) && (stage - 1) % b.starterEvery == 0) {
+  if (state.progress.rebirths == 0 && b.isStarterStage(stage)) {
     return receiveCard(state, t, b.starterCrew, t.rarities.rarities.first.id);
   }
   if (fleet.isEmpty) return state;

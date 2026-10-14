@@ -5,7 +5,6 @@ import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
-import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
@@ -45,8 +44,13 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),
-    // 함포 지원 효과는 전투 레인 — 경제는 한도·횟수만.
-    AdPlacement.bossSupport => _saved(s, ctx),
+    // 함포 지원: 경제가 종료 시각을 채우고, 피해 보너스는 전투가 Buffs.bossSupportUntil을 읽어 적용한다.
+    AdPlacement.bossSupport => _saved(
+      s.copyWith(
+        buffs: s.buffs.copyWith(bossSupportUntil: now.add(Duration(seconds: reward.integer('durationSec'))).toUtc()),
+      ),
+      ctx,
+    ),
   };
 }
 
@@ -67,7 +71,7 @@ GameState addTailwind(GameState state, GameTables t, DateTime now, Duration d) {
   final max = Duration(seconds: _def(t, AdPlacement.tailwind).reward.integer('maxStackSec'));
   var left = tailwindRemaining(state, now) + d;
   if (left > max) left = max;
-  return state.copyWith(buffs: Buffs(tailwindUntil: now.add(left).toUtc()));
+  return state.copyWith(buffs: state.buffs.copyWith(tailwindUntil: now.add(left).toUtc()));
 }
 
 GameState opGrantTailwind(GameState state, OpGrantTailwind c, SystemContext ctx) =>

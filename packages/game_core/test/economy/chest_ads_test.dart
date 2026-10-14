@@ -133,6 +133,17 @@ void main() {
       expect(tailwindRemaining(s, h.clock.now()), maxStack);
     });
 
+    test('함포 지원 광고: bossSupportUntil = now + durationSec, 순풍은 함포 지원을 지우지 않는다', () {
+      final bs = t.ads.placements.firstWhere((p) => p.id == 'bossSupport').reward;
+      var s = sys.handle(playing(), const GrantAdReward(AdPlacement.bossSupport), h.ctx)!;
+      final until = h.clock.now().add(Duration(seconds: bs.integer('durationSec')));
+      expect(s.buffs.bossSupportUntil, until);
+      expect(s.daily.ads['bossSupport'], 1);
+      s = sys.handle(s, const GrantAdReward(AdPlacement.tailwind), h.ctx)!;
+      expect(s.buffs.bossSupportUntil, until);
+      expect(tailwindRemaining(s, h.clock.now()), dur);
+    });
+
     test('OpGrantTailwind는 한도와 상관없이 같은 누적 규칙', () {
       final s = sys.handle(playing(), const OpGrantTailwind(Duration(minutes: 5)), h.ctx)!;
       expect(tailwindRemaining(s, h.clock.now()), const Duration(minutes: 5));

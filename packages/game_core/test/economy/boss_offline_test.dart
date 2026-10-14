@@ -26,7 +26,7 @@ void main() {
   );
 
   group('보스 카드 grantBossCards', () {
-    test('첫 회차 시작 구간: 첫 보스부터 starterEvery번째 보스마다 옥토에게 일반 카드 1장 (사용자 결정 C)', () {
+    test('첫 회차: starterFirstStage부터 starterEvery번째 보스마다 옥토에게 일반 카드 1장 (사용자 결정 C)', () {
       final b = t.growth.bossCards;
       var s = starter().copyWith(
         crews: {
@@ -34,7 +34,8 @@ void main() {
           'turtle': CrewState(level: t.growth.maxLevel),
         },
       );
-      for (var stage = 1; stage <= b.starterCount * b.starterEvery; stage++) {
+      final lastStage = b.starterFirstStage + (b.starterCount - 1) * b.starterEvery;
+      for (var stage = 1; stage <= lastStage; stage++) {
         s = grantBossCards(atStage(s, stage), h.ctx, ['turtle']);
       }
       final octo = s.crews['octo']!;
@@ -44,8 +45,8 @@ void main() {
       final need = t.growth.promotions.first.cards;
       expect(octo.cards, need);
       var between = 0;
-      for (var stage = 1; stage <= b.starterCount * b.starterEvery; stage++) {
-        if ((stage - 1) % b.starterEvery != 0) between += b.countAt(stage);
+      for (var stage = 1; stage <= lastStage; stage++) {
+        if (!b.isStarterStage(stage)) between += b.countAt(stage);
       }
       expect(s.tokens, (b.starterCount - need + between) * t.growth.tokenPerSurplusCard);
     });
