@@ -203,5 +203,12 @@
   "uiRebirthKeep": "그대로: 선원·도감·젬",
   "uiRebirthGainLine": "얻음: 조각 +{count}, 보너스 {from}에서 {to}로",
   "uiRebirthConfirm": "보물지도 펼치기",
-  "uiCancel": "취소"
+  "uiCancel": "취소",
+  "uiAdChestGold": "×{mult} · {amount}",
+  "uiAdChestGems": "젬 {gems}",
+  "uiAdOffline": "×2 · +{amount}",
+  "uiAdTailwind": "{minutes}분 ×{mult}",
+  "uiAdBossSupport": "피해 +{percent} · {seconds}초",
+  "uiAdFreeSummon": "무료 소환 · 남은 {left}회",
+  "uiOk": "확인"
 }

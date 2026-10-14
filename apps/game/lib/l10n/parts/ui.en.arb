@@ -84,5 +84,12 @@
   "uiRebirthKeep": "Kept: crew, collection, gems",
   "uiRebirthGainLine": "Gain: +{count} pieces, bonus {from} to {to}",
   "uiRebirthConfirm": "Open the Map",
-  "uiCancel": "Cancel"
+  "uiCancel": "Cancel",
+  "uiAdChestGold": "×{mult} · {amount}",
+  "uiAdChestGems": "Gems {gems}",
+  "uiAdOffline": "×2 · +{amount}",
+  "uiAdTailwind": "{minutes}m ×{mult}",
+  "uiAdBossSupport": "Damage +{percent} · {seconds}s",
+  "uiAdFreeSummon": "Free summon · {left} left",
+  "uiOk": "OK"
 }

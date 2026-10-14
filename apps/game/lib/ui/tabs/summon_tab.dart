@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -13,7 +14,7 @@ import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 const _summonTen = 10;
 
 /// 소환 탭: 1회·10회 버튼(젬 비용), 천장 진행 막대, 등급 확률표 (설계서 4.3, 9.3 확률 공개).
-// TODO(ui): 광고 무료 소환(남은 횟수), 증표 상점 — 다음 계획.
+// TODO(ui): 증표 상점 — 다음 계획.
 class SummonTab extends ConsumerWidget {
   const SummonTab({super.key});
 
@@ -60,6 +61,8 @@ class SummonTab extends ConsumerWidget {
             ],
           ],
         ),
+        // 광고가 없으면 자리도 차지하지 않는다.
+        const Center(child: FreeSummonAdButton()),
         const SizedBox(height: 12),
         Text(l10n.uiSummonPity(rarities.pityCount, tableText(l10n, pityRarity.nameKey))),
         const SizedBox(height: 4),
