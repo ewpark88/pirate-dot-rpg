@@ -31,7 +31,7 @@ M2 관문 "저사양 실기기 60fps"를 사람이 한 번에 판단할 수 있�
 준비: 저사양 Android 기기 1대, USB 디버깅 켬, PC에서 `flutter devices`로 기기 id 확인.
 
 ```bat
-cd /d D:\Projects\pirate-dot-rpgpps\game
+cd /d D:\Projects\pirate-dot-rpg\apps\game
 flutter devices
 flutter run --profile -d <기기id> --dart-define=OPERATOR=true --dart-define=BATTLE_SCENE=stress --dart-define=PERF_OVERLAY=true
 ```
