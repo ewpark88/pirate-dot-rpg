@@ -8,18 +8,10 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
-
-class _FixedClock implements Clock {
-  _FixedClock(this.time);
-
-  DateTime time;
-
-  @override
-  DateTime now() => time;
-}
 
 /// S2의 offlinePreview가 오기 전 가짜: 경과를 0~8시간으로 자르고, 1분 미만이면 없음. 골드는 초당 100.
 OfflinePreview? _fakePreview(GameState s, DateTime now) {
@@ -41,7 +33,7 @@ Future<CommandLog> _pump(WidgetTester tester, Duration away, {bool fake = true})
         initialGameStateProvider.overrideWithValue(state),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
-        clockProvider.overrideWithValue(_FixedClock(state.savedAt.add(away))),
+        clockProvider.overrideWithValue(FixedClock(state.savedAt.add(away))),
         if (fake) offlinePreviewProvider.overrideWithValue(_fakePreview),
       ],
       child: const PirateDotApp(locale: Locale('en')),

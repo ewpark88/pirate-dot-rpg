@@ -5,6 +5,8 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
+import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
+import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
@@ -36,6 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             children: [
               const HudBar(),
+              const GoalBar(),
               Expanded(
                 flex: _battleFlex,
                 child: Stack(
@@ -49,6 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     const Positioned(top: 8, right: 8, child: BossChallenge()),
+                    const Positioned(top: 8, left: 8, child: TailwindBadge()),
                   ],
                 ),
               ),

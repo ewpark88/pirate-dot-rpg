@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "savedAt": "2026-11-01T12:34:56.000Z",
   "playerId": "fixture-player",
   "rngSeed": 913377,
@@ -43,6 +43,7 @@
     "pityCount": 0,
     "total": 0
   },
+  "tutorialStep": 1,
   "buffs": {
     "tailwindUntil": null
   },
@@ -50,7 +51,9 @@
     "date": "2026-11-01",
     "ads": {},
     "quests": {},
-    "attendanceDay": 0
+    "attendanceDay": 0,
+    "questsClaimed": [],
+    "attendanceClaimed": false
   },
   "collection": [
     "octo",
@@ -161,6 +164,8 @@
     ],
     "captainId": "octo",
     "hitStopTicks": 0,
-    "speed": 1
+    "speed": 1,
+    "stage": 1,
+    "chest": null
   }
 }

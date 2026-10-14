@@ -43,6 +43,14 @@ void main() {
     expect(v2.toJson()['summon'], containsPair('total', v2.summonsTotal));
   });
 
+  test('v2 → v3: 일일 받음 기록이 비고, 튜토리얼은 끝난 것(null)', () {
+    final v2 = SaveCodec.decode(File('test/fixtures/saves/v2.json').readAsStringSync());
+    expect(v2.daily.questsClaimed, isEmpty);
+    expect(v2.daily.attendanceClaimed, isFalse);
+    expect(v2.tutorialStep, isNull);
+    expect(GameState.newGame(playerId: 'n', seed: 1, now: DateTime.utc(2026, 11)).tutorialStep, 1);
+  });
+
   test('본문을 고치면 체크섬이 깨진다', () {
     final text = SaveCodec.encode(sample).replaceFirst('"gems": 0', '"gems": 999');
     expect(() => SaveCodec.decode(text), throwsA(isA<SaveCorruptException>()));

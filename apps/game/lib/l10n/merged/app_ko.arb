@@ -137,5 +137,11 @@
   "uiSettingsPowerSave": "절전 모드",
   "uiSettingsAutoBoss": "자동 보스 도전",
   "uiSettingsAutoUpgrade": "자동 강화",
-  "uiSummonFree": "무료"
+  "uiSummonFree": "무료",
+  "uiGoalShipTier": "{tier} 승급까지 스테이지 {count}",
+  "uiGoalPartMilestone": "{part} 도약까지 {count}레벨",
+  "uiGoalCollection": "도감 보너스까지 {count}명",
+  "uiGoalRebirth": "환생 가능까지 스테이지 {count}",
+  "uiCollectionBonus": "공격력 +{percent}",
+  "uiCollectionNext": "다음 보너스까지 {count}명"
 }
