@@ -10,7 +10,7 @@
 - [x] 4. 보스 등장 경고·처치 코인 비·실패 어두움
 - [x] 4b. 보스 모양 13종+촉수, 보호막 테두리·깨짐, tier 테두리
 - [x] 4c. scene이 frame.stage로 Backdrop 갱신 + 보물상자(BattleView.chest) — b78d0fe
-- [ ] 5. 기존 골든 2장 재승인·커밋 d640aad ✔ · 보스 골든 `battle_boss_storm.png` 생성 → S1 승인 대기 → 커밋
+- [x] 5. 골든 2장 재승인 d640aad · 보스 골든 battle_boss_storm.png (S1 승인, storm_pirate·deep_sub 색 밝게)
 
 ## 검증 방법
 `tool\check.bat --full`, `flutter test apps/game/test/render`.

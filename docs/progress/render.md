@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-regions.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx` |
-| 상태 | render-regions: stage 연결·보물상자 b78d0fe 커밋. 보스 골든 `battle_boss_storm.png` S1 확인 대기(미커밋) |
-| 막힌 것 | 보스 골든 승인(S1) · 실기기 측정(M2 관문) |
+| 현재 계획 | `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
+| 상태 | render-regions 완료(보스 골든 포함). 다음: live 실기기 확인 준비, art-pack-v02 스펙 |
+| 막힌 것 | 실기기 측정(M2 관문, S1이 docs/DEVICE_TEST.md 작성) |
 
 ## 실기기 측정
 
@@ -22,7 +22,8 @@
 - 검증: `tool\check.bat --full` 통과(29.9s).
 - 추가: 골든 재승인 → d640aad. main(해역 보스) 머지 → 보호막 테두리·깨짐·tier 테두리 2e9ccae, 렌더 테스트 58개.
 - 추가: main(16dda02 stage·chest) 머지 → b78d0fe 프레임 stage로 배경, 보물상자(둥둥·가라앉기·흐려짐). 렌더 테스트 62개.
-- 다음 할 일: 보스 골든 승인 → 커밋 → 계획 done/.
+- 추가: 보스 골든 승인(S1) — storm_pirate #8E3B2E·deep_sub #D4AC0D로 밝게(바다와 겹침) 후 커밋, 계획 done/.
+- 다음 할 일: live 모드 실기기 확인 준비(PERF_OVERLAY live), art-pack-v02 스펙 초안.
 
 ### 2026-10-14 · S3 · render-m3-fx (스킬·궁극기·적 역할 연출)
 - 한 일: 스펙 승인(S1)·계약 A·B·C 수용 기록. 테스트 먼저(수용 기준 1~9, 5는 계약 B 대기 skip) →
