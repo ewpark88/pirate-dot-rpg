@@ -31,6 +31,24 @@ double crewPowerMultiplier(GrowthTable g, RarityTable t, int level); // (1+0.08(
 - 최종 피해의 나머지 항(배 등급 `ship_tiers.damageBonus`, % 보너스 합: 보유 효과·도감·지도 조각)은 다음 단계에서
   `crewDamageBonus(GameTables, GameState)` 하나로 추가할 예정 — 나오면 이 문서에 덧붙인다.
 
+### 소환·승급 판정 (UI 레인용, 4단계에서 추가)
+
+```dart
+// package:game_core/src/economy/cards.dart
+int summonCost(MetaTable meta, int count);                       // 젬
+bool canSummon(GameState s, GameTables t, int count);
+PromotionDef? nextPromotion(GameTables t, int level);            // 신화면 null
+BigNum promotionGold(GameTables t, PromotionDef p, int stage);   // 처치 골드(화물칸 전) × goldKills
+enum PromoteStatus { ok, notOwned, maxRarity, level, cards, gold, tokens }
+PromoteStatus promoteStatus(GameState s, GameTables t, String crewId); // 빨간 점 = ok
+bool canPromote(GameState s, GameTables t, String crewId);
+GameState receiveCard(GameState s, GameTables t, String crewId, String rarity); // 카드 1장 받기 공통 규칙
+
+// package:game_core/src/economy/summon.dart
+String rollSummonRarity(RarityTable t, Rng rng, {required bool pity});
+```
+`game_core.dart` export에 `cards.dart`도 추가해 주면 UI가 `src/` import 없이 쓴다(shared 경로라 S1 몫).
+
 ### 보스 카드 (사용자 결정 ②, 2026-10-14)
 경제 시스템은 전투 이벤트를 받지 못하므로, **전투가 보스 처치 순간 경제 함수를 부른다**:
 

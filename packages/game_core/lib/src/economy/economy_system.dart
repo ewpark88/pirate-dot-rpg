@@ -1,3 +1,4 @@
+import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/upgrade.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -13,7 +14,8 @@ class EconomySystem implements GameSystem {
   @override
   GameState? handle(GameState state, Command command, SystemContext ctx) => switch (command) {
     final UpgradePart c => upgradePart(state, c, ctx),
-    // TODO(economy): Summon, MergeAllCards, PromoteCrew, GrantAdReward, Rebirth …
+    final Summon c => summon(state, c, ctx),
+    // TODO(economy): MergeAllCards, PromoteCrew, GrantAdReward, Rebirth …
     _ => null,
   };
 
