@@ -10,8 +10,8 @@
 - [x] 4. ② 보물상자 — `battle.chest` 탭 영역·링, 금액은 `chestRewardProvider`(S2 B3 전까지 숨김) (기준 2·3)
 - [x] 5. ④ 퀘스트·출석 시트 — 전장 아이콘(빨간 점)→하단 시트, `dailyQuestsProvider`·`attendanceProvider`(S2 B7·B8 전까지 숨김) (기준 5·6)
 - [x] 6. ⑥ 튜토리얼 — 말풍선(전장·탭 사이 줄)·손가락(TutorialSpot)·건너뛰기·확인(1·6단계 TutorialAck), 4단계는 10회 소환 직후 Ack(임시) (기준 8·9)
-- [ ] 6-1. ⑦ 소환 결과 연출 — 결과를 상태로 받는 계약 필요(요청) (기준 11)
-- [ ] 7. 영어 골든 3장 + 바뀐 골든 재생성 → S1 승인 (기준 10)
+- [x] 6-1. ⑦ 소환 결과 연출 — `lastSummon`(main 8e7567d) → 카드 뒤집기 창, 확인 → AckSummonResult(+튜토리얼 4단계 Ack) (기준 11)
+- [x] 7. 영어 골든 4장(en_m3_hud·en_daily_sheet·en_tutorial_step2·en_summon_result) — S1 승인 (기준 10·11)
 - [ ] 8. `check --full` → 진척 문서 → 커밋 → S1 보고 (단계마다)
 
 ## 메모

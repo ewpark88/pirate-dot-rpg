@@ -41,18 +41,13 @@ void main() {
     expect(find.byKey(const Key('tutorial.ok')), findsNothing);
   });
 
-  testWidgets('4단계: 10회 소환 직후 TutorialAck(4) (소환 결과 화면이 생기면 닫을 때로)', (tester) async {
+  testWidgets('4단계: 10회 소환을 가리키고, 소환은 Summon만 (Ack는 결과 창을 닫을 때 — summon_result_test)', (tester) async {
     final base = loadFixture('stage37_midgame');
     final state = base.copyWith(tutorialStep: 4, wallet: base.wallet.copyWith(gems: 1000));
     final log = await pumpGame(tester, state, tab: summonTab, keepTutorial: true);
     expect(find.byKey(const Key('tutorial.spot.summon.ten')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('summon.one')));
-    expect(log.sent.map((c) => c.toJson()), [const Summon().toJson()]); // 1회는 단계와 무관
     await tester.tap(find.byKey(const Key('summon.ten')));
-    expect(log.sent.skip(1).map((c) => c.toJson()), [
-      const Summon(count: 10).toJson(),
-      const TutorialAck(4).toJson(),
-    ]);
+    expect(log.sent.map((c) => c.toJson()), [const Summon(count: 10).toJson()]);
   });
 
   testWidgets('말풍선은 전장과 탭 패널을 가리지 않는다', (tester) async {
