@@ -108,7 +108,10 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
   `hpBase` 20→10, `hpGrowth` 1.16→1.19 → 스테이지 10: 18.7→7.6분(OK), 처음 10분 한 파 33→9.4초, 첫 보스 실패 1.3분(OK), 가장 긴 벽 1.5분.
   스테이지 40은 0.4시간(목표 1.5~3시간) — hpGrowth로는 거의 안 변함, 첫 전설 0.08일 등 경제 성장 속도가 결정 → economy(사용자 결정 대기).
   boss_timeout_farming 시나리오는 op.setFleet[octo]로 약한 편성 고정.
-- 다음 할 일: 렌더 라이브 입력 연결, economy 밸런스(사용자 결정) 후 sim 재확인
+- 추가5: lane/render 8f10d56 머지(재생기·연출·풀/상한·라이브 feed), main.dart가 `battleFeedProvider`에 `EngineHost.ticks` 연결.
+  `game_cli fixtures`가 운영자 패널용 `apps/game/lib/operator/sample_states.g.dart` 생성(allLanes).
+  lane/ui 586b804 머지는 --full 실패(UI 골든에 전장 그림이 찍혀 렌더 변경에 깨짐)로 push 전 머지 커밋을 버림 → UI 골든은 HUD·탭만 찍기로(S4 수정 중).
+- 다음 할 일: S4 골든 분리 후 ui 머지, S3 골든 머지, economy 밸런스 머지
 - 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
 
 ### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안
