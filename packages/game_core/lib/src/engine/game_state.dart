@@ -22,6 +22,7 @@ class GameState {
     this.summonsTotal = 0,
     this.tutorialStep,
     this.lastSummon,
+    this.lastOfflineGold,
     this.buffs = const Buffs(),
     this.collection = const {},
     this.settings = const Settings(),
@@ -96,6 +97,9 @@ class GameState {
 
   /// 방금 소환한 결과 (소환 결과 연출용, 세이브 밖). 화면이 닫으면 AckSummonResult로 지운다.
   final List<SummonResult>? lastSummon;
+
+  /// 이번 복귀에 받은 오프라인 골드 (광고 ×2 '복귀당 1회'용, 세이브 밖). 광고로 두 배를 받으면 경제가 지운다.
+  final BigNum? lastOfflineGold;
   final Buffs buffs;
   final DailyState daily;
 
@@ -123,6 +127,8 @@ class GameState {
     bool clearTutorial = false,
     List<SummonResult>? lastSummon,
     bool clearLastSummon = false,
+    BigNum? lastOfflineGold,
+    bool clearLastOfflineGold = false,
     Buffs? buffs,
     DailyState? daily,
     Set<String>? collection,
@@ -142,6 +148,7 @@ class GameState {
     summonsTotal: summonsTotal ?? this.summonsTotal,
     tutorialStep: clearTutorial ? null : tutorialStep ?? this.tutorialStep,
     lastSummon: clearLastSummon ? null : lastSummon ?? this.lastSummon,
+    lastOfflineGold: clearLastOfflineGold ? null : lastOfflineGold ?? this.lastOfflineGold,
     buffs: buffs ?? this.buffs,
     daily: daily ?? this.daily,
     collection: collection ?? this.collection,
