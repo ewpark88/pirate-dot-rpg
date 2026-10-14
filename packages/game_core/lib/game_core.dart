@@ -2,6 +2,9 @@
 library;
 
 export 'contracts.dart';
+export 'src/economy/cards.dart';
+export 'src/economy/crew_stats.dart';
+export 'src/economy/ship_stats.dart';
 export 'src/engine/core_engine.dart' show CoreEngine, defaultSystems;
 export 'src/ports/xorshift_rng.dart';
 export 'src/save/save_codec.dart';

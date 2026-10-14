@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:game_cli/src/commands/export_events.dart';
+import 'package:game_cli/src/fixtures/engine_battle.dart';
 import 'package:game_cli/src/fixtures/sample_states.dart';
-import 'package:game_cli/src/fixtures/synthetic_battle.dart';
 import 'package:game_cli/src/repo_root.dart';
 import 'package:game_core/game_core.dart' hide Command;
 import 'package:game_data/game_data.dart';
@@ -32,7 +33,9 @@ class FixturesCommand extends Command<int> {
       final body = {'schemaVersion': currentSchemaVersion, ...e.value.toJson(includeBattle: true)};
       _write(root, 'fixtures/states/${e.key}.json', '${encoder.convert(body)}\n');
     }
-    _write(root, 'fixtures/events/sample_battle.jsonl', encodeRecording(syntheticBattle()));
+    final jsonl = encodeRecording(engineBattle(tables));
+    _write(root, 'fixtures/events/sample_battle.jsonl', jsonl);
+    _write(root, demoRecordingPath, recordingDartSource(jsonl));
 
     if (argResults!.flag('saves')) {
       final midgame = sampleStates(tables)['stage37_midgame']!;
