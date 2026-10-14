@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-art-pack-v02.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
-| 상태 | 실제 엔진 라이브 재생 통합 테스트 ab11e7d(PERF_OVERLAY live 확인). 아트 팩 v0.2 스펙 초안 |
-| 막힌 것 | art-pack 승인·Q1(lane/art 작업 위치)·Q2(pubspec assets) · 실기기 측정(M2 관문) |
+| 현재 계획 | `plans/active/render-art-pack-v02.md`(5단계 남음) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `render-battle-replay`, `render-m3-fx`, `render-regions` |
+| 상태 | 아트 팩 에셋 11f3c8c + SpriteBank 4d537e1 커밋. pubspec 등록(S1 머지) 대기 |
+| 막힌 것 | pubspec `flutter: assets:`(S1) · 실기기 측정(M2 관문) |
 
 ## 실기기 측정
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S3 · 아트 팩 v0.2 적용
+- 한 일: S1 결정(Q1 render가 assets·tools/art 소유, Q2 pubspec은 S1 머지 때). `tools/art/import_pack.py`(zip 이미지·json만 읽음, 크기 검증, overrides 우선,
+  LICENSES.json 자동, `--check` 재실행 동일) + 테스트 3개 → 에셋 62개(초상 40·fx 8·적 6·보스선·배·발사체 5·코인) 11f3c8c.
+  렌더: `SpriteBank`·`SpriteDraw`(nearest·흰 번쩍임·물속 색조), `HudPainter` 분리, `BattleGame.loadSprites/useSprites/spriteCount` 4d537e1.
+- 검증: `tool\check.bat --full` 통과(42.3s), 렌더 테스트 67개, `python -I tools/art/test_import_pack.py` OK.
+- 커버리지: 적 27종 중 6, 보스 14 중 1(enemy_ship), 발사체 8 중 5(shock·assault·air 없음), 해역 배경 0/6 — 나머지는 플레이스홀더.
+- 다음 할 일: pubspec 등록 후 실제 이미지 골든 `battle_sprites.png`, 부하 장면 프레임 시간 비교.
 
 ### 2026-10-14 · S3 · M2 관문 준비 + 아트 팩 스펙
 - 한 일: 보스 골든 커밋(7bc4922, storm_pirate·deep_sub 색 밝게). `live_engine_test.dart` — EngineHost(실제 엔진) 30초를 60Hz로 라이브 재생:
