@@ -12,7 +12,7 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 const _sheetMaxHeight = 0.7;
 
 /// 지금 퀘스트·출석 화면 값. 경제 함수(B7·B8)가 오기 전에는 (null, null).
-(DailyQuestsView?, AttendanceView?) _daily(WidgetRef ref) {
+(List<QuestView>?, AttendanceView?) _daily(WidgetRef ref) {
   final state = ref.watch(gameStateProvider);
   return (
     ref.watch(dailyQuestsProvider)(state),
@@ -28,7 +28,7 @@ class DailyIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
-    final claimable = (quests?.canClaim ?? false) || (attendance?.canClaim ?? false);
+    final claimable = (quests?.any((q) => q.canClaim) ?? false) || (attendance?.canClaim ?? false);
     final icon = IconButton.filledTonal(
       key: const Key('daily.icon'),
       visualDensity: VisualDensity.compact,
@@ -47,7 +47,7 @@ class DailyIcon extends ConsumerWidget {
   }
 }
 
-/// 하단 시트: 위 칸 일일 퀘스트 4줄 + 모두 달성 보상, 아래 칸 출석 7칸.
+/// 하단 시트: 위 칸 일일 퀘스트 4줄(줄마다 받기), 아래 칸 출석 7칸.
 class DailySheet extends ConsumerWidget {
   const DailySheet({super.key});
 
@@ -66,9 +66,9 @@ class DailySheet extends ConsumerWidget {
 }
 
 class _Quests extends ConsumerWidget {
-  const _Quests(this.view);
+  const _Quests(this.quests);
 
-  final DailyQuestsView view;
+  final List<QuestView> quests;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,7 +83,7 @@ class _Quests extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.uiQuestTitle, style: Theme.of(context).textTheme.titleMedium),
-        for (final q in view.quests)
+        for (final q in quests)
           ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -92,21 +92,16 @@ class _Quests extends ConsumerWidget {
               color: q.done ? Colors.green : null,
             ),
             title: Text(name(q)),
-            trailing: Text(l10n.uiQuestProgress(q.progress, q.target)),
+            subtitle: Text(l10n.uiQuestProgress(q.progress, q.target)),
+            trailing: q.claimed
+                ? Text(l10n.uiQuestClaimed)
+                : FilledButton.icon(
+                    key: Key('daily.claim.${q.id}'),
+                    onPressed: q.canClaim ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
+                    icon: const Icon(Icons.diamond, size: 14),
+                    label: Text(l10n.uiQuestClaimGems(q.rewardGems)),
+                  ),
           ),
-        Row(
-          children: [
-            Expanded(child: Text(l10n.uiQuestReward(view.rewardGems))),
-            if (view.claimed)
-              Text(l10n.uiQuestClaimed)
-            else
-              FilledButton(
-                key: const Key('daily.claim'),
-                onPressed: view.canClaim ? () => ref.read(commandSinkProvider).send(const ClaimDaily()) : null,
-                child: Text(l10n.uiQuestClaim),
-              ),
-          ],
-        ),
       ],
     );
   }

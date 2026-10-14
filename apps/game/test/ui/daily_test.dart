@@ -10,27 +10,35 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
 
-DailyQuestsView _quests({required int done, bool claimed = false}) {
+/// 퀘스트 4개: 앞의 [done]개 달성, [claimed]개 받음. 보상은 퀘스트마다 젬 10.
+List<QuestView> _quests({required int done, int claimed = 0}) {
   const types = ['kill', 'upgrade', 'summon', 'ad'];
   const targets = [500, 30, 1, 1];
-  final quests = [
+  return [
     for (var i = 0; i < 4; i++)
-      QuestView(id: 'q$i', type: types[i], progress: i < done ? targets[i] : 0, target: targets[i]),
+      QuestView(
+        id: 'q$i',
+        type: types[i],
+        progress: i < done ? targets[i] : 0,
+        target: targets[i],
+        rewardGems: 10,
+        claimed: i < claimed,
+      ),
   ];
-  return DailyQuestsView(quests: quests, rewardGems: 40, canClaim: done == 4 && !claimed, claimed: claimed);
 }
 
 AttendanceView _attendance({required bool claimedToday}) => AttendanceView(
   day: 4,
   claimedToday: claimedToday,
   rewards: [
-    for (var d = 1; d <= 6; d++) AttendanceReward(gems: d * 10),
+    // 사용자 결정(2026-10-14): 20·20·30·30·40·50 + 7일차 영웅 확정 소환
+    for (final g in const [20, 20, 30, 30, 40, 50]) AttendanceReward(gems: g),
     const AttendanceReward(ticket: true),
   ],
 );
 
 /// 경제 함수(B7·B8)가 오기 전이라 provider를 가짜로 덮는다.
-Future<CommandLog> _pump(WidgetTester tester, {DailyQuestsView? quests, AttendanceView? attendance}) async {
+Future<CommandLog> _pump(WidgetTester tester, {List<QuestView>? quests, AttendanceView? attendance}) async {
   tester.view
     ..physicalSize = const Size(400, 800)
     ..devicePixelRatio = 1;
@@ -65,30 +73,24 @@ void main() {
     expect(find.byKey(const Key('daily.icon')), findsNothing);
   });
 
-  testWidgets('기준 5: 3/4 완료 → 빨간 점 없음, 받기 비활성', (tester) async {
-    await _pump(tester, quests: _quests(done: 3), attendance: _attendance(claimedToday: true));
+  testWidgets('기준 5: 달성했지만 받은 것뿐이면 빨간 점 없음', (tester) async {
+    await _pump(tester, quests: _quests(done: 2, claimed: 2), attendance: _attendance(claimedToday: true));
     expect(find.byKey(const Key('daily.dot')), findsNothing);
     await _openSheet(tester);
     expect(find.text('Defeat 500 monsters'), findsOneWidget);
-    expect(find.text('500/500'), findsOneWidget);
-    expect(find.text('0/1'), findsOneWidget); // 광고 퀘스트
-    expect(tester.widget<FilledButton>(find.byKey(const Key('daily.claim'))).onPressed, isNull);
+    expect(find.text('Claimed'), findsNWidgets(2));
+    // 미달성 줄은 받기 비활성, 진행이 보인다
+    expect(tester.widget<FilledButton>(find.byKey(const Key('daily.claim.q3'))).onPressed, isNull);
+    expect(find.text('0/1'), findsNWidgets(2));
   });
 
-  testWidgets('기준 5: 4/4 미수령 → 빨간 점, 받기 → ClaimDaily', (tester) async {
-    final log = await _pump(tester, quests: _quests(done: 4), attendance: _attendance(claimedToday: true));
+  testWidgets('기준 5: 달성·미수령 줄이 있으면 빨간 점, 그 줄 받기 → ClaimDaily(id)', (tester) async {
+    final log = await _pump(tester, quests: _quests(done: 3, claimed: 1), attendance: _attendance(claimedToday: true));
     expect(find.byKey(const Key('daily.dot')), findsOneWidget);
     await _openSheet(tester);
-    expect(find.text('Complete all: Gems +40'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('daily.claim')));
-    expect(log.sent, [isA<ClaimDaily>()]);
-  });
-
-  testWidgets('이미 받았으면 ‘Claimed’', (tester) async {
-    await _pump(tester, quests: _quests(done: 4, claimed: true), attendance: _attendance(claimedToday: true));
-    await _openSheet(tester);
-    expect(find.text('Claimed'), findsOneWidget);
-    expect(find.byKey(const Key('daily.claim')), findsNothing);
+    expect(find.text('+10'), findsNWidgets(3)); // 받기 버튼 3개(1개는 받음)
+    await tester.tap(find.byKey(const Key('daily.claim.q1')));
+    expect(log.sent.map((c) => c.toJson()), [const ClaimDaily('q1').toJson()]);
   });
 
   testWidgets('기준 6: 출석 오늘 미수령 → 빨간 점, 받기 → ClaimAttendance, 7일차는 소환권', (tester) async {

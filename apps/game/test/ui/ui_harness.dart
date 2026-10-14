@@ -26,9 +26,10 @@ Future<CommandLog> pumpGame(
   int tab = 0,
   FixedClock? clock,
   bool keepTutorial = false,
+  Size size = const Size(400, 800),
 }) async {
   tester.view
-    ..physicalSize = const Size(400, 800)
+    ..physicalSize = size
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final log = CommandLog();
