@@ -8,13 +8,14 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 결과 카드 한 줄에 몇 장 (10연 = 2줄 × 5장).
 const _perRow = 5;
 
 /// 카드 가로:세로.
-const _cardAspect = 0.7;
+const _cardAspect = 0.5;
 
 /// 카드 뒤집기 시간.
 const _flip = Duration(milliseconds: 250);
@@ -170,6 +171,7 @@ class _Face extends ConsumerWidget {
               l10n.uiSummonNew,
               style: small?.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
             ),
+          CrewPortrait(crew: tables.crews.byId(result.crewId), size: 24),
           Text(
             tableText(l10n, tables.crews.byId(result.crewId).nameKey),
             maxLines: 2,

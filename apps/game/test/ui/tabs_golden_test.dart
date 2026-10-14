@@ -18,6 +18,7 @@ void main() {
   ]) {
     testWidgets('골든: $name', (tester) async {
       await pumpGame(tester, loadFixture(fixture), tab: tab);
+      await precacheImages(tester);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/$name.png'));
     });
   }

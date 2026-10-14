@@ -103,6 +103,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('summon.revealAll')));
     await tester.pumpAndSettle();
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_summon_result.png'));
   });
 }
