@@ -5,9 +5,15 @@
 | --- | --- |
 | 계획 | 완료: `done/ui-tabs.md`, `done/ui-operator-panel.md` → 다음: 스펙 `ui-core-loop` |
 | 상태 | 운영자 패널 1차 커밋 (골든 S1 승인) |
-| 기다리는 것 | - |
+| 기다리는 것 | `ui-core-loop` 스펙 승인, S2 `offlinePreview` 함수, savedAt 갱신 확인 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · 운영자 패널 커밋, 코어 루프 스펙
+- 한 일: dbb986f 운영자 패널(골든 S1 승인), main 298b02c(저장·복원) 머지 315e0ab — `flutter pub get` 후 `check --full` 통과.
+  `docs/specs/ui-core-loop.md` 초안(보스 도전·복귀 오프라인 팝업·설정 화면·운영자 렌더 묶음). main 1c31c32 다시 머지 — main이 옛 커밋(dbb986f)을 머지한 뒤 레인 검사가 main 파일을 ui 변경으로 잡던 문제 해소.
+- 다음 할 일: 승인 → 계획 → 테스트 먼저 → 구현
+- 남은 문제: 오프라인 미리보기 함수가 없어 S2에 `offlinePreview` 요청(S1 중계). 일시정지 저장 때 savedAt 갱신 여부 확인 요청
 
 ### 2026-10-14 · S4 · 운영자 패널 1차
 - 한 일: b5aa3e6 (전장 주입점·골든 재생성·스펙, S1이 main 머지). 운영자 패널: 샘플 4개 → `OpLoadState`(SaveCodec.migrate 경유),
