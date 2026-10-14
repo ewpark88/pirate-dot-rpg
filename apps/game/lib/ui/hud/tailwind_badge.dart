@@ -56,7 +56,7 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
     return Container(
       key: const Key('tailwind'),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(12)),
       child: Opacity(
         opacity: active ? 1 : _inactiveOpacity,
         child: Row(

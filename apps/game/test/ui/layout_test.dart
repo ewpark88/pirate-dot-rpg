@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
+
+import 'ui_harness.dart';
+
+/// 레이아웃 점검: 작은 화면(360×640)·한국어·가로. 넘침(overflow)은 위젯 테스트에서 예외로 실패한다.
+void main() {
+  const small = Size(360, 640);
+  final fixtures = ['new_player', 'stage37_midgame', 'boss_fight', 'all_crews_mythic'];
+
+  for (final locale in const [Locale('en'), Locale('ko')]) {
+    for (final name in fixtures) {
+      testWidgets('${locale.languageCode} 360×640 $name: 탭 4개가 넘치지 않는다', (tester) async {
+        for (final tab in [voyageTab, shipTab, crewTab, summonTab]) {
+          await pumpGame(tester, _farming(loadFixture(name)), locale: locale, tab: tab, size: small);
+        }
+      });
+    }
+
+    testWidgets('${locale.languageCode} 360×640: 설정 화면이 넘치지 않는다', (tester) async {
+      await pumpGame(tester, loadFixture('stage37_midgame'), locale: locale, size: small);
+      await tester.tap(find.byKey(const Key('hud.settings')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('settings.lang')), findsOneWidget);
+    });
+  }
+
+  group('한국어 화면 문구', () {
+    testWidgets('HUD·배 탭', (tester) async {
+      await pumpGame(tester, loadFixture('boss_fight'), locale: const Locale('ko'), tab: shipTab);
+      expect(find.text('보스 20초'), findsOneWidget);
+      expect(find.text('스테이지 5-3'), findsOneWidget);
+      expect(find.text('궁극기'), findsOneWidget);
+      expect(find.text('대포'), findsOneWidget);
+    });
+
+    testWidgets('소환 탭: 천장 문구', (tester) async {
+      await pumpGame(tester, loadFixture('stage37_midgame'), locale: const Locale('ko'), tab: summonTab);
+      expect(find.text('1회 소환'), findsOneWidget);
+      expect(find.text('50회 안에 영웅 이상 확정'), findsOneWidget);
+    });
+
+    testWidgets('선원 탭: 도감·일괄 합치기·출전', (tester) async {
+      await pumpGame(tester, loadFixture('stage37_midgame'), locale: const Locale('ko'), tab: crewTab);
+      expect(find.text('도감 4/40'), findsOneWidget);
+      expect(find.text('일괄 합치기'), findsOneWidget);
+      expect(find.text('출전', skipOffstage: false), findsWidgets);
+    });
+
+    testWidgets('파밍: 보스 도전', (tester) async {
+      await pumpGame(tester, _farming(loadFixture('stage37_midgame')), locale: const Locale('ko'));
+      expect(find.text('보스 도전'), findsOneWidget);
+      expect(find.text('파밍 중'), findsOneWidget);
+    });
+  });
+
+  testWidgets('가로 화면(800×360)에서도 넘치지 않는다 — 세로 고정 전까지 안전망', (tester) async {
+    for (final tab in [voyageTab, shipTab, crewTab, summonTab]) {
+      await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab, size: const Size(800, 360));
+    }
+  });
+
+  testWidgets('접근성: 아이콘 버튼에는 설명(tooltip)이 있다', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'));
+    final gear = tester.widget<IconButton>(find.byKey(const Key('hud.settings')));
+    expect(gear.tooltip, 'Settings');
+    await expectLater(tester, meetsGuideline(textContrastGuideline));
+  });
+}
+
+/// 보스 도전 버튼까지 보이게 파밍 상태로 (보스전 중이면 버튼은 숨는다).
+GameState _farming(GameState s) => s.copyWith(progress: s.progress.copyWith(farming: true));

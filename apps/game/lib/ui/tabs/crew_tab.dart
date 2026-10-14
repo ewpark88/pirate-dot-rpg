@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
@@ -15,6 +17,12 @@ const _columns = 5;
 
 /// 카드 가로:세로.
 const _cardAspect = 0.45;
+
+/// 카드 최소 높이 — 이름·별·레벨·카드 수·출전·승급 버튼이 들어가는 높이.
+const _minCardHeight = 162.0;
+
+/// 카드 사이 간격.
+const _spacing = 4.0;
 
 /// 미보유 선원 카드의 불투명도.
 const _unownedOpacity = 0.35;
@@ -74,16 +82,23 @@ class CrewTab extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        GridView.count(
-          crossAxisCount: _columns,
-          childAspectRatio: _cardAspect,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            for (final c in crews) CrewCard(def: c, owned: owned.contains(c.id)),
-          ],
+        LayoutBuilder(
+          builder: (context, box) {
+            // 좁은 화면(360dp)에서는 가로:세로만으로 카드가 내용보다 낮아진다 → 최소 높이를 둔다.
+            final cardWidth = (box.maxWidth - _spacing * (_columns - 1)) / _columns;
+            final cardHeight = math.max(cardWidth / _cardAspect, _minCardHeight);
+            return GridView.count(
+              crossAxisCount: _columns,
+              childAspectRatio: cardWidth / cardHeight,
+              mainAxisSpacing: _spacing,
+              crossAxisSpacing: _spacing,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                for (final c in crews) CrewCard(def: c, owned: owned.contains(c.id)),
+              ],
+            );
+          },
         ),
       ],
     );

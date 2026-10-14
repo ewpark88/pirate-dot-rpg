@@ -62,8 +62,6 @@
   "uiQuestSummon": "Summon {target} time",
   "uiQuestAd": "Watch {target} ad",
   "uiQuestProgress": "{progress}/{target}",
-  "uiQuestReward": "Complete all: Gems +{gems}",
-  "uiQuestClaim": "Claim",
   "uiQuestClaimed": "Claimed",
   "uiAttendanceTitle": "Attendance",
   "uiAttendanceDay": "Day {day}",
@@ -72,5 +70,6 @@
   "uiSummonResultTitle": "Summon Results",
   "uiSummonRevealAll": "Reveal All",
   "uiSummonResultOk": "OK",
-  "uiSummonNew": "NEW"
+  "uiSummonNew": "NEW",
+  "uiQuestClaimGems": "+{gems}"
 }
