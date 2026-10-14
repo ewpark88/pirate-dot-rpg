@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -77,7 +79,8 @@ class EngineHost implements CommandSink {
     final now = clock.now();
     _lastSave = now;
     final text = SaveCodec.encode(engine.state.copyWith(savedAt: now));
-    return _saving = _saving.then((_) => s.write(text));
+    // 한 번 실패해도 다음 저장이 이어지도록 실패를 여기서 삼킨다(어댑터도 던지지 않지만 이중 안전장치 — S5 발견).
+    return _saving = _saving.then((_) => s.write(text)).catchError((Object e) => debugPrint('save: $e'));
   }
 
   /// 백그라운드로 갈 때: 멈추고, 지금 시각을 savedAt으로 저장한다.
