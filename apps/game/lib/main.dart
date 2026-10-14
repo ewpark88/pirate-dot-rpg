@@ -48,11 +48,8 @@ Future<void> main() async {
     ..start();
   // 백그라운드로 가면 저장하고 멈춘다. 돌아오면 다시 돈다 (오프라인 보상은 UI 복귀 팝업이 ClaimOffline으로 받는다).
   AppLifecycleListener(
-    onPause: () {
-      host.stop();
-      unawaited(host.save());
-    },
-    onResume: host.start,
+    onPause: () => unawaited(host.pause()),
+    onResume: host.resume,
   );
   runApp(UncontrolledProviderScope(container: container, child: const PirateDotApp()));
 }
