@@ -96,4 +96,20 @@ void main() {
     expect(engine.drainEvents().whereType<HitStop>(), hasLength(1));
     expect(engine.drainEvents(), isEmpty);
   });
+
+  test('AckSummonResult는 lastSummon을 지운다 (엔진 공통 명령)', () {
+    final e =
+        CoreEngine(
+            tables: tables,
+            clock: ManualClock(start),
+            initial: GameState.newGame(playerId: 'p', seed: 1, now: start).copyWith(
+              lastSummon: const [SummonResult(crewId: 'octo', rarity: 'hero', isNew: true)],
+            ),
+            systems: const [],
+          )
+          ..enqueue(const AckSummonResult())
+          ..tick();
+    expect(e.state.lastSummon, isNull);
+    expect(e.unhandled, isEmpty);
+  });
 }

@@ -21,6 +21,7 @@ class GameState {
     this.pityCount = 0,
     this.summonsTotal = 0,
     this.tutorialStep,
+    this.lastSummon,
     this.buffs = const Buffs(),
     this.collection = const {},
     this.settings = const Settings(),
@@ -92,6 +93,9 @@ class GameState {
 
   /// 튜토리얼 단계(설계서 4.12, 1부터). null이면 끝냈거나 건너뜀 (세이브 v3).
   final int? tutorialStep;
+
+  /// 방금 소환한 결과 (소환 결과 연출용, 세이브 밖). 화면이 닫으면 AckSummonResult로 지운다.
+  final List<SummonResult>? lastSummon;
   final Buffs buffs;
   final DailyState daily;
 
@@ -117,6 +121,8 @@ class GameState {
     int? summonsTotal,
     int? tutorialStep,
     bool clearTutorial = false,
+    List<SummonResult>? lastSummon,
+    bool clearLastSummon = false,
     Buffs? buffs,
     DailyState? daily,
     Set<String>? collection,
@@ -135,6 +141,7 @@ class GameState {
     pityCount: pityCount ?? this.pityCount,
     summonsTotal: summonsTotal ?? this.summonsTotal,
     tutorialStep: clearTutorial ? null : tutorialStep ?? this.tutorialStep,
+    lastSummon: clearLastSummon ? null : lastSummon ?? this.lastSummon,
     buffs: buffs ?? this.buffs,
     daily: daily ?? this.daily,
     collection: collection ?? this.collection,

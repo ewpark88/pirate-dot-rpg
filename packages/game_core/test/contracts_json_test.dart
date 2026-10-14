@@ -19,6 +19,7 @@ void main() {
     const ClaimAttendance(),
     const SkipTutorial(),
     const TutorialAck(3),
+    const AckSummonResult(),
     const Rebirth(),
     const ExchangeToken('manta'),
     const SetSetting('shake', false),

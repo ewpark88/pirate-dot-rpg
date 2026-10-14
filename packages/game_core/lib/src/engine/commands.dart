@@ -32,6 +32,7 @@ sealed class Command {
       'setSetting' => SetSetting(j['key'] as String, j['value'] as Object),
       'skipTutorial' => const SkipTutorial(),
       'tutorialAck' => TutorialAck(j['step'] as int),
+      'ackSummonResult' => const AckSummonResult(),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
@@ -211,4 +212,12 @@ class TutorialAck extends Command {
 
   @override
   Json _fields() => {'step': step};
+}
+
+/// 소환 결과 연출을 닫았다 → GameState.lastSummon = null.
+class AckSummonResult extends Command {
+  const AckSummonResult();
+
+  @override
+  String get type => 'ackSummonResult';
 }
