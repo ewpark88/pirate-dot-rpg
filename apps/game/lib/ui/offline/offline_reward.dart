@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -64,15 +66,32 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
 }
 
 /// 오프라인 보상 팝업: 경과 시간·골드·카드, 받기 → ClaimOffline.
-// TODO(ui): 광고 ×2 버튼 — 광고 포트(AdsPort)가 생기면. 로드 안 되면 숨긴다 (설계서 4.6).
-class OfflineRewardDialog extends ConsumerWidget {
+class OfflineRewardDialog extends ConsumerStatefulWidget {
   const OfflineRewardDialog({required this.preview, super.key});
 
   final OfflinePreview preview;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OfflineRewardDialog> createState() => _OfflineRewardDialogState();
+}
+
+class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
+  /// 받기를 눌렀나. 광고 ×2는 받은 뒤(`lastOfflineGold`)에만 있으므로, 광고가 준비됐으면 창을 열어 둔다.
+  var _claimed = false;
+
+  void _claim() {
+    ref.read(commandSinkProvider).send(const ClaimOffline());
+    if (ref.read(adsPortProvider).isReady(AdPlacement.offline)) {
+      setState(() => _claimed = true);
+    } else {
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final preview = widget.preview;
     final away = Duration(seconds: preview.seconds);
     return AlertDialog(
       title: Text(l10n.uiOfflineTitle),
@@ -93,14 +112,16 @@ class OfflineRewardDialog extends ConsumerWidget {
         ],
       ),
       actions: [
-        FilledButton(
-          key: const Key('offline.claim'),
-          onPressed: () {
-            ref.read(commandSinkProvider).send(const ClaimOffline());
-            Navigator.of(context).pop();
-          },
-          child: Text(l10n.uiOfflineClaim),
-        ),
+        if (_claimed) ...[
+          // 광고 ×2 (설계서 4.6: 복귀당 1회) — 경제가 허락하고 광고가 준비됐을 때만 보인다.
+          const OfflineAdButton(),
+          TextButton(
+            key: const Key('offline.ok'),
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.uiOk),
+          ),
+        ] else
+          FilledButton(key: const Key('offline.claim'), onPressed: _claim, child: Text(l10n.uiOfflineClaim)),
       ],
     );
   }

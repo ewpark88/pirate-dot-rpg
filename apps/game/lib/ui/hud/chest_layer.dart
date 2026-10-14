@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -13,7 +14,6 @@ const _rewardOffset = -18.0;
 
 /// 떠내려온 보물상자 탭 영역 (설계서 4.6). 전장 위에 겹쳐, 전장 논리 좌표(320×180)를 화면 크기로 늘려 놓는다.
 /// 상자 그림은 렌더 레인이 그리고, 여기는 누를 곳·가라앉기까지 남은 시간 링·기본 보상 금액만.
-// TODO(ui): 광고 ×5 · 젬 버튼(Key 'chest.ad') — 광고 포트(AdsPort)가 생기면. 로드 안 되면 숨김 (4.6).
 class ChestLayer extends ConsumerWidget {
   const ChestLayer({super.key});
 
@@ -66,6 +66,12 @@ class ChestLayer extends ConsumerWidget {
                   ),
                 ),
               ),
+            ),
+            // 광고 ×5 · 젬 (광고가 준비됐을 때만, 설계서 4.6) — 상자 바로 아래 가운데.
+            Positioned(
+              left: x * scale,
+              top: y * scale + _size / 2 + 2,
+              child: const FractionalTranslation(translation: Offset(-0.5, 0), child: ChestAdButtons()),
             ),
           ],
         );

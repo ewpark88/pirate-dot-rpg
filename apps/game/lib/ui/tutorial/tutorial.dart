@@ -21,15 +21,6 @@ const _ackSteps = {1, 6};
 /// 현재 튜토리얼 단계 (null = 끝·건너뜀).
 final tutorialStepProvider = Provider<int?>((ref) => ref.watch(gameStateProvider.select((s) => s.tutorialStep)));
 
-/// 광고가 준비됐나 (로드 안 되면 버튼을 숨긴다, 설계서 4.6).
-// TODO(platform): AdsPort가 앱에 연결되면 그 로드 상태로. 그 전엔 false.
-final adsReadyProvider = Provider<bool>((_) => false);
-
-/// 광고 제안을 보여도 되나: 광고가 준비됐고 튜토리얼 중이 아닐 때만 (설계서 4.6).
-final adOffersAllowedProvider = Provider<bool>(
-  (ref) => ref.watch(adsReadyProvider) && ref.watch(tutorialStepProvider) == null,
-);
-
 /// 튜토리얼이 가리키는 위젯에 테두리와 손가락을 겹친다. 가리키지 않으면 [child] 그대로.
 class TutorialSpot extends ConsumerWidget {
   const TutorialSpot({required this.id, required this.child, super.key});
