@@ -3,6 +3,7 @@ import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
+import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
@@ -36,6 +37,7 @@ GameState summon(GameState state, Summon command, SystemContext ctx) {
     summonsTotal: state.summonsTotal + command.count,
   );
   final results = <({String crewId, String rarity})>[];
+  final shown = <SummonResult>[];
   var guaranteed = false;
   for (var i = 0; i < command.count; i++) {
     // 무료 첫 10연: 마지막 장까지 확정 등급이 안 나왔으면 마지막 장을 확정 등급 이상으로 굴린다.
@@ -47,11 +49,12 @@ GameState summon(GameState state, Summon command, SystemContext ctx) {
     if (rarityOrder.indexOf(rarity) >= guarantee) guaranteed = true;
     final crewId = t.crews.crews[ctx.rng.nextInt(t.crews.crews.length)].id;
     final pityCount = rarityOrder.indexOf(rarity) >= minIndex ? 0 : s.pityCount + 1;
+    shown.add(SummonResult(crewId: crewId, rarity: rarity, isNew: !s.crews.containsKey(crewId)));
     s = receiveCard(s, t, crewId, rarity).copyWith(pityCount: pityCount);
     results.add((crewId: crewId, rarity: rarity));
   }
   ctx
     ..emit(CrewSummoned(ctx.tick, results: results))
     ..emit(SaveRequested(ctx.tick, reason: command.type));
-  return s;
+  return s.copyWith(lastSummon: shown);
 }
