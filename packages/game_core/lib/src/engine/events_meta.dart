@@ -20,6 +20,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'chestSpawned' => ChestSpawned(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'chestOpened' => ChestOpened(t, gold: big('gold')),
     'offlineReward' => OfflineReward(t, gold: big('gold'), cards: j['cards'] as int, seconds: j['seconds'] as int),
+    'rebirthDone' => RebirthDone(t, gain: j['gain'] as int, pieces: j['pieces'] as int, rebirths: j['rebirths'] as int),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };
@@ -168,4 +169,19 @@ class SaveRequested extends GameEvent {
 
   @override
   Json _fields() => {'reason': reason};
+}
+
+/// 환생했다 (설계서 4.5 보물지도). 화면 연출용 — [gain]은 이번에 얻은 조각, [pieces]는 지금 총 조각.
+class RebirthDone extends GameEvent {
+  const RebirthDone(super.tick, {required this.gain, required this.pieces, required this.rebirths});
+
+  final int gain;
+  final int pieces;
+  final int rebirths;
+
+  @override
+  String get type => 'rebirthDone';
+
+  @override
+  Json _fields() => {'gain': gain, 'pieces': pieces, 'rebirths': rebirths};
 }
