@@ -5,10 +5,13 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 환생(M3) 스펙 → 구현. M3 메타는 완료(export 요청 중) |
+| 바로 다음 할 일 | 환생 스펙(`docs/specs/economy-rebirth.md`) 승인·결정 2건 → 구현 |
 | 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 환생 스펙 초안
+- 한 일: `docs/specs/economy-rebirth.md`(규칙 8, 수용 기준 6, UI 요청 rebirthPreview 포함). 결정 필요: 조각 기준(매번 전부 vs 역대 최고 초과분), 환생 연출 이벤트.
 
 ### 2026-10-14 · S2 · 함포 지원 버프·스테이지 40 판정·옥토 첫 승급 재조정 (조정 4)
 - 한 일: GrantAdReward(bossSupport) → Buffs.bossSupportUntil, 순풍은 copyWith. sim 스테이지 40 = 첫날 안(하루 일정) + 계속 접속 20분 이상(설계서 7.2, S1 정리).
