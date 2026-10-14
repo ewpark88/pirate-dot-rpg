@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-14 · S3 · 첫 3분 화면 점검 (③)
+- `first_minutes_test.dart`: 새 게임을 실제 엔진으로 3분(누르지 않음) 라이브 재생, 매 프레임 그림(스프라이트 포함) — 예외 없음.
+  이벤트: attackFired·damage·kill·multiKill·aoeSum·skillCast·hitStop·waveCleared·bossSpawned·bossFailed. 최대 숫자 11·이펙트 13(상한 안). 보스 경고 그려짐.
+  `RENDER_DUMP=<폴더>`면 장면 PNG(t05s·first_hits·boss_warn·boss_fail·t180s) — 눈으로 확인, 렌더 이상 없음.
+- 참고: 3분 동안 stage 1에 머물고 첫 보스는 실패(튜토리얼 실패 연출로 보임 — S1 확인 몫).
+
 ### 2026-10-14 · S3 · sim 전설·신화 시점 점검 (②)
 - 임시 조사(커밋 안 함): `SimPlayer`(시드 1, 연속 접속)를 1시간씩 12시간 돌리며 함대 선원의 레벨별 단독 점수 ÷ 같은 레벨 40명 중앙값.
   전설(L46~)·신화(L61~)가 들어오는 시점 모두 1.00 — 단 충격(turtle)은 단독 피해만 보면 0.14~0.28.
