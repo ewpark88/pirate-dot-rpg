@@ -44,8 +44,13 @@
 - [ ] 운영자 모드 패널
 - [ ] 실기기 60fps (저사양 1대)
 
-### M3 콘텐츠 · M4 아트·광고 · M5 AOS 출시 · M6 iOS·랭킹
-- 설계서 11장 DoD 그대로. M2 관문 통과 후 항목 단위로 펼친다.
+### M3 콘텐츠 (진행 중 — M2 관문 전이지만 엔진·테이블 작업은 병행)
+- [x] 전투: 스킬 8계열 자동 시전·전설 화면 스킬·지원 스킬, 계열별 궁극기(밀어내기·기절·회복), 등급 사다리, 수중 장판, 적 역할 6종·해역별 적 27종 (`docs/specs/battle-m3-skills.md`)
+- [ ] 해역 보스 패턴(25·50스테이지), 300 이후 등급 테두리 (`battle-m3-bosses`)
+- [ ] 보물상자·순풍 버프, 환생, 일일 퀘스트·출석, 도감, 튜토리얼 (economy·ui)
+
+### M4 아트·광고 · M5 AOS 출시 · M6 iOS·랭킹
+- 설계서 11장 DoD 그대로.
 
 ## 레인 상태
 
@@ -87,6 +92,12 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ```
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S1 · 저장·복원, 전투 M3, 레인 지휘
+- 한 일: 저장·복원(FileSaveStore·자동 저장·pause/resume으로 savedAt 보정), 운영자 패널·ui 탭·렌더 perf 머지, 세이브 v2(ADR-0007).
+  전투 M3 스펙(S1 승인, 사용자 위임) → 테스트 먼저 11개 → 구현(skills.dart·Zone·역할·사다리), 계약 추가: SkillCast.scope, EnemyView.stunned, ZoneSpawned(렌더 요청 A·B·C).
+  sim 재조정: 스킬 multiplier 1.0→0.5, boss.hpMultiplier 8→16, travelSec 2→3 → 첫 보스 실패 1.02분·스테이지 10 10.6분(OK), 가장 긴 벽 4.5분.
+- 다음 할 일: S2 offlinePreview·무료 10연 머지(UI 픽스처 summon.total 수정 선행), S3 M3 연출·S4 core-loop 골든 승인·머지, 스테이지 40 벽 설계(S2와 분담)
 
 ### 2026-10-14 · S1 · 전투 M1 코어 + 레인 지원
 - 한 일:

@@ -1,0 +1,202 @@
+import 'package:game_data/src/models/common.dart';
+
+/// 범위 모양 하나 (기본 공격·스킬 공통, 설계서 4.3.2·4.4). 모양별로 쓰는 필드만 채운다.
+/// shape: circle, single, line, chain, random, cone, push, ship.
+class AttackDef {
+  AttackDef.fromJson(this.raw)
+    : shape = raw.str('shape'),
+      intervalSec = raw.numberOr('intervalSec', 0),
+      power = raw.numberOr('power', 1),
+      excludeLayers = raw.has('excludeLayers') ? raw.strs('excludeLayers').toSet() : const {},
+      targets = raw.strOrNull('targets'),
+      radius = raw.numberOr('radius', 0),
+      width = raw.numberOr('width', 0),
+      range = raw.numberOr('range', 0),
+      angleDeg = raw.numberOr('angleDeg', 0),
+      knockback = raw.numberOr('knockback', 0),
+      stunSec = raw.numberOr('stunSec', 0),
+      dotSec = raw.numberOr('dotSec', 0),
+      shots = raw.intOrNull('shots') ?? 1,
+      burst = raw.intOrNull('burst') ?? 1,
+      projectiles = raw.intOrNull('projectiles') ?? 1,
+      pierce = raw.intOrNull('pierce') ?? 1,
+      chains = raw.intOrNull('chains') ?? 1,
+      count = raw.intOrNull('count') ?? 1;
+
+  final JsonReader raw;
+  final String shape;
+
+  /// 발사 간격(초). 돛 강화의 공격 속도 배율로 나눈다. 스킬은 0.
+  final double intervalSec;
+
+  /// 한 번 발사의 피해 배율 (계열 예산, 밸런스 시뮬로 조정).
+  final double power;
+
+  /// 이 공격이 맞히지 못하는 층.
+  final Set<String> excludeLayers;
+
+  /// 대상 고르기 힌트: nearest, cluster, strongest, random, front, self.
+  final String? targets;
+  final double radius;
+  final double width;
+  final double range;
+  final double angleDeg;
+  final double knockback;
+  final double stunSec;
+
+  /// 수중 장판 지속(초). 0이면 장판 없음.
+  final double dotSec;
+
+  /// 연사 발수 (연출).
+  final int shots;
+
+  /// 직사 사다리 연사 수 (연출).
+  final int burst;
+
+  /// 서로 다른 대상에 쏘는 발사체 수. 한 발 피해 = 기본 ÷ 발사체 수 (예산 유지).
+  final int projectiles;
+  final int pierce;
+  final int chains;
+  final int count;
+
+  /// 사다리([ladder]의 키 → 등급별 값)를 [rarity] 등급 순번으로 덮어쓴 모양.
+  AttackDef withLadder(Map<String, List<num>> ladder, int rarity) {
+    if (ladder.isEmpty) return this;
+    return AttackDef.fromJson(
+      JsonReader({
+        ...raw.raw,
+        for (final e in ladder.entries) e.key: e.value[rarity.clamp(0, e.value.length - 1)],
+      }, raw.path),
+    );
+  }
+}
+
+/// 자동 스킬 (설계서 4.4). 모양은 [area], 피해 배율은 [multiplier].
+class SkillDef {
+  SkillDef.fromJson(this.raw)
+    : id = raw.str('id'),
+      area = AttackDef.fromJson(raw),
+      cooldownSec = raw.number('cooldownSec'),
+      multiplier = raw.number('multiplier'),
+      fx = raw.str('fx'),
+      heal = raw.numberOr('heal', 0),
+      attackSpeedBuff = raw.numberOr('attackSpeedBuff', 0),
+      buffSec = raw.numberOr('buffSec', 0);
+
+  final JsonReader raw;
+  final String id;
+  final AttackDef area;
+  final double cooldownSec;
+  final double multiplier;
+  final String fx;
+
+  /// `ship` 모양: 배 최대 HP 대비 회복 비율, 공격 속도 버프와 지속.
+  final double heal;
+  final double attackSpeedBuff;
+  final double buffSec;
+
+  String get shape => area.shape;
+  int get count => area.count;
+}
+
+/// 선장 궁극기 (설계서 4.4): 화면 전체 피해 + 계열별 추가 효과.
+class UltimateDef {
+  UltimateDef.fromJson(JsonReader j)
+    : id = j.str('id'),
+      fx = j.str('fx'),
+      knockback = j.numberOr('knockback', 0),
+      stunSec = j.numberOr('stunSec', 0),
+      healRatio = j.numberOr('healRatio', 0);
+
+  final String id;
+  final String fx;
+  final double knockback;
+  final double stunSec;
+  final double healRatio;
+}
+
+class FamilyDef {
+  FamilyDef.fromJson(JsonReader j)
+    : id = j.str('id'),
+      projectile = j.strOrNull('projectile'),
+      attack = AttackDef.fromJson(j.obj('attack')),
+      skill = SkillDef.fromJson(j.obj('skill')),
+      ultimate = UltimateDef.fromJson(j.obj('ultimate')),
+      ladder = {
+        if (j.has('ladder'))
+          for (final e in (j.raw['ladder'] as Map<String, dynamic>).entries) e.key: (e.value as List).cast<num>(),
+      },
+      nameKey = j.str('nameKey');
+
+  final String id;
+  final String? projectile;
+  final AttackDef attack;
+  final SkillDef skill;
+  final UltimateDef ultimate;
+
+  /// 등급별 발사체 사다리 (설계서 4.3.2): 키 → [일반, 희귀, 영웅, 전설, 신화].
+  final Map<String, List<num>> ladder;
+  final String nameKey;
+
+  String get ultimateId => ultimate.id;
+  String get ultimateFx => ultimate.fx;
+
+  /// [rarity] 등급(0 = 일반)의 기본 공격.
+  AttackDef attackAt(int rarity) => attack.withLadder(ladder, rarity);
+}
+
+class SkillsTable {
+  SkillsTable.fromJson(JsonReader j)
+    : families = j.objs('families').map(FamilyDef.fromJson).toList(),
+      crewSkills = j.objs('crewSkills').map(SkillDef.fromJson).toList(),
+      maxSameFamilyInFleet = j.integer('maxSameFamilyInFleet'),
+      legendSkillScope = j.str('legendSkillScope'),
+      bossControlFactor = j.number('bossControlFactor'),
+      ragePerKill = j.obj('rage').number('perKill'),
+      rageMax = j.obj('rage').number('max'),
+      rageAutoTrigger = j.obj('rage').boolean('autoTrigger'),
+      ultimateMultiplier = j.obj('rage').number('ultimateMultiplier');
+
+  final List<FamilyDef> families;
+
+  /// 계열 스킬 대신 선원이 고를 수 있는 스킬 (crews.json의 `skill`).
+  final List<SkillDef> crewSkills;
+  final int maxSameFamilyInFleet;
+
+  /// 전설 이상 선원의 스킬 범위 (`screen` = 화면 전체).
+  final String legendSkillScope;
+
+  /// 보스가 받는 기절·밀어내기 비율 (설계서 4.10: 절반).
+  final double bossControlFactor;
+  final double ragePerKill;
+  final double rageMax;
+  final bool rageAutoTrigger;
+
+  /// 궁극기 피해 = 기본 공격 피해 × 이 값.
+  final double ultimateMultiplier;
+
+  FamilyDef byId(String id) => families.firstWhere((f) => f.id == id);
+
+  /// 계열 스킬과 선원 스킬 전체의 id.
+  Set<String> get skillIds => {for (final f in families) f.skill.id, for (final s in crewSkills) s.id};
+
+  /// [id]의 스킬 정의 (계열 스킬 또는 선원 스킬).
+  SkillDef skillById(String id) => [...families.map((f) => f.skill), ...crewSkills].firstWhere((s) => s.id == id);
+
+  List<String> validate(double skillCooldownMinSec) {
+    final e = <String>[];
+    for (final s in [...families.map((f) => f.skill), ...crewSkills]) {
+      expect(
+        e,
+        that: s.cooldownSec >= skillCooldownMinSec,
+        message: 'skills: ${s.id} 쿨타임 ${s.cooldownSec} < 최소 $skillCooldownMinSec',
+      );
+    }
+    for (final f in families) {
+      for (final l in f.ladder.entries) {
+        expect(e, that: l.value.length == 5, message: 'skills: ${f.id} ladder.${l.key}는 등급 5개 값이어야 함');
+      }
+    }
+    return e;
+  }
+}

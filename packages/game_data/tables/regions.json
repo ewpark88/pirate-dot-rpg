@@ -1,19 +1,40 @@
 {
   "stagesPerRegion": 50,
   "regions": [
-    { "id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral" },
-    { "id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionStorm" },
-    { "id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier" },
-    { "id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano" },
-    { "id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss" },
-    { "id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["crab", "jelly", "fish", "puffer", "urchin", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom" }
+    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral"},
+    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm"},
+    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier"},
+    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano"},
+    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss"},
+    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom"}
   ],
   "enemies": [
-    { "id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14 },
-    { "id": "jelly", "layer": "underwater", "hpScale": 0.8, "speed": 10 },
-    { "id": "fish", "layer": "underwater", "hpScale": 0.7, "speed": 22 },
-    { "id": "puffer", "layer": "surface", "hpScale": 1.3, "speed": 9 },
-    { "id": "urchin", "layer": "underwater", "hpScale": 1.5, "speed": 7 },
-    { "id": "gull", "layer": "air", "hpScale": 0.6, "speed": 26 }
+    {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},
+    {"id": "piranha", "layer": "underwater", "hpScale": 0.6, "speed": 22, "role": "fast"},
+    {"id": "jelly", "layer": "underwater", "hpScale": 0.8, "speed": 10, "role": "basic"},
+    {"id": "gull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "urchin", "layer": "underwater", "hpScale": 2.0, "speed": 8, "role": "tough"},
+    {"id": "flyingfish", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast"},
+    {"id": "stormgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "puffer", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
+    {"id": "icecrab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "split", "splitInto": "icecrab_small", "splitCount": 2, "splitHpRatio": 0.35},
+    {"id": "icecrab_small", "layer": "surface", "hpScale": 0.35, "speed": 18, "role": "basic"},
+    {"id": "penguin", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast"},
+    {"id": "seal", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
+    {"id": "snowgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "lavacrab", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "split", "splitInto": "lavacrab_small", "splitCount": 2, "splitHpRatio": 0.35},
+    {"id": "lavacrab_small", "layer": "surface", "hpScale": 0.7, "speed": 12, "role": "basic"},
+    {"id": "starfish", "layer": "underwater", "hpScale": 1.0, "speed": 12, "role": "split", "splitInto": "starfish_small", "splitCount": 2, "splitHpRatio": 0.35},
+    {"id": "starfish_small", "layer": "underwater", "hpScale": 0.35, "speed": 16, "role": "basic"},
+    {"id": "lavaturtle", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
+    {"id": "firebird", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "angler", "layer": "underwater", "hpScale": 1.0, "speed": 12, "role": "revive", "reviveHpRatio": 0.5},
+    {"id": "squid", "layer": "underwater", "hpScale": 1.0, "speed": 14, "role": "basic"},
+    {"id": "siphon", "layer": "underwater", "hpScale": 0.8, "speed": 10, "role": "revive", "reviveHpRatio": 0.5},
+    {"id": "eel", "layer": "underwater", "hpScale": 0.6, "speed": 22, "role": "fast"},
+    {"id": "skeleton", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "revive", "reviveHpRatio": 0.5},
+    {"id": "ghostjelly", "layer": "air", "hpScale": 0.6, "speed": 18, "role": "revive", "reviveHpRatio": 0.5},
+    {"id": "cursegull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "wraith", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "revive", "reviveHpRatio": 0.5}
   ]
 }

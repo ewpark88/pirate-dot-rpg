@@ -304,129 +304,143 @@
     "enemies": [
       {
         "id": 1,
-        "kind": "crab",
+        "kind": "lavacrab",
         "x": 200.0,
         "y": 40.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 2,
-        "kind": "jelly",
+        "kind": "starfish",
         "x": 222.0,
         "y": 48.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 3,
-        "kind": "fish",
+        "kind": "lavaturtle",
         "x": 244.0,
         "y": 40.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 4,
-        "kind": "puffer",
+        "kind": "firebird",
         "x": 266.0,
         "y": 48.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 5,
-        "kind": "urchin",
+        "kind": "lavacrab",
         "x": 288.0,
         "y": 40.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 6,
-        "kind": "gull",
+        "kind": "starfish",
         "x": 200.0,
         "y": 78.0,
         "hpRatio": 1.0,
-        "layer": "air",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 7,
-        "kind": "crab",
+        "kind": "lavaturtle",
         "x": 222.0,
         "y": 70.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 8,
-        "kind": "jelly",
+        "kind": "firebird",
         "x": 244.0,
         "y": 78.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 9,
-        "kind": "fish",
+        "kind": "lavacrab",
         "x": 266.0,
         "y": 70.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 10,
-        "kind": "puffer",
+        "kind": "starfish",
         "x": 288.0,
         "y": 78.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 11,
-        "kind": "urchin",
+        "kind": "lavaturtle",
         "x": 200.0,
         "y": 100.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 12,
-        "kind": "gull",
+        "kind": "firebird",
         "x": 222.0,
         "y": 108.0,
         "hpRatio": 1.0,
-        "layer": "air",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 13,
-        "kind": "crab",
+        "kind": "lavacrab",
         "x": 244.0,
         "y": 100.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 14,
-        "kind": "jelly",
+        "kind": "starfish",
         "x": 266.0,
         "y": 108.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       }
     ],
     "fleet": [

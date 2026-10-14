@@ -34,7 +34,22 @@ sealed class GameEvent {
       'aoeSum' => AoeDamageSum(t, total: big('total'), x: d('x'), y: d('y')),
       'kill' => Kill(t, targetId: j['targetId'] as int, gold: big('gold'), x: d('x'), y: d('y')),
       'multiKill' => MultiKill(t, count: j['count'] as int),
-      'skillCast' => SkillCast(t, crewId: j['crewId'] as String, skillId: j['skillId'] as String, x: d('x'), y: d('y')),
+      'skillCast' => SkillCast(
+        t,
+        crewId: j['crewId'] as String,
+        skillId: j['skillId'] as String,
+        x: d('x'),
+        y: d('y'),
+        scope: j['scope'] as String? ?? 'normal',
+      ),
+      'zoneSpawned' => ZoneSpawned(
+        t,
+        crewId: j['crewId'] as String,
+        x: d('x'),
+        y: d('y'),
+        radius: d('radius'),
+        ticks: j['ticks'] as int,
+      ),
       'ultimateCast' => UltimateCast(t, crewId: j['crewId'] as String, ultimateId: j['ultimateId'] as String),
       'hitStop' => HitStop(t, ticks: j['ticks'] as int, reason: j['reason'] as String),
       'shipDamaged' => ShipDamaged(t, amount: big('amount'), hpRatio: d('hpRatio')),
@@ -141,19 +156,54 @@ class MultiKill extends GameEvent {
   Json _fields() => {'count': count};
 }
 
+/// 스킬 시전. 여러 곳에 떨어지는 스킬(count > 1)은 중심마다 하나씩 같은 틱에 나온다.
 class SkillCast extends GameEvent {
-  const SkillCast(super.tick, {required this.crewId, required this.skillId, required this.x, required this.y});
+  const SkillCast(
+    super.tick, {
+    required this.crewId,
+    required this.skillId,
+    required this.x,
+    required this.y,
+    this.scope = 'normal',
+  });
 
   final String crewId;
   final String skillId;
   final double x;
   final double y;
 
+  /// `normal` | `screen` (전설 이상 선원의 화면 전체 스킬).
+  final String scope;
+
   @override
   String get type => 'skillCast';
 
   @override
-  Json _fields() => {'crewId': crewId, 'skillId': skillId, 'x': x, 'y': y};
+  Json _fields() => {'crewId': crewId, 'skillId': skillId, 'x': x, 'y': y, 'scope': scope};
+}
+
+/// 지속 피해 장판(수중)이 생겼다. [ticks] 동안 남는다.
+class ZoneSpawned extends GameEvent {
+  const ZoneSpawned(
+    super.tick, {
+    required this.crewId,
+    required this.x,
+    required this.y,
+    required this.radius,
+    required this.ticks,
+  });
+
+  final String crewId;
+  final double x;
+  final double y;
+  final double radius;
+  final int ticks;
+
+  @override
+  String get type => 'zoneSpawned';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'x': x, 'y': y, 'radius': radius, 'ticks': ticks};
 }
 
 class UltimateCast extends GameEvent {

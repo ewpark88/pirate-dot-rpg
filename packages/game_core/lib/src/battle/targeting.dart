@@ -11,17 +11,38 @@ typedef Hit = ({Foe foe, double factor});
 /// 공격 한 번의 결과. `x`,`y`는 조준점(렌더가 발사체를 날리는 곳).
 typedef Volley = ({double x, double y, List<Hit> hits});
 
-/// 계열 기본 공격 모양 8종 (docs/specs/battle-m1-core.md 규칙 5). 맞힐 적이 없으면 null.
-Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng) {
+/// 화면 안에서 [a]가 맞힐 수 있는 적.
+List<Foe> eligible(AttackDef a, List<Foe> foes, FieldDef f) => [
+  for (final e in foes)
+    if (e.alive && e.x <= f.width && !a.excludeLayers.contains(e.layer)) e,
+];
+
+/// [n]발을 서로 다른 대상(원형은 서로 다른 중심)에 쏜다 (사다리 `projectiles`, 스킬 `count`).
+/// 맞힐 적이 그보다 적으면 있는 만큼만.
+List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, WavesTable w, Rng rng) {
+  final out = <Volley>[];
+  final avoid = <Foe>{};
+  for (var i = 0; i < n; i++) {
+    final v = aim(a, foes, w, rng, avoid: avoid);
+    if (v == null) break;
+    out.add(v);
+    avoid.addAll(a.shape == 'circle' ? v.hits.map((h) => h.foe) : [v.hits.first.foe]);
+  }
+  return out;
+}
+
+/// 모양 8종 (docs/specs/battle-m1-core.md 규칙 5, battle-m3-skills.md 1). 맞힐 적이 없으면 null.
+/// [avoid]는 조준(중심·첫 대상)으로 고르지 않는다 — 여러 발이 서로 다른 곳에 떨어지게.
+Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid = const {}}) {
   final f = w.field;
-  final targets = [
-    for (final e in foes)
-      if (e.alive && e.x <= f.width && !a.excludeLayers.contains(e.layer)) e,
-  ];
-  if (targets.isEmpty) return null;
+  final targets = eligible(a, foes, f);
+  final pickable = targets.where((e) => !avoid.contains(e)).toList();
+  if (pickable.isEmpty) return null;
   double fromShip(Foe e) => _dist(e.x, e.y, f.shipX, f.shipY);
   Foe nearest(Iterable<Foe> pool, double x, double y) =>
       pool.reduce((m, e) => _dist(e.x, e.y, x, y) < _dist(m.x, m.y, x, y) ? e : m);
+  Foe first() =>
+      a.targets == 'strongest' ? pickable.reduce((m, e) => e.hp > m.hp ? e : m) : nearest(pickable, f.shipX, f.shipY);
 
   final List<Foe> hit;
   var falloff = false;
@@ -31,7 +52,7 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng) {
     case 'circle':
       // 적이 가장 많이 모인 적을 중심으로. 같으면 배에 가까운 쪽.
       int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= a.radius).length;
-      final center = targets.reduce((m, e) {
+      final center = pickable.reduce((m, e) {
         final d = around(e) - around(m);
         return d > 0 || (d == 0 && fromShip(e) < fromShip(m)) ? e : m;
       });
@@ -40,16 +61,16 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng) {
       hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= a.radius).toList()
         ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
     case 'line':
-      final t = nearest(targets, f.shipX, f.shipY);
+      final t = first();
       (ax, ay) = (t.x, t.y);
       hit = (targets.where((e) => (e.y - t.y).abs() <= a.width * half).toList()..sort((p, q) => p.x.compareTo(q.x)))
           .take(a.pierce)
           .toList();
       falloff = true;
     case 'chain':
-      final first = nearest(targets, f.shipX, f.shipY);
-      (ax, ay) = (first.x, first.y);
-      hit = [first];
+      final start = first();
+      (ax, ay) = (start.x, start.y);
+      hit = [start];
       final limit = math.min(a.chains, w.chainMax);
       while (hit.length < limit) {
         final rest = targets.where((e) => !hit.contains(e));
@@ -59,8 +80,8 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng) {
       falloff = true;
     case 'random':
       // 공중 적 우선, 없으면 전체에서.
-      final air = targets.where((e) => e.layer == 'air').toList();
-      final pool = air.isNotEmpty ? air : List.of(targets);
+      final air = pickable.where((e) => e.layer == 'air').toList();
+      final pool = air.isNotEmpty ? air : List.of(pickable);
       hit = [];
       while (hit.length < a.count && pool.isNotEmpty) {
         hit.add(pool.removeAt(rng.nextInt(pool.length)));
@@ -79,7 +100,7 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng) {
       if (hit.isEmpty) return null;
       (ax, ay) = (f.shipX, f.shipY);
     default: // single
-      final t = nearest(targets, f.shipX, f.shipY);
+      final t = first();
       (ax, ay) = (t.x, t.y);
       hit = [t];
   }
