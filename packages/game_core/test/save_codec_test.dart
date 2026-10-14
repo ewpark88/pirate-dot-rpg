@@ -35,6 +35,14 @@ void main() {
     expect(mid.crews['manta']!.level, 46);
   });
 
+  test('v1 → v2: summon.total이 0으로 생긴다 (첫 10연 무료 대상)', () {
+    final v1 = SaveCodec.decode(File('test/fixtures/saves/v1.json').readAsStringSync());
+    expect(v1.summonsTotal, 0);
+    expect(v1.pityCount, isNonNegative);
+    final v2 = SaveCodec.decode(File('test/fixtures/saves/v2.json').readAsStringSync());
+    expect(v2.toJson()['summon'], containsPair('total', v2.summonsTotal));
+  });
+
   test('본문을 고치면 체크섬이 깨진다', () {
     final text = SaveCodec.encode(sample).replaceFirst('"gems": 0', '"gems": 999');
     expect(() => SaveCodec.decode(text), throwsA(isA<SaveCorruptException>()));

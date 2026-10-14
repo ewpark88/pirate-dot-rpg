@@ -17,6 +17,8 @@ dependencies:
   game_core: any
   game_data: any
   intl: any
+  path: ^1.9.1
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:

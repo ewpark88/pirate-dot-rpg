@@ -12,6 +12,7 @@ class PirateDotApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).uiAppTitle,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

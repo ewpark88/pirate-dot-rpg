@@ -30,7 +30,7 @@
 6. Given `stage37_midgame`(젬 140) 소환 탭 Then 1회(30젬) 버튼만 활성이고 누르면 `Summon(count:1)`, 10회(300젬)는 비활성 / 젬이 충분하면 10회 → `Summon(count:10)`. 천장 `17/50`과 확률 4줄이 보인다.
 7. Given 선원 탭 Then 카드 40장, 보유 수 = `collection` 수. 일괄 합치기 → `MergeAllCards`.
 8. Given `stage37_midgame`의 옥토(Lv15, 카드 2/3) Then 승급 버튼이 보이지만 비활성·빨간 점 없음 / 카드를 채우면 활성·빨간 점, 누르면 `PromoteCrew('octo')` / Given `all_crews_mythic` Then 승급 버튼이 없다.
-9. 영어 골든 4장(HUD+배 탭 · 소환 · 선원 · 보스전 HUD), `stage37_midgame`/`boss_fight` 기준. 한국어 텍스트 테스트는 위 기준으로 대신한다.
+9. 영어 골든 4장(HUD+배 탭 · 소환 · 선원 · 보스전 HUD), `stage37_midgame`/`boss_fight` 기준. **골든은 HUD와 탭 패널만 본다** — 전장은 `battleViewBuilderProvider`로 같은 크기의 빈 상자로 바꾼다(전장 골든은 render 레인 몫, S1 결정 2026-10-14). 한국어 텍스트 테스트는 위 기준으로 대신한다.
 
 ## 문구 (ko / en) — `parts/ui.*.arb`
 | 키 | ko | en |
