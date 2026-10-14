@@ -48,4 +48,22 @@ void main() {
     expect(ticks, hasLength(3));
     await host.dispose();
   });
+
+  test('pause → 시간 경과 → resume: savedAt이 멈춘 시각이라 ClaimOffline은 백그라운드 시간만 센다', () async {
+    final clock = ManualClock(start);
+    final host = EngineHost(
+      tables: tables,
+      initial: GameState.newGame(playerId: 't', seed: 1, now: start, crews: tables.meta.startingCrews),
+      clock: clock,
+    );
+    clock.advance(const Duration(minutes: 30)); // 30분 플레이
+    host.step();
+    await host.pause();
+    clock.advance(const Duration(hours: 1)); // 1시간 백그라운드
+    host
+      ..resume()
+      ..stop();
+    expect(host.state.savedAt, start.add(const Duration(minutes: 30)));
+    await host.dispose();
+  });
 }
