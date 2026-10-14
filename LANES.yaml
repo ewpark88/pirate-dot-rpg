@@ -69,6 +69,9 @@ lanes:
     paths:
       - apps/game/lib/render/
       - apps/game/test/render/
+      # art 레인(2단계)도 같은 S3 세션이 한다 — worktree 하나로 하도록 render가 함께 소유 (2026-10-14)
+      - apps/game/assets/
+      - tools/art/
       - packages/game_data/tables/juice.json
       - packages/game_data/tables/fx_map.json
       - packages/game_data/lib/src/models/render_tables.dart

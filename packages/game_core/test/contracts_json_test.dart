@@ -20,6 +20,7 @@ void main() {
     const SkipTutorial(),
     const TutorialAck(3),
     const AckSummonResult(),
+    const GrantAdReward(AdPlacement.chest, choice: 'gems'),
     const Rebirth(),
     const ExchangeToken('manta'),
     const SetSetting('shake', false),
