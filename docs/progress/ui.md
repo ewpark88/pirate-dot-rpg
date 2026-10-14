@@ -3,11 +3,17 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | 완료: `done/ui-core-loop.md` → 다음: 스펙 `ui-m3-meta` |
-| 상태 | 코어 루프 커밋 3e45c65. M3 메타 스펙·요청서 초안(미커밋) |
-| 기다리는 것 | `ui-m3-meta` 스펙 승인, 요청서 `docs/contracts/requests/ui-m3-meta.md`(S1 계약 A1~A6, S2 경제 B1~B10) |
+| 계획 | `docs/plans/active/ui-m3-meta.md` |
+| 상태 | M3 ①③⑤ 커밋 (골든 4장 S1 승인), ②④⑥ 대기 |
+| 기다리는 것 | S1 세이브 v3(A1~A6) · S2 B2·B3 → B7·B8 → B5 → B1·B9·B10 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S4 · M3 ①③⑤
+- 한 일: b56dde8 스펙(승인)·요청서·계획. 순풍 배지(전장 왼쪽 위, 1초마다 다시 그림, h:mm/mm:ss, 배율은 ads.json),
+  목표 막대(HUD 아래, `nextGoalProvider`), 선원 탭 도감 보너스 줄(`collectionBonusProvider`) — 둘 다 기본값 null(숨김), S2 B1·B9 오면 본문 교체.
+  `clockProvider`를 `ui/state/clock_provider.dart`로 옮기고 테스트 하네스가 샘플 savedAt으로 고정. `check --full` 통과(위젯 70개대).
+- 다음 할 일: 골든 승인 → 커밋 → S1 세이브 v3·S2 상자 규칙 오면 ② 상자
 
 ### 2026-10-14 · S4 · M3 메타 스펙
 - 한 일: 3e45c65 코어 루프 커밋(골든 7장 승인, 경제 offlinePreview·summonCostFor 연결). `docs/specs/ui-m3-meta.md` 초안(목표 막대·상자·순풍·퀘스트/출석·도감·튜토리얼)과

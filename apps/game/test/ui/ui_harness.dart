@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 샘플 상태 4개: new_player, stage37_midgame, boss_fight, all_crews_mythic.
@@ -23,6 +24,7 @@ Future<CommandLog> pumpGame(
   GameState state, {
   Locale? locale = const Locale('en'), // null이면 settings.lang → OS 언어
   int tab = 0,
+  FixedClock? clock,
 }) async {
   tester.view
     ..physicalSize = const Size(400, 800)
@@ -34,6 +36,8 @@ Future<CommandLog> pumpGame(
       overrides: [
         initialGameStateProvider.overrideWithValue(state),
         commandSinkProvider.overrideWithValue(log),
+        // 시계는 샘플의 저장 시각에 고정 — 순풍 남은 시간 등이 매번 같게 (복귀 팝업도 안 뜬다).
+        clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),
         // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.
         battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
       ],
