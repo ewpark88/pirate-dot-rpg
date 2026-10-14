@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
@@ -32,6 +33,10 @@ class Round {
 
   /// 공격 속도 배율 = 돛 + 지원 버프, 상한 `caps.attackSpeedMax` (설계서 4.8).
   double get attackSpeed => math.min(stats.attackSpeed + field.buffValue, t.shipParts.attackSpeedMax);
+
+  /// 공격한 선원의 계열 (보스 패턴 판정용). 선원이 아니면 null.
+  String? familyOf(String? crewId) =>
+      crewId == null ? null : t.crews.crews.where((c) => c.id == crewId).firstOrNull?.family;
 
   /// 4.8 공식의 앞 네 항: 대포 × 선원 파워 × 배 등급 × [k](계열 배율·치명타 등).
   BigNum damageOf(Gun g, double k) => stats.attack.times(g.power * stats.tierDamage * k);
@@ -183,7 +188,9 @@ class Round {
     for (final h in v.hits) {
       final e = h.foe;
       if (!e.alive) continue;
-      final amount = base.times(h.factor);
+      final g = guard(e, familyOf(crewId));
+      if (g <= 0) continue; // 보호막: 피해 없음
+      final amount = base.times(h.factor * g);
       total = total + amount;
       e.hp = e.hp - amount;
       ctx.emit(Damage(ctx.tick, targetId: e.id, amount: amount, crit: crit, crewId: crewId));

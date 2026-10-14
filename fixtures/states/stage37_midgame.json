@@ -99,7 +99,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 2,
@@ -109,7 +111,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 3,
@@ -119,7 +123,9 @@
         "hpRatio": 1.0,
         "layer": "underwater",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 4,
@@ -129,7 +135,9 @@
         "hpRatio": 1.0,
         "layer": "air",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 5,
@@ -139,7 +147,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 6,
@@ -149,7 +159,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 7,
@@ -159,7 +171,9 @@
         "hpRatio": 1.0,
         "layer": "underwater",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 8,
@@ -169,7 +183,9 @@
         "hpRatio": 1.0,
         "layer": "air",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       },
       {
         "id": 9,
@@ -179,7 +195,9 @@
         "hpRatio": 1.0,
         "layer": "surface",
         "boss": false,
-        "stunned": false
+        "stunned": false,
+        "shielded": false,
+        "tier": 0
       }
     ],
     "fleet": [
