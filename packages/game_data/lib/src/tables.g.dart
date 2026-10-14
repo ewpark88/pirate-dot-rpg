@@ -691,7 +691,7 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 10, "hpGrowth": 1.19, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 16, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 6 },
+  "boss": { "hpMultiplier": 16, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 6, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4 },
   "travelSec": 3,
   "field": {
     "width": 320,

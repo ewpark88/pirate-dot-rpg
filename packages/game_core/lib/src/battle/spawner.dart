@@ -40,8 +40,16 @@ void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}
 
 /// 보스 등장 (규칙 8, battle-m3-bosses). HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율, 타이머 `boss.timeLimitSec`.
 /// 해역 보스 패턴: 보호막은 켠 채로, 크라켄은 촉수와 함께 나온다.
-/// 상태 불러오기로 다시 만들 때는 [emit]=false, 남은 HP 비율 [hpRatio]와 위치 [x]를 이어받는다.
-void startBoss(Field f, int stage, SystemContext ctx, {bool emit = true, double hpRatio = 1, double? x}) {
+/// 상태 불러오기로 다시 만들 때는 [emit]=false, 남은 HP 비율 [hpRatio]와 위치 [x]를 이어받는다. [hpScale]은 튜토리얼 보스.
+void startBoss(
+  Field f,
+  int stage,
+  SystemContext ctx, {
+  bool emit = true,
+  double hpRatio = 1,
+  double? x,
+  double hpScale = 1,
+}) {
   final t = ctx.tables;
   final w = t.waves;
   final def = t.regions.bossAt(stage);
@@ -51,7 +59,7 @@ void startBoss(Field f, int stage, SystemContext ctx, {bool emit = true, double 
     layer: 'surface',
     x: x ?? w.field.spawnX,
     y: w.field.laneY['surface'] ?? w.field.shipY,
-    maxHp: stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier * def.hpMultiplier),
+    maxHp: stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier * def.hpMultiplier * hpScale),
     speed: w.bossSpeed,
     attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
     gold: stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier),
