@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | `plans/active/render-status.md`(스펙 초안) · `plans/active/render-audio.md`(음원·어댑터 대기) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | 스프라이트 골든 d3c03e1. 사운드 연결(SoundDirector·BattleGame(audio:)) 구현, 렌더 테스트 74개 |
-| 막힌 것 | CC0 음원 선정(사람, M4) · flame_audio 어댑터(platform 경로, S1) · 실기기 측정(M2 관문) |
+| 막힌 것 | render-status 승인·계약 F · CC0 음원(사람, M4) · flame_audio 어댑터(S1) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -19,6 +19,7 @@
   `SoundDirector`(이벤트→fx_map sfx, 타격음 변형·피치 결정론, 같은 id 40ms·프레임당 6개 상한, 해역 bgm), `Backdrop.bgmFor`, `BattleGame(audio:)`·`audioLog`.
 - 검증: `tool\check.bat --full` 통과, 렌더 테스트 74개.
 - 남은 문제: 어댑터(adapters/, flame_audio)·pubspec 의존은 S1/플랫폼. 음원은 사람이 고른 뒤.
+- 추가: 아트 팩 계획 done/. 전설 능력(main 19aa020)의 감속·화상·취약 표시용 계약 요청 F + `render-status` 스펙 초안.
 
 ### 2026-10-14 · S3 · 아트 팩 v0.2 적용
 - 한 일: S1 결정(Q1 render가 assets·tools/art 소유, Q2 pubspec은 S1 머지 때). `tools/art/import_pack.py`(zip 이미지·json만 읽음, 크기 검증, overrides 우선,
