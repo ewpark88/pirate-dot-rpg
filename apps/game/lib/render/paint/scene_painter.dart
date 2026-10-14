@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart' show FontWeight, Shadow, TextPainter, TextSpan, TextStyle;
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/stage_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
@@ -12,9 +13,10 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 ///
 /// 그리는 순서: 배경 → 물속 적 → 배 → 물위 적 → 공중 적 → 발사체 → 이펙트 → 코인 → 숫자 → (흔들림 밖) 슬롯·플래시.
 class ScenePainter {
-  ScenePainter(this.scene);
+  ScenePainter(this.scene) : _stage = StagePainter(scene);
 
   final BattleScene scene;
+  final StagePainter _stage;
 
   /// 운영자 모드: 적 히트박스 표시.
   bool showHitboxes = false;
@@ -27,9 +29,6 @@ class ScenePainter {
   final _layerPaint = Paint();
   final Map<String, int> _kindColor = {};
 
-  static const _sky = Color(0xFF7EC8E3);
-  static const _sea = Color(0xFF1B4F72);
-  static const _deep = Color(0xFF133A55);
   static const _slotBar = Color(0xFF2B1D14);
   static const _ship = Color(0xFF8B5A2B);
   static const _shipDeck = Color(0xFFC49A6C);
@@ -40,13 +39,12 @@ class ScenePainter {
   static const _hitbox = Color(0xFFFF00FF);
   static const _underwaterTint = Color(0xFF0B2A44);
   static const _palette = [0xFFE74C3C, 0xFFF39C12, 0xFF9B59B6, 0xFF1ABC9C, 0xFFE67E22, 0xFFECF0F1, 0xFF2ECC71];
-  static const _bossColor = 0xFF4A2C2A;
 
   void paint(Canvas canvas) {
     canvas
       ..save()
       ..translate(scene.shake.offsetX, scene.shake.offsetY);
-    _background(canvas);
+    _stage.paintBackground(canvas);
     _zones(canvas);
     _enemies(canvas, 'underwater');
     _shipBody(canvas);
@@ -57,6 +55,7 @@ class ScenePainter {
     _coins(canvas);
     _numbers(canvas);
     canvas.restore();
+    _stage.paintOverlays(canvas);
     _slots(canvas);
     if (scene.screenFlashMs > 0) _fill(canvas, 0, 0, kLogicalWidth, kFieldBottom, 0x99FFFFFF);
   }
@@ -64,12 +63,6 @@ class ScenePainter {
   void _fill(Canvas c, double l, double t, double w, double h, int argb) {
     _paint.color = Color(argb);
     c.drawRect(Rect.fromLTWH(l.roundToDouble(), t.roundToDouble(), w.roundToDouble(), h.roundToDouble()), _paint);
-  }
-
-  void _background(Canvas c) {
-    _fill(c, 0, 0, kLogicalWidth, kHorizonY, _sky.toARGB32());
-    _fill(c, 0, kHorizonY, kLogicalWidth, kWaterlineY - kHorizonY, _sea.toARGB32());
-    _fill(c, 0, kWaterlineY, kLogicalWidth, kFieldBottom - kWaterlineY, _deep.toARGB32());
   }
 
   void _shipBody(Canvas c) {
@@ -115,21 +108,23 @@ class ScenePainter {
 
   void _enemy(Canvas c, EnemyPose e) {
     final looks = scene.looks;
-    final size = e.boss ? kBossSize : looks.sizeOf(e.kind);
-    final l = e.drawX - size / 2;
-    final t = e.drawY - size / 2;
-    var color = e.boss ? _bossColor : looks.colorOf(e.kind);
+    final bossShape = looks.bossOf(e.kind, boss: e.boss);
+    final w = bossShape?.w ?? looks.sizeOf(e.kind);
+    final h = bossShape?.h ?? w;
+    final l = e.drawX - w / 2;
+    final t = e.drawY - h / 2;
+    var color = bossShape?.color ?? looks.colorOf(e.kind);
     if (e.layer == 'underwater') color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
-    if (!e.boss) color = ((looks.alphaOf(e.kind) * 0xFF).round() << 24) | (color & 0xFFFFFF);
-    _fill(c, l, t, size, size, e.flash ? 0xFFFFFFFF : color);
-    if (e.boss || e.hpRatio < 1) {
-      _fill(c, l, t - 3, size, 1, _hpBack.toARGB32());
-      _fill(c, l, t - 3, size * e.hpRatio, 1, _hpFront.toARGB32());
+    if (bossShape == null) color = ((looks.alphaOf(e.kind) * 0xFF).round() << 24) | (color & 0xFFFFFF);
+    _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);
+    if (bossShape != null || e.hpRatio < 1) {
+      _fill(c, l, t - 3, w, 1, _hpBack.toARGB32());
+      _fill(c, l, t - 3, w * e.hpRatio, 1, _hpFront.toARGB32());
     }
     if (e.stunned) _stars(c, e.drawX, t - 4);
     if (showHitboxes) {
       _stroke.color = _hitbox;
-      c.drawRect(Rect.fromLTWH(l, t, size, size), _stroke);
+      c.drawRect(Rect.fromLTWH(l, t, w, h), _stroke);
     }
   }
 
@@ -180,6 +175,7 @@ class ScenePainter {
 
   void _coins(Canvas c) {
     for (final coin in scene.coins.active) {
+      if (coin.ageMs < 0) continue;
       _fill(c, coin.x - 1, coin.y - 1, 2, 2, 0xFFFFD23F);
     }
   }

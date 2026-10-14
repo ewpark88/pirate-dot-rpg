@@ -53,6 +53,7 @@ class JuiceTable {
       bossSlowMoMs = raw.obj('bossKill').number('slowMoMs'),
       bossSlowMoRate = raw.obj('bossKill').number('slowMoRate'),
       bossFlash = raw.obj('bossKill').boolean('flash'),
+      bossCoinRain = raw.obj('bossKill').integer('coinRain'),
       coinCount = raw.obj('kill').integer('coinCount'),
       coinFlyMs = raw.obj('kill').number('coinFlyMs'),
       lookaheadTicks = raw.obj('replay').integer('lookaheadTicks'),
@@ -73,6 +74,9 @@ class JuiceTable {
   final double bossSlowMoMs;
   final double bossSlowMoRate;
   final bool bossFlash;
+
+  /// 보스 처치 때 화면 위에서 떨어지는 코인 수.
+  final int bossCoinRain;
   final int coinCount;
   final double coinFlyMs;
 
@@ -190,6 +194,15 @@ class FxMapTable {
       split = j.obj('split'),
       revive = j.obj('revive'),
       stun = j.obj('stun'),
+      backgrounds = {for (final k in j.obj('backgrounds').raw.keys) k: j.obj('backgrounds').obj(k)},
+      backgroundDefault = j.str('backgroundDefault'),
+      backgroundFadeMs = j.number('backgroundFadeMs'),
+      bossEntrance = j.obj('bossEntrance'),
+      bossFailed = j.obj('bossFailed'),
+      bossLook = {for (final k in j.obj('bossLook').raw.keys) k: j.obj('bossLook').obj(k)},
+      bossLookDefault = j.str('bossLookDefault'),
+      shield = j.obj('shield'),
+      tierColors = [for (final c in j.strs('tierColors')) parseArgb(c, 'tierColors')],
       zone = j.obj('zone');
 
   final Map<String, JsonReader> events;
@@ -214,6 +227,19 @@ class FxMapTable {
 
   /// 기절 별 (EnemyView.stunned).
   final JsonReader stun;
+
+  /// 해역 배경·보스 (docs/specs/render-regions.md).
+  final Map<String, JsonReader> backgrounds;
+  final String backgroundDefault;
+  final double backgroundFadeMs;
+  final JsonReader bossEntrance;
+  final JsonReader bossFailed;
+  final Map<String, JsonReader> bossLook;
+  final String bossLookDefault;
+  final JsonReader shield;
+
+  /// 무한 항해 테두리 tier 1~3 색.
+  final List<int> tierColors;
   final JsonReader zone;
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
@@ -248,6 +274,9 @@ class FxMapTable {
       expect(e, that: ids.contains(u.value.fx), message: 'fx_map: ultimates.${u.key}의 fx ${u.value.fx}가 fxSheets에 없음');
     }
     expect(e, that: enemyLook.containsKey('basic'), message: 'fx_map: enemyLook.basic 없음');
+    expect(e, that: backgrounds.containsKey(backgroundDefault), message: 'fx_map: backgroundDefault가 backgrounds에 없음');
+    expect(e, that: bossLook.containsKey(bossLookDefault), message: 'fx_map: bossLookDefault가 bossLook에 없음');
+    expect(e, that: tierColors.length == 3, message: 'fx_map: tierColors는 tier 1~3의 3개');
     for (final k in ['split', 'revive']) {
       final fx = (k == 'split' ? split : revive).str('fx');
       expect(e, that: ids.contains(fx), message: 'fx_map: $k.fx $fx가 fxSheets에 없음');

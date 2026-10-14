@@ -7,37 +7,13 @@ import 'package:pirate_dot/render/juice/screen_shake.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/enemy_look.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
+import 'package:pirate_dot/render/scene/backdrop.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/event_director.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
+import 'package:pirate_dot/render/scene/scene_state.dart';
 
-/// 맞은 적의 번쩍임·넉백 상태.
-class HitState {
-  int id = 0;
-  double flashMs = 0;
-  double knockAgeMs = 0;
-  double knockMs = 0;
-  double dirX = 0;
-  double dirY = 0;
-  double px = 0;
-}
-
-/// 운영자 모드·테스트가 읽는 숫자들. 객체 하나를 계속 고쳐 쓴다.
-class SceneStats {
-  int enemies = 0;
-  int projectiles = 0;
-  int effects = 0;
-  int numbers = 0;
-  int coins = 0;
-  int zones = 0;
-
-  /// 지금까지 본 분열·부활 연출 수 (M3 확인용).
-  int splitPops = 0;
-  int revives = 0;
-
-  /// 풀·재사용 버퍼가 만든 객체 수. 워밍업 뒤에는 변하지 않아야 한다.
-  int pooledObjects = 0;
-}
+export 'package:pirate_dot/render/scene/scene_state.dart';
 
 /// 그릴 것 전부의 상태. Flame을 모르는 순수 Dart라 테스트가 직접 돌린다.
 ///
@@ -69,6 +45,7 @@ class BattleScene {
     hits = Pool(_maxHits, HitState.new);
     zones = Pool(fx.zone.integer('max'), Zone.new);
     this.looks = looks ?? EnemyLooks.fromTables(tables);
+    backdrop = Backdrop(fx, rawTables['regions']!);
     player.listener = EventDirector(this);
     this.settings = settings;
   }
@@ -88,6 +65,7 @@ class BattleScene {
   late final Pool<HitState> hits;
   late final Pool<Zone> zones;
   late final EnemyLooks looks;
+  late final Backdrop backdrop;
   final shake = ScreenShake();
   final stats = SceneStats();
 
@@ -99,6 +77,10 @@ class BattleScene {
   double shipHealMs = 0;
   double shipBuffMs = 0;
   double screenFlashMs = 0;
+
+  /// 보스 등장 경고·보스 실패 어두움 남은 시간(ms).
+  double bossWarnMs = 0;
+  double bossFailMs = 0;
   double slowMoMs = 0;
   double shipHpRatio = 1;
 
@@ -150,6 +132,9 @@ class BattleScene {
     if (shipHealMs > 0) shipHealMs -= fxDt;
     if (shipBuffMs > 0) shipBuffMs -= dtMs;
     if (screenFlashMs > 0) screenFlashMs -= dtMs;
+    if (bossWarnMs > 0) bossWarnMs -= dtMs;
+    if (bossFailMs > 0) bossFailMs -= dtMs;
+    backdrop.update(dtMs);
     _applyHits(fxDt);
     _updateStats();
   }
@@ -239,6 +224,8 @@ class BattleScene {
     shipFlashMs = 0;
     shipHealMs = 0;
     shipBuffMs = 0;
+    bossWarnMs = 0;
+    bossFailMs = 0;
   }
 
   void _updateProjectiles() {

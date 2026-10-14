@@ -60,6 +60,9 @@ class Coin {
   /// 분수처럼 퍼지는 방향(-1~1)과 높이.
   double spread = 0;
   double lift = 0;
+
+  /// 코인 비: 0보다 크면 분수 대신 이만큼 곧장 떨어졌다가 배로 간다.
+  double fallPx = 0;
   double ageMs = 0;
   double flyMs = 1;
   double x = 0;
