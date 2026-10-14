@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge.dart';
+import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
@@ -64,7 +65,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       ),
-                      const Positioned(top: 8, right: 8, child: BossChallenge()),
+                      const Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [BossChallenge(), BossWeakness()],
+                        ),
+                      ),
                       const Positioned(
                         top: 8,
                         left: 8,
