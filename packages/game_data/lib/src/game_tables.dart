@@ -89,9 +89,32 @@ class GameTables {
       expect(e, that: familyIds.contains(c.family), message: 'crews: ${c.id}의 계열 ${c.family}가 skills에 없음');
       expect(e, that: fxIds.contains(c.fx), message: 'crews: ${c.id}의 fx ${c.fx}가 fx_map에 없음');
       expect(e, that: rarityOrder.contains(c.baseRarity), message: 'crews: ${c.id}의 등급 오류');
+      final skill = c.skill;
+      if (skill != null) {
+        expect(e, that: skills.skillIds.contains(skill), message: 'crews: ${c.id}의 스킬 $skill이 skills에 없음');
+      }
+    }
+    for (final s in [...skills.families.map((f) => f.skill), ...skills.crewSkills]) {
+      expect(e, that: fxIds.contains(s.fx), message: 'skills: ${s.id} 스킬 fx ${s.fx}가 fx_map에 없음');
+    }
+    for (final id in meta.startingCrews) {
+      expect(e, that: crews.crews.any((c) => c.id == id), message: 'meta: startingCrews의 $id가 crews에 없음');
     }
     for (final f in skills.families) {
-      expect(e, that: fxIds.contains(f.skill.fx), message: 'skills: ${f.id} 스킬 fx ${f.skill.fx}가 fx_map에 없음');
+      for (final layer in f.attack.excludeLayers) {
+        expect(
+          e,
+          that: waves.field.laneY.containsKey(layer),
+          message: 'skills: ${f.id} excludeLayers의 $layer가 waves.field.laneY에 없음',
+        );
+      }
+    }
+    for (final en in regions.enemies.values) {
+      expect(
+        e,
+        that: waves.field.laneY.containsKey(en.layer),
+        message: 'regions: 적 ${en.id}의 층 ${en.layer}가 waves.field.laneY에 없음',
+      );
     }
     return e;
   }

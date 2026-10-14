@@ -1,0 +1,160 @@
+// 전투 M1 수용 기준 (docs/specs/battle-m1-core.md). 번호는 스펙의 수용 기준 번호.
+import 'dart:convert';
+
+import 'package:game_core/game_core.dart';
+import 'package:game_core/src/battle/combat.dart';
+import 'package:game_core/src/battle/combat_stats.dart';
+import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/fleet.dart';
+import 'package:game_core/src/battle/spawner.dart';
+import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/testing.dart';
+import 'package:game_data/game_data.dart';
+import 'package:test/test.dart';
+
+void main() {
+  final tables = GameTables.load();
+  final w = tables.waves;
+  final start = DateTime.utc(2026, 11);
+
+  GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
+      GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
+        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        crews: crews,
+      );
+  CoreEngine engineOf(GameState s) => CoreEngine(tables: tables, clock: ManualClock(start), initial: s);
+
+  late List<GameEvent> events;
+  SystemContext ctxOf(int seed) =>
+      SystemContext(tables: tables, clock: ManualClock(start), rng: XorShiftRng(seed), onEvent: events.add);
+  setUp(() => events = []);
+
+  Foe foeAt(double x, double y, {BigNum? hp}) => Foe(
+    id: x.toInt() * 1000 + y.toInt(),
+    kind: 'crab',
+    layer: 'surface',
+    x: x,
+    y: y,
+    maxHp: hp ?? BigNum.from(1e9),
+    speed: 0,
+    attack: BigNum.one,
+    gold: BigNum.from(10),
+  );
+  Field fieldWith(List<Foe> foes) =>
+      Field(stage: 1, shipHpMax: BigNum.from(100), shipHp: BigNum.from(100))..foes.addAll(foes);
+  FamilyDef family(String id) => tables.skills.byId(id);
+  String crewOf(String familyId, [int nth = 0]) =>
+      tables.crews.crews.where((c) => c.family == familyId).elementAt(nth).id;
+
+  test('1. 첫 틱에 mobCountAt(1)마리가 오른쪽에 생기고, HP 합 = 단일 HP × 마리 수 × waveHpPoolFactor', () {
+    final e = engineOf(game())..tick();
+    final enemies = e.state.battle!.enemies;
+    expect(enemies, hasLength(w.mobCountAt(1)));
+    expect(enemies.every((x) => x.x >= w.field.spawnX - w.field.width && x.hpRatio == 1), isTrue);
+
+    final f = fieldWith([]);
+    spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1
+    final total = f.foes.fold(BigNum.zero, (s, x) => s + x.maxHp);
+    expect(total.closeTo(BigNum.from(w.hpBase * w.mobCountAt(1) * w.waveHpPoolFactor)), isTrue);
+  });
+
+  test('2. 아무 공격도 없으면 적이 배에 닿고 ShipDamaged가 나온다', () {
+    final e = engineOf(game())..enqueue(const OpSetWave(count: 1, enemyKind: 'crab'));
+    final secs = (w.field.spawnX - w.field.shipX) / tables.regions.enemies['crab']!.speed;
+    e.advance((secs * 1000 / w.tickMs).ceil() + 2);
+    final hits = e.drainEvents().whereType<ShipDamaged>();
+    expect(hits, isNotEmpty);
+    expect(e.state.battle!.shipHp < e.state.battle!.shipHpMax, isTrue);
+  });
+
+  test('3. 자동 편성: 슬롯 수만큼, 같은 계열 최대 2명, 선장 = 최고 등급', () {
+    final crews = {
+      crewOf('lob'): const CrewState(level: 20),
+      crewOf('lob', 1): const CrewState(level: 19),
+      crewOf('lob', 2): const CrewState(level: 18),
+      crewOf('direct'): const CrewState(level: 5),
+      crewOf('pierce'): const CrewState(level: 32), // hero
+      crewOf('skip'): const CrewState(level: 2),
+      crewOf('air'): const CrewState(level: 3),
+    };
+    final s = game(crews: crews);
+    final fleet = autoFleet(s, tables, tables.shipTiers.tierAt(1).slots);
+    expect(fleet, hasLength(3));
+    expect(fleet.where((id) => tables.crews.byId(id).family == 'lob').length, lessThanOrEqualTo(2));
+    expect(fleet.first, crewOf('pierce'));
+    expect(captainOf(fleet, s, tables), crewOf('pierce'));
+  });
+
+  test('4. 원형 범위: 8마리를 맞히고 7·8번째는 overflowDamage, AoeDamageSum이 나온다', () {
+    final foes = [for (var i = 0; i < 8; i++) foeAt(200, 100.0 + i)];
+    final v = aim(family('lob').attack, foes, w, XorShiftRng(1))!;
+    expect(v.hits, hasLength(8));
+    expect(
+      [for (final h in v.hits) h.factor],
+      [
+        ...List<double>.filled(w.aoeFullDamageTargets, 1),
+        w.aoeOverflowDamage,
+        w.aoeOverflowDamage,
+      ],
+    );
+
+    final f = fieldWith(foes)..guns = [Gun(crewId: crewOf('lob'), family: family('lob'), power: 1)];
+    Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0).fireGuns();
+    expect(events.whereType<AoeDamageSum>(), hasLength(1));
+    expect(events.whereType<Damage>(), hasLength(8));
+  });
+
+  test('5. 연쇄: 한 번 튈 때마다 chainFalloff씩 줄어든다', () {
+    final foes = [for (var i = 0; i < 4; i++) foeAt(100.0 + i * 10, 100)];
+    final hits = spread(foes, w, falloff: true);
+    for (var i = 1; i < hits.length; i++) {
+      expect(hits[i].factor, closeTo(hits[i - 1].factor * (1 - w.chainFalloff), 1e-12));
+    }
+    final v = aim(family('skip').attack, foes, w, XorShiftRng(1))!;
+    expect(v.hits.first.foe.x, 100); // 배에 가장 가까운 적부터
+  });
+
+  test('6. 0.5초 안에 5마리 처치 → 창이 닫히면 MultiKill(5) + 히트스톱', () {
+    final foes = [for (var i = 0; i < 5; i++) foeAt(200, 100.0 + i, hp: BigNum.from(1e-3))];
+    final f = fieldWith(foes)..guns = [Gun(crewId: crewOf('lob'), family: family('lob'), power: 1)];
+    final r = Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0)..fireGuns();
+    expect(events.whereType<Kill>(), hasLength(5));
+    final goldBefore = r.gold;
+    for (var i = 0; i * w.tickMs <= w.multiKillWindowSec * 1000; i++) {
+      r.tickCombo();
+    }
+    expect(events.whereType<MultiKill>().single.count, 5);
+    expect(events.whereType<HitStop>().map((h) => h.reason), contains('multiKill4'));
+    expect(r.gold > goldBefore, isTrue); // 동시 처치 골드 보너스
+  });
+
+  test('7. 함성 게이지가 가득이면 다음 틱에 궁극기, 게이지 0', () {
+    final e = engineOf(game(crews: {crewOf('skip'): const CrewState(level: 3)}, rage: tables.skills.rageMax))..tick();
+    final ult = e.drainEvents().whereType<UltimateCast>().single;
+    expect(ult.crewId, crewOf('skip'));
+    expect(ult.ultimateId, family('skip').ultimateId);
+    expect(e.state.progress.rage, 0);
+  });
+
+  test('처치하면 골드가 지갑에 들어가고 게이지가 찬다', () {
+    final e = engineOf(game(crews: {crewOf('direct'): const CrewState(level: 30)}))..advance(40 * 1000 ~/ w.tickMs);
+    final kills = e.drainEvents().whereType<Kill>().toList();
+    expect(kills, isNotEmpty);
+    expect(e.state.wallet.gold.isZero, isFalse);
+    expect(e.state.progress.rage, greaterThan(0));
+  });
+
+  test('10. 같은 시드·같은 명령이면 600틱 이벤트가 완전히 같다', () {
+    String run() {
+      final e = engineOf(game(stage: 12, crews: {for (final f in crewFamilies) crewOf(f): const CrewState(level: 10)}))
+        ..advance(300)
+        ..enqueue(const TriggerUltimate())
+        ..advance(300);
+      return jsonEncode([for (final ev in e.drainEvents()) ev.toJson()]);
+    }
+
+    final a = run();
+    expect(a, run());
+    expect(a.length, greaterThan(1000));
+  });
+}

@@ -4,11 +4,22 @@
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 20, "hpGrowth": 1.16, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 8, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1 },
+  "boss": { "hpMultiplier": 8, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 6 },
   "travelSec": 2,
+  "field": {
+    "width": 320,
+    "shipX": 56,
+    "shipY": 100,
+    "spawnX": 300,
+    "spawnSpacing": 12,
+    "laneY": { "surface": 100, "underwater": 124, "air": 44 },
+    "laneJitter": 14,
+    "contactIntervalSec": 1
+  },
   "multiKill": {
     "windowSec": 0.5,
     "goldBonusPerKill": 0.1,
+    "hitStopMinKills": 4,
     "tiers": [
       { "kills": 2, "nameKey": "battleComboDouble" },
       { "kills": 3, "nameKey": "battleComboTriple" },

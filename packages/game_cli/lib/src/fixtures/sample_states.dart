@@ -5,8 +5,9 @@ import 'package:game_data/game_data.dart';
 Map<String, GameState> sampleStates(GameTables t) {
   final now = DateTime.utc(2026, 11, 1, 12, 34, 56);
   final base = GameState.newGame(playerId: 'fixture-player', seed: 913377, now: now);
+  final starter = GameState.newGame(playerId: 'fixture-player', seed: 913377, now: now, crews: t.meta.startingCrews);
   return {
-    'new_player': base.copyWith(battle: _battle(t, stage: 1, fleet: const [])),
+    'new_player': starter.copyWith(battle: _battle(t, stage: 1, fleet: t.meta.startingCrews)),
     'stage37_midgame': _midgame(base, t),
     'boss_fight': base.copyWith(
       progress: const Progress(stage: 5, wave: 3, bestStage: 5),

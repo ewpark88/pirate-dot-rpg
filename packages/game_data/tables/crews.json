@@ -319,7 +319,7 @@
       "id": "turtle",
       "num": 36,
       "baseRarity": "common",
-      "family": "support",
+      "family": "shock",
       "fx": "level_up",
       "portrait": "crews/turtle.png",
       "nameKey": "crewTurtleName"
@@ -328,7 +328,7 @@
       "id": "pumpum",
       "num": 37,
       "baseRarity": "common",
-      "family": "support",
+      "family": "shock",
       "fx": "level_up",
       "portrait": "crews/pumpum.png",
       "nameKey": "crewPumpumName"
@@ -337,16 +337,17 @@
       "id": "cook",
       "num": 38,
       "baseRarity": "rare",
-      "family": "support",
+      "family": "shock",
       "fx": "level_up",
       "portrait": "crews/cook.png",
-      "nameKey": "crewCookName"
+      "nameKey": "crewCookName",
+      "skill": "support_rally"
     },
     {
       "id": "corey",
       "num": 39,
       "baseRarity": "hero",
-      "family": "support",
+      "family": "shock",
       "fx": "level_up",
       "portrait": "crews/corey.png",
       "nameKey": "crewCoreyName"
@@ -355,10 +356,11 @@
       "id": "lamp",
       "num": 40,
       "baseRarity": "legend",
-      "family": "support",
+      "family": "shock",
       "fx": "level_up",
       "portrait": "crews/lamp.png",
-      "nameKey": "crewLampName"
+      "nameKey": "crewLampName",
+      "skill": "support_rally"
     }
   ]
 }
