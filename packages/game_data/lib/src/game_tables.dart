@@ -99,6 +99,10 @@ class GameTables {
     for (final s in [...skills.families.map((f) => f.skill), ...skills.crewSkills]) {
       expect(e, that: fxIds.contains(s.fx), message: 'skills: ${s.id} 스킬 fx ${s.fx}가 fx_map에 없음');
     }
+    for (final id in skills.legends.keys) {
+      expect(e, that: crews.crews.any((c) => c.id == id), message: 'skills: legends의 선원 $id가 crews에 없음');
+    }
+    expect(e, that: skills.legends.length == crews.crews.length, message: 'skills: legends는 선원 40명 모두 있어야 함');
     for (final id in meta.startingCrews) {
       expect(e, that: crews.crews.any((c) => c.id == id), message: 'meta: startingCrews의 $id가 crews에 없음');
     }

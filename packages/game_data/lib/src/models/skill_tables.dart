@@ -1,4 +1,5 @@
 import 'package:game_data/src/models/common.dart';
+import 'package:game_data/src/models/legend_tables.dart';
 
 /// 범위 모양 하나 (기본 공격·스킬 공통, 설계서 4.3.2·4.4). 모양별로 쓰는 필드만 채운다.
 /// shape: circle, single, line, chain, random, cone, push, ship.
@@ -155,7 +156,11 @@ class SkillsTable {
       ragePerKill = j.obj('rage').number('perKill'),
       rageMax = j.obj('rage').number('max'),
       rageAutoTrigger = j.obj('rage').boolean('autoTrigger'),
-      ultimateMultiplier = j.obj('rage').number('ultimateMultiplier');
+      ultimateMultiplier = j.obj('rage').number('ultimateMultiplier'),
+      critBurstDamage = j.number('critBurstDamage'),
+      legends = {
+        for (final e in (j.raw['legends'] as Map<String, dynamic>).entries) e.key: j.obj('legends').obj(e.key),
+      };
 
   final List<FamilyDef> families;
 
@@ -175,6 +180,19 @@ class SkillsTable {
   /// 궁극기 피해 = 기본 공격 피해 × 이 값.
   final double ultimateMultiplier;
 
+  /// 전설 치명타 폭발 피해 비율.
+  final double critBurstDamage;
+
+  /// 선원 id → 전설 능력 원문 (등급에 따라 [legendFor]).
+  final Map<String, JsonReader> legends;
+
+  /// [rarity] 등급(3 = 전설, 4 = 신화)의 [crewId] 전설 능력. 전설 미만이거나 데이터가 없으면 null.
+  LegendDef? legendFor(String crewId, int rarity, int legendRarity) {
+    final raw = legends[crewId];
+    if (raw == null || rarity < legendRarity) return null;
+    return LegendDef.of(raw, mythic: rarity > legendRarity);
+  }
+
   FamilyDef byId(String id) => families.firstWhere((f) => f.id == id);
 
   /// 계열 스킬과 선원 스킬 전체의 id.
@@ -191,6 +209,10 @@ class SkillsTable {
         that: s.cooldownSec >= skillCooldownMinSec,
         message: 'skills: ${s.id} 쿨타임 ${s.cooldownSec} < 최소 $skillCooldownMinSec',
       );
+    }
+    for (final l in legends.entries) {
+      final bad = l.value.raw.keys.where((k) => !LegendDef.keys.contains(k));
+      expect(e, that: bad.isEmpty, message: 'skills: legends.${l.key}의 모르는 키 $bad');
     }
     for (final f in families) {
       for (final l in f.ladder.entries) {

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -47,12 +48,17 @@ class Round {
     field.buffLeft -= dt;
     if (field.buffLeft <= 0) field.buffValue = 0;
     for (final e in field.living) {
+      e.vulnerableTimer -= dt;
+      if (e.vulnerableTimer <= 0) e.vulnerable = 0;
       if (e.stunned) {
         e.stunTimer -= dt;
         continue;
       }
+      final speed = e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed;
+      e.slowTimer -= dt;
+      if (e.slowTimer <= 0) e.slow = 0;
       if (e.x > f.shipX) {
-        e.x = e.x - e.speed * dt < f.shipX ? f.shipX : e.x - e.speed * dt;
+        e.x = e.x - speed * dt < f.shipX ? f.shipX : e.x - speed * dt;
         continue;
       }
       e.contactTimer -= dt;
@@ -71,7 +77,8 @@ class Round {
       g.cooldown -= dt * attackSpeed;
       if (g.cooldown > 0 && !zeroCooldown) continue;
       final a = g.attack;
-      final volleys = aimMany(a, a.projectiles, field.foes, w, ctx.rng);
+      final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
+      final volleys = [for (final v in aimMany(a, shots, field.foes, w, ctx.rng)) extendVolley(g, v, field.foes, w)];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
@@ -79,7 +86,7 @@ class Round {
       g.cooldown = a.intervalSec;
       final crit = ctx.rng.nextDouble() < stats.critChance;
       if (crit) hitStop('crit');
-      final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / a.projectiles);
+      final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);
       for (final v in volleys) {
         ctx.emit(
           AttackFired(
@@ -92,6 +99,7 @@ class Round {
           ),
         );
         land(g, a, v, base, crit: crit);
+        legendAfterHit(this, g, v, base, crit: crit);
       }
     }
   }
@@ -190,7 +198,8 @@ class Round {
       if (!e.alive) continue;
       final g = guard(e, familyOf(crewId));
       if (g <= 0) continue; // 보호막: 피해 없음
-      final amount = base.times(h.factor * g);
+      final vul = e.vulnerableTimer > 0 ? e.vulnerable : 0.0;
+      final amount = base.times(h.factor * g * (1 + vul));
       total = total + amount;
       e.hp = e.hp - amount;
       ctx.emit(Damage(ctx.tick, targetId: e.id, amount: amount, crit: crit, crewId: crewId));
