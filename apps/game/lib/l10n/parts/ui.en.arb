@@ -55,5 +55,18 @@
   "uiTutStep5": "Merge cards of the same crew to make them stronger.",
   "uiTutStep6": "Your ship fights by itself now. Gold piles up even when the app is closed!",
   "uiTutSkip": "Skip",
-  "uiTutOk": "Got it"
+  "uiTutOk": "Got it",
+  "uiQuestTitle": "Daily Quests",
+  "uiQuestKill": "Defeat {target} monsters",
+  "uiQuestUpgrade": "Upgrade {target} times",
+  "uiQuestSummon": "Summon {target} time",
+  "uiQuestAd": "Watch {target} ad",
+  "uiQuestProgress": "{progress}/{target}",
+  "uiQuestReward": "Complete all: Gems +{gems}",
+  "uiQuestClaim": "Claim",
+  "uiQuestClaimed": "Claimed",
+  "uiAttendanceTitle": "Attendance",
+  "uiAttendanceDay": "Day {day}",
+  "uiAttendanceTicket": "Hero+ Summon",
+  "uiAttendanceClaim": "Claim"
 }

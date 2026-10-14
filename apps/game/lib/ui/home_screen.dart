@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/hud/boss_challenge.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
+import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -61,7 +62,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     const Positioned(top: 8, right: 8, child: BossChallenge()),
-                    const Positioned(top: 8, left: 8, child: TailwindBadge()),
+                    const Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [TailwindBadge(), SizedBox(height: 4), DailyIcon()],
+                      ),
+                    ),
                   ],
                 ),
               ),

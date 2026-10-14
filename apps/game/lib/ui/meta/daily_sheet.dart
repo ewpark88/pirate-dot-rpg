@@ -1,0 +1,193 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/state/clock_provider.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
+
+/// 시트 최대 높이 비율 — 위쪽 HUD를 가리지 않는다 (운영자 패널과 같음).
+const _sheetMaxHeight = 0.7;
+
+/// 지금 퀘스트·출석 화면 값. 경제 함수(B7·B8)가 오기 전에는 (null, null).
+(DailyQuestsView?, AttendanceView?) _daily(WidgetRef ref) {
+  final state = ref.watch(gameStateProvider);
+  return (
+    ref.watch(dailyQuestsProvider)(state),
+    ref.watch(attendanceProvider)(state, ref.watch(clockProvider).now()),
+  );
+}
+
+/// 전장 위 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
+class DailyIcon extends ConsumerWidget {
+  const DailyIcon({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final (quests, attendance) = _daily(ref);
+    if (quests == null && attendance == null) return const SizedBox.shrink();
+    final claimable = (quests?.canClaim ?? false) || (attendance?.canClaim ?? false);
+    final icon = IconButton.filledTonal(
+      key: const Key('daily.icon'),
+      visualDensity: VisualDensity.compact,
+      icon: const Icon(Icons.assignment_turned_in),
+      onPressed: () => unawaited(
+        showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * _sheetMaxHeight),
+          builder: (_) => const DailySheet(),
+        ),
+      ),
+    );
+    return claimable ? Badge(key: const Key('daily.dot'), smallSize: 10, child: icon) : icon;
+  }
+}
+
+/// 하단 시트: 위 칸 일일 퀘스트 4줄 + 모두 달성 보상, 아래 칸 출석 7칸.
+class DailySheet extends ConsumerWidget {
+  const DailySheet({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final (quests, attendance) = _daily(ref);
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (quests != null) _Quests(quests),
+        if (quests != null && attendance != null) const Divider(height: 32),
+        if (attendance != null) _Attendance(attendance),
+      ],
+    );
+  }
+}
+
+class _Quests extends ConsumerWidget {
+  const _Quests(this.view);
+
+  final DailyQuestsView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    String name(QuestView q) => switch (q.type) {
+      'kill' => l10n.uiQuestKill(q.target),
+      'upgrade' => l10n.uiQuestUpgrade(q.target),
+      'summon' => l10n.uiQuestSummon(q.target),
+      _ => l10n.uiQuestAd(q.target),
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.uiQuestTitle, style: Theme.of(context).textTheme.titleMedium),
+        for (final q in view.quests)
+          ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(
+              q.done ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: q.done ? Colors.green : null,
+            ),
+            title: Text(name(q)),
+            trailing: Text(l10n.uiQuestProgress(q.progress, q.target)),
+          ),
+        Row(
+          children: [
+            Expanded(child: Text(l10n.uiQuestReward(view.rewardGems))),
+            if (view.claimed)
+              Text(l10n.uiQuestClaimed)
+            else
+              FilledButton(
+                key: const Key('daily.claim'),
+                onPressed: view.canClaim ? () => ref.read(commandSinkProvider).send(const ClaimDaily()) : null,
+                child: Text(l10n.uiQuestClaim),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _Attendance extends ConsumerWidget {
+  const _Attendance(this.view);
+
+  final AttendanceView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.uiAttendanceTitle, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            for (var i = 0; i < view.rewards.length; i++)
+              Expanded(
+                child: _DayCell(day: i + 1, reward: view.rewards[i], view: view),
+              ),
+          ],
+        ),
+        if (view.canClaim)
+          Align(
+            alignment: Alignment.centerRight,
+            child: FilledButton(
+              key: const Key('attendance.claim'),
+              onPressed: () => ref.read(commandSinkProvider).send(const ClaimAttendance()),
+              child: Text(l10n.uiAttendanceClaim),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _DayCell extends StatelessWidget {
+  const _DayCell({required this.day, required this.reward, required this.view});
+
+  final int day;
+  final AttendanceReward reward;
+  final AttendanceView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final today = day == view.day;
+    // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
+    final checked = day < view.day || (today && view.claimedToday);
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      key: Key('attendance.day.$day.${checked ? 'checked' : (today ? 'today' : 'later')}'),
+      margin: const EdgeInsets.all(2),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        color: today && !checked ? scheme.primaryContainer : null,
+        border: Border.all(color: today ? scheme.primary : scheme.outlineVariant, width: today ? 2 : 1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
+          Icon(
+            checked ? Icons.check : (reward.ticket ? Icons.auto_awesome : Icons.diamond),
+            size: 18,
+            color: checked ? Colors.green : null,
+          ),
+          if (reward.ticket)
+            Text(
+              l10n.uiAttendanceTicket,
+              style: Theme.of(context).textTheme.labelSmall,
+              textAlign: TextAlign.center,
+            )
+          else
+            Text(reward.gems.toString(), style: Theme.of(context).textTheme.labelSmall),
+        ],
+      ),
+    );
+  }
+}

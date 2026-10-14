@@ -55,5 +55,18 @@
   "uiTutStep5": "같은 선원 카드를 합치면 강해져요.",
   "uiTutStep6": "이제 배가 알아서 싸워요. 앱을 꺼도 골드가 쌓여요!",
   "uiTutSkip": "건너뛰기",
-  "uiTutOk": "좋아요"
+  "uiTutOk": "좋아요",
+  "uiQuestTitle": "일일 퀘스트",
+  "uiQuestKill": "몬스터 {target}마리 처치",
+  "uiQuestUpgrade": "강화 {target}회",
+  "uiQuestSummon": "소환 {target}회",
+  "uiQuestAd": "광고 {target}회 보기",
+  "uiQuestProgress": "{progress}/{target}",
+  "uiQuestReward": "모두 달성: 젬 +{gems}",
+  "uiQuestClaim": "받기",
+  "uiQuestClaimed": "받음",
+  "uiAttendanceTitle": "출석",
+  "uiAttendanceDay": "{day}일차",
+  "uiAttendanceTicket": "영웅 이상 소환권",
+  "uiAttendanceClaim": "받기"
 }
