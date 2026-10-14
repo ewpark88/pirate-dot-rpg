@@ -1,126 +1,5 @@
 import 'package:game_data/src/models/common.dart';
 
-/// 범위 모양: circle, single, line, chain, random, cone, ship.
-class SkillDef {
-  SkillDef.fromJson(this.raw)
-    : id = raw.str('id'),
-      shape = raw.str('shape'),
-      count = raw.integer('count'),
-      cooldownSec = raw.number('cooldownSec'),
-      multiplier = raw.number('multiplier'),
-      fx = raw.str('fx');
-
-  final JsonReader raw;
-  final String id;
-  final String shape;
-  final int count;
-  final double cooldownSec;
-  final double multiplier;
-  final String fx;
-}
-
-/// 계열 기본 공격 (설계서 4.3.2·4.4). 모양별로 쓰는 필드만 채운다.
-/// shape: circle, single, line, chain, random, cone, push.
-class AttackDef {
-  AttackDef.fromJson(this.raw)
-    : shape = raw.str('shape'),
-      intervalSec = raw.number('intervalSec'),
-      power = raw.number('power'),
-      excludeLayers = raw.strs('excludeLayers').toSet(),
-      radius = raw.numberOr('radius', 0),
-      width = raw.numberOr('width', 0),
-      range = raw.numberOr('range', 0),
-      angleDeg = raw.numberOr('angleDeg', 0),
-      knockback = raw.numberOr('knockback', 0),
-      shots = raw.intOrNull('shots') ?? 1,
-      pierce = raw.intOrNull('pierce') ?? 1,
-      chains = raw.intOrNull('chains') ?? 1,
-      count = raw.intOrNull('count') ?? 1;
-
-  final JsonReader raw;
-  final String shape;
-
-  /// 발사 간격(초). 돛 강화의 공격 속도 배율로 나눈다.
-  final double intervalSec;
-
-  /// 한 번 발사의 피해 배율 (계열 예산, 밸런스 시뮬로 조정).
-  final double power;
-
-  /// 이 공격이 맞히지 못하는 층.
-  final Set<String> excludeLayers;
-  final double radius;
-  final double width;
-  final double range;
-  final double angleDeg;
-  final double knockback;
-
-  /// 연사 발수. 한 발 피해 = power / shots.
-  final int shots;
-  final int pierce;
-  final int chains;
-  final int count;
-}
-
-class FamilyDef {
-  FamilyDef.fromJson(JsonReader j)
-    : id = j.str('id'),
-      projectile = j.strOrNull('projectile'),
-      attack = AttackDef.fromJson(j.obj('attack')),
-      skill = SkillDef.fromJson(j.obj('skill')),
-      ultimateId = j.obj('ultimate').str('id'),
-      ultimateFx = j.obj('ultimate').str('fx'),
-      nameKey = j.str('nameKey');
-
-  final String id;
-  final String? projectile;
-
-  final AttackDef attack;
-  final SkillDef skill;
-  final String ultimateId;
-  final String ultimateFx;
-  final String nameKey;
-}
-
-class SkillsTable {
-  SkillsTable.fromJson(JsonReader j)
-    : families = j.objs('families').map(FamilyDef.fromJson).toList(),
-      crewSkills = j.objs('crewSkills').map(SkillDef.fromJson).toList(),
-      maxSameFamilyInFleet = j.integer('maxSameFamilyInFleet'),
-      ragePerKill = j.obj('rage').number('perKill'),
-      rageMax = j.obj('rage').number('max'),
-      rageAutoTrigger = j.obj('rage').boolean('autoTrigger'),
-      ultimateMultiplier = j.obj('rage').number('ultimateMultiplier');
-
-  final List<FamilyDef> families;
-
-  /// 계열 스킬 대신 선원이 고를 수 있는 스킬 (crews.json의 `skill`).
-  final List<SkillDef> crewSkills;
-  final int maxSameFamilyInFleet;
-  final double ragePerKill;
-  final double rageMax;
-  final bool rageAutoTrigger;
-
-  /// 궁극기 피해 = 기본 공격 피해 × 이 값 (M1 공통 모양, 계열별 모양은 M3).
-  final double ultimateMultiplier;
-
-  FamilyDef byId(String id) => families.firstWhere((f) => f.id == id);
-
-  /// 계열 스킬과 선원 스킬 전체의 id.
-  Set<String> get skillIds => {for (final f in families) f.skill.id, for (final s in crewSkills) s.id};
-
-  List<String> validate(double skillCooldownMinSec) {
-    final e = <String>[];
-    for (final f in families) {
-      expect(
-        e,
-        that: f.skill.cooldownSec >= skillCooldownMinSec,
-        message: 'skills: ${f.id} 쿨타임 ${f.skill.cooldownSec} < 최소 $skillCooldownMinSec',
-      );
-    }
-    return e;
-  }
-}
-
 class WavesTable {
   WavesTable.fromJson(this.raw)
     : tickMs = raw.integer('tickMs'),
@@ -239,7 +118,12 @@ class EnemyDef {
     : id = j.str('id'),
       layer = j.str('layer'),
       hpScale = j.number('hpScale'),
-      speed = j.number('speed');
+      speed = j.number('speed'),
+      role = j.str('role'),
+      splitInto = j.strOrNull('splitInto'),
+      splitCount = j.intOrNull('splitCount') ?? 0,
+      splitHpRatio = j.numberOr('splitHpRatio', 0),
+      reviveHpRatio = j.numberOr('reviveHpRatio', 0);
 
   final String id;
 
@@ -249,6 +133,17 @@ class EnemyDef {
 
   /// 초당 이동 거리(논리 px).
   final double speed;
+
+  /// 역할 (설계서 4.11): basic, fast, tough, air, split, revive. 배율은 speed·hpScale에, 역할은 특수 동작만.
+  final String role;
+
+  /// 분열: 처치되면 [splitInto]를 [splitCount]마리, 체력 = 부모 최대 체력 × [splitHpRatio].
+  final String? splitInto;
+  final int splitCount;
+  final double splitHpRatio;
+
+  /// 부활: 처음 처치되면 체력 [reviveHpRatio]로 한 번 일어난다.
+  final double reviveHpRatio;
 }
 
 class RegionsTable {

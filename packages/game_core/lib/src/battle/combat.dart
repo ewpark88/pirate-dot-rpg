@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
@@ -8,6 +10,7 @@ import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart';
 
 /// 한 틱 동안의 전투 계산. 지갑·게이지 변화는 [gold]·[rage]에 모아 두고 BattleSystem이 상태에 반영한다.
+/// 스킬·장판은 battle/skills.dart의 확장.
 class Round {
   Round(this.field, this.ctx, this.stats, {required this.rage, this.invincible = false, this.zeroCooldown = false});
 
@@ -27,10 +30,22 @@ class Round {
   WavesTable get w => t.waves;
   double get dt => w.tickMs * secondsPerMillisecond;
 
-  /// 적 이동과 배 접촉 피해 (규칙 3).
+  /// 공격 속도 배율 = 돛 + 지원 버프, 상한 `caps.attackSpeedMax` (설계서 4.8).
+  double get attackSpeed => math.min(stats.attackSpeed + field.buffValue, t.shipParts.attackSpeedMax);
+
+  /// 4.8 공식의 앞 네 항: 대포 × 선원 파워 × 배 등급 × [k](계열 배율·치명타 등).
+  BigNum damageOf(Gun g, double k) => stats.attack.times(g.power * stats.tierDamage * k);
+
+  /// 적 이동·기절·배 접촉 피해 (규칙 3), 지원 버프 시간.
   void moveFoes() {
     final f = w.field;
+    field.buffLeft -= dt;
+    if (field.buffLeft <= 0) field.buffValue = 0;
     for (final e in field.living) {
+      if (e.stunned) {
+        e.stunTimer -= dt;
+        continue;
+      }
       if (e.x > f.shipX) {
         e.x = e.x - e.speed * dt < f.shipX ? f.shipX : e.x - e.speed * dt;
         continue;
@@ -45,56 +60,88 @@ class Round {
     }
   }
 
-  /// 슬롯마다 쿨타임을 돌리고, 준비됐고 맞힐 적이 있으면 쏜다 (규칙 5).
+  /// 슬롯마다 쿨타임을 돌리고, 준비됐고 맞힐 적이 있으면 쏜다 (규칙 5, 사다리 발사체 수).
   void fireGuns() {
     for (final g in field.guns) {
-      g.cooldown -= dt * stats.attackSpeed;
+      g.cooldown -= dt * attackSpeed;
       if (g.cooldown > 0 && !zeroCooldown) continue;
-      final a = g.family.attack;
-      final v = aim(a, field.foes, w, ctx.rng);
-      if (v == null) {
+      final a = g.attack;
+      final volleys = aimMany(a, a.projectiles, field.foes, w, ctx.rng);
+      if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
       }
       g.cooldown = a.intervalSec;
-      ctx.emit(
-        AttackFired(
-          ctx.tick,
-          crewId: g.crewId,
-          family: g.family.id,
-          targetIds: [for (final h in v.hits) h.foe.id],
-          x: v.x,
-          y: v.y,
-        ),
-      );
       final crit = ctx.rng.nextDouble() < stats.critChance;
-      if (crit) _hitStop('crit');
-      final base = stats.attack.times(g.power * stats.tierDamage * a.power * (crit ? stats.critMultiplier : 1));
-      _strike(v, base, crit: crit, crewId: g.crewId);
-      if (a.knockback > 0) {
-        for (final h in v.hits) {
-          if (!h.foe.boss) h.foe.x += a.knockback;
-        }
+      if (crit) hitStop('crit');
+      final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / a.projectiles);
+      for (final v in volleys) {
+        ctx.emit(
+          AttackFired(
+            ctx.tick,
+            crewId: g.crewId,
+            family: g.family.id,
+            targetIds: [for (final h in v.hits) h.foe.id],
+            x: v.x,
+            y: v.y,
+          ),
+        );
+        land(g, a, v, base, crit: crit);
       }
     }
   }
 
-  /// 함성 게이지가 가득이면 선장의 궁극기: 화면의 모든 적 (규칙 7, M1 공통 모양).
+  /// 한 발의 결과: 피해(장판 계열은 절반 즉시 + 절반 장판), 밀어내기·기절.
+  void land(Gun g, AttackDef a, Volley v, BigNum base, {bool crit = false}) {
+    if (a.dotSec > 0) {
+      strike(v, base.times(half), crit: crit, crewId: g.crewId);
+      spawnZone(g, a, v.x, v.y, base.times(half));
+    } else {
+      strike(v, base, crit: crit, crewId: g.crewId);
+    }
+    control(v.hits.map((h) => h.foe), knockback: a.knockback, stunSec: a.stunSec);
+  }
+
+  /// 밀어내기·기절. 보스는 `bossControlFactor`만큼만 (설계서 4.10).
+  void control(Iterable<Foe> foes, {double knockback = 0, double stunSec = 0}) {
+    if (knockback <= 0 && stunSec <= 0) return;
+    for (final e in foes) {
+      if (!e.alive) continue;
+      final k = e.boss ? t.skills.bossControlFactor : 1.0;
+      e
+        ..x = math.min(e.x + knockback * k, w.field.width)
+        ..stunTimer = math.max(e.stunTimer, stunSec * k);
+    }
+  }
+
+  /// 함성 게이지가 가득이면 선장의 궁극기: 화면 전체 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
   bool castUltimate() {
     final captain = field.captainId;
     if (rage < t.skills.rageMax || captain == null) return false;
     final gun = field.guns.firstWhere((g) => g.crewId == captain);
+    final ult = gun.family.ultimate;
     final targets = [
       for (final e in field.foes)
         if (e.alive && e.x <= w.field.width) e,
     ];
     rage = 0;
-    ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: gun.family.ultimateId));
-    _hitStop('ultimate');
+    ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id));
+    hitStop('ultimate');
+    if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
-    final base = stats.attack.times(gun.power * stats.tierDamage * t.skills.ultimateMultiplier);
-    _strike((x: w.field.width * half, y: w.field.shipY, hits: spread(targets, w)), base, crewId: captain);
+    strike(
+      (x: w.field.width * half, y: w.field.shipY, hits: spread(targets, w)),
+      damageOf(gun, t.skills.ultimateMultiplier),
+      crewId: captain,
+    );
+    control(targets, knockback: ult.knockback, stunSec: ult.stunSec);
     return true;
+  }
+
+  /// 배 회복 (최대 HP 대비 [ratio]).
+  void heal(double ratio) {
+    final hp = field.shipHp + field.shipHpMax.times(ratio);
+    field.shipHp = hp > field.shipHpMax ? field.shipHpMax : hp;
   }
 
   /// 동시 처치 창을 닫는다 (규칙 7).
@@ -106,14 +153,32 @@ class Round {
     if (n >= w.multiKillMinKills) {
       gold = gold + field.comboGold.times(w.multiKillGoldBonusPerKill * n);
       ctx.emit(MultiKill(ctx.tick, count: n));
-      if (n >= w.multiKillHitStopMinKills) _hitStop('multiKill4');
+      if (n >= w.multiKillHitStopMinKills) hitStop('multiKill4');
     }
     field
       ..comboKills = 0
       ..comboGold = BigNum.zero;
   }
 
-  void _strike(Volley v, BigNum base, {bool crit = false, String? crewId}) {
+  /// 장판을 만든다: [total] 피해를 `dotSec` 동안 매 틱 나눠 준다.
+  void spawnZone(Gun g, AttackDef a, double x, double y, BigNum total) {
+    final ticks = math.max((a.dotSec / dt).round(), 1);
+    field.zones.add(
+      Zone(
+        crewId: g.crewId,
+        x: x,
+        y: y,
+        radius: a.radius,
+        ticksLeft: ticks,
+        perTick: total.times(1 / ticks),
+        excludeLayers: a.excludeLayers,
+      ),
+    );
+    ctx.emit(ZoneSpawned(ctx.tick, crewId: g.crewId, x: x, y: y, radius: a.radius, ticks: ticks));
+  }
+
+  /// 피해를 주고 처치를 처리한다. 2마리 이상이면 합산 숫자(AoeDamageSum).
+  void strike(Volley v, BigNum base, {bool crit = false, String? crewId}) {
     var total = BigNum.zero;
     for (final h in v.hits) {
       final e = h.foe;
@@ -122,9 +187,41 @@ class Round {
       total = total + amount;
       e.hp = e.hp - amount;
       ctx.emit(Damage(ctx.tick, targetId: e.id, amount: amount, crit: crit, crewId: crewId));
-      if (!e.alive) _kill(e);
+      if (!e.alive) _down(e);
     }
     if (v.hits.length > 1) ctx.emit(AoeDamageSum(ctx.tick, total: total, x: v.x, y: v.y));
+  }
+
+  /// 쓰러짐: 부활(한 번, 보상 없음) → 분열(작은 적) → 처치 보상.
+  void _down(Foe e) {
+    final def = e.def;
+    if (def != null && def.role == 'revive' && !e.revived) {
+      e
+        ..revived = true
+        ..hp = e.maxHp.times(def.reviveHpRatio);
+      return;
+    }
+    final small = def?.splitInto;
+    if (def != null && def.role == 'split' && small != null) {
+      final sd = t.regions.enemies[small];
+      for (var i = 0; i < def.splitCount; i++) {
+        field.foes.add(
+          Foe(
+            id: field.nextId(),
+            kind: small,
+            layer: sd?.layer ?? e.layer,
+            x: e.x + (i - (def.splitCount - 1) * half) * w.field.spawnSpacing,
+            y: e.y,
+            maxHp: e.maxHp.times(def.splitHpRatio),
+            speed: sd?.speed ?? e.speed,
+            attack: e.attack,
+            gold: e.gold.times(def.splitHpRatio),
+            def: sd,
+          ),
+        );
+      }
+    }
+    _kill(e);
   }
 
   void _kill(Foe e) {
@@ -139,7 +236,7 @@ class Round {
   }
 
   /// 히트스톱 틱 = juice.hitStopMs[이유] / tickMs (올림). 엔진이 이번 틱의 가장 긴 것을 건다.
-  void _hitStop(String reason) {
+  void hitStop(String reason) {
     final ms = t.juice.hitStopMs[reason];
     if (ms == null) return;
     ctx.emit(HitStop(ctx.tick, ticks: (ms / w.tickMs).ceil(), reason: reason));

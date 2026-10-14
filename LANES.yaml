@@ -32,6 +32,7 @@ lanes:
       - packages/game_data/tables/waves.json
       - packages/game_data/tables/regions.json
       - packages/game_data/lib/src/models/battle_tables.dart
+      - packages/game_data/lib/src/models/skill_tables.dart
       - packages/game_cli/lib/src/commands/replay.dart
       - packages/game_cli/lib/src/commands/export_events.dart
       - scenarios/

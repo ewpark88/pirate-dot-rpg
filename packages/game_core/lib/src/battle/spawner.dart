@@ -31,6 +31,7 @@ void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}
         speed: def.speed,
         attack: attack,
         gold: gold,
+        def: def,
       ),
     );
   }

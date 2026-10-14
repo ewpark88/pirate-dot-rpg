@@ -17,9 +17,13 @@ class EngineHost implements CommandSink {
     required this.clock,
     this.store,
     this.autosaveEvery = const Duration(seconds: 10),
-  }) : engine = CoreEngine(tables: tables, clock: clock, initial: initial);
+  }) : _tables = tables,
+       engine = CoreEngine(tables: tables, clock: clock, initial: initial);
 
-  final CoreEngine engine;
+  final GameTables _tables;
+
+  /// [resume]이 새로 만들 수 있어 final이 아니다.
+  CoreEngine engine;
   final Clock clock;
   final SaveStore? store;
 
@@ -75,6 +79,31 @@ class EngineHost implements CommandSink {
     final text = SaveCodec.encode(engine.state.copyWith(savedAt: now));
     return _saving = _saving.then((_) => s.write(text));
   }
+
+  /// 백그라운드로 갈 때: 멈추고, 지금 시각을 savedAt으로 저장한다.
+  Future<void> pause() {
+    stop();
+    _pausedAt = clock.now();
+    return save();
+  }
+
+  /// 돌아올 때: 엔진 상태의 savedAt을 멈춘 시각으로 맞춰 다시 만든 뒤 돈다.
+  /// 그래야 ClaimOffline이 `now − savedAt`으로 백그라운드에 있던 시간만 센다 (설계서 4.7).
+  /// 전장은 새 엔진에서 현재 파를 처음부터 다시 만든다.
+  void resume() {
+    final at = _pausedAt;
+    if (at != null) {
+      engine = CoreEngine(
+        tables: _tables,
+        clock: clock,
+        initial: engine.state.copyWith(savedAt: at),
+      );
+      _pausedAt = null;
+    }
+    start();
+  }
+
+  DateTime? _pausedAt;
 
   Future<void> dispose() async {
     stop();

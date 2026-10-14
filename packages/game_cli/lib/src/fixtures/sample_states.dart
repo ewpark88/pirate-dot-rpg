@@ -10,6 +10,7 @@ Map<String, GameState> sampleStates(GameTables t) {
     'new_player': starter.copyWith(battle: _battle(t, stage: 1, fleet: t.meta.startingCrews)),
     'stage37_midgame': _midgame(base, t),
     'boss_fight': base.copyWith(
+      summonsTotal: 10,
       progress: const Progress(stage: 5, wave: 3, bestStage: 5),
       wallet: Wallet(gold: BigNum.from(320), gems: 30),
       crews: const {'octo': CrewState(level: 3), 'pang': CrewState(level: 2)},
@@ -17,6 +18,7 @@ Map<String, GameState> sampleStates(GameTables t) {
       battle: _battle(t, stage: 5, fleet: const ['octo', 'pang'], boss: true),
     ),
     'all_crews_mythic': base.copyWith(
+      summonsTotal: 900,
       operator: true,
       progress: const Progress(stage: 160, bestStage: 160),
       wallet: Wallet(gold: BigNum.parse('3.3e21'), gems: 99999, mapPieces: 120),
@@ -41,6 +43,7 @@ GameState _midgame(GameState base, GameTables t) => base.copyWith(
   },
   tokens: 12,
   pityCount: 17,
+  summonsTotal: 67, // 무료 10연은 이미 씀 (세이브 v2)
   buffs: Buffs(tailwindUntil: DateTime.utc(2026, 11, 1, 14, 4, 56)),
   daily: const DailyState(
     date: '2026-11-01',

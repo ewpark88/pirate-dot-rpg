@@ -14,6 +14,7 @@ class EnemyView {
     required this.hpRatio,
     this.layer = 'surface',
     this.boss = false,
+    this.stunned = false,
   });
 
   factory EnemyView.fromJson(Json j) => EnemyView(
@@ -24,6 +25,7 @@ class EnemyView {
     hpRatio: (j['hpRatio'] as num).toDouble(),
     layer: j['layer'] as String? ?? 'surface',
     boss: j['boss'] as bool? ?? false,
+    stunned: j['stunned'] as bool? ?? false,
   );
 
   /// 전투 동안 유일한 id. 이벤트가 이 id로 대상을 가리킨다.
@@ -39,6 +41,9 @@ class EnemyView {
   final String layer;
   final bool boss;
 
+  /// 기절 중 (머리 위 별).
+  final bool stunned;
+
   Json toJson() => {
     'id': id,
     'kind': kind,
@@ -47,6 +52,7 @@ class EnemyView {
     'hpRatio': hpRatio,
     'layer': layer,
     'boss': boss,
+    'stunned': stunned,
   };
 }
 

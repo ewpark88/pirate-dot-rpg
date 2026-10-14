@@ -51,7 +51,7 @@
   "tokens": 12,
   "summon": {
     "pityCount": 17,
-    "total": 0
+    "total": 67
   },
   "buffs": {
     "tailwindUntil": "2026-11-01T14:04:56.000Z"
@@ -98,79 +98,88 @@
         "y": 40.0,
         "hpRatio": 1.0,
         "layer": "surface",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 2,
-        "kind": "jelly",
+        "kind": "piranha",
         "x": 222.0,
         "y": 48.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 3,
-        "kind": "fish",
+        "kind": "jelly",
         "x": 244.0,
         "y": 40.0,
         "hpRatio": 1.0,
         "layer": "underwater",
-        "boss": false
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 4,
-        "kind": "puffer",
+        "kind": "gull",
         "x": 266.0,
         "y": 48.0,
         "hpRatio": 1.0,
-        "layer": "surface",
-        "boss": false
+        "layer": "air",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 5,
-        "kind": "urchin",
+        "kind": "crab",
         "x": 288.0,
         "y": 40.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 6,
-        "kind": "gull",
+        "kind": "piranha",
         "x": 200.0,
         "y": 78.0,
         "hpRatio": 1.0,
-        "layer": "air",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 7,
-        "kind": "crab",
+        "kind": "jelly",
         "x": 222.0,
         "y": 70.0,
         "hpRatio": 1.0,
-        "layer": "surface",
-        "boss": false
+        "layer": "underwater",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 8,
-        "kind": "jelly",
+        "kind": "gull",
         "x": 244.0,
         "y": 78.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "air",
+        "boss": false,
+        "stunned": false
       },
       {
         "id": 9,
-        "kind": "fish",
+        "kind": "crab",
         "x": 266.0,
         "y": 70.0,
         "hpRatio": 1.0,
-        "layer": "underwater",
-        "boss": false
+        "layer": "surface",
+        "boss": false,
+        "stunned": false
       }
     ],
     "fleet": [

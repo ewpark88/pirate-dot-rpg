@@ -12,8 +12,23 @@ import 'package:game_data/game_data.dart';
 /// [count]회 소환에 드는 젬.
 int summonCost(MetaTable meta, int count) => meta.summonCostGems * count;
 
+/// 첫 10연 무료인가 (설계서 4.9·4.12 튜토리얼 4단계 ‘보스 처치, 젬 획득’ 뒤, `meta.tutorial`):
+/// 첫 보스를 잡았고(bestStage > 1), 아직 한 번도 소환하지 않았고, `firstTenCount`연.
+bool isFreeFirstTen(GameState state, GameTables t, int count) {
+  final tut = t.meta.raw.obj('tutorial');
+  return tut.boolean('firstTenSummonFree') &&
+      state.progress.bestStage > 1 &&
+      state.summonsTotal == 0 &&
+      count == tut.integer('firstTenCount');
+}
+
+/// 이 상태에서 [count]회 소환에 실제로 드는 젬 (첫 10연 무료 반영). UI 버튼 표시용.
+int summonCostFor(GameState state, GameTables t, int count) =>
+    isFreeFirstTen(state, t, count) ? 0 : summonCost(t.meta, count);
+
 /// [count]회 소환할 수 있는가.
-bool canSummon(GameState state, GameTables t, int count) => count > 0 && state.wallet.gems >= summonCost(t.meta, count);
+bool canSummon(GameState state, GameTables t, int count) =>
+    count > 0 && state.wallet.gems >= summonCostFor(state, t, count);
 
 /// Lv[level] 선원의 다음 승급. 신화면 null.
 PromotionDef? nextPromotion(GameTables t, int level) {

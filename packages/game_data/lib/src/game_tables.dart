@@ -5,6 +5,7 @@ import 'package:game_data/src/models/common.dart';
 import 'package:game_data/src/models/crew_tables.dart';
 import 'package:game_data/src/models/economy_tables.dart';
 import 'package:game_data/src/models/render_tables.dart';
+import 'package:game_data/src/models/skill_tables.dart';
 import 'package:game_data/src/tables.g.dart';
 
 /// 모든 데이터 테이블. [GameTables.load]로 만들면 검증까지 끝난 상태다.
@@ -110,6 +111,14 @@ class GameTables {
       }
     }
     for (final en in regions.enemies.values) {
+      final split = en.splitInto;
+      if (split != null) {
+        expect(
+          e,
+          that: regions.enemies.containsKey(split),
+          message: 'regions: ${en.id}의 splitInto $split가 enemies에 없음',
+        );
+      }
       expect(
         e,
         that: waves.field.laneY.containsKey(en.layer),
