@@ -11,7 +11,7 @@
     { "from": "hero", "to": "legend", "level": 45, "cards": 10, "goldKills": 1000, "tokens": 0 },
     { "from": "legend", "to": "mythic", "level": 60, "cards": 20, "goldKills": 3000, "tokens": 50 }
   ],
-  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 10 },
+  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14 },
   "tokenPerSurplusCard": 1,
   "tokenExchangeCost": 10
 }

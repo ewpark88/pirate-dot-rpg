@@ -8,7 +8,7 @@ const Map<String, String> rawTables = {
   "dailyCap": 25,
   "firstOfferAfterSec": 180,
   "placements": [
-    { "id": "chest", "dailyLimit": 10, "reward": { "type": "goldMultiplier", "value": 5, "altGems": 20 } },
+    { "id": "chest", "dailyLimit": 10, "reward": { "type": "goldMultiplier", "value": 5, "altGems": 30 } },
     { "id": "tailwind", "dailyLimit": 8, "reward": { "type": "buff", "durationSec": 1800, "goldMultiplier": 2, "speedMultiplier": 2, "maxStackSec": 14400 } },
     { "id": "offline", "dailyLimit": null, "perReturn": 1, "reward": { "type": "goldMultiplier", "value": 2 } },
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
@@ -444,7 +444,7 @@ const Map<String, String> rawTables = {
     { "from": "hero", "to": "legend", "level": 45, "cards": 10, "goldKills": 1000, "tokens": 0 },
     { "from": "legend", "to": "mythic", "level": 60, "cards": 20, "goldKills": 3000, "tokens": 50 }
   ],
-  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 10 },
+  "bossCards": { "earlyStageMax": 10, "early": 2, "base": 1, "stagesPerExtra": 150, "starterCrew": "octo", "starterCount": 14 },
   "tokenPerSurplusCard": 1,
   "tokenExchangeCost": 10
 }
@@ -487,11 +487,11 @@ const Map<String, String> rawTables = {
   "dailyQuestRewardGems": 40,
   "attendance": { "days": 7, "finalRewardMinRarity": "hero", "resetOnMiss": false },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 60 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
-  "tutorial": { "firstTenSummonFree": true, "firstTenGuarantee": "hero" },
+  "tutorial": { "firstTenSummonFree": true, "firstTenCount": 10, "firstTenGuarantee": "hero" },
   "notifications": { "dailyMax": 1 },
   "sim": {
     "decisionSec": 1,

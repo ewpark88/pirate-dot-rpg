@@ -20,6 +20,15 @@ void main() {
     expect(t.rarities.pityMinRarity, 'hero');
   });
 
+  test('젬 광고 = 30젬 = 소환 1회 (사용자 결정 2026-10-14)', () {
+    final chest = t.ads.placements.firstWhere((p) => p.id == 'chest').reward;
+    expect(chest.integer('altGems'), t.meta.summonCostGems);
+  });
+
+  test('오프라인 효율 계수는 0~1', () {
+    expect(t.meta.offlineEfficiency, inExclusiveRange(0, 1));
+  });
+
   test('보스 드롭 카드 등급 80/17/2.8/0.2', () {
     expect(t.rarities.bossDropRates, {'common': 0.8, 'rare': 0.17, 'hero': 0.028, 'legend': 0.002});
   });
@@ -34,7 +43,7 @@ void main() {
     expect([for (final p in t.growth.promotions) p.goldKills], [100, 300, 1000, 3000]);
   });
 
-  test('보스 카드: 스테이지 1~10은 2장, 이후 1 + floor(stage/150), 처음 10번은 옥토', () {
+  test('보스 카드: 스테이지 1~10은 2장, 이후 1 + floor(stage/150), 처음 14장은 옥토(사용자 결정 2026-10-14)', () {
     final b = t.growth.bossCards;
     expect(b.countAt(1), 2);
     expect(b.countAt(10), 2);
@@ -43,6 +52,6 @@ void main() {
     expect(b.countAt(150), 2);
     expect(b.countAt(300), 3);
     expect(b.starterCrew, 'octo');
-    expect(b.starterCount, 10);
+    expect(b.starterCount, 14);
   });
 }
