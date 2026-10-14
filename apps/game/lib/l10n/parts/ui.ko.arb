@@ -68,5 +68,9 @@
   "uiAttendanceTitle": "출석",
   "uiAttendanceDay": "{day}일차",
   "uiAttendanceTicket": "영웅 이상 소환권",
-  "uiAttendanceClaim": "받기"
+  "uiAttendanceClaim": "받기",
+  "uiSummonResultTitle": "소환 결과",
+  "uiSummonRevealAll": "모두 뒤집기",
+  "uiSummonResultOk": "확인",
+  "uiSummonNew": "NEW"
 }

@@ -125,13 +125,17 @@ class _Attendance extends ConsumerWidget {
       children: [
         Text(l10n.uiAttendanceTitle, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            for (var i = 0; i < view.rewards.length; i++)
-              Expanded(
-                child: _DayCell(day: i + 1, reward: view.rewards[i], view: view),
-              ),
-          ],
+        // 7일차 문구가 길어도 칸 높이를 맞춘다.
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < view.rewards.length; i++)
+                Expanded(
+                  child: _DayCell(day: i + 1, reward: view.rewards[i], view: view),
+                ),
+            ],
+          ),
         ),
         if (view.canClaim)
           Align(
