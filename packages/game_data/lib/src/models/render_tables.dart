@@ -135,6 +135,34 @@ class ProjectileStyle {
   final double burstGapMs;
 }
 
+/// 궁극기 화면 연출 패턴 (fx_map.json ultimates).
+enum UltimatePatternKind { sweep, rain, strikes, volley }
+
+class UltimatePattern {
+  UltimatePattern.fromJson(JsonReader j)
+    : kind = UltimatePatternKind.values.byName(j.str('pattern')),
+      fx = j.str('fx'),
+      count = j.integer('count'),
+      durationMs = j.number('durationMs');
+
+  final UltimatePatternKind kind;
+  final String fx;
+  final int count;
+  final double durationMs;
+}
+
+/// 적 역할별 플레이스홀더 모양 (fx_map.json enemyLook).
+class EnemyLook {
+  EnemyLook.fromJson(JsonReader j)
+    : color = parseArgb(j.str('color'), '${j.path}.color'),
+      size = j.number('size'),
+      alpha = j.number('alpha');
+
+  final int color;
+  final double size;
+  final double alpha;
+}
+
 /// 게임 이벤트 → 이펙트·효과음 (fx_map.json).
 class FxMapTable {
   FxMapTable.fromJson(JsonReader j)
@@ -152,7 +180,16 @@ class FxMapTable {
       sheetColors = {
         for (final e in j.obj('sheetColors').raw.entries) e.key: parseArgb(e.value as String, 'sheetColors.${e.key}'),
       },
-      sheetFrameMs = j.number('sheetFrameMs');
+      sheetFrameMs = j.number('sheetFrameMs'),
+      skillFxScale = j.number('skillFxScale'),
+      screenSkill = j.obj('screenSkill'),
+      shipSkill = j.obj('shipSkill'),
+      ultimates = {for (final k in j.obj('ultimates').raw.keys) k: UltimatePattern.fromJson(j.obj('ultimates').obj(k))},
+      enemyLook = {for (final k in j.obj('enemyLook').raw.keys) k: EnemyLook.fromJson(j.obj('enemyLook').obj(k))},
+      enemySmallSize = j.number('enemySmallSize'),
+      split = j.obj('split'),
+      revive = j.obj('revive'),
+      zone = j.obj('zone');
 
   final Map<String, JsonReader> events;
   final List<FxSheetDef> sheets;
@@ -163,6 +200,17 @@ class FxMapTable {
   /// 아트가 없을 때 시트를 대신 그리는 단색.
   final Map<String, int> sheetColors;
   final double sheetFrameMs;
+
+  /// M3 스킬·궁극기·적 역할 연출 (docs/specs/render-m3-fx.md).
+  final double skillFxScale;
+  final JsonReader screenSkill;
+  final JsonReader shipSkill;
+  final Map<String, UltimatePattern> ultimates;
+  final Map<String, EnemyLook> enemyLook;
+  final double enemySmallSize;
+  final JsonReader split;
+  final JsonReader revive;
+  final JsonReader zone;
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
   ProjectileStyle projectileFor(String family) =>
@@ -191,6 +239,14 @@ class FxMapTable {
     }
     for (final id in ids) {
       expect(e, that: sheetColors.containsKey(id), message: 'fx_map: sheetColors에 $id 없음');
+    }
+    for (final u in ultimates.entries) {
+      expect(e, that: ids.contains(u.value.fx), message: 'fx_map: ultimates.${u.key}의 fx ${u.value.fx}가 fxSheets에 없음');
+    }
+    expect(e, that: enemyLook.containsKey('basic'), message: 'fx_map: enemyLook.basic 없음');
+    for (final k in ['split', 'revive']) {
+      final fx = (k == 'split' ? split : revive).str('fx');
+      expect(e, that: ids.contains(fx), message: 'fx_map: $k.fx $fx가 fxSheets에 없음');
     }
     return e;
   }

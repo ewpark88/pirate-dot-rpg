@@ -7,15 +7,20 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
+import 'package:pirate_dot/render/scene/m3_director.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (docs/GAME_DESIGN.md 4.4 타격감 규칙, 수치는 juice.json·fx_map.json).
 ///
 /// - 앞서 알림(onAhead, lookahead 틱 전): 발사체를 띄우고 슬롯을 번쩍인다.
 /// - 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
 class EventDirector implements ReplayListener {
-  EventDirector(this.scene) : _crewFamily = _familyByCrew(scene.tables), _crewFx = _fxByCrew(scene.tables);
+  EventDirector(this.scene)
+    : _crewFamily = _familyByCrew(scene.tables),
+      _crewFx = _fxByCrew(scene.tables),
+      _m3 = M3Director(scene);
 
   final BattleScene scene;
+  final M3Director _m3;
   final Map<String, String> _crewFamily;
   final Map<String, String?> _crewFx;
 
@@ -56,8 +61,12 @@ class EventDirector implements ReplayListener {
           ..y = kShipNoseY;
       }
     }
+    _flashSlot(frame, e.crewId);
+  }
+
+  void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {
-      if (frame.fleet[i].crewId == e.crewId) scene.slotFlashMs[i] = _slotFlashMs;
+      if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = _slotFlashMs;
     }
   }
 
@@ -72,6 +81,10 @@ class EventDirector implements ReplayListener {
         case AttackFired():
           final fxId = _crewFx[e.crewId];
           if (fxId != null) scene.spawnEffect(fxId, e.x, e.y);
+          _m3.zoneFromAttack(e);
+        case SkillCast():
+          _m3.onSkill(e, tick);
+          _flashSlot(tick.frame, e.crewId);
         case Damage():
           _damage(e, tick, index);
         case AoeDamageSum():
@@ -80,7 +93,7 @@ class EventDirector implements ReplayListener {
         case Kill():
           _kill(e, index);
         case UltimateCast():
-          _fx('ultimateCast', kUltimateX, kUltimateY);
+          _m3.onUltimate(e, index);
           scene.shake.trigger(_juice.shake['ultimate']!);
           scene.haptic(HapticLevel.medium);
         case ShipDamaged():
@@ -93,6 +106,7 @@ class EventDirector implements ReplayListener {
           break;
       }
     }
+    _m3.detectSplitRevive(tick, index);
   }
 
   void _damage(Damage e, RecordedTick tick, int index) {

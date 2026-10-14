@@ -1,6 +1,6 @@
 # 스펙: 렌더 M3 — 스킬·궁극기·적 역할 연출
 
-- 상태: 초안 — 승인 대기 · 레인: render(S3) · 설계서 절: 4.4 스킬과 궁극기·타격감, 4.11 해역과 적, 10장 아트 규격
+- 상태: 승인됨 (2026-10-14, S1) · 레인: render(S3) · 설계서 절: 4.4 스킬과 궁극기·타격감, 4.11 해역과 적, 10장 아트 규격
 - 엔진 쪽: `docs/specs/battle-m3-skills.md`(S1, 승인됨) · 계약 요청: `docs/contracts/requests/render-m3-events.md`
 - 엔진 구현 전에는 테스트 안 고정 기록으로 개발한다(샘플 기록은 생성물이라 쓰지 않는다).
 
@@ -52,6 +52,13 @@
 ## 운영자 모드에서 불러보는 법
 S1의 `OpCastSkill`·`OpSetWave(enemyKind)`로 엔진이 이벤트를 내면 라이브 재생으로 보인다. 렌더 단독 확인은 `BATTLE_SCENE=demo`에 M3 기록이 들어온 뒤.
 
-## 열린 질문 (S1)
-- 계약 요청 A·B·C 채택 여부 (`docs/contracts/requests/render-m3-events.md`).
-- `regions.json enemies[].role` 필드 이름·값이 스펙 5절과 같은지(지금 main 테이블엔 role이 아직 없다).
+## 결정 기록 (2026-10-14, S1)
+- 계약 요청 A·B·C 모두 수용 — S1 전투 M3 커밋과 함께 main에 들어온다. 임시 어댑터(규칙 2·9)는 그때까지만, 기절 별(규칙 5)은 그 뒤에 켠다.
+  - A: `SkillCast.scope`('normal'|'screen', 기본 normal). circle·line·single이 count>1이면 중심/대상마다 SkillCast(같은 틱).
+  - B: `EnemyView.stunned`(bool, 기본 false). C: `ZoneSpawned(crewId, x, y, radius, ticks)`, JSON type `zoneSpawned`.
+- `regions.json enemies[]`: `role`(basic|fast|tough|air|split|revive), 선택 `splitInto`·`splitCount`·`splitHpRatio`·`reviveHpRatio`.
+  적 27종: crab, piranha, jelly, gull, urchin, flyingfish, stormgull, puffer, icecrab, icecrab_small, penguin, seal, snowgull, lavacrab,
+  lavacrab_small, starfish, starfish_small, lavaturtle, firebird, angler, squid, siphon, eel, skeleton, ghostjelly, cursegull, wraith.
+  보스 kind는 지금 모두 `enemy_ship`(해역 보스는 다음 스펙).
+- 렌더는 `regions.json` 원문에서 `role`을 직접 읽는다(필드가 없으면 layer가 air면 air, 아니면 basic).
+- 장판은 이펙트와 별도 풀(상한 `fx_map.zone.max`)로 그린다 — 오래 남는 원이라 이펙트 40개 회수 순서와 섞지 않는다.

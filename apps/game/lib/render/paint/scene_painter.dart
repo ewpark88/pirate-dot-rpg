@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/painting.dart' show FontWeight, Shadow, TextPainter, TextSpan, TextStyle;
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -45,6 +46,7 @@ class ScenePainter {
       ..save()
       ..translate(scene.shake.offsetX, scene.shake.offsetY);
     _background(canvas);
+    _zones(canvas);
     _enemies(canvas, 'underwater');
     _shipBody(canvas);
     _enemies(canvas, 'surface');
@@ -77,6 +79,27 @@ class ScenePainter {
     // 배 HP 바.
     _fill(c, kShipLeft + 2, kShipTop - 5, kShipWidth - 4, 2, _hpBack.toARGB32());
     _fill(c, kShipLeft + 2, kShipTop - 5, (kShipWidth - 4) * scene.shipHpRatio, 2, _hpFront.toARGB32());
+    // 배 스킬: 회복 번쩍임과 버프 테두리.
+    if (scene.shipHealMs > 0 && scene.settings.flash) {
+      _fill(c, kShipLeft, kShipTop, kShipWidth, kShipHeight, (0x88 << 24) | (_healColor & 0xFFFFFF));
+    }
+    if (scene.shipBuffMs > 0) {
+      _stroke.color = Color(_buffColor);
+      c.drawRect(const Rect.fromLTWH(kShipLeft, kShipTop, kShipWidth, kShipHeight), _stroke);
+    }
+  }
+
+  late final int _healColor = parseArgb(scene.fx.shipSkill.str('healColor'), 'shipSkill.healColor');
+  late final int _buffColor = parseArgb(scene.fx.shipSkill.str('buffColor'), 'shipSkill.buffColor');
+  late final int _zoneColor =
+      ((scene.fx.zone.number('alpha') * 0xFF).round() << 24) |
+      (parseArgb(scene.fx.zone.str('color'), 'zone.color') & 0xFFFFFF);
+
+  void _zones(Canvas c) {
+    _paint.color = Color(_zoneColor);
+    for (final z in scene.zones.active) {
+      c.drawCircle(Offset(z.x.roundToDouble(), z.y.roundToDouble()), z.radius.roundToDouble(), _paint);
+    }
   }
 
   int _colorOf(String kind) => _kindColor[kind] ??= _palette[kind.codeUnits.fold(0, (a, b) => a + b) % _palette.length];
@@ -90,11 +113,13 @@ class ScenePainter {
   }
 
   void _enemy(Canvas c, EnemyPose e) {
-    final size = e.boss ? kBossSize : kEnemySize;
+    final looks = scene.looks;
+    final size = e.boss ? kBossSize : looks.sizeOf(e.kind);
     final l = e.drawX - size / 2;
     final t = e.drawY - size / 2;
-    var color = e.boss ? _bossColor : _colorOf(e.kind);
+    var color = e.boss ? _bossColor : looks.colorOf(e.kind);
     if (e.layer == 'underwater') color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
+    if (!e.boss) color = ((looks.alphaOf(e.kind) * 0xFF).round() << 24) | (color & 0xFFFFFF);
     _fill(c, l, t, size, size, e.flash ? 0xFFFFFFFF : color);
     if (e.boss || e.hpRatio < 1) {
       _fill(c, l, t - 3, size, 1, _hpBack.toARGB32());
@@ -116,6 +141,7 @@ class ScenePainter {
 
   void _effects(Canvas c) {
     for (final e in scene.effects.active) {
+      if (!e.visible) continue;
       final t = e.frame / e.frames;
       final scale = 0.5 + 0.5 * t;
       final alpha = ((1 - t) * 0xCC).round() << 24;
@@ -163,6 +189,8 @@ class ScenePainter {
   }
 
   static const _fadeStart = 0.7;
+  static const _skillBarPx = 3.0;
+  static const _blinkMs = 250;
 
   void _slots(Canvas c) {
     _fill(c, 0, kFieldBottom, kLogicalWidth, kLogicalHeight - kFieldBottom, _slotBar.toARGB32());
@@ -172,6 +200,14 @@ class ScenePainter {
       final slot = fleet[i];
       _fill(c, x, kSlotTop, kSlotSize, kSlotSize, _colorOf(slot.crewId));
       _fill(c, x, kSlotTop, kSlotSize, kSlotSize * slot.cooldown.clamp(0.0, 1.0), _cooldown.toARGB32());
+      // 스킬 쿨타임: 초상 아래 막대가 차오르고, 다 차면 금색 테두리가 깜빡인다.
+      final skillReady = 1 - slot.skillCooldown.clamp(0.0, 1.0);
+      _fill(c, x, kSlotTop + kSlotSize - _skillBarPx, kSlotSize, _skillBarPx, _cooldown.toARGB32());
+      _fill(c, x, kSlotTop + kSlotSize - _skillBarPx, kSlotSize * skillReady, _skillBarPx, _buffColor);
+      if (slot.skillCooldown <= 0 && (scene.clockMs ~/ _blinkMs).isEven) {
+        _stroke.color = Color(_buffColor);
+        c.drawRect(Rect.fromLTWH(x - 1, kSlotTop - 1, kSlotSize + 2, kSlotSize + 2), _stroke);
+      }
       if (scene.slotFlashMs[i] > 0) {
         _stroke.color = _white;
         c.drawRect(Rect.fromLTWH(x, kSlotTop, kSlotSize, kSlotSize), _stroke);
