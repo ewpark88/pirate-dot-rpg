@@ -33,12 +33,13 @@ flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
 - Windows에서 Kotlin "Could not close incremental caches" 오류 → `android/gradle.properties`의 `kotlin.incremental=false`로 해결돼 있다.
 
 ## 5. 운영자 코드 잔존 검사 (업로드 전)
-`tool\check.bat --release`(S1이 추가 예정, 요청서 `platform-release-check.md`)가 생기기 전까지 수동:
-```bash
-cd apps/game
-unzip -p build/app/outputs/bundle/release/app-release.aab base/lib/arm64-v8a/libapp.so | grep -c "__OPERATOR_PANEL__"   # 0이어야 함
+`tool/release_check.dart`(S1이 옮길 예정 — 코드는 요청서 `platform-release-check.md`):
+```bat
+dart run tool/release_check.dart                  :: aab + 운영자 apk 둘 다 빌드해서 검사 (약 2분 40초)
+dart run tool/release_check.dart --marker op.invincible   :: 표식 상수가 들어오기 전
 ```
-(표식 상수 `__OPERATOR_PANEL__`도 같은 요청서로 operator/에 들어간다. 들어가기 전엔 이 검사가 의미 없다.)
+배포 aab의 `libapp.so`에 표식이 0회, 운영자 apk에 1회 이상이어야 통과. 2026-10-14 `op.invincible`로 확인: 배포 0회 · 운영자 1회.
+**주의**: 검사가 운영자 apk를 마지막에 만들므로, 업로드용 aab는 검사 **뒤에** 4번 명령으로 다시 만들 필요는 없다(aab와 apk는 출력 경로가 다르다).
 
 ## 6. Play Console 내부 테스트
 1. 앱 만들기(이름·기본 언어 ko·게임·무료) → 테스트 → 내부 테스트 → 새 버전 → aab 업로드.
