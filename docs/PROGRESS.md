@@ -111,7 +111,9 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 추가5: lane/render 8f10d56 머지(재생기·연출·풀/상한·라이브 feed), main.dart가 `battleFeedProvider`에 `EngineHost.ticks` 연결.
   `game_cli fixtures`가 운영자 패널용 `apps/game/lib/operator/sample_states.g.dart` 생성(allLanes).
   lane/ui 586b804 머지는 --full 실패(UI 골든에 전장 그림이 찍혀 렌더 변경에 깨짐)로 push 전 머지 커밋을 버림 → UI 골든은 HUD·탭만 찍기로(S4 수정 중).
-- 다음 할 일: S4 골든 분리 후 ui 머지, S3 골든 머지, economy 밸런스 머지
+- 추가6: 사용자 결정 4건(오프라인 효율 계수, 옥토 카드 14장, 광고 30젬, 스테이지 40 = 플레이 시간) → 설계서 4.3.3·4.6·4.7·7.2 반영, S2에 전달.
+  세이브 v2(`summonsTotal`, ADR-0007, 픽스처 v2.json). render 골든·render-perf 스펙(승인), ui 소환·선원 탭·골든(전장 분리)·live feed·운영자 패널 스펙(승인) 머지 → 앱 전장이 실제 엔진으로 돈다.
+- 다음 할 일: economy 밸런스·무료 10연, ui 운영자 패널, render-perf 머지 → M2 관문(실기기 손맛·60fps)은 사람 확인
 - 남은 문제: 한 파 약 30초로 느림(sim으로 조정), 스킬·장판·기절·적 역할은 M3, 보스 카드는 경제 레인
 
 ### 2026-10-14 · S1 · worktree 생성, 전투 스펙 초안

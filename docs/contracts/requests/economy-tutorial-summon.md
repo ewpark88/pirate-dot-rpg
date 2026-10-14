@@ -21,4 +21,4 @@ final int summonsTotal; // 누적 소환 횟수. 세이브: "summon": {"pityCoun
 없음 — 무료 10연은 반영하지 않고 sim 지표 ‘첫 소환 가능’은 벗어남으로 둔다.
 
 ## 처리 결과 (S1 작성)
-- [ ] 반영 / 거절 / 수정 반영 — 커밋:
+- [x] 수정 반영(2026-10-14, S1) — 마이그레이션은 total=0(ADR-0007). `GameState.summonsTotal`, 세이브 v2, 픽스처 v2.json. 무료 10연 규칙은 economy 몫.

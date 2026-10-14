@@ -19,6 +19,7 @@ class GameState {
     this.crews = const {},
     this.tokens = 0,
     this.pityCount = 0,
+    this.summonsTotal = 0,
     this.buffs = const Buffs(),
     this.collection = const {},
     this.settings = const Settings(),
@@ -57,6 +58,7 @@ class GameState {
     },
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
+    summonsTotal: (j['summon'] as Json)['total'] as int,
     buffs: Buffs.fromJson(j['buffs'] as Json),
     daily: DailyState.fromJson(j['daily'] as Json),
     collection: (j['collection'] as List).cast<String>().toSet(),
@@ -81,6 +83,9 @@ class GameState {
 
   /// 영웅 이상이 안 나온 연속 소환 수 (천장).
   final int pityCount;
+
+  /// 누적 소환 횟수. 0이면 첫 10연 무료(설계서 4.12, 세이브 v2).
+  final int summonsTotal;
   final Buffs buffs;
   final DailyState daily;
 
@@ -103,6 +108,7 @@ class GameState {
     Map<String, CrewState>? crews,
     int? tokens,
     int? pityCount,
+    int? summonsTotal,
     Buffs? buffs,
     DailyState? daily,
     Set<String>? collection,
@@ -119,6 +125,7 @@ class GameState {
     crews: crews ?? this.crews,
     tokens: tokens ?? this.tokens,
     pityCount: pityCount ?? this.pityCount,
+    summonsTotal: summonsTotal ?? this.summonsTotal,
     buffs: buffs ?? this.buffs,
     daily: daily ?? this.daily,
     collection: collection ?? this.collection,
@@ -138,7 +145,7 @@ class GameState {
     'ship': ship.toJson(),
     'crews': {for (final e in crews.entries) e.key: e.value.toJson()},
     'tokens': tokens,
-    'summon': {'pityCount': pityCount},
+    'summon': {'pityCount': pityCount, 'total': summonsTotal},
     'buffs': buffs.toJson(),
     'daily': daily.toJson(),
     'collection': collection.toList()..sort(),
