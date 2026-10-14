@@ -62,6 +62,7 @@ void main() {
     const SkillCast(3, crewId: 'orca', skillId: 'skip_splash', x: 1, y: 2),
     const SkillCast(3, crewId: 'volke', skillId: 'lob_rain', x: 1, y: 2, scope: 'screen'),
     const ZoneSpawned(3, crewId: 'jelly', x: 10, y: 120, radius: 16, ticks: 40),
+    const RebirthDone(3, gain: 44, pieces: 47, rebirths: 2),
     const UltimateCast(3, crewId: 'orca', ultimateId: 'ult_tidal_wave'),
     const HitStop(3, ticks: 2, reason: 'ultimate'),
     ShipDamaged(4, amount: BigNum.from(5), hpRatio: 0.9),
