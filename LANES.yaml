@@ -54,6 +54,8 @@ lanes:
       - packages/game_data/tables/ship_tiers.json
       - packages/game_data/tables/ads.json
       - packages/game_data/tables/meta.json
+      # 환생 밸런스(몬스터 곡선)는 sim을 가진 S2가 맞춘다 (2026-10-14 S1 위임)
+      - packages/game_data/tables/waves.json
       - packages/game_data/lib/src/models/economy_tables.dart
       - packages/game_data/lib/src/models/crew_tables.dart
       - packages/game_cli/lib/src/commands/sim.dart
@@ -76,6 +78,8 @@ lanes:
       - packages/game_cli/lib/src/commands/balance.dart
       - packages/game_cli/lib/src/balance/
       - packages/game_cli/test/balance/
+      # 선원 균형 수치(계열 power·사다리·전설 powerScale)는 balance crews를 가진 S3가 맞춘다
+      - packages/game_data/tables/skills.json
       - packages/game_data/tables/juice.json
       - packages/game_data/tables/fx_map.json
       - packages/game_data/lib/src/models/render_tables.dart

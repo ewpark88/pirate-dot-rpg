@@ -7,40 +7,11 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
-/// 환생(보물지도) 미리보기 (설계서 4.5). 값은 경제 함수가 정한다.
-// TODO(economy): S2 환생 스펙의 미리보기 타입이 오면 그것으로 바꾸고 이 타입은 지운다(이름은 S2 스펙대로).
-@immutable
-class RebirthPreviewView {
-  const RebirthPreviewView({
-    required this.unlockStage,
-    required this.available,
-    required this.currentPieces,
-    required this.gainPieces,
-    required this.nextPieceInStages,
-    required this.bonusPerPiece,
-  });
-
-  /// 환생이 열리는 최고 스테이지 (meta.rebirth.minStage).
-  final int unlockStage;
-  final bool available;
-  final int currentPieces;
-
-  /// 지금 환생하면 받는 조각.
-  final int gainPieces;
-
-  /// 다음 조각까지 남은 스테이지.
-  final int nextPieceInStages;
-
-  /// 조각 하나당 전체 피해·골드 보너스 (0.05 = 5%, 합산).
-  final double bonusPerPiece;
-}
-
-/// 상태 → 환생 미리보기. null이면 환생 카드를 숨긴다.
-// TODO(economy): S2 환생 미리보기 함수가 main에 오면 본문을 그 함수로. 그 전엔 숨김.
-final rebirthPreviewProvider = Provider<RebirthPreviewView? Function(GameState state)>(
-  (_) =>
-      (_) => null,
-);
+/// 상태 → 환생 미리보기 (경제 `rebirthPreview`, 사용자 결정 ①: 이번 회차 스테이지 기준). null이면 카드를 숨긴다(테스트용).
+final rebirthPreviewProvider = Provider<RebirthPreview? Function(GameState state)>((ref) {
+  final tables = ref.watch(tablesProvider);
+  return (s) => rebirthPreview(s, tables);
+});
 
 /// 항해 탭의 환생 카드: 조각·보너스, 가능하면 이번 획득 조각과 보물지도 버튼, 아니면 해금 안내.
 class RebirthCard extends ConsumerWidget {
@@ -49,10 +20,17 @@ class RebirthCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final previewOf = ref.watch(rebirthPreviewProvider);
-    final (preview, best) = ref.watch(gameStateProvider.select((s) => (previewOf(s), s.progress.bestStage)));
-    if (preview == null) return const SizedBox.shrink();
+    // RebirthPreview에는 ==가 없어서 화면에 쓰는 값만 레코드로 골라 구독한다.
+    final view = ref.watch(
+      gameStateProvider.select((s) {
+        final p = previewOf(s);
+        return p == null ? null : (p, s.progress.stage, p.locked, p.currentPieces, p.gain, p.nextPieceInStages);
+      }),
+    );
+    if (view == null) return const SizedBox.shrink();
+    final (preview, stage, _, _, _, _) = view;
     final l10n = AppLocalizations.of(context);
-    final bonus = percentText(l10n, preview.currentPieces * preview.bonusPerPiece);
+    final bonus = percentText(l10n, preview.bonusNow);
 
     return Card(
       key: const Key('rebirth.card'),
@@ -71,8 +49,8 @@ class RebirthCard extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(l10n.uiRebirthPieces(preview.currentPieces, bonus)),
             const SizedBox(height: 8),
-            if (preview.available) ...[
-              Text(l10n.uiRebirthGain(preview.gainPieces), style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (!preview.locked) ...[
+              Text(l10n.uiRebirthGain(preview.gain), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(l10n.uiRebirthNext(preview.nextPieceInStages)),
               const SizedBox(height: 8),
               Align(
@@ -90,9 +68,9 @@ class RebirthCard extends ConsumerWidget {
                 ),
               ),
             ] else ...[
-              Text(l10n.uiRebirthLocked(preview.unlockStage)),
+              Text(l10n.uiRebirthLocked(preview.minStage)),
               const SizedBox(height: 4),
-              LinearProgressIndicator(value: (best / preview.unlockStage).clamp(0.0, 1.0), minHeight: 6),
+              LinearProgressIndicator(value: (stage / preview.minStage).clamp(0.0, 1.0), minHeight: 6),
             ],
           ],
         ),
@@ -105,13 +83,13 @@ class RebirthCard extends ConsumerWidget {
 class RebirthDialog extends ConsumerWidget {
   const RebirthDialog({required this.preview, super.key});
 
-  final RebirthPreviewView preview;
+  final RebirthPreview preview;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final from = percentText(l10n, preview.currentPieces * preview.bonusPerPiece);
-    final to = percentText(l10n, (preview.currentPieces + preview.gainPieces) * preview.bonusPerPiece);
+    final from = percentText(l10n, preview.bonusNow);
+    final to = percentText(l10n, preview.bonusAfter);
     return AlertDialog(
       title: Text(l10n.uiRebirthTitle),
       content: Column(
@@ -123,7 +101,7 @@ class RebirthDialog extends ConsumerWidget {
           _Line(
             icon: Icons.add_circle_outline,
             color: Colors.green,
-            text: l10n.uiRebirthGainLine(preview.gainPieces, '+$from', '+$to'),
+            text: l10n.uiRebirthGainLine(preview.gain, '+$from', '+$to'),
           ),
         ],
       ),
@@ -165,4 +143,54 @@ class _Line extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// 환생 결과 팝업 (‘조각 +N’). 이벤트가 아니라 상태로 안다: 환생 횟수가 늘면 그 사이 늘어난 지도 조각을 보인다.
+class RebirthDoneGate extends ConsumerStatefulWidget {
+  const RebirthDoneGate({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  ConsumerState<RebirthDoneGate> createState() => _RebirthDoneGateState();
+}
+
+class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(gameStateProvider.select((s) => (s.progress.rebirths, s.wallet.mapPieces)), (before, after) {
+      if (before == null || after.$1 <= before.$1) return;
+      final gain = after.$2 - before.$2;
+      final bonus = rebirthBonus(ref.read(gameStateProvider), ref.read(tablesProvider));
+      unawaited(
+        showDialog<void>(
+          context: context,
+          builder: (_) => _RebirthDoneDialog(gain: gain, bonus: bonus),
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class _RebirthDoneDialog extends StatelessWidget {
+  const _RebirthDoneDialog({required this.gain, required this.bonus});
+
+  final int gain;
+  final double bonus;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      key: const Key('rebirth.done'),
+      icon: const Icon(Icons.map, size: 40, color: Colors.amber),
+      title: Text(l10n.uiRebirthDoneTitle),
+      content: Text(l10n.uiRebirthDoneGain(gain, percentText(l10n, bonus)), textAlign: TextAlign.center),
+      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.uiOk))],
+    );
+  }
 }
