@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/done/render-battle-replay.md` · 스펙 `docs/specs/render-battle-replay.md` (승인됨, S1 위임) |
-| 상태 | M2 1단계(전투 기록 재생) 완료 — 골든 승인·커밋. 다음: render-perf 스펙 |
-| 막힌 것 | 없음 |
+| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (초안, 승인 대기) · 끝남: `plans/done/render-battle-replay.md` |
+| 상태 | 전투 기록 재생 완료(골든 ce4dddf, main 556ab67 머지 75683a0, check --full 통과). render-perf 스펙 초안 2690d98 |
+| 막힌 것 | render-perf 스펙 승인 · Q1 정수배 확대 담당(렌더 vs UI) |
 
 ## 세션 로그 (최신이 위)
 
