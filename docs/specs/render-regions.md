@@ -26,7 +26,9 @@
 8. **보호막**(`EnemyView.shielded`): 적 둘레 2px 청록 테두리. 보호막이 true→false로 바뀌는 틱에 "깨짐"(청록 hit_spark 3개).
 9. **무한 항해 테두리**(`EnemyView.tier` 0~3): 0은 없음, 1~3은 `fx_map.tierColors`(동·은·금) 1px 테두리. 보호막과 같이 있으면 보호막이 바깥.
 10. **약점 계열**(`regions.json bosses[].weakFamilies`) 아이콘은 UI HUD 몫 — 렌더는 그리지 않는다.
-11. **수치**: `fx_map.json`(`backgrounds`, `backgroundFadeMs`, `bossEntrance`, `bossFailed`, `bossLook`, `shield`, `tierColors`), `juice.json`(`bossKill.coinRain`).
+11. **보물상자**(`BattleView.chest`: x·y·ticksLeft, 경제가 띄움): null이 아니면 바다 위에 상자를 그리고 위아래로 둥둥(`fx_map.chest.bobPx`·`bobMs`),
+    남은 틱이 `sinkTicks`보다 적으면 그만큼 가라앉으며(`sinkPx`) 흐려진다. 탭 판정은 UI가 같은 좌표로 한다(렌더는 그림만).
+12. **수치**: `fx_map.json`(`backgrounds`, `backgroundFadeMs`, `bossEntrance`, `bossFailed`, `bossLook`, `shield`, `tierColors`, `chest`), `juice.json`(`bossKill.coinRain`).
 
 ## 수용 기준 (Given / When / Then) — `apps/game/test/render/`
 1. Given `regions.json`의 배경 id 6개 When 조회 Then 모두 `fx_map.backgrounds`에 있고, 모르는 id는 `bg_coral`.
@@ -38,6 +40,8 @@
 7. Given 보스 kind 13종(+촉수) When 모양 조회 Then 모두 `bossLook`에 있고, 모르는 보스 kind는 `enemy_ship` 모양.
 8. Given `shielded` true→false When 재생 Then 깨짐 연출 1번, 그 뒤 보호막 테두리 없음.
 9. Given `tier` 0·1·2·3 When 그림 Then 0은 테두리 없음, 1~3은 `tierColors` 색.
+11. Given 프레임 stage 50 → 51 When 재생 Then 장면 배경이 storm으로 섞여 넘어간다(`frame.stage` 사용).
+12. Given `chest`(ticksLeft 충분) When 그림 Then 상자가 (x, y±bobPx) 안에 보인다. ticksLeft < sinkTicks면 가라앉음 > 0, chest null이면 안 보인다.
 10. 골든 1장: 폭풍해 배경 + 중간 보스(보호막·tier 2) 등장 경고 + 무리 (`goldens/battle_boss_storm.png`, 승인 필요).
 
 ## 문구 (ko / en)
@@ -47,5 +51,5 @@
 S1/S4 운영자 명령(스테이지 이동·보스 소환)으로 엔진이 이벤트를 내면 라이브로 보인다. 렌더 단독: 고정 기록 테스트·골든.
 
 ## 결정 기록 (2026-10-14, S1)
-- 계약 D 수용: `BattleView.stage`(int, JSON 없으면 1) main 반영 예정. 임시 세터 없이 기다린다(테스트는 고정 기록).
+- 계약 D 수용: `BattleView.stage`(int, JSON 없으면 1) main 16dda02(ADR-0008)에 반영. 같이 `BattleView.chest`(ChestView) 추가 — 규칙 11.
 - 해역 보스(battle-m3-bosses): 보스 kind가 스테이지별로 바뀌고 `EnemyView.shielded`·`tier`(0~3)가 추가된다 — 규칙 7~10으로 포함.

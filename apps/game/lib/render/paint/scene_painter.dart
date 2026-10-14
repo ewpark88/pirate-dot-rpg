@@ -46,6 +46,7 @@ class ScenePainter {
       ..translate(scene.shake.offsetX, scene.shake.offsetY);
     _stage.paintBackground(canvas);
     _zones(canvas);
+    _stage.paintChest(canvas);
     _enemies(canvas, 'underwater');
     _shipBody(canvas);
     _enemies(canvas, 'surface');

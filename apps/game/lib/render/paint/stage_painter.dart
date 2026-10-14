@@ -41,6 +41,24 @@ class StagePainter {
     }
   }
 
+  late final int _chestColor = parseArgb(scene.fx.chest.str('color'), 'chest.color');
+  late final int _lidColor = parseArgb(scene.fx.chest.str('lidColor'), 'chest.lidColor');
+  static const _sinkFade = 0.7;
+  static const _lidRatio = 0.35;
+
+  /// 보물상자: 몸통 + 뚜껑 띠. 가라앉을수록 흐려진다. 탭 판정은 UI가 같은 좌표(중심 x·y)로.
+  void paintChest(Canvas c) {
+    final ch = scene.chest;
+    if (!ch.visible) return;
+    final w = scene.fx.chest.number('w');
+    final h = scene.fx.chest.number('h');
+    final a = ((1 - _sinkFade * ch.sink) * 0xFF).round() << 24;
+    final l = (ch.x - w / 2).roundToDouble();
+    final t = (ch.y - h / 2).roundToDouble();
+    _rect(c, l, t, w, h, a | (_chestColor & 0xFFFFFF));
+    _rect(c, l, t, w, (h * _lidRatio).roundToDouble(), a | (_lidColor & 0xFFFFFF));
+  }
+
   /// 흔들림 밖에서 그리는 덮개: 보스 실패 어두움, 보스 등장 붉은 테두리(깜빡임).
   void paintOverlays(Canvas c) {
     final fx = scene.fx;

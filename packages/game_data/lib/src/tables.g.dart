@@ -459,10 +459,10 @@ const Map<String, String> rawTables = {
   "bossLook": {
     "enemy_ship": { "color": "#4A2C2A", "w": 40, "h": 40 },
     "raider_ship": { "color": "#7B241C", "w": 44, "h": 44 },
-    "storm_pirate": { "color": "#283747", "w": 44, "h": 44 },
+    "storm_pirate": { "color": "#8E3B2E", "w": 44, "h": 44 },
     "icebreaker": { "color": "#5DADE2", "w": 44, "h": 44 },
     "fire_pirate": { "color": "#BA4A00", "w": 44, "h": 44 },
-    "deep_sub": { "color": "#1A5276", "w": 44, "h": 44 },
+    "deep_sub": { "color": "#D4AC0D", "w": 44, "h": 44 },
     "ghost_ship": { "color": "#839192", "w": 44, "h": 44 },
     "giant_hermit": { "color": "#A04000", "w": 52, "h": 52 },
     "thunder_ray": { "color": "#F4D03F", "w": 52, "h": 52 },
@@ -475,6 +475,7 @@ const Map<String, String> rawTables = {
   "bossLookDefault": "enemy_ship",
   "shield": { "color": "#48E5E5", "px": 2, "breakFx": "hit_spark", "breakCount": 3 },
   "tierColors": ["#CD7F32", "#C0C0C0", "#FFD700"],
+  "chest": { "color": "#B9770E", "lidColor": "#F4D03F", "w": 14, "h": 10, "bobPx": 1.5, "bobMs": 900, "sinkTicks": 20, "sinkPx": 10 },
   "fxSheets": [
     { "id": "slash", "w": 48, "h": 48, "frames": 5 },
     { "id": "muzzle", "w": 32, "h": 32, "frames": 4 },
