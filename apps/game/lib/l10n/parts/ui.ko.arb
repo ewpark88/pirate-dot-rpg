@@ -91,5 +91,8 @@
   "uiAdTailwind": "{minutes}분 ×{mult}",
   "uiAdBossSupport": "피해 +{percent} · {seconds}초",
   "uiAdFreeSummon": "무료 소환 · 남은 {left}회",
-  "uiOk": "확인"
+  "uiOk": "확인",
+  "uiSettingsPrivacy": "개인정보 옵션",
+  "uiRebirthDoneTitle": "보물지도를 펼쳤어요!",
+  "uiRebirthDoneGain": "지도 조각 +{count} · 피해·골드 +{percent}"
 }
