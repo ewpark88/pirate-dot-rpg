@@ -1,3 +1,6 @@
+import 'package:game_core/src/economy/ads.dart';
+import 'package:game_core/src/economy/chest.dart';
+import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
@@ -21,14 +24,20 @@ class EconomySystem implements GameSystem {
     final MergeAllCards c => mergeAllCards(state, c, ctx),
     final PromoteCrew c => promoteCrew(state, c, ctx),
     final ClaimOffline c => claimOffline(state, c, ctx),
+    final ClaimDaily c => claimDaily(state, c, ctx),
+    final ClaimAttendance c => claimAttendance(state, c, ctx),
     final OpSetCrew c => opSetCrew(state, c, ctx),
     final OpGrant c => opGrant(state, c, ctx),
     final OpSetShip c => opSetShip(state, c, ctx),
     final OpAdvanceClock c => opAdvanceClock(state, c, ctx),
-    // TODO(economy): GrantAdReward, Rebirth …
+    final TapChest c => tapChest(state, c, ctx),
+    final GrantAdReward c => grantAdReward(state, c, ctx),
+    OpSpawnChest() => spawnChest(state, ctx),
+    final OpGrantTailwind c => opGrantTailwind(state, c, ctx),
+    // TODO(economy): Rebirth …
     _ => null,
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) => state;
+  GameState update(GameState state, SystemContext ctx) => tickChest(rollDay(state, ctx.clock.now()), ctx);
 }
