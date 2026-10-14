@@ -1,3 +1,5 @@
+import 'package:game_core/src/economy/merge.dart';
+import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/upgrade.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -15,7 +17,10 @@ class EconomySystem implements GameSystem {
   GameState? handle(GameState state, Command command, SystemContext ctx) => switch (command) {
     final UpgradePart c => upgradePart(state, c, ctx),
     final Summon c => summon(state, c, ctx),
-    // TODO(economy): MergeAllCards, PromoteCrew, GrantAdReward, Rebirth …
+    final MergeAllCards c => mergeAllCards(state, c, ctx),
+    final PromoteCrew c => promoteCrew(state, c, ctx),
+    final ClaimOffline c => claimOffline(state, c, ctx),
+    // TODO(economy): 운영자 명령, GrantAdReward, Rebirth …
     _ => null,
   };
 
