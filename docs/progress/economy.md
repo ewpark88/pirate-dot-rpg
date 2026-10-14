@@ -5,10 +5,17 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` (승인 2026-10-14) · `docs/plans/active/economy-m1.md` |
-| 바로 다음 할 일 | 4단계: Summon + 천장 + receiveCard (기준 5~8, 11) |
+| 바로 다음 할 일 | 5단계: MergeAllCards · PromoteCrew (기준 9~10) |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-14 · S2 · 소환·천장·카드 받기 + UI용 판정 함수
+- 한 일: main(3b28d2c, S1이 lane/economy 머지 후 combat_stats를 ShipStats로 교체) 머지.
+  `economy/cards.dart`(summonCost·canSummon·nextPromotion·promotionGold·promoteStatus·canPromote·receiveCard),
+  `economy/summon.dart`(rollSummonRarity·Summon 처리) — 수용 기준 5~8·11, 100만 회 분포 ±0.2%p, 천장 50회 연속 없음. economy 테스트 37개
+- 승급 골드는 전투의 `stageCurve(goldBase, goldGrowth, stage)`(화물칸 배율 전)를 그대로 쓴다 — 공식 한 곳
+- 다음 할 일: 5단계 MergeAllCards·PromoteCrew → 6단계 grantBossCards·오프라인
 
 ### 2026-10-14 · S2 · 스펙 승인 + 강화·선원 효과 함수 + 테이블 + UpgradePart
 - 한 일:

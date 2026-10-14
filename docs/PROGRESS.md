@@ -9,7 +9,7 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-14 · S1 |
-| 바로 다음 할 일 | S1: `export-events` 실제 엔진 출력(렌더 통지) · economy의 `grantBossCards`가 오면 보스 처치에 연결 |
+| 바로 다음 할 일 | S1: 레인 머지·통합, economy의 `grantBossCards`가 오면 보스 처치에 연결 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -35,7 +35,7 @@
 - [ ] 강화·소환·천장·카드·승급·오프라인 (`EconomySystem`)
 - [ ] `game_cli sim`이 7.2 목표 리포트, check 밸런스 스모크 활성화
 - [x] `scenarios/boss_timeout_farming.yaml` skip 해제, `boss_clear_advances.yaml` 추가 · 화면 없이 돈다(강화가 없어 스테이지 1 파밍에서 멈춤)
-- [ ] `game_cli export-events` 실제 엔진 출력
+- [x] `game_cli export-events` 실제 엔진 출력 (+ 앱 데모 상수 `render/demo/sample_battle.g.dart`, allLanes)
 
 ### M2 화면 연결 (S3 render · S4 ui) — 관문: 실기기 손맛 승인
 - [ ] Flame 전투 화면(기록 재생 → 실제 엔진) · 타격감

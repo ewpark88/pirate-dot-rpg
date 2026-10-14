@@ -11,7 +11,7 @@
       - `combat_stats.dart` 임시 전투 수치(대포·선체·돛·망루·화물칸, 선원 파워·등급)
       - `fleet.dart` 자동 편성 · `targeting.dart` 모양 8종 · `battle_system.dart` 흐름(파·보스·파밍·운영자)
 - [x] 4. 시나리오: `boss_timeout_farming` skip 해제, `boss_clear_advances.yaml` 추가
-- [ ] 5. `game_cli export-events` 실제 엔진 출력 → `fixtures/events/sample_battle.jsonl` 갱신, 렌더 레인 통지
+- [x] 5. `game_cli export-events` 실제 엔진 출력 → `fixtures/events/sample_battle.jsonl` 갱신, 렌더 레인 통지
 - [ ] 6. check `--full` → 진척 문서 → 커밋
 
 ## 메모
