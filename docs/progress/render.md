@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | `docs/plans/active/render-perf.md` · 스펙 `docs/specs/render-perf.md` (승인됨 S1) · 끝남: `plans/done/render-battle-replay.md` |
-| 상태 | render-perf 구현 완료(측정 도구). 실기기 측정 대기 — 절차는 스펙 "실기기 측정 절차" |
-| 막힌 것 | 실기기 측정은 사람(S4) 몫 — 결과가 오면 아래 표에 기록 후 계획을 done/으로 |
+| 현재 계획 | `plans/active/render-m3-fx.md`(스펙 초안, 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · 끝남: `plans/done/render-battle-replay.md` |
+| 상태 | render-perf 구현 완료(89b9905, main 머지됨). render-m3-fx 스펙 초안 + 계약 요청 `render-m3-events`(A 스킬 범위·B 기절·C 장판) |
+| 막힌 것 | render-m3-fx 승인·계약 A~C 결정(S1) · 실기기 측정(M2 관문 때 S1이 사용자에게 전달) |
 
 ## 실기기 측정
 
