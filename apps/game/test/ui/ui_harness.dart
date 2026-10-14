@@ -77,6 +77,16 @@ Future<void> loadGoldenFonts() async {
 /// NavigationBar 선택 표시 애니메이션보다 넉넉히.
 const _tabAnimation = Duration(seconds: 1);
 
+/// 골든을 찍기 전에 화면의 이미지(선원 초상 등)를 실제로 디코드한다. 안 하면 골든에 빈칸으로 찍힌다.
+Future<void> precacheImages(WidgetTester tester) async {
+  await tester.runAsync(() async {
+    for (final e in find.byType(Image, skipOffstage: false).evaluate()) {
+      await precacheImage((e.widget as Image).image, e);
+    }
+  });
+  await tester.pump();
+}
+
 /// 탭 순서 (탭 4개 고정).
 const voyageTab = 0;
 const shipTab = 1;

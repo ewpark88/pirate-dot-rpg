@@ -10,16 +10,17 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 격자 한 줄에 선원 수.
 const _columns = 5;
 
 /// 카드 가로:세로.
-const _cardAspect = 0.45;
+const _cardAspect = 0.38;
 
-/// 카드 최소 높이 — 이름·별·레벨·카드 수·출전·승급 버튼이 들어가는 높이.
-const _minCardHeight = 162.0;
+/// 카드 최소 높이 — 초상·이름·별·레벨·카드 수·출전·승급 버튼이 들어가는 높이.
+const _minCardHeight = 194.0;
 
 /// 카드 사이 간격.
 const _spacing = 4.0;
@@ -142,6 +143,7 @@ class CrewCard extends ConsumerWidget {
       padding: const EdgeInsets.all(2),
       child: Column(
         children: [
+          CrewPortrait(crew: def),
           Text(tableText(l10n, def.nameKey), maxLines: 1, overflow: TextOverflow.ellipsis, style: small),
           _Stars(rarity: rarity),
           if (level != null && cards != null) ...[
