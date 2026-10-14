@@ -12,7 +12,7 @@
 - [x] 4. 소환 탭 (기준 6)
 - [x] 5. 선원 탭 (기준 7~8)
 - [x] 6. 영어 골든 4장 (기준 9) — S1 승인 · 운영자 샘플 상태 버튼은 보류(에셋 등록 필요, shared)
-- [ ] 7. `tool\check.bat --full` → 진척 문서 → 커밋(lane/ui, push 안 함)
+- [x] 7. `tool\check.bat --full` → 진척 문서 → 커밋(lane/ui, push 안 함) — 4778d63
 
 ## 검증 방법
 - `apps/game/test/ui/*_test.dart` 위젯 테스트, `apps/game/test/goldens/` 영어 골든, `tool\check.bat --full`
