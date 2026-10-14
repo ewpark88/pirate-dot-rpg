@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
@@ -39,10 +40,32 @@ Future<CommandLog> pumpGame(
   await tester.pump();
   if (tab != 0) {
     await tester.tap(find.byType(NavigationDestination).at(tab));
-    await tester.pump();
+    // 탭 표시 애니메이션을 끝까지 (전장 게임 루프 때문에 pumpAndSettle은 끝나지 않는다).
+    await tester.pump(); // 탭 상태 반영 → 애니메이션 시작
+    await tester.pump(_tabAnimation);
   }
   return log;
 }
+
+/// 골든용 글꼴: Flutter SDK에 들어 있는 Roboto와 Material 아이콘을 읽는다.
+/// 기본 글꼴(Ahem)은 글자를 네모로 그려 잘림을 볼 수 없다. Galmuri가 들어오면(art 레인) 그 글꼴로 바꾼다.
+Future<void> loadGoldenFonts() async {
+  final dir = '${Platform.environment['FLUTTER_ROOT']}/bin/cache/artifacts/material_fonts';
+  Future<void> load(String family, List<String> files) async {
+    final loader = FontLoader(family);
+    for (final f in files) {
+      final bytes = File('$dir/$f').readAsBytesSync();
+      loader.addFont(Future.value(ByteData.sublistView(bytes)));
+    }
+    await loader.load();
+  }
+
+  await load('Roboto', ['roboto-regular.ttf', 'roboto-medium.ttf', 'roboto-bold.ttf']);
+  await load('MaterialIcons', ['materialicons-regular.otf']);
+}
+
+/// NavigationBar 선택 표시 애니메이션보다 넉넉히.
+const _tabAnimation = Duration(seconds: 1);
 
 /// 탭 순서 (탭 4개 고정).
 const voyageTab = 0;
