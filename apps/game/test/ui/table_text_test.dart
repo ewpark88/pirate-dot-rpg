@@ -8,6 +8,8 @@ void main() {
   final tables = GameTables.load();
   final keys = [
     for (final c in tables.crews.crews) c.nameKey,
+    // 카드 한 줄 짧은 이름 (crew{Id}Short).
+    for (final c in tables.crews.crews) '${c.nameKey.substring(0, c.nameKey.length - 'Name'.length)}Short',
     for (final r in tables.rarities.rarities) r.nameKey,
     for (final p in tables.shipParts.parts) p.nameKey,
     for (final t in tables.shipTiers.tiers) t.nameKey,
