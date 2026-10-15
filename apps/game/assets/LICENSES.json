@@ -268,11 +268,55 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
       "license": "OWN"
     },
+    "ui/ad.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/bubble.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/card_back.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/check.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/check_empty.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
     "ui/coin.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     },
+    "ui/farm.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/flag.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/gear.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
     "ui/gem.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/hand.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/lock.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/moon.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     },
@@ -296,6 +340,14 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     },
+    "ui/quest.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/rebirth.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
     "ui/star.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
@@ -313,6 +365,10 @@
       "license": "OWN"
     },
     "ui/tab_summon.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/tailwind.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     }
