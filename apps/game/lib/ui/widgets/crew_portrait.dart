@@ -14,6 +14,8 @@ class CrewPortrait extends StatelessWidget {
     'assets/${crew.portrait}',
     width: size,
     height: size,
+    // 기본(BoxFit.scaleDown)은 32px보다 키우지 않는다 → 칸에 꽉 채운다.
+    fit: BoxFit.fill,
     filterQuality: FilterQuality.none,
     errorBuilder: (_, _, _) => Icon(Icons.person, size: size),
   );

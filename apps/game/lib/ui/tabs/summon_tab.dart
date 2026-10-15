@@ -4,9 +4,8 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -110,7 +109,7 @@ class _SummonButton extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const PixelIcon(PixelIcons.gem, color: PixelPalette.slot),
+              const PixelSprite(UiSprites.gem, dots: 8, frames: 3, scale: 1),
               const SizedBox(width: 4),
               Text(cost.toString()),
             ],
