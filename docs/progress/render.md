@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · T2 탑다운 렌더러 1단계: 카메라·바다·배 층 (S1 보완: 배 정가운데·바다 깊이)
+- `render/top/top_frame.dart`: 배율 k를 폭으로만(화면 가로 약 180단위, 0.02 여유) — 시트를 끌어 상자 높이가 바뀌어도 그대로. 배 화면 자리 = 보이는 전장(상자 위 ~ 선원 줄) 가운데. 선원 줄·버튼은 battleFrameFor 그대로(UI 변경 없음).
+- `top_sea_painter.dart`(fx_map topSea): 바탕 + 깊이 얼룩 2색(시차 0.6) + 물결 대시 + 거품 숨쉬기 + 햇빛 반짝임(세 무리 drawRawPoints) + 배 항적(V자 두 줄·고물 소용돌이·뱃머리 물보라). 흐름 = 진행 방향 반대. 무늬는 보이는 영역을 덮는 Path 하나씩(층마다 그리기 1번).
+- `top_ship_painter.dart`: td 층 6장(shipLook 단계) + 그림자. `top_scene_painter.dart`: 배 가운데 고정 카메라, 시트를 열면 배 자리가 220ms에 걸쳐 따라감. 스프라이트 키 td:<tierId>:<layer>.
+- 테스트 top_frame_test(4기기, 높이 4가지에서 k 그대로·배 가운데). 시안 `docs/specs/render-topdown/renderer_4devices.png`.
+- 아직 BattleGame에 붙이지 않음(엔진 T1 오면 mode 'top'에서 이 경로로). 다음: 적 27·보스 13 위에서 본 도트 → 2D 발사체·폭발·숫자·코인·체력 막대.
+
 ### 2026-10-15 · S3 · T2 탑다운 첫 산출: 위에서 본 큰 배 t1~t4 × 부품 단계 + S24 장면 시안
 - `tools/art/gen_topdown_ships.py` → `assets/ship/td_t<n>_{base,hull,cargo,cannon,sail,crowsnest}.png`(같은 크기 층, 이 순서로 겹침, 뱃머리 위). OWN.
   프레임 t1 56×96 · t2 60×106 · t3/t4 66×118 도트, 선체 폭 34~40(돛 포함 약 50). 화면 180도트(시험판)에서 S24 약 105dp.

@@ -49,6 +49,16 @@ class SpriteBank {
             frames: part.value as int,
           ),
       (key: 'ship_cannon', path: 'ship/part_cannon.png', frames: fx.raw.obj('shipParts').integer('cannonStages')),
+      // 탑다운 배 층 (tools/art/gen_topdown_ships.py, T2): 바탕 1장 + 부위별 단계 시트.
+      for (final tier in t.shipTiers.tiers) ...[
+        (key: 'td:${tier.id}:base', path: 'ship/td_${tier.sprite.replaceFirst('ship_', '')}_base.png', frames: 1),
+        for (final part in fx.raw.obj('topShip').obj('stages').raw.entries)
+          (
+            key: 'td:${tier.id}:${part.key}',
+            path: 'ship/td_${tier.sprite.replaceFirst('ship_', '')}_${part.key}.png',
+            frames: part.value as int,
+          ),
+      ],
       for (final f in t.skills.families)
         if (f.projectile != null) (key: 'projectile:${f.id}', path: 'projectiles/${f.projectile}.png', frames: 1),
       for (final s in fx.sheets) (key: 'fx:${s.id}', path: 'fx/${s.id}.png', frames: s.frames),
