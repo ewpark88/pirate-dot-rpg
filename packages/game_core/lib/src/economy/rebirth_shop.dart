@@ -5,6 +5,8 @@ import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 import 'package:meta/meta.dart';
 
+export 'package:game_core/src/economy/rebirth_rewards.dart';
+
 // 환생 v2 (docs/specs/platform-rebirth-v2.md): 보물지도 상점·스킨·칭호·항로. 수치는 meta.rebirth.
 
 List<JsonReader> _shop(GameTables t) => t.meta.rebirth.objs('shop');

@@ -56,9 +56,9 @@ int partLookStage(ShipPartDef def, int level) {
   return n;
 }
 
-/// 부위별 외형 단계 (렌더가 배 그림을 고른다). BattleView.shipLook과 같다.
+/// 부위별 외형 단계 (렌더가 배 그림을 고른다) = max(지금 레벨의 단계, 명예 단계). BattleView.shipLook과 같다.
 Map<String, int> partLook(GameState s, GameTables t) => {
-  for (final p in t.shipParts.parts) p.id: partLookStage(p, s.ship.level(p.id)),
+  for (final p in t.shipParts.parts) p.id: math.max(partLookStage(p, s.ship.level(p.id)), s.ship.honorParts[p.id] ?? 0),
 };
 
 /// 대포: 선원 전체 공격력.

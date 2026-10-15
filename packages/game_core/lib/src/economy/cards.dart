@@ -1,6 +1,7 @@
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart' show crewMaxLevel;
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/state_parts.dart';
@@ -14,8 +15,10 @@ export 'package:game_core/src/economy/rebirth_shop.dart'
     show
         RebirthShopView,
         ShopItemView,
+        crewMaxLevel,
         fastSailFraction,
         offlineMaxSec,
+        rebirthChest,
         shopCost,
         shopEffect,
         shopLevel,
@@ -23,6 +26,9 @@ export 'package:game_core/src/economy/rebirth_shop.dart'
         shopSpent,
         shopView,
         startLevel,
+        treasureGoldMultiplier,
+        treasureHpMultiplier,
+        treasurePiecesMultiplier,
         treasureSeasUnlocked,
         upgradeCostMultiplier;
 
@@ -79,16 +85,20 @@ PromoteStatus promoteStatus(GameState state, GameTables t, String crewId) {
 bool canPromote(GameState state, GameTables t, String crewId) => promoteStatus(state, t, crewId) == PromoteStatus.ok;
 
 /// 합치기로 [crew]의 레벨이 하나 오르는가: 등급 마지막 레벨(승급 문) 전이고 적립 경험치가 그 등급 `expToNext` 이상.
-bool canLevelUp(CrewState crew, GameTables t) {
+/// [maxLevel]은 선원 최대 레벨(crewMaxLevel, 환생 해금으로 75 → 90) — 마지막 등급(신화)은 levelMax를 넘어 그때까지 오른다.
+bool canLevelUp(CrewState crew, GameTables t, {int? maxLevel}) {
   final rarity = rarityOfLevel(t.rarities, crew.level);
   final need = t.growth.expToNext[rarity.id] ?? 0;
-  return crew.level < rarity.levelMax && need > 0 && crew.exp >= need;
+  final last = identical(rarity, t.rarities.rarities.last);
+  final cap = last ? (maxLevel ?? t.growth.maxLevel) : rarity.levelMax;
+  return crew.level < cap && need > 0 && crew.exp >= need;
 }
 
 /// 일괄 합치기(MergeAllCards)로 레벨이 오르는 선원이 있는가 — UI 선원 탭 ‘할 일’ 점(매 틱 호출, 할당 없음).
 bool canMergeAny(GameState state, GameTables t) {
+  final max = crewMaxLevel(state, t);
   for (final c in state.crews.values) {
-    if (canLevelUp(c, t)) return true;
+    if (canLevelUp(c, t, maxLevel: max)) return true;
   }
   return false;
 }
@@ -119,7 +129,7 @@ GameState receiveCard(GameState state, GameTables t, String crewId, String rarit
       },
     );
   }
-  if (crew.level >= t.growth.maxLevel) return state.copyWith(tokens: state.tokens + t.growth.tokenPerSurplusCard);
+  if (crew.level >= crewMaxLevel(state, t)) return state.copyWith(tokens: state.tokens + t.growth.tokenPerSurplusCard);
   final need = nextPromotion(t, crew.level)?.cards ?? 0;
   final surplus = crew.cards >= need;
   return state.copyWith(
