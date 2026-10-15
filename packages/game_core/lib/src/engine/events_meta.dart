@@ -21,6 +21,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'chestOpened' => ChestOpened(t, gold: big('gold')),
     'offlineReward' => OfflineReward(t, gold: big('gold'), cards: j['cards'] as int, seconds: j['seconds'] as int),
     'rebirthDone' => RebirthDone(t, gain: j['gain'] as int, pieces: j['pieces'] as int, rebirths: j['rebirths'] as int),
+    'bossFired' => BossFired(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'shipLookChanged' => ShipLookChanged(t, part: j['part'] as String, stage: j['stage'] as int),
     'fleetRejected' => FleetRejected(
       t,
@@ -221,4 +222,18 @@ class ShipLookChanged extends GameEvent {
 
   @override
   Json _fields() => {'part': part, 'stage': stage};
+}
+
+/// 보스 원거리 공격 한 번 (정지 지점 waves.boss.standoff에서). 피해는 같은 틱의 ShipDamaged. 렌더는 보스에서 배로 발사체를 그린다.
+class BossFired extends GameEvent {
+  const BossFired(super.tick, {required this.x, required this.y});
+
+  final double x;
+  final double y;
+
+  @override
+  String get type => 'bossFired';
+
+  @override
+  Json _fields() => {'x': x, 'y': y};
 }

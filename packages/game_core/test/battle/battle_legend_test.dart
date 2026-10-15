@@ -72,18 +72,19 @@ void main() {
   });
 
   test('4. 장판 감속: 안의 적은 (1 − slow)배로 움직이고, 보스는 절반만', () {
-    final mob = foe(200, 100, speed: 20);
-    final boss = foe(200, 100, speed: 20, boss: true);
+    // 보스 정지·감속 구간(뱃머리 + standoff + slowZone) 밖에서 잰다.
+    final mob = foe(240, 100, speed: 20);
+    final boss = foe(240, 100, speed: 20, boss: true);
     final f = field([mob, boss]);
     final r = round(f);
     final octo = gun('octo', legend);
-    spawnLegendZone(r, octo, 200, 100);
+    spawnLegendZone(r, octo, 240, 100);
     r
       ..tickZones()
       ..moveFoes();
     final slow = octo.legend!.zone!.slow;
-    expect(200 - mob.x, closeTo(20 * r.dt * (1 - slow), 1e-9));
-    expect(200 - boss.x, closeTo(20 * r.dt * (1 - slow * tables.skills.bossControlFactor), 1e-9));
+    expect(240 - mob.x, closeTo(20 * r.dt * (1 - slow), 1e-9));
+    expect(240 - boss.x, closeTo(20 * r.dt * (1 - slow * tables.skills.bossControlFactor), 1e-9));
   });
 
   test('5. 화상: burnSec 동안 Damage, 합 = 맞힌 피해 × burnRatio', () {

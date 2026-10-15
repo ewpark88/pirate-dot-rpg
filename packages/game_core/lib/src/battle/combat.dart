@@ -61,14 +61,20 @@ class Round {
       final speed = e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed;
       e.slowTimer -= dt;
       if (e.slowTimer <= 0) e.slow = 0;
-      if (e.x > f.shipX) {
-        e.x = e.x - speed * dt < f.shipX ? f.shipX : e.x - speed * dt;
+      // 일반 적은 몸통이 겹치지 않게 contactGap에서, 보스는 standoff에서 멈춘다(정지 전 slowZone에서 감속).
+      final stop = f.shipX + (e.boss ? w.bossStandoff : f.contactGap);
+      if (e.x > stop) {
+        final left = e.x - stop;
+        final v = e.boss && left < w.bossSlowZone ? speed * math.max(left / w.bossSlowZone, w.bossSlowFloor) : speed;
+        e.x = e.x - v * dt < stop ? stop : e.x - v * dt;
         continue;
       }
       e.contactTimer -= dt;
       if (e.contactTimer > 0) continue;
       e.contactTimer += f.contactIntervalSec;
       if (invincible) continue;
+      // 보스는 정지 지점에서 원거리 공격 (렌더가 발사체를 그린다). 피해·간격은 접촉 공격과 같다.
+      if (e.boss) ctx.emit(BossFired(ctx.tick, x: e.x, y: e.y));
       final hp = field.shipHp - e.attack;
       field.shipHp = hp.isNegative ? BigNum.zero : hp;
       ctx.emit(ShipDamaged(ctx.tick, amount: e.attack, hpRatio: (field.shipHp / field.shipHpMax).toDouble()));
