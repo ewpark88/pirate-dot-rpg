@@ -29,6 +29,7 @@ const topField = TopField(
   bossStandoff: 48,
   bossOrbitDegPerSec: 12,
   reachScale: 1,
+  swarmSpacing: 12,
 );
 
 void main() {
@@ -76,6 +77,55 @@ void main() {
         }
       }
       expect(dirs, hasLength(4), reason: '여러 판이면 네 방향 모두에서 온다');
+    });
+
+    test('방향 가중(spawnWeights 위 50·좌우 20·아래 10): 위가 가장 많고 아래가 가장 적다', () {
+      const weighted = TopField(
+        width: 270,
+        height: 480,
+        shipX: 135,
+        shipY: 300,
+        shipRadius: 28,
+        mobRadius: 6,
+        bossRadius: 24,
+        spawnMargin: 12,
+        approachRadius: 206,
+        approachBoost: 5,
+        swarmGroupsMin: 1,
+        swarmGroupsMax: 5,
+        swarmSpreadDeg: 20,
+        separation: 0.5,
+        bossStandoff: 100,
+        bossOrbitDegPerSec: 12,
+        reachScale: 1,
+        swarmSpacing: 3,
+        spawnWeights: (up: 0.5, side: 0.2, down: 0.1),
+      );
+      final g = TopGeometry(w, weighted);
+      final count = {'up': 0, 'down': 0, 'side': 0};
+      for (var seed = 1; seed <= 200; seed++) {
+        final f = field();
+        g.spawnWave(f, 30, ctx(seed), count: 1);
+        final e = f.foes.single;
+        final dx = e.x - weighted.shipX;
+        final dy = e.y - weighted.shipY;
+        count[dy.abs() > dx.abs() ? (dy < 0 ? 'up' : 'down') : 'side'] =
+            count[dy.abs() > dx.abs() ? (dy < 0 ? 'up' : 'down') : 'side']! + 1;
+      }
+      expect(count['up'], greaterThan(70)); // 기대 100
+      expect(count['side'], inInclusiveRange(50, 110)); // 기대 80
+      expect(count['down'], lessThan(40)); // 기대 20
+    });
+
+    test('줄 간격 swarmSpacing: 한 묶음 안에서 k번째는 k × 간격만큼 더 바깥', () {
+      final g = TopGeometry(w, topField.withShipRadius(20));
+      final f = field();
+      g.spawnWave(f, 30, ctx(3), count: 40);
+      final far = f.foes.map(dist).reduce(math.max);
+      final groupsMax = topField.swarmGroupsMax;
+      // 가장 먼 적도 (40/묶음 수) × 간격 안쪽(+ 화면 모서리까지 거리).
+      expect(far, lessThan(math.sqrt(135 * 135 + 240 * 240) + 12 + 6 + (40 / 1).ceil() * topField.swarmSpacing + 1));
+      expect(groupsMax, 3);
     });
 
     test('도착 시간: 위·옆 어느 방향이든 차이 ≤ 10% (접근 원 밖은 해류)', () {
