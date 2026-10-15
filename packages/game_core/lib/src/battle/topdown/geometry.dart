@@ -91,9 +91,23 @@ BattleGeometry geometryFor(GameTables t, int stage, {int hullStage = 1}) {
 }
 
 /// [f]에 지금 배(등급·선체 강화 단계)에 맞는 모양을 둔다. 배 상태가 바뀔 때만 다시 만든다 — 강화해도 무리는 그대로.
+/// 돌발 이벤트 '폭풍'이면 적 이동 배율(meta.seaEvents 폭풍 enemySpeed)도 매번 맞춘다.
 void shapeField(Field f, GameState s, GameTables t) {
-  if (f.geometry != null && identical(f.shipSeen, s.ship)) return;
-  f
-    ..shipSeen = s.ship
-    ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
+  if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
+    f
+      ..shipSeen = s.ship
+      ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
+  }
+  final g = f.geometry;
+  if (g is TopGeometry) g.speedScale = seaEventSpeed(s, t);
+}
+
+/// 지금 돌발 이벤트의 적 이동 배율(meta.seaEvents 그 이벤트의 enemySpeed, 없으면 1).
+double seaEventSpeed(GameState s, GameTables t) {
+  final id = s.battle?.seaEvent?.id;
+  if (id == null) return 1;
+  for (final e in t.meta.raw.obj('seaEvents').objs('events')) {
+    if (e.str('id') == id) return e.numberOr('enemySpeed', 1);
+  }
+  return 1;
 }

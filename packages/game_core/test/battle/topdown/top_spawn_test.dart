@@ -101,4 +101,35 @@ void main() {
     }
     expect(scattered, inInclusiveRange(80, 120), reason: 'scatter 0.5 ≈ 100/200');
   });
+
+  test('돌발 이벤트: 황금 물고기는 자동 조준에서 빠진다, 폭풍이면 적이 enemySpeed배로 다가온다', () {
+    final g = TopGeometry(w, base);
+    Foe at(double dy, {String? event}) => Foe(
+      id: dy.toInt(),
+      kind: 'crab',
+      layer: 'surface',
+      x: base.shipX,
+      y: base.shipY - dy,
+      maxHp: BigNum.from(1e9),
+      speed: 20,
+      attack: BigNum.one,
+      gold: BigNum.one,
+      eventKind: event,
+    );
+    final fish = at(60, event: 'goldfish');
+    final merchant = at(70, event: 'merchant');
+    expect(g.eligible(t.skills.byId('direct').attack, [fish, merchant]), [merchant]);
+    final storm = t.meta.raw
+        .obj('seaEvents')
+        .objs('events')
+        .firstWhere((e) => e.str('id') == 'storm')
+        .number('enemySpeed');
+    final calm = at(100);
+    final windy = at(100);
+    g
+      ..advance(calm, 20, 0.05)
+      ..speedScale = storm
+      ..advance(windy, 20, 0.05);
+    expect(windy.y - (base.shipY - 100), closeTo((calm.y - (base.shipY - 100)) * storm, 1e-9));
+  });
 }

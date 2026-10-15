@@ -33,6 +33,9 @@ class TopGeometry implements BattleGeometry {
   final TopAim _aim;
   final TopSpawn _spawn;
 
+  /// 적 이동 배율(돌발 이벤트 '폭풍' enemySpeed 등 — shapeField가 매 틱 정한다). 보스 포함.
+  double speedScale = 1;
+
   @override
   String get mode => 'top';
 
@@ -94,7 +97,8 @@ class TopGeometry implements BattleGeometry {
     final dy = e.y - top.shipY;
     final d = math.sqrt(dx * dx + dy * dy);
     if (e.boss ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
-    final step = speed * dt * (d > top.approachRadius ? top.approachBoost : 1) * (e.boss ? 1 : top.mobSpeedScale);
+    final step =
+        speed * dt * speedScale * (d > top.approachRadius ? top.approachBoost : 1) * (e.boss ? 1 : top.mobSpeedScale);
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
     final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
     final nd = e.boss
