@@ -2,12 +2,14 @@
 library;
 
 export 'contracts.dart';
+export 'src/battle/fleet.dart' show autoFleet;
 export 'src/economy/ads.dart' show canWatchAd, tailwindRemaining;
 export 'src/economy/cards.dart';
 export 'src/economy/chest.dart' show chestReward;
 export 'src/economy/crew_stats.dart';
 export 'src/economy/daily.dart'
     show AttendanceView, QuestView, addQuestProgress, attendance, canClaimDaily, dailyQuests;
+export 'src/economy/formation.dart' show activeFleet, emptySlotCount, fleetSlots;
 export 'src/economy/meta_views.dart' show CollectionBonus, GoalKind, NextGoal, collectionBonus, nextGoal;
 export 'src/economy/offline.dart';
 export 'src/economy/rebirth.dart' show RebirthPreview, piecesFor, rebirthBonus, rebirthPreview;
