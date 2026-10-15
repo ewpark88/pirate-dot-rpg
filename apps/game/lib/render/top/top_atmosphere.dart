@@ -34,6 +34,11 @@ class TopAtmosphere {
   ];
   late final JsonReader _weather = cfg.obj('weather');
   late final JsonReader _land = cfg.obj('landmarks');
+  late final double _despawn = _land.number('despawn');
+  late final int _maxLand = _land.integer('maxOnScreen');
+  late final int _ripples = _weather.obj('rain').integer('ripples');
+  late final int _streaks = _weather.obj('rain').integer('streaks');
+  late final int _flakes = _weather.obj('ash').integer('flakes');
 
   final _paint = Paint()..isAntiAlias = false;
   final _soft = Paint()..isAntiAlias = true;
@@ -116,8 +121,8 @@ class TopAtmosphere {
         l.pos = l.anchor + flow;
       }
     }
-    landmarks.removeWhere((l) => l.pos.distance > _land.number('despawn'));
-    if (ms >= _nextLandMs! && landmarks.length < _land.integer('maxOnScreen')) {
+    landmarks.removeWhere((l) => l.pos.distance > _despawn);
+    if (ms >= _nextLandMs! && landmarks.length < _maxLand) {
       final kinds = _land.obj('byRegion').strs(region);
       final iv = [for (final v in _land.raw['intervalSec'] as List) (v as num).toDouble()];
       final h = _hash(_landSeq++, 77);
@@ -190,7 +195,7 @@ class TopAtmosphere {
       }
     }
     if (rain) {
-      final drops = (_weather.obj('rain').integer('ripples') * (powerSave ? 0.5 : 1)).round();
+      final drops = (_ripples * (powerSave ? 0.5 : 1)).round();
       _soft
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.6;
@@ -214,7 +219,7 @@ class TopAtmosphere {
   /// 맨 위(옅게): 빗줄·화산재. 파티클 상한 fx_map, 절전이면 ½.
   void paintOver(Canvas c, Rect view, double ms, {required bool powerSave}) {
     if (rain) {
-      final n = (_weather.obj('rain').integer('streaks') * (powerSave ? 0.5 : 1)).round();
+      final n = (_streaks * (powerSave ? 0.5 : 1)).round();
       _paint.color = const Color(0x55DCEBFF);
       for (var i = 0; i < n; i++) {
         final h = _hash(i, 3);
@@ -224,7 +229,7 @@ class TopAtmosphere {
       }
     }
     if (ash) {
-      final n = (_weather.obj('ash').integer('flakes') * (powerSave ? 0.5 : 1)).round();
+      final n = (_flakes * (powerSave ? 0.5 : 1)).round();
       for (var i = 0; i < n; i++) {
         final h = _hash(i, 5);
         final x = view.left + (h % view.width.toInt() + math.sin(ms / 900 + i) * 6) % view.width;
