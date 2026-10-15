@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art 묶음 6 유령해 승인 대기 — 적 27·보스 13(+촉수) 스프라이트 완료. 남은 것: 음원 생성기 이전 · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | 피해 숫자 가독성(E8) 승인 대기 · `plans/active/render-perf.md`(실기기 측정 대기) · 디자인 2·3단계는 S1 배정 대기 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 5·6 승인(S1) · UI 상단 바 머지 후 실기기 확인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
+| 막힌 것 | S4 UI 골든 en_m3_hud가 v2.1(하늘 0.7) 전 값 — S4 재생성 · 숫자 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 피해 숫자 가독성 (platform E8)
+- 테스트 먼저 `damage_numbers_test`(5개) → `DamageNumbers.add(key:)`: 같은 적·같은 종류 250ms 안이면 합치고 다시 튀어 오름(지금 그려지는 높이를 새 기준 — 아래로 떨어져 겹치지 않게),
+  겹치면 글자 폭 기준으로 위로 비켜 쌓기 최대 3줄, 넘치면 맨 위 숫자에 합침(종류는 그대로 — 커져서 다시 겹치지 않게). 동시 상한·합계 보존 그대로.
+  값은 juice damageNumber.mergeMs·stackRows (render_tables는 300줄 제한이라 장면이 raw에서 읽어 넘긴다).
+- 골든 battle_numbers(배 앞 밀집 장면) 새로, battle_aoe·battle_reference 갱신. 비교 `docs/specs/render-layout-v2/compare_numbers.png`·`goldens_numbers_before_after.png`.
+- check --full: 렌더 전부 통과, UI 골든 en_m3_hud 1개 실패 — main 머지로 들어온 S4 골든이 v2.1 전(하늘 0.55) 상자 좌표로 찍혀 상자 고리가 14px 위. 이 변경 전 HEAD에서도 같은 실패 → S4 재생성 요청.
 
 ### 2026-10-15 · S3 · 음원 생성기 이전 (S1 요청, 여유 있을 때)
 - `docs/store/audio-gen/` → `tools/art/audio/`(gen_audio.py·chipsynth.py·test_gen_audio.py 그대로, 미리 듣기 출력은 `tools/art/audio/preview/` 무시). LICENSES.json 음원 19개 출처 경로 갱신.

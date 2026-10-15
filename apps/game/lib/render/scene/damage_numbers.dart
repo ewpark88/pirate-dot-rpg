@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/fx/pool.dart';
@@ -15,6 +17,9 @@ class DamageNumber {
   double y = 0;
   double ageMs = 0;
 
+  /// 합치기 기준(적 id). 음수면 합치지 않는다(범위 합산 등).
+  int key = -1;
+
   /// 그리는 쪽이 붙여 두는 캐시(TextPainter 등). 풀과 함께 재사용된다.
   Object? cache;
 
@@ -27,15 +32,49 @@ class DamageNumber {
 
 /// 데미지 숫자 묶음. 상한(juice limits.damageNumbers)을 넘으면 가장 오래된 둘을 하나로 합친다 → 합계 보존.
 class DamageNumbers {
-  DamageNumbers(this.spec, int capacity) : pool = Pool(capacity, DamageNumber.new);
+  DamageNumbers(this.spec, int capacity, {required this.mergeMs, required this.stackRows})
+    : pool = Pool(capacity, DamageNumber.new);
+
+  /// juice damageNumber.mergeMs: 이 시간 안의 같은 적·같은 종류 피해는 숫자 하나로 합친다(숫자 더미 방지).
+  final double mergeMs;
+
+  /// juice damageNumber.stackRows: 겹치는 숫자를 위로 비켜 쌓는 최대 줄 수. 넘치면 맨 위 숫자에 합친다.
+  final int stackRows;
 
   final DamageNumberSpec spec;
   final Pool<DamageNumber> pool;
 
   List<DamageNumber> get active => pool.active;
 
-  void add(BigNum amount, double x, double y, DamageKind kind) {
+  /// 숫자 하나를 띄운다 (platform E8 '숫자가 쌓여 읽히지 않음' 대책, 기준 gif처럼 읽히게):
+  /// 1. 같은 적([key])·같은 종류가 [mergeMs] 안이면 그 숫자에 더하고 다시 튀어 오르게.
+  /// 2. 지금 그려지는 숫자와 겹치면 한 줄씩 위로 비켜 쌓는다(최대 [stackRows]줄), 넘치면 맨 위 숫자에 합친다.
+  /// 3. 동시 상한을 넘으면 가장 오래된 둘을 하나로 합친다 → 합계 보존.
+  void add(BigNum amount, double x, double y, DamageKind kind, {int key = -1}) {
     final list = pool.active;
+    if (key >= 0) {
+      for (final n in list) {
+        if (n.key == key && n.kind == kind && n.ageMs < mergeMs) {
+          _renew(n.._setAmount(n.amount + amount));
+          return;
+        }
+      }
+    }
+    final scale = _scaleOf(kind);
+    final line = lineHeight(scale);
+    final width = textWidth(amount.format(), scale);
+    var top = y;
+    DamageNumber? blocker;
+    for (var row = 0; row < stackRows; row++) {
+      blocker = _overlapping(x, top, line, width);
+      if (blocker == null) break;
+      top = math.min(top, blocker.y - riseOf(blocker)) - line;
+    }
+    if (blocker != null) {
+      // 종류(크기)는 그대로 둔다 — 일반 숫자가 치명타 크기로 커지면 옆 줄과 다시 겹친다. 합계는 보존.
+      _renew(blocker.._setAmount(blocker.amount + amount));
+      return;
+    }
     if (list.length >= pool.capacity) {
       final oldest = list[0];
       final next = list[1].._setAmount(list[1].amount + oldest.amount);
@@ -45,10 +84,38 @@ class DamageNumbers {
     pool.obtain()
       .._setAmount(amount)
       ..kind = kind
+      ..key = key
       ..x = x
-      ..y = y
+      ..y = top
       ..ageMs = 0;
   }
+
+  /// 합친 숫자를 새로 띄운다: 지금 그려지는 높이를 새 기준으로 삼아(아래로 떨어져 위 숫자와 겹치지 않게) 수명만 처음부터.
+  void _renew(DamageNumber n) {
+    n
+      ..y = n.y - riseOf(n)
+      ..ageMs = 0;
+  }
+
+  /// 글자 줄 높이 (3×5 도트 글리프 × 배율 + 외곽선·여백).
+  static double lineHeight(double scale) => 5 * scale + 3;
+
+  /// 글자 폭 (3×5 글리프 4칸 간격 × 배율, pixel_glyphs와 같은 계산).
+  static double textWidth(String text, double scale) => text.length * 4 * scale;
+
+  /// 가로로 숫자 사이에 둘 최소 틈.
+  static const _gapX = 2.0;
+
+  /// (x, y)에 폭 [width]·줄 높이 [line]인 숫자를 놓으면 겹치는 숫자 (가운데 정렬 기준 글자 상자끼리).
+  DamageNumber? _overlapping(double x, double y, double line, double width) {
+    for (final n in pool.active) {
+      final w = textWidth(n.text, scaleOf(n));
+      if ((n.x - x).abs() < (w + width) / 2 + _gapX && ((n.y - riseOf(n)) - y).abs() < line) return n;
+    }
+    return null;
+  }
+
+  double _scaleOf(DamageKind kind) => kind == DamageKind.normal ? spec.normalScale : spec.critScale;
 
   void update(double dtMs) {
     for (final n in pool.active) {
@@ -74,7 +141,7 @@ class DamageNumbers {
 
   static const _bounceEnd = 0.35;
 
-  double scaleOf(DamageNumber n) => n.kind == DamageKind.normal ? spec.normalScale : spec.critScale;
+  double scaleOf(DamageNumber n) => _scaleOf(n.kind);
 
   int colorOf(DamageNumber n) => switch (n.kind) {
     DamageKind.normal => spec.normalColor,

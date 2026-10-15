@@ -1119,7 +1119,9 @@ const Map<String, String> rawTables = {
     "sumColor": "#FF8A1F",
     "lifeMs": 600,
     "risePx": 24,
-    "critBouncePx": 0
+    "critBouncePx": 0,
+    "mergeMs": 250,
+    "stackRows": 3
   },
   "bossKill": {
     "slowMoMs": 300,

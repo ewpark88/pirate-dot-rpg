@@ -167,6 +167,7 @@ class EventDirector implements ReplayListener {
         target.x,
         target.y - kNumberLiftPx,
         e.crit ? DamageKind.crit : DamageKind.normal,
+        key: e.targetId,
       );
     }
     _fx(e.crit ? 'critHit' : 'damage', target.x, target.y);
