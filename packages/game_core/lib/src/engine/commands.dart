@@ -16,7 +16,10 @@ sealed class Command {
   factory Command.fromJson(Json j) {
     final type = j['type'] as String;
     return switch (type) {
-      'upgradePart' => UpgradePart(j['part'] as String, times: j['times'] as int? ?? 1),
+      'upgradePart' =>
+        j['max'] == true
+            ? UpgradePart.max(j['part'] as String)
+            : UpgradePart(j['part'] as String, times: j['times'] as int? ?? 1),
       'summon' => Summon(count: j['count'] as int? ?? 1),
       'mergeAllCards' => const MergeAllCards(),
       'promoteCrew' => PromoteCrew(j['crewId'] as String),
@@ -56,17 +59,23 @@ sealed class Command {
 
 /// 배 부위 강화 (골드).
 class UpgradePart extends Command {
-  const UpgradePart(this.part, {this.times = 1});
+  const UpgradePart(this.part, {this.times = 1}) : max = false;
+
+  /// ‘최대’ 버튼: 골드로 살 수 있는 만큼 (최대 레벨까지).
+  const UpgradePart.max(this.part) : times = 0, max = true;
 
   /// ship_parts.json의 id.
   final String part;
+
+  /// 일괄 강화 횟수 (UI 1·5·10·20·50). 골드가 모자라면 살 수 있는 만큼만.
   final int times;
+  final bool max;
 
   @override
   String get type => 'upgradePart';
 
   @override
-  Json _fields() => {'part': part, 'times': times};
+  Json _fields() => max ? {'part': part, 'max': true} : {'part': part, 'times': times};
 }
 
 /// 선원 소환 (젬). 1회 또는 10연.

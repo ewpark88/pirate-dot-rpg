@@ -36,6 +36,13 @@ void main() {
       expect(p.gold.closeTo(gps.times(t.meta.offlineMaxSec * t.meta.offlineEfficiency)), isTrue);
     });
 
+    test('5분 미만 부재(광고 시청·앱 껐다 켜기)는 복귀 창도 보상도 없다 — 사용자 신고 2026-10-15', () {
+      expect(t.meta.offlineMinSec, 300);
+      expect(offlinePreview(away(const Duration(minutes: 4, seconds: 59)), t, EconomyHarness.start), isNull);
+      expect(offlinePreview(away(const Duration(seconds: 30)), t, EconomyHarness.start), isNull);
+      expect(offlinePreview(away(const Duration(minutes: 5)), t, EconomyHarness.start), isNotNull);
+    });
+
     test('offline.minSec 미만이거나 시계 역행이면 null, ClaimOffline도 아무것도 안 함', () {
       final short = away(Duration(seconds: t.meta.offlineMinSec - 1));
       expect(offlinePreview(short, t, EconomyHarness.start), isNull);

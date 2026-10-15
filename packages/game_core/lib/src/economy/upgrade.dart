@@ -12,22 +12,19 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
   if (defs.isEmpty) return state;
   final def = defs.first;
 
-  var gold = state.wallet.gold;
-  var level = state.ship.level(def.id);
-  final start = level;
-  final lookBefore = partLookStage(def, level);
-  for (var i = 0; i < command.times; i++) {
-    final max = def.maxLevel;
-    if (max != null && level >= max) break;
-    final cost = partCost(def, level);
-    if (gold < cost) break;
-    gold = gold - cost;
-    level++;
-    ctx.emit(PartUpgraded(ctx.tick, part: def.id, level: level));
-    final every = def.milestoneEvery;
-    if (every != null && level % every == 0) ctx.emit(PartMilestone(ctx.tick, part: def.id, level: level));
+  final start = state.ship.level(def.id);
+  final can = affordableLevels(def, start, state.wallet.gold);
+  final n = command.max || command.times > can ? can : command.times;
+  if (n <= 0) return state;
+  // 비용은 공식 합 한 번 (일괄·최대 강화 성능). 이벤트는 레벨마다 (스펙 economy-m1 기준 1).
+  final gold = state.wallet.gold - partCostSum(def, start, n);
+  final level = start + n;
+  final every = def.milestoneEvery;
+  for (var l = start + 1; l <= level; l++) {
+    ctx.emit(PartUpgraded(ctx.tick, part: def.id, level: l));
+    if (every != null && l % every == 0) ctx.emit(PartMilestone(ctx.tick, part: def.id, level: l));
   }
-  if (level == start) return state;
+  final lookBefore = partLookStage(def, start);
   final look = partLookStage(def, level);
   if (look > lookBefore) ctx.emit(ShipLookChanged(ctx.tick, part: def.id, stage: look));
 
