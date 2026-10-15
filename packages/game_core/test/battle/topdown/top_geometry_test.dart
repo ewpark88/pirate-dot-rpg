@@ -231,9 +231,20 @@ void main() {
     test('탑다운 모양 키(T4-B): topWidth·topRadius·topArcDeg가 있으면 그것, 없으면 옆모습 값', () {
       AttackDef withKeys(String family, Map<String, Object> extra) =>
           AttackDef.fromJson(JsonReader({...attack(family).raw.raw, ...extra}, 'test'));
+      // 실제 표에 탑다운 키가 들어가도(T4-B 값) ‘없으면 옆모습 값’을 보도록 키를 뺀 사본.
+      AttackDef plain(String family) => AttackDef.fromJson(
+        JsonReader(
+          {...attack(family).raw.raw}
+            ..remove('topWidth')
+            ..remove('topRadius')
+            ..remove('topArcDeg')
+            ..remove('topRange'),
+          'test',
+        ),
+      );
       final aim = TopAim(topField, w);
       // 관통: 반폭 3(width 6의 절반) → topWidth 10이면 옆으로 8 떨어진 적도 맞는다.
-      final pierce = attack('pierce');
+      final pierce = plain('pierce');
       final first = mob(topField.shipX, topField.shipY - 40);
       final aside = mob(topField.shipX + 8, topField.shipY - 70, id: 2);
       expect(aim.beamHalfWidth(pierce), pierce.width / 2);
@@ -243,11 +254,11 @@ void main() {
       // 수중: 장판 반지름도 topRadius.
       final under = withKeys('underwater', {'topRadius': 30});
       expect(geo.zoneRadius(under), 30);
-      expect(geo.zoneRadius(attack('underwater')), attack('underwater').radius);
+      expect(geo.zoneRadius(plain('underwater')), attack('underwater').radius);
       expect(SideGeometry(w).zoneRadius(under), attack('underwater').radius, reason: '옆모습은 그대로');
       // 강습: 부채꼴 각.
       expect(aim.arcDeg(withKeys('assault', {'topArcDeg': 48})), 48);
-      expect(aim.arcDeg(attack('assault')), attack('assault').angleDeg);
+      expect(aim.arcDeg(plain('assault')), attack('assault').angleDeg);
       // 충격: 고리 범위.
       expect(aim.ringRange(withKeys('shock', {'topRadius': 70})), 70);
     });
