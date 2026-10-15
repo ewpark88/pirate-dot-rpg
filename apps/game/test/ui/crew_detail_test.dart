@@ -102,4 +102,16 @@ void main() {
     await tester.tap(find.byKey(const Key('fleet.auto')));
     expect(fleet.calls, ['auto']);
   });
+
+  testWidgets('B: 기본 포트는 계약 명령을 보낸다 (AutoFleet · SetFleetSlot)', (tester) async {
+    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab);
+    await tester.tap(find.byKey(const Key('fleet.auto')));
+    await tester.tap(find.byKey(const Key('tab.$voyageTab')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('fleet.slot.1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('fleet.pick.manta')));
+    await tester.pumpAndSettle();
+    expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), const SetFleetSlot(1, 'manta').toJson()]);
+  });
 }
