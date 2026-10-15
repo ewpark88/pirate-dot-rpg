@@ -14,6 +14,10 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 음원 생성기 이전 (S1 요청, 여유 있을 때)
+- `docs/store/audio-gen/` → `tools/art/audio/`(gen_audio.py·chipsynth.py·test_gen_audio.py 그대로, 미리 듣기 출력은 `tools/art/audio/preview/` 무시). LICENSES.json 음원 19개 출처 경로 갱신.
+- 확인: 옛 경로와 새 경로 효과음 wav 42개 바이트 같음, 테스트 7개 통과. 옛 폴더 삭제·docs/store 문서 경로는 main 전용 → S1.
+
 ### 2026-10-15 · S3 · art 묶음 6: 유령해 (적·보스 스프라이트 전부 완료)
 - gen_enemies: skeleton 13×15(뼈 흰빛·녹슨 칼·걸음), wraith 14×15(두건 천·초록 눈·찢긴 끝 흔들림), ghostjelly(팩 jelly 박하 유령빛), cursegull(gull 초록 + 보라 부리).
 - gen_bosses: ghost_ship(찢긴 반투명 잿빛 돛·초록 해골·썩은 선체 — 내 배 t4 청록과 구별), ghost_admiral 56×62(삼각 모자 금 테·해골, 초록 빛 눈구멍, 금 단추 외투·견장, 칼, 반투명 유령 꼬리).
