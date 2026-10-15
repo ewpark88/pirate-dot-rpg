@@ -14,6 +14,11 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 지루함 해소 3종 연출 (S2 c5193fa 계약)
+- `scene/fun_director.dart`: FeverStarted(금빛 번쩍·흔들림·진동·소리), GoldfishCaught(금화 터짐 + 금 숫자 + 그 금액 금화가 배로), BottlePicked(병 자리 반짝), SeaEventStarted·ShipLookChanged 소리. EventDirector default → funEvent.
+- TopScenePainter: 이벤트 적(goldfish·sea_serpent·merchant_ship)은 td_event 그림, 피버 중 금화 비(결정론, 절전 ½) + 금빛 테두리(선명 테 + 안쪽 번짐, 맥박), 유리병은 배 오른쪽 앞에서 출렁, 폭풍이면 분위기에 비·어둡게·번개 번쩍(번쩍임 설정 따름).
+- fx_map topEvents·events(feverStarted·goldfishCaught·bottlePicked·seaEventStarted 소리 = 기존 효과음). 테스트 top_fun_test. 시안 `docs/specs/render-topdown/fun_events_s24.png`.
+
 ### 2026-10-15 · S3 · 사용자 지시: 배 15%로 + 부품 단계 극적 변화(돛 1→4·선체·대포)
 - e9f7e1f: 탑다운 배 0.85배(fx_map topShip.scale) — S24 약 60dp, 화면 폭 약 15%.
 - `gen_topdown_ships.py` 다시: 돛 단계 = 돛대 수(1→2→3→4, 5단계 앞 삼각돛·금 테·해골), 선체 단계 = 길이 +5%·폭 +3%씩 + 뱃머리 뭉툭→뾰족→쇠 충각→금 선수상 + 갑판(두 색 판자·쇠 띠·청동/금 테·마호가니), 대포 = 한쪽 1→2→2(긴)→3(청동)→3(쌍포)→4+회전 포탑→4 금 용포. 망루 크기·화물 개수도 단계별. 큰 돛대(망루)는 늘 같은 자리라 층이 어긋나지 않음. base 층은 빈 프레임(그림자는 지금 선체 단계).

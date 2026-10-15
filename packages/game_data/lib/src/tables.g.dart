@@ -483,6 +483,22 @@ const Map<String, String> rawTables = {
     "shipLookChanged": {
       "fx": "level_up",
       "sfx": "promote"
+    },
+    "feverStarted": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "goldfishCaught": {
+      "fx": null,
+      "sfx": "coin"
+    },
+    "bottlePicked": {
+      "fx": null,
+      "sfx": "pop"
+    },
+    "seaEventStarted": {
+      "fx": null,
+      "sfx": "combo"
     }
   },
   "projectiles": {
@@ -1488,7 +1504,9 @@ const Map<String, String> rawTables = {
       "border": "#FFD84A",
       "borderDp": 6,
       "pulseMs": 420,
-      "coinsPerSec": 10
+      "coinsPerSec": 10,
+      "flashMs": 500,
+      "coins": 18
     },
     "storm": {
       "flashEveryMs": [

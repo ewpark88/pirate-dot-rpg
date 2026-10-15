@@ -63,6 +63,7 @@ class TopScenePainter {
       ..paint(c, viewRect, clockMs);
     final powerSave = scene.settings.powerSave;
     atmosphere
+      ..storm = view.seaEvent?.id == 'storm'
       ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, view.shipHeading, powerSave: powerSave)
       ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
     // 전장 좌표로: 배 중심이 원점.
@@ -106,10 +107,22 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _enemies(c, under: false);
+    if (view.seaEvent?.id == 'bottle') {
+      final b = scene.bottleAt;
+      sprites.draw(
+        c,
+        'td_event:bottle',
+        b.dx.roundToDouble(),
+        b.dy.roundToDouble(),
+        frame: (clockMs / 400).floor() % 2,
+      );
+    }
     fx(c);
     c.restore();
     atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
+    if (view.feverTicksLeft > 0) _feverCoins(c, viewRect, clockMs);
     c.restore();
+    _overlays(c, frame.box, clockMs);
   }
 
   late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
@@ -142,6 +155,53 @@ class TopScenePainter {
     return cfg.raw['glow'] == true && skins.ready(id);
   }
 
+  late final JsonReader _fever = scene.fx.raw.obj('topEvents').obj('fever');
+  late final Color _feverColor = Color(parseArgb(_fever.str('border'), 'topEvents.fever.border'));
+  final _border = Paint()..style = PaintingStyle.stroke;
+  final _overlay = Paint();
+
+  /// 피버 금화 비: 보이는 영역 위에서 결정론적 자리로 떨어지며 회전(절전이면 반).
+  void _feverCoins(Canvas c, Rect view, double ms) {
+    final n = (_fever.integer('coins') * (scene.settings.powerSave ? 0.5 : 1)).round();
+    const size = 9.0;
+    for (var i = 0; i < n; i++) {
+      final x = view.left + (i * 53 + 17) % view.width.toInt();
+      final y = view.top + ((ms / (14 + i % 5)) + i * 41) % (view.height + 20) - 10;
+      sprites.drawSmoothFrame(c, 'coin_hd', ((ms / 70).floor() + i) % 4, x, y, size, size);
+    }
+  }
+
+  /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).
+  void _overlays(Canvas c, Size box, double ms) {
+    final view = scene.frame;
+    final flash = scene.settings.flash;
+    if (view.feverTicksLeft > 0) {
+      final pulse = 0.55 + 0.45 * math.sin(ms / _fever.number('pulseMs') * math.pi);
+      final w = _fever.number('borderDp');
+      // 안쪽으로 번지는 금빛(넓고 흐림) + 가장자리 금 테(선명)
+      _border
+        ..strokeWidth = w * 3
+        ..color = _feverColor.withValues(alpha: 0.35 * pulse)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, w);
+      c.drawRect((Offset.zero & box).deflate(w * 1.5), _border);
+      _border
+        ..strokeWidth = w
+        ..color = _feverColor.withValues(alpha: 0.6 + 0.4 * pulse)
+        ..maskFilter = null;
+      c.drawRect((Offset.zero & box).deflate(w / 2), _border);
+    }
+    final f = scene.moments.feverFlashMs;
+    if (f > 0 && flash) {
+      _overlay.color = _feverColor.withValues(alpha: 0.35 * f / _fever.number('flashMs'));
+      c.drawRect(Offset.zero & box, _overlay);
+    }
+    final l = atmosphere.lightning(ms);
+    if (l > 0 && flash) {
+      _overlay.color = Color.fromRGBO(240, 246, 255, 0.45 * l);
+      c.drawRect(Offset.zero & box, _overlay);
+    }
+  }
+
   /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
   bool _sink(Canvas c, double left) {
     if (left <= 0) return false;
@@ -171,7 +231,7 @@ class TopScenePainter {
     }
     for (final e in scene.poses) {
       if ((e.layer == 'underwater') != under) continue;
-      final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= e.boss ? 'td_boss:${e.kind}' : 'td_enemy:${e.kind}';
+      final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
       final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
@@ -198,6 +258,13 @@ class TopScenePainter {
   final Map<SpriteSheet, _Batch> _batches = {};
   final Map<SpriteSheet, _Batch> _flashBatches = {};
   final Map<String, String> _enemyKeys = {};
+
+  /// 돌발 이벤트 적(황금 물고기·바다뱀·상인선)은 td_event 그림, 나머지는 td_enemy·td_boss.
+  String _keyFor(String kind, {required bool boss}) {
+    if (sprites.sheet('td_event:$kind') != null) return 'td_event:$kind';
+    return boss ? 'td_boss:$kind' : 'td_enemy:$kind';
+  }
+
   final Map<String, String> _bossKeys = {};
   final _atlasPaint = Paint()
     ..isAntiAlias = false

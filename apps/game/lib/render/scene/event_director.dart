@@ -9,6 +9,7 @@ import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/coin_rain.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
+import 'package:pirate_dot/render/scene/fun_director.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/ship_geometry.dart';
@@ -143,10 +144,11 @@ class EventDirector implements ReplayListener {
           scene.moments.onTierUp(e.tierId);
         case ShipLookChanged():
           scene.moments.onPartUp(e.part);
+          funEvent(scene, e);
         case BossFailed():
           scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:
-          break;
+          funEvent(scene, e);
       }
     }
     _m3
