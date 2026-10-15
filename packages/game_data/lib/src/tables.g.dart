@@ -1784,10 +1784,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 17, "topHalfLength": 40, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 18, "topHalfLength": 44, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 20, "topHalfLength": 50, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 20, "topHalfLength": 50, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
@@ -1879,6 +1879,7 @@ const Map<String, String> rawTables = {
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,
+    "mobSpeedScale": 2,
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,
