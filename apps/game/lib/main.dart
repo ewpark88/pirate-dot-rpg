@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pirate_dot/adapters/ad_aware_lifecycle.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/google_ads_sdk.dart';
 import 'package:pirate_dot/adapters/analytics/firebase_sdk.dart';
@@ -67,10 +68,6 @@ Future<void> main() async {
   step('analytics');
   final audio = await AudioAdapter.load(FlameAudioSdk(), timeout: _sdkTimeout);
   step('audio');
-  // 광고가 화면을 덮는 동안 게임 소리를 멈춘다(광고 소리와 겹치거나 오디오 포커스를 다투지 않게 — 2026-10-15 광고 뒤 버벅임).
-  final ads = AdMobAds(GoogleAdsSdk(), onShowStart: audio.suspend, onShowEnd: audio.unsuspend);
-  // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
-  ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
   late final ProviderContainer container;
   final notifier = OfflineFullNotifier(
     sdk: LocalNotificationsSdk(),
@@ -82,6 +79,35 @@ Future<void> main() async {
     enabled: () => container.read(gameStateProvider).settings.notifications,
     lang: () => container.read(gameStateProvider).settings.lang,
   );
+  // 생명주기: 광고 화면이 앞에 와서 생기는 pause·resume은 백그라운드로 치지 않는다(광고 뒤 복귀 보상 버그, 2026-10-15).
+  final life = AdAwareLifecycle(
+    onBackground: () {
+      unawaited(host.pause());
+      unawaited(notifier.onPause());
+      audio.pauseBgm(); // 뒤로 가면 배경음도 멈춘다(실기기: 홈 화면에서도 계속 울렸다)
+    },
+    onForeground: () {
+      host.resume();
+      unawaited(notifier.onResume());
+      audio.resumeBgm();
+    },
+  );
+  // 광고가 화면을 덮는 동안: 게임 소리 멈춤(포커스 다툼·겹침 방지) + 오프라인 기준 시각을 지금으로(복귀 창이 안 뜨게).
+  final ads = AdMobAds(
+    GoogleAdsSdk(),
+    onShowStart: () {
+      life.adStarted();
+      host.markPresent();
+      audio.suspend();
+    },
+    onShowEnd: () {
+      host.markPresent();
+      life.adEnded();
+      audio.unsuspend();
+    },
+  );
+  // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
+  ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
   container = ProviderContainer(
     overrides: [
       tablesProvider.overrideWithValue(tables),
@@ -107,16 +133,8 @@ Future<void> main() async {
   // 백그라운드로 가면 저장하고 멈춘다. 돌아오면 다시 돈다 (오프라인 보상은 UI 복귀 팝업이 ClaimOffline으로 받는다).
   // 엔진이 떨어지면(액티비티 종료) 타이머·배경음을 멈춘다 — 떨어진 엔진에 플랫폼 메시지를 계속 보내지 않게.
   AppLifecycleListener(
-    onPause: () {
-      unawaited(host.pause());
-      unawaited(notifier.onPause());
-      audio.pauseBgm(); // 뒤로 가면 배경음도 멈춘다(실기기: 홈 화면에서도 계속 울렸다)
-    },
-    onResume: () {
-      host.resume();
-      unawaited(notifier.onResume());
-      audio.resumeBgm();
-    },
+    onPause: life.pause,
+    onResume: life.resume,
     onDetach: () {
       unawaited(host.pause());
       audio.stopBgm();
