@@ -46,7 +46,7 @@ class GoalBar extends ConsumerWidget {
     return TutorialSpot(
       id: 'goal',
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 6, 10, 2),
+        padding: const EdgeInsets.fromLTRB(10, 4, 10, 2),
         child: DecoratedBox(
           key: const Key('goal'),
           decoration: BoxDecoration(
@@ -55,7 +55,7 @@ class GoalBar extends ConsumerWidget {
             boxShadow: Skin.shadowSmall,
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: u * 3),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: u * 2),
             child: Row(
               children: [
                 const PixelSprite(UiSprites.flag, dots: 16, scale: 1),

@@ -38,7 +38,7 @@ class PixelTabItem extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kMinTap),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 2),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -62,7 +62,7 @@ class PixelTabItem extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Skin.text(14, color: selected ? Skin.primaryEdge : Skin.sub),
+                style: Skin.text(13, color: selected ? Skin.primaryEdge : Skin.sub),
               ),
             ],
           ),
@@ -82,7 +82,7 @@ class PixelTabBar extends StatelessWidget {
   Widget build(BuildContext context) => SafeArea(
     top: false,
     child: Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 4),
       // 화면 아래 떠 있는 흰 둥근 판 (스킨 r1).
       child: DecoratedBox(
         decoration: BoxDecoration(
