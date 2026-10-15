@@ -32,6 +32,10 @@
       "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/boss_horn_0.wav)",
       "license": "OWN"
     },
+    "audio/sfx/coin.ogg": {
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/coin_1.wav)",
+      "license": "OWN"
+    },
     "audio/sfx/combo.ogg": {
       "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/combo_0.wav)",
       "license": "OWN"
