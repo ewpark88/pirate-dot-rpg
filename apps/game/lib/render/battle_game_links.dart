@@ -35,4 +35,13 @@ mixin _UiLinks on FlameGame {
   /// 탑다운: 전장 좌표 ↔ 상자 dp (UI 탭 판정용 — 황금 물고기·보물상자, 시트를 끄는 중에도 지금 배치 기준).
   Offset worldToDp(Offset world) => _topFrame.worldToDp(world, scene.topShip);
   Offset dpToWorld(Offset dp) => _topFrame.dpToWorld(dp, scene.topShip);
+
+  /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
+  CutInState get cutIn => scene.moments.cutIn;
+
+  /// 운영자: 컷인 다시 보기.
+  void resetSeenBosses() => scene.moments.resetSeenBosses();
+
+  /// 운영자 패널용 최근 효과음.
+  List<String> get audioLog => scene.audioLog;
 }

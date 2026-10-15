@@ -74,15 +74,6 @@ class BattleGame extends FlameGame with _UiLinks {
   /// 효과음·배경음 (flame_audio 어댑터). null이면 무음.
   final AudioPort? audio;
 
-  /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
-  CutInState get cutIn => scene.moments.cutIn;
-
-  /// 운영자: 컷인 다시 보기.
-  void resetSeenBosses() => scene.moments.resetSeenBosses();
-
-  /// 운영자 패널용 최근 효과음.
-  List<String> get audioLog => scene.audioLog;
-
   /// onLoad에서 아트 팩(assets/)을 읽을지. 없는 이미지는 플레이스홀더.
   final bool loadSprites;
   SpriteBank? _sprites;
@@ -224,6 +215,9 @@ class BattleGame extends FlameGame with _UiLinks {
     final frame = battleFrameFor(Size(size.x, size.y), dpr, bottomInset: _bottomInset);
     scene.layout = frame;
     _topFrame = topFrameFor(Size(size.x, size.y), dpr);
+    // 상자 크기가 바뀌면(시트를 끄는 동안 매 프레임) 절전 캐시의 옛 그림을 버리고 바로 다시 그린다(S4: 선원 줄이 옛 자리에 남음).
+    _cache.dispose();
+    _dirty = true;
     if (_top) {
       // 탑다운(T2): 캔버스를 상자 dp 그대로 — 탑다운 카메라·옆모습 HUD는 ScenePainter.paintTop이 옮긴다.
       camera.viewfinder
