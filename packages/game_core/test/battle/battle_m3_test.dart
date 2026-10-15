@@ -214,4 +214,11 @@ void main() {
     round(field([touching])..guns = [g]).fireGuns();
     expect(events.whereType<Damage>().map((d) => d.targetId), contains(touching.id));
   });
+
+  test('계약 I. 슬롯 투영이 현재 등급 순번을 싣고 JSON 왕복에서 유지된다 (없는 옛 기록은 0)', () {
+    final slot = gun(crewOf('lob'), rarity: 3).view();
+    expect(slot.rarity, 3);
+    expect(FleetSlot.fromJson(slot.toJson()).rarity, 3);
+    expect(FleetSlot.fromJson(const {'crewId': 'octo', 'cooldown': 0, 'skillCooldown': 0}).rarity, 0);
+  });
 }

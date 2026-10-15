@@ -85,15 +85,19 @@ class EnemyView {
 /// 화면 아래 무기 슬롯 하나 (출전 선원).
 @immutable
 class FleetSlot {
-  const FleetSlot({required this.crewId, this.cooldown = 0, this.skillCooldown = 0});
+  const FleetSlot({required this.crewId, this.cooldown = 0, this.skillCooldown = 0, this.rarity = 0});
 
   factory FleetSlot.fromJson(Json j) => FleetSlot(
     crewId: j['crewId'] as String,
     cooldown: (j['cooldown'] as num).toDouble(),
     skillCooldown: (j['skillCooldown'] as num).toDouble(),
+    rarity: (j['rarity'] as int?) ?? 0,
   );
 
   final String crewId;
+
+  /// 현재 등급 순번 (`rarities.json` 순서, 0 = 일반). 승급하면 바로 바뀐다 — 선원 바 테두리 색 (계약 I, 렌더 요청).
+  final int rarity;
 
   /// 남은 공격 쿨타임 비율 0(준비)~1(방금 발사). 슬롯의 어두운 덮개.
   final double cooldown;
@@ -101,7 +105,7 @@ class FleetSlot {
   /// 남은 스킬 쿨타임 비율.
   final double skillCooldown;
 
-  Json toJson() => {'crewId': crewId, 'cooldown': cooldown, 'skillCooldown': skillCooldown};
+  Json toJson() => {'crewId': crewId, 'cooldown': cooldown, 'skillCooldown': skillCooldown, 'rarity': rarity};
 }
 
 /// 바다에 떠 있는 보물상자 (설계서 4.6). 탭하면 TapChest. 경제 레인이 띄우고 치운다.

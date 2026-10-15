@@ -148,6 +148,7 @@ class Gun {
       crewId: crewId,
       cooldown: ratio(cooldown, attack.intervalSec),
       skillCooldown: ratio(skillCooldown, skill.cooldownSec),
+      rarity: rarity,
     );
   }
 }

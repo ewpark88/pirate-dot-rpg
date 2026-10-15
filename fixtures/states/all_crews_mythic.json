@@ -520,32 +520,38 @@
       {
         "crewId": "volke",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "volt",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "moby",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "orca",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "kraki",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "manta",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       }
     ],
     "captainId": "volke",

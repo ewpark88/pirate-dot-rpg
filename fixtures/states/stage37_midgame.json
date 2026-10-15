@@ -234,22 +234,26 @@
       {
         "crewId": "manta",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "pingu",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "octo",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       },
       {
         "crewId": "pang",
         "cooldown": 0.3,
-        "skillCooldown": 0.0
+        "skillCooldown": 0.0,
+        "rarity": 0
       }
     ],
     "captainId": "manta",
