@@ -78,7 +78,7 @@ void main() {
   });
 
   // 스펙 render-art-enemies: 해역 묶음마다 하나씩 늘린다 (플레이스홀더 0).
-  for (final regionId in ['coral']) {
+  for (final regionId in ['coral', 'storm']) {
     test('render-art-enemies: $regionId 해역의 적·보스가 모두 스프라이트 파일이 있다', () {
       final r = tables.regions.regions.firstWhere((r) => r.id == regionId);
       final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};

@@ -1,4 +1,4 @@
-"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit). 격자 → PNG, LICENSES OWN.
+"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray). 격자 → PNG, LICENSES OWN.
 
     python -I tools/art/gen_bosses.py            # apps/game/assets/bosses/ 에 쓴다
     python -I tools/art/gen_bosses.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -133,49 +133,77 @@ SKULL = [
 ]
 
 
-def raider_ship() -> list[list]:
+def ship_variant(swap, sail, sail_shade, emblem, emblem_colors, emblem_at, tatter, streamer) -> list[list]:
+    """enemy_ship 칸 바꿈: 색 바꿈 → 원래 작은 문양 지움 → (찢긴 돛 끝) → 돛 아래 그늘 2줄 → 문양 → 깃발 꼬리 → 외곽선."""
     src = read_png(ASSETS / "bosses" / "enemy_ship.png")
-    px = [[None if c is None else RAIDER_SWAP.get(c[:3], c[:3]) for c in row] for row in src]
+    px = [[None if c is None else swap.get(c[:3], c[:3]) for c in row] for row in src]
     h, w = len(px), len(px[0])
-    # 원래 작은 문양(돛 위 외곽선 칸) 지우기 → 돛 색
     for y in range(h):
         for x in range(w):
-            if px[y][x] == OUTLINE and 0 < x < w - 1 and px[y][x - 1] == SAIL and px[y][x + 1] in (SAIL, OUTLINE):
-                if px[y - 1][x] in (SAIL, OUTLINE) and px[y + 1][x] in (SAIL, OUTLINE) and _inside_sail(px, x, y):
-                    px[y][x] = SAIL
-    # 찢긴 돛 끝: 돛 맨 아래 칸을 6칸마다 2칸씩 한 줄 올린다.
+            if px[y][x] == OUTLINE and 0 < x < w - 1 and px[y][x - 1] == sail and px[y][x + 1] in (sail, OUTLINE):
+                if px[y - 1][x] in (sail, OUTLINE) and px[y + 1][x] in (sail, OUTLINE) and _inside_sail(px, x, y, sail):
+                    px[y][x] = sail
+    if tatter:  # 돛 맨 아래 칸을 6칸마다 2칸씩 한 줄 올린다.
+        for x in range(w):
+            ys = [y for y in range(h) if px[y][x] == sail]
+            if not ys or x % 6 not in (1, 2):
+                continue
+            bottom = max(ys)
+            if px[bottom + 1][x] == OUTLINE:
+                px[bottom + 1][x] = None
+                px[bottom][x] = OUTLINE
     for x in range(w):
-        ys = [y for y in range(h) if px[y][x] == SAIL]
-        if not ys or x % 6 not in (1, 2):
-            continue
-        bottom = max(ys)
-        if px[bottom + 1][x] == OUTLINE:
-            px[bottom + 1][x] = None
-            px[bottom][x] = OUTLINE
-    # 돛 아래쪽 그늘 2줄
-    for x in range(w):
-        ys = [y for y in range(h) if px[y][x] == SAIL]
+        ys = [y for y in range(h) if px[y][x] == sail]
         for y in ys[-2:]:
-            px[y][x] = SAIL_SHADE
-    # 해골 (돛대 왼쪽 돛 가운데, 줄무늬 위)
-    sx, sy = 21, 8
-    for dy, row in enumerate(SKULL):
+            px[y][x] = sail_shade
+    sx, sy = emblem_at
+    for dy, row in enumerate(emblem):
         for dx, ch in enumerate(row):
-            if ch == "w":
-                px[sy + dy][sx + dx] = BONE
-            elif ch == "k":
-                px[sy + dy][sx + dx] = OUTLINE
-    # 깃발 꼬리: 깃발 오른쪽으로 갈라진 빨간 띠
+            if ch in emblem_colors:
+                px[sy + dy][sx + dx] = emblem_colors[ch]
     for x, y in ((34, 2), (35, 2), (36, 3), (37, 3), (34, 4), (35, 4), (36, 5)):
         if px[y][x] is None:
-            px[y][x] = STREAMER
+            px[y][x] = streamer
     outline(px)
     return px
 
 
-def _inside_sail(px, x, y) -> bool:
+def raider_ship() -> list[list]:
+    """핏빛 돛·검은 줄·찢긴 돛 끝·해골·어두운 선체·빨간 깃발 꼬리."""
+    return ship_variant(RAIDER_SWAP, SAIL, SAIL_SHADE, SKULL, {"w": BONE, "k": OUTLINE}, (21, 8), True, STREAMER)
+
+
+STORM_SWAP = {
+    (60, 50, 60): (70, 82, 112),  # 돛: 먹구름 남회색
+    (179, 48, 43): (250, 210, 70),  # 줄무늬: 번개 노랑
+    (140, 90, 50): (118, 96, 78),  # 비바람에 바랜 선체
+    (95, 58, 32): (80, 64, 52),
+    (70, 44, 26): (56, 44, 36),
+    (220, 70, 60): (250, 210, 70),  # 꼭대기 깃발도 노랑
+}
+BOLT = [
+    "...kkkk",
+    "..kyyyk",
+    "..kyyk.",
+    ".kyyk..",
+    "kyyyyyk",
+    "kkkyyk.",
+    "..kyk..",
+    ".kyk...",
+    ".kk....",
+]
+
+
+def storm_pirate() -> list[list]:
+    """먹구름 돛·노란 줄·번개 문양·바랜 선체·노란 깃발 꼬리 (폭풍해 중간 보스)."""
+    return ship_variant(
+        STORM_SWAP, (70, 82, 112), (52, 60, 86), BOLT, {"y": (250, 210, 70), "k": OUTLINE}, (21, 6), False, (250, 210, 70)
+    )
+
+
+def _inside_sail(px, x, y, sail) -> bool:
     row = px[y]
-    return any(c == SAIL for c in row[:x]) and any(c == SAIL for c in row[x + 1 :])
+    return any(c == sail for c in row[:x]) and any(c == sail for c in row[x + 1 :])
 
 
 # ---------- giant_hermit ----------
@@ -240,8 +268,10 @@ def giant_hermit() -> list[list]:
     ellipse(OX + 14.5, 28.5, 11, 7, body)
     # 큰 집게 (앞 왼쪽) + 벌어진 틈
     ellipse(OX + 4.5, 27.5, 4.5, 5.5, body)
-    for x, y in ((OX + 0, 26), (OX + 1, 26), (OX + 2, 26), (OX + 0, 27), (OX + 1, 27)):
-        block(x, y, None)
+    for x, y in ((OX - 2, 26), (OX - 1, 26), (OX + 0, 26), (OX + 1, 26),
+                 (OX - 2, 27), (OX - 1, 27), (OX + 0, 27), (OX + 1, 27), (OX + 2, 27), (OX + 3, 27),
+                 (OX - 2, 28), (OX - 1, 28), (OX + 0, 28), (OX + 1, 28)):
+        block(x, y, None)  # 집게 갈라짐: 위·아래 턱 사이 쐐기(가운데 줄이 가장 깊다)
     # 작은 집게 (몸 오른쪽 아래)
     ellipse(OX + 22.5, 33.5, 3, 2.5, body)
     # 눈자루 + 눈 (흰자, 동공은 왼쪽 = 배 쪽을 본다)
@@ -263,9 +293,64 @@ def giant_hermit() -> list[list]:
     return px
 
 
+# ---------- thunder_ray ----------
+RAY = (64, 72, 130)
+RAY_LIGHT = (100, 112, 175)
+RAY_DARK = (44, 50, 96)
+BOLT_Y = (250, 210, 70)
+GLOW = (255, 240, 140)
+# 위에서 본 가오리, 머리가 왼쪽(배 쪽). 날개 끝이 위·아래, 꼬리는 오른쪽.
+RAY_POLY = [(12, 23), (16, 16), (23, 9), (31, 4), (39, 1), (40, 7), (42, 13), (46, 18), (51, 23),
+            (46, 28), (42, 33), (40, 39), (39, 45), (31, 42), (23, 37), (16, 30)]
+
+
+def _in_poly(x: float, y: float, poly) -> bool:
+    inside = False
+    for i in range(len(poly)):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % len(poly)]
+        if (y1 > y) != (y2 > y) and x < x1 + (y - y1) * (x2 - x1) / (y2 - y1):
+            inside = not inside
+    return inside
+
+
+def _line(px, pts, c):
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        n = max(abs(x2 - x1), abs(y2 - y1))
+        for i in range(n + 1):
+            px[round(y1 + (y2 - y1) * i / n)][round(x1 + (x2 - x1) * i / n)] = c
+
+
+def thunder_ray() -> list[list]:
+    """번개 가오리 64×47: 남색 몸(위 밝고 아래 날개 어둡게)·날개 번개 줄·빛나는 눈·머리 지느러미·꼬리 끝 불꽃."""
+    w, h = 64, 47
+    px = [[None] * w for _ in range(h)]
+    for y in range(h):
+        for x in range(w):
+            if _in_poly(x + 0.5, y + 0.5, RAY_POLY):
+                px[y][x] = RAY_LIGHT if y < 11 else (RAY_DARK if y > 33 or (y > 23 and x > 40) else RAY)
+    for y in range(h):  # 등뼈 융기: 머리에서 꼬리까지 밝은 타원
+        for x in range(w):
+            if px[y][x] is not None and ((x + 0.5 - 32) / 17) ** 2 + ((y + 0.5 - 23) / 3.6) ** 2 <= 1:
+                px[y][x] = RAY_LIGHT
+    _line(px, [(51, 23), (60, 23)], RAY_DARK)  # 꼬리
+    _line(px, [(30, 19), (34, 14), (31, 12), (36, 6)], BOLT_Y)  # 위 날개 번개
+    _line(px, [(30, 27), (34, 32), (31, 34), (36, 40)], BOLT_Y)  # 아래 날개 번개
+    for x, y in ((9, 19), (10, 19), (10, 20), (11, 20), (9, 27), (10, 27), (10, 26), (11, 26)):
+        px[y][x] = RAY  # 머리 지느러미(뿔)
+    for x, y in ((16, 20), (17, 20), (16, 26), (17, 26)):
+        px[y][x] = GLOW  # 빛나는 눈
+    for x, y in ((61, 22), (61, 24), (62, 23), (60, 21), (60, 25)):
+        px[y][x] = BOLT_Y  # 꼬리 끝 불꽃
+    outline(px)
+    return px
+
+
 FILES = {
     "bosses/raider_ship.png": raider_ship,
     "bosses/giant_hermit.png": giant_hermit,
+    "bosses/storm_pirate.png": storm_pirate,
+    "bosses/thunder_ray.png": thunder_ray,
 }
 
 
