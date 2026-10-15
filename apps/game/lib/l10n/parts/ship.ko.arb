@@ -7,5 +7,9 @@
   "shipTierDinghy": "쪽배",
   "shipTierSloop": "범선",
   "shipTierWarship": "해적 군함",
-  "shipTierGhost": "유령선"
+  "shipTierGhost": "유령선",
+  "shipSkinCoral": "산호 항해단",
+  "shipSkinStorm": "폭풍 사냥꾼",
+  "shipSkinGold": "황금 함대",
+  "shipSkinPhantom": "유령선"
 }

@@ -7,5 +7,9 @@
   "shipTierDinghy": "Dinghy",
   "shipTierSloop": "Sloop",
   "shipTierWarship": "Pirate Warship",
-  "shipTierGhost": "Ghost Ship"
+  "shipTierGhost": "Ghost Ship",
+  "shipSkinCoral": "Coral Voyagers",
+  "shipSkinStorm": "Storm Hunters",
+  "shipSkinGold": "Golden Fleet",
+  "shipSkinPhantom": "Phantom Ship"
 }

@@ -4,6 +4,7 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:meta/meta.dart';
 
+part 'commands_rebirth.dart';
 part 'operator_commands.dart';
 
 /// 플레이어 입력. UI는 버튼을 누르면 Command만 보낸다. 엔진은 다음 틱에 적용한다.
@@ -41,6 +42,10 @@ sealed class Command {
       'ackSummonResult' => const AckSummonResult(),
       'setFleetSlot' => SetFleetSlot(j['slot'] as int, j['crewId'] as String?),
       'autoFleet' => const AutoFleet(),
+      'buyRebirthUpgrade' => BuyRebirthUpgrade(j['id'] as String),
+      'selectShipSkin' => SelectShipSkin(j['id'] as String?),
+      'selectTitle' => SelectTitle(j['id'] as String?),
+      'setTreasureRoute' => SetTreasureRoute(j['sea'] as int?),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
