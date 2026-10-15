@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -26,7 +27,11 @@ class ShipTab extends ConsumerWidget {
     final tables = ref.watch(tablesProvider);
     return ListView(
       padding: const EdgeInsets.all(8),
-      children: [for (final def in tables.shipParts.parts) _PartRow(def: def)],
+      children: [
+        // 배 스킨 (환생 v2 — 스킨이 생기면 보인다).
+        const Align(alignment: Alignment.centerRight, child: ShipSkinButton()),
+        for (final def in tables.shipParts.parts) _PartRow(def: def),
+      ],
     );
   }
 }
