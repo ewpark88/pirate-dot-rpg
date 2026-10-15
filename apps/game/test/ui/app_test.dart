@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pirate_dot/ui/pixel/pixel_tab_bar.dart';
 
 import 'ui_harness.dart';
 
@@ -8,7 +9,7 @@ void main() {
     testWidgets('${locale.languageCode}: 탭 4개', (tester) async {
       await pumpGame(tester, loadFixture('new_player'), locale: locale);
       expect(find.text(tab), findsOneWidget);
-      expect(find.byType(NavigationDestination), findsNWidgets(4));
+      expect(find.byType(PixelTabItem), findsNWidgets(4));
     });
   }
 }

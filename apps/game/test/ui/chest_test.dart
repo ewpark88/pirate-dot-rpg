@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -38,8 +39,8 @@ void main() {
 
   testWidgets('가라앉기까지 남은 시간 링 = ticksLeft / (floatSec × 1000 / tickMs)', (tester) async {
     await pumpGame(tester, _withChest(ticksLeft: 200)); // 40초 × 20틱 = 800틱 중 200
-    final ring = tester.widget<CircularProgressIndicator>(
-      find.descendant(of: find.byKey(const Key('chest')), matching: find.byType(CircularProgressIndicator)),
+    final ring = tester.widget<PixelRing>(
+      find.descendant(of: find.byKey(const Key('chest')), matching: find.byType(PixelRing)),
     );
     expect(ring.value, closeTo(0.25, 1e-9));
   });

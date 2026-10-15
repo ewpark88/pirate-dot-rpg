@@ -120,19 +120,37 @@ class _StatusLines extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(
-          dense: true,
-          leading: const PixelSprite(UiSprites.moon, dots: 16, scale: 1),
-          title: Text(l10n.uiOfflineRate((perHour ?? BigNum.zero).format(), maxHours)),
+        _InfoLine(
+          icon: const PixelSprite(UiSprites.moon, dots: 16, scale: 1),
+          text: Text(l10n.uiOfflineRate((perHour ?? BigNum.zero).format(), maxHours)),
         ),
-        ListTile(
-          dense: true,
-          leading: const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
-          title: Text(
+        _InfoLine(
+          icon: const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
+          text: Text(
             left > Duration.zero ? l10n.uiTailwindStatus(shortDecimal(mult), remainingText(left)) : l10n.uiTailwindOff,
           ),
         ),
       ],
     );
   }
+}
+
+/// 아이콘 + 글자 한 줄 (ListTile 대신, 도트 화면에 잉크·여백 없이).
+class _InfoLine extends StatelessWidget {
+  const _InfoLine({required this.icon, required this.text});
+
+  final Widget icon;
+  final Widget text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        icon,
+        const SizedBox(width: 8),
+        Expanded(child: text),
+      ],
+    ),
+  );
 }

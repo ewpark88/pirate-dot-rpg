@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 
@@ -64,11 +65,15 @@ class WeakChips extends ConsumerWidget {
         Text(l10n.uiBossWeak, style: labelStyle),
         for (final f in boss.weakFamilies) ...[
           const SizedBox(width: 4),
-          Chip(
-            visualDensity: VisualDensity.compact,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: EdgeInsets.zero,
-            label: Text(tableText(l10n, tables.skills.byId(f).nameKey)),
+          // 약점 칩: 도트 프레임 (누르는 것 아님).
+          PixelFrame(
+            key: Key('boss.weak.$f'),
+            padding: 2,
+            highlight: null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(tableText(l10n, tables.skills.byId(f).nameKey), style: labelStyle),
+            ),
           ),
         ],
       ],

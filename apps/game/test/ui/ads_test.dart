@@ -70,7 +70,7 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
   );
   await tester.pump();
   if (tab != 0) {
-    await tester.tap(find.byType(NavigationDestination).at(tab));
+    await tester.tap(find.byKey(Key('tab.$tab')));
     await tester.pump();
   }
   return log;
@@ -83,7 +83,7 @@ void main() {
     final farming = _withChest(_base());
     await pumpGame(tester, farming.copyWith(progress: farming.progress.copyWith(farming: true)));
     expect(_ad(), findsNothing);
-    await tester.tap(find.byType(NavigationDestination).at(summonTab));
+    await tester.tap(find.byKey(const Key('tab.$summonTab')));
     await tester.pump();
     expect(_ad(), findsNothing);
   });
@@ -114,7 +114,7 @@ void main() {
     expect(find.text('Damage +30% · 30s'), findsOneWidget);
     await tester.tap(find.byKey(const Key('ad.bossSupport')));
     await tester.pump();
-    await tester.tap(find.byType(NavigationDestination).at(summonTab));
+    await tester.tap(find.byKey(const Key('tab.$summonTab')));
     await tester.pump();
     expect(find.textContaining('Free summon · '), findsOneWidget);
     await tester.tap(find.byKey(const Key('ad.freeSummon')));

@@ -43,7 +43,7 @@ void main() {
     await tester.pump();
     expect(analytics.seen, [('voyage', 37)]);
 
-    await tester.tap(find.byType(NavigationDestination).at(shipTab));
+    await tester.tap(find.byKey(const Key('tab.$shipTab')));
     await tester.pump();
     expect(analytics.seen.last, ('ship', 37));
 

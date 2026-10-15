@@ -4,6 +4,8 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 상자 탭 영역 지름 (화면 픽셀).
@@ -49,17 +51,13 @@ class ChestLayer extends ConsumerWidget {
                     alignment: Alignment.center,
                     clipBehavior: Clip.none,
                     children: [
-                      CircularProgressIndicator(
-                        value: (ticksLeft / floatTicks).clamp(0.0, 1.0),
-                        strokeWidth: 3,
-                        color: Colors.amber,
-                      ),
+                      PixelRing(value: (ticksLeft / floatTicks).clamp(0.0, 1.0)),
                       if (reward != null)
                         Positioned(
                           top: _rewardOffset,
                           child: Text(
                             reward.format(),
-                            style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: PixelPalette.gold, fontWeight: FontWeight.bold),
                           ),
                         ),
                     ],

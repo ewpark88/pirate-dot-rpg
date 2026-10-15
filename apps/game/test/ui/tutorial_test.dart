@@ -15,7 +15,7 @@ void main() {
     await pumpGame(tester, loadFixture('stage37_midgame').copyWith(tutorialStep: 2), keepTutorial: true);
     expect(find.text('Try upgrading the Cannon.'), findsOneWidget);
     expect(find.byKey(const Key('tutorial.spot.tab.ship')), findsOneWidget);
-    await tester.tap(find.byType(NavigationDestination).at(shipTab));
+    await tester.tap(find.byKey(const Key('tab.$shipTab')));
     await tester.pump();
     expect(find.byKey(const Key('tutorial.spot.ship.upgrade.cannon')), findsOneWidget);
     expect(find.byKey(const Key('tutorial.spot.tab.summon')), findsNothing);
