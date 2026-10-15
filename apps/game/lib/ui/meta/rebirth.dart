@@ -47,7 +47,8 @@ class RebirthCard extends ConsumerWidget {
     final bonus = percentText(l10n, preview.bonusNow);
     final shopDot = ref.watch(rebirthShopProvider.select((s) => s.anyAffordable));
     final earned = ref.watch(gameStateProvider.select((s) => s.wallet.mapPieces));
-    final forecast = preview.locked ? null : ref.watch(rebirthForecastProvider)(stage, preview.gain, earned);
+    // 미리보기 계산은 카드가 다시 그려질 때만(스테이지·조각이 바뀔 때) — 틱마다 하지 않는다.
+    final forecast = preview.locked ? null : ref.watch(rebirthForecastProvider)(ref.read(gameStateProvider));
 
     return PixelFrame(
       key: const Key('rebirth.card'),

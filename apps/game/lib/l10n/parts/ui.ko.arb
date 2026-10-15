@@ -228,5 +228,8 @@
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
   "uiUnlockTreasureSea": "보물 바다 {n}해역이 열렸어요!",
-  "uiUnlockShopRow": "보물지도 상점 {n}줄이 열렸어요!"
+  "uiUnlockShopRow": "보물지도 상점 {n}줄이 열렸어요!",
+  "uiShipLookTitle": "배가 새 모습이 됐어요!",
+  "uiShipLookPart": "{part} {stage}단계",
+  "uiShipNextLook": "다음 외형 Lv {level}"
 }

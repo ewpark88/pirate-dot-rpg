@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/upgrade_multiplier.dart';
@@ -30,24 +31,59 @@ class ShipTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
-        // 일괄 강화 배수 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
+        // 지금 배 (크게) · 등급 이름 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
+        const _ShipHeader(),
+        // 일괄 강화 배수.
         const Padding(
           padding: EdgeInsets.only(bottom: 6),
-          child: Row(
-            children: [
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: UpgradeMultiplierPills(),
-                ),
-              ),
-              ShipSkinButton(),
-            ],
-          ),
+          child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: UpgradeMultiplierPills()),
         ),
         for (final def in tables.shipParts.parts) _PartRow(def: def),
       ],
+    );
+  }
+}
+
+class _ShipHeader extends ConsumerWidget {
+  const _ShipHeader();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final tables = ref.watch(tablesProvider);
+    final tier = ref.watch(shipLookProvider.select((v) => v.tier));
+    final name = tableText(l10n, tables.shipTiers.tiers.firstWhere((t) => t.id == tier).nameKey);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        key: const Key('ship.header'),
+        padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF8FD3FF), Color(0xFF4FA9E8)],
+          ),
+          borderRadius: BorderRadius.circular(Skin.radiusCard),
+          boxShadow: Skin.shadow,
+        ),
+        child: Row(
+          children: [
+            const ShipLookPreview(key: Key('ship.preview'), size: 84),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: Skin.text(20, color: Colors.white)),
+                  const SizedBox(height: 6),
+                  const ShipSkinButton(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -71,6 +107,11 @@ class _PartRow extends ConsumerWidget {
       }),
     );
     final affordable = levels > 0;
+    // 다음 외형: 다음 단계가 열리는 레벨과 그 모습(명예 단계로 이미 보이는 모습이면 없음).
+    final look = ref.watch(shipLookProvider.select((v) => v.look[def.id] ?? 0));
+    final nextAt = nextLookLevel(def, level);
+    final nextStage = nextAt == null ? null : partLookStage(def, nextAt);
+    final next = nextStage != null && nextStage > look ? nextAt : null;
     final max = def.maxLevel;
     final maxed = max != null && level >= max;
 
@@ -80,71 +121,105 @@ class _PartRow extends ConsumerWidget {
       // 안쪽 여백 = 프레임 3칸 + 2칸.
       child: PixelFrame(
         padding: 5,
-        child: Row(
+        child: Column(
           children: [
-            // 부위 아이콘 (아트 레인 16px × 2).
-            PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
-            const SizedBox(width: 8),
-            // 이름과 레벨은 한 덩어리.
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
-                  if (honor)
-                    Text(
-                      l10n.uiRebirthHonorLook,
-                      key: Key('ship.honor.${def.id}'),
-                      style: Skin.text(12, color: Skin.goldInk),
-                    ),
-                ],
-              ),
-            ),
-            Text(
-              partEffectText(l10n, def, partEffect(def, level)),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
-            ),
-            const SizedBox(width: 8),
-            // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).
-            ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: _buttonMinWidth),
-              child: TutorialSpot(
-                id: 'ship.upgrade.${def.id}',
-                child: PixelButton(
-                  key: Key('ship.upgrade.${def.id}'),
-                  primary: true,
-                  onPressed: maxed || !affordable
-                      ? null
-                      : () => ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult)),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+            Row(
+              children: [
+                // 부위 아이콘 (아트 레인 16px × 2).
+                PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
+                const SizedBox(width: 8),
+                // 이름과 레벨은 한 덩어리.
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (!maxed) ...[
-                        Opacity(
-                          opacity: affordable ? 1 : 0.5,
-                          child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
-                      // ×1이 아니면 실제로 오를 레벨 수.
-                      if (!maxed && mult != 1 && levels > 0) ...[
-                        const SizedBox(width: 4),
+                      Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                      if (honor)
                         Text(
-                          l10n.uiUpgradeLevels(levels),
-                          key: Key('ship.upgrade.levels.${def.id}'),
-                          style: Skin.text(12, color: Colors.white70),
+                          l10n.uiRebirthHonorLook,
+                          key: Key('ship.honor.${def.id}'),
+                          style: Skin.text(12, color: Skin.goldInk),
                         ),
-                      ],
                     ],
                   ),
                 ),
-              ),
+                Text(
+                  partEffectText(l10n, def, partEffect(def, level)),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+                ),
+                const SizedBox(width: 8),
+                // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: _buttonMinWidth),
+                  child: TutorialSpot(
+                    id: 'ship.upgrade.${def.id}',
+                    child: PixelButton(
+                      key: Key('ship.upgrade.${def.id}'),
+                      primary: true,
+                      onPressed: maxed || !affordable
+                          ? null
+                          : () => ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!maxed) ...[
+                            Opacity(
+                              opacity: affordable ? 1 : 0.5,
+                              child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
+                          if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
+                          // ×1이 아니면 실제로 오를 레벨 수.
+                          if (!maxed && mult != 1 && levels > 0) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.uiUpgradeLevels(levels),
+                              key: Key('ship.upgrade.levels.${def.id}'),
+                              style: Skin.text(12, color: Colors.white70),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            // 다음 외형: 작은 배 그림(이 부위만 다음 단계) + '다음 외형 Lv N'.
+            if (next != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Row(
+                  children: [
+                    _NextLook(part: def.id, stage: nextStage!),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.uiShipNextLook(next),
+                      key: Key('ship.next.${def.id}'),
+                      style: Skin.text(12, color: Skin.primaryEdge),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     );
+  }
+}
+
+/// 부위 줄 작은 미리보기: 이 부위만 다음 단계로 바꾼 배.
+class _NextLook extends ConsumerWidget {
+  const _NextLook({required this.part, required this.stage});
+
+  final String part;
+  final int stage;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final look = ref.watch(shipLookProvider.select((v) => v.look));
+    return ShipLookPreview(key: Key('ship.next.preview.$part'), size: 30, look: {...look, part: stage});
   }
 }
