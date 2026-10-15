@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 
 /// 하단 탭 한 칸.
 class PixelTabItem extends StatelessWidget {
@@ -9,6 +10,8 @@ class PixelTabItem extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.badge = false,
+    this.dotKey,
     super.key,
   });
 
@@ -16,6 +19,12 @@ class PixelTabItem extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
+
+  /// ‘지금 할 수 있는 일’ 빨간 점 (탭마다 하나).
+  final bool badge;
+
+  /// 빨간 점의 키 (보일 때만 — 테스트용).
+  final Key? dotKey;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +56,11 @@ class PixelTabItem extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: u * 8, vertical: u * 2),
-                    child: Opacity(opacity: selected ? 1 : 0.6, child: icon),
+                    child: PixelDot(
+                      show: badge,
+                      dotKey: dotKey,
+                      child: Opacity(opacity: selected ? 1 : 0.6, child: icon),
+                    ),
                   ),
                 ),
                 SizedBox(height: u * 2),

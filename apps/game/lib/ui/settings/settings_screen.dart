@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
@@ -115,6 +116,19 @@ class SettingsScreen extends ConsumerWidget {
                       trailing: const PixelBitmap(PixelBitmaps.chevron),
                       onTap: () => unawaited(ads.showPrivacyOptions()),
                     ),
+                  // 도움말: 큰 수 단위 (계획 E11).
+                  Padding(
+                    key: const Key('settings.help'),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.uiSettingsHelp, style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 6),
+                        Text(l10n.uiNumberUnits, style: const TextStyle(color: PixelPalette.textDim)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -9,6 +9,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S4 · 할 일 빨간 점 · 큰 수 설명 (계획 E5·E11)
+- 한 일: `ui/state/badge_providers.dart` — 배(살 수 있는 강화)·선원(승급 가능 또는 합치기)·소환(1회 젬 충분·첫 10연 무료·무료 광고) 탭 점, 일괄 합치기 버튼 점. 경제 함수 결과를 bool로 select(값이 바뀔 때만 다시 그림). 보는 탭엔 점 없음.
+  PixelDot 8칸(실기기에서 4칸은 안 보였다), 테스트용 dotKey. 합치기 판정은 `mergeAvailableProvider`(기본 false) — S2 `canMergeAny` main 머지되면 본문 교체.
+  큰 수: 설정 ‘도움말’에 K·M·B·T·aa… 한 줄, `text/big_num_text.dart` BigNumText(길게 누르면 전체 자릿수, 10^20 넘으면 m × 10^e) — 상단 바 골드·강화 비용·복귀 골드.
+  주의: gen-l10n 인자 순서가 알파벳순(uiNumberScientific(exponent, mantissa)). `check --full` 통과(60.9s).
+- 다음 할 일: canMergeAny 연결, 골든 승인, 폰 피드백
+
 ### 2026-10-15 · S4 · 화면 배치 v2 (사용자 S24 실기기 피드백, 최우선)
 - 근거: main `docs/specs/layout-v2-brief.md`, 실기기 캡처 `docs/specs/layout-v2/device_*.png`. S3와 직접 좌표 약속 → `render/layout.dart` `battleFrameFor`(94ec694, main b2b0157).
 - 한 일: `hud/top_bar.dart`(48dp: 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원), 퀘스트·설정 그림 버튼 — `PixelIconButton`: 그림 ≈26dp 정수배, 누르기 48dp).

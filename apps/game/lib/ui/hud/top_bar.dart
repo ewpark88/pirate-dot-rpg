@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
@@ -15,6 +14,7 @@ import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/big_num_text.dart';
 
 /// 상단 바 (전장 밖, layout-v2-brief 1): 왼쪽 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원),
 /// 오른쪽 퀘스트·설정 그림 버튼. 누르는 영역이 48dp라 바 높이도 48dp.
@@ -31,8 +31,9 @@ class TopBar extends ConsumerWidget {
       children: [
         const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
         const SizedBox(width: 4),
-        Text(
-          gold.format(),
+        // 길게 누르면 전체 자릿수.
+        BigNumText(
+          gold,
           key: const Key('top.gold'),
           style: const TextStyle(color: PixelPalette.gold),
         ),

@@ -62,28 +62,37 @@ Future<T?> showPixelSheet<T>(BuildContext context, {required WidgetBuilder build
       builder: (context) => PixelSheet(child: builder(context)),
     );
 
+/// 빨간 점 한 변(도트 칸).
+const _dotDots = 8;
+
 /// 도트 빨간 점 (Badge 대신): [child] 오른쪽 위에 네모 점. 지금 눌러서 이득일 때만 쓴다 (설계서 4.9).
 class PixelDot extends StatelessWidget {
-  const PixelDot({required this.child, this.show = true, super.key});
+  const PixelDot({required this.child, this.show = true, this.dotKey, super.key});
 
   final Widget child;
   final bool show;
 
+  /// 점 자체의 키 (보일 때만 있다 — 테스트용).
+  final Key? dotKey;
+
   @override
   Widget build(BuildContext context) {
     if (!show) return child;
-    final d = pixelUnit(context) * 4;
+    // 실기기에서 보이게 도트 8칸(≈8dp), 모서리 바깥으로 2칸 걸친다.
+    final u = pixelUnit(context);
+    final d = u * _dotDots;
     return Stack(
       clipBehavior: Clip.none,
       children: [
         child,
         Positioned(
-          right: 0,
-          top: 0,
+          right: -u * 2,
+          top: -u * 2,
           child: DecoratedBox(
+            key: dotKey,
             decoration: BoxDecoration(
               color: PixelPalette.danger,
-              border: Border.all(color: PixelPalette.outline, width: pixelUnit(context)),
+              border: Border.all(color: PixelPalette.outline, width: u),
             ),
             child: SizedBox.square(dimension: d),
           ),

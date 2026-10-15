@@ -6,6 +6,8 @@ import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_card.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -93,11 +95,15 @@ class CrewTab extends ConsumerWidget {
             const SizedBox(width: 8),
             TutorialSpot(
               id: 'crew.mergeAll',
-              child: PixelButton(
-                key: const Key('crew.mergeAll'),
-                primary: true,
-                onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
-                child: Text(l10n.uiCrewMergeAll),
+              child: PixelDot(
+                dotKey: const Key('crew.mergeAll.dot'),
+                show: ref.watch(mergeBadgeProvider),
+                child: PixelButton(
+                  key: const Key('crew.mergeAll'),
+                  primary: true,
+                  onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                  child: Text(l10n.uiCrewMergeAll),
+                ),
               ),
             ),
           ],

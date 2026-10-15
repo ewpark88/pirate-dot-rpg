@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/pixel/pixel_tab_bar.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
+import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_result.dart';
@@ -108,16 +109,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // 탭 4개 고정 (도트 탭 막대). 배·선원·소환은 튜토리얼이 가리킨다.
             bottomNavigationBar: PixelTabBar(
               children: [
-                for (final (i, (asset, label, spot)) in [
-                  (UiSprites.tabMap, l10n.uiTabVoyage, null),
-                  (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship'),
-                  (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew'),
-                  (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon'),
+                for (final (i, (asset, label, spot, badge)) in [
+                  (UiSprites.tabMap, l10n.uiTabVoyage, null, false),
+                  (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
+                  (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
+                  (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(summonBadgeProvider)),
                 ].indexed)
                   PixelTabItem(
                     key: Key('tab.$i'),
                     label: label,
                     selected: _tab == i,
+                    // 지금 보고 있는 탭에는 점을 띄우지 않는다 (이미 거기 있다).
+                    badge: badge && _tab != i,
+                    dotKey: Key('tab.dot.$i'),
                     onTap: () => _selectTab(i),
                     icon: spot == null
                         ? PixelSprite(asset, dots: 16)

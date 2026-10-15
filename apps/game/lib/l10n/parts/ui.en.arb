@@ -106,5 +106,8 @@
   "uiSaveFailedDiskFull": "Not enough storage to save. Progress will save again once space is freed.",
   "uiSaveFailedIo": "Couldn't save progress. Will try again shortly.",
   "uiSettingsNotifications": "Notifications",
-  "uiCrewCardBadge": "×{count}"
+  "uiCrewCardBadge": "×{count}",
+  "uiNumberScientific": "{mantissa} × 10^{exponent}",
+  "uiSettingsHelp": "Help",
+  "uiNumberUnits": "Big numbers: K = thousand · M = million · B = billion · T = trillion · then aa, ab, ac… (each ×1000). Long-press a number to see it in full."
 }

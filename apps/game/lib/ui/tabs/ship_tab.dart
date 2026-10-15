@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/big_num_text.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -96,7 +97,7 @@ class _PartRow extends ConsumerWidget {
                         ),
                         const SizedBox(width: 4),
                       ],
-                      Text(maxed ? l10n.uiShipMaxed : cost.format()),
+                      if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
                     ],
                   ),
                 ),
