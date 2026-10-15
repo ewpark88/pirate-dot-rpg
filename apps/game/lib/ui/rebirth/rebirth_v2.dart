@@ -213,13 +213,14 @@ final treasureRouteProvider = Provider<int?>(
   (ref) => ref.watch(gameStateProvider.select((s) => s.progress.treasureRoute)),
 );
 
-/// 환생 미리보기 (경제 `rebirthForecast` 자리 — S2 다음 커밋 전까지 가짜 근사). 잠겨 있으면 null.
-final rebirthForecastProvider = Provider<ForecastVm? Function(int stage, int gain, int earned)>((ref) {
-  return (stage, gain, earned) {
-    if (stage < 40) return null;
-    final mult = (1 + (earned + gain) * 0.05) / (1 + earned * 0.05);
-    final minutes = ((stage / 4) / 5).ceil() * 5;
-    return (powerMultiplier: mult, minutesToBeat: minutes, targetStage: stage);
+/// 환생 미리보기 (경제 `rebirthForecast`). 잠겨 있으면 null. 카드가 다시 그려질 때(스테이지·조각이 바뀔 때)만 부른다.
+final rebirthForecastProvider = Provider<ForecastVm? Function(GameState state)>((ref) {
+  final t = ref.watch(tablesProvider);
+  return (s) {
+    final f = rebirthForecast(s, t);
+    return f == null
+        ? null
+        : (powerMultiplier: f.powerMultiplier, minutesToBeat: f.minutesToBeat, targetStage: f.targetStage);
   };
 });
 

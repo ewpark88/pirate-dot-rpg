@@ -428,5 +428,8 @@
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
   "uiUnlockTreasureSea": "Treasure Sea {n} unlocked!",
-  "uiUnlockShopRow": "Treasure Map Shop row {n} unlocked!"
+  "uiUnlockShopRow": "Treasure Map Shop row {n} unlocked!",
+  "uiShipLookTitle": "Your ship got a new look!",
+  "uiShipLookPart": "{part} stage {stage}",
+  "uiShipNextLook": "Next look Lv {level}"
 }

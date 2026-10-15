@@ -6,7 +6,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/chest_paint.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
-import 'package:pirate_dot/ui/rebirth/skin_preview_ship.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -49,7 +49,8 @@ class _RebirthChestDialogState extends State<RebirthChestDialog> with TickerProv
       (const SkinIcon(UiSprites.tabMap, size: 28), l10n.uiRebirthDoneGain(widget.pieces, widget.bonus)),
       (const SkinIcon(UiSprites.gem, size: 28), l10n.uiRebirthChestGems(c.gems)),
       (const SkinIcon(UiSprites.tabSummon, size: 28), l10n.uiRebirthChestSummons(c.summons)),
-      if (skin != null) (SkinPreviewShip(skin: skin, size: 40), l10n.uiRebirthChestSkin(skinName(l10n, skin.id))),
+      if (skin != null)
+        (ShipLookPreview(useSkin: true, skin: skin.id, size: 40), l10n.uiRebirthChestSkin(skinName(l10n, skin.id))),
       if (c.title != null)
         (const SkinIcon(UiSprites.star, size: 28), l10n.uiRebirthChestTitle(titleName(l10n, c.title!))),
     ];
@@ -139,7 +140,7 @@ class _RebirthChestDialogState extends State<RebirthChestDialog> with TickerProv
                     ),
                   if (skin != null && _items.isCompleted) ...[
                     const SizedBox(height: 6),
-                    SkinPreviewShip(key: const Key('rebirth.chest.skin'), skin: skin, size: 120),
+                    ShipLookPreview(key: const Key('rebirth.chest.skin'), useSkin: true, skin: skin.id, size: 140),
                   ],
                   const SizedBox(height: 12),
                   SizedBox(

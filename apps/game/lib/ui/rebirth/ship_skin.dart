@@ -6,7 +6,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
-import 'package:pirate_dot/ui/rebirth/skin_preview_ship.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
@@ -21,7 +21,6 @@ class ShipSkinButton extends ConsumerWidget {
     final skins = ref.watch(shipSkinProvider);
     if (skins.owned.isEmpty) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
-    final equipped = skinDefs.where((s) => s.id == skins.equipped).firstOrNull;
     return Semantics(
       button: true,
       label: l10n.uiShipSkin,
@@ -42,7 +41,7 @@ class ShipSkinButton extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SkinPreviewShip(skin: equipped, size: 40),
+                const ShipLookPreview(size: 40),
                 const SizedBox(width: 4),
                 Text(l10n.uiShipSkin, style: Skin.text(15)),
               ],
@@ -141,7 +140,7 @@ class _SkinTile extends StatelessWidget {
               children: [
                 Opacity(
                   opacity: owned ? 1 : 0.35,
-                  child: SkinPreviewShip(skin: skin, size: 84),
+                  child: ShipLookPreview(useSkin: true, skin: skin?.id, size: 84),
                 ),
                 const SizedBox(height: 6),
                 Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Skin.text(14)),
