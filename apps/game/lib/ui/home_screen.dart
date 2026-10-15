@@ -13,6 +13,8 @@ import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -128,17 +130,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               selectedIndex: _tab,
               onDestinationSelected: _selectTab,
               destinations: [
-                NavigationDestination(icon: const Icon(Icons.sailing), label: l10n.uiTabVoyage),
                 NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.ship', child: Icon(Icons.directions_boat)),
+                  icon: const PixelIcon(PixelIcons.voyage),
+                  selectedIcon: const PixelIcon(PixelIcons.voyage, color: PixelPalette.gold),
+                  label: l10n.uiTabVoyage,
+                ),
+                NavigationDestination(
+                  icon: const TutorialSpot(id: 'tab.ship', child: PixelIcon(PixelIcons.ship)),
+                  selectedIcon: const TutorialSpot(
+                    id: 'tab.ship',
+                    child: PixelIcon(PixelIcons.ship, color: PixelPalette.gold),
+                  ),
                   label: l10n.uiTabShip,
                 ),
                 NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.crew', child: Icon(Icons.groups)),
+                  icon: const TutorialSpot(id: 'tab.crew', child: PixelIcon(PixelIcons.crew)),
+                  selectedIcon: const TutorialSpot(
+                    id: 'tab.crew',
+                    child: PixelIcon(PixelIcons.crew, color: PixelPalette.gold),
+                  ),
                   label: l10n.uiTabCrew,
                 ),
                 NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.summon', child: Icon(Icons.auto_awesome)),
+                  icon: const TutorialSpot(id: 'tab.summon', child: PixelIcon(PixelIcons.summon)),
+                  selectedIcon: const TutorialSpot(
+                    id: 'tab.summon',
+                    child: PixelIcon(PixelIcons.summon, color: PixelPalette.gold),
+                  ),
                   label: l10n.uiTabSummon,
                 ),
               ],

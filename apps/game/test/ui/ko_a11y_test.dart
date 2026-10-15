@@ -90,5 +90,36 @@ void main() {
       expect(find.text('해역 보스까지 스테이지 13'), findsOneWidget);
     });
   }
-  // 접근성(48dp·라벨) 점검은 S1 지시로 ui-quality-v1(도트 UI) 뒤로 미룬다 — 도트 버튼으로 바꾼 뒤 한 번에 맞춘다.
+
+  group('접근성 (스펙 ui-voyage-a11y ③)', () {
+    for (final tab in [voyageTab, shipTab, crewTab, summonTab]) {
+      testWidgets('탭 $tab: 누르는 곳 48dp·라벨', (tester) async {
+        final handle = tester.ensureSemantics();
+        await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab);
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+        handle.dispose();
+      });
+    }
+
+    testWidgets('설정 화면: 누르는 곳 48dp·라벨', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpGame(tester, loadFixture('stage37_midgame'));
+      await tester.tap(find.byKey(const Key('hud.settings')));
+      await tester.pumpAndSettle();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      handle.dispose();
+    });
+
+    testWidgets('퀘스트·출석 시트: 누르는 곳 48dp·라벨', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpGame(tester, loadFixture('stage37_midgame'));
+      await tester.tap(find.byKey(const Key('daily.icon')));
+      await tester.pumpAndSettle();
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      handle.dispose();
+    });
+  });
 }

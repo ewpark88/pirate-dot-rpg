@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 
@@ -32,7 +33,7 @@ class BossWeakness extends ConsumerWidget {
     return Container(
       key: const Key('boss.weak'),
       padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(8)),
+      decoration: const BoxDecoration(color: PixelPalette.outline),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,

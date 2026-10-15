@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 
 import 'ui_harness.dart';
 
-FilledButton _button(WidgetTester tester, String part) =>
-    tester.widget<FilledButton>(find.byKey(Key('ship.upgrade.$part')));
+PixelButton _button(WidgetTester tester, String part) =>
+    tester.widget<PixelButton>(find.byKey(Key('ship.upgrade.$part')));
 
 void main() {
   final tables = GameTables.load();

@@ -72,7 +72,6 @@ class HudBar extends ConsumerWidget {
                 ),
                 IconButton(
                   key: const Key('hud.settings'),
-                  visualDensity: VisualDensity.compact,
                   tooltip: l10n.uiSettingsTitle,
                   icon: const Icon(Icons.settings),
                   onPressed: () => unawaited(

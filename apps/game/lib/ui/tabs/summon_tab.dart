@@ -4,6 +4,9 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -93,8 +96,9 @@ class _SummonButton extends StatelessWidget {
   final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => FilledButton(
+  Widget build(BuildContext context) => PixelButton(
     key: buttonKey,
+    primary: true,
     onPressed: onPressed,
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -106,8 +110,8 @@ class _SummonButton extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.diamond, size: 14),
-              const SizedBox(width: 2),
+              const PixelIcon(PixelIcons.gem, color: PixelPalette.slot),
+              const SizedBox(width: 4),
               Text(cost.toString()),
             ],
           ),

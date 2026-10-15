@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/no_ads.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -50,12 +51,13 @@ class AdButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!ref.watch(adOfferProvider(placement))) return const SizedBox.shrink();
-    return FilledButton.tonalIcon(
+    return PixelButton(
       key: Key('ad.${placement.name}${choice == null ? '' : '.$choice'}'),
-      style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
-      icon: const Icon(Icons.ondemand_video, size: 16),
-      label: Text(label),
       onPressed: () => watchAd(ref, placement, choice: choice),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [const Icon(Icons.ondemand_video, size: 16), const SizedBox(width: 4), Text(label)],
+      ),
     );
   }
 }

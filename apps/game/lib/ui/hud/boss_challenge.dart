@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -29,12 +30,11 @@ class BossChallenge extends ConsumerWidget {
         const SizedBox(height: 4),
         TutorialSpot(
           id: 'boss.challenge',
-          child: FilledButton.icon(
+          child: PixelButton(
             key: const Key('boss.challenge'),
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            primary: true,
             onPressed: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
-            icon: const Icon(Icons.flag),
-            label: Text(l10n.uiBossChallenge),
+            child: Text(l10n.uiBossChallenge),
           ),
         ),
         const SizedBox(height: 4),

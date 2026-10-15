@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -80,7 +81,7 @@ void main() {
     expect(find.text('Defeat 500 monsters'), findsOneWidget);
     expect(find.text('Claimed'), findsNWidgets(2));
     // 미달성 줄은 받기 비활성, 진행이 보인다
-    expect(tester.widget<FilledButton>(find.byKey(const Key('daily.claim.q3'))).onPressed, isNull);
+    expect(tester.widget<PixelButton>(find.byKey(const Key('daily.claim.q3'))).onPressed, isNull);
     expect(find.text('0/1'), findsNWidgets(2));
   });
 

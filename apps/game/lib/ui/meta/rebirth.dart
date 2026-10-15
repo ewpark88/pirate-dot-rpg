@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -32,10 +34,11 @@ class RebirthCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final bonus = percentText(l10n, preview.bonusNow);
 
-    return Card(
+    return PixelFrame(
       key: const Key('rebirth.card'),
+      padding: 6,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,10 +58,10 @@ class RebirthCard extends ConsumerWidget {
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerRight,
-                child: FilledButton.icon(
+                child: PixelButton(
                   key: const Key('rebirth.open'),
-                  icon: const Icon(Icons.map),
-                  label: Text(l10n.uiRebirthButton),
+                  primary: true,
+                  child: Text(l10n.uiRebirthButton),
                   onPressed: () => unawaited(
                     showDialog<void>(
                       context: context,
@@ -111,8 +114,9 @@ class RebirthDialog extends ConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.uiCancel),
         ),
-        FilledButton(
+        PixelButton(
           key: const Key('rebirth.confirm'),
+          primary: true,
           onPressed: () {
             ref.read(commandSinkProvider).send(const Rebirth());
             Navigator.of(context).pop();

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
 import 'ui_harness.dart';
 
-FilledButton _button(WidgetTester tester, String key) => tester.widget<FilledButton>(find.byKey(Key(key)));
+PixelButton _button(WidgetTester tester, String key) => tester.widget<PixelButton>(find.byKey(Key(key)));
 
 void main() {
   final tables = GameTables.load();

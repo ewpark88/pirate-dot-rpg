@@ -6,6 +6,8 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -32,10 +34,10 @@ class DailyIcon extends ConsumerWidget {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
     final claimable = (quests?.any(_claimable) ?? false) || (attendance != null && !attendance.claimedToday);
-    final icon = IconButton.filledTonal(
+    final icon = PixelButton(
       key: const Key('daily.icon'),
-      visualDensity: VisualDensity.compact,
-      icon: const Icon(Icons.assignment_turned_in),
+      semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
+      child: const Icon(Icons.assignment_turned_in, size: 18),
       onPressed: () => unawaited(
         showModalBottomSheet<void>(
           context: context,
@@ -46,7 +48,9 @@ class DailyIcon extends ConsumerWidget {
         ),
       ),
     );
-    return claimable ? Badge(key: const Key('daily.dot'), smallSize: 10, child: icon) : icon;
+    return claimable
+        ? Badge(key: const Key('daily.dot'), smallSize: 10, backgroundColor: PixelPalette.danger, child: icon)
+        : icon;
   }
 }
 
@@ -98,11 +102,11 @@ class _Quests extends ConsumerWidget {
             subtitle: Text(l10n.uiQuestProgress(q.progress, q.target)),
             trailing: q.claimed
                 ? Text(l10n.uiQuestClaimed)
-                : FilledButton.icon(
+                : PixelButton(
                     key: Key('daily.claim.${q.id}'),
+                    primary: true,
                     onPressed: _claimable(q) ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
-                    icon: const Icon(Icons.diamond, size: 14),
-                    label: Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
+                    child: Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
                   ),
           ),
       ],
@@ -138,8 +142,9 @@ class _Attendance extends ConsumerWidget {
         if (!view.claimedToday)
           Align(
             alignment: Alignment.centerRight,
-            child: FilledButton(
+            child: PixelButton(
               key: const Key('attendance.claim'),
+              primary: true,
               onPressed: () => ref.read(commandSinkProvider).send(const ClaimAttendance()),
               child: Text(l10n.uiAttendanceClaim),
             ),

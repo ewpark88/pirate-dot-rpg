@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -17,6 +21,7 @@ class ShipTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tables = ref.watch(tablesProvider);
     return ListView(
+      padding: const EdgeInsets.all(8),
       children: [for (final def in tables.shipParts.parts) _PartRow(def: def)],
     );
   }
@@ -41,25 +46,46 @@ class _PartRow extends ConsumerWidget {
     final maxed = max != null && level >= max;
     final cost = partCost(def, level);
 
-    return ListTile(
-      dense: true,
-      title: Text(tableText(l10n, def.nameKey)),
-      subtitle: Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max)),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(partEffectText(l10n, def, partEffect(def, level)), style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(width: 12),
-          TutorialSpot(
-            id: 'ship.upgrade.${def.id}',
-            child: FilledButton.icon(
-              key: Key('ship.upgrade.${def.id}'),
-              onPressed: maxed || !affordable ? null : () => ref.read(commandSinkProvider).send(UpgradePart(def.id)),
-              icon: maxed ? null : const Icon(Icons.monetization_on, size: 16),
-              label: Text(maxed ? l10n.uiShipMaxed : cost.format()),
+    final small = Theme.of(context).textTheme.bodySmall?.copyWith(color: PixelPalette.textDim);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: PixelFrame(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                ],
+              ),
             ),
-          ),
-        ],
+            Text(
+              partEffectText(l10n, def, partEffect(def, level)),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+            ),
+            const SizedBox(width: 8),
+            TutorialSpot(
+              id: 'ship.upgrade.${def.id}',
+              child: PixelButton(
+                key: Key('ship.upgrade.${def.id}'),
+                primary: true,
+                onPressed: maxed || !affordable ? null : () => ref.read(commandSinkProvider).send(UpgradePart(def.id)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!maxed) ...[
+                      PixelIcon(PixelIcons.coin, color: affordable ? PixelPalette.gold : PixelPalette.textDim),
+                      const SizedBox(width: 4),
+                    ],
+                    Text(maxed ? l10n.uiShipMaxed : cost.format()),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

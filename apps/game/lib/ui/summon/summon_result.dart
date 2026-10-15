@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -112,7 +113,12 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> {
       ),
       actions: [
         if (allRevealed)
-          FilledButton(key: const Key('summon.result.ok'), onPressed: _close, child: Text(l10n.uiSummonResultOk))
+          PixelButton(
+            key: const Key('summon.result.ok'),
+            primary: true,
+            onPressed: _close,
+            child: Text(l10n.uiSummonResultOk),
+          )
         else
           TextButton(
             key: const Key('summon.revealAll'),

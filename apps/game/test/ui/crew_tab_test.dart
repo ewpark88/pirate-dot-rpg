@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 
 import 'ui_harness.dart';
@@ -39,7 +40,7 @@ void main() {
   testWidgets('기준 8: 승급 문 앞이지만 카드가 모자라면 버튼 비활성, 빨간 점 없음', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab);
     await _show(tester, 'crew.promote.octo');
-    expect(tester.widget<FilledButton>(find.byKey(const Key('crew.promote.octo'))).onPressed, isNull);
+    expect(tester.widget<PixelButton>(find.byKey(const Key('crew.promote.octo'))).onPressed, isNull);
     expect(find.byKey(const Key('crew.dot.octo')), findsNothing);
     // 승급 문 앞이 아닌 선원(망타 Lv46)은 버튼 자체가 없다
     expect(find.byKey(const Key('crew.promote.manta'), skipOffstage: false), findsNothing);
