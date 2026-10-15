@@ -29,7 +29,7 @@ from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 RES = HERE.parent / "app" / "src" / "main" / "res"
-ROOT = HERE.parents[2]
+ROOT = HERE.parents[3]  # icon → android → game → apps → 저장소 루트
 STORE_OUT = ROOT / "build" / "store" / "icon-512.png"
 
 # 밀도 → 배율. 108dp 적응형 = 54px 격자 ×2(mdpi)…×8(xxxhdpi), 48dp 예전 = 24px 격자, 스플래시 48px 격자.
@@ -113,7 +113,7 @@ def _outside_safe_zone(img: Image.Image) -> int:
 
 
 def _opaque_colors(img: Image.Image) -> set[tuple[int, int, int]]:
-    return {p[:3] for p in img.getdata() if p[3] > 0}
+    return {c[:3] for _, c in img.getcolors(img.width * img.height) if c[3] > 0}
 
 
 def load_sources(src: Path, plan: Plan) -> dict[str, Image.Image]:
@@ -147,7 +147,7 @@ def build(src: Path, res: Path, bg: str, splash_bg: str, store_out: Path) -> Pla
     if "monochrome" in imgs and len(_opaque_colors(imgs["monochrome"])) > 1:
         plan.errors.append("monochrome.png: 불투명 색이 2가지 이상 — 한 가지 색 + 투명이어야 한다")
         return plan
-    if any(p[3] < 255 for p in imgs["legacy"].getdata()):
+    if imgs["legacy"].getchannel("A").getextrema()[0] < 255:
         plan.warnings.append("legacy.png: 투명 픽셀이 있다 — 예전 런처는 그대로 비쳐 보인다(의도면 무시)")
 
     for d, k in DENSITIES.items():
@@ -189,7 +189,11 @@ def write(plan: Plan) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Windows cp949 콘솔에서 '—' 같은 글자가 UnicodeEncodeError를 내지 않게.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
+    ap =argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--src", type=Path, required=True, help="원본 격자 PNG 폴더")
     ap.add_argument("--bg", required=True, help="적응형 배경 단색(#RRGGBB). background.png가 있어도 colors.xml에 쓴다")
     ap.add_argument("--splash-bg", help="스플래시 배경색(#RRGGBB). 기본 = --bg. 게임 첫 화면 색과 같게")

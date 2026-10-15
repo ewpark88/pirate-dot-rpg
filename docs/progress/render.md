@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | render-quality-v2(스펙 `docs/specs/render-quality-v1.md` v2 절, 골든 5장 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
-| 상태 | v1 승인·main 머지. v2: 선원 바(등급 테두리)·범위 숫자 합산만·무리 밀도·m3 골든 번쩍임 제거, check --full 통과 |
-| 막힌 것 | v2 골든 5장 승인(S1) · FleetSlot 현재 등급 계약(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 현재 계획 | art: 적·보스 스프라이트 스펙 초안 `docs/specs/render-art-enemies.md`(S1 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
+| 막힌 것 | 앱 아이콘 적용(S5 apply_icons.py) · 적 스펙 승인(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 계약 I + art (앱 아이콘·UI 아이콘·적 계획)
+- main 2e976cb(계약 I) 머지 → 선원 바 테두리 = `FleetSlot.rarity`(순번). slots_test는 octo rarity 3 → 전설 색으로 확인, 기준 장면 함대에 baseRarity 순번을 넣어 골든 그대로.
+- 앱 아이콘: `tools/art/gen_app_icon.py` → `tools/art/icon/` foreground 54·background 54·monochrome 54·legacy 24·splash 48·store 64, 배경색 #5AA9E6.
+  ship_t1 비율로 줄별 칸을 손으로 맞춘 해골 깃발 범선 + 자동 외곽선. `apply_icons.py --dry-run` 통과(경고: legacy 둥근 모서리 투명 — 의도).
+  참고: apply_icons.py는 cp949 콘솔에서 경고 출력 때 UnicodeEncodeError → `PYTHONIOENCODING=utf-8`로 돌림(S5에 전달).
+- UI 16px: `gen_ui_icons.py`에 coin(금화)·star·part_cannon·part_hull·part_sail·part_crowsnest·part_cargo, 칠한 칸 + `outlined()` 자동 외곽선, LICENSES OWN.
+- 적 21종·보스 12종: 스펙 초안 `docs/specs/render-art-enemies.md` — 실루엣 9 + 변형 12, 해역 순(산호초 보스 먼저).
 
 ### 2026-10-15 · S3 · 렌더 품질 v2 (S1 우선순위)
 - v1 커밋 f6af03e·비교 이미지 450c31e → S1 골든 7장 승인·main 머지, main을 lane/render에 머지.

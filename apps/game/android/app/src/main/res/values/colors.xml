@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- apply_icons.py 가 만든 파일. -->
+<resources>
+    <color name="ic_launcher_background">#5AA9E6</color>
+    <color name="splash_background">#5AA9E6</color>
+</resources>

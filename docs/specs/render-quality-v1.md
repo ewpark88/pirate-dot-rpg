@@ -29,7 +29,7 @@
 ## v2 추가 (S1 우선순위 2026-10-15)
 - 규칙 4b **범위 숫자**: 엔진이 범위 한 발의 Damage(·Kill) 묶음 바로 뒤에 AoeDamageSum을 내면, 그 묶음의 개별 일반 숫자는 그리지 않고 합산 숫자만(치명타는 따로) — 기준 scene3.py `show=False`.
 - 규칙 8b **선원 바**: 판 36×31 (x = 12 + i·52, y 149), 등급 색(rarities.json) 2px 테두리, 안쪽 32×27에 32px 초상을 잘라 꽉 채움(윗변 y 150),
-  왼쪽 위 4px 계열 색 표식, 쿨타임 덮개·스킬 막대는 안쪽, 방금 발사 = 테두리 흰색. 등급은 지금 `baseRarity` — FleetSlot에 현재 등급이 오면 바꾼다(계약 요청).
+  왼쪽 위 4px 계열 색 표식, 쿨타임 덮개·스킬 막대는 안쪽, 방금 발사 = 테두리 흰색. 등급은 `FleetSlot.rarity`(계약 I, rarities.json 순번).
   캔버스 HUD·선원 바는 render 소유(S1 확정) → S4가 위쪽 Material HUD를 걷어낸다.
 - 골든: `battle_reference`는 무리를 scene3.py 배치(gx = 140 + g·55, ±13·±11, 9마리)로 촘촘히, 처치 뒤 7틱(코인·반짝임 보이게).
   `battle_m3`는 궁극기 화면 번쩍임이 끝난 4.4틱에서 찍는다(뿌연 프레임 금지). 비교 이미지: `docs/specs/render-quality-v1/compare_*.png`(gif 프레임 20).
