@@ -68,7 +68,8 @@ double _minutesToBeat(GameState s0, GameTables t, int target) {
   final mult = upgradeCostMultiplier(s0, t);
   final fast = (s0.progress.bestStage * fastSailFraction(s0, t)).ceil();
   final bossLimit = w.bossTimeLimitSec + bossExtraSec(s0, t);
-  final bossWalk = math.max(w.field.spawnX - w.field.shipX - w.bossStandoff, 0) / w.bossSpeed;
+  final top = w.raw.obj('top');
+  final bossWalk = math.max(top.number('bossSpawnRadius') - top.number('bossStandoff'), 0) / w.bossSpeed;
   var levels = {...s0.ship.parts};
   var gold = BigNum.zero;
   var sec = 0.0;
