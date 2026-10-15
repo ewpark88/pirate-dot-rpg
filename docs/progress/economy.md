@@ -5,10 +5,18 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | M3 완료 조건: 야간 30일 리포트(경로·CI는 S1 요청), 환생 해금 40 vs 30 sim 근거, bossSupport 근거 |
+| 바로 다음 할 일 | 야간 30일 리포트(100명, 실행 중) → docs/balance/nightly-30d.md 커밋, 벗어남 있으면 원인·조정안 |
 | 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S2 · 수동 편성(ADR-0010) + UI 요청 2건 + sim 도구
+- 수동 편성(사용자 결정, S1 위임 — engine·save·battle 편성 경로 개방): GameState.fleet(List<String?>)·fleetInit, 세이브 v5(v4→v5: 빈 편성 → 첫 틱 자동 편성), SetFleetSlot·AutoFleet·FleetRejected,
+  activeFleet·emptySlotCount·fleetSlots(economy/formation.dart, cards.dart로 export). 전투·오프라인·상자가 activeFleet 사용. sim은 선원 변화마다 AutoFleet — 지표 동일. 4b7b082.
+- UI 요청: crewXxxShort 40명(6617ed1), canMergeAny·canLevelUp(4b7b082). sim 도구: --days·--report(8954692), --set·--boss-ad(a9c01f7).
+- 환생 해금 40·bossSupport는 설계서 12장에 이미 결정 → 비교 중단(S1).
+- 실수 기록: GameState.fromJson에서 fleet 키를 필수로 해 상태 픽스처(fixtures/states, 키 없음)를 읽는 Flutter 테스트 183개 실패 → 선택 키(없으면 편성 전)로.
+  메모리 부족으로 check·sim이 두 번 강제 종료 → 동시 실행 줄임.
 
 ### 2026-10-15 · S2 · 환생 3 구현(c3) + 첫 신화 조정
 - 사용자 결정 c3+f0 채택. c3: growth bossCards.repeatEvery 2·repeatCount 1 — 환생 뒤 bestStage 미만 보스는 짝수 스테이지만 1장(c6647bc, 테스트 먼저). f0은 S1 main db0c4bc.
