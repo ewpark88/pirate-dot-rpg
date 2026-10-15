@@ -328,5 +328,10 @@
   "uiSummonDupe": "+Card",
   "uiSummonCutinLegend": "A legendary pirate joins the crew!",
   "uiSummonCutinMythic": "A mythic pirate awakens!",
-  "uiSummonTapContinue": "Tap to continue"
+  "uiSummonTapContinue": "Tap to continue",
+  "uiFleetSlotLocked": "Unlocks with the {tier} (stage {stage})",
+  "uiFleetRejectedFamily": "Up to {max} crew of the same type can sail together",
+  "uiFleetSlotStage": "Stage {stage}",
+  "uiCrewReplace": "Replace",
+  "uiFleetSwapped": "Swapped places with a deployed crew"
 }

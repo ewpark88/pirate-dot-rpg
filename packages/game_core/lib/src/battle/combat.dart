@@ -82,7 +82,10 @@ class Round {
       if (g.cooldown > 0 && !zeroCooldown) continue;
       final a = g.attack;
       final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
-      final volleys = [for (final v in aimMany(a, shots, field.foes, w, ctx.rng)) extendVolley(g, v, field.foes, w)];
+      final bonus = t.crews.byId(g.crewId).reachBonus;
+      final volleys = [
+        for (final v in aimMany(a, shots, field.foes, w, ctx.rng, reachBonus: bonus)) extendVolley(g, v, field.foes, w),
+      ];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
@@ -131,7 +134,7 @@ class Round {
     }
   }
 
-  /// 함성 게이지가 가득이면 선장의 궁극기: 화면 전체 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
+  /// 함성 게이지가 가득이면 선장의 궁극기: 보이는 화면 전체(visibleRight까지) 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
   bool castUltimate() {
     final captain = field.captainId;
     if (rage < t.skills.rageMax || captain == null) return false;
@@ -139,7 +142,7 @@ class Round {
     final ult = gun.family.ultimate;
     final targets = [
       for (final e in field.foes)
-        if (e.alive && e.x <= w.field.width) e,
+        if (e.alive && e.x <= w.field.visibleRight) e,
     ];
     rage = 0;
     ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id));

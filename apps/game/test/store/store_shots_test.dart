@@ -28,6 +28,8 @@ import '../ui/ui_harness.dart' show crewTab, loadGoldenFonts, precacheImages, sh
 ///
 ///     cd apps/game
 ///     STORE_SHOTS=ko flutter test test/store/store_shots_test.dart   → build/store/screens/ko/01_….png
+///     STORE_DEVICE=tablet10 STORE_SHOTS=ko flutter test …                → build/store/screens/tablet10/ko/ (tablet7도 있음)
+///     python -I -B docs/store/flatten_png.py                              → Play 규격 24비트 PNG(알파 없음)로
 ///     STORE_SHOTS=en flutter test test/store/store_shots_test.dart
 ///
 /// 평소(check)에는 건너뛴다. 메모리를 아끼려고 한 번에 한 언어만 굽는다.
@@ -36,6 +38,8 @@ import '../ui/ui_harness.dart' show crewTab, loadGoldenFonts, precacheImages, sh
 /// 전장은 물리 픽셀 기준 정수 3배라 도트가 선명하다. 운영자 패널은 없다(OPERATOR 꺼짐 — 샘플의 운영자 명령은 엔진 기록에만 쓴다).
 void main() {
   final lang = Platform.environment['STORE_SHOTS'];
+  // 기기: phone(기본) · tablet7 · tablet10 — Play 태블릿 스크린샷은 세로 9:16, 1080~7680px.
+  final device = _devices[Platform.environment['STORE_DEVICE'] ?? 'phone']!;
   final enabled = lang == 'ko' || lang == 'en';
   final tables = GameTables.load();
   SpriteBank? bank;
@@ -68,7 +72,7 @@ void main() {
       _fixture('stage37_midgame'),
       ticks: 2600,
       commands: {
-        0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 30)],
+        0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
       },
     );
     // 궁극기: 같은 산호해 44 장면을 함성 게이지 0.95에서 시작 → 무리가 화면에 찬 채로 궁극기.
@@ -78,7 +82,7 @@ void main() {
       _fixture('stage37_midgame', rage: 0.95),
       ticks: 600,
       commands: {
-        0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 30)],
+        0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
       },
     );
     // 해역 보스: 화산해 200(용암 고래). 신화 함대는 보스를 몇 초 만에 잡으니 중반 함대로 오래 싸운다.
@@ -105,10 +109,19 @@ void main() {
   }) async {
     bank ??= (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     final painter = ScenePainter(m.play(tables))..sprites = bank;
-    await _pump(tester, m.state, locale: Locale(lang!), tab: tab, painter: painter, away: away, extra: extra);
+    await _pump(
+      tester,
+      m.state,
+      locale: Locale(lang!),
+      tab: tab,
+      painter: painter,
+      device: device,
+      away: away,
+      extra: extra,
+    );
     if (act != null) await act();
     await precacheImages(tester);
-    await _save(tester, '../../build/store/screens/$lang/$file.png');
+    await _save(tester, '../../build/store/screens/${device.dir}$lang/$file.png', device);
   }
 
   group('스토어 스크린샷 ($lang)', skip: !enabled, () {
@@ -149,6 +162,11 @@ void main() {
           final reveal = find.byKey(const Key('summon.revealAll'));
           if (reveal.evaluate().isNotEmpty) {
             await tester.tap(reveal);
+            await tester.pumpAndSettle();
+          }
+          // 전설 이상이면 컷인이 하나씩 뜬다 — 눌러 닫아 결과 격자가 보이게.
+          for (var i = 0; i < 10 && find.byKey(const Key('summon.cutin')).evaluate().isNotEmpty; i++) {
+            await tester.tap(find.byKey(const Key('summon.cutin')));
             await tester.pumpAndSettle();
           }
         },
@@ -208,8 +226,25 @@ void main() {
   });
 }
 
-const _dpr = 2.625;
-const _logical = Size(1080 / _dpr, 1920 / _dpr);
+/// 스크린샷 기기. 물리 픽셀은 모두 9:16(Play 규격). 전장은 물리 픽셀 정수배라 도트가 선명하다.
+class _Device {
+  const _Device(this.width, this.height, this.dpr, this.dir);
+
+  final double width;
+  final double height;
+  final double dpr;
+
+  /// `build/store/screens/` 아래 하위 폴더(휴대전화는 예전 경로 그대로).
+  final String dir;
+
+  Size get logical => Size(width / dpr, height / dpr);
+}
+
+const _devices = {
+  'phone': _Device(1080, 1920, 2.625, ''), // 411×731dp, 흔한 Pixel
+  'tablet7': _Device(1440, 2560, 2.4, 'tablet7/'), // 600×1067dp
+  'tablet10': _Device(1800, 3200, 2.25, 'tablet10/'), // 800×1422dp
+};
 const _sea = Color(0xFF1B4F72); // BattleGame.backgroundColor와 같게
 final GlobalKey _shotKey = GlobalKey();
 
@@ -250,6 +285,9 @@ class _Run {
     final end = (before ?? this.ticks.length) - ticks;
     for (var i = 0; i < end && i + ticks < this.ticks.length; i++) {
       if (!this.ticks[i].events.any(match)) continue;
+      // 처치가 화면 가운데쯤에서 났을 때만(오른쪽 끝에서 나면 연출이 잘린다).
+      final kills = this.ticks[i].events.whereType<Kill>().map((k) => k.x).toList();
+      if (kills.isNotEmpty && kills.reduce((a, b) => a + b) / kills.length > kLogicalWidth * 0.72) continue;
       final n = this.ticks[i + ticks].frame.enemies.where((e) => e.x < kLogicalWidth - 20).length;
       if (n > most) (bestAt, most) = (i, n);
     }
@@ -336,12 +374,13 @@ Future<void> _pump(
   required Locale locale,
   required int tab,
   required ScenePainter painter,
+  required _Device device,
   Duration? away,
   List<Override> extra = const [],
 }) async {
   tester.view
-    ..physicalSize = _logical * _dpr
-    ..devicePixelRatio = _dpr;
+    ..physicalSize = device.logical * device.dpr
+    ..devicePixelRatio = device.dpr;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
@@ -351,7 +390,7 @@ Future<void> _pump(
         // 시계: 저장 시각(복귀 팝업 없음) 또는 [away] 뒤(복귀 팝업).
         clockProvider.overrideWithValue(FixedClock(state.savedAt.add(away ?? Duration.zero))),
         battleViewBuilderProvider.overrideWithValue(
-          (context) => CustomPaint(size: Size.infinite, painter: _ScenePaint(painter, _dpr)),
+          (context) => CustomPaint(size: Size.infinite, painter: _ScenePaint(painter, device.dpr)),
         ),
         ...extra,
       ],
@@ -374,10 +413,10 @@ class _NoCommands implements CommandSink {
   void send(Command command) {}
 }
 
-Future<void> _save(WidgetTester tester, String path) async {
+Future<void> _save(WidgetTester tester, String path, _Device device) async {
   await tester.runAsync(() async {
     final boundary = _shotKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: _dpr);
+    final image = await boundary.toImage(pixelRatio: device.dpr);
     final png = await image.toByteData(format: ui.ImageByteFormat.png);
     File(path)
       ..createSync(recursive: true)

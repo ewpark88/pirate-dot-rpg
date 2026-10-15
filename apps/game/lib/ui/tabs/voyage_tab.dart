@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -79,7 +80,7 @@ class _RegionCard extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 4),
-            PixelBar(value: inRegion / per, fill: PixelPalette.gold),
+            PixelBar(value: inRegion / per, fill: Skin.goldBottom),
             const SizedBox(height: 8),
             Text(toBoss == 0 ? l10n.uiRegionBossNow : l10n.uiRegionBossIn(toBoss)),
             Wrap(

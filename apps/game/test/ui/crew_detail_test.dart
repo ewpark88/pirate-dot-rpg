@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 
 import 'ui_harness.dart';
@@ -34,6 +35,16 @@ Future<void> _openDetail(WidgetTester tester, String id) async {
   await tester.tap(find.byKey(Key('crew.card.$id')));
   await tester.pumpAndSettle();
 }
+
+/// 편성: 샘플 전장 선원 중 마지막 칸을 비운 상태 (4칸 중 3칸 출전 → 3번 칸이 열린 빈 칸).
+GameState _withGap() {
+  final base = loadFixture('stage37_midgame');
+  final ids = [for (final f in base.battle!.fleet) f.crewId];
+  return base.copyWith(fleet: [...ids.take(ids.length - 1), null], fleetInit: true);
+}
+
+/// [_withGap]에서 빠진(쉬는) 선원.
+String _gapBenched() => loadFixture('stage37_midgame').battle!.fleet.last.crewId;
 
 void main() {
   testWidgets('A: 보유 선원 카드 → 상세(이름·레벨·파워·계열·스킬, 출전 중이면 내리기)', (tester) async {
@@ -85,23 +96,28 @@ void main() {
     expect(fleet.calls, ['set ${ids.length - 1} $free']);
   });
 
-  testWidgets('B: 선원 줄 칸 → 후보 시트(보유 선원) → 고르면 그 칸에', (tester) async {
-    final fleet = await _pump(tester, tab: voyageTab);
-    await tester.tap(find.byKey(const Key('fleet.slot.1')));
+  testWidgets('B: 열린 빈 칸 → 후보 시트(보유 선원) → 고르면 빈 자리에', (tester) async {
+    final fleet = await _pump(tester, state: _withGap(), tab: voyageTab);
+    await tester.tap(find.byKey(const Key('fleet.slot.3')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('fleet.picker.1')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('fleet.pick.manta')));
+    expect(find.byKey(const Key('fleet.picker.3')), findsOneWidget);
+    // 쉬는 선원(빈 칸에서 뺀 선원)이 맨 위.
+    final benched = _gapBenched();
+    await tester.tap(find.byKey(Key('fleet.pick.$benched')));
     await tester.pumpAndSettle();
-    expect(fleet.calls, ['set 1 manta']);
+    expect(fleet.calls, ['set 3 $benched']);
   });
 
-  testWidgets('B: 찬 칸은 비우기도 된다', (tester) async {
-    final fleet = await _pump(tester, tab: voyageTab);
-    await tester.tap(find.byKey(const Key('fleet.slot.0')));
+  testWidgets('B: 출전 중 칸 → 그 선원 상세', (tester) async {
+    await _pump(tester, tab: voyageTab);
+    await tester.tap(find.byKey(const Key('fleet.crew.0')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fleet.clear')));
-    await tester.pumpAndSettle();
-    expect(fleet.calls, ['set 0 -']);
+    expect(find.byType(CrewDetailDialog), findsOneWidget);
+  });
+
+  testWidgets('B: 잠긴 칸 아래 작은 ‘스테이지 N’', (tester) async {
+    await _pump(tester, tab: voyageTab);
+    expect(find.byKey(const Key('fleet.locked.label.4')), findsOneWidget);
   });
 
   testWidgets('B: 선원 탭 자동 편성', (tester) async {
@@ -111,14 +127,15 @@ void main() {
   });
 
   testWidgets('B: 기본 포트는 계약 명령을 보낸다 (AutoFleet · SetFleetSlot)', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab);
+    final log = await pumpGame(tester, _withGap(), tab: crewTab);
     await tester.tap(find.byKey(const Key('fleet.auto')));
     await tester.tap(find.byKey(const Key('tab.$voyageTab')));
     await tester.pump();
-    await tester.tap(find.byKey(const Key('fleet.slot.1')));
+    await tester.tap(find.byKey(const Key('fleet.slot.3')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fleet.pick.manta')));
+    final benched = _gapBenched();
+    await tester.tap(find.byKey(Key('fleet.pick.$benched')));
     await tester.pumpAndSettle();
-    expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), const SetFleetSlot(1, 'manta').toJson()]);
+    expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), SetFleetSlot(3, benched).toJson()]);
   });
 }

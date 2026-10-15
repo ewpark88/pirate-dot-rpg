@@ -13,6 +13,7 @@
 | A5 | 업로드 키 생성 → `key.properties` | 사람 | ⬜ | `android-release.md` 1·2절 |
 | A6 | `flutter build appbundle --release --obfuscate --split-debug-info=build/symbols` | S1 | ✅ 키 없이 빌드 성공(54MB) | 기호 파일은 Crashlytics용 보관 |
 | A7 | `dart run tool/release_check.dart` — 배포 aab에 운영자 표식 0회 | S1 | ✅ 2026-10-15 통과 | 업로드 전 매번 |
+| A7b | **release apk 실기기 실행 1회** — `python -I -B docs/store/device/release_smoke.py`(설치·실행·10초 안에 앞 화면·크래시 0, 입력 없음). 2026-10-15 release가 실행 즉시 종료된 사고(R8이 WorkManager Room 클래스를 지움)를 빌드 검사는 못 잡았다 | S1·사람 | ✅ 수정 c881761 뒤 S24 통과 | `docs/store/device/release_smoke.py` |
 | A8 | 실기기 확인 DEVICE_TEST.md 1~3절 | 사람 | 🟡 1차 설치 완료, 배치 v2 뒤 다시 | |
 
 ## B. 계정·연동

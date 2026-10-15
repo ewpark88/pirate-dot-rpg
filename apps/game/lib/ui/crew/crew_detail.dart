@@ -137,13 +137,20 @@ class CrewDetailDialog extends ConsumerWidget {
                 : null,
             child: Text(l10n.uiCrewPromote),
           ),
-        if (crew != null && deployed)
+        // 출전 중이면 ‘바꾸기’(이 칸에 다른 선원)와 ‘내리기’.
+        if (crew != null && deployed) ...[
+          PixelButton(
+            key: Key('crew.detail.replace.${def.id}'),
+            primary: true,
+            onPressed: () => unawaited(replaceCrew(context, ref, def.id)),
+            child: Text(l10n.uiCrewReplace),
+          ),
           PixelButton(
             key: Key('crew.detail.undeploy.${def.id}'),
             onPressed: () => undeployCrew(ref, def.id),
             child: Text(l10n.uiCrewUndeploy),
-          )
-        else if (crew != null)
+          ),
+        ] else if (crew != null)
           PixelButton(
             key: Key('crew.detail.deploy.${def.id}'),
             primary: true,

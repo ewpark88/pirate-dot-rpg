@@ -25,6 +25,7 @@ const Map<String, String> rawTables = {
       "num": 1,
       "baseRarity": "common",
       "family": "lob",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/octo.png",
       "nameKey": "crewOctoName"
@@ -34,6 +35,7 @@ const Map<String, String> rawTables = {
       "num": 2,
       "baseRarity": "common",
       "family": "lob",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/starry.png",
       "nameKey": "crewStarryName"
@@ -43,6 +45,7 @@ const Map<String, String> rawTables = {
       "num": 3,
       "baseRarity": "rare",
       "family": "lob",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/crabs.png",
       "nameKey": "crewCrabsName"
@@ -52,6 +55,7 @@ const Map<String, String> rawTables = {
       "num": 4,
       "baseRarity": "hero",
       "family": "lob",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/uni.png",
       "nameKey": "crewUniName"
@@ -61,6 +65,7 @@ const Map<String, String> rawTables = {
       "num": 5,
       "baseRarity": "legend",
       "family": "lob",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/volke.png",
       "nameKey": "crewVolkeName"
@@ -70,6 +75,7 @@ const Map<String, String> rawTables = {
       "num": 6,
       "baseRarity": "common",
       "family": "direct",
+      "reachBonus": -6,
       "fx": "hit_spark",
       "portrait": "crews/pang.png",
       "nameKey": "crewPangName"
@@ -79,6 +85,7 @@ const Map<String, String> rawTables = {
       "num": 7,
       "baseRarity": "common",
       "family": "direct",
+      "reachBonus": -3,
       "fx": "hit_spark",
       "portrait": "crews/hippo.png",
       "nameKey": "crewHippoName"
@@ -88,6 +95,7 @@ const Map<String, String> rawTables = {
       "num": 8,
       "baseRarity": "rare",
       "family": "direct",
+      "reachBonus": 0,
       "fx": "hit_spark",
       "portrait": "crews/bones.png",
       "nameKey": "crewBonesName"
@@ -97,6 +105,7 @@ const Map<String, String> rawTables = {
       "num": 9,
       "baseRarity": "hero",
       "family": "direct",
+      "reachBonus": 3,
       "fx": "hit_spark",
       "portrait": "crews/lion.png",
       "nameKey": "crewLionName"
@@ -106,6 +115,7 @@ const Map<String, String> rawTables = {
       "num": 10,
       "baseRarity": "legend",
       "family": "direct",
+      "reachBonus": 6,
       "fx": "hit_spark",
       "portrait": "crews/volt.png",
       "nameKey": "crewVoltName"
@@ -115,6 +125,7 @@ const Map<String, String> rawTables = {
       "num": 11,
       "baseRarity": "common",
       "family": "pierce",
+      "reachBonus": -6,
       "fx": "slash",
       "portrait": "crews/sword.png",
       "nameKey": "crewSwordName"
@@ -124,6 +135,7 @@ const Map<String, String> rawTables = {
       "num": 12,
       "baseRarity": "rare",
       "family": "pierce",
+      "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/nar.png",
       "nameKey": "crewNarName"
@@ -133,6 +145,7 @@ const Map<String, String> rawTables = {
       "num": 13,
       "baseRarity": "rare",
       "family": "pierce",
+      "reachBonus": 0,
       "fx": "slash",
       "portrait": "crews/walrus.png",
       "nameKey": "crewWalrusName"
@@ -142,6 +155,7 @@ const Map<String, String> rawTables = {
       "num": 14,
       "baseRarity": "hero",
       "family": "pierce",
+      "reachBonus": 3,
       "fx": "slash",
       "portrait": "crews/saw.png",
       "nameKey": "crewSawName"
@@ -151,6 +165,7 @@ const Map<String, String> rawTables = {
       "num": 15,
       "baseRarity": "legend",
       "family": "pierce",
+      "reachBonus": 6,
       "fx": "slash",
       "portrait": "crews/moby.png",
       "nameKey": "crewMobyName"
@@ -160,6 +175,7 @@ const Map<String, String> rawTables = {
       "num": 16,
       "baseRarity": "common",
       "family": "skip",
+      "reachBonus": -6,
       "fx": "hit_spark",
       "portrait": "crews/otter.png",
       "nameKey": "crewOtterName"
@@ -169,6 +185,7 @@ const Map<String, String> rawTables = {
       "num": 17,
       "baseRarity": "rare",
       "family": "skip",
+      "reachBonus": -3,
       "fx": "hit_spark",
       "portrait": "crews/pingu.png",
       "nameKey": "crewPinguName"
@@ -178,6 +195,7 @@ const Map<String, String> rawTables = {
       "num": 18,
       "baseRarity": "rare",
       "family": "skip",
+      "reachBonus": 0,
       "fx": "hit_spark",
       "portrait": "crews/sheldon.png",
       "nameKey": "crewSheldonName"
@@ -187,6 +205,7 @@ const Map<String, String> rawTables = {
       "num": 19,
       "baseRarity": "hero",
       "family": "skip",
+      "reachBonus": 3,
       "fx": "hit_spark",
       "portrait": "crews/dolphy.png",
       "nameKey": "crewDolphyName"
@@ -196,6 +215,7 @@ const Map<String, String> rawTables = {
       "num": 20,
       "baseRarity": "legend",
       "family": "skip",
+      "reachBonus": 6,
       "fx": "hit_spark",
       "portrait": "crews/orca.png",
       "nameKey": "crewOrcaName"
@@ -205,6 +225,7 @@ const Map<String, String> rawTables = {
       "num": 21,
       "baseRarity": "common",
       "family": "underwater",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/puffer.png",
       "nameKey": "crewPufferName"
@@ -214,6 +235,7 @@ const Map<String, String> rawTables = {
       "num": 22,
       "baseRarity": "rare",
       "family": "underwater",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/jelly.png",
       "nameKey": "crewJellyName"
@@ -223,6 +245,7 @@ const Map<String, String> rawTables = {
       "num": 23,
       "baseRarity": "rare",
       "family": "underwater",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/bara.png",
       "nameKey": "crewBaraName"
@@ -232,6 +255,7 @@ const Map<String, String> rawTables = {
       "num": 24,
       "baseRarity": "hero",
       "family": "underwater",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/moray.png",
       "nameKey": "crewMorayName"
@@ -241,6 +265,7 @@ const Map<String, String> rawTables = {
       "num": 25,
       "baseRarity": "legend",
       "family": "underwater",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/kraki.png",
       "nameKey": "crewKrakiName"
@@ -250,6 +275,7 @@ const Map<String, String> rawTables = {
       "num": 26,
       "baseRarity": "common",
       "family": "air",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/polly.png",
       "nameKey": "crewPollyName"
@@ -259,6 +285,7 @@ const Map<String, String> rawTables = {
       "num": 27,
       "baseRarity": "common",
       "family": "air",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/gull.png",
       "nameKey": "crewGullName"
@@ -268,6 +295,7 @@ const Map<String, String> rawTables = {
       "num": 28,
       "baseRarity": "rare",
       "family": "air",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/pelly.png",
       "nameKey": "crewPellyName"
@@ -277,6 +305,7 @@ const Map<String, String> rawTables = {
       "num": 29,
       "baseRarity": "hero",
       "family": "air",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/alba.png",
       "nameKey": "crewAlbaName"
@@ -286,6 +315,7 @@ const Map<String, String> rawTables = {
       "num": 30,
       "baseRarity": "legend",
       "family": "air",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/manta.png",
       "nameKey": "crewMantaName"
@@ -295,6 +325,7 @@ const Map<String, String> rawTables = {
       "num": 31,
       "baseRarity": "common",
       "family": "assault",
+      "reachBonus": -6,
       "fx": "slash",
       "portrait": "crews/shark.png",
       "nameKey": "crewSharkName"
@@ -304,6 +335,7 @@ const Map<String, String> rawTables = {
       "num": 32,
       "baseRarity": "rare",
       "family": "assault",
+      "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/crabby.png",
       "nameKey": "crewCrabbyName"
@@ -313,6 +345,7 @@ const Map<String, String> rawTables = {
       "num": 33,
       "baseRarity": "rare",
       "family": "assault",
+      "reachBonus": 0,
       "fx": "slash",
       "portrait": "crews/king.png",
       "nameKey": "crewKingName"
@@ -322,6 +355,7 @@ const Map<String, String> rawTables = {
       "num": 34,
       "baseRarity": "hero",
       "family": "assault",
+      "reachBonus": 3,
       "fx": "slash",
       "portrait": "crews/lobster.png",
       "nameKey": "crewLobsterName"
@@ -331,6 +365,7 @@ const Map<String, String> rawTables = {
       "num": 35,
       "baseRarity": "legend",
       "family": "assault",
+      "reachBonus": 6,
       "fx": "slash",
       "portrait": "crews/davy.png",
       "nameKey": "crewDavyName"
@@ -340,6 +375,7 @@ const Map<String, String> rawTables = {
       "num": 36,
       "baseRarity": "common",
       "family": "shock",
+      "reachBonus": -6,
       "fx": "level_up",
       "portrait": "crews/turtle.png",
       "nameKey": "crewTurtleName"
@@ -349,6 +385,7 @@ const Map<String, String> rawTables = {
       "num": 37,
       "baseRarity": "common",
       "family": "shock",
+      "reachBonus": -3,
       "fx": "level_up",
       "portrait": "crews/pumpum.png",
       "nameKey": "crewPumpumName"
@@ -358,6 +395,7 @@ const Map<String, String> rawTables = {
       "num": 38,
       "baseRarity": "rare",
       "family": "shock",
+      "reachBonus": 0,
       "fx": "level_up",
       "portrait": "crews/cook.png",
       "nameKey": "crewCookName",
@@ -368,6 +406,7 @@ const Map<String, String> rawTables = {
       "num": 39,
       "baseRarity": "hero",
       "family": "shock",
+      "reachBonus": 3,
       "fx": "level_up",
       "portrait": "crews/corey.png",
       "nameKey": "crewCoreyName"
@@ -377,6 +416,7 @@ const Map<String, String> rawTables = {
       "num": 40,
       "baseRarity": "legend",
       "family": "shock",
+      "reachBonus": 6,
       "fx": "level_up",
       "portrait": "crews/lamp.png",
       "nameKey": "crewLampName",
@@ -1474,16 +1514,16 @@ const Map<String, String> rawTables = {
   'skills': r'''
 {
   "families": [
-    {"id": "lob", "projectile": "cannonball", "attack": {"shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.3145, 0.3499, 0.6142, 0.6142, 0.6142]}},
-    {"id": "direct", "projectile": "bullet", "attack": {"shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8639, 0.9655, 0.9752, 0.9752, 0.9752]}},
-    {"id": "pierce", "projectile": "harpoon", "attack": {"shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.784, "excludeLayers": []}, "skill": {"id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.7989, 0.7119, 0.8189, 0.8189, 0.8189]}},
-    {"id": "skip", "projectile": "stone", "attack": {"shape": "chain", "chains": 3, "targets": "nearest", "intervalSec": 1.5, "power": 0.801, "excludeLayers": []}, "skill": {"id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 0.5, "fx": "hit_spark", "endFx": "tidal_wave"}, "ultimate": {"id": "ult_tidal_wave", "fx": "tidal_wave", "knockback": 30}, "nameKey": "battleFamilySkip", "ladder": {"chains": [3, 4, 5, 6, 8], "power": [0.8671, 0.8061, 0.7126, 0.7126, 0.7126]}},
-    {"id": "underwater", "projectile": "torpedo", "attack": {"shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.4736, 0.5227, 0.5251, 0.5251, 0.5251]}},
-    {"id": "air", "projectile": "lightning", "attack": {"shape": "random", "count": 2, "targets": "random", "intervalSec": 2.2, "power": 1.332, "excludeLayers": []}, "skill": {"id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 0.666, "fx": "lightning"}, "ultimate": {"id": "ult_thunderstorm", "fx": "lightning"}, "nameKey": "battleFamilyAir", "ladder": {"count": [2, 3, 3, 4, 5], "power": [1.4739, 1.2402, 1.2525, 1.2525, 1.2525]}},
-    {"id": "assault", "projectile": "hook", "attack": {"shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 2.425, "excludeLayers": ["air"]}, "skill": {"id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.2074, 0.2496, 0.2536, 0.2536, 0.2536]}},
-    {"id": "shock", "projectile": "shockwave", "attack": {"shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.379, "excludeLayers": []}, "skill": {"id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.7275, 0.7037, 0.6343, 0.6343, 0.6343]}}
+    {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.3145, 0.3499, 0.6142, 0.6142, 0.6142]}},
+    {"id": "direct", "projectile": "bullet", "attack": {"reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8639, 0.9655, 0.9752, 0.9752, 0.9752]}},
+    {"id": "pierce", "projectile": "harpoon", "attack": {"reach": 168, "shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.784, "excludeLayers": []}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.7989, 0.7119, 0.8189, 0.8189, 0.8189]}},
+    {"id": "skip", "projectile": "stone", "attack": {"reach": 155, "shape": "chain", "chains": 3, "targets": "nearest", "intervalSec": 1.5, "power": 0.801, "excludeLayers": []}, "skill": {"reach": 155, "id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 0.5, "fx": "hit_spark", "endFx": "tidal_wave"}, "ultimate": {"id": "ult_tidal_wave", "fx": "tidal_wave", "knockback": 30}, "nameKey": "battleFamilySkip", "ladder": {"chains": [3, 4, 5, 6, 8], "power": [0.8671, 0.8061, 0.7126, 0.7126, 0.7126]}},
+    {"id": "underwater", "projectile": "torpedo", "attack": {"reach": 125, "shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"reach": 125, "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.4736, 0.5227, 0.5251, 0.5251, 0.5251]}},
+    {"id": "air", "projectile": "lightning", "attack": {"reach": 160, "shape": "random", "count": 2, "targets": "random", "intervalSec": 2.2, "power": 1.332, "excludeLayers": []}, "skill": {"reach": 160, "id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 0.666, "fx": "lightning"}, "ultimate": {"id": "ult_thunderstorm", "fx": "lightning"}, "nameKey": "battleFamilyAir", "ladder": {"count": [2, 3, 3, 4, 5], "power": [1.4739, 1.2402, 1.2525, 1.2525, 1.2525]}},
+    {"id": "assault", "projectile": "hook", "attack": {"reach": 95, "shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 1.896, "excludeLayers": ["air"]}, "skill": {"reach": 95, "id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.1622, 0.1952, 0.1984, 0.1984, 0.1984]}},
+    {"id": "shock", "projectile": "shockwave", "attack": {"reach": 85, "shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.379, "excludeLayers": []}, "skill": {"reach": 85, "id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.7275, 0.7037, 0.6343, 0.6343, 0.6343]}}
   ],
-  "crewSkills": [{"id": "support_rally", "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
+  "crewSkills": [{"id": "support_rally", "reach": 85, "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
   "maxSameFamilyInFleet": 2,
   "rage": {"perKill": 0.01, "max": 1.0, "autoTrigger": true, "ultimateMultiplier": 5},
@@ -1540,14 +1580,15 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 8, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 10, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
-  "travelSec": 3,
+  "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 25, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
+  "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "field": {
     "width": 320,
-    "shipX": 56,
+    "shipX": 86,
     "shipY": 100,
-    "spawnX": 300,
+    "spawnX": 272,
+    "visibleRight": 266,
     "spawnSpacing": 12,
     "laneY": { "surface": 100, "underwater": 124, "air": 44 },
     "laneJitter": 14,

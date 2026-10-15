@@ -43,7 +43,11 @@ Future<void> main(List<String> args) async {
     stderr.writeln('✗ 배포 빌드에 운영자 코드가 남았다 — `if (kOperator)` 밖에서 operator/를 부르는 곳을 찾으세요.');
     exit(1);
   }
-  stdout.writeln('✓ 배포 빌드에 운영자 코드 없음');
+  stdout
+    ..writeln('✓ 배포 빌드에 운영자 코드 없음')
+    ..writeln(
+      '다음: 기기 연결 시 `python -I -B docs/store/device/release_smoke.py` (release apk 실행 확인 — 빌드 검사로는 실행 중 크래시를 못 잡는다)',
+    );
 }
 
 Future<void> _flutter(Directory dir, List<String> args) async {

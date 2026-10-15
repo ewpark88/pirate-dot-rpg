@@ -125,6 +125,10 @@ lanes:
       - apps/game/lib/adapters/
       - apps/game/test/adapters/
       - apps/game/test/store/
+      # 탑다운 전투 프로토타입(운영자 전용, 2026-10-15 사용자 결정 — 시험판)
+      - apps/game/lib/proto/
+      - apps/game/test/proto/
+      - tools/art/proto/
       # 뒤로 가기 후 재실행 멈춤 수정(2026-10-15 S1 위임)
       - apps/game/lib/main.dart
       - apps/game/lib/engine_host.dart

@@ -90,6 +90,7 @@ class FieldDef {
       shipX = j.number('shipX'),
       shipY = j.number('shipY'),
       spawnX = j.number('spawnX'),
+      visibleRight = j.number('visibleRight'),
       spawnSpacing = j.number('spawnSpacing'),
       laneY = j.numberMap('laneY'),
       laneJitter = j.number('laneJitter'),
@@ -102,6 +103,9 @@ class FieldDef {
   final double shipX;
   final double shipY;
   final double spawnX;
+
+  /// 보이는 화면 오른쪽 끝(필드 x, 기기 공통 최소). 사거리 상한이자 궁극기 범위 — 그 밖의 적은 맞히지 않는다.
+  final double visibleRight;
 
   /// 한 파 안에서 적 사이 가로 간격.
   final double spawnSpacing;
