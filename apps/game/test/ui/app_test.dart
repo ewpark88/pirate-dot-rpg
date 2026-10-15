@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pirate_dot/ui/pixel/pixel_tab_bar.dart';
 
 import 'ui_harness.dart';
 
@@ -9,7 +8,10 @@ void main() {
     testWidgets('${locale.languageCode}: 탭 4개', (tester) async {
       await pumpGame(tester, loadFixture('new_player'), locale: locale);
       expect(find.text(tab), findsOneWidget);
-      expect(find.byType(PixelTabItem), findsNWidgets(4));
+      // 도크 아이콘 4개 (시트 안 도크).
+      for (var i = 0; i < 4; i++) {
+        expect(find.byKey(Key('tab.$i')), findsOneWidget);
+      }
     });
   }
 }

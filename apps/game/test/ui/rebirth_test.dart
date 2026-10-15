@@ -55,6 +55,10 @@ Future<CommandLog> _pump(WidgetTester tester, RebirthPreview? preview, {GameStat
     ),
   );
   await tester.pump();
+  // 도크 + 시트: 항해 패널을 연다.
+  await tester.tap(find.byKey(const Key('tab.0')));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 600));
   await _scrollToCard(tester);
   return log;
 }

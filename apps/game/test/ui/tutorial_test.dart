@@ -16,7 +16,9 @@ void main() {
     expect(find.text('Try upgrading the Cannon.'), findsOneWidget);
     expect(find.byKey(const Key('tutorial.spot.tab.ship')), findsOneWidget);
     await tester.tap(find.byKey(const Key('tab.$shipTab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.byKey(const Key('tutorial.spot.ship.upgrade.cannon')), findsOneWidget);
     expect(find.byKey(const Key('tutorial.spot.tab.summon')), findsNothing);
   });
@@ -52,11 +54,14 @@ void main() {
     expect(log.sent.map((c) => c.toJson()), [const Summon(count: 10).toJson()]);
   });
 
-  testWidgets('말풍선은 전장과 탭 패널을 가리지 않는다', (tester) async {
+  testWidgets('말풍선은 위쪽(전장 위)에 — 시트와 선원 줄을 가리지 않는다', (tester) async {
     await pumpGame(tester, _step(2), keepTutorial: true);
     final bubble = tester.getRect(find.byKey(const Key('tutorial.bubble')));
     final battle = tester.getRect(find.byKey(const Key('battle.area')));
-    expect(bubble.top, greaterThanOrEqualTo(battle.bottom));
+    final sheet = tester.getRect(find.byKey(const Key('sheet.handle')));
+    expect(bubble.top, greaterThanOrEqualTo(battle.top));
+    expect(bubble.bottom, lessThanOrEqualTo(battle.center.dy));
+    expect(bubble.bottom, lessThanOrEqualTo(sheet.top));
   });
 
   testWidgets('튜토리얼이 끝나면 말풍선·손가락 없음', (tester) async {

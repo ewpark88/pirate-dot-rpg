@@ -11,10 +11,8 @@ import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/ship_geometry.dart';
 
-/// 기록의 이벤트를 연출로 바꾼다 (docs/GAME_DESIGN.md 4.4 타격감 규칙, 수치는 juice.json·fx_map.json).
-///
-/// - 앞서 알림(onAhead, lookahead 틱 전): 발사체를 띄우고 슬롯을 번쩍인다.
-/// - 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
+/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
+/// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
 class EventDirector implements ReplayListener {
   EventDirector(this.scene)
     : _crewFamily = _familyByCrew(scene.tables),
@@ -119,7 +117,9 @@ class EventDirector implements ReplayListener {
         case ShipDamaged():
           scene
             ..shipFlashMs = _juice.flashFrames * kFrameMs
-            ..shipHpRatio = e.hpRatio;
+            ..shipHpRatio = e.hpRatio
+            ..numbers.add(e.amount, kShipCenterX, kShipTop - kNumberLiftPx, DamageKind.ship);
+          if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
         case BossCleared():
           _bossKill();
         case BossSpawned():

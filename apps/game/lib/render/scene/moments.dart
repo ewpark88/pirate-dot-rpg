@@ -59,6 +59,14 @@ class Moments {
   /// 대포 발사 시각 (장면 시계 ms) — 반동. 포구 화염 지연만큼 미래일 수 있다.
   double cannonFiredAtMs = -1000000000;
 
+  /// 무리전 침몰(배 HP 0, 엔진이 배를 고치고 파를 다시) 연출 남은 시간(ms): 앞 절반 기울며 가라앉고, 뒤 절반 고쳐져 떠오른다.
+  double sinkMs = 0;
+
+  void onShipSunk() {
+    if (sinkMs > 0) return;
+    sinkMs = scene.fx.raw.obj('shipHp').number('sinkMs');
+  }
+
   void onPartUp(String part) {
     glowPart = part;
     glowMs = scene.fx.raw.obj('shipParts').number('glowMs');
@@ -83,6 +91,13 @@ class Moments {
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
     if (glowMs > 0) glowMs -= dtMs;
+    if (sinkMs > 0) {
+      final half = scene.fx.raw.obj('shipHp').number('sinkMs') / 2;
+      final before = sinkMs;
+      sinkMs -= dtMs;
+      // 반쯤 가라앉았을 때 수리 반짝(떠오르기 시작).
+      if (before > half && sinkMs <= half) scene.spawnEffect('level_up', kShipCenterX, kShipCenterY);
+    }
   }
 
   void reset() {

@@ -33,6 +33,9 @@ abstract final class ShipGeometry {
   /// 포구 끝 (도트, 출렁임 제외) — 발사체 출발점·포구 화염.
   static Offset cannonTip(BattleScene s) => Offset(_right - _tipFromRight * scale(s), _y(s, _bottom - _tipFromBottom));
 
+  /// 물 닿는 줄 (도트, 출렁임 제외) — 침몰할 때 이 아래는 안 그린다.
+  static double waterline(BattleScene s) => _y(s, _bottom - 2);
+
   static const double _right = kShipLeft + kShipWidth;
   static const double _bottom = kShipTop + kShipHeight;
   static double _y(BattleScene s, double y) => kShipPivotY + (y - kShipPivotY) * scale(s);

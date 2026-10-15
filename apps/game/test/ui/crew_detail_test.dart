@@ -130,7 +130,9 @@ void main() {
     final log = await pumpGame(tester, _withGap(), tab: crewTab);
     await tester.tap(find.byKey(const Key('fleet.auto')));
     await tester.tap(find.byKey(const Key('tab.$voyageTab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     await tester.tap(find.byKey(const Key('fleet.slot.3')));
     await tester.pumpAndSettle();
     final benched = _gapBenched();
