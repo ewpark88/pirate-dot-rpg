@@ -1,6 +1,7 @@
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 
 /// 해역 보스 컷인 상태. UI가 [kind]·[progress]를 보고 이름을 얹는다.
 class CutInState {
@@ -71,7 +72,7 @@ class Moments {
     glowPart = part;
     glowMs = scene.fx.raw.obj('shipParts').number('glowMs');
     final fx = scene.fx.fxFor('shipLookChanged');
-    if (fx != null) scene.spawnEffect(fx, kShipCenterX, kShipCenterY - 8);
+    if (fx != null) scene.spawnEffect(fx, scene.shipCenter.dx, scene.shipCenter.dy - 8);
   }
 
   /// 해역 보스 첫 등장이면 컷인.
@@ -96,7 +97,7 @@ class Moments {
       final before = sinkMs;
       sinkMs -= dtMs;
       // 반쯤 가라앉았을 때 수리 반짝(떠오르기 시작).
-      if (before > half && sinkMs <= half) scene.spawnEffect('level_up', kShipCenterX, kShipCenterY);
+      if (before > half && sinkMs <= half) scene.spawnEffect('level_up', scene.shipCenter.dx, scene.shipCenter.dy);
     }
   }
 
@@ -109,8 +110,9 @@ class Moments {
     final p = scene.fx.pillar;
     pillarMs = p.number('ms');
     pillarCount++;
+    final at = scene.shipCenter;
     scene
-      ..spawnEffect('level_up', kShipCenterX, kShipTop + kShipHeight, scale: p.number('fxScale'))
+      ..spawnEffect('level_up', at.dx, at.dy + kShipHeight / 2, scale: p.number('fxScale'))
       ..shipFlashMs = scene.juice.flashFrames * kFrameMs;
   }
 

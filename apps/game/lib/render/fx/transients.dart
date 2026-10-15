@@ -17,6 +17,9 @@ class Projectile {
   double toX = 0;
   double toY = 0;
 
+  /// 탑다운(T2): 화면에서는 곧게 날고, 포물선·물수제비 높이는 크기·그림자로 보인다(heightAt).
+  bool flat = false;
+
   /// 출발·도착 가상 인덱스.
   double startIndex = 0;
   double impactIndex = 0;

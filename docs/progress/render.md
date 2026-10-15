@@ -14,6 +14,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · T2 탑다운 마무리 1: 숫자 배율·투척 높이·골든 4기기·부하 150마리·침몰/축하
+- 숫자: 탑다운은 전장 1단위가 옆모습 1도트보다 커서 숫자를 옆모습 화면 크기로(paintNumbers scale = 옆모습 dot / 탑다운 dot).
+- 투척·물수제비·떨어지기: Projectile.flat(탑다운) — 땅 위 자리는 직선, 높이(heightAt)는 크기 +45%·수면 그림자(높을수록 작고 흐림).
+- 골든 `test/render/goldens/top_{360x640,s24,411x891,tablet800x1280}.png`(T1 엔진 기록 틱 138, 전체 화면·시트 닫힘).
+- 부하 `test/render/perf/top_stress_test.dart`: 150마리 + 매 틱 6발 + 처치. 적을 그림·번쩍임별 drawAtlas로 묶어 프레임당 그리기 446 → 304, 기록 0.81ms(디버그 JIT, 상대값). 키 문자열 캐시(프레임당 할당 없음).
+- 탑다운 침몰: 작아지며 어두워지고 거품 → 떠오름(saveLayer는 이 1.8초 동안만). 부품 축하·등급 빛·수리 반짝 위치 = scene.shipCenter(탑다운이면 배).
+- 남은 것: 보스 정지 위치(S2 bossStandoff 100 대기), 탑다운 대포 반동(대포가 배 층에 있어 생략 — 필요하면 층 분리), 실기기 fps.
+
 ### 2026-10-15 · S3 · T2 BattleGame mode 'top' 연결 (T1 엔진 실제 전투)
 - BattleGame: 프레임 mode가 top이면 카메라를 상자 dp로 두고 `ScenePainter.paintTop(canvas, TopFrame)` — 탑다운 카메라(바다·항적·물속 적 → 배(그림자·층·체력 막대) → 물 위·공중 적 → 발사체·폭발·코인·숫자), 덮개·HUD·선원 줄은 옆모습 배치 그대로. 모드가 바뀌면 배치 다시.
 - 연출(EventDirector): 탑다운이면 발사 = AttackFired.fromX·fromY(없으면 배 중심), 배 피격 숫자 = 배 위, 코인 = 배로. 보스 코인 비는 `scene/coin_rain.dart`(탑다운은 배 위쪽 폭). `scene/top_view.dart`(isTop·topShip·shipCenter·coinTo). EnemyPose.heading(탑다운 도트 회전).
