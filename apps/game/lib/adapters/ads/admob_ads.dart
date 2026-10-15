@@ -20,6 +20,11 @@ class AdMobAds implements AdsPort {
   final void Function()? onShowEnd;
 
   static const _firstRetry = Duration(seconds: 30);
+
+  /// 연속 실패가 이만큼이면 이번 실행에서는 더 불러오지 않는다. 실패한 불러오기가 WebView·렌더러 메모리를 남기는 정황이 있었다
+  /// (2026-10-15 S24: 연속 실패 세션에서 Native Heap이 분당 ~10MB 증가, 정상 세션은 평평). 다음 실행에서 다시 시도한다.
+  static const maxConsecutiveFailures = 6;
+  int _failures = 0;
   static const _maxRetry = Duration(minutes: 10);
 
   final AdsSdk _sdk;
@@ -91,7 +96,12 @@ class AdMobAds implements AdsPort {
     _loading = false;
     if (ok) {
       _retry = _firstRetry;
+      _failures = 0;
       _ready.value = true;
+      return;
+    }
+    if (++_failures >= maxConsecutiveFailures) {
+      debugPrint('ads: $_failures loads failed in a row — stop for this run');
       return;
     }
     final wait = _retry;
