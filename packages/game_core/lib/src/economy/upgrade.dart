@@ -15,6 +15,7 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
   var gold = state.wallet.gold;
   var level = state.ship.level(def.id);
   final start = level;
+  final lookBefore = partLookStage(def, level);
   for (var i = 0; i < command.times; i++) {
     final max = def.maxLevel;
     if (max != null && level >= max) break;
@@ -27,6 +28,8 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
     if (every != null && level % every == 0) ctx.emit(PartMilestone(ctx.tick, part: def.id, level: level));
   }
   if (level == start) return state;
+  final look = partLookStage(def, level);
+  if (look > lookBefore) ctx.emit(ShipLookChanged(ctx.tick, part: def.id, stage: look));
 
   ctx.emit(SaveRequested(ctx.tick, reason: command.type));
   final s = state.copyWith(

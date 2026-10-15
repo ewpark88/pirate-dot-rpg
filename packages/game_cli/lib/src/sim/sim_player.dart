@@ -196,6 +196,10 @@ class SimPlayer {
     }
   }
 
+  void _recordLook(Map<String, int> best, Duration within, String part, int stage) {
+    if (_elapsed <= within && stage > (best[part] ?? 0)) best[part] = stage;
+  }
+
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       switch (e) {
@@ -213,6 +217,12 @@ class SimPlayer {
           _lastBoss = _recovering != null ? _online : null;
           result.cardsByRun.last.bossCleared(t, stage: stage, bestBefore: _best, rebirths: result.rebirths);
           if (stage + 1 > _best) _best = stage + 1;
+        case PartUpgraded(:final part, :final level):
+          _recordLook(result.levelDay1, const Duration(days: 1), part, level);
+          _recordLook(result.levelWeek1, const Duration(days: 7), part, level);
+        case ShipLookChanged(:final part, :final stage):
+          _recordLook(result.lookDay1, const Duration(days: 1), part, stage);
+          _recordLook(result.lookWeek1, const Duration(days: 7), part, stage);
         case BossFailed(:final stage):
           result.firstBossFail ??= _elapsed;
           result.firstBossFailStage ??= stage;

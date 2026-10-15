@@ -1,0 +1,15 @@
+# 수용 기준: 부위 강화가 외형 단계 레벨(ship_parts.json visualStages)에 닿으면 배 외형 단계가 오른다 (사용자 지시 2026-10-15).
+# 담당: economy 레인. stage37_midgame의 대포는 Lv52 → 단계 3(1·15·35). Lv55에 닿으면 단계 4. 선체 Lv40도 단계 3.
+name: 배 외형 단계 — 대포 강화로 다음 디자인
+seed: 1
+state: fixtures/states/stage37_midgame.json
+steps:
+  - advance: 1t
+  - expect: { look.cannon: 3, look.hull: 3 }
+  - input: { type: op.grant, gold: "1e12" }
+  - input: { type: upgradePart, part: cannon, times: 2 }
+  - advance: 1t
+  - expect: { look.cannon: 3 }
+  - input: { type: upgradePart, part: cannon }
+  - advance: 1t
+  - expect: { look.cannon: 4, look.hull: 3 }

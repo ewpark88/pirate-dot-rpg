@@ -166,6 +166,14 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 오프라인 추정 ÷ 실제 초당 골드(마지막 10분) | '
       '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
     )
+    ..writeln(
+      '| 배 외형 단계(부위별 최고, 첫날 / 첫 주) | '
+      '${[for (final p in t.shipParts.parts) '${p.id} ${_fmt(m((r) => (r.lookDay1[p.id] ?? 0).toDouble()))}/${_fmt(m((r) => (r.lookWeek1[p.id] ?? 0).toDouble()))}'].join(' · ')} |',
+    )
+    ..writeln(
+      '| 부위 최고 레벨(첫날 / 첫 주) | '
+      '${[for (final p in t.shipParts.parts) '${p.id} ${_fmt(m((r) => (r.levelDay1[p.id] ?? 0).toDouble()))}/${_fmt(m((r) => (r.levelWeek1[p.id] ?? 0).toDouble()))}'].join(' · ')} |',
+    )
     ..writeln('| 함포 지원 광고(보스 실패 뒤) | ${_fmt(m((r) => r.bossAds.toDouble()))} |')
     ..writeln('| 강화·소환 횟수 | ${_fmt(m((r) => r.upgrades.toDouble()))} · ${_fmt(m((r) => r.summons.toDouble()))} |');
   _cardsByRun(b, t, rs);

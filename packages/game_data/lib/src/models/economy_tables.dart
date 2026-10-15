@@ -14,6 +14,7 @@ class ShipPartDef {
       maxLevel = j.intOrNull('maxLevel'),
       milestoneEvery = j.intOrNull('milestoneEvery'),
       milestoneMultiplier = j.number('milestoneMultiplier'),
+      visualStages = [for (final v in j.raw['visualStages'] as List) (v as num).toInt()],
       nameKey = j.str('nameKey');
 
   final String id;
@@ -28,6 +29,9 @@ class ShipPartDef {
   final int? maxLevel;
   final int? milestoneEvery;
   final double milestoneMultiplier;
+
+  /// 배 외형이 바뀌는 레벨 (오름차순, 1부터). 지금 단계 = 이 목록에서 레벨 이하인 것의 수 (사용자 지시 2026-10-15).
+  final List<int> visualStages;
   final String nameKey;
 }
 
@@ -57,6 +61,15 @@ class ShipPartsTable {
     for (final p in parts) {
       expect(e, that: p.costGrowth > 1, message: 'ship_parts: ${p.id} costGrowth는 1보다 커야 함');
       expect(e, that: p.formula == 'exp' || p.formula == 'linear', message: 'ship_parts: ${p.id} formula 오류');
+      final v = p.visualStages;
+      var ascending = v.isNotEmpty && v.first == 1;
+      for (var i = 1; i < v.length; i++) {
+        ascending = ascending && v[i] > v[i - 1];
+      }
+      expect(e, that: ascending, message: 'ship_parts: ${p.id} visualStages는 1부터 오름차순');
+      if (p.maxLevel case final max?) {
+        expect(e, that: v.isEmpty || v.last <= max, message: 'ship_parts: ${p.id} visualStages는 maxLevel 이하');
+      }
       if (p.formula == 'exp') {
         expect(e, that: p.growth > 1, message: 'ship_parts: ${p.id} growth는 1보다 커야 함');
       }

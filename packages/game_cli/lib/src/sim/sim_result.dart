@@ -58,6 +58,14 @@ class SimResult {
   /// 환생 뒤 회복 중 연속 보스 처치 간격(초) — 빠른 항해(waves.rebirthSkip)에서 이동 시간 확인용.
   final recoverBossGaps = <double>[];
 
+  /// 부위별 최고 외형 단계 — 첫날(24시간) 끝 / 첫 주 끝 (ShipLookChanged, 환생으로 내려갔다 다시 오른 것은 새 단계가 아님).
+  final lookDay1 = <String, int>{};
+  final lookWeek1 = <String, int>{};
+
+  /// 부위별 최고 레벨 — 첫날 / 첫 주 (외형 단계 간격 조정용).
+  final levelDay1 = <String, int>{};
+  final levelWeek1 = <String, int>{};
+
   /// 회차별 카드 수입 (첫 회차가 0번, 환생할 때마다 하나씩 늘어난다).
   final cardsByRun = <RunCards>[RunCards()];
 }

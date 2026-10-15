@@ -10,6 +10,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S2 · 배 외형 단계 + 보유·도감 효과 전투 적용 + 야간 리포트
+- 배 외형 단계(사용자 지시): ship_parts visualStages(대포·선체 1·15·35·55·90·140·250, 돛 1·8·16·24·30, 망루 1·8·16·26·36·45, 화물칸 1·10·20·35·60·100·160),
+  partLookStage·partLook, BattleView.shipLook(없으면 빈 맵), ShipLookChanged(강화로 단계가 오를 때 1번). sim: 모든 부위 첫날 4단계·첫 주 5~6단계. 시나리오 ship_look_upgrade(observe look.<부위>).
+- 보유 효과·도감 보너스가 전투에 빠져 있었음 → damageBonus 구현(sim 지표 모두 목표 안, 첫 신화 28.0일). 커밋 보류: balance crews에서 shock이 1.134 —
+  arena가 보조 선원 유무를 ‘보유’까지 바꿔 비교해 보유 효과가 지원 점수로 잡힘. S3 arena 수정 요청(비교 두 실행의 보유 선원을 같게).
+- 야간 리포트 100명×30일(9528dcd): 첫 전설 보유 4.00일 경계 외 OK. 조정 중: 보스 드롭 전설 0.4%(100명×8일 3.0일 OK) + 전설 경험치 32~34(60일 확인이 메모리 부족으로 중단).
+- 다음: 첫 전설 숫자 확정 → 함대 전투력·일괄 강화(S1) → 몬스터 수(pool 기준, 경로 열림).
+
 ### 2026-10-15 · S2 · 수동 편성(ADR-0010) + UI 요청 2건 + sim 도구
 - 수동 편성(사용자 결정, S1 위임 — engine·save·battle 편성 경로 개방): GameState.fleet(List<String?>)·fleetInit, 세이브 v5(v4→v5: 빈 편성 → 첫 틱 자동 편성), SetFleetSlot·AutoFleet·FleetRejected,
   activeFleet·emptySlotCount·fleetSlots(economy/formation.dart, cards.dart로 export). 전투·오프라인·상자가 activeFleet 사용. sim은 선원 변화마다 AutoFleet — 지표 동일. 4b7b082.

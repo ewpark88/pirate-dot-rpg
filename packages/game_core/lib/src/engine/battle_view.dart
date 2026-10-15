@@ -143,6 +143,7 @@ class BattleView {
     this.wave = 0,
     this.rage = 0,
     this.gold = BigNum.zero,
+    this.shipLook = const {},
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -161,6 +162,7 @@ class BattleView {
     wave: j['wave'] as int? ?? 0,
     rage: (j['rage'] as num?)?.toDouble() ?? 0,
     gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
+    shipLook: {for (final e in (j['shipLook'] as Json? ?? const {}).entries) e.key: e.value as int},
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -194,6 +196,9 @@ class BattleView {
   final double rage;
   final BigNum gold;
 
+  /// 부위별 외형 단계 (ship_parts.json visualStages, 경제 partLook). 렌더가 배 그림을 고른다. 없으면 빈 맵.
+  final Map<String, int> shipLook;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -212,6 +217,7 @@ class BattleView {
     int? wave,
     double? rage,
     BigNum? gold,
+    Map<String, int>? shipLook,
   }) => BattleView(
     tick: tick ?? this.tick,
     shipHp: shipHp ?? this.shipHp,
@@ -228,6 +234,7 @@ class BattleView {
     wave: wave ?? this.wave,
     rage: rage ?? this.rage,
     gold: gold ?? this.gold,
+    shipLook: shipLook ?? this.shipLook,
   );
 
   Json toJson() => {
@@ -246,5 +253,6 @@ class BattleView {
     'wave': wave,
     'rage': rage,
     'gold': gold.toJson(),
+    'shipLook': shipLook,
   };
 }
