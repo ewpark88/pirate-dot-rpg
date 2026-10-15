@@ -67,8 +67,9 @@ abstract interface class BattleGeometry {
   ({double x, double y, double angle})? muzzle(double tx, double ty);
 }
 
-/// Settings.battleView(`side` | `top`)에 맞는 전장 모양.
-BattleGeometry geometryFor(String mode, WavesTable w) => mode == 'top' ? TopGeometry.of(w) : SideGeometry(w);
+/// Settings.battleView(`side` | `top`)에 맞는 전장 모양. 탑다운 배 반경은 [stage]의 배 등급(ship_tiers topRadius).
+BattleGeometry geometryFor(String mode, GameTables t, int stage) =>
+    mode == 'top' ? TopGeometry.of(t.waves, shipRadius: t.shipTiers.tierAt(stage).topRadius) : SideGeometry(t.waves);
 
 /// 옆모습: 배는 왼쪽(shipX), 적은 오른쪽에서 줄지어 걸어온다. 지금 동작 그대로.
 class SideGeometry implements BattleGeometry {

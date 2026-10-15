@@ -83,6 +83,7 @@ class ShipTierDef {
     : id = j.str('id'),
       stage = j.integer('stage'),
       slots = j.integer('slots'),
+      topRadius = j.number('topRadius'),
       damageBonus = j.number('damageBonus'),
       sprite = j.str('sprite'),
       nameKey = j.str('nameKey');
@@ -90,6 +91,9 @@ class ShipTierDef {
   final String id;
   final int stage;
   final int slots;
+
+  /// 탑다운 배 반경(충돌·사거리 기준 둘레, S3 배 크기 t1 34×80 ~ t3 40×100).
+  final double topRadius;
   final double damageBonus;
   final String sprite;
   final String nameKey;

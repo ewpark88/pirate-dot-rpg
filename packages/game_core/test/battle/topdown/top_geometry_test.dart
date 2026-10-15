@@ -245,6 +245,19 @@ void main() {
       }
     });
 
+    test('배 등급별 반경: 둘레 거리·접촉·포구가 그 반경으로', () {
+      final big = TopGeometry(w, topField.withShipRadius(32));
+      final e = mob(topField.shipX + 32 + 6 + 10, topField.shipY);
+      expect(big.edge(e), closeTo(10, 1e-9));
+      for (var i = 0; i < 100 && !big.advance(e, 20, 0.05); i++) {}
+      expect(dist(e), closeTo(32 + topField.mobRadius, 1e-9));
+      expect(big.muzzle(topField.shipX, 0).y, closeTo(topField.shipY - 32, 1e-9));
+      // 배 등급별(ship_tiers topRadius): 스테이지 1 소형선 28, 30 슬루프 29, 80 군함 32.
+      double r(int stage) => (geometryFor('top', t, stage) as TopGeometry).top.shipRadius;
+      expect([r(1), r(30), r(80), r(150)], [28, 29, 32, 32]);
+      expect(geometryFor('side', t, 80), isA<SideGeometry>());
+    });
+
     test('옆모습 SideGeometry는 지금 규칙 그대로(앞머리에서 멈춤, 오른쪽으로 밀림)', () {
       final s = SideGeometry(w);
       final stop = w.field.shipX + w.field.contactGap;

@@ -18,8 +18,9 @@ const double _turn = math.pi / half;
 class TopGeometry implements BattleGeometry {
   TopGeometry(this.w, this.top) : _aim = TopAim(top, w);
 
-  /// `waves.json`의 `top` 절로.
-  factory TopGeometry.of(WavesTable w) => TopGeometry(w, TopField.of(w));
+  /// `waves.json`의 `top` 절로. [shipRadius]가 있으면 배 반경만 그것으로(배 등급별 크기).
+  factory TopGeometry.of(WavesTable w, {double? shipRadius}) =>
+      TopGeometry(w, TopField.of(w).withShipRadius(shipRadius));
 
   final WavesTable w;
   final TopField top;

@@ -93,6 +93,31 @@ class TopField {
   final double viewWidth;
   final double viewHeight;
 
+  /// 배 반경만 바꾼 사본([r]이 null이면 그대로).
+  TopField withShipRadius(double? r) => r == null
+      ? this
+      : TopField(
+          width: width,
+          height: height,
+          shipX: shipX,
+          shipY: shipY,
+          shipRadius: r,
+          mobRadius: mobRadius,
+          bossRadius: bossRadius,
+          spawnMargin: spawnMargin,
+          approachRadius: approachRadius,
+          approachBoost: approachBoost,
+          swarmGroupsMin: swarmGroupsMin,
+          swarmGroupsMax: swarmGroupsMax,
+          swarmSpreadDeg: swarmSpreadDeg,
+          separation: separation,
+          bossStandoff: bossStandoff,
+          bossOrbitDegPerSec: bossOrbitDegPerSec,
+          reachScale: reachScale,
+          viewWidth: viewWidth,
+          viewHeight: viewHeight,
+        );
+
   /// [e]의 원 반지름.
   double radiusOf(Foe e) => e.boss ? bossRadius : mobRadius;
 }

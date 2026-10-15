@@ -254,7 +254,7 @@ class BattleSystem implements GameSystem {
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..geometry = geometryFor(s.settings.battleView, ctx.tables.waves);
+      ..geometry = geometryFor(s.settings.battleView, ctx.tables, s.progress.stage);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;
       startBoss(nf, s.progress.stage, ctx, emit: false, hpRatio: b?.hpRatio ?? 1, x: b?.x, y: b?.y);
