@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "savedAt": "2026-11-01T12:34:56.000Z",
   "playerId": "fixture-player",
   "rngSeed": 913377,
@@ -15,7 +15,11 @@
     "bestStage": 160,
     "farming": false,
     "rebirths": 0,
-    "rage": 0.0
+    "rage": 0.0,
+    "mapPiecesEarned": 0,
+    "titles": [],
+    "treasureSea": null,
+    "treasureRoute": null
   },
   "ship": {
     "parts": {
@@ -24,7 +28,14 @@
       "sail": 30,
       "crowsnest": 45,
       "cargo": 300
-    }
+    },
+    "honor": {
+      "parts": {},
+      "tier": 0
+    },
+    "skin": null,
+    "skinsOwned": [],
+    "skinChosen": false
   },
   "crews": {
     "octo": {
@@ -230,6 +241,8 @@
   },
   "fleet": [],
   "fleetInit": false,
+  "rebirthShop": {},
+  "bounty": null,
   "tokens": 0,
   "summon": {
     "pityCount": 0,
@@ -564,6 +577,7 @@
     "chest": null,
     "wave": 0,
     "rage": 0.0,
-    "gold": "0e0"
+    "gold": "0e0",
+    "shipLook": {}
   }
 }
