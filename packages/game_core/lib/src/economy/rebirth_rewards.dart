@@ -1,3 +1,7 @@
+import 'dart:math' as math;
+
+import 'package:game_core/src/economy/ship_stats.dart' show partLook;
+import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
@@ -64,3 +68,25 @@ double treasurePiecesMultiplier(GameState s, GameTables t) => _treasure(s, t)?.n
 
 /// 배 등급 [tier]가 명예 등급을 넘는가 — ShipTierUp 연출은 이때만(환생 뒤 다시 오를 때 반복하지 않음). 능력치는 그대로 적용된다.
 bool beyondHonor(GameState s, GameTables t, ShipTierDef tier) => t.shipTiers.tiers.indexOf(tier) > s.ship.honorTier;
+
+/// 전장 스냅샷의 배 겉모습(외형 단계·등급 그림·스킨·보물 바다)을 채운다. 배·진행 상태가 같으면 지난 계산을 쓴다(매 틱 할당 없음).
+class ShipDressCache {
+  Object? _ship;
+  Object? _progress;
+  Map<String, int> _look = const {};
+  String? _tier;
+
+  BattleView apply(BattleView v, GameState s, GameTables t) {
+    if (!identical(_ship, s.ship) || !identical(_progress, s.progress)) {
+      _ship = s.ship;
+      _progress = s.progress;
+      _look = partLook(s, t);
+      final tiers = t.shipTiers.tiers;
+      final now = tiers.indexOf(t.shipTiers.tierAt(s.progress.stage));
+      _tier = tiers[math.min(math.max(now, s.ship.honorTier), tiers.length - 1)].id;
+    }
+    return v
+        .copyWith(shipLook: _look)
+        .withShipDress(tierLook: _tier, skin: s.ship.skin, treasureSea: s.progress.treasureSea);
+  }
+}
