@@ -972,6 +972,102 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ships.py 픽셀 격자 (ship_t1 바탕)",
       "license": "OWN"
     },
+    "ship/td_t1_base.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t1_cannon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t1_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t1_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t1_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t1_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_base.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_cannon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t2_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_base.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_cannon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t3_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_base.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_cannon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/td_t4_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_topdown_ships.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
     "ui/ad.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
