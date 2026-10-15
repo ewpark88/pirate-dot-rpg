@@ -26,7 +26,7 @@ class SimCommand extends Command<int> {
         help: 'continuous: 계속 접속 · daily: 하루 40분(20분씩 두 번) + 오프라인(설계서 4.3.3)',
       )
       ..addFlag('boss-ad', help: '보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지)')
-      ..addMultiOption('set', help: '테이블 값 덮어쓰기(탐색용) — 예: --set meta.rebirth.minStage=30 (값은 JSON)')
+      ..addMultiOption('set', splitCommas: false, help: '테이블 값 덮어쓰기(탐색용) — 예: --set meta.rebirth.minStage=30 (값은 JSON)')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로')
       ..addOption('report', help: '사람이 읽는 표(마크다운) 저장 경로 — 예: docs/balance/nightly-30d.md');

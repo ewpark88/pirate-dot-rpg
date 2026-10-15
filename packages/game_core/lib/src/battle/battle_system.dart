@@ -10,11 +10,13 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
+import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
+import 'package:game_data/game_data.dart';
 
 /// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 함성 게이지·궁극기, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
 ///
@@ -25,6 +27,8 @@ class BattleSystem implements GameSystem {
   Field? _field;
   Object? _crewsSeen;
   Object? _fleetSeen;
+  Object? _shipSeen;
+  Map<String, int> _shipLook = const {};
   List<String>? _fixedFleet;
   bool _invincible = false;
   bool _zeroCooldown = false;
@@ -37,7 +41,7 @@ class BattleSystem implements GameSystem {
         if (f.bossActive) return state;
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx);
-        return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f);
+        return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
       case TriggerUltimate():
         return _round(state, ctx, (r) => r.castUltimate());
       case OpJumpStage(:final stage):
@@ -46,16 +50,16 @@ class BattleSystem implements GameSystem {
         final s = state.copyWith(
           progress: p.copyWith(stage: stage, wave: 0, farming: false, bestStage: stage > p.bestStage ? stage : null),
         );
-        return _project(s, _sync(s, ctx));
+        return _project(s, _sync(s, ctx), ctx.tables);
       case OpSetWave(:final count, :final enemyKind):
         final f = _sync(state, ctx)..foes.clear();
         f.bossActive = false;
         spawnWave(f, state.progress.stage, ctx, count: count, kind: enemyKind);
-        return _project(state, f);
+        return _project(state, f, ctx.tables);
       case OpSpawnBoss():
         final f = _sync(state, ctx)..foes.clear();
         startBoss(f, state.progress.stage, ctx);
-        return _project(state, f);
+        return _project(state, f, ctx.tables);
       case OpSetInvincible(:final on):
         _invincible = on;
         return state;
@@ -71,7 +75,7 @@ class BattleSystem implements GameSystem {
         _fixedFleet = crewIds;
         final f = _sync(state, ctx);
         _arm(f, state, ctx);
-        return _project(state, f);
+        return _project(state, f, ctx.tables);
       default:
         return null;
     }
@@ -98,7 +102,7 @@ class BattleSystem implements GameSystem {
     final after = _resolve(next, _field!, ctx);
     // 보스 처치는 새 스테이지의 Field를 만든다. 그래서 _resolve 뒤의 Field를 다시 읽는다.
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
-    return _tailwindSpeed(_project(after, f), ctx);
+    return _tailwindSpeed(_project(after, f, ctx.tables), ctx);
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스.
@@ -207,7 +211,7 @@ class BattleSystem implements GameSystem {
       ),
     );
     final nf = _sync(next, ctx)..travelLeft = t.waves.travelSec;
-    return _project(next, nf);
+    return _project(next, nf, ctx.tables);
   }
 
   void _restart(Field f, SystemContext ctx) {
@@ -236,7 +240,7 @@ class BattleSystem implements GameSystem {
       wallet: r.gold.isZero ? null : state.wallet.copyWith(gold: state.wallet.gold + r.gold),
       progress: r.rage == state.progress.rage ? null : state.progress.copyWith(rage: r.rage),
     );
-    return _project(s, f);
+    return _project(s, f, ctx.tables);
   }
 
   /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.
@@ -281,9 +285,16 @@ class BattleSystem implements GameSystem {
       ..captainId = captainOf(ids, s, t);
   }
 
-  GameState _project(GameState s, Field f) => s.copyWith(
-    battle: f
-        .view(s.battle ?? BattleView.empty)
-        .copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),
-  );
+  GameState _project(GameState s, Field f, GameTables t) {
+    // 외형 단계는 강화 때만 바뀐다 — 배 상태가 같으면 지난 맵을 그대로 쓴다(매 틱 할당 없음).
+    if (!identical(_shipSeen, s.ship)) {
+      _shipSeen = s.ship;
+      _shipLook = partLook(s, t);
+    }
+    return s.copyWith(
+      battle: f
+          .view(s.battle ?? BattleView.empty)
+          .copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold, shipLook: _shipLook),
+    );
+  }
 }

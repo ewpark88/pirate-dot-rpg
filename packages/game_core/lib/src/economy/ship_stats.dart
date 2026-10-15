@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_data/game_data.dart';
 import 'package:meta/meta.dart';
@@ -18,6 +19,21 @@ BigNum partEffect(ShipPartDef def, int level) {
 
 /// 부위 [def]를 Lv[level]에서 Lv[level]+1로 올리는 비용.
 BigNum partCost(ShipPartDef def, int level) => BigNum.powOf(def.costGrowth, level).times(def.costBase);
+
+/// 부위 [def]의 Lv[level] 외형 단계 = `visualStages` 중 레벨 이하인 것의 수 (Lv0 = 0단계).
+int partLookStage(ShipPartDef def, int level) {
+  var n = 0;
+  for (final v in def.visualStages) {
+    if (v > level) break;
+    n++;
+  }
+  return n;
+}
+
+/// 부위별 외형 단계 (렌더가 배 그림을 고른다). BattleView.shipLook과 같다.
+Map<String, int> partLook(GameState s, GameTables t) => {
+  for (final p in t.shipParts.parts) p.id: partLookStage(p, s.ship.level(p.id)),
+};
 
 /// 대포: 선원 전체 공격력.
 BigNum shipAttack(ShipPartsTable t, int level) => partEffect(t.byId('cannon'), level);

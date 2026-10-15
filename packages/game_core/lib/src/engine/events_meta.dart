@@ -21,6 +21,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'chestOpened' => ChestOpened(t, gold: big('gold')),
     'offlineReward' => OfflineReward(t, gold: big('gold'), cards: j['cards'] as int, seconds: j['seconds'] as int),
     'rebirthDone' => RebirthDone(t, gain: j['gain'] as int, pieces: j['pieces'] as int, rebirths: j['rebirths'] as int),
+    'shipLookChanged' => ShipLookChanged(t, part: j['part'] as String, stage: j['stage'] as int),
     'fleetRejected' => FleetRejected(
       t,
       slot: j['slot'] as int,
@@ -205,4 +206,19 @@ class FleetRejected extends GameEvent {
 
   @override
   Json _fields() => {'slot': slot, 'crewId': crewId, 'reason': reason};
+}
+
+/// 강화로 부위 외형 단계가 올랐다 (ship_parts.json visualStages). 렌더는 배 그림을 바꾸고, UI는 축하 연출.
+/// 한 번에 여러 단계를 넘으면 마지막 단계로 한 번만.
+class ShipLookChanged extends GameEvent {
+  const ShipLookChanged(super.tick, {required this.part, required this.stage});
+
+  final String part;
+  final int stage;
+
+  @override
+  String get type => 'shipLookChanged';
+
+  @override
+  Json _fields() => {'part': part, 'stage': stage};
 }

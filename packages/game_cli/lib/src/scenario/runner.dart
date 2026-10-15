@@ -87,6 +87,8 @@ Map<String, Object?> observe(GameState s) => {
   'enemies': s.battle?.enemies.length,
   'crews': s.crews.length,
   'operator': s.operator,
+  // 배 외형 단계 (ship_parts.json visualStages). 부위마다 키 하나 — 예: { look.cannon: 2 }
+  for (final e in (s.battle?.shipLook ?? const <String, int>{}).entries) 'look.${e.key}': e.value,
 };
 
 int _ticks(String text, int tickMs) {
