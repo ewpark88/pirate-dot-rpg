@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · T2 탑다운 첫 산출: 위에서 본 큰 배 t1~t4 × 부품 단계 + S24 장면 시안
+- `tools/art/gen_topdown_ships.py` → `assets/ship/td_t<n>_{base,hull,cargo,cannon,sail,crowsnest}.png`(같은 크기 층, 이 순서로 겹침, 뱃머리 위). OWN.
+  프레임 t1 56×96 · t2 60×106 · t3/t4 66×118 도트, 선체 폭 34~40(돛 포함 약 50). 화면 180도트(시험판)에서 S24 약 105dp.
+  층: 바탕(테두리·엇갈린 판자·승강구·돛대·바우스프릿·고물 선실) / 선체 7(징·쇠 띠·충각·금 테·문장·마호가니) / 화물 7 / 대포 7(옆 포 1~4쌍·청동·강철·뱃머리 포·쌍포·금 용) / 돛 5(위에서 본 활대+부푼 천: 기운 자국·깨끗·빨간 줄·해골·금 테) / 망루 6.
+- 시안 `docs/specs/render-topdown/`: ships_tiers_stages.png(4등급 × 7단계), scene_s24_tiers.png, scene_4devices.png(시험판 장면 위에 새 배).
+- 남은 것(T2): 렌더러 본체(탑다운 카메라·배 가운데·층 겹침 그리기·절전 반영), 적 27·보스 13 위에서 본 도트, 발사체·폭발·숫자·코인·체력 막대 2D, 환생 명예 외형·스킨 4종(팔레트)·금빛 물결.
+
 ### 2026-10-15 · S3 · 전체 화면 전투(bottomInset) + 배 체력 막대·피격·침몰 (사용자 결정·지적)
 - `battleFrameFor(box, dpr, {bottomInset})` + `BattleGame.bottomInset`(S4 약속): 도크·시트가 가린 높이만큼 선원 줄·궁극기가 위로, 필드는 배율 그대로 위아래만(보이는 필드가 148보다 낮으면 하늘을 자름). 줄 바탕은 상자 바닥까지(bandFill). 테스트: 닫힘 72dp·시트 50%에서 k 그대로, 배 보임.
 - UI 연결값(goldTargetDp·onCoinArrive·bottomInset)은 `battle_game_links.dart`(part, mixin)로.
