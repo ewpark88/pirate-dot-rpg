@@ -122,8 +122,11 @@ GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet)
     return receiveCard(state, t, b.starterCrew, t.rarities.rarities.first.id);
   }
   if (fleet.isEmpty) return state;
+  // 환생 뒤 이미 깬 스테이지는 줄여서 (회차 수만큼 카드 수입이 곱해지지 않게).
+  final repeat = state.progress.rebirths > 0 && stage < state.progress.bestStage;
+  final n = repeat ? b.repeatCountAt(stage) : b.countAt(stage);
   var s = state;
-  for (var i = 0; i < b.countAt(stage); i++) {
+  for (var i = 0; i < n; i++) {
     s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));
   }
   return s;
