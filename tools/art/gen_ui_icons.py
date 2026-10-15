@@ -1,4 +1,4 @@
-"""UI 도트 아이콘 생성 (탭 바 16×16 4개 + 젬 8×8 3프레임). 픽셀 격자 → PNG, LICENSES.json(OWN) 갱신.
+"""UI 도트 아이콘 생성 (탭 바 16×16 4개 + 젬 8×8 3프레임 + 코인·별·배 부품 5개 16×16). 픽셀 격자 → PNG, LICENSES.json(OWN) 갱신.
 
     python -I tools/art/gen_ui_icons.py            # apps/game/assets/ui/ 에 쓴다
     python -I tools/art/gen_ui_icons.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -37,6 +37,11 @@ PALETTE = {
     "p": (233, 216, 166),  # 종이
     "P": (196, 170, 112),
     "g": (170, 175, 190),
+    "G": (110, 115, 130),  # 쇠 (ship_t1 포)
+    "S": (70, 74, 90),
+    "W": (240, 232, 210),  # 돛 (ship_t1)
+    "D": (70, 44, 26),  # 돛대
+    "u": (47, 98, 196),
 }
 
 SHIP = [
@@ -144,6 +149,152 @@ GEM = [
     ],
 ]
 
+# 아래 아이콘은 칠한 칸만 그린다 — outlined()가 바깥에 1px 외곽선 k를 붙인다(도트 팩 스타일).
+STAR = [
+    "................",
+    "................",
+    ".......YY.......",
+    ".......Yy.......",
+    "......YYyy......",
+    "......Yyyy......",
+    "..YYYYYyyyyyyy..",
+    "...Yyyyyyyyyyo..",
+    "....Yyyyyyyyo...",
+    ".....yyyyyyo....",
+    "....Yyyyyyyyo...",
+    "....yyyyoyyyo...",
+    "...Yyyo..oyyo...",
+    "...yyo....yyo...",
+    "................",
+    "................",
+]
+PART_CANNON = [
+    "................",
+    "................",
+    "............gg..",
+    "...........gGGk.",
+    ".........ggGGGS.",
+    ".......ggGGGGS..",
+    ".....ggGGGGSS...",
+    "...ogGGGGGSS....",
+    "...GGGGGSS......",
+    "..dbbbbbbbd.....",
+    "..dbbbbbbbbd....",
+    "..ddddddddd.....",
+    "..SggS..SggS....",
+    "..SgSS..SgSS....",
+    "...SS....SS.....",
+    "................",
+]
+PART_HULL = [
+    "................",
+    "................",
+    "................",
+    "..............d.",
+    ".............dd.",
+    ".dddddddddddddd.",
+    ".bbbbbbbbbbbbbb.",
+    ".bbbkbbbbkbbbbb.",
+    ".dddddddddddddd.",
+    "..bbbbbbbbbbbbb.",
+    "...bbbbbbbbbbb..",
+    "...dddddddddd...",
+    "....bbbbbbbbb...",
+    "................",
+    "................",
+    "................",
+]
+PART_SAIL = [
+    "................",
+    ".......Drr......",
+    "....WWWDWWWW....",
+    "....WWWDWWWWW...",
+    "...WWWWDWWWWW...",
+    "...WWWWDWWWWWW..",
+    "...uuuuDuuuuuu..",
+    "..WWWWWDWWWWWW..",
+    "..WWWWWDWWWWWWW.",
+    "..WWWWWDWWWWWWW.",
+    ".WWWWWWDWWWWWWW.",
+    ".PPPPPPDPPPPPPP.",
+    ".......D........",
+    ".......D........",
+    "................",
+    "................",
+]
+PART_CROWSNEST = [
+    "................",
+    ".......D........",
+    ".......Drr......",
+    ".......Drrr.....",
+    "...yyyY.D.......",
+    "...dddddddddd...",
+    "...bbbbbbbbbb...",
+    "...bbbdbbdbbb...",
+    "....bbbbbbbb....",
+    ".......D........",
+    ".......D........",
+    ".......D........",
+    ".......D........",
+    ".......D........",
+    "................",
+    "................",
+]
+PART_CARGO = [
+    "................",
+    "................",
+    "................",
+    ".....yYy........",
+    "...yYyyYyy......",
+    "..bbbbbbbbbbbb..",
+    "..dddddddddddd..",
+    "..bdbbbbbbbbdb..",
+    "..bdbbbbbbbbdb..",
+    "..dddddddddddd..",
+    "..bdbbbbbbbbdb..",
+    "..bdbbbbbbbbdb..",
+    "..dddddddddddd..",
+    "................",
+    "................",
+    "................",
+]
+
+
+def coin16() -> list[str]:
+    """16px 금화: 테두리 고리(왼쪽 위 밝고 오른쪽 아래 어둡게) + 안쪽 면 + 십자 각인 + 반짝임."""
+    rows = []
+    for y in range(16):
+        row = ""
+        for x in range(16):
+            dx, dy = x + 0.5 - 8, y + 0.5 - 8
+            d = (dx * dx + dy * dy) ** 0.5
+            if d > 6.6:
+                row += "."
+            elif d > 5.0:
+                row += "Y" if dx + dy < -3 else ("o" if dx + dy > 3 else "y")
+            elif (x in (7, 8) and 5 <= y <= 10) or (y in (7, 8) and 5 <= x <= 10):
+                row += "o"
+            else:
+                row += "Y" if dx + dy < -4 else "y"
+        rows.append(row)
+    rows[4] = rows[4][:5] + "w" + rows[4][6:]
+    return rows
+
+
+def outlined(rows: list[str]) -> list[str]:
+    """투명 칸 중 상하좌우로 칠한 칸에 닿는 칸을 외곽선 k로."""
+    h, w = len(rows), len(rows[0])
+    out = [list(r) for r in rows]
+    for y in range(h):
+        for x in range(w):
+            if rows[y][x] != ".":
+                continue
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if 0 <= nx < w and 0 <= ny < h and rows[ny][nx] not in ".k":
+                    out[y][x] = "k"
+                    break
+    return ["".join(r) for r in out]
+
 
 def png(rows: list[str]) -> bytes:
     h = len(rows)
@@ -174,6 +325,13 @@ FILES = {
     "ui/tab_summon.png": SUMMON,
     "ui/tab_map.png": MAP,
     "ui/gem.png": sheet(GEM),  # 8×8 × 3프레임 가로 시트
+    "ui/coin.png": outlined(coin16()),
+    "ui/star.png": outlined(STAR),
+    "ui/part_cannon.png": outlined(PART_CANNON),
+    "ui/part_hull.png": outlined(PART_HULL),
+    "ui/part_sail.png": outlined(PART_SAIL),
+    "ui/part_crowsnest.png": outlined(PART_CROWSNEST),
+    "ui/part_cargo.png": outlined(PART_CARGO),
 }
 
 

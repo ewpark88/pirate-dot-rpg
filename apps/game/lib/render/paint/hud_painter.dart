@@ -11,16 +11,11 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 /// 캔버스 안 HUD (기준 battle_ship.gif, render-quality-v1 규칙 4·5·8):
 /// 도트 데미지 숫자, `xN COMBO` 배너, 왼쪽 위 코인+골드, 가운데 `스테이지-파`, 오른쪽 위 함성 게이지, 선원 슬롯 6칸.
 class HudPainter {
-  HudPainter(this.scene, this.sprites)
-    : _family = {for (final c in scene.tables.crews.crews) c.id: c.family},
-      _rarity = {for (final c in scene.tables.crews.crews) c.id: c.baseRarity};
+  HudPainter(this.scene, this.sprites) : _family = {for (final c in scene.tables.crews.crews) c.id: c.family};
 
   final BattleScene scene;
   final SpriteDraw sprites;
   final Map<String, String> _family;
-
-  /// 슬롯 테두리 등급. FleetSlot에 지금 등급이 없어 기본 등급(crews.json baseRarity)을 쓴다 — 계약 요청 대기.
-  final Map<String, String> _rarity;
 
   final _paint = Paint()..isAntiAlias = false;
 
@@ -49,9 +44,10 @@ class HudPainter {
     for (final e in _fx.familyColors.raw.entries) e.key: parseArgb(e.value as String, 'familyColors.${e.key}'),
   };
 
-  late final Map<String, int> _rarityColor = {
-    for (final r in scene.tables.rarities.rarities) r.id: parseArgb(r.color, 'rarities.${r.id}.color'),
-  };
+  /// 등급 순번(FleetSlot.rarity, 계약 I) → 테두리 색.
+  late final List<int> _rarityColor = [
+    for (final r in scene.tables.rarities.rarities) parseArgb(r.color, 'rarities.${r.id}.color'),
+  ];
 
   static const _white32 = 0xFFFFFFFF;
   static const _skillBarPx = 2.0;
@@ -125,7 +121,14 @@ class HudPainter {
       final ix = x + bw;
       final slot = fleet[i];
       final family = _familyColor[_family[slot.crewId]] ?? _white32;
-      _fill(c, x, kSlotTop, w, h, scene.slotFlashMs[i] > 0 ? _white32 : _rarityColor[_rarity[slot.crewId]] ?? _white32);
+      _fill(
+        c,
+        x,
+        kSlotTop,
+        w,
+        h,
+        scene.slotFlashMs[i] > 0 ? _white32 : _rarityColor[slot.rarity.clamp(0, _rarityColor.length - 1)],
+      );
       _fill(c, ix, iy, iw, ih, _plate);
       c
         ..save()

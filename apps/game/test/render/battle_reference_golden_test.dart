@@ -26,11 +26,11 @@ class _Painter extends CustomPainter {
 
 const _fleet = [
   FleetSlot(crewId: 'octo', cooldown: 0.9),
-  FleetSlot(crewId: 'bones', cooldown: 0.2),
+  FleetSlot(crewId: 'bones', cooldown: 0.2, rarity: 1),
   FleetSlot(crewId: 'sword', cooldown: 0.6),
-  FleetSlot(crewId: 'pingu', cooldown: 0.4),
-  FleetSlot(crewId: 'manta', cooldown: 0.75),
-  FleetSlot(crewId: 'lamp', cooldown: 0.3),
+  FleetSlot(crewId: 'pingu', cooldown: 0.4, rarity: 1),
+  FleetSlot(crewId: 'manta', cooldown: 0.75, rarity: 3),
+  FleetSlot(crewId: 'lamp', cooldown: 0.3, rarity: 3),
 ];
 
 const _kinds = ['crab', 'jelly', 'piranha', 'puffer', 'urchin', 'crab', 'piranha'];
