@@ -8,6 +8,9 @@ class Projectile {
 
   /// 발사한 계열 (스프라이트 키 `projectile:<family>`).
   String family = '';
+
+  /// 쏜 선원 (PB 무기 그림 `weapon:<crewId>`, 없으면 계열 그림).
+  String crewId = '';
   double fromX = 0;
   double fromY = 0;
   double toX = 0;

@@ -1,0 +1,300 @@
+{
+ "version": "0.22",
+ "canvas": {
+  "viewBox": [
+   -6,
+   -12,
+   252,
+   358
+  ],
+  "size": [
+   252,
+   358
+  ],
+  "note": "모든 레이어는 같은 캔버스. 카드 몸통은 (0,0)~(240,340), 위쪽 문장이 y<0로 튀어나옴 / all layers share this canvas; card body (0,0)-(240,340)"
+ },
+ "layers": [
+  "back",
+  "character",
+  "front",
+  "text",
+  "fx"
+ ],
+ "artWindow": {
+  "rect": [
+   12,
+   12,
+   216,
+   238
+  ],
+  "radius": 9,
+  "note": "캐릭터는 이 창으로 잘라서 그림 / clip character to this rect"
+ },
+ "character": {
+  "scale": 0.74,
+  "foot": [
+   120,
+   247
+  ],
+  "transform": "translate(31.2 13.9) scale(.74)",
+  "source": "characters/<id>/<id>_blue.svg (240x324, 발 120,315)"
+ },
+ "text": {
+  "name": {
+   "pos": [
+    120,
+    292
+   ],
+   "align": "center",
+   "font": "Black Han Sans",
+   "size": "18 (8자 이하) / 16 (10자 이하) / 14.5",
+   "stroke": "#14161c 3px"
+  },
+  "nameEn": {
+   "pos": [
+    120,
+    311
+   ],
+   "align": "center",
+   "font": "IBM Plex Sans KR 600",
+   "size": 10,
+   "opacity": 0.78
+  },
+  "rarity": {
+   "baseline": 258,
+   "note": "등급 띠 안, 별 뒤: 한글(Black Han Sans 13) + 영문(IBM Plex Sans KR 700, 8.5). x는 ribbonX 참고"
+  },
+  "num": {
+   "pill": [
+    18,
+    18,
+    30,
+    16
+   ],
+   "textPos": [
+    33,
+    30
+   ],
+   "size": 10
+  },
+  "family": {
+   "pillRight": 222,
+   "y": 18,
+   "h": 16,
+   "textRight": 214,
+   "size": 9.5
+  },
+  "ammoChip": {
+   "pos": [
+    26,
+    226
+   ],
+   "h": 22,
+   "icon": "ammo/icons/<ammo>.svg (scale .62, 중심 x+11)",
+   "text": "IBM Plex Sans KR 700, 12, #fff2dc, x+24",
+   "border": "탄종 색 1.5px",
+   "content": "ammo.json pirates.<id>.chip (예: 분열 4, 연사 12, 치명 ×1.5)"
+  }
+ },
+ "rarities": {
+  "common": {
+   "ko": "일반",
+   "en": "COMMON",
+   "stars": 1,
+   "main": "#9aa3ad",
+   "dark": "#3d424a",
+   "text": "#e6e2d8",
+   "rarityTextColor": "#14161c",
+   "ribbonX": 94.3,
+   "ribbonEnX": 123.3,
+   "back": "ui/cards/card_common_back.svg",
+   "front": "ui/cards/card_common_front.svg",
+   "motion": []
+  },
+  "rare": {
+   "ko": "희귀",
+   "en": "RARE",
+   "stars": 2,
+   "main": "#58a6ff",
+   "dark": "#123a66",
+   "text": "#eaf4ff",
+   "rarityTextColor": "#ffffff",
+   "ribbonX": 108.2,
+   "ribbonEnX": 137.2,
+   "back": "ui/cards/card_rare_back.svg",
+   "front": "ui/cards/card_rare_front.svg",
+   "motion": [
+    {
+     "layer": "card_bubble.svg",
+     "points": [
+      [
+       32,
+       200,
+       5
+      ],
+      [
+       40,
+       150,
+       3
+      ],
+      [
+       205,
+       180,
+       6
+      ],
+      [
+       198,
+       120,
+       3.5
+      ],
+      [
+       58,
+       90,
+       2.5
+      ],
+      [
+       185,
+       60,
+       4
+      ]
+     ],
+     "note": "[x,y,반지름] 거품. 4초마다 위로 30 이동 후 반복 / rise 30px per 4s loop"
+    }
+   ]
+  },
+  "hero": {
+   "ko": "영웅",
+   "en": "HERO",
+   "stars": 3,
+   "main": "#c07bff",
+   "dark": "#3c1c66",
+   "text": "#f6eaff",
+   "rarityTextColor": "#ffffff",
+   "ribbonX": 115.7,
+   "ribbonEnX": 144.7,
+   "back": "ui/cards/card_hero_back.svg",
+   "front": "ui/cards/card_hero_front.svg",
+   "motion": [
+    {
+     "layer": "card_sparkle.svg",
+     "points": [
+      [
+       80,
+       40,
+       5
+      ],
+      [
+       140,
+       28,
+       3.5
+      ],
+      [
+       210,
+       110,
+       4.5
+      ],
+      [
+       30,
+       150,
+       3.5
+      ],
+      [
+       205,
+       200,
+       3
+      ],
+      [
+       100,
+       70,
+       2.5
+      ]
+     ],
+     "note": "[x,y,반지름] 별빛. 2.4초 주기 크기 0.5→1.1, 투명도 0.15→1, 서로 다른 시차"
+    }
+   ]
+  },
+  "legend": {
+   "ko": "전설",
+   "en": "LEGEND",
+   "stars": 4,
+   "main": "#ffcf4a",
+   "dark": "#6a4410",
+   "text": "#fff6d6",
+   "rarityTextColor": "#14161c",
+   "ribbonX": 116.8,
+   "ribbonEnX": 145.8,
+   "back": "ui/cards/card_legend_back.svg",
+   "front": "ui/cards/card_legend_front.svg",
+   "motion": [
+    {
+     "layer": "card_legend_rays.svg",
+     "pivot": [
+      120,
+      160
+     ],
+     "note": "빛살. 30초에 한 바퀴 회전 / rotate 360deg per 30s"
+    },
+    {
+     "layer": "card_sparkle.svg",
+     "points": [
+      [
+       40,
+       60,
+       6
+      ],
+      [
+       200,
+       44,
+       5
+      ],
+      [
+       188,
+       150,
+       4
+      ],
+      [
+       34,
+       170,
+       4
+      ],
+      [
+       120,
+       26,
+       3.5
+      ]
+     ],
+     "note": "영웅과 같은 반짝임"
+    },
+    {
+     "layer": "card_shine.svg",
+     "note": "광택 띠. x -120에서 +320까지 skewX(-18), 3.6초 주기 중 뒤 45% 동안 이동, 카드 몸통으로 잘라 그림"
+    }
+   ]
+  },
+  "mythic": {
+   "ko": "신화",
+   "en": "MYTHIC",
+   "stars": 5,
+   "main": "#7af0ff",
+   "dark": "#2a0f4a",
+   "text": "#f0fbff",
+   "rarityTextColor": "#14161c",
+   "ribbonX": 124.3,
+   "ribbonEnX": 153.3,
+   "back": "ui/cards/card_mythic_back.svg",
+   "front": "ui/cards/card_mythic_front.svg",
+   "motion": [
+    {
+     "note": "오로라 띠 3줄이 좌우로 24px 흐름(6초 왕복), 삼지창 뒤 점선 후광 12초 1회전, 무지개 광택 띠(card_shine 색만 바꿔 씀), 반짝임 6개"
+    }
+   ]
+  }
+ },
+ "glow": {
+  "rare": "#58a6ff 45% blur 5",
+  "hero": "#c07bff 60% blur 8",
+  "legend": "#ffc846 75% blur 12",
+  "note": "카드 뒤 외곽 빛(선택) / optional outer glow",
+  "mythic": "#7af0ff 70% blur 10 + #ff9ae8 50% blur 6"
+ }
+}

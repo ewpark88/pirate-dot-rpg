@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
@@ -88,7 +90,8 @@ class M3Director {
         );
       case UltimatePatternKind.rain:
         for (var i = 0; i < pattern.count; i++) {
-          final x = _rainLeft + (i * _rainPrimeX + index * _rainTickX) % _rainSpanX;
+          final span = math.min(_rainSpanX, (scene.visibleRight - _rainLeft - 24).floor());
+          final x = _rainLeft + (i * _rainPrimeX + index * _rainTickX) % span;
           final y = _rainTop + (i * _rainPrimeY + index * _rainTickY) % _rainSpanY;
           scene.spawnEffect(pattern.fx, x, y, delayMs: i * gap);
         }
@@ -96,7 +99,7 @@ class M3Director {
         var n = 0;
         for (var k = 0; k < scene.poseCount && n < pattern.count; k++) {
           final p = scene.poses[k];
-          if (p.x > kLogicalWidth) continue;
+          if (p.x > scene.visibleRight) continue;
           scene.spawnEffect(pattern.fx, p.x, p.y, delayMs: n * gap);
           n++;
         }

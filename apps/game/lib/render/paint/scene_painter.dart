@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/hud_painter.dart';
+import 'package:pirate_dot/render/paint/pb_fx_painter.dart';
 import 'package:pirate_dot/render/paint/ship_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/paint/stage_painter.dart';
@@ -20,6 +21,7 @@ class ScenePainter {
   ScenePainter(this.scene) : _status = StatusPainter(scene) {
     _hud = HudPainter(scene, _sprite);
     _ship = ShipPainter(scene, _sprite);
+    _pb = PbFxPainter(scene, _sprite);
     _stage = StagePainter(scene, _sprite);
     _sprite.slowed = ColorFilter.mode(Color(_status.slowedTint), BlendMode.srcATop);
   }
@@ -30,6 +32,7 @@ class ScenePainter {
   final _sprite = SpriteDraw();
   late final HudPainter _hud;
   late final ShipPainter _ship;
+  late final PbFxPainter _pb;
 
   /// 아트 팩 이미지. null이거나 키가 없으면 플레이스홀더.
   SpriteBank? get sprites => _sprite.bank;
@@ -185,6 +188,7 @@ class ScenePainter {
   void _projectiles(Canvas c) {
     for (final p in scene.projectiles.active) {
       if (scene.player.position < p.startIndex) continue;
+      if (_pb.projectile(c, p)) continue;
       if (_sprite.draw(c, 'projectile:${p.family}', p.x, p.y)) continue;
       final s = p.style.size;
       _fill(c, p.x - s / 2, p.y - s / 2, s, s, p.style.color);
@@ -194,6 +198,7 @@ class ScenePainter {
   void _effects(Canvas c) {
     for (final e in scene.effects.active) {
       if (!e.visible) continue;
+      if (e.sheetId == 'explosion_aoe' && _pb.blast(c, e)) continue;
       final cy = _bottomAnchored.contains(e.sheetId) ? e.y - e.h / 2 : e.y;
       if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, cy, frame: e.frame, w: e.w, h: e.h)) continue;
       final t = e.frame / e.frames;

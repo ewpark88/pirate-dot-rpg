@@ -72,7 +72,7 @@ List<RecordedTick> _recording() => [
 
 void main() {
   for (final MapEntry(key: name, value: (screen, dpr)) in devices.entries) {
-    testWidgets('화면 배치 v2 골든 $name: 전장 상자를 빈 띠 없이 채움 + 선원 줄 6칸 + 궁극기 버튼 + 캔버스 HUD', (tester) async {
+    testWidgets('화면 배치 v2 골든 $name (물리 픽셀): 필드 k+1·선원 줄 k, 빈 띠 없음 + 선원 줄 6칸 + 궁극기 버튼 + 캔버스 HUD', (tester) async {
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       final box = boxOf(screen);
       final frame = battleFrameFor(box, dpr);
@@ -95,13 +95,19 @@ void main() {
         });
       }
 
+      // 골든은 실기기와 같은 물리 픽셀로 찍는다(필드 k배·선원 줄 kb배 — 도트 하나가 정수 픽셀).
+      final k = frame.k.toDouble();
+      tester.view
+        ..physicalSize = Size((v.width * k).ceilToDouble(), (v.height * k).ceilToDouble())
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       await tester.pumpWidget(
         Center(
           child: RepaintBoundary(
             child: SizedBox(
-              width: v.width.ceilToDouble(),
-              height: v.height.ceilToDouble(),
-              child: CustomPaint(painter: _Painter(painter, v)),
+              width: (v.width * k).ceilToDouble(),
+              height: (v.height * k).ceilToDouble(),
+              child: CustomPaint(painter: _Painter(painter, v, scale: k)),
             ),
           ),
         ),

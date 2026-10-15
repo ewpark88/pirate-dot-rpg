@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 피해 숫자 가독성(E8) 승인 대기 · `plans/active/render-perf.md`(실기기 측정 대기) · 디자인 2·3단계는 S1 배정 대기 |
+| 현재 계획 | 포탄·폭발(`docs/specs/render-bombs.md`) 승인 대기 → 배 부품 단계 디자인(사용자 지시, S2 shipLook 계약 대기) → B HD 도트 → C 연출 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | S4 UI 골든 en_m3_hud가 v2.1(하늘 0.7) 전 값 — S4 재생성 · 숫자 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
+| 막힌 것 | pubspec assets/weapons·fx/pb·crew_art·ui/cards 등록(S1) · S4 en_m3_hud 재생성 · BattleView.shipLook(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,25 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 포탄·폭발 퀄리티 (사용자 직접 지시) + 태블릿
+- 스펙 `docs/specs/render-bombs.md`. PB 무기 36종·폭발 부품 16장 가져오기(import_pb.py), `PbFxPainter`(무기 회전·꼬리, 폭발 단계 합성), 계열별 flightMs·lookahead 16·범위 계열 한 발, 폭발 합치기·상한.
+- 태블릿 800×1280: 검사 기기 4종(battle_frame_test·layout 골든). 선원 줄 도트 ≤1.6dp 상한(kBandDotMaxDp) — 휴대폰 3종은 그대로.
+- event_director·battle_scene 300줄 → ProjectileRules·mergeBlast로 나눔.
+- 골든 4장 갱신 + layout_tablet 새로(PB 그림 미등록 상태로 찍음 — S1이 pubspec 등록하면 스프라이트 골든 다시 찍어야 함). check --full: S4 en_m3_hud만 실패(대기 중).
+
+### 2026-10-15 · S3 · Pirate Busters 선원 그림 가져오기 (사용자 결정: PB 차용, 유료 도구 0회)
+- `tools/art/import_pb.py`: 40명 카드 그림(355×480)·얼굴 초상(@2x) → `assets/crew_art/`, 등급 테두리 5종 back·front + legend_rays·shine·sparkle + cards.json → `assets/ui/cards/`.
+  무손실 WebP(원본과 픽셀 같음 확인), 94개 1.2MB, 카드 최대 ~14KB(150KB 한도). LICENSES OWN(출처 PB 경로). `--check` 같음.
+- 표정 SVG는 아직 안 가져옴 — Flutter에 SVG 의존이 없어 PNG 부위 합성이 필요(상세 화면 설계 때).
+- check --full: S4 골든 en_m3_hud만 실패(v3 프레임 대기 중, S4가 재생성) — 이 변경과 무관.
+
+### 2026-10-15 · S3 · 전장 배율 +1 (사용자 직접 지시, v3)
+- battleFrameFor: 필드 k+1(왼쪽 기준, 오른쪽 잘림 — S24 보이는 폭 270), 선원 줄은 이전 배율 그대로(줄 좌표 + bandOrigin·bandScale), 줄 윗변 정수 물리 픽셀.
+- 보스 clampBossX(그림·발사체 목표·숫자·불꽃), 궁극기 비·코인 비·타격 목표는 보이는 폭 안. 상자 45%는 S4.
+- 테스트: battle_frame_test(3기기 — 필드 k+1·줄 k, 빈 띠 없음, 왼쪽 기준·보이는 폭 250~300, 줄 56dp+, 버튼 48dp+). 골든 layout_* 3장 물리 픽셀로 새로, battle_boss_storm·battle_cutin(보스 x 안쪽으로) 갱신.
+- 점검 regions_s24.png(18장면) 다시 찍음, 비교 compare_s24_v3.png·goldens_3devices_v3.png.
+- check --full: UI 골든 en_m3_hud(S4)만 실패 — 상자 좌표(toDp)가 새 프레임으로 바뀌어서. S4가 상자 45%와 함께 다시 찍는다.
 
 ### 2026-10-15 · S3 · 폭발·포탄 보정 (S1 실기기 지적: 무늬 없는 큰 노란 원)
 - 원인: 팩 explosion_aoe 앞 프레임(0~2)이 단색 원. 렌더는 팩 시트를 그대로 쓰고 있었다(플레이스홀더 아님).
