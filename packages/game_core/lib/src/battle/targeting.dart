@@ -98,7 +98,8 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid 
       final halfAngle = a.angleDeg * half * radiansPerDegree;
       hit = [
         for (final e in targets)
-          if (e.x - f.shipX <= a.range &&
+          // 보스는 크고 멈춰서 싸우므로 사거리(eligible) 안이면 부채꼴·밀기 범위와 무관하게 닿는다(돌진).
+          if ((e.boss || e.x - f.shipX <= a.range) &&
               (e.x - f.shipX <= f.coneNearPx ||
                   math.atan2((e.y - f.shipY).abs(), math.max(e.x - f.shipX, 0)) <= halfAngle))
             e,
@@ -106,7 +107,7 @@ Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid 
       if (hit.isEmpty) return null;
       (ax, ay) = (hit.first.x, hit.first.y);
     case 'push':
-      hit = targets.where((e) => e.x - f.shipX <= a.range).toList()..sort((p, q) => p.x.compareTo(q.x));
+      hit = targets.where((e) => e.boss || e.x - f.shipX <= a.range).toList()..sort((p, q) => p.x.compareTo(q.x));
       if (hit.isEmpty) return null;
       (ax, ay) = (f.shipX, f.shipY);
     default: // single

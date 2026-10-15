@@ -10,6 +10,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S2 · 보스 거리 두기 (사용자 신고: 보스가 배와 부딪침)
+- waves.boss: speed 25 → 20, standoff 110(정지 x = 뱃머리 + 110), slowZone 30·slowFloor 0.2(감속). field.contactGap 8(일반 적은 몸통 겹치지 않게).
+  보스는 정지 지점에서 원거리 공격 — 새 이벤트 BossFired(x, y) + ShipDamaged(피해·간격 그대로). 30초 타이머·배 HP 0 실패 유지.
+- 근접 계열이 보스를 못 때리는 충돌(S1 승인안): 보스는 사거리 안이면 부채꼴·밀기 범위와 무관하게 닿음, 강습 reach 120·충격 117.
+  balance: 충격 power ×0.97, 관통 ×1.04 → lob 0.924 ~ shock 1.093 통과. 초반: travelSec 1, monster.hpBase 7 → 첫 보스 실패 2.86분·첫 소환 3.38분·스테이지 10 6.56분.
+- 골든 6장(전투 장면 위치)은 S1이 main에서 갱신. 몬스터 수는 탑다운 T1에 합침(S1). 다음: T0 계약(S5) → 환생 v2 → 이벤트·피버.
+
 ### 2026-10-15 · S2 · 선원 사거리 + shipX 86 (사용자 지시 최우선)
 - 사거리: waves.field.visibleRight 266, skills.json 모든 공격·스킬 reach(직사 172·관통 168·공중 160·물수제비 155·투척 135·수중 125·강습 95·충격 85), crews.json reachBonus(±6).
   targeting.eligible = x ≤ min(visibleRight, shipX + reach + 보정), 궁극기는 visibleRight까지. 수용 테스트: 강한 함대 60초 모든 공격·스킬 x ≤ visibleRight.
