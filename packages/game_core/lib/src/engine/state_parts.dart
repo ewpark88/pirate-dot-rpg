@@ -216,6 +216,7 @@ class Settings {
     this.shake = true,
     this.flash = true,
     this.notifications = true,
+    this.battleView = 'side',
   });
 
   factory Settings.fromJson(Json j) => Settings(
@@ -229,6 +230,7 @@ class Settings {
     shake: j['shake'] as bool,
     flash: j['flash'] as bool,
     notifications: j['notifications'] as bool,
+    battleView: j['battleView'] as String? ?? 'side',
   );
 
   /// `system` | `ko` | `en`.
@@ -245,6 +247,10 @@ class Settings {
   /// 오프라인 보상 가득 로컬 알림 (platform, 하루 최대 `meta.notifications.dailyMax`). 기본 켜짐 — 세이브 v4.
   final bool notifications;
 
+  /// 전투 화면 방식 `side`(옆모습) | `top`(탑다운) — 탑다운 전환 T0 (docs/plans/active/topdown-migration.md).
+  /// 세이브 선택 키(없으면 side). 전환이 끝나면(T4) 기본값을 top으로 바꾼다.
+  final String battleView;
+
   Json toJson() => {
     'lang': lang,
     'autoUpgrade': autoUpgrade,
@@ -256,11 +262,13 @@ class Settings {
     'shake': shake,
     'flash': flash,
     'notifications': notifications,
+    // 옆모습(기본)은 쓰지 않는다 — 옛 픽스처·세이브와 같은 본문.
+    if (battleView != 'side') 'battleView': battleView,
   };
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].
   Settings withValue(String key, Object value) {
-    final j = toJson();
+    final j = {...toJson(), 'battleView': battleView};
     if (!j.containsKey(key) || j[key].runtimeType != value.runtimeType) {
       throw ArgumentError('설정 키/타입 오류: $key=$value');
     }

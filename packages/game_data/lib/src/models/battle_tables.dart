@@ -9,7 +9,8 @@ class WavesTable {
       mobMax = raw.obj('mobCount').integer('max'),
       waveHpPoolFactor = raw.number('waveHpPoolFactor'),
       bossTimeLimitSec = raw.obj('boss').number('timeLimitSec'),
-      field = FieldDef.fromJson(raw.obj('field'));
+      field = FieldDef.fromJson(raw.obj('field')),
+      top = TopFieldDef.fromJson(raw.obj('top'));
 
   final JsonReader raw;
   final int tickMs;
@@ -20,6 +21,9 @@ class WavesTable {
   final double waveHpPoolFactor;
   final double bossTimeLimitSec;
   final FieldDef field;
+
+  /// 탑다운 전장 (T0). 옆모습은 [field].
+  final TopFieldDef top;
 
   JsonReader get _monster => raw.obj('monster');
   JsonReader get _boss => raw.obj('boss');
@@ -88,6 +92,7 @@ class WavesTable {
       that: skip.waves >= 0 && skip.waves <= wavesPerStage,
       message: 'waves: rebirthSkip.waves는 0~wavesPerStage',
     );
+    e.addAll(top.validate());
     return e;
   }
 }
@@ -138,4 +143,66 @@ class RebirthSkip {
 
   final double fraction;
   final int waves;
+}
+
+/// 탑다운 전장 (탑다운 전환 T0, Settings.battleView == 'top'). 좌표는 왼쪽 위 원점, 배 중심 고정.
+/// 거리 판정은 ‘배 둘레 → 적 가장자리’: dist − shipRadius − 적 반경 ≤ 사거리 × reachScale (S5 검토 반영).
+class TopFieldDef {
+  TopFieldDef.fromJson(JsonReader j)
+    : width = j.number('width'),
+      height = j.number('height'),
+      shipX = j.number('shipX'),
+      shipY = j.number('shipY'),
+      shipRadius = j.number('shipRadius'),
+      mobRadius = j.number('mobRadius'),
+      bossRadius = j.number('bossRadius'),
+      bossStandoff = j.number('bossStandoff'),
+      spawnMargin = j.number('spawnMargin'),
+      approachRadius = j.number('approachRadius'),
+      approachBoost = j.number('approachBoost'),
+      swarmGroupsMin = j.integer('swarmGroupsMin'),
+      swarmGroupsMax = j.integer('swarmGroupsMax'),
+      swarmSpreadDeg = j.number('swarmSpreadDeg'),
+      reachScale = j.number('reachScale');
+
+  final double width;
+  final double height;
+
+  /// 배 중심 (화면 가운데 고정).
+  final double shipX;
+  final double shipY;
+  final double shipRadius;
+  final double mobRadius;
+  final double bossRadius;
+
+  /// 보스가 멈추는 배 중심 거리 (배 둘레 + 보스 반경 + 여유 — 모든 계열 사거리 안).
+  final double bossStandoff;
+
+  /// 스폰: 테두리 바로 바깥 여유.
+  final double spawnMargin;
+
+  /// 이 반경 밖에서는 해류로 ×approachBoost 다가온다 — 어느 방향이든 도착 시간이 옆모습과 비슷하게.
+  final double approachRadius;
+  final double approachBoost;
+
+  /// 한 파를 나누는 방향 묶음 수 [min, max]와 묶음 안 흩어짐(±도).
+  final int swarmGroupsMin;
+  final int swarmGroupsMax;
+  final double swarmSpreadDeg;
+
+  /// 사거리 배율 (skills reach × 이 값).
+  final double reachScale;
+
+  List<String> validate() {
+    final e = <String>[];
+    expect(e, that: shipX > 0 && shipX < width && shipY > 0 && shipY < height, message: 'waves.top: 배 중심은 전장 안');
+    expect(
+      e,
+      that: bossStandoff >= shipRadius + bossRadius,
+      message: 'waves.top: 보스가 배와 겹치지 않게 standoff ≥ 배 반경 + 보스 반경',
+    );
+    expect(e, that: swarmGroupsMin >= 1 && swarmGroupsMax >= swarmGroupsMin, message: 'waves.top: swarmGroups 범위');
+    expect(e, that: approachBoost >= 1, message: 'waves.top: approachBoost ≥ 1');
+    return e;
+  }
 }

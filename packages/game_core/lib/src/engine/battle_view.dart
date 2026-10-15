@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/state_parts.dart';
 import 'package:meta/meta.dart';
@@ -20,6 +22,7 @@ class EnemyView {
     this.slowed = false,
     this.burning = false,
     this.vulnerable = false,
+    this.heading = sideHeading,
   });
 
   factory EnemyView.fromJson(Json j) => EnemyView(
@@ -36,7 +39,11 @@ class EnemyView {
     slowed: j['slowed'] as bool? ?? false,
     burning: j['burning'] as bool? ?? false,
     vulnerable: j['vulnerable'] as bool? ?? false,
+    heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
   );
+
+  /// 옆모습의 적 진행 방향(왼쪽) — 라디안, 0 = 오른쪽, 반시계(수학 좌표, y는 화면 아래로).
+  static const double sideHeading = math.pi;
 
   /// 전투 동안 유일한 id. 이벤트가 이 id로 대상을 가리킨다.
   final int id;
@@ -65,6 +72,9 @@ class EnemyView {
   final bool burning;
   final bool vulnerable;
 
+  /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
+  final double heading;
+
   Json toJson() => {
     'id': id,
     'kind': kind,
@@ -79,6 +89,7 @@ class EnemyView {
     'slowed': slowed,
     'burning': burning,
     'vulnerable': vulnerable,
+    if (heading != sideHeading) 'heading': heading,
   };
 }
 
@@ -144,6 +155,10 @@ class BattleView {
     this.rage = 0,
     this.gold = BigNum.zero,
     this.shipLook = const {},
+    this.mode = 'side',
+    this.shipX,
+    this.shipY,
+    this.shipHeading = 0,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -163,6 +178,10 @@ class BattleView {
     rage: (j['rage'] as num?)?.toDouble() ?? 0,
     gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
     shipLook: {for (final e in (j['shipLook'] as Json? ?? const {}).entries) e.key: e.value as int},
+    mode: j['mode'] as String? ?? 'side',
+    shipX: (j['shipX'] as num?)?.toDouble(),
+    shipY: (j['shipY'] as num?)?.toDouble(),
+    shipHeading: (j['shipHeading'] as num?)?.toDouble() ?? 0,
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -199,6 +218,16 @@ class BattleView {
   /// 부위별 외형 단계 (ship_parts.json visualStages, 경제 partLook). 렌더가 배 그림을 고른다. 없으면 빈 맵.
   final Map<String, int> shipLook;
 
+  /// 전장 방식 `side` | `top` (Settings.battleView, 탑다운 전환 T0). 옛 기록은 side.
+  final String mode;
+
+  /// 배 중심(필드 좌표). null이면 방식의 테이블 값(side: waves.field.shipX·shipY, top: waves.top.shipX·shipY).
+  final double? shipX;
+  final double? shipY;
+
+  /// 배가 향하는 방향(라디안, 0 = 화면 위쪽, 시계 방향). 탑다운 렌더가 배를 돌린다.
+  final double shipHeading;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -218,6 +247,10 @@ class BattleView {
     double? rage,
     BigNum? gold,
     Map<String, int>? shipLook,
+    String? mode,
+    double? shipX,
+    double? shipY,
+    double? shipHeading,
   }) => BattleView(
     tick: tick ?? this.tick,
     shipHp: shipHp ?? this.shipHp,
@@ -235,6 +268,10 @@ class BattleView {
     rage: rage ?? this.rage,
     gold: gold ?? this.gold,
     shipLook: shipLook ?? this.shipLook,
+    mode: mode ?? this.mode,
+    shipX: shipX ?? this.shipX,
+    shipY: shipY ?? this.shipY,
+    shipHeading: shipHeading ?? this.shipHeading,
   );
 
   Json toJson() => {
@@ -254,5 +291,10 @@ class BattleView {
     'rage': rage,
     'gold': gold.toJson(),
     'shipLook': shipLook,
+    // 탑다운 T0 선택 키: 기본값이면 쓰지 않는다(옛 기록·픽스처와 같은 본문).
+    if (mode != 'side') 'mode': mode,
+    if (shipX != null) 'shipX': shipX,
+    if (shipY != null) 'shipY': shipY,
+    if (shipHeading != 0) 'shipHeading': shipHeading,
   };
 }
