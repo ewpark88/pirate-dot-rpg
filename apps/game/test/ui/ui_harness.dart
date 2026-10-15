@@ -53,7 +53,7 @@ Future<CommandLog> pumpGame(
   );
   await tester.pump();
   if (tab != 0) {
-    await tester.tap(find.byType(NavigationDestination).at(tab));
+    await tester.tap(find.byKey(Key('tab.$tab')));
     // 탭 표시 애니메이션을 끝까지.
     await tester.pump(); // 탭 상태 반영 → 애니메이션 시작
     await tester.pump(_tabAnimation);
@@ -85,7 +85,7 @@ Future<void> loadGoldenFonts() async {
   await galmuri.load();
 }
 
-/// NavigationBar 선택 표시 애니메이션보다 넉넉히.
+/// 탭 전환 뒤 화면이 자리 잡을 시간 (넉넉히).
 const _tabAnimation = Duration(seconds: 1);
 
 /// 골든을 찍기 전에 화면의 이미지(선원 초상 등)를 실제로 디코드한다. 안 하면 골든에 빈칸으로 찍힌다.

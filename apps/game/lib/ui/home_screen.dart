@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/pixel/pixel_tab_bar.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -111,52 +112,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: _tab,
-              onDestinationSelected: _selectTab,
-              destinations: [
-                NavigationDestination(
-                  icon: const _TabIcon(UiSprites.tabMap),
-                  selectedIcon: const _TabIcon(UiSprites.tabMap, selected: true),
-                  label: l10n.uiTabVoyage,
-                ),
-                NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.ship', child: _TabIcon(UiSprites.tabShip)),
-                  selectedIcon: const TutorialSpot(id: 'tab.ship', child: _TabIcon(UiSprites.tabShip, selected: true)),
-                  label: l10n.uiTabShip,
-                ),
-                NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.crew', child: _TabIcon(UiSprites.tabCrew)),
-                  selectedIcon: const TutorialSpot(id: 'tab.crew', child: _TabIcon(UiSprites.tabCrew, selected: true)),
-                  label: l10n.uiTabCrew,
-                ),
-                NavigationDestination(
-                  icon: const TutorialSpot(id: 'tab.summon', child: _TabIcon(UiSprites.tabSummon)),
-                  selectedIcon: const TutorialSpot(
-                    id: 'tab.summon',
-                    child: _TabIcon(UiSprites.tabSummon, selected: true),
+            // 탭 4개 고정 (도트 탭 막대). 배·선원·소환은 튜토리얼이 가리킨다.
+            bottomNavigationBar: PixelTabBar(
+              children: [
+                for (final (i, (asset, label, spot)) in [
+                  (UiSprites.tabMap, l10n.uiTabVoyage, null),
+                  (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship'),
+                  (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew'),
+                  (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon'),
+                ].indexed)
+                  PixelTabItem(
+                    key: Key('tab.$i'),
+                    label: label,
+                    selected: _tab == i,
+                    onTap: () => _selectTab(i),
+                    icon: spot == null
+                        ? PixelSprite(asset, dots: 16)
+                        : TutorialSpot(id: spot, child: PixelSprite(asset, dots: 16)),
                   ),
-                  label: l10n.uiTabSummon,
-                ),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-}
-
-/// 탭 아이콘 (아트 레인 16px 그림). 그림에 색이 있어 고른 탭은 바탕 표시(인디케이터)로, 나머지는 살짝 어둡게.
-class _TabIcon extends StatelessWidget {
-  const _TabIcon(this.asset, {this.selected = false});
-
-  final String asset;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final sprite = PixelSprite(asset, dots: 16);
-    return selected ? sprite : Opacity(opacity: 0.6, child: sprite);
   }
 }

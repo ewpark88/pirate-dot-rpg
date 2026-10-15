@@ -34,8 +34,13 @@ void main() {
     final weak = find.byKey(const Key('boss.weak'));
     expect(weak, findsOneWidget);
     expect(find.descendant(of: weak, matching: find.text('Weak')), findsOneWidget);
-    final chips = tester.widgetList<Chip>(find.descendant(of: weak, matching: find.byType(Chip))).toList();
-    expect(chips.map((c) => (c.label as Text).data), ['Lob', 'Air']);
+    // 칩은 테이블 순서대로 (lob → air), 글자는 계열 이름.
+    final chips = find.descendant(of: weak, matching: find.byWidgetPredicate((w) => '${w.key}'.contains('boss.weak.')));
+    final texts = [
+      for (final e in chips.evaluate())
+        tester.widget<Text>(find.descendant(of: find.byWidget(e.widget), matching: find.byType(Text))).data,
+    ];
+    expect(texts, ['Lob', 'Air']);
   });
 
   testWidgets('기준 4: 약점 없는 보스(enemy_ship)는 표시 없음', (tester) async {

@@ -32,7 +32,7 @@ Future<void> _pump(WidgetTester tester, {NextGoal? goal, CollectionBonus? bonus,
   );
   await tester.pump();
   if (tab != 0) {
-    await tester.tap(find.byType(NavigationDestination).at(tab));
+    await tester.tap(find.byKey(Key('tab.$tab')));
     await tester.pump();
   }
 }

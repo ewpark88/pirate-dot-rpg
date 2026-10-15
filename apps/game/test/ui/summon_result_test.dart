@@ -35,6 +35,15 @@ Future<void> _revealAll(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+const _legendOnly = [SummonResult(crewId: 'manta', rarity: 'legend')];
+
+/// 0번 카드 위의 흰 번쩍임 덮개(반투명 흰색).
+Iterable<ColoredBox> _flashes(WidgetTester tester) => tester
+    .widgetList<ColoredBox>(
+      find.descendant(of: find.byKey(const Key('summon.card.0.face')), matching: find.byType(ColoredBox)),
+    )
+    .where((b) => b.color.r == 1 && b.color.g == 1 && b.color.b == 1 && b.color.a < 1);
+
 void main() {
   testWidgets('기준 11: 결과가 오면 카드 10장이 뒷면으로', (tester) async {
     await pumpGame(tester, _withResult());
@@ -67,6 +76,39 @@ void main() {
     expect(find.byKey(const Key('summon.card.9.highlight')), findsOneWidget); // 영웅
     expect(find.byKey(const Key('summon.card.5.highlight')), findsNothing); // 희귀는 강조 없음
     expect(find.text('NEW'), findsOneWidget);
+  });
+
+  testWidgets('등장 연출: 전설·신화만 테두리 빛, 영웅은 없음', (tester) async {
+    const results = [
+      SummonResult(crewId: 'manta', rarity: 'legend'),
+      SummonResult(crewId: 'uni', rarity: 'hero'),
+      SummonResult(crewId: 'octo', rarity: 'mythic'),
+    ];
+    await pumpGame(tester, _withResult(results: results));
+    await tester.pumpAndSettle();
+    await _revealAll(tester);
+    expect(find.byKey(const Key('summon.card.0.glow')), findsOneWidget);
+    expect(find.byKey(const Key('summon.card.1.glow')), findsNothing);
+    expect(find.byKey(const Key('summon.card.2.glow')), findsOneWidget);
+  });
+
+  testWidgets('등장 연출: 뒤집은 직후 번쩍이고 끝나면 사라진다', (tester) async {
+    await pumpGame(tester, _withResult(results: _legendOnly));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('summon.card.0.back')).first);
+    await tester.pump(const Duration(milliseconds: 260)); // 뒤집기(250ms) 직후, 연출 중
+    expect(_flashes(tester), isNotEmpty);
+    await tester.pumpAndSettle();
+    expect(_flashes(tester), isEmpty);
+  });
+
+  testWidgets('등장 연출: 설정 번쩍임을 끄면 번쩍이지 않는다', (tester) async {
+    final off = _withResult(results: _legendOnly);
+    await pumpGame(tester, off.copyWith(settings: off.settings.withValue('flash', false)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('summon.card.0.back')).first);
+    await tester.pump(const Duration(milliseconds: 260));
+    expect(_flashes(tester), isEmpty);
   });
 
   testWidgets('기준 11: 확인 → AckSummonResult, 닫힘', (tester) async {
