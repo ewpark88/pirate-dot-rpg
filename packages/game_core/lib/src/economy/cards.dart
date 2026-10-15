@@ -15,6 +15,7 @@ export 'package:game_core/src/economy/rebirth_shop.dart'
     show
         RebirthShopView,
         ShopItemView,
+        beyondHonor,
         crewMaxLevel,
         fastSailFraction,
         offlineMaxSec,

@@ -1,4 +1,5 @@
 import 'package:game_core/game_core.dart';
+import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
@@ -124,5 +125,17 @@ void main() {
       h.ctx,
     )!;
     expect(reborn.progress.bossFails, 3);
+  });
+
+  test('보물 바다 회차는 골드 ×goldMultiplier (CombatStats)', () {
+    final normal = at(30);
+    final sea = normal.copyWith(progress: normal.progress.copyWith(treasureSea: 1));
+    expect(CombatStats.of(sea, t).goldMultiplier / CombatStats.of(normal, t).goldMultiplier, closeTo(1.5, 1e-9));
+  });
+
+  test('ShipTierUp은 명예 등급을 넘을 때만 (beyondHonor)', () {
+    final tier = t.shipTiers.tiers[1];
+    expect(beyondHonor(at(1), t, tier), isTrue);
+    expect(beyondHonor(at(1, ship: const ShipState(honorTier: 2)), t, tier), isFalse);
   });
 }
