@@ -250,5 +250,8 @@
   "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
   "uiPower": "전투력",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}초"
+  "uiGaugeSeconds": "{sec}초",
+  "uiMult": "×{n}",
+  "uiMultMax": "MAX",
+  "uiUpgradeLevels": "+{n}"
 }

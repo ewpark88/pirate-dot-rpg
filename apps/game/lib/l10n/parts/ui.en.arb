@@ -250,5 +250,8 @@
   "uiFarmingRetry": "Farming · boss retry ready",
   "uiPower": "Power",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}s"
+  "uiGaugeSeconds": "{sec}s",
+  "uiMult": "×{n}",
+  "uiMultMax": "MAX",
+  "uiUpgradeLevels": "+{n}"
 }
