@@ -92,6 +92,10 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/enemy_ship.png",
       "license": "OWN"
     },
+    "bosses/fire_pirate.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
     "bosses/giant_hermit.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
@@ -101,6 +105,10 @@
       "license": "OWN"
     },
     "bosses/icebreaker.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/lava_whale.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
@@ -284,6 +292,10 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/crab.png",
       "license": "OWN"
     },
+    "enemies/firebird.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/flyingfish.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
@@ -304,6 +316,18 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/jelly.png",
       "license": "OWN"
     },
+    "enemies/lavacrab.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/lavacrab_small.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/lavaturtle.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/penguin.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
@@ -321,6 +345,14 @@
       "license": "OWN"
     },
     "enemies/snowgull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/starfish.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/starfish_small.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
