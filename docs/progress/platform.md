@@ -1,5 +1,30 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 탑다운 시험판 → 사용자 결정 '탑다운으로' → T1 엔진 2D화, 환생 v2·현상금 C1 문서
+- **현재 위치**: 탑다운 전환(docs/plans/active/topdown-migration.md) T1 리드.
+  - [x] T0 검토(S2 계약 채택 + 거리·해류·무리 의견, 2da8665)
+  - [x] T1-1 topdown/ 모양(42e1dc4)
+  - [x] T1-2 기존 battle 파일 훅(리뷰 브랜치 `review/topdown-t1-hooks` d3377a2·739dc1b, S2 검토 대기 → S1 머지)
+  - [ ] 등급별 배 반경(S3 크기, 표 대기)
+  - [ ] 균형 sim ±10%(S2)
+- 한 일
+  - 시험판: lib/proto/ 결정론 2D 시뮬·코드 도트·drawAtlas, PROTO 빌드(앱 ID .proto, 본 게임과 나란히 설치). S1이 설치했고, 사용자 판정은 '탑다운으로 진행'.
+  - 환생 v2 기획서(1f49c73): 상점 9칸·명예 외형·스킨·즉시 상자·미리보기·횟수별 해금·세이브 v6. 사람 결정 4개.
+  - 현상금 C1 계약 요청서(21c994b): bounty.active 포함, 구현 보류. 세이브 v6은 환생 v2와 합치기를 권함.
+  - T1
+    - BattleGeometry(Side = 지금 함수 그대로, Top = 2D)
+    - 8계열 2D 조준(거리 = 배 둘레 → 적 가장자리)
+    - 사방 1~3 무리 스폰, 접근 원 밖 해류로 도착 시간을 옆모습과 맞춤
+    - 보스 standoff 원 돌기
+    - 밀기 방사·끌기 2D, 포구·방향 이벤트
+    - 옆모습은 sim 20명·3시간 결과 파일이 main과 cmp 동일. 리뷰 브랜치에서 check --full 통과. 탑다운 테스트 18.
+- 다음 할 일: S2 검토 반영 → S1 머지. S2 표 추가(separation·bossOrbitDegPerSec·viewWidth/Height·approachBoost 5·ship_tiers.topRadius) 뒤 등급별 반경 연결.
+- 남은 문제
+  - 강습 range 40 < 보스 둘레 거리 → 옆모습 규칙(보스면 range 무시)을 그대로 씀.
+  - 좌우 보이는 폭 90이라 첫 발이 늦어지는지 sim 확인 필요(S2).
+  - 폰 작업(시험판 60fps gfxinfo, QA, 메모리 A/B)은 S1 재연결 알림 대기.
+  - 기존 파일 훅은 레인 밖이라 리뷰 브랜치로 냈다(lane/platform에는 topdown/만).
+
 ## 2026-10-15 · S5 · 재실행 멈춤 버그 원인 확정·수정 (S24 실기기, 사용자 자리 확인 후)
 - 원인(logcat 근거): ① 첫 화면 BACK이 액티비티를 **finish**(`wm_finish_activity app-request`) → 다시 열면 같은 프로세스에서 새 Flutter 엔진.
   ② 템플릿 `taskAffinity=""` 때문에 런처로 열 때마다 **새 작업·새 엔진**. ③ 이전 엔진 정리 `performDestroy`가 **8349ms**(배경음이 백그라운드에서도 재생 중이던 때) — 메인 스레드(Flutter 3.29+ 합쳐진 스레드)가 막혀 새 화면이 스플래시에 머묾. 배경음을 멈춘 뒤엔 103ms.
