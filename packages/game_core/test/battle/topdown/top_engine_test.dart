@@ -28,7 +28,7 @@ void main() {
     final b = e.state.battle!;
     expect(b.mode, 'top');
     expect((b.shipX, b.shipY), (top.shipX, top.shipY));
-    expect(b.enemies, hasLength(tables.waves.mobCountAt(1)));
+    expect(b.enemies, hasLength(tables.waves.topMobCountAt(1)));
     for (final x in b.enemies) {
       final d = math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY, 2));
       expect(d, greaterThan(top.approachRadius * 0.9), reason: '첫 틱에 한 걸음 다가왔을 뿐');

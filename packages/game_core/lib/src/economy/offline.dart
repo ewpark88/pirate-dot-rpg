@@ -37,7 +37,7 @@ BigNum goldPerSecEstimate(GameState s, GameTables t, List<String> fleet) {
   if (dps <= BigNum.zero) return BigNum.zero;
   final w = t.waves;
   final stage = s.progress.stage;
-  final n = w.mobCountAt(stage);
+  final n = w.mobPoolAt(stage); // 한 파 총량 기준 (보이는 마리 수와 무관)
   final waveGold = stageCurve(
     w.goldBase,
     w.goldGrowth,
