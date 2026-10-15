@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/engine/battle_view.dart';
@@ -5,6 +7,7 @@ import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
+import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart';
 
 // 떠내려오는 보물상자 (설계서 4.6, 스펙 economy-m3-meta 규칙 1). 위치·주기는 ads.json chest.
@@ -43,10 +46,7 @@ GameState tickChest(GameState state, SystemContext ctx) {
 GameState spawnChest(GameState state, SystemContext ctx) {
   final t = ctx.tables;
   final ch = t.ads.chest;
-  final field = t.waves.raw.obj('field');
-  final x =
-      field.number('width') * (ch.number('xMin') + ctx.rng.nextDouble() * (ch.number('xMax') - ch.number('xMin')));
-  final y = field.obj('laneY').number('surface');
+  final (x, y) = state.settings.battleView == 'top' ? _topChestAt(t, ctx) : _sideChestAt(t, ctx);
   ctx.emit(ChestSpawned(ctx.tick, x: x, y: y));
   return state.copyWith(
     battle: (state.battle ?? BattleView.empty).copyWith(
@@ -71,3 +71,23 @@ GameState openChest(GameState state, SystemContext ctx, {BigNum gold = BigNum.ze
 /// 탭: 기본 보상.
 GameState tapChest(GameState state, TapChest command, SystemContext ctx) =>
     openChest(state, ctx, gold: chestReward(state, ctx.tables));
+
+/// 옆모습: 필드 폭의 xMin~xMax 사이, 수면 높이.
+(double, double) _sideChestAt(GameTables t, SystemContext ctx) {
+  final ch = t.ads.chest;
+  final field = t.waves.raw.obj('field');
+  final x =
+      field.number('width') * (ch.number('xMin') + ctx.rng.nextDouble() * (ch.number('xMax') - ch.number('xMin')));
+  return (x, field.obj('laneY').number('surface'));
+}
+
+/// 탑다운: 배 중심 둘레 밖(shipRadius + chestMargin) ~ 보이는 사각형 안(가로·세로 절반 − chestMargin)의 고리, 각도 무작위.
+(double, double) _topChestAt(GameTables t, SystemContext ctx) {
+  final top = t.waves.raw.obj('top');
+  final margin = top.number('chestMargin');
+  final inner = top.number('shipRadius') + margin;
+  final outer = math.min(top.number('viewWidth'), top.number('viewHeight')) * half - margin;
+  final angle = ctx.rng.nextDouble() * fullTurn;
+  final r = inner + ctx.rng.nextDouble() * math.max(outer - inner, 0);
+  return (top.number('shipX') + r * math.cos(angle), top.number('shipY') + r * math.sin(angle));
+}
