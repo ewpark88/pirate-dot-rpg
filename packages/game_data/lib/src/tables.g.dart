@@ -1475,6 +1475,28 @@ const Map<String, String> rawTables = {
         ]
       }
     }
+  },
+  "topEvents": {
+    "sprites": [
+      "goldfish",
+      "sea_serpent",
+      "merchant_ship",
+      "bottle"
+    ],
+    "fever": {
+      "border": "#FFD84A",
+      "borderDp": 6,
+      "pulseMs": 420,
+      "coinsPerSec": 10
+    },
+    "storm": {
+      "flashEveryMs": [
+        2400,
+        5200
+      ],
+      "flashMs": 120,
+      "dim": 0.25
+    }
   }
 }
 ''',
