@@ -25,6 +25,9 @@ class TopScenePainter {
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
+
+  /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). fx_map topShip.scale.
+  late final double _shipScale = scene.fx.raw.obj('topShip').number('scale');
   late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
@@ -73,7 +76,8 @@ class TopScenePainter {
       final m = scene.moments;
       c
         ..save()
-        ..rotate(view.shipHeading);
+        ..rotate(view.shipHeading)
+        ..scale(_shipScale);
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       final sinking = _sink(c, m.sinkMs);
       final skinGlow = skinId != null && _skinGlow(skinId);
@@ -91,7 +95,12 @@ class TopScenePainter {
       );
       if (sinking) c.restore();
       c.restore();
-      if (m.sinkMs <= 0) _hp.paint(c, Rect.fromCenter(center: Offset.zero, width: size.width, height: size.height));
+      final box = Rect.fromCenter(
+        center: Offset.zero,
+        width: size.width * _shipScale,
+        height: size.height * _shipScale,
+      );
+      if (m.sinkMs <= 0) _hp.paint(c, box);
     }
     c
       ..save()
