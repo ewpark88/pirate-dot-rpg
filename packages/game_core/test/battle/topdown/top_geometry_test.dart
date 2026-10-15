@@ -254,7 +254,7 @@ void main() {
       final under = withKeys('underwater', {'topRadius': 30});
       expect(geo.zoneRadius(under), 30);
       expect(geo.zoneRadius(plain('underwater')), attack('underwater').radius);
-      // 강습: 부채꼴 각.
+      // 강습: 부채꼴 각·길이.
       expect(aim.arcDeg(withKeys('assault', {'topArcDeg': 48})), 48);
       expect(aim.arcDeg(plain('assault')), attack('assault').angleDeg);
       expect(aim.coneRange(withKeys('assault', {'topRange': 30})), 30);
