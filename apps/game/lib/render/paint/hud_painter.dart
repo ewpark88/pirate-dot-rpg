@@ -11,17 +11,18 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 /// 캔버스 안 HUD (기준 battle_ship.gif, render-quality-v1 규칙 4·5·8):
 /// 도트 데미지 숫자, `xN COMBO` 배너, 왼쪽 위 코인+골드, 가운데 `스테이지-파`, 오른쪽 위 함성 게이지, 선원 슬롯 6칸.
 class HudPainter {
-  HudPainter(this.scene, this.sprites) : _family = {for (final c in scene.tables.crews.crews) c.id: c.family};
+  HudPainter(this.scene, this.sprites)
+    : _family = {for (final c in scene.tables.crews.crews) c.id: c.family},
+      _rarity = {for (final c in scene.tables.crews.crews) c.id: c.baseRarity};
 
   final BattleScene scene;
   final SpriteDraw sprites;
   final Map<String, String> _family;
 
+  /// 슬롯 테두리 등급. FleetSlot에 지금 등급이 없어 기본 등급(crews.json baseRarity)을 쓴다 — 계약 요청 대기.
+  final Map<String, String> _rarity;
+
   final _paint = Paint()..isAntiAlias = false;
-  final _stroke = Paint()
-    ..isAntiAlias = false
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 1;
 
   final _stage = PixelText();
   final _gold = PixelText();
@@ -46,6 +47,10 @@ class HudPainter {
   late final int _slotLine = parseArgb(_fx.backgroundLayout.str('slotLine'), 'backgroundLayout.slotLine');
   late final Map<String, int> _familyColor = {
     for (final e in _fx.familyColors.raw.entries) e.key: parseArgb(e.value as String, 'familyColors.${e.key}'),
+  };
+
+  late final Map<String, int> _rarityColor = {
+    for (final r in scene.tables.rarities.rarities) r.id: parseArgb(r.color, 'rarities.${r.id}.color'),
   };
 
   static const _white32 = 0xFFFFFFFF;
@@ -99,34 +104,43 @@ class HudPainter {
     }
   }
 
-  /// 선원 슬롯 6칸: 판 + 계열 색 테두리, 32px 초상, 쿨타임 덮개, 방금 발사 = 흰 테두리, 스킬 막대(우리 추가).
+  /// 선원 슬롯 6칸 (render-quality-v2): 등급 색 두꺼운 테두리 안에 32px 초상을 꽉 채우고(넘치는 줄은 잘라냄),
+  /// 왼쪽 위 계열 색 표식, 쿨타임 덮개, 방금 발사 = 흰 테두리, 스킬 막대(우리 추가).
   void paintSlots(Canvas c) {
     _fill(c, 0, kFieldBottom, kLogicalWidth, kLogicalHeight - kFieldBottom, _slotBar);
     _fill(c, 0, kFieldBottom, kLogicalWidth, 1, _slotLine);
     final fleet = scene.frame.fleet;
-    final x0 = _fx.slots.number('x');
-    final step = _fx.slots.number('step');
+    final s = _fx.slots;
+    final (x0, step, w, h, bw) = (
+      s.number('x'),
+      s.number('step'),
+      s.number('plateW'),
+      s.number('plateH'),
+      s.number('border'),
+    );
+    final (iw, ih) = (w - bw * 2, h - bw * 2);
+    final iy = kSlotTop + bw;
     for (var i = 0; i < fleet.length && i < kMaxSlots; i++) {
       final x = x0 + i * step;
+      final ix = x + bw;
       final slot = fleet[i];
-      final color = _familyColor[_family[slot.crewId]] ?? _white32;
-      _fill(c, x, kSlotTop, kSlotPlateW, kSlotPlateH, _plate);
-      _stroke.color = Color(color);
-      c.drawRect(Rect.fromLTWH(x + 0.5, kSlotTop + 0.5, kSlotPlateW - 1, kSlotPlateH - 1), _stroke);
-      if (!sprites.draw(c, 'crew:${slot.crewId}', x + 1 + kSlotSize / 2, kSlotTop - 1 + kSlotSize / 2)) {
-        _fill(c, x + 2, kSlotTop + 2, kSlotSize - 2, kSlotPlateH - 4, color);
+      final family = _familyColor[_family[slot.crewId]] ?? _white32;
+      _fill(c, x, kSlotTop, w, h, scene.slotFlashMs[i] > 0 ? _white32 : _rarityColor[_rarity[slot.crewId]] ?? _white32);
+      _fill(c, ix, iy, iw, ih, _plate);
+      c
+        ..save()
+        ..clipRect(Rect.fromLTWH(ix, iy, iw, ih));
+      if (!sprites.draw(c, 'crew:${slot.crewId}', ix + kSlotSize / 2, s.number('portraitTop') + kSlotSize / 2)) {
+        _fill(c, ix + 1, iy + 1, iw - 2, ih - 2, family);
       }
+      c.restore();
       final rem = slot.cooldown.clamp(0.0, 1.0);
-      if (rem > 0.02) _fill(c, x + 1, kSlotTop + 1, kSlotSize, (kSlotPlateH - 1) * rem, _cooldown);
-      // 스킬 충전 막대(우리 추가): 차오르는 동안만 판 아래 2px. 준비되면 사라진다 — 계열 색 테두리는 그대로(기준 화면).
+      if (rem > 0.02) _fill(c, ix, iy, iw, ih * rem, _cooldown);
+      // 스킬 충전 막대(우리 추가): 차오르는 동안만 안쪽 아래 2px. 준비되면 사라진다.
       final skill = slot.skillCooldown.clamp(0.0, 1.0);
-      if (skill > 0) {
-        _fill(c, x + 1, kSlotTop + kSlotPlateH - 1 - _skillBarPx, kSlotSize * (1 - skill), _skillBarPx, _goldColor);
-      }
-      if (scene.slotFlashMs[i] > 0) {
-        _stroke.color = const Color(_white32);
-        c.drawRect(Rect.fromLTWH(x + 0.5, kSlotTop + 0.5, kSlotPlateW - 1, kSlotPlateH - 1), _stroke);
-      }
+      if (skill > 0) _fill(c, ix, iy + ih - _skillBarPx, iw * (1 - skill), _skillBarPx, _goldColor);
+      final badge = s.number('badge');
+      _fill(c, ix, iy, badge, badge, family);
     }
   }
 }

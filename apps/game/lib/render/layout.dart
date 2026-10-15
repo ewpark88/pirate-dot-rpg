@@ -34,10 +34,8 @@ const double kBossSize = 40;
 const double kUltimateX = kLogicalWidth / 2;
 const double kUltimateY = 96;
 
-/// 선원 슬롯 6칸: 판 34×31 (x, 149), 초상 32px (x+1, 148).
+/// 선원 슬롯 6칸 윗변 y와 초상 크기 (판 크기·테두리는 fx_map slots).
 const double kSlotTop = 149;
-const double kSlotPlateW = 34;
-const double kSlotPlateH = 31;
 const double kSlotSize = 32;
 const int kMaxSlots = 8;
 

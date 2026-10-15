@@ -3,7 +3,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 현재 계획 | render-quality-v1(스펙 `docs/specs/render-quality-v1.md`, 구현 완료·골든 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
-| 상태 | 기준 battle_ship.gif 수준으로 렌더 재작업(미커밋, check --full 통과). UI 아이콘·젬 d22e591 |
+| 상태 | v1 승인·main 머지. v2: 선원 바(등급 테두리)·범위 숫자 합산만·무리 밀도·m3 골든 번쩍임 제거, check --full 통과 |
 | 막힌 것 | 골든 7장 승인(S1) · pubspec assets/ui/(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 렌더 품질 v2 (S1 우선순위)
+- v1 커밋 f6af03e·비교 이미지 450c31e → S1 골든 7장 승인·main 머지, main을 lane/render에 머지.
+- 기준 scene3.py 재확인: 범위 피해 개별 숫자는 `show=False` → 우리도 Damage(·Kill) 묶음 뒤 AoeDamageSum이면 합산 숫자만(치명타 따로). 테스트 먼저(battle_scene_test).
+- 선원 바 v2: 판 36×31·등급 색 2px 테두리·초상 꽉 채움(잘라냄)·계열 색 4px 표식, 값은 fx_map slots. slots_test(픽셀). 등급은 baseRarity — 계약 요청.
+- 코인: 이미 기준 물리(vx ±25, vy −40, 중력 200, 0.35초 뒤 (30,96))와 같음. 안 보였던 건 범위 숫자 겹침 + 처치 직후 프레임이라서 → 숫자 정리·찍는 시점 7틱.
+- 골든: battle_reference(무리 scene3 배치 9마리×4)·battle_m3(4.4틱, 번쩍임 끝)·나머지 3장은 선원 바 변경. 비교 이미지 gif 프레임 20.
 
 ### 2026-10-14 · S3 · 렌더 품질 v1 (사용자 지시: battle_ship.gif 수준)
 - 스펙 `render-quality-v1`(S1 승인) + 계약 H(BattleView wave·rage·gold, main 13cbb0b). 팩 `tools/scene3.py`는 읽기만, gif 프레임은 PIL로 비교용 추출.

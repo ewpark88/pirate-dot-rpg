@@ -1045,8 +1045,13 @@ const Map<String, String> rawTables = {
     "stageY": 6
   },
   "slots": {
-    "x": 6,
+    "x": 12,
     "step": 52,
+    "plateW": 36,
+    "plateH": 31,
+    "border": 2,
+    "badge": 4,
+    "portraitTop": 150,
     "plate": "#96B0D6",
     "cooldown": "#0A0C18",
     "cooldownAlpha": 0.59,

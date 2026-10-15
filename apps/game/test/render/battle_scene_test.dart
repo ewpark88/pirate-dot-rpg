@@ -54,6 +54,28 @@ void main() {
       expect(total.toDouble(), closeTo(465, 1e-6));
     });
 
+    test('범위 피해는 합산 숫자만, 치명타는 따로 보인다 (render-quality-v1 규칙 4, 기준 show=False)', () {
+      List<RecordedTick> volley(List<GameEvent> hits) => [
+        for (var i = 0; i < 3; i++)
+          tickOf(i, enemies: [(1, 200), (2, 210), (3, 220)], events: i == 1 ? hits : const []),
+      ];
+      final s = _scene(
+        volley([
+          Damage(1, targetId: 1, amount: BigNum.from(40)),
+          Damage(1, targetId: 2, amount: BigNum.from(40)),
+          Kill(1, targetId: 2, gold: BigNum.from(7), x: 210, y: 100),
+          Damage(1, targetId: 3, amount: BigNum.from(80), crit: true),
+          AoeDamageSum(1, total: BigNum.from(160), x: 210, y: 100),
+          Damage(1, targetId: 1, amount: BigNum.from(18)),
+        ]),
+      )..update(tickMs + 1);
+      expect(s.numbers.active.map((n) => (n.kind, n.amount.toDouble())), [
+        (DamageKind.crit, 80.0),
+        (DamageKind.sum, 160.0),
+        (DamageKind.normal, 18.0),
+      ]);
+    });
+
     test('샘플 기록을 반복 재생해도 풀이 새 객체를 만들지 않는다', () {
       final s = _scene(decodeRecording(sampleBattleJsonl), loop: true);
       for (var i = 0; i < 200; i++) {
