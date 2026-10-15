@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/ship_skins.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
@@ -70,14 +73,18 @@ class TopScenePainter {
         ..rotate(view.shipHeading);
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       final sinking = _sink(c, m.sinkMs);
+      final skinGlow = skin != null && _skinGlow(skin!);
+      final celebrate = m.glowMs > 0;
       _ship.paint(
         c,
         tier,
         view.shipLook,
         flash: scene.shipFlashMs > 0 && scene.settings.flash,
-        glowPart: m.glowMs > 0 ? m.glowPart : null,
-        glow: m.glowMs > 0 ? 0.5 + 0.5 * math.sin(clockMs / 70) : 0,
+        // 부품 축하가 우선, 없으면 빛나는 스킨(phantom)의 돛이 은은하게 맥박.
+        glowPart: celebrate ? m.glowPart : (skinGlow ? 'sail' : null),
+        glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
+        skin: skin != null && skins.ready(skin!) ? skin : null,
       );
       if (sinking) c.restore();
       c.restore();
@@ -97,6 +104,32 @@ class TopScenePainter {
 
   /// 발사 뒤 [since] ms의 반동 0~1 (발사 순간 1 → recoilMs에 0).
   double _recoil(double since) => since >= 0 && since < _recoilMs ? 1 - since / _recoilMs : 0;
+
+  /// 환생 스킨(운영자 미리보기·계약 오기 전) — 바꾸면 색 사본을 비동기로 만들고, 준비되면 그린다.
+  String? skin;
+
+  /// 보물 바다 금빛 물결(환생 v2 §4).
+  bool get goldSea => _sea.gold;
+  set goldSea(bool v) => _sea.gold = v;
+
+  final skins = ShipSkins();
+  late final JsonReader _skinCfg = scene.fx.raw.obj('topShip').obj('skinPreview');
+
+  /// 스킨 사본이 없으면 비동기로 만들기 시작한다. glow 스킨(phantom)이고 준비됐으면 true.
+  bool _skinGlow(String id) {
+    if (!_skinCfg.has(id)) return false;
+    final cfg = _skinCfg.obj(id);
+    final bank = sprites.bank;
+    if (!skins.ready(id) && bank != null) {
+      unawaited(
+        skins.prepare(id, cfg, bank, [
+          for (final t in scene.tables.shipTiers.tiers)
+            for (final l in TopShipPainter.layers) 'td:${t.id}:$l',
+        ]),
+      );
+    }
+    return cfg.raw['glow'] == true && skins.ready(id);
+  }
 
   /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
   bool _sink(Canvas c, double left) {
