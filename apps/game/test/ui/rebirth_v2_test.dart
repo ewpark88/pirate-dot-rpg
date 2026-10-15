@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_chest.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/summon/summon_result.dart';
 
 import 'ui_harness.dart';
 
@@ -262,6 +266,29 @@ void main() {
     await tester.pump();
     expect(find.text('Treasure Map Shop row 2 unlocked!'), findsOneWidget);
     await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('상자 → 소환 순서: 환생과 영웅 소환이 함께 오면 상자를 닫은 뒤 소환 결과 창', (tester) async {
+    final s = _state();
+    await pumpGame(tester, s, openTab: false);
+    final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    container
+        .read(gameStateProvider.notifier)
+        .replace(
+          s.copyWith(
+            progress: s.progress.copyWith(rebirths: 1),
+            lastSummon: const [SummonResult(crewId: 'octo', rarity: 'hero')],
+          ),
+        );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('rebirth.chest')), findsOneWidget);
+    expect(find.byType(SummonResultDialog), findsNothing);
+    await tester.tap(find.byKey(const Key('rebirth.chest.open')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('rebirth.chest.sail')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('rebirth.chest')), findsNothing);
+    expect(find.byType(SummonResultDialog), findsOneWidget);
   });
 
   group('골든', () {
