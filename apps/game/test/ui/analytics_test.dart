@@ -44,7 +44,9 @@ void main() {
     expect(analytics.seen, [('voyage', 37)]);
 
     await tester.tap(find.byKey(const Key('tab.$shipTab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(analytics.seen.last, ('ship', 37));
 
     final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));

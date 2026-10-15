@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
@@ -201,7 +202,7 @@ class _Growth extends StatelessWidget {
           if (atGate || need <= 0)
             Text(l10n.uiCrewAtGate, style: dim)
           else ...[
-            PixelBar(value: crew.exp / need, fill: PixelPalette.accent, dots: 6),
+            PixelBar(value: crew.exp / need, fill: Skin.goldBottom, dots: 6),
             Text(l10n.uiCrewExp(crew.exp, need), style: dim),
           ],
           Text(l10n.uiCrewCards(crew.cards), style: dim),

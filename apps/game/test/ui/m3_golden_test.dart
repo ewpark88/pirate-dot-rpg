@@ -37,6 +37,10 @@ void main() {
       ),
     );
     await tester.pump();
+    // 도크 + 시트: 항해 패널을 연다(환생 카드·순풍 등이 보이게).
+    await tester.tap(find.byKey(const Key('tab.0')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
   }
 
   final base = loadFixture('stage37_midgame');

@@ -31,9 +31,11 @@ Future<void> _pump(WidgetTester tester, {NextGoal? goal, CollectionBonus? bonus,
     ),
   );
   await tester.pump();
-  if (tab != 0) {
+  {
     await tester.tap(find.byKey(Key('tab.$tab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
   }
 }
 

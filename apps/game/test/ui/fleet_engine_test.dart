@@ -81,6 +81,7 @@ void main() {
     final out = before.firstWhere((id) => id != null)!;
 
     await tester.tap(find.byKey(const Key('tab.$crewTab')));
+    await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     await tester.ensureVisible(find.byKey(const Key('crew.card.starry')));
     await tester.tap(find.byKey(const Key('crew.card.starry')));

@@ -333,5 +333,8 @@
   "uiFleetRejectedFamily": "Up to {max} crew of the same type can sail together",
   "uiFleetSlotStage": "Stage {stage}",
   "uiCrewReplace": "Replace",
-  "uiFleetSwapped": "Swapped places with a deployed crew"
+  "uiFleetSwapped": "Swapped places with a deployed crew",
+  "uiQuickUpgrade": "Quick upgrade: {part} (hold to repeat)",
+  "uiQuickUpgradeNone": "Not enough gold to upgrade",
+  "uiPanelHandle": "Drag to resize · tap the battle to close"
 }
