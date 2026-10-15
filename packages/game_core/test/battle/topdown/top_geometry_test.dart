@@ -161,6 +161,13 @@ void main() {
       expect(hits, isNot(contains(back)));
     });
 
+    test('보스는 멀리 서도(standoff 100) 충격·강습이 닿는다 — 옆모습과 같은 규칙', () {
+      final boss = mob(topField.shipX, topField.shipY - 100, boss: true);
+      for (final id in ['shock', 'assault']) {
+        expect(geo.aimMany(attack(id), 1, [boss], XorShiftRng(1)).single.hits.single.foe, boss, reason: id);
+      }
+    });
+
     test('투척: 가장 붐비는 곳 중심 · 여러 발은 서로 다른 무리', () {
       final a = attack('lob');
       final pack = [for (var i = 0; i < 4; i++) mob(topField.shipX + 60 + i * 3.0, topField.shipY - 40, id: i)];

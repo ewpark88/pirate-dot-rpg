@@ -104,13 +104,13 @@ class TopAim {
         }
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'cone':
-        // 가장 가까운 적 방향 부채꼴. 배 둘레에서 range 안, coneNearPx 안은 각도와 상관없이.
+        // 가장 가까운 적 방향 부채꼴. 배 둘레에서 range 안(보스는 사거리 안이면 됨), coneNearPx 안은 각도와 상관없이.
         final t = first();
         final dir = math.atan2(t.y - top.shipY, t.x - top.shipX);
         final halfAngle = a.angleDeg * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if (edge(e) <= a.range &&
+            if ((e.boss || edge(e) <= a.range) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,
@@ -118,8 +118,8 @@ class TopAim {
         if (hit.isEmpty) return null;
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'push':
-        // 배 둘레 고리: 둘레에서 range 안 전부.
-        hit = targets.where((e) => edge(e) <= a.range).toList()..sort((p, q) => edge(p).compareTo(edge(q)));
+        // 배 둘레 고리: 둘레에서 range 안 전부. 보스는 사거리 안이면 range와 상관없이(옆모습과 같은 규칙 — 보스는 멀리 선다).
+        hit = targets.where((e) => e.boss || edge(e) <= a.range).toList()..sort((p, q) => edge(p).compareTo(edge(q)));
         if (hit.isEmpty) return null;
         (ax, ay) = (top.shipX, top.shipY);
       default: // single
