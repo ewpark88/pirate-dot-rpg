@@ -57,7 +57,11 @@ class AdButton extends ConsumerWidget {
       onPressed: () => watchAd(ref, placement, choice: choice),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [const PixelSprite(UiSprites.ad, dots: 16, scale: 1), const SizedBox(width: 4), Text(label)],
+        children: [
+          const PixelSprite(UiSprites.ad, dots: 16, scale: 1),
+          const SizedBox(width: 4),
+          Flexible(child: Text(label, maxLines: 2, textAlign: TextAlign.center)),
+        ],
       ),
     );
   }

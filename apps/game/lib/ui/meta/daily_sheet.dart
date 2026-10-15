@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -25,7 +26,7 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 
 bool _claimable(QuestView q) => q.done && !q.claimed;
 
-/// 전장 위 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
+/// 상단 바 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
 class DailyIcon extends ConsumerWidget {
   const DailyIcon({super.key});
 
@@ -34,10 +35,10 @@ class DailyIcon extends ConsumerWidget {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
     final claimable = (quests?.any(_claimable) ?? false) || (attendance != null && !attendance.claimedToday);
-    final icon = PixelButton(
+    final icon = PixelIconButton(
       key: const Key('daily.icon'),
+      asset: UiSprites.quest,
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
-      child: const PixelSprite(UiSprites.quest, dots: 16, scale: 1),
       onPressed: () => unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet())),
     );
     return claimable ? PixelDot(key: const Key('daily.dot'), child: icon) : icon;
@@ -108,7 +109,15 @@ class _Quests extends ConsumerWidget {
                     key: Key('daily.claim.${q.id}'),
                     primary: true,
                     onPressed: _claimable(q) ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
-                    child: Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
+                    // 보상 = 젬 그림 + 숫자 (layout-v2-brief C2).
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
+                        const SizedBox(width: 4),
+                        Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
+                      ],
+                    ),
                   ),
               ],
             ),

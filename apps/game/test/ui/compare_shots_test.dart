@@ -14,11 +14,23 @@ void main() {
 
   for (final (name, tab) in [('ship', shipTab), ('crew', crewTab), ('summon', summonTab), ('voyage', voyageTab)]) {
     testWidgets('×2 화면: $name', skip: !enabled, (tester) async {
-      await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab, dpr: 2);
+      await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab, size: const Size(400, 800), dpr: 2);
       await precacheImages(tester);
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile('../../../../docs/specs/ui-quality-v1/x2_$name.png'),
+      );
+    });
+  }
+
+  // 화면 배치 v2: 실기기(S24, 한국어)와 같은 크기로 찍어 docs/specs/layout-v2/device_*.png 옆에 (결과는 ui-layout-v2/) 붙인다.
+  for (final (name, tab) in [('voyage', voyageTab), ('ship', shipTab), ('crew', crewTab), ('summon', summonTab)]) {
+    testWidgets('S24 화면: $name', skip: !enabled, (tester) async {
+      await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab, locale: const Locale('ko'));
+      await precacheImages(tester);
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('../../../../docs/specs/ui-layout-v2/ui_$name.png'),
       );
     });
   }

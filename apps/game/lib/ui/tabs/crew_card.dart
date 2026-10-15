@@ -10,13 +10,17 @@ import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 초상 그림 한 변의 도트 수 (도트 팩 32×32).
 const _portraitDots = 32;
+
+/// 배지 글자 최소 크기(dp).
+const _badgeMinDp = 10.0;
 
 /// 미보유 선원 실루엣 색 (도트 윤곽색).
 const Color _silhouette = PixelPalette.outline;
@@ -62,35 +66,27 @@ class CrewCard extends ConsumerWidget {
           color: color,
           owned: owned,
           rarity: rarity,
-          deployed: deployed,
+          level: level,
+          cards: cards,
           // 승급은 카드 안 오른쪽 아래 작은 도트 버튼 (빈 줄을 차지하지 않게).
           promote: _atGate.contains(status) ? _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok) : null,
         ),
-        // 이름은 두 줄까지 (영어 "Octo the Brawler"가 말줄임 없이 들어가게).
+        // 짧은 이름 한 줄 (별명은 상세 창에서, layout-v2-brief).
         Text(
-          tableText(l10n, def.nameKey),
-          maxLines: 2,
+          shortCrewName(l10n, def),
+          key: Key('crew.name.${def.id}'),
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: (owned ? small : small?.copyWith(color: PixelPalette.textDim)),
+          style: owned ? small : small?.copyWith(color: PixelPalette.textDim),
         ),
-        // 레벨 · 카드 수를 한 줄에 작게.
-        if (level != null && cards != null)
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: l10n.uiLevel(level)),
-                TextSpan(
-                  text: ' ×$cards',
-                  style: const TextStyle(color: PixelPalette.textDim),
-                ),
-              ],
-            ),
-            key: Key('crew.info.${def.id}'),
+        if (deployed)
+          Text(
+            l10n.uiCrewDeployed,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: small,
+            style: small?.copyWith(color: PixelPalette.accent),
           ),
       ],
     );
@@ -105,7 +101,8 @@ class _PortraitBox extends StatelessWidget {
     required this.color,
     required this.owned,
     required this.rarity,
-    required this.deployed,
+    required this.level,
+    required this.cards,
     this.promote,
   });
 
@@ -113,7 +110,8 @@ class _PortraitBox extends StatelessWidget {
   final Color color;
   final bool owned;
   final RarityDef rarity;
-  final bool deployed;
+  final int? level;
+  final int? cards;
   final Widget? promote;
 
   @override
@@ -141,21 +139,14 @@ class _PortraitBox extends StatelessWidget {
                   ColorFiltered(colorFilter: const ColorFilter.mode(_silhouette, BlendMode.srcIn), child: portrait),
                 Positioned(left: 0, bottom: 0, child: _Stars(rarity: rarity)),
                 if (promote case final p?) Positioned(right: 0, bottom: 0, width: kMinTap, height: kMinTap, child: p),
-                if (deployed)
+                // 레벨(왼쪽 위)·카드 수(오른쪽 위) 작은 도트 배지.
+                if (level case final lv?)
+                  Positioned(left: 0, top: 0, child: _Badge(l10n.uiLevel(lv), key: Key('crew.level.${def.id}'))),
+                if (cards case final c?)
                   Positioned(
-                    left: 0,
                     right: 0,
                     top: 0,
-                    child: ColoredBox(
-                      color: PixelPalette.outline,
-                      child: Text(
-                        l10n.uiCrewDeployed,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.accent),
-                      ),
-                    ),
+                    child: _Badge(l10n.uiCrewCardBadge(c), key: Key('crew.cards.${def.id}')),
                   ),
               ],
             );
@@ -164,6 +155,29 @@ class _PortraitBox extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 초상 위 작은 도트 배지 (윤곽색 바탕, 글자는 본문보다 작은 도트 정수배).
+class _Badge extends StatelessWidget {
+  const _Badge(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    color: PixelPalette.outline,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: PixelPalette.text,
+          fontSize: pixelFontSize(MediaQuery.devicePixelRatioOf(context), _badgeMinDp),
+          height: 1.1,
+        ),
+      ),
+    ),
+  );
 }
 
 /// 등급 별: 별 그림 하나 + 개수 (16px 별 5개는 초상 폭을 넘는다). 숫자는 등급 색.

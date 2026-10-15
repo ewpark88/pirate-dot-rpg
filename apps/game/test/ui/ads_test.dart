@@ -110,8 +110,9 @@ void main() {
   testWidgets('기준 4: 순풍·함포 지원(파밍 중)·무료 소환 자리', (tester) async {
     final s = _base();
     final log = await _pump(tester, s.copyWith(progress: s.progress.copyWith(farming: true)), _FakeAds());
-    expect(find.text('30m ×2'), findsOneWidget);
-    expect(find.text('Damage +30% · 30s'), findsOneWidget);
+    // 상단 바 작은 광고 그림 버튼: 짧은 이득 숫자 + 전체 이득은 설명(낭독·길게 누르기).
+    expect(find.byTooltip('30m ×2'), findsOneWidget);
+    expect(find.byTooltip('Damage +30% · 30s'), findsOneWidget);
     await tester.tap(find.byKey(const Key('ad.bossSupport')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('tab.$summonTab')));

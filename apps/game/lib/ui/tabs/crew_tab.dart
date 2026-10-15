@@ -14,7 +14,7 @@ import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 export 'package:pirate_dot/ui/tabs/crew_card.dart' show CrewCard;
 
 /// 격자 한 줄에 선원 수.
-const _columns = 5;
+const _columns = 4;
 
 /// 카드 사이 간격.
 const _spacing = 4.0;
@@ -76,9 +76,13 @@ class CrewTab extends ConsumerWidget {
                       ),
                       if (bonus case (_, final nextIn) when nextIn > 0) ...[
                         const SizedBox(width: 6),
-                        Text(
-                          l10n.uiCollectionNext(nextIn),
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.textDim),
+                        Flexible(
+                          child: Text(
+                            l10n.uiCollectionNext(nextIn),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.textDim),
+                          ),
                         ),
                       ],
                     ],

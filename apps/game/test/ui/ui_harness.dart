@@ -19,7 +19,11 @@ GameState loadFixture(String name) {
   return GameState.fromJson(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
 }
 
-/// 세로 폰 화면(논리 400×800)에 앱을 그리고, 버튼이 보낸 명령을 모으는 로그를 돌려준다.
+/// 세로 폰 화면(기본: 사용자 실기기 Galaxy S24 = 384×832dp, dpr 2.8125)에 앱을 그리고, 버튼이 보낸 명령을 모으는 로그를 돌려준다.
+/// 사용자 실기기 Galaxy S24 (1080×2340px ÷ 2.8125).
+const s24Size = Size(384, 832);
+const s24Dpr = 2.8125;
+
 Future<CommandLog> pumpGame(
   WidgetTester tester,
   GameState state, {
@@ -27,8 +31,8 @@ Future<CommandLog> pumpGame(
   int tab = 0,
   FixedClock? clock,
   bool keepTutorial = false,
-  Size size = const Size(400, 800),
-  double dpr = 1,
+  Size size = s24Size,
+  double dpr = s24Dpr,
   List<Override> overrides = const [],
 }) async {
   tester.view

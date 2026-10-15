@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/ui/hud/top_bar.dart';
 
 import 'ui_harness.dart';
 
 void main() {
-  // 골드·스테이지·함성 게이지는 캔버스 HUD(render)가 그린다 — UI는 누르는 것만 전장 위에 남긴다.
-  testWidgets('기준 1: Material HUD가 없고, 젬은 소환 탭에', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'), tab: summonTab);
-    expect(find.text('Stage 37-2'), findsNothing);
-    expect(find.descendant(of: find.byKey(const Key('summon.gems')), matching: find.text('140')), findsOneWidget);
+  // 화면 배치 v2 (layout-v2-brief): 골드·젬·퀘스트·설정은 전장 밖 상단 바, 전장 필드 안에는 누르는 것이 없다.
+  testWidgets('기준 1: 상단 바에 골드·젬·설정, 모두 전장 위(밖)', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'));
+    expect(find.descendant(of: find.byType(TopBar), matching: find.text('1.25M')), findsOneWidget);
+    expect(find.descendant(of: find.byType(TopBar), matching: find.text('140')), findsOneWidget);
+    final area = tester.getRect(find.byKey(const Key('battle.area')));
+    for (final key in ['top.gold', 'top.gems', 'hud.settings', 'daily.icon']) {
+      expect(tester.getRect(find.byKey(Key(key))).bottom, lessThanOrEqualTo(area.top + 0.5), reason: key);
+    }
   });
 
-  testWidgets('기준 1: 누르는 것(설정·궁극기)은 전장 상자 안', (tester) async {
+  testWidgets('기준 1: 궁극기는 선원 줄 오른쪽 끝(battleFrameFor.ultimateRect), 필드 안이 아님', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
     final area = tester.getRect(find.byKey(const Key('battle.area')));
-    for (final key in ['hud.settings', 'hud.ultimate']) {
-      final r = tester.getRect(find.byKey(Key(key)));
-      expect(area.contains(r.topLeft) && area.contains(r.bottomRight - const Offset(1, 1)), isTrue, reason: key);
-    }
-    // 궁극기는 선원 슬롯 줄(논리 y 148~180) 위
-    final k = area.width / 320;
-    expect(tester.getRect(find.byKey(const Key('hud.ultimate'))).bottom, lessThanOrEqualTo(area.top + 148 * k));
+    final f = battleFrameFor(area.size, s24Dpr);
+    final ult = tester.getRect(find.byKey(const Key('hud.ultimate')));
+    expect(ult.center, offsetMoreOrLessEquals(area.topLeft + f.ultimateRect.center, epsilon: 0.5));
+    expect(ult.top, greaterThanOrEqualTo(area.top + f.gameRect.bottom - 0.5));
+    expect(ult.width, greaterThanOrEqualTo(48));
   });
 
-  testWidgets('기준 2: 보스전이면 남은 초 (400틱 × 50ms = 20초)', (tester) async {
+  testWidgets('기준 2: 보스 남은 초는 캔버스(렌더)가 그린다 — UI 오버레이 없음', (tester) async {
     await pumpGame(tester, loadFixture('boss_fight'));
-    expect(find.text('Boss 20s'), findsOneWidget);
-  });
-
-  testWidgets('기준 2: 보스전이 아니면 타이머가 없다', (tester) async {
-    await pumpGame(tester, loadFixture('new_player'));
-    expect(find.textContaining('Boss'), findsNothing);
+    expect(find.text('Boss 20s'), findsNothing);
   });
 
   testWidgets('기준 3: 함성이 덜 찼으면 궁극기 버튼 비활성', (tester) async {

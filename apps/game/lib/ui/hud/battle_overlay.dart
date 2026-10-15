@@ -1,145 +1,41 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/operator/flags.dart';
-import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/render/layout.dart';
-import 'package:pirate_dot/ui/ads/ad_buttons.dart';
-import 'package:pirate_dot/ui/hud/boss_challenge.dart';
-import 'package:pirate_dot/ui/hud/boss_weakness.dart';
-import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
-import 'package:pirate_dot/ui/meta/daily_sheet.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
-import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// 캔버스 HUD(골드·스테이지·함성 게이지, y 6~12) 아래에서 오버레이가 시작하는 논리 y.
-const _belowHud = 15.0;
-
-/// 오버레이 바깥 여백(논리 픽셀).
-const _margin = 4.0;
-
-/// 운영자 탭 영역의 논리 크기 — 캔버스 스테이지 글자(x 150, y 6) 위.
-const _operatorX = 140.0;
-const _operatorW = 40.0;
-
-/// 전장 위 도트 오버레이 — 누르는 것만 (render-quality 캔버스 HUD가 골드·스테이지·게이지를 그린다).
-/// 전장 상자(`battle.area`, 320×180 비율) 안에 깔려 논리 좌표 × 배율로 놓는다.
-/// 왼쪽 위: 퀘스트·설정, 순풍·순풍 광고 / 가운데 위: 보스 타이머 / 오른쪽 위: 보스 도전·약점 / 오른쪽 아래(슬롯 위): 궁극기.
-/// 전장 높이가 400dp 폭에서 225dp라 오른쪽 위 줄과 궁극기가 겹치지 않게 설정은 왼쪽에 둔다.
-class BattleOverlay extends StatelessWidget {
-  const BattleOverlay({super.key});
+/// 선원 줄 오른쪽 끝 버튼 (layout-v2-brief 3, S3 좌표 약속 `battleFrameFor`):
+/// 궁극기 = 렌더가 그린 자리(초상·함성 게이지) 위 투명 버튼, 보스 도전 = 파밍 중일 때만 그 왼쪽 도트 버튼.
+/// 전장 필드 안에는 누르는 것을 두지 않는다(보물상자 탭은 예외 — ChestLayer).
+class BattleButtons extends StatelessWidget {
+  const BattleButtons({super.key});
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final k = box.maxWidth / kLogicalWidth;
-      final top = _belowHud * k;
-      final m = _margin * k;
+      final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
+      // 그림 자리가 48dp보다 작으면 누르는 영역만 가운데 기준으로 키운다.
+      Rect hit(Rect r) => Rect.fromCenter(
+        center: r.center,
+        width: r.width < kMinTap ? kMinTap : r.width,
+        height: r.height < kMinTap ? kMinTap : r.height,
+      );
       return Stack(
+        clipBehavior: Clip.none,
         children: [
-          Positioned(
-            top: top,
-            left: m,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(mainAxisSize: MainAxisSize.min, children: [DailyIcon(), SizedBox(width: 4), _SettingsButton()]),
-                SizedBox(height: 4),
-                TailwindBadge(),
-                TailwindAdButton(),
-              ],
-            ),
-          ),
-          Positioned(
-            top: top,
-            left: 0,
-            right: 0,
-            child: const Center(child: _BossTimer()),
-          ),
-          Positioned(
-            top: top,
-            right: m,
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [BossChallenge(), BossWeakness()],
-            ),
-          ),
-          Positioned(
-            right: m,
-            bottom: (kLogicalHeight - kFieldBottom) * k + m,
-            child: const _UltimateButton(),
-          ),
-          // 운영자 빌드에서만 캔버스 스테이지 글자를 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
-          if (kOperator)
-            Positioned(
-              top: 0,
-              left: _operatorX * k,
-              width: _operatorW * k,
-              height: _belowHud * k,
-              child: const OperatorTapGate(child: SizedBox.expand()),
-            ),
+          Positioned.fromRect(rect: hit(f.ultimateRect), child: const _UltimateButton()),
+          Positioned.fromRect(rect: hit(f.bossRect), child: const _BossChallengeButton()),
         ],
       );
     },
   );
 }
 
-/// 보스전 남은 초 (캔버스 HUD에 없는 값).
-class _BossTimer extends ConsumerWidget {
-  const _BossTimer();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final tickMs = ref.watch(tablesProvider).waves.tickMs;
-    final seconds = ref.watch(
-      gameStateProvider.select((s) {
-        final battle = s.battle;
-        if (battle == null || !battle.bossActive) return null;
-        return (battle.bossTicksLeft * tickMs / Duration.millisecondsPerSecond).ceil();
-      }),
-    );
-    if (seconds == null) return const SizedBox.shrink();
-    return ColoredBox(
-      color: PixelPalette.outline,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Text(
-          AppLocalizations.of(context).uiHudBossTimer(seconds),
-          key: const Key('hud.bossTimer'),
-          style: const TextStyle(color: PixelPalette.danger, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsButton extends StatelessWidget {
-  const _SettingsButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final label = AppLocalizations.of(context).uiSettingsTitle;
-    return Tooltip(
-      message: label,
-      child: PixelButton(
-        key: const Key('hud.settings'),
-        semanticLabel: label,
-        onPressed: () => unawaited(
-          Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen())),
-        ),
-        child: const PixelSprite(UiSprites.gear, dots: 16, scale: 1),
-      ),
-    );
-  }
-}
-
-/// 궁극기: 함성이 가득일 때만 누를 수 있다 (게이지는 캔버스).
+/// 궁극기: 그림은 렌더(ultimateRect), 여기서는 누르는 영역만. 함성이 가득일 때만 누를 수 있다.
 class _UltimateButton extends ConsumerWidget {
   const _UltimateButton();
 
@@ -147,11 +43,46 @@ class _UltimateButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final rageMax = ref.watch(tablesProvider).skills.rageMax;
     final full = ref.watch(gameStateProvider.select((s) => s.progress.rage >= rageMax));
-    return PixelButton(
-      key: const Key('hud.ultimate'),
-      primary: true,
-      onPressed: full ? () => ref.read(commandSinkProvider).send(const TriggerUltimate()) : null,
-      child: Text(AppLocalizations.of(context).uiHudUltimate),
+    final label = AppLocalizations.of(context).uiHudUltimate;
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        enabled: full,
+        label: label,
+        child: GestureDetector(
+          key: const Key('hud.ultimate'),
+          behavior: HitTestBehavior.opaque,
+          onTap: full ? () => ref.read(commandSinkProvider).send(const TriggerUltimate()) : null,
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
+}
+
+/// 파밍 중(보스를 못 잡아 제자리 항해)이면 보스 도전 (설계서 4.1-4). 파밍 그림 버튼.
+class _BossChallengeButton extends ConsumerWidget {
+  const _BossChallengeButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final show = ref.watch(gameStateProvider.select((s) => s.progress.farming && !(s.battle?.bossActive ?? false)));
+    if (!show) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
+    return TutorialSpot(
+      id: 'boss.challenge',
+      child: Tooltip(
+        message: l10n.uiBossChallenge,
+        child: PixelButton(
+          key: const Key('boss.challenge'),
+          primary: true,
+          semanticLabel: l10n.uiBossChallenge,
+          onPressed: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
+          // 칸이 50dp 안팎이라 그림만 (글자는 낭독·길게 누르기 설명으로).
+          child: const PixelSprite(UiSprites.farm, dots: 16),
+        ),
+      ),
     );
   }
 }

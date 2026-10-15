@@ -1,13 +1,12 @@
-import 'dart:math' as math;
-
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
+import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
+import 'package:pirate_dot/ui/hud/top_bar.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
@@ -32,8 +31,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-/// 전장이 차지할 수 있는 최대 높이 비율 (가로·낮은 화면에서 탭 패널을 남긴다).
-const _battleMax = 0.5;
+/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (layout-v2-brief 2: 38~42%).
+const _battleShare = 0.4;
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _tab = 0;
@@ -68,31 +67,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 builder: (context, screen) => Column(
                   children: [
                     const SaveFailureBanner(),
-                    // 전장은 폭에 맞춘 320×180 비율 높이(빈 띠 없이), 가로 화면처럼 낮으면 화면 높이의 절반까지.
+                    // 상단 바 (전장 밖): 골드·젬·순풍·퀘스트·설정.
+                    const TopBar(),
+                    // 전장 + 선원 줄: 폭 전체 × 화면의 40% (렌더가 남는 곳을 배경으로 채운다, layout-v2-brief 2·3).
                     SizedBox(
-                      height: math.min(screen.maxWidth * kLogicalHeight / kLogicalWidth, screen.maxHeight * _battleMax),
+                      key: const Key('battle.area'),
+                      height: screen.maxHeight * _battleShare,
                       child: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Center(
-                            child: AspectRatio(
-                              key: const Key('battle.area'),
-                              aspectRatio: kLogicalWidth / kLogicalHeight,
-                              // 전장(렌더) 위에 UI의 탭 영역(보물상자)을 같은 좌표로 겹친다.
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  ref.watch(battleViewBuilderProvider)?.call(context) ??
-                                      GameWidget(game: ref.watch(battleGameProvider)),
-                                  const ChestLayer(),
-                                  // 누르는 것만 전장 위 도트 오버레이로 (골드·스테이지·게이지는 캔버스 HUD).
-                                  const BattleOverlay(),
-                                ],
-                              ),
-                            ),
-                          ),
+                          ref.watch(battleViewBuilderProvider)?.call(context) ??
+                              GameWidget(game: ref.watch(battleGameProvider)),
+                          // 보물상자 탭(게임 오브젝트)과 선원 줄 오른쪽 끝 버튼만.
+                          const ChestLayer(),
+                          const BattleButtons(),
                         ],
                       ),
                     ),
+                    const ChestAdStrip(),
+                    const BossWeakness(),
                     // 다음 목표 도트 띠 (전장 바로 아래, 설계서 4.5).
                     const GoalBar(),
                     // 튜토리얼 중에만 자리를 차지한다 — 전장도 탭 패널도 가리지 않는다.
