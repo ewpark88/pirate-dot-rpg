@@ -95,11 +95,13 @@ class ScenePainter {
     _projectiles(c);
     _effects(c);
     _coins(c);
-    _hud.paintNumbers(c);
+    _hud.paintNumbers(c, scale: _numberScale);
   };
+  double _numberScale = 1;
 
   /// 탑다운(T2, BattleView.mode 'top'): 상자 dp 캔버스. 전장은 탑다운 카메라, 덮개·HUD·선원 줄은 옆모습 배치(같은 상자)로.
   void paintTop(Canvas canvas, TopFrame frame) {
+    _numberScale = scene.layout.dot / frame.dot;
     _top.paint(canvas, frame, _worldFx);
     final l = scene.layout;
     canvas

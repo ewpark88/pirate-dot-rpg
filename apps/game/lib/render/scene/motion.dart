@@ -23,6 +23,11 @@ void placeProjectile(Projectile p) {
 /// 진행률 [t]일 때 발사체 위치 (꼬리 잔상도 같은 길로 그린다).
 (double, double) positionAt(Projectile p, double t) {
   final s = p.style;
+  if (p.flat) {
+    // 탑다운: 땅 위 자리는 직선(떨어지기는 목표 위 그대로), 높이는 heightAt.
+    if (s.path == ProjectilePath.drop) return (p.toX, p.toY);
+    return (p.fromX + (p.toX - p.fromX) * t, p.fromY + (p.toY - p.fromY) * t);
+  }
   switch (s.path) {
     case ProjectilePath.drop:
       return (p.toX, p.toY - s.arcPx * (1 - t));
@@ -33,6 +38,17 @@ void placeProjectile(Projectile p) {
       if (s.path == ProjectilePath.skip) y -= s.arcPx * math.sin(t * math.pi * _skipBounces).abs();
       return (x, y);
   }
+}
+
+/// 탑다운 발사체 높이 (도트, 0 = 수면): 포물선·물수제비·떨어지기. 그리는 쪽이 크기·그림자에 쓴다.
+double heightAt(Projectile p, double t) {
+  final s = p.style;
+  return switch (s.path) {
+    ProjectilePath.arc => s.arcPx * 4 * t * (1 - t),
+    ProjectilePath.skip => s.arcPx * math.sin(t * math.pi * _skipBounces).abs(),
+    ProjectilePath.drop => s.arcPx * (1 - t),
+    ProjectilePath.line => 0,
+  };
 }
 
 /// 코인(사용자 지시 '돈 들어오는 게 보이게'): 크게 튀어 오른 뒤(앞 [_fountainEnd]) 위로 휘는 곡선으로 목표(상단 바 골드)까지.
