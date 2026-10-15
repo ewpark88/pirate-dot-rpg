@@ -10,10 +10,12 @@ class AudioAdapter implements AudioPort {
   AudioAdapter._(this._sdk, this._files);
 
   /// 목록을 못 읽으면 빈 목록(전부 무음).
-  static Future<AudioAdapter> load(AudioSdk sdk) async {
+  /// [timeout]: 목록 읽기가 이보다 오래 걸리면 무음으로 시작한다(첫 프레임을 막지 않게).
+  static Future<AudioAdapter> load(AudioSdk sdk, {Duration? timeout}) async {
     var files = <String>{};
     try {
-      files = await sdk.listAssets();
+      final listing = sdk.listAssets();
+      files = await (timeout == null ? listing : listing.timeout(timeout));
     } on Object catch (e) {
       debugPrint('audio: asset list failed — silent ($e)');
     }

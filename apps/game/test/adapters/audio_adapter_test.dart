@@ -104,6 +104,10 @@ void main() {
     await pumpEventQueue();
     expect(sdk.bgmStopped, isTrue);
   });
+  test('목록 읽기가 시간 제한을 넘으면 무음으로 시작한다(첫 프레임을 막지 않음)', () async {
+    final a = await AudioAdapter.load(_HangingSdk(), timeout: const Duration(milliseconds: 20));
+    expect(a.hasSfx('hit'), isFalse);
+  });
 }
 
 class _ThrowingSdk extends FakeAudioSdk {
@@ -111,4 +115,12 @@ class _ThrowingSdk extends FakeAudioSdk {
 
   @override
   Future<Set<String>> listAssets() async => throw StateError('manifest');
+}
+
+/// 목록 읽기가 끝나지 않는 SDK (같은 프로세스 재실행에서 플랫폼 응답이 안 오는 경우를 흉내).
+class _HangingSdk extends FakeAudioSdk {
+  _HangingSdk() : super({});
+
+  @override
+  Future<Set<String>> listAssets() => Completer<Set<String>>().future;
 }
