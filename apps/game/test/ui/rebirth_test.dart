@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 
 import 'ui_harness.dart';
 
@@ -54,7 +55,18 @@ Future<CommandLog> _pump(WidgetTester tester, RebirthPreview? preview, {GameStat
     ),
   );
   await tester.pump();
+  await _scrollToCard(tester);
   return log;
+}
+
+/// 환생 카드는 항해 탭 아래쪽(아직 안 지어졌을 수 있음) — 스크롤해서 짓는다.
+Future<void> _scrollToCard(WidgetTester tester) async {
+  await tester.scrollUntilVisible(
+    find.byKey(const Key('rebirth.card')),
+    200,
+    scrollable: find.descendant(of: find.byType(VoyageTab), matching: find.byType(Scrollable)).first,
+  );
+  await tester.pump();
 }
 
 void main() {
@@ -103,6 +115,7 @@ void main() {
 
   testWidgets('기본값은 경제 rebirthPreview — 샘플(스테이지 37)은 잠김, 최고 스테이지 표시', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'), size: _tall);
+    await _scrollToCard(tester);
     expect(find.byKey(const Key('rebirth.card')), findsOneWidget);
     expect(find.text('Rebirth unlocks at stage 40'), findsOneWidget);
     expect(find.text('Best stage 41'), findsOneWidget);

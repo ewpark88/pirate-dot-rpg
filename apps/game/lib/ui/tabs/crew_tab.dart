@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
+import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_card.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -108,7 +109,17 @@ class CrewTab extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
+        // 수동 편성이 기본, 한 번에 채우기 (사용자 결정).
+        Align(
+          alignment: Alignment.centerRight,
+          child: PixelButton(
+            key: const Key('fleet.auto'),
+            onPressed: () => ref.read(fleetCommandsProvider).auto(),
+            child: Text(l10n.uiFleetAuto),
+          ),
+        ),
+        const SizedBox(height: 6),
         // 기준 gif 아래 선원 바처럼 큰 정사각 초상 카드. 줄마다 높이가 달라도 되게(승급 버튼이 있는 줄만 길어짐) 격자 대신 줄.
         // 테스트·도감이 40장을 모두 찾을 수 있게 한 덩어리로 짓는다(ListView는 화면 밖 자식을 안 지음).
         Column(

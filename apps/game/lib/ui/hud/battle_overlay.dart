@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 선원 줄 오른쪽 끝 버튼 (layout-v2-brief 3, S3 좌표 약속 `battleFrameFor`):
@@ -27,6 +32,12 @@ class BattleButtons extends StatelessWidget {
       return Stack(
         clipBehavior: Clip.none,
         children: [
+          // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
+          for (final (i, r) in f.slotRects.indexed)
+            Positioned.fromRect(
+              rect: hit(r),
+              child: _SlotButton(slot: i),
+            ),
           Positioned.fromRect(rect: hit(f.ultimateRect), child: const _UltimateButton()),
           Positioned.fromRect(rect: hit(f.bossRect), child: const _BossChallengeButton()),
         ],
@@ -82,6 +93,32 @@ class _BossChallengeButton extends ConsumerWidget {
           // 칸이 50dp 안팎이라 그림만 (글자는 낭독·길게 누르기 설명으로).
           child: const PixelSprite(UiSprites.farm, dots: 16),
         ),
+      ),
+    );
+  }
+}
+
+/// 선원 줄 한 칸: 투명 버튼(그림은 렌더), 빈 칸이면 가운데 ‘+’.
+class _SlotButton extends ConsumerWidget {
+  const _SlotButton({required this.slot});
+
+  final int slot;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final id = ref.watch(fleetSlotsProvider.select((s) => s[slot]));
+    final tables = ref.watch(tablesProvider);
+    final label = id == null ? l10n.uiFleetEmptySlot : tableText(l10n, tables.crews.byId(id).nameKey);
+    return Semantics(
+      button: true,
+      label: '${l10n.uiFleetSlotTitle(slot + 1)} · $label',
+      excludeSemantics: true,
+      child: GestureDetector(
+        key: Key('fleet.slot.$slot'),
+        behavior: HitTestBehavior.opaque,
+        onTap: () => openFleetPicker(context, slot),
+        child: id == null ? const Center(child: PixelBitmap(PixelBitmaps.plus, color: PixelPalette.textDim)) : null,
       ),
     );
   }

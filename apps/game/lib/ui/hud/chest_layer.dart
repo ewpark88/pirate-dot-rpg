@@ -39,6 +39,8 @@ class ChestLayer extends ConsumerWidget {
         // 게임 좌표 → 전장 상자 dp (렌더와 같은 battleFrameFor).
         final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
         final at = f.toDp(Offset(x, y));
+        // 필드가 상자보다 넓으면(렌더 k+1) 상자 밖의 보물상자는 보이지 않는다 — 누를 곳도 없다.
+        if (!(Offset.zero & box.biggest).contains(at)) return const SizedBox.shrink();
         return Stack(
           children: [
             Positioned(

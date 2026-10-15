@@ -6,6 +6,9 @@ abstract final class PixelBitmaps {
   /// 다음으로 (›).
   static const chevron = ['#..', '.#.', '..#', '.#.', '#..'];
 
+  /// 빈 칸 (+).
+  static const plus = ['..#..', '..#..', '#####', '..#..', '..#..'];
+
   /// 뒤로 (‹).
   static const back = ['..#', '.#.', '#..', '.#.', '..#'];
 

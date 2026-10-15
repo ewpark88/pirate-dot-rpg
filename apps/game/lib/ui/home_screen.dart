@@ -32,8 +32,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (layout-v2-brief 2: 38~42%).
-const _battleShare = 0.4;
+/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (사용자 지시: 약 45%, S3가 도트 배율 +1).
+const _battleShare = 0.45;
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _tab = 0;
