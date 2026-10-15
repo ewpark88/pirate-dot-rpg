@@ -14,6 +14,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 전체 화면 전투(bottomInset) + 배 체력 막대·피격·침몰 (사용자 결정·지적)
+- `battleFrameFor(box, dpr, {bottomInset})` + `BattleGame.bottomInset`(S4 약속): 도크·시트가 가린 높이만큼 선원 줄·궁극기가 위로, 필드는 배율 그대로 위아래만(보이는 필드가 148보다 낮으면 하늘을 자름). 줄 바탕은 상자 바닥까지(bandFill). 테스트: 닫힘 72dp·시트 50%에서 k 그대로, 배 보임.
+- UI 연결값(goldTargetDp·onCoinArrive·bottomInset)은 `battle_game_links.dart`(part, mixin)로.
+- 배 체력 막대 `paint/ship_hp_painter.dart`(fx_map shipHp): 늘 보임, 초록→노랑→빨강, 25% 아래 맥박, 피격 시 흰 테두리·흔들림·흰 조각이 늦게 줄어듦, 회복 시 초록 반짝. 배 피격 숫자 DamageKind.ship(빨강).
+- 무리전 침몰(ShipDamaged hpRatio 0, 보스전 아님): 기울며 물 아래로(물 닿는 줄에서 잘림) → 반에서 수리 반짝 → 떠오름(1.8초). 보스 실패는 기존 어둡게 + UI 문구(S4).
+- 비교 `docs/specs/render-fullscreen/fullscreen_4devices.png`(도크·시트 50%), `ship_hp_sink_s24.png`.
+- 사용자 결정으로 다음은 탑다운 전환(T2). 옆모습 작업(분위기·이벤트)은 T2 뒤로.
+
 ### 2026-10-15 · S3 · 배 부품 외형 단계 + 대포 레이어 + 배 1.3배 (사용자 지시)
 - `tools/art/gen_ship_parts.py` → `assets/ship/part_t<n>_<part>.png`(등급마다 hull 7·sail 5·crowsnest 6·cargo 7 프레임, 배 그림과 같은 크기 덧그림) + `part_cannon.png`(7단계). PB 배 모듈 디자인을 도트로. OWN.
   선체: 쇠 띠 → 가로 띠 → 구리 바닥 → 금 테 → 금 문장 → 마호가니(유령선은 깊은 보라). 돛: 기운 자국 → 깨끗 → 빨간 겹줄 → 해골 → 금 테. 망루: 바구니 → 난간 → 깃발 → 망원경 → 등불 → 금 깃발. 화물: 통 → 상자 → 보물상자 → 금 더미. 대포: 쇠 → 긴 쇠 → 청동 → 띠 → 강철 바퀴 → 쌍포 → 금 용.

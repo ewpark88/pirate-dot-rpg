@@ -23,6 +23,8 @@ export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, J
 export 'package:pirate_dot/render/layout.dart' show kLogicalHeight, kLogicalWidth;
 export 'package:pirate_dot/render/scene/moments.dart' show CutInState;
 
+part 'battle_game_links.dart';
+
 /// 전장이 무엇을 재생하는가.
 enum BattleMode { live, demo, stress }
 
@@ -37,7 +39,7 @@ const _powerSaveSwitch = bool.fromEnvironment('POWER_SAVE');
 /// - `feed`가 있으면 라이브 모드: 엔진의 `EngineHost.ticks`를 구독한다 (`battleFeedProvider`).
 /// - 없으면 `recording`(기본: 데모 기록 [sampleBattleJsonl])을 반복 재생한다.
 /// - 운영자·측정: [loadStress]·[loadDemo]·[resumeLive], [perf]·[stats]·[showHitboxes]·[settings].
-class BattleGame extends FlameGame {
+class BattleGame extends FlameGame with _UiLinks {
   BattleGame({
     Stream<RecordedTick>? feed,
     this._recording,
@@ -91,29 +93,13 @@ class BattleGame extends FlameGame {
   /// 읽은 스프라이트 수 (0이면 전부 플레이스홀더).
   int get spriteCount => _sprites?.length ?? 0;
 
+  @override
   late BattleScene scene;
 
   /// 장면을 새로 만들 때(데모·부하·라이브 전환) 상자 배치를 이어받는다.
   BattleFrame? get scene0Layout => _sceneReady ? scene.layout : null;
+  @override
   bool _sceneReady = false;
-
-  Offset? _goldTargetDp;
-  void Function(BigNum amount)? _onCoinArrive;
-
-  /// 상단 바 골드 아이콘 자리 (전장 상자 왼쪽 위 기준 dp, 상자 위면 y < 0). UI가 레이아웃 때마다 알려 준다.
-  /// 코인이 이 자리(상자 위면 상자 맨 위)로 날아간다. null이면 배로.
-  Offset? get goldTargetDp => _goldTargetDp;
-  set goldTargetDp(Offset? v) {
-    _goldTargetDp = v;
-    if (_sceneReady) scene.coinFlow.goldTargetDp = v;
-  }
-
-  /// 코인이 목표에 닿은 프레임마다 금액 합계 — UI가 골드 아이콘을 통통 튀기고 '+금액'을 띄운다.
-  void Function(BigNum amount)? get onCoinArrive => _onCoinArrive;
-  set onCoinArrive(void Function(BigNum amount)? f) {
-    _onCoinArrive = f;
-    if (_sceneReady) scene.coinFlow.onCoinArrive = f;
-  }
 
   late ScenePainter painter;
   late BattleMode mode;
@@ -229,8 +215,8 @@ class BattleGame extends FlameGame {
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     final dpr = PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 1;
-    // 화면 배치 v2: 폭 기준 정수배, 필드는 가운데, 남는 위·아래·좌우는 배경으로 채운다(UI 버튼과 같은 계산).
-    final frame = battleFrameFor(Size(size.x, size.y), dpr);
+    // 화면 배치 v2: 폭 기준 정수배, 남는 높이는 배경. 도크·시트에 가린 만큼 선원 줄·필드가 위로(UI 버튼과 같은 계산).
+    final frame = battleFrameFor(Size(size.x, size.y), dpr, bottomInset: _bottomInset);
     scene.layout = frame;
     camera.viewfinder
       ..zoom = frame.dot

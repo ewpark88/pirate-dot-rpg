@@ -44,8 +44,24 @@ void main() {
       test('선원 줄: 56dp 이상(칸 + 위아래 여백), 상자 맨 아래, 폭 전체', () {
         final b = f.slotBand;
         expect(b.height, greaterThanOrEqualTo(kSlotBandMinDp - 1e-6));
-        expect(b.bottom, closeTo(box.height, 1e-6));
+        expect(b.bottom, closeTo(box.height, 1 / dpr + 1e-6), reason: '줄 윗변이 정수 물리 픽셀 — 1px 안');
         expect(b.width, closeTo(box.width, 1e-6));
+      });
+
+      test('도크·시트(bottomInset): 줄은 가려지지 않는 맨 아래로, 배율은 그대로, 배는 보인다', () {
+        // 전체 화면 상자 = 화면(지금 상자는 화면의 45%) − 상단 바 48dp. 닫힘 = 도크 72dp, 열림 = 화면 아래 50%.
+        final full = Size(box.width, box.height / 0.45 - 48);
+        final closed = battleFrameFor(full, dpr, bottomInset: 72);
+        for (final inset in [72.0, full.height * 0.5 + 24]) {
+          final g = battleFrameFor(full, dpr, bottomInset: inset);
+          expect(g.k, closed.k, reason: '시트를 끌어도 그림 크기는 그대로');
+          expect(g.slotBand.bottom, closeTo(full.height - inset, 1 / dpr + 1e-6));
+          expect(g.slotRects.first.width, closeTo(closed.slotRects.first.width, 1e-6));
+          final shipBottomDp = g.toDp(const Offset(0, kShipTop + kShipHeight)).dy;
+          final shipTopDp = g.toDp(const Offset(0, kShipTop)).dy;
+          expect(shipTopDp, greaterThanOrEqualTo(-1e-6), reason: '배 윗부분이 상자 안 ($inset)');
+          expect(shipBottomDp, lessThanOrEqualTo(g.slotBand.top + 1e-6), reason: '배가 선원 줄 위 ($inset)');
+        }
       });
 
       test('선원 줄 도트 상한: 슬롯 판 ≤ 58dp (태블릿에서 과하게 커지지 않음)', () {
