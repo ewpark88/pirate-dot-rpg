@@ -78,7 +78,10 @@ class BattleFrame {
   Offset get bandOrigin => Offset(viewDots.left, bandTop);
 
   /// 선원 줄 높이 (도트) — 이전 이름 호환.
-  double get bandDots => viewDots.bottom - bandTop;
+  double get bandDots => bandHeight * bandScale;
+
+  /// 선원 줄 바탕을 칠할 높이 (줄 도트) — 줄 윗변부터 상자 바닥까지(도크·시트 아래로 이어져 틈이 없게).
+  double get bandFill => (viewDots.bottom - bandTop) / bandScale;
 
   /// 줄 도트 → 도트.
   Offset bandToDots(Offset p) => Offset(viewDots.left + p.dx * bandScale, bandTop + p.dy * bandScale);
@@ -142,7 +145,8 @@ class BattleFrame {
   Rect get gameRect => rectToDp(const Rect.fromLTWH(0, 0, kLogicalWidth, kFieldBottom));
 
   /// 선원 줄 (dp, 상자 폭 전체).
-  Rect get slotBand => rectToDp(Rect.fromLTRB(viewDots.left, bandTop, viewDots.right, viewDots.bottom));
+  Rect get slotBand =>
+      rectToDp(Rect.fromLTRB(viewDots.left, bandTop, viewDots.right, bandTop + bandHeight * bandScale));
 
   /// 슬롯 6칸 (dp).
   List<Rect> get slotRects => [
@@ -162,9 +166,14 @@ class BattleFrame {
 ///   필드 148 + 선원 줄이 상자 높이에 안 들어가면 k를 줄인다(kb ≤ k).
 /// - 선원 줄 높이 = max(32줄 도트, 56dp). 줄 윗변은 정수 물리 픽셀.
 /// - 필드 가로: 보이는 폭 < 320이면 왼쪽(배 쪽) 기준, 넓으면 가운데. 남는 높이는 위 70% 하늘, 아래 30% 깊은 바다.
-BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
+/// - [bottomInset] (dp, 사용자 결정 '전체 화면 + 도크·끌어올리는 시트', S4 약속): 상자 아래에서 도크·시트가 가리는 높이.
+///   선원 줄·궁극기는 가려지지 않는 맨 아래(시트 바로 위)로 따라 올라가고, 필드는 배율(k)을 그대로 둔 채 보이는 높이에 맞춰
+///   위아래만 옮긴다(시트를 끄는 동안 그림 크기가 출렁이지 않게). 보이는 필드가 148보다 낮으면 하늘 쪽이 잘린다(배는 보인다).
+///   상자 전체(viewDots)는 그대로 그린다 — 가려진 아래는 바다.
+BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1, double bottomInset = 0}) {
   final physW = box.width * dpr;
   final physH = box.height * dpr;
+  final visH = math.max<double>(0, box.height - bottomInset) * dpr;
   // 태블릿처럼 넓으면 줄 배율을 1줄 도트 ≤ kBandDotMaxDp dp로 묶는다(슬롯·버튼이 과하게 커지지 않게).
   var kb = math.max(1, math.min((physW / kLogicalWidth).floor(), (kBandDotMaxDp * dpr).floor()));
   final base = math.max(1, (physW / kLogicalWidth).floor());
@@ -182,13 +191,14 @@ BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
   final bandDot = kb / dpr;
   final side = (sideDp / bandDot).floorToDouble();
   final bandH = band(kb);
-  final bandPhysTop = (physH - bandH * kb).floorToDouble();
+  final bandPhysTop = (visH - bandH * kb).floorToDouble();
   final w = physW / k;
   final h = physH / k;
   final fieldH = bandPhysTop / k;
-  final extra = math.max<double>(0, fieldH - kFieldBottom);
+  final extra = fieldH - kFieldBottom;
   final left = w >= kLogicalWidth ? ((w - kLogicalWidth) / 2).floorToDouble() : 0.0;
-  final top = (extra * kSkyShare).floorToDouble();
+  // 남으면 위 70% 하늘, 모자라면(시트가 높이 올라옴) 필드 아래(물 밑)를 선원 줄 윗변에 맞추고 하늘을 자른다.
+  final top = extra >= 0 ? (extra * kSkyShare).floorToDouble() : extra.floorToDouble();
   return BattleFrame._(
     k: k,
     kb: kb,
@@ -196,7 +206,7 @@ BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
     viewDots: Rect.fromLTWH(-left, -top, w, h),
     bandTop: -top + bandPhysTop / k,
     bandWidth: physW / kb,
-    bandHeight: (physH - bandPhysTop) / kb,
+    bandHeight: bandH,
     slotSize: Size(side, side),
     // 칸이 상한(72dp)에 걸려 폭이 남으면(태블릿) 6칸을 가운데로.
     slotLeft:

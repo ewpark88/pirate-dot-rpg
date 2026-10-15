@@ -82,4 +82,5 @@ class Coin {
 }
 
 /// 데미지 숫자 종류.
-enum DamageKind { normal, crit, sum }
+/// [ship] = 내 배가 받은 피해(빨강, 사용자 지적 '내 체력은?').
+enum DamageKind { normal, crit, sum, ship }

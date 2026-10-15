@@ -147,7 +147,10 @@ class DamageNumbers {
     DamageKind.normal => spec.normalColor,
     DamageKind.crit => spec.critColor,
     DamageKind.sum => spec.sumColor,
+    DamageKind.ship => _shipColor,
   };
+
+  static const _shipColor = 0xFFFF5A5A;
 
   void clear() => pool.clear();
 }

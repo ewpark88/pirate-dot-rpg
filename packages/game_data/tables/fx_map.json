@@ -837,5 +837,21 @@
     "glowMs": 1400,
     "sparkles": 5,
     "cannonScale": 1.4
+  },
+  "shipHp": {
+    "w": 44,
+    "h": 3,
+    "lift": 6,
+    "full": "#5BD75B",
+    "mid": "#FFD84A",
+    "low": "#FF4A4A",
+    "back": "#3A0D0D",
+    "edge": "#1B1726",
+    "lag": "#FFFFFF",
+    "lagMs": 450,
+    "healMs": 600,
+    "sinkMs": 1800,
+    "sinkDepth": 26,
+    "sinkTilt": 0.35
   }
 }

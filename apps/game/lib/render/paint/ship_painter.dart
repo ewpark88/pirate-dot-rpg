@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/ship_parts_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -16,6 +17,7 @@ class ShipPainter {
   final SpriteDraw sprites;
 
   late final _parts = ShipPartsPainter(scene, sprites);
+  late final _hp = ShipHpPainter(scene);
   final _paint = Paint()..isAntiAlias = false;
   final _stroke = Paint()
     ..isAntiAlias = false
@@ -24,8 +26,6 @@ class ShipPainter {
 
   static const _hull = 0xFF8B5A2B;
   static const _deck = 0xFFC49A6C;
-  static const _hpBack = 0xFF3A0D0D;
-  static const _hpFront = 0xFF5BD75B;
   static const _white = 0xFFFFFFFF;
   static const _pillarAlpha = 0.6;
   static const _pulseMs = 60.0;
@@ -46,6 +46,7 @@ class ShipPainter {
     c
       ..save()
       ..translate(0, bob);
+    _sink(c);
     // 등급 그림 + 부품 외형 단계 덧그림 + 뱃머리 대포 (ShipGeometry: 뱃머리·포구 높이 기준 shipScale배).
     final sheet = sprites.sheet('ship:$tier');
     final box = sheet == null
@@ -56,12 +57,8 @@ class ShipPainter {
     } else {
       _parts.paint(c, tier, box, sheet!.frameW, flash: flash);
     }
+    if (scene.moments.sinkMs <= 0) _hp.paint(c, box);
     c.restore();
-    if (scene.shipHpRatio < 1) {
-      final w = math.min(box.width - 4, kShipWidth * ShipGeometry.scale(scene));
-      _fill(c, box.right - 2 - w, box.top - 5, w, 2, _hpBack);
-      _fill(c, box.right - 2 - w, box.top - 5, w * scene.shipHpRatio, 2, _hpFront);
-    }
     if (scene.shipHealMs > 0 && scene.settings.flash) {
       _fill(c, box.left, box.top, box.width, box.height, (0x88 << 24) | (_heal & 0xFFFFFF));
     }
@@ -88,6 +85,22 @@ class ShipPainter {
     _fill(c, kShipNoseX - w, bottom - h / 2, w, h / 2, color);
     _fill(c, kShipNoseX - w + 8, bottom - h, 4, h / 2, flash ? _white : _deck);
     _fill(c, kShipNoseX - w / 2, bottom - h + 4, w / 3, h / 3, flash ? _white : _deck);
+  }
+
+  /// 무리전 침몰: 앞 절반 뱃머리를 들며 기울어 가라앉고, 뒤 절반 고쳐져 똑바로 떠오른다(moments.sinkMs).
+  void _sink(Canvas c) {
+    final left = scene.moments.sinkMs;
+    if (left <= 0) return;
+    final cfg = scene.fx.raw.obj('shipHp');
+    final p = 1 - left / cfg.number('sinkMs');
+    final down = p < 0.5 ? p / 0.5 : 1 - (p - 0.5) / 0.5;
+    final tilt = p < 0.5 ? cfg.number('sinkTilt') * p / 0.5 : 0.0;
+    final v = scene.layout.viewDots;
+    c
+      ..clipRect(Rect.fromLTRB(v.left, v.top, v.right, ShipGeometry.waterline(scene)))
+      ..translate(kShipCenterX, kShipTop + kShipHeight)
+      ..rotate(-tilt)
+      ..translate(-kShipCenterX, -(kShipTop + kShipHeight) + cfg.number('sinkDepth') * down);
   }
 
   void _pillar(Canvas c) {
