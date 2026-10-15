@@ -40,14 +40,17 @@ class TopShipPainter {
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
-    final base = sprites.sheet('td:$tierId:base')!;
-    // 그림자: 바탕 실루엣을 오른쪽 아래로 3·4단위
-    c.drawImageRect(
-      base.image,
-      Rect.fromLTWH(0, 0, base.frameW, base.frameH),
-      Rect.fromLTWH(-size.width / 2 + 3, -size.height / 2 + 4, size.width, size.height),
-      _shadow,
-    );
+    // 그림자: 지금 선체 단계 실루엣을 오른쪽 아래로 3·4단위 (선체 층 = 단계마다 길이·뱃머리가 다름).
+    final hull = sprites.sheet('td:$tierId:hull');
+    if (hull != null) {
+      final f = ((look['hull'] ?? 0) < 1 ? 1 : look['hull']!) - 1;
+      c.drawImageRect(
+        hull.image,
+        Rect.fromLTWH(f.clamp(0, hull.frames - 1) * hull.frameW, 0, hull.frameW, hull.frameH),
+        Rect.fromLTWH(-size.width / 2 + 3, -size.height / 2 + 4, size.width, size.height),
+        _shadow,
+      );
+    }
     for (final layer in layers) {
       final base = 'td:$tierId:$layer';
       // 환생 스킨: 색 바꾼 사본(<key>@<skin>)이 있으면 그것으로.
@@ -67,7 +70,13 @@ class TopShipPainter {
       sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: flash);
       if (kick) c.restore();
       if (glowPart == layer && glow > 0) {
+        // 축하(사용자 '바뀐 부위가 커졌다 돌아오며 빛나게'): 그 층을 조금 크게 한 번 더 흰빛으로.
+        final grow = 1 + 0.12 * glow;
+        c
+          ..save()
+          ..scale(grow);
         sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: true, alpha: glow);
+        c.restore();
       }
     }
     return true;

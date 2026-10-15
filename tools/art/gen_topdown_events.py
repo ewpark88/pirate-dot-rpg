@@ -74,7 +74,7 @@ def merchant_ship(f):
     s = _s.Ship(1)
     s.t = dict(s.t, ghost=True)
     px = s.blank()
-    for layer in (_s.base(s), _s.cargo(s, 4 if f else 3), _s.sail(s, 2)):
+    for layer in (_s.hull(s, 1), _s.cargo(s, 4 if f else 3), _s.sail(s, 2)):
         for y in range(s.h):
             for x in range(s.w):
                 if layer[y][x] is not None:
