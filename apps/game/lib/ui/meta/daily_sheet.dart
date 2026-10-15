@@ -34,14 +34,15 @@ class DailyIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
-    final claimable = (quests?.any(_claimable) ?? false) || (attendance != null && !attendance.claimedToday);
+    // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
+    final count = (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
     final icon = PixelIconButton(
       key: const Key('daily.icon'),
       asset: UiSprites.quest,
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
       onPressed: () => unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet())),
     );
-    return claimable ? PixelDot(key: const Key('daily.dot'), child: icon) : icon;
+    return count > 0 ? PixelDot(key: const Key('daily.dot'), count: count, child: icon) : icon;
   }
 }
 

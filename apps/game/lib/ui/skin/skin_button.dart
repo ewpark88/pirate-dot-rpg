@@ -1,5 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
+
+/// 보상(금색) 버튼 빛 줄기 주기·길이 (스킨 r2 결정 ①: 5초).
+const _shineEvery = Duration(seconds: 5);
+const _shineFor = Duration(milliseconds: 700);
 
 /// 버튼 색 종류.
 enum SkinTone {
@@ -36,7 +45,7 @@ class SkinButton extends StatefulWidget {
   State<SkinButton> createState() => _SkinButtonState();
 }
 
-class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateMixin {
+class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
   late final AnimationController _press = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 90),
@@ -48,8 +57,42 @@ class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateM
     reverseCurve: Curves.easeOutBack,
   );
 
+  /// 빛 줄기 (금색 버튼만, 한 번 지나가는 애니메이션을 5초마다).
+  late final AnimationController _shine = AnimationController(vsync: this, duration: _shineFor);
+  Timer? _shineTimer;
+
+  ProviderContainer? get _container {
+    try {
+      return ProviderScope.containerOf(context, listen: false);
+    } on Object {
+      return null; // 앱 밖(단독 위젯 테스트)에서는 소리·설정 없음.
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _shineTimer?.cancel();
+    _shineTimer = null;
+    if (widget.tone != SkinTone.gold || widget.onPressed == null || MediaQuery.disableAnimationsOf(context)) return;
+    final settings = _container?.read(gameStateProvider).settings;
+    // 절전·번쩍임 끄기면 빛 줄기 없음.
+    if (settings != null && (settings.powerSave || !settings.flash)) return;
+    _shineTimer = Timer.periodic(_shineEvery, (_) {
+      if (mounted) _shine.forward(from: 0).ignore();
+    });
+  }
+
+  /// 누를 때 짧은 '톡' (스킨 r2 결정 ②: 주 버튼(파랑·금색)만, 기존 pop.ogg 높은 음 — 설정 효과음을 따른다).
+  void _tock() {
+    if (widget.tone == SkinTone.plain) return;
+    _container?.read(audioPortProvider)?.playSfx('pop', pitch: 1.6);
+  }
+
   @override
   void dispose() {
+    _shineTimer?.cancel();
+    _shine.dispose();
     _press.dispose();
     super.dispose();
   }
@@ -71,7 +114,12 @@ class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateM
       label: widget.semanticLabel,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTapDown: enabled ? (_) => _press.forward() : null,
+        onTapDown: enabled
+            ? (_) {
+                _tock();
+                _press.forward().ignore();
+              }
+            : null,
         onTapCancel: enabled ? _press.reverse : null,
         onTapUp: enabled ? (_) => _press.reverse() : null,
         onTap: widget.onPressed,
@@ -102,27 +150,30 @@ class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateM
                 ),
               );
             },
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [top, bottom],
+            child: _Gloss(
+              shine: widget.tone == SkinTone.gold ? _shine : null,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [top, bottom],
+                  ),
+                  borderRadius: BorderRadius.circular(Skin.radiusButton),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
                 ),
-                borderRadius: BorderRadius.circular(Skin.radiusButton),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                child: Center(
-                  widthFactor: 1,
-                  heightFactor: 1,
-                  child: DefaultTextStyle.merge(
-                    style: Skin.text(17, color: ink, weight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                    child: IconTheme.merge(
-                      data: IconThemeData(color: ink),
-                      child: widget.child,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  child: Center(
+                    widthFactor: 1,
+                    heightFactor: 1,
+                    child: DefaultTextStyle.merge(
+                      style: Skin.text(17, color: ink, weight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                      child: IconTheme.merge(
+                        data: IconThemeData(color: ink),
+                        child: widget.child,
+                      ),
                     ),
                   ),
                 ),
@@ -133,4 +184,72 @@ class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateM
       ),
     );
   }
+}
+
+/// 버튼 겉: 위 절반 광택 띠(스킨 r2 ③) + [shine]이 돌면 비스듬한 빛 줄기가 왼쪽→오른쪽으로 한 번.
+class _Gloss extends StatelessWidget {
+  const _Gloss({required this.child, this.shine});
+
+  final Widget child;
+  final Animation<double>? shine;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    // 버튼 겉이 받은 크기 그대로(넓은 버튼은 꽉 차게) — 느슨하게 풀면 글자 크기로 줄어든다.
+    fit: StackFit.passthrough,
+    children: [
+      child,
+      Positioned(
+        left: 6,
+        right: 6,
+        top: 3,
+        height: 12,
+        child: IgnorePointer(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white.withValues(alpha: 0.42), Colors.white.withValues(alpha: 0)],
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+      ),
+      if (shine case final s?)
+        Positioned.fill(
+          child: IgnorePointer(
+            child: AnimatedBuilder(
+              animation: s,
+              builder: (context, _) {
+                if (!s.isAnimating) return const SizedBox.shrink();
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(Skin.radiusButton),
+                  child: Align(
+                    alignment: Alignment(-1.4 + 2.8 * Curves.easeInOut.transform(s.value), 0),
+                    child: Transform.rotate(
+                      angle: 0.4,
+                      child: Container(
+                        width: 16,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0),
+                              Colors.white.withValues(alpha: 0.75),
+                              Colors.white.withValues(alpha: 0),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+    ],
+  );
 }

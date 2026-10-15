@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/rebirth/chest_paint.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
+import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -191,7 +192,15 @@ class _RewardLine extends StatelessWidget {
               children: [
                 SizedBox(width: 40, child: Center(child: icon)),
                 const SizedBox(width: 8),
-                Expanded(child: Text(text, style: Skin.text(16))),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: RewardSparkle(
+                      seed: text.length,
+                      child: Text(text, style: Skin.text(16)),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
