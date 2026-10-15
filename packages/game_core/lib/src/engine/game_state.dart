@@ -19,6 +19,8 @@ class GameState {
     this.crews = const {},
     this.fleet = const [],
     this.fleetInit = false,
+    this.rebirthShop = const {},
+    this.bounty,
     this.tokens = 0,
     this.pityCount = 0,
     this.summonsTotal = 0,
@@ -65,6 +67,8 @@ class GameState {
     // v5 키. 마이그레이션을 거치지 않는 상태 픽스처(fixtures/states)에는 없을 수 있다 → ‘편성 전’.
     fleet: (j['fleet'] as List?)?.cast<String?>() ?? const [],
     fleetInit: j['fleetInit'] as bool? ?? false,
+    rebirthShop: (j['rebirthShop'] as Map?)?.cast<String, int>() ?? const {},
+    bounty: j['bounty'] as Json?,
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
     summonsTotal: (j['summon'] as Json)['total'] as int,
@@ -94,6 +98,12 @@ class GameState {
 
   /// 한 번이라도 편성됐는가. false면(새 게임·v4 이전 세이브) 경제가 첫 틱에 자동 편성으로 채운다.
   final bool fleetInit;
+
+  /// 보물지도 상점: 항목 id → 레벨 (환생해도 유지, 세이브 v6).
+  final Map<String, int> rebirthShop;
+
+  /// 현상금 사냥 자리 (docs/specs/platform-content-bounty.md, 구현 보류) — 원문 그대로 보존만 한다 (세이브 v6).
+  final Json? bounty;
 
   /// 해적의 증표.
   final int tokens;
@@ -134,6 +144,8 @@ class GameState {
     Map<String, CrewState>? crews,
     List<String?>? fleet,
     bool? fleetInit,
+    Map<String, int>? rebirthShop,
+    Json? bounty,
     int? tokens,
     int? pityCount,
     int? summonsTotal,
@@ -159,6 +171,8 @@ class GameState {
     crews: crews ?? this.crews,
     fleet: fleet ?? this.fleet,
     fleetInit: fleetInit ?? this.fleetInit,
+    rebirthShop: rebirthShop ?? this.rebirthShop,
+    bounty: bounty ?? this.bounty,
     tokens: tokens ?? this.tokens,
     pityCount: pityCount ?? this.pityCount,
     summonsTotal: summonsTotal ?? this.summonsTotal,
@@ -185,6 +199,8 @@ class GameState {
     'crews': {for (final e in crews.entries) e.key: e.value.toJson()},
     'fleet': fleet,
     'fleetInit': fleetInit,
+    'rebirthShop': rebirthShop,
+    'bounty': bounty,
     'tokens': tokens,
     'summon': {'pityCount': pityCount, 'total': summonsTotal},
     'tutorialStep': tutorialStep,

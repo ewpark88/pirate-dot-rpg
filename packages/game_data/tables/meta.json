@@ -1,5 +1,48 @@
 {
-  "rebirth": { "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300 },
+  "rebirth": {
+    "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300,
+    "shopRows": [0, 30, 150],
+    "shop": [
+      { "id": "startParts", "row": 1, "perLevel": 5, "perLevelMinor": 1, "maxLevel": 10, "costBase": 3, "costGrowth": 1.35, "nameKey": "econRebirthShopStartPartsName", "descKey": "econRebirthShopStartPartsDesc" },
+      { "id": "discount", "row": 1, "perLevel": 0.04, "maxLevel": 10, "costBase": 4, "costGrowth": 1.4, "nameKey": "econRebirthShopDiscountName", "descKey": "econRebirthShopDiscountDesc" },
+      { "id": "bossTime", "row": 1, "perLevel": 3, "maxLevel": 5, "costBase": 6, "costGrowth": 1.5, "nameKey": "econRebirthShopBossTimeName", "descKey": "econRebirthShopBossTimeDesc" },
+      { "id": "offline", "row": 2, "perLevel": 3600, "maxLevel": 4, "costBase": 10, "costGrowth": 1.8, "nameKey": "econRebirthShopOfflineName", "descKey": "econRebirthShopOfflineDesc" },
+      { "id": "critChance", "row": 2, "perLevel": 0.01, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritChanceName", "descKey": "econRebirthShopCritChanceDesc" },
+      { "id": "critDamage", "row": 2, "perLevel": 0.1, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritDamageName", "descKey": "econRebirthShopCritDamageDesc" },
+      { "id": "fleetSlot", "row": 3, "perLevel": 1, "maxLevel": 2, "costBase": 60, "costGrowth": 4, "nameKey": "econRebirthShopFleetSlotName", "descKey": "econRebirthShopFleetSlotDesc" },
+      { "id": "pieceGain", "row": 3, "perLevel": 0.1, "maxLevel": 10, "costBase": 8, "costGrowth": 1.5, "nameKey": "econRebirthShopPieceGainName", "descKey": "econRebirthShopPieceGainDesc" },
+      { "id": "fastSail", "row": 3, "perLevel": 0.05, "maxLevel": 4, "costBase": 12, "costGrowth": 1.6, "nameKey": "econRebirthShopFastSailName", "descKey": "econRebirthShopFastSailDesc" }
+    ],
+    "fleetSlotsMax": 7,
+    "skins": [
+      { "id": "coral", "rebirths": 1, "nameKey": "shipSkinCoral" },
+      { "id": "storm", "rebirths": 3, "nameKey": "shipSkinStorm" },
+      { "id": "gold", "rebirths": 5, "nameKey": "shipSkinGold" },
+      { "id": "phantom", "rebirths": 10, "nameKey": "shipSkinPhantom" }
+    ],
+    "titles": [
+      { "id": "deckhand", "rebirths": 1, "nameKey": "econTitleDeckhand" },
+      { "id": "navigator", "rebirths": 3, "nameKey": "econTitleNavigator" },
+      { "id": "captain", "rebirths": 5, "nameKey": "econTitleCaptain" },
+      { "id": "admiral", "rebirths": 10, "nameKey": "econTitleAdmiral" },
+      { "id": "seaKing", "rebirths": 20, "nameKey": "econTitleSeaKing" }
+    ],
+    "chest": { "gemsBase": 50, "gemsPerRebirth": 10, "gemsMax": 150, "summons": [{ "from": 1, "count": 1 }, { "from": 5, "count": 2 }, { "from": 10, "count": 3 }], "minRarity": "hero" },
+    "unlocks": [
+      { "rebirths": 1, "kind": "shopRow", "value": 1 },
+      { "rebirths": 2, "kind": "crewMaxLevel", "value": 80 },
+      { "rebirths": 3, "kind": "treasureSea", "value": 1 },
+      { "rebirths": 5, "kind": "crewMaxLevel", "value": 85 },
+      { "rebirths": 5, "kind": "treasureSea", "value": 2 },
+      { "rebirths": 8, "kind": "treasureSea", "value": 3 },
+      { "rebirths": 10, "kind": "crewMaxLevel", "value": 90 }
+    ],
+    "treasureSeas": [
+      { "sea": 1, "hpMultiplier": 2.0, "goldMultiplier": 1.5, "piecesMultiplier": 1.5, "firstBossGems": 30, "firstBossPieces": 5 },
+      { "sea": 2, "hpMultiplier": 3.5, "goldMultiplier": 1.5, "piecesMultiplier": 2.0, "firstBossGems": 30, "firstBossPieces": 5 },
+      { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
+    ]
+  },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },

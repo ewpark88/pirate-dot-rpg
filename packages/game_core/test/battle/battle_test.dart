@@ -204,7 +204,10 @@ void main() {
     expect(e.state.battle!.speed, reward['tailwind']!.integer('speedMultiplier'));
 
     // 환생 조각 10개 = 피해·골드 +bonusPerPiece × 10
-    final pieces = s.copyWith(wallet: s.wallet.copyWith(mapPieces: 10));
+    final pieces = s.copyWith(
+      wallet: s.wallet.copyWith(mapPieces: 10),
+      progress: s.progress.copyWith(mapPiecesEarned: 10), // 환생 v2: 보너스는 누계 기준
+    );
     final per = tables.meta.rebirth.number('bonusPerPiece');
     final withPieces = CombatStats.of(pieces, tables, now: start.add(const Duration(hours: 2)));
     expect(withPieces.bonus - off.bonus, closeTo(per * 10, 1e-9));

@@ -19,8 +19,8 @@ int piecesFor(GameTables t, int stage) {
   return over <= 0 ? 0 : math.pow(over, r.number('exponent')).floor();
 }
 
-/// 전체 피해·골드 % 보너스 = 조각 × `bonusPerPiece` (설계서 4.8 마지막 합에 더한다).
-double rebirthBonus(GameState s, GameTables t) => s.wallet.mapPieces * t.meta.rebirth.number('bonusPerPiece');
+/// 전체 피해·골드 % 보너스 = 모은 조각 누계 × `bonusPerPiece` (환생 v2: 쓴 조각과 무관 — 상점 구매가 순수한 이득) (설계서 4.8 마지막 합에 더한다).
+double rebirthBonus(GameState s, GameTables t) => s.progress.mapPiecesEarned * t.meta.rebirth.number('bonusPerPiece');
 
 /// 환생 버튼 미리보기 (UI 요청). [rebirth]와 같은 계산.
 @immutable
@@ -32,6 +32,7 @@ class RebirthPreview {
     required this.gain,
     required this.nextPieceInStages,
     required this.bonusPerPiece,
+    this.earned = 0,
   });
 
   /// 해금 전(스테이지 < minStage).
@@ -46,8 +47,11 @@ class RebirthPreview {
   final int nextPieceInStages;
   final double bonusPerPiece;
 
-  double get bonusNow => currentPieces * bonusPerPiece;
-  double get bonusAfter => (currentPieces + gain) * bonusPerPiece;
+  /// 모은 조각 누계 (보너스 근거). [currentPieces]는 쓸 수 있는 조각.
+  final int earned;
+
+  double get bonusNow => earned * bonusPerPiece;
+  double get bonusAfter => (earned + gain) * bonusPerPiece;
 }
 
 RebirthPreview rebirthPreview(GameState s, GameTables t) {
@@ -62,6 +66,7 @@ RebirthPreview rebirthPreview(GameState s, GameTables t) {
     locked: stage < r.integer('minStage'),
     minStage: r.integer('minStage'),
     currentPieces: s.wallet.mapPieces,
+    earned: s.progress.mapPiecesEarned,
     gain: gain,
     nextPieceInStages: next - stage,
     bonusPerPiece: r.number('bonusPerPiece'),
@@ -82,7 +87,13 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
     ..emit(SaveRequested(ctx.tick, reason: 'rebirth'));
   return s.copyWith(
     wallet: s.wallet.copyWith(gold: BigNum.zero, mapPieces: p.currentPieces + p.gain),
-    progress: Progress(bestStage: s.progress.bestStage, rebirths: s.progress.rebirths + 1),
+    progress: Progress(
+      bestStage: s.progress.bestStage,
+      rebirths: s.progress.rebirths + 1,
+      mapPiecesEarned: s.progress.mapPiecesEarned + p.gain,
+      titles: s.progress.titles,
+      treasureRoute: s.progress.treasureRoute,
+    ),
     ship: ShipState(parts: {for (final id in s.ship.parts.keys) id: 0}),
     battle: BattleView(tick: old.tick, shipHp: BigNum.one, shipHpMax: BigNum.one, speed: old.speed),
   );

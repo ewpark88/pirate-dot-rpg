@@ -6,11 +6,17 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 
 /// 현재 세이브 스키마 버전. 올리면 [migrations]에 함수 + test/fixtures/saves/에 픽스처 필수.
-const currentSchemaVersion = 5;
+const currentSchemaVersion = 6;
 
 /// `migrations[i]`는 v(i+1) → v(i+2). 순수 함수만 둔다.
 /// 예: `Json migrateV1ToV2(Json j) => {...j, 'schemaVersion': 2, 'newField': 0};`
-const List<Json Function(Json)> migrations = [migrateV1ToV2, migrateV2ToV3, migrateV3ToV4, migrateV4ToV5];
+const List<Json Function(Json)> migrations = [
+  migrateV1ToV2,
+  migrateV2ToV3,
+  migrateV3ToV4,
+  migrateV4ToV5,
+  migrateV5ToV6,
+];
 
 /// v1 → v2: `summon.total`(누적 소환 횟수) 추가. 출시 전이라 실제 플레이어 세이브가 없어 0으로 둔다
 /// → v1에서 올라온 세이브도 첫 10연 무료를 한 번 받는다 (docs/decisions/0007-save-v2-summon-total.md).
@@ -103,3 +109,25 @@ Json migrateV3ToV4(Json j) => {
 /// v4 → v5: 수동 편성 `fleet`(슬롯 순서, null = 빈 칸)·`fleetInit` (docs/decisions/0010-save-v5-fleet.md).
 /// 옛 세이브는 편성한 적이 없는 것으로 두고, 경제가 첫 틱에 자동 편성으로 채운다(기존 체감 유지).
 Json migrateV4ToV5(Json j) => {...j, 'schemaVersion': 5, 'fleet': <String?>[], 'fleetInit': false};
+
+/// v5 → v6: 환생 v2(docs/specs/platform-rebirth-v2.md 5절) + 현상금 자리.
+/// 모은 조각 누계 = 지금 보유(쓴 적이 없으므로). 명예 외형·스킨·칭호 소급은 테이블이 필요해 경제가 첫 틱에 채운다(상자는 소급 없음).
+Json migrateV5ToV6(Json j) {
+  final wallet = j['wallet'] as Json;
+  final progress = j['progress'] as Json;
+  final ship = j['ship'] as Json;
+  return {
+    ...j,
+    'schemaVersion': 6,
+    'progress': {...progress, 'mapPiecesEarned': wallet['mapPieces'] ?? 0, 'titles': <String>[]},
+    'ship': {
+      ...ship,
+      'honor': {'parts': <String, int>{}, 'tier': 0},
+      'skin': null,
+      'skinsOwned': <String>[],
+      'skinChosen': false,
+    },
+    'rebirthShop': <String, int>{},
+    'bounty': {'tickets': 3, 'refilledOn': null, 'cleared': <String, int>{}, 'progress': <String, double>{}},
+  };
+}
