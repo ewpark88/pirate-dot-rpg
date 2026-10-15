@@ -119,7 +119,7 @@
   "econRebirthShopStartPartsName": "Fair Wind Start",
   "econRebirthShopStartPartsDesc": "After rebirth: cannon, hull, cargo start +{n}; sail, crow's nest +{m}",
   "econRebirthShopDiscountName": "Merchant Regular",
-  "econRebirthShopDiscountDesc": "Ship upgrade gold cost −{pct}%",
+  "econRebirthShopDiscountDesc": "Ship upgrade gold cost -{pct}%",
   "econRebirthShopBossTimeName": "Hourglass",
   "econRebirthShopBossTimeDesc": "Boss time limit +{sec}s",
   "econRebirthShopOfflineName": "Long Anchorage",

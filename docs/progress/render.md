@@ -14,6 +14,28 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 환생 v2 렌더 준비: 스킨 색 바꾸기·금빛 물결·배 미리보기 위젯
+- `render/top/ship_skins.dart`: 탑다운 배 층의 정해진 색(테두리·갑판·판자 틈 / 돛 3색 / 깃발)만 바꾼 사본을 스킨마다 한 번(비동기) 만들어 은행에 `<key>@<skin>`으로. TopShipPainter가 있으면 그것으로. 계약 전 값은 fx_map topShip.skinPreview(coral·royal·shadow·phantom, phantom은 돛 은은한 맥박).
+- 보물 바다: TopSeaPainter.gold(=TopScenePainter.goldSea) — 바탕·물결·거품·반짝임을 금빛으로, 반짝임 더 빠르게.
+- `render/top/ship_preview.dart` `ShipPreview(tables, tier, look, skin?, skinPalette?, size, glowPart?, glow)` + `ShipPreview.preload` — S4 배 탭·다음 외형·축하 팝업·스킨 고르기용(전장과 같은 그림). 골든 ship_preview.png.
+- 계약 제안(S2): BattleView.shipLook에 명예 max 반영 + shipTierLook, shipSkin, treasureSea. 오면 연결.
+
+### 2026-10-15 · S3 · 바다 분위기 탑다운판 (platform-fun-atmosphere)
+- `render/top/top_atmosphere.dart`(fx_map atmosphere): 12분 순환 낮·노을·밤·새벽(전환 20초), 유령해 늘 밤·심연 늘 어둡게. 색조·어둡게는 바다·풍경에만 → 적·발사체·숫자는 밤에도 같은 색(픽셀 테스트).
+  날씨(시간대마다 굴림, 해역별): 비(수면 동그라미 + 옅은 빗줄), 안개(흐르는 흰 막), 오로라 반사(밤 빙하), 화산재(화산 늘), 밤 수면 별 반짝임. 절전 = 파티클 ½·풍경 멈춤.
+  풍경: 시작 20초 뒤부터 40~90초마다 배 앞쪽 옆에서 나타나 바다 흐름과 함께 지나감(동시 2개).
+- `tools/art/gen_topdown_landmarks.py` → `assets/fx/td_land_<id>.png` 7종(야자섬·등대·고래·난파선·빙산·화산섬·먼 유령선), 2프레임.
+- 운영자·테스트용 `ScenePainter.top.atmosphere.offsetMs`(시간대 미리보기). 테스트 top_atmosphere_test 5개. 시안 `docs/specs/render-topdown/atmosphere_s24.png`.
+- 탑다운 배 63% 커밋(2ebab76) 비교 `docs/specs/render-topdown/ship63_s24.png`.
+
+### 2026-10-15 · S3 · T2 탑다운 마무리 1: 숫자 배율·투척 높이·골든 4기기·부하 150마리·침몰/축하
+- 숫자: 탑다운은 전장 1단위가 옆모습 1도트보다 커서 숫자를 옆모습 화면 크기로(paintNumbers scale = 옆모습 dot / 탑다운 dot).
+- 투척·물수제비·떨어지기: Projectile.flat(탑다운) — 땅 위 자리는 직선, 높이(heightAt)는 크기 +45%·수면 그림자(높을수록 작고 흐림).
+- 골든 `test/render/goldens/top_{360x640,s24,411x891,tablet800x1280}.png`(T1 엔진 기록 틱 138, 전체 화면·시트 닫힘).
+- 부하 `test/render/perf/top_stress_test.dart`: 150마리 + 매 틱 6발 + 처치. 적을 그림·번쩍임별 drawAtlas로 묶어 프레임당 그리기 446 → 304, 기록 0.81ms(디버그 JIT, 상대값). 키 문자열 캐시(프레임당 할당 없음).
+- 탑다운 침몰: 작아지며 어두워지고 거품 → 떠오름(saveLayer는 이 1.8초 동안만). 부품 축하·등급 빛·수리 반짝 위치 = scene.shipCenter(탑다운이면 배).
+- 남은 것: 보스 정지 위치(S2 bossStandoff 100 대기), 탑다운 대포 반동(대포가 배 층에 있어 생략 — 필요하면 층 분리), 실기기 fps.
+
 ### 2026-10-15 · S3 · T2 BattleGame mode 'top' 연결 (T1 엔진 실제 전투)
 - BattleGame: 프레임 mode가 top이면 카메라를 상자 dp로 두고 `ScenePainter.paintTop(canvas, TopFrame)` — 탑다운 카메라(바다·항적·물속 적 → 배(그림자·층·체력 막대) → 물 위·공중 적 → 발사체·폭발·코인·숫자), 덮개·HUD·선원 줄은 옆모습 배치 그대로. 모드가 바뀌면 배치 다시.
 - 연출(EventDirector): 탑다운이면 발사 = AttackFired.fromX·fromY(없으면 배 중심), 배 피격 숫자 = 배 위, 코인 = 배로. 보스 코인 비는 `scene/coin_rain.dart`(탑다운은 배 위쪽 폭). `scene/top_view.dart`(isTop·topShip·shipCenter·coinTo). EnemyPose.heading(탑다운 도트 회전).

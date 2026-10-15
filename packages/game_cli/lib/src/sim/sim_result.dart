@@ -49,6 +49,12 @@ class SimResult {
   int? firstRebirthStage;
   Duration? rebirthRecoverMax;
 
+  /// 첫 환생 뒤 이전 최고(환생한 스테이지)를 넘을 때까지 접속 시간 (환생 v2 수용 기준 14).
+  Duration? rebirthBeatBest;
+
+  /// 첫 환생 직전 rebirthForecast.minutesRaw (환생 v2 수용 기준 13: 실제 rebirthBeatBest와 ±30%).
+  double? rebirthForecastMin;
+
   /// 환생 뒤 회복 시간 ÷ 직전 회차가 같은 스테이지까지 걸린 시간(접속 시간)의 최댓값. 상대 기준 회복 지표.
   double? rebirthRecoverRatioMax;
 

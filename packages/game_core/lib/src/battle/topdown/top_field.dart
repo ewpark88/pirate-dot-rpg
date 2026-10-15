@@ -22,9 +22,13 @@ class TopField {
     required this.bossStandoff,
     required this.bossOrbitDegPerSec,
     required this.reachScale,
+    double? bossSpawnRadius,
+    this.swarmSpacing = 0,
+    this.spawnWeights,
     double? viewWidth,
     double? viewHeight,
-  }) : viewWidth = viewWidth ?? width,
+  }) : bossSpawnRadius = bossSpawnRadius ?? approachRadius,
+       viewWidth = viewWidth ?? width,
        viewHeight = viewHeight ?? height;
 
   /// `waves.json`의 `top` 절(TopFieldDef, 계약 T0). 아직 표에 없는 값(겹침 풀기·보스 원 속도·카메라 사각형)은 선택 키.
@@ -49,6 +53,15 @@ class TopField {
       bossStandoff: d.bossStandoff,
       bossOrbitDegPerSec: j.numberOr('bossOrbitDegPerSec', 0),
       reachScale: d.reachScale,
+      bossSpawnRadius: j.numberOr('bossSpawnRadius', d.approachRadius),
+      swarmSpacing: j.numberOr('swarmSpacing', w.field.spawnSpacing),
+      spawnWeights: j.has('spawnWeights')
+          ? (
+              up: j.obj('spawnWeights').number('up'),
+              side: j.obj('spawnWeights').number('side'),
+              down: j.obj('spawnWeights').number('down'),
+            )
+          : null,
       viewWidth: j.numberOr('viewWidth', d.width),
       viewHeight: j.numberOr('viewHeight', d.height),
     );
@@ -82,6 +95,15 @@ class TopField {
   /// 겹친 적을 한 틱에 밀어내는 비율(0~1).
   final double separation;
 
+  /// 보스가 출발하는 원(배 중심 기준, 보스 가장자리가 이 원 바로 밖) — 기본은 접근 원. 빠른 항해의 보스 간격을 옆모습과 맞춘다(S2 결정 ①).
+  final double bossSpawnRadius;
+
+  /// 한 묶음 안 k번째 적이 k × 이만큼 더 바깥에서 출발(줄 간격). 옆모습 spawnSpacing보다 촘촘하게 — 많은 무리가 늦게 닿지 않게.
+  final double swarmSpacing;
+
+  /// 묶음 방향 가중: 위·좌우(한쪽마다)·아래. 배가 화면 아래쪽에 있으면 위에서 더 많이(S3 카메라). null이면 모든 방향 같게.
+  final ({double up, double side, double down})? spawnWeights;
+
   /// 보스가 멈춰 도는 원의 반지름(배 중심 기준)과 도는 속도.
   final double bossStandoff;
   final double bossOrbitDegPerSec;
@@ -114,6 +136,9 @@ class TopField {
           bossStandoff: bossStandoff,
           bossOrbitDegPerSec: bossOrbitDegPerSec,
           reachScale: reachScale,
+          bossSpawnRadius: bossSpawnRadius,
+          swarmSpacing: swarmSpacing,
+          spawnWeights: spawnWeights,
           viewWidth: viewWidth,
           viewHeight: viewHeight,
         );

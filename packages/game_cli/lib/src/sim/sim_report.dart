@@ -100,6 +100,13 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('firstLegendPromotedDays', '승급으로 만든 첫 전설', (r) => _days(r.firstLegendPromoted), '일'),
     c('firstMythicDays', '첫 신화', (r) => _days(r.firstMythic), '일'),
     c(
+      'rebirthBeatBestMin',
+      '첫 환생 뒤 이전 최고 돌파(접속 시간)',
+      (r) => _min(r.rebirthBeatBest),
+      '분',
+      onlyIfReached: true,
+    ),
+    c(
       'rebirthRecoverSec',
       '환생 뒤 30% 회복(접속 시간, 가장 느린 것)',
       (r) => r.rebirthRecoverMax == null ? null : r.rebirthRecoverMax!.inMilliseconds / Duration.millisecondsPerSecond,
@@ -155,6 +162,10 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 환생 뒤 회복 중 연속 보스 간격(중앙값 · 최소) | '
       '${_fmt(m((r) => r.recoverBossGaps.isEmpty ? null : median(r.recoverBossGaps)), '초')} · '
       '${_fmt(m((r) => r.recoverBossGaps.isEmpty ? null : r.recoverBossGaps.reduce((a, b) => a < b ? a : b)), '초')} |',
+    )
+    ..writeln(
+      '| 환생 미리보기 추정 ÷ 실제 이전 최고 돌파 | '
+      '${_fmt(m((r) => r.rebirthForecastMin == null || r.rebirthBeatBest == null ? null : r.rebirthForecastMin! / _min(r.rebirthBeatBest)!))} |',
     )
     ..writeln('| 첫 보스 실패 스테이지 | ${_fmt(m((r) => r.firstBossFailStage?.toDouble()))} |')
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')

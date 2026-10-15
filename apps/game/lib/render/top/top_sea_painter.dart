@@ -18,6 +18,12 @@ class TopSeaPainter {
   late final Color _shallow = Color(_c('shallow'));
   late final Color _wave = Color(_c('wave'));
   late final Color _foam = Color(_c('foam'));
+  late final Color _goldWave = Color(_c('goldWave'));
+  late final Color _goldFoam = Color(_c('goldFoam'));
+  late final Color _goldBase = Color(_c('goldBase'));
+
+  /// 보물 바다(환생 v2 §4): 물결·거품·반짝임을 금빛으로, 반짝임 더 자주.
+  bool gold = false;
   late final double _tile = cfg.number('tile');
   late final double _speed = cfg.number('flowSpeed');
   final _paint = Paint()..isAntiAlias = false;
@@ -111,7 +117,7 @@ class TopSeaPainter {
       _build(view.size);
       _builtFor = view.size;
     }
-    _paint.color = _base;
+    _paint.color = gold ? _goldBase : _base;
     c.drawRect(view.inflate(1), _paint);
     void layer(Path p, Color color, double parallax) {
       final o = flow * parallax;
@@ -127,10 +133,10 @@ class TopSeaPainter {
 
     layer(_deepPath, _deep, 0.6);
     layer(_shallowPath, _shallow, 0.6);
-    layer(_wavePath, _wave, 1);
+    layer(_wavePath, gold ? _goldWave : _wave, 1);
     // 거품: 천천히 숨 쉬듯 나타났다 사라짐
     final foamA = 0.35 + 0.35 * math.sin(clockMs / 900);
-    layer(_foamPath, _foam.withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
+    layer(_foamPath, (gold ? _goldFoam : _foam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
     // 햇빛 반짝임: 세 무리로 나눠 깜빡임(무리마다 알파 하나 → drawRawPoints 3번)
     final o = flow;
     final dx = (o.dx % _tile) - _tile + view.left;
@@ -139,11 +145,11 @@ class TopSeaPainter {
       ..save()
       ..translate(dx.roundToDouble(), dy.roundToDouble());
     for (var g = 0; g < 3; g++) {
-      final a = math.max<double>(0, math.sin(clockMs / 260 + g * 2.1));
+      final a = math.max<double>(0, math.sin(clockMs / (gold ? 160 : 260) + g * 2.1)) * (gold ? 1.0 : 1);
       if (a < 0.05) continue;
       _points
         ..strokeWidth = 1
-        ..color = _foam.withValues(alpha: a);
+        ..color = (gold ? _goldWave : _foam).withValues(alpha: a);
       c.drawRawPoints(PointMode.points, _groupOf(g), _points);
     }
     c.restore();

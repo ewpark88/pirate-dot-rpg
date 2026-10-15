@@ -1289,6 +1289,77 @@ const Map<String, String> rawTables = {
       "cannon": 7,
       "sail": 5,
       "crowsnest": 6
+    },
+    "skinPreview": {
+      "coral": {
+        "hull": [
+          "#B0503C",
+          "#84382A",
+          "#E8B49A",
+          "#F2C8B0",
+          "#C4846C"
+        ],
+        "sail": [
+          "#FFF2E0",
+          "#F0C8A8",
+          "#FFFAF0"
+        ],
+        "flag": [
+          "#FF7A9A"
+        ]
+      },
+      "royal": {
+        "hull": [
+          "#3A3E78",
+          "#262A58",
+          "#C9A45A",
+          "#DDBC78",
+          "#A8843E"
+        ],
+        "sail": [
+          "#2E4FB0",
+          "#203A88",
+          "#5A7AD8"
+        ],
+        "flag": [
+          "#F2C94C"
+        ]
+      },
+      "shadow": {
+        "hull": [
+          "#3A3440",
+          "#26222C",
+          "#5C5464",
+          "#6E6676",
+          "#48424E"
+        ],
+        "sail": [
+          "#2A2A30",
+          "#1A1A20",
+          "#44444C"
+        ],
+        "flag": [
+          "#D63A3A"
+        ]
+      },
+      "phantom": {
+        "hull": [
+          "#4E4466",
+          "#382E4E",
+          "#6A6086",
+          "#7E749A",
+          "#58506E"
+        ],
+        "sail": [
+          "#8EE8D6",
+          "#5AC0B0",
+          "#C8FFF2"
+        ],
+        "flag": [
+          "#78FFC8"
+        ],
+        "glow": true
+      }
     }
   },
   "topSea": {
@@ -1298,7 +1369,112 @@ const Map<String, String> rawTables = {
     "wave": "#9FD8FF",
     "foam": "#F2FBFF",
     "tile": 128,
-    "flowSpeed": 14
+    "flowSpeed": 14,
+    "goldWave": "#FFE27A",
+    "goldFoam": "#FFF6C8",
+    "goldBase": "#2F8ACF"
+  },
+  "atmosphere": {
+    "cycleSec": 720,
+    "fadeSec": 20,
+    "phases": [
+      {
+        "id": "day",
+        "sec": 360
+      },
+      {
+        "id": "dusk",
+        "sec": 90,
+        "tint": "#FF9A5A",
+        "tintAlpha": 0.25
+      },
+      {
+        "id": "night",
+        "sec": 180,
+        "tint": "#1B2A55",
+        "tintAlpha": 0.2,
+        "dim": 0.45,
+        "stars": 40
+      },
+      {
+        "id": "dawn",
+        "sec": 90,
+        "tint": "#FFB3C7",
+        "tintAlpha": 0.15
+      }
+    ],
+    "weather": {
+      "rain": {
+        "chance": 0.25,
+        "regions": [
+          "coral",
+          "storm",
+          "abyss"
+        ],
+        "ripples": 40,
+        "streaks": 80
+      },
+      "fog": {
+        "chance": 0.4,
+        "phase": "dawn",
+        "regions": [
+          "glacier",
+          "phantom"
+        ]
+      },
+      "aurora": {
+        "chance": 0.5,
+        "phase": "night",
+        "regions": [
+          "glacier"
+        ]
+      },
+      "ash": {
+        "always": true,
+        "regions": [
+          "volcano"
+        ],
+        "flakes": 60
+      }
+    },
+    "landmarks": {
+      "intervalSec": [
+        40,
+        90
+      ],
+      "maxOnScreen": 2,
+      "ahead": 260,
+      "lateral": 70,
+      "despawn": 420,
+      "byRegion": {
+        "coral": [
+          "island",
+          "lighthouse",
+          "whale"
+        ],
+        "storm": [
+          "wreck",
+          "lighthouse",
+          "whale"
+        ],
+        "glacier": [
+          "iceberg",
+          "whale"
+        ],
+        "volcano": [
+          "volcano_isle",
+          "wreck"
+        ],
+        "abyss": [
+          "whale",
+          "wreck"
+        ],
+        "phantom": [
+          "ghost_ship_far",
+          "wreck"
+        ]
+      }
+    }
   }
 }
 ''',
@@ -1411,6 +1587,9 @@ const Map<String, String> rawTables = {
       { "id": "fastSail", "row": 3, "perLevel": 0.05, "maxLevel": 4, "costBase": 12, "costGrowth": 1.6, "nameKey": "econRebirthShopFastSailName", "descKey": "econRebirthShopFastSailDesc" }
     ],
     "fleetSlotsMax": 7,
+    "forecastRoundMin": 5,
+    "forecastMinWaveSec": 7,
+    "forecastFarmWaves": 400,
     "skins": [
       { "id": "coral", "rebirths": 1, "nameKey": "shipSkinCoral" },
       { "id": "storm", "rebirths": 3, "nameKey": "shipSkinStorm" },
@@ -1488,7 +1667,8 @@ const Map<String, String> rawTables = {
       "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
       "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
-      "rebirthRecoverSec": { "min": 0, "max": 300 }
+      "rebirthRecoverSec": { "min": 0, "max": 300 },
+      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" }
     }
   }
 }
@@ -1654,13 +1834,16 @@ const Map<String, String> rawTables = {
 {
   "tickMs": 50,
   "wavesPerStage": 3,
-  "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
+  "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 7, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "standoff": 110, "slowZone": 30, "slowFloor": 0.2, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
+    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
+    "swarmSpacing": 3,
+    "bossSpawnRadius": 152,
     "chestMargin": 12,
     "width": 270,
     "height": 480,
@@ -1674,7 +1857,7 @@ const Map<String, String> rawTables = {
     "approachRadius": 206,
     "approachBoost": 5,
     "swarmGroupsMin": 1,
-    "swarmGroupsMax": 3,
+    "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,
     "reachScale": 1,
     "separation": 0.5,
