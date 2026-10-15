@@ -53,24 +53,24 @@ void main() {
         expect(f.slotRects.first.width, lessThanOrEqualTo(kSlotMaxDp + 1e-6));
       });
 
-      test('큰 칸(사용자 지시): 6칸 + 궁극기가 한 줄, 칸 44~72dp, 보스 도전은 궁극기 바로 위(줄 밖)', () {
+      test('큰 칸(사용자 결정): 6칸이 한 줄, 칸 46~72dp / 궁극기 둥근 버튼은 오른쪽 끝 칸 위(전장 구석, 줄 위 여백에 걸침), 보스 도전은 그 왼쪽', () {
         final slots = f.slotRects;
         expect(slots, hasLength(kSlotCount));
         for (final s in slots) {
-          expect(s.width, inInclusiveRange(44, kSlotMaxDp + 1e-6));
+          expect(s.width, inInclusiveRange(46, kSlotMaxDp + 1e-6));
           expect(s.top, greaterThanOrEqualTo(f.slotBand.top));
           expect(s.bottom, lessThanOrEqualTo(f.slotBand.bottom + 1e-6));
         }
+        expect(slots.last.right, lessThanOrEqualTo(box.width + 1e-6));
         final u = f.ultimateRect;
-        expect(u.width, greaterThanOrEqualTo(44), reason: '그림은 44dp 이상, 누르는 영역은 UI가 48dp로 키운다');
+        expect(u.width, inInclusiveRange(kUltimateMinDp - 2, kUltimateMaxDp + 1e-6));
         expect(u.right, lessThanOrEqualTo(box.width + 1e-6));
-        expect(u.top, greaterThanOrEqualTo(f.slotBand.top - 1e-6));
-        expect(slots.last.right, lessThanOrEqualTo(u.left));
+        expect(u.bottom, lessThanOrEqualTo(slots.last.top + 1e-6), reason: '칸을 가리지 않는다');
+        expect(u.bottom, greaterThan(f.slotBand.top), reason: '줄 위 여백에 살짝 걸친다');
         final b = f.bossRect;
-        expect(b.width, closeTo(u.width, 1e-6));
-        expect(b.left, closeTo(u.left, 1e-6));
-        expect(b.bottom, lessThanOrEqualTo(f.slotBand.top), reason: '줄 위에 뜬다');
-        expect(b.top, greaterThanOrEqualTo(0));
+        expect(b.width, greaterThanOrEqualTo(kBossButtonDp - 1e-6));
+        expect(b.right, lessThanOrEqualTo(u.left));
+        expect(b.bottom, lessThanOrEqualTo(slots.last.top + 1e-6));
       });
     });
   }

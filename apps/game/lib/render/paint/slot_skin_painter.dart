@@ -1,9 +1,12 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/bolt.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/slot_states.dart';
 
 /// 새 스킨 r1(파스텔·통통 버튼·PB 카드, 사용자 승인 — S4 docs/specs/ui-skin-r1.md)의 선원 줄. 값은 fx_map `slotSkin`(dp).
 /// - 줄: 크림 바탕, 위 경계선 대신 위로 부드러운 그림자.
@@ -21,8 +24,12 @@ class SlotSkinPainter {
   int _c(String k) => parseArgb(_cfg.str(k), 'slotSkin.$k');
   late final int _bar = _c('bar');
   late final int _shadowRgb = _c('shadow') & 0xFFFFFF;
-  late final int _empty = _c('empty');
-  late final int _emptyBorder = _c('emptyBorder');
+  late final int _open = _c('open');
+  late final int _openBorder = _c('openBorder');
+  late final int _openPlus = _c('openPlus');
+  late final int _locked = _c('locked');
+  late final int _lockedBorder = _c('lockedBorder');
+  late final int _lock = _c('lock');
   late final int _ultTop = _c('ultimateTop');
   late final int _ultBottom = _c('ultimateBottom');
   late final int _ultEdge = _c('ultimateEdge');
@@ -132,17 +139,14 @@ class SlotSkinPainter {
     final fleet = scene.frame.fleet;
     for (var i = 0; i < kSlotCount; i++) {
       final r = layout.slotRectInBand(i);
-      if (i >= fleet.length) {
-        final rr = RRect.fromRectAndRadius(r, Radius.circular(_dp('radius')));
-        _paint.color = Color(_empty);
-        c.drawRRect(rr, _paint);
-        _paint
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _px(2)
-          ..color = Color(_emptyBorder);
-        c.drawRRect(rr.deflate(_px(1)), _paint);
-        _paint.style = PaintingStyle.fill;
-        continue;
+      switch (slotStateAt(scene.tables, scene.frame, i)) {
+        case SlotState.open:
+          _openSlot(c, r);
+          continue;
+        case SlotState.locked:
+          _lockedSlot(c, r);
+          continue;
+        case SlotState.crew:
       }
       final slot = fleet[i];
       final flash = scene.slotFlashMs[i] > 0;
@@ -169,6 +173,74 @@ class SlotSkinPainter {
     return true;
   }
 
+  /// 비었지만 열림: 밝은 바탕 + 하늘색 점선 테두리 + 가운데 '+'가 살짝 맥박(누르라는 느낌).
+  void _openSlot(Canvas c, Rect r) {
+    final t = (scene.clockMs % _cfg.number('openPulseMs')) / _cfg.number('openPulseMs');
+    final pulse = 0.5 - 0.5 * math.cos(t * 2 * math.pi);
+    final rr = RRect.fromRectAndRadius(r, Radius.circular(_dp('radius')));
+    _paint
+      ..shader = null
+      ..color = Color(_open);
+    c.drawRRect(rr, _paint);
+    _paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _px(2.5)
+      ..strokeCap = StrokeCap.round
+      ..color = Color(_openBorder).withValues(alpha: 0.65 + 0.35 * pulse);
+    c.drawPath(_dashes[r] ??= _dashed(rr.deflate(_px(1.5)), _px(6)), _paint);
+    final arm = r.width * (0.16 + 0.03 * pulse);
+    _paint
+      ..strokeWidth = _px(4)
+      ..color = Color(_openPlus);
+    c
+      ..drawLine(r.center.translate(-arm, 0), r.center.translate(arm, 0), _paint)
+      ..drawLine(r.center.translate(0, -arm), r.center.translate(0, arm), _paint);
+    _paint
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.butt;
+  }
+
+  final Map<Rect, Path> _dashes = {};
+
+  static Path _dashed(RRect rr, double dash) {
+    final out = Path();
+    for (final m in (Path()..addRRect(rr)).computeMetrics()) {
+      for (var d = 0.0; d < m.length; d += dash * 2) {
+        out.addPath(m.extractPath(d, d + dash), Offset.zero);
+      }
+    }
+    return out;
+  }
+
+  /// 잠김(배 등급 부족): 어두운 판 + 자물쇠. '스테이지 N에서 열림' 글자는 UI(S4)가 얹는다(번역).
+  void _lockedSlot(Canvas c, Rect r) {
+    final rr = RRect.fromRectAndRadius(r, Radius.circular(_dp('radius')));
+    _paint
+      ..shader = null
+      ..color = Color(_lockedBorder);
+    c.drawRRect(rr, _paint);
+    _paint.color = Color(_locked);
+    c.drawRRect(rr.deflate(_px(2)), _paint);
+    final u = r.width / 20; // 자물쇠 단위
+    final cx = r.center.dx;
+    final top = r.top + r.height * 0.24;
+    _paint
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = u * 1.6
+      ..color = Color(_lock);
+    c
+      ..drawArc(Rect.fromLTWH(cx - u * 3.2, top, u * 6.4, u * 7), math.pi, math.pi, false, _paint)
+      ..drawLine(Offset(cx - u * 3.2, top + u * 3.5), Offset(cx - u * 3.2, top + u * 5), _paint)
+      ..drawLine(Offset(cx + u * 3.2, top + u * 3.5), Offset(cx + u * 3.2, top + u * 5), _paint);
+    _paint.style = PaintingStyle.fill;
+    final body = Rect.fromLTWH(cx - u * 5, top + u * 5, u * 10, u * 7.5);
+    c.drawRRect(RRect.fromRectAndRadius(body, Radius.circular(u * 1.5)), _paint);
+    _paint.color = Color(_locked);
+    c
+      ..drawCircle(Offset(cx, body.top + u * 3), u * 1.2, _paint)
+      ..drawRect(Rect.fromLTWH(cx - u * 0.5, body.top + u * 3, u, u * 2.6), _paint);
+  }
+
   static const _blinkMs = 250.0;
 
   /// 궁극기 통통 버튼: 아래 4dp 진한 테두리 → 금 그라데이션 몸 → 선장 초상 → 덮개·게이지 → 번개.
@@ -177,7 +249,8 @@ class SlotSkinPainter {
     final rage = f.rage.clamp(0.0, 1.0);
     final full = rage >= 1;
     final blink = full && (scene.clockMs / _blinkMs).floor().isEven;
-    final radius = _dp('ultimateRadius');
+    // 뜬 배치는 둥근 큰 버튼(사용자 결정), 예전 배치는 둥근 사각.
+    final radius = scene.layout.floating ? r.width / 2 : _dp('ultimateRadius');
     final edge = _px(4);
     final body = Rect.fromLTRB(r.left, r.top, r.right, r.bottom - edge);
     final outer = RRect.fromRectAndRadius(r, Radius.circular(radius));
@@ -209,27 +282,6 @@ class SlotSkinPainter {
         _paint,
       );
     }
-    _bolt(c, ir.left + _px(3), ir.top + _px(3), _px(1));
-  }
-
-  /// 궁극기 번개 표시(매끈한 다각형, [u] = 1dp).
-  void _bolt(Canvas c, double x, double y, double u) {
-    final p = Path()
-      ..moveTo(x + 6 * u, y)
-      ..lineTo(x + 1 * u, y + 8 * u)
-      ..lineTo(x + 5 * u, y + 8 * u)
-      ..lineTo(x + 3 * u, y + 14 * u)
-      ..lineTo(x + 9.5 * u, y + 5.5 * u)
-      ..lineTo(x + 5.5 * u, y + 5.5 * u)
-      ..lineTo(x + 8 * u, y)
-      ..close();
-    _paint.color = Color(_ultTop);
-    c.drawPath(p, _paint);
-    _paint
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = u
-      ..color = Color(_ultEdge);
-    c.drawPath(p, _paint);
-    _paint.style = PaintingStyle.fill;
+    drawBolt(c, _paint, ir.left + _px(3), ir.top + _px(3), _px(1), _ultTop, _ultEdge);
   }
 }
