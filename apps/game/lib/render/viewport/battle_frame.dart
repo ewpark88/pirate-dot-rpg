@@ -3,69 +3,104 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/layout.dart';
 
-/// 전장 상자 하나의 배치 (화면 배치 v2, docs/specs/layout-v2-brief.md). 렌더 카메라와 UI 버튼이 같은 계산을 쓴다.
+/// 전장 상자 하나의 배치 (화면 배치 v2 + 사용자 지시 '전장을 키워라'). 렌더 카메라와 UI 버튼이 같은 계산을 쓴다.
 ///
-/// 좌표 두 가지:
-/// - 도트(dots): 게임 좌표. 320×148 필드가 (0,0)~(320,148). 상자가 넓거나 높으면 [viewDots]가 그 바깥(음수·320 넘음)까지 넓어진다.
-/// - dp: 전장 상자 왼쪽 위가 (0,0)인 논리 픽셀. 1도트 = [dot] dp (= k / dpr).
+/// 배율 두 가지:
+/// - 필드 [k]: 폭 기준 정수배 + 1 (S24 3 → 4). 320 필드 중 보이는 폭은 약 270 — 왼쪽(배 쪽) 기준, 오른쪽(적 등장 쪽)이 잘린다.
+/// - 선원 줄 [kb]: 폭 기준 정수배 그대로 — 슬롯 6칸·궁극기·보스 도전 칸이 폭 전체에 지금 크기로 들어간다.
+///
+/// 좌표 세 가지:
+/// - 도트(dots): 게임 좌표(필드 배율). 320×148 필드가 (0,0)~(320,148). [viewDots]는 상자 전체.
+/// - 줄 도트(band): 선원 줄 왼쪽 위가 (0,0), 1칸 = [kb] 물리 픽셀. 그리는 쪽은 [bandOrigin]으로 옮기고 [bandScale]배 한다.
+/// - dp: 전장 상자 왼쪽 위가 (0,0)인 논리 픽셀. 1도트 = [dot] dp.
 class BattleFrame {
-  BattleFrame._({required this.k, required this.dot, required this.viewDots, required this.bandDots});
+  BattleFrame._({
+    required this.k,
+    required this.kb,
+    required this.dpr,
+    required this.viewDots,
+    required this.bandTop,
+    required this.bandWidth,
+    required this.bandHeight,
+  });
 
   /// 테스트·골든용 기본 배치: 320×180 도트 그대로(필드 0~148, 선원 줄 148~180), 1도트 = 1dp.
   static final standard = BattleFrame._(
     k: 1,
-    dot: 1,
+    kb: 1,
+    dpr: 1,
     viewDots: const Rect.fromLTWH(0, 0, kLogicalWidth, kLogicalHeight),
-    bandDots: kLogicalHeight - kFieldBottom,
+    bandTop: kFieldBottom,
+    bandWidth: kLogicalWidth,
+    bandHeight: kLogicalHeight - kFieldBottom,
   );
 
-  /// 물리 픽셀 정수배.
+  /// 필드·선원 줄의 물리 픽셀 정수배.
   final int k;
+  final int kb;
+  final double dpr;
 
-  /// 1도트의 dp 크기.
-  final double dot;
-
-  /// 보이는 영역 (도트). 필드는 가로 가운데, 남는 위는 하늘·아래는 깊은 바다, 맨 아래 [bandDots]는 선원 줄.
+  /// 보이는 영역 (도트) = 상자 전체.
   final Rect viewDots;
 
-  /// 선원 줄 높이 (도트).
-  final double bandDots;
+  /// 선원 줄 윗변 (도트). 물리 픽셀 정수 자리.
+  final double bandTop;
 
-  /// 선원 줄 윗변 (도트).
-  double get bandTop => viewDots.bottom - bandDots;
+  /// 선원 줄 폭·높이 (줄 도트).
+  final double bandWidth;
+  final double bandHeight;
 
-  /// 슬롯 판 왼쪽 위 (도트). 판 크기는 [kSlotPlateSize].
-  Offset slotAt(int i) => Offset(
-    viewDots.left + kSlotLeft + i * kSlotStep,
-    (bandTop + (bandDots - kSlotPlateSize.height) / 2).floorToDouble(),
-  );
+  /// 1도트의 dp 크기.
+  double get dot => k / dpr;
 
-  /// 버튼 한 칸 변 (도트, 정사각). 띠 높이에서 위아래 3도트씩, 슬롯 6칸 뒤 남는 폭이 모자라면 줄인다.
+  /// 줄 도트 1칸 = 필드 도트 몇 칸.
+  double get bandScale => kb / k;
+
+  /// 선원 줄 왼쪽 위 (도트).
+  Offset get bandOrigin => Offset(viewDots.left, bandTop);
+
+  /// 선원 줄 높이 (도트) — 이전 이름 호환.
+  double get bandDots => viewDots.bottom - bandTop;
+
+  /// 줄 도트 → 도트.
+  Offset bandToDots(Offset p) => Offset(viewDots.left + p.dx * bandScale, bandTop + p.dy * bandScale);
+  Rect bandRectToDots(Rect r) => Rect.fromPoints(bandToDots(r.topLeft), bandToDots(r.bottomRight));
+
+  /// 슬롯 판 왼쪽 위 (줄 도트). 판 크기는 [kSlotPlateSize].
+  Offset slotInBand(int i) =>
+      Offset(kSlotLeft + i * kSlotStep, ((bandHeight - kSlotPlateSize.height) / 2).floorToDouble());
+
+  /// 버튼 한 칸 변 (줄 도트, 정사각). 띠 높이에서 위아래 3칸씩, 슬롯 6칸 뒤 남는 폭이 모자라면 줄인다.
   double get _button {
-    final room = (viewDots.width - kSlotLeft - kSlotCount * kSlotStep - kButtonGap * 3) / 2;
-    return math.max(kButtonMinDots, math.min(bandDots - kButtonGap * 2, room)).floorToDouble();
+    final room = (bandWidth - kSlotLeft - kSlotCount * kSlotStep - kButtonGap * 3) / 2;
+    return math.max(kButtonMinDots, math.min(bandHeight - kButtonGap * 2, room)).floorToDouble();
   }
 
-  /// 궁극기 버튼 (도트): 선원 줄 오른쪽 끝. 렌더가 테두리·선장 초상·함성 게이지를 그리고, UI가 투명 버튼을 얹는다.
-  Rect get ultimateDots {
+  /// 궁극기 버튼 (줄 도트): 선원 줄 오른쪽 끝. 렌더가 테두리·선장 초상·함성 게이지를 그리고, UI가 투명 버튼을 얹는다.
+  Rect get ultimateInBand {
     final b = _button;
     return Rect.fromLTWH(
-      (viewDots.right - kButtonGap - b).floorToDouble(),
-      (bandTop + (bandDots - b) / 2).floorToDouble(),
+      (bandWidth - kButtonGap - b).floorToDouble(),
+      ((bandHeight - b) / 2).floorToDouble(),
       b,
       b,
     );
   }
 
-  /// 보스 도전 버튼 자리 (도트): 궁극기 왼쪽. 렌더는 비워 두고 UI가 그린다.
-  Rect get bossDots => ultimateDots.shift(Offset(-(_button + kButtonGap), 0));
+  /// 보스 도전 버튼 자리 (줄 도트): 궁극기 왼쪽. 렌더는 비워 두고 UI가 그린다.
+  Rect get bossInBand => ultimateInBand.shift(Offset(-(_button + kButtonGap), 0));
+
+  /// 같은 자리를 도트로 (테스트·픽셀 확인용).
+  Offset slotAt(int i) => bandToDots(slotInBand(i));
+  Rect get ultimateDots => bandRectToDots(ultimateInBand);
+  Rect get bossDots => bandRectToDots(bossInBand);
 
   /// 도트 → dp (전장 상자 기준).
   Offset toDp(Offset dots) => Offset((dots.dx - viewDots.left) * dot, (dots.dy - viewDots.top) * dot);
 
   Rect rectToDp(Rect dots) => Rect.fromPoints(toDp(dots.topLeft), toDp(dots.bottomRight));
 
-  /// 320×148 필드가 그려지는 dp 사각형 (보물상자 탭 좌표 등).
+  /// 320×148 필드가 그려지는 dp 사각형 (보물상자 탭 좌표 등). 오른쪽 끝은 상자 밖으로 나갈 수 있다.
   Rect get gameRect => rectToDp(const Rect.fromLTWH(0, 0, kLogicalWidth, kFieldBottom));
 
   /// 선원 줄 (dp, 상자 폭 전체).
@@ -73,7 +108,7 @@ class BattleFrame {
 
   /// 슬롯 6칸 (dp).
   List<Rect> get slotRects => [
-    for (var i = 0; i < kSlotCount; i++) rectToDp(slotAt(i) & kSlotPlateSize),
+    for (var i = 0; i < kSlotCount; i++) rectToDp(bandRectToDots(slotInBand(i) & kSlotPlateSize)),
   ];
 
   Rect get ultimateRect => rectToDp(ultimateDots);
@@ -83,21 +118,36 @@ class BattleFrame {
   Rect get buttonsRect => bossRect.expandToInclude(ultimateRect);
 }
 
-/// 전장 상자 [box](dp)를 빈 띠 없이 채우는 배치 (화면 배치 v2 규칙).
-/// - k = 폭 기준 정수배 floor(폭·dpr / 320), 필드 148 + 선원 줄이 높이에 안 들어가면 줄인다(최소 1).
-/// - 선원 줄 높이 = max(32도트, 56dp).
-/// - 남는 높이는 위 70% 하늘, 아래 30% 깊은 바다. 필드 왼쪽 위는 정수 도트 → 정수 물리 픽셀에 놓인다.
-BattleFrame battleFrameFor(Size box, double dpr) {
-  double band(int k) => math.max(kSlotBandMinDots, (kSlotBandMinDp * dpr / k).ceilToDouble());
-  var k = math.max(1, (box.width * dpr / kLogicalWidth).floor());
-  while (k > 1 && box.height * dpr / k < kFieldBottom + band(k)) {
+/// 전장 상자 [box](dp)를 빈 띠 없이 채우는 배치.
+/// - 줄 배율 kb = floor(폭·dpr / 320)(최소 1), 필드 배율 k = kb + [boost] (사용자 지시 '전장을 키워라' — 기본 +1).
+///   필드 148 + 선원 줄이 상자 높이에 안 들어가면 k를 줄인다(kb ≤ k).
+/// - 선원 줄 높이 = max(32줄 도트, 56dp). 줄 윗변은 정수 물리 픽셀.
+/// - 필드 가로: 보이는 폭 < 320이면 왼쪽(배 쪽) 기준, 넓으면 가운데. 남는 높이는 위 70% 하늘, 아래 30% 깊은 바다.
+BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
+  final physW = box.width * dpr;
+  final physH = box.height * dpr;
+  var kb = math.max(1, (physW / kLogicalWidth).floor());
+  double band(int kb) => math.max(kSlotBandMinDots, (kSlotBandMinDp * dpr / kb).ceilToDouble());
+  var k = kb + boost;
+  while (k > 1 && (physH - band(math.min(kb, k)) * math.min(kb, k)) / k < kFieldBottom) {
     k--;
   }
-  final b = band(k);
-  final w = box.width * dpr / k;
-  final h = box.height * dpr / k;
-  final extra = math.max<double>(0, h - kFieldBottom - b);
-  final left = ((w - kLogicalWidth) / 2).floorToDouble();
+  kb = math.min(kb, k);
+  final bandH = band(kb);
+  final bandPhysTop = (physH - bandH * kb).floorToDouble();
+  final w = physW / k;
+  final h = physH / k;
+  final fieldH = bandPhysTop / k;
+  final extra = math.max<double>(0, fieldH - kFieldBottom);
+  final left = w >= kLogicalWidth ? ((w - kLogicalWidth) / 2).floorToDouble() : 0.0;
   final top = (extra * kSkyShare).floorToDouble();
-  return BattleFrame._(k: k, dot: k / dpr, viewDots: Rect.fromLTWH(-left, -top, w, h), bandDots: b);
+  return BattleFrame._(
+    k: k,
+    kb: kb,
+    dpr: dpr,
+    viewDots: Rect.fromLTWH(-left, -top, w, h),
+    bandTop: -top + bandPhysTop / k,
+    bandWidth: physW / kb,
+    bandHeight: (physH - bandPhysTop) / kb,
+  );
 }

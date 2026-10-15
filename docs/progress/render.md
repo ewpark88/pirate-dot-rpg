@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 전장 배율 +1 (사용자 직접 지시, v3)
+- battleFrameFor: 필드 k+1(왼쪽 기준, 오른쪽 잘림 — S24 보이는 폭 270), 선원 줄은 이전 배율 그대로(줄 좌표 + bandOrigin·bandScale), 줄 윗변 정수 물리 픽셀.
+- 보스 clampBossX(그림·발사체 목표·숫자·불꽃), 궁극기 비·코인 비·타격 목표는 보이는 폭 안. 상자 45%는 S4.
+- 테스트: battle_frame_test(3기기 — 필드 k+1·줄 k, 빈 띠 없음, 왼쪽 기준·보이는 폭 250~300, 줄 56dp+, 버튼 48dp+). 골든 layout_* 3장 물리 픽셀로 새로, battle_boss_storm·battle_cutin(보스 x 안쪽으로) 갱신.
+- 점검 regions_s24.png(18장면) 다시 찍음, 비교 compare_s24_v3.png·goldens_3devices_v3.png.
+- check --full: UI 골든 en_m3_hud(S4)만 실패 — 상자 좌표(toDp)가 새 프레임으로 바뀌어서. S4가 상자 45%와 함께 다시 찍는다.
+
 ### 2026-10-15 · S3 · 폭발·포탄 보정 (S1 실기기 지적: 무늬 없는 큰 노란 원)
 - 원인: 팩 explosion_aoe 앞 프레임(0~2)이 단색 원. 렌더는 팩 시트를 그대로 쓰고 있었다(플레이스홀더 아님).
 - `tools/art/gen_fx.py` → `tools/art/overrides/`(import_pack.py의 수작업 보정 경로): explosion_aoe 64×64×8(같은 크기) — 번쩍 별 →

@@ -105,6 +105,11 @@ void applyHits(BattleScene s, double dtMs) {
   s.hits.releaseWhere(_hitDone);
   for (var k = 0; k < s.poseCount; k++) {
     final pose = s.poses[k];
+    if (pose.boss) {
+      pose
+        ..x = s.clampBossX(pose.x)
+        ..drawX = pose.x;
+    }
     for (final h in s.hits.active) {
       if (h.id != pose.id) continue;
       pose.flash = s.settings.flash && h.flashMs > 0;

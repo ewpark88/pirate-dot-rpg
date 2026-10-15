@@ -53,7 +53,7 @@ class EventDirector implements ReplayListener {
           ..family = e.family
           ..fromX = kShipNoseX
           ..fromY = kShipNoseY
-          ..toX = target?.x ?? e.x
+          ..toX = target == null ? e.x : (target.boss ? scene.clampBossX(target.x) : target.x)
           ..toY = target?.y ?? e.y
           ..startIndex = start + b * style.burstGapMs / tickMs
           ..impactIndex = index.toDouble()
@@ -161,16 +161,17 @@ class EventDirector implements ReplayListener {
   void _damage(Damage e, RecordedTick tick, int index, {required bool number}) {
     final target = _player.enemyAt(index - 1, e.targetId) ?? _player.enemyAt(index, e.targetId);
     if (target == null) return;
+    final tx = target.boss ? scene.clampBossX(target.x) : target.x;
     if (number) {
       scene.numbers.add(
         e.amount,
-        target.x,
+        tx,
         target.y - kNumberLiftPx,
         e.crit ? DamageKind.crit : DamageKind.normal,
         key: e.targetId,
       );
     }
-    _fx(e.crit ? 'critHit' : 'damage', target.x, target.y);
+    _fx(e.crit ? 'critHit' : 'damage', tx, target.y);
     if (e.crit) scene.haptic(HapticLevel.light);
 
     final family = _crewFamily[e.crewId];
@@ -249,10 +250,13 @@ class EventDirector implements ReplayListener {
   static const _rainFallMin = 60.0;
   static const _rainFallSpread = 40;
 
+  /// 보이는 폭 안에서만 떨어지게 (필드를 키우면 오른쪽이 잘린다).
+  int get _rainSpanIn => math.min(_rainSpan, (scene.visibleRight - _rainLeft - 8).floor());
+
   void _coinRain() {
     for (var i = 0; i < _juice.bossCoinRain; i++) {
       scene.coins.obtain()
-        ..fromX = _rainLeft + i * _rainPrime % _rainSpan
+        ..fromX = _rainLeft + i * _rainPrime % _rainSpanIn
         ..fromY = _rainTopY
         ..toX = kShipCenterX
         ..toY = kShipCenterY
@@ -261,7 +265,7 @@ class EventDirector implements ReplayListener {
         ..fallPx = _rainFallMin + i * _rainPrime % _rainFallSpread
         ..ageMs = -(i * _juice.coinFlyMs / _juice.bossCoinRain)
         ..flyMs = _juice.coinFlyMs * 2
-        ..x = _rainLeft + i * _rainPrime % _rainSpan
+        ..x = _rainLeft + i * _rainPrime % _rainSpanIn
         ..y = _rainTopY;
     }
   }

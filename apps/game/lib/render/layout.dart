@@ -34,6 +34,9 @@ const double kCoinTargetY = 96;
 const double kEnemySize = 12;
 const double kBossSize = 40;
 
+/// 보스를 보이는 오른쪽 끝 안에 그릴 때 끝에서 띄우는 거리 (보스 그림 폭 64의 절반 + 2).
+const double kBossEdgeInset = 34;
+
 /// 궁극기 이펙트 중심.
 const double kUltimateX = kLogicalWidth / 2;
 const double kUltimateY = 96;

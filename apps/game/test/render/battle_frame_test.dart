@@ -3,14 +3,14 @@ import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pirate_dot/render/layout.dart';
 
-/// 화면 배치 v2 (docs/specs/layout-v2-brief.md): 전장 상자는 화면 폭 전체 × 화면 높이의 약 40% (UI가 정함).
+/// 화면 배치 v2 + 사용자 지시 '전장을 키워라': 전장 상자는 화면 폭 전체 × 화면 높이의 약 45% (UI가 정함), 필드 도트 배율 +1.
 const devices = {
   's24': (Size(384, 832), 2.8125),
   '360x640': (Size(360, 640), 3.0),
   '411x891': (Size(411, 891), 2.625),
 };
 
-Size boxOf(Size screen) => Size(screen.width, (screen.height * 0.4).roundToDouble());
+Size boxOf(Size screen) => Size(screen.width, (screen.height * 0.45).roundToDouble());
 
 void main() {
   for (final MapEntry(key: name, value: (screen, dpr)) in devices.entries) {
@@ -18,22 +18,25 @@ void main() {
       final box = boxOf(screen);
       final f = battleFrameFor(box, dpr);
 
-      test('폭 기준 정수배, 보이는 영역이 상자를 빈 띠 없이 덮는다', () {
-        expect(f.k, (screen.width * dpr / kLogicalWidth).floor());
+      test('필드는 폭 기준 정수배 + 1, 선원 줄은 폭 기준 정수배 — 보이는 영역이 상자를 빈 띠 없이 덮는다', () {
+        final base = (screen.width * dpr / kLogicalWidth).floor();
+        expect(f.kb, base);
+        expect(f.k, base + 1);
         expect(f.viewDots.width * f.dot, closeTo(box.width, 1e-6));
         expect(f.viewDots.height * f.dot, closeTo(box.height, 1e-6));
-        expect(f.viewDots.left, lessThanOrEqualTo(0));
-        expect(f.viewDots.right, greaterThanOrEqualTo(kLogicalWidth));
-        // 필드 왼쪽 위가 정수 도트 → 정수 물리 픽셀 (도트가 흐려지지 않는다).
+        // 필드·줄 윗변이 정수 물리 픽셀 → 도트가 흐려지지 않는다.
         expect(f.viewDots.left, f.viewDots.left.roundToDouble());
         expect(f.viewDots.top, f.viewDots.top.roundToDouble());
+        final bandPhys = (f.bandTop - f.viewDots.top) * f.k;
+        expect(bandPhys, closeTo(bandPhys.roundToDouble(), 1e-6));
       });
 
-      test('필드는 가로 가운데, 늘어난 높이는 위(하늘)·아래(깊은 바다)로', () {
-        final g = f.gameRect;
-        expect((g.left - (box.width - g.right)).abs(), lessThanOrEqualTo(2 * f.dot)); // 왼쪽 여백을 정수 도트로 내림
-        expect(g.top, greaterThan(0));
-        expect(f.bandTop, greaterThanOrEqualTo(kFieldBottom));
+      test('필드는 왼쪽(배 쪽) 기준, 보이는 폭은 약 270 — 오른쪽(적 등장 쪽)이 잘린다', () {
+        expect(f.viewDots.left, 0);
+        expect(f.viewDots.right, inInclusiveRange(250, 300));
+        expect(f.gameRect.left, 0);
+        expect(f.gameRect.right, greaterThan(box.width));
+        expect(f.bandTop - kFieldBottom, greaterThanOrEqualTo(0), reason: '필드 148이 선원 줄 위에 다 들어간다');
       });
 
       test('선원 줄: 56dp 이상, 상자 맨 아래, 폭 전체', () {
@@ -71,6 +74,6 @@ void main() {
   test('아주 낮은 상자면 정수배를 줄여 필드와 선원 줄이 들어가게', () {
     final f = battleFrameFor(const Size(1200, 260), 1);
     expect(f.k, lessThan(3));
-    expect(f.viewDots.height, greaterThanOrEqualTo(kFieldBottom + f.bandDots));
+    expect(f.bandTop, greaterThanOrEqualTo(kFieldBottom));
   });
 }
