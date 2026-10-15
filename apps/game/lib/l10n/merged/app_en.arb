@@ -176,6 +176,10 @@
   "opAdResult": "Ad result: {result}",
   "opPrivacyOptions": "Privacy Options",
   "opTestRing": "Notification in 10s",
+  "opBattleView": "Battle view",
+  "opBattleViewSide": "Side",
+  "opBattleViewTop": "Top-down",
+  "opBattleViewNotReady": "Top-down render not ready yet",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -443,5 +447,11 @@
   "uiBossFailRule": "Beat the boss before time runs out. For now you're farming gold on this stage — upgrade your ship and try again!",
   "uiBossFailShort": "Boss got away — upgrade and retry!",
   "uiBossFailUpgrade": "Upgrade {part}",
-  "uiFarmingRetry": "Farming · boss retry ready"
+  "uiFarmingRetry": "Farming · boss retry ready",
+  "uiPower": "Power",
+  "uiGaugeStage": "{stage}-{wave}",
+  "uiGaugeSeconds": "{sec}s",
+  "uiMult": "×{n}",
+  "uiMultMax": "MAX",
+  "uiUpgradeLevels": "+{n}"
 }

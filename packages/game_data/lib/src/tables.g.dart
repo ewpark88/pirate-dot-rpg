@@ -1661,6 +1661,7 @@ const Map<String, String> rawTables = {
   "travelSec": 1,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
+    "chestMargin": 12,
     "width": 270,
     "height": 480,
     "shipX": 135,

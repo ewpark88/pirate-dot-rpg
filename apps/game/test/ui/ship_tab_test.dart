@@ -39,7 +39,8 @@ void main() {
     await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab, size: _tall);
     expect(_button(tester, 'sail').onPressed, isNull);
     expect(_button(tester, 'crowsnest').onPressed, isNull);
-    expect(find.text('MAX'), findsNWidgets(2));
+    // 배수 알약의 MAX 1개 + 최대 레벨 부위 2개.
+    expect(find.text('MAX'), findsNWidgets(3));
     // 최대 레벨이 없는 부위는 MAX 대신 비용을 보인다 (Lv400 비용이 골드보다 커서 비활성).
     expect(find.text(partCost(tables.shipParts.byId('cannon'), 400).format()), findsOneWidget);
   });

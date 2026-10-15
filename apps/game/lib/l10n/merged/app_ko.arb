@@ -176,6 +176,10 @@
   "opAdResult": "광고 결과: {result}",
   "opPrivacyOptions": "개인정보 옵션",
   "opTestRing": "알림 10초 뒤",
+  "opBattleView": "전장 방식",
+  "opBattleViewSide": "옆모습",
+  "opBattleViewTop": "탑다운",
+  "opBattleViewNotReady": "탑다운은 렌더 준비 중",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -443,5 +447,11 @@
   "uiBossFailRule": "보스는 제한 시간 안에 쓰러뜨려야 해요. 지금은 이 스테이지에서 골드를 모으는 중 — 배를 강화하고 다시 도전해요!",
   "uiBossFailShort": "보스를 놓쳤어요 — 강화하고 다시 도전!",
   "uiBossFailUpgrade": "{part} 강화",
-  "uiFarmingRetry": "파밍 중 · 보스 재도전 가능"
+  "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
+  "uiPower": "전투력",
+  "uiGaugeStage": "{stage}-{wave}",
+  "uiGaugeSeconds": "{sec}초",
+  "uiMult": "×{n}",
+  "uiMultMax": "MAX",
+  "uiUpgradeLevels": "+{n}"
 }

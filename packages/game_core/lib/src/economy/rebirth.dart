@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
+import 'package:game_core/src/economy/ship_stats.dart' show partLook;
+import 'package:game_core/src/economy/summon.dart' show summonCards;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -57,7 +60,7 @@ class RebirthPreview {
 RebirthPreview rebirthPreview(GameState s, GameTables t) {
   final r = t.meta.rebirth;
   final stage = s.progress.stage;
-  final gain = piecesFor(t, stage);
+  final gain = (piecesFor(t, stage) * pieceGainMultiplier(s, t) * treasurePiecesMultiplier(s, t)).floor();
   var next = stage + 1;
   while (piecesFor(t, next) <= gain) {
     next++;
@@ -74,29 +77,75 @@ RebirthPreview rebirthPreview(GameState s, GameTables t) {
 }
 
 /// 환생 (사용자 결정 ①: 이번 회차 스테이지로 매번 전부 지급). 해금 전이면 상태 그대로, 단 [force](운영자)면 진행.
-/// 스테이지·골드·배 강화를 초기화하고 선원·도감·젬·증표·최고 기록은 유지한다.
+/// 스테이지·골드·배 강화 레벨(능력치)을 초기화하고 선원·도감·젬·증표·최고 기록·명예 외형·스킨·상점은 유지한다.
+/// 환생 v2: 상자(젬·영웅 이상 소환)·스킨·칭호·해금을 바로 지급하고 RebirthDone 하나로 알린다.
 GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
   final t = ctx.tables;
   final p = rebirthPreview(s, t);
   if (p.locked && !force) return s;
   final old = s.battle ?? BattleView.empty;
-  ctx
-    ..emit(
-      RebirthDone(ctx.tick, gain: p.gain, pieces: p.currentPieces + p.gain, rebirths: s.progress.rebirths + 1),
-    )
-    ..emit(SaveRequested(ctx.tick, reason: 'rebirth'));
-  return s.copyWith(
-    wallet: s.wallet.copyWith(gold: BigNum.zero, mapPieces: p.currentPieces + p.gain),
+  final n = s.progress.rebirths + 1;
+  final chest = rebirthChest(t, n);
+  final got = rebirthRewardsAt(t, n);
+  final newSkins = got.skins.where((k) => !s.ship.skinsOwned.contains(k)).toList();
+  final newTitles = got.titles.where((k) => !s.progress.titles.contains(k)).toList();
+  // 명예 외형: 지금까지 본 최고 단계·등급은 남는다(그림만).
+  final look = partLook(s, t);
+  final tier = t.shipTiers.tiers.indexOf(t.shipTiers.tierAt(s.progress.bestStage));
+  final route = s.progress.treasureRoute;
+  var next = s.copyWith(
+    wallet: s.wallet.copyWith(gold: BigNum.zero, mapPieces: p.currentPieces + p.gain, gems: s.wallet.gems + chest.gems),
     progress: Progress(
       bestStage: s.progress.bestStage,
-      rebirths: s.progress.rebirths + 1,
+      rebirths: n,
       mapPiecesEarned: s.progress.mapPiecesEarned + p.gain,
-      titles: s.progress.titles,
-      treasureRoute: s.progress.treasureRoute,
+      titles: [...s.progress.titles, ...newTitles],
+      treasureRoute: route,
+      bossFails: s.progress.bossFails,
+      treasureSea:
+          route != null && route <= treasureSeasUnlocked(s.copyWith(progress: s.progress.copyWith(rebirths: n)), t)
+          ? route
+          : null,
     ),
-    ship: ShipState(parts: {for (final id in s.ship.parts.keys) id: 0}),
+    ship: s.ship.copyWith(
+      parts: {for (final id in s.ship.parts.keys) id: startLevel(s, t, id)},
+      honorParts: {for (final e in look.entries) e.key: e.value},
+      honorTier: tier > s.ship.honorTier ? tier : null,
+      skinsOwned: {...s.ship.skinsOwned, ...newSkins},
+      skin: newSkins.isNotEmpty && !s.ship.skinChosen ? newSkins.first : null,
+    ),
     battle: BattleView(tick: old.tick, shipHp: BigNum.one, shipHpMax: BigNum.one, speed: old.speed),
   );
+  if (chest.summons > 0) {
+    next = summonCards(
+      next,
+      ctx,
+      chest.summons,
+      reason: 'rebirth',
+      guarantee: t.meta.rebirth.obj('chest').str('minRarity'),
+    );
+  }
+  for (final k in newSkins) {
+    ctx.emit(SkinUnlocked(ctx.tick, id: k));
+  }
+  for (final u in got.unlocks) {
+    ctx.emit(ContentUnlocked(ctx.tick, kind: u.kind, value: u.value));
+  }
+  ctx
+    ..emit(
+      RebirthDone(
+        ctx.tick,
+        gain: p.gain,
+        pieces: p.currentPieces + p.gain,
+        rebirths: n,
+        gems: chest.gems,
+        summons: chest.summons,
+        title: newTitles.firstOrNull,
+        skin: newSkins.firstOrNull,
+      ),
+    )
+    ..emit(SaveRequested(ctx.tick, reason: 'rebirth'));
+  return next;
 }
 
 GameState onRebirth(GameState s, Rebirth c, SystemContext ctx) => rebirth(s, ctx);

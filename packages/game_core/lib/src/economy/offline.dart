@@ -66,7 +66,8 @@ class OfflinePreview {
 OfflinePreview? offlinePreview(GameState s, GameTables t, DateTime now) {
   final elapsed = now.difference(s.savedAt).inSeconds;
   if (elapsed < t.meta.offlineMinSec) return null;
-  final seconds = math.min(elapsed, t.meta.offlineMaxSec);
+  final cap = offlineMaxSec(s, t);
+  final seconds = math.min(elapsed, cap);
   final fleet = offlineFleet(s, t);
   return OfflinePreview(
     seconds: seconds,

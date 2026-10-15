@@ -3,16 +3,25 @@ part of 'events.dart';
 // 배 피해·파·보스 진행 이벤트 (events.dart가 300줄을 넘어 나눔).
 
 class ShipDamaged extends GameEvent {
-  const ShipDamaged(super.tick, {required this.amount, required this.hpRatio});
+  const ShipDamaged(super.tick, {required this.amount, required this.hpRatio, this.fromX, this.fromY});
 
   final BigNum amount;
   final double hpRatio;
+
+  /// 때린 쪽 위치(선택, 탑다운 피격 방향 연출). 없으면 본문에 없다.
+  final double? fromX;
+  final double? fromY;
 
   @override
   String get type => 'shipDamaged';
 
   @override
-  Json _fields() => {'amount': amount.toJson(), 'hpRatio': hpRatio};
+  Json _fields() => {
+    'amount': amount.toJson(),
+    'hpRatio': hpRatio,
+    if (fromX != null) 'fromX': fromX,
+    if (fromY != null) 'fromY': fromY,
+  };
 }
 
 class WaveCleared extends GameEvent {

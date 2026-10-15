@@ -1,4 +1,5 @@
 import 'package:game_core/src/battle/fleet.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -10,7 +11,11 @@ export 'package:game_core/src/battle/fleet.dart' show autoFleet;
 // 수동 편성 (사용자 결정 2026-10-15, ADR-0010): 출전은 사용자가 고르고, ‘자동 편성’ 버튼으로 한 번에 채운다.
 
 /// 지금 배 등급의 출전 슬롯 수.
-int fleetSlots(GameState s, GameTables t) => t.shipTiers.tierAt(s.progress.stage).slots;
+int fleetSlots(GameState s, GameTables t) {
+  final n = t.shipTiers.tierAt(s.progress.stage).slots + fleetSlotBonus(s, t);
+  final max = t.meta.rebirth.integer('fleetSlotsMax');
+  return n > max ? max : n;
+}
 
 /// 실제로 출전하는 선원 (슬롯 순서, 빈 칸·미보유 제외). 전투·오프라인·상자 추정이 모두 이것을 쓴다.
 /// 편성한 적이 없으면(첫 틱 전) 자동 편성과 같다.
