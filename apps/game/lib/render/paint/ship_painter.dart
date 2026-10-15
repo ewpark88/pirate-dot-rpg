@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/ship_parts_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/ship_geometry.dart';
 
 /// 내 배: 등급별 그림(`ship:<tierId>` 스프라이트, 없으면 플레이스홀더), HP 바, 배 스킬 번쩍임·버프 테두리, 승급 빛기둥.
 class ShipPainter {
@@ -13,6 +15,7 @@ class ShipPainter {
   final BattleScene scene;
   final SpriteDraw sprites;
 
+  late final _parts = ShipPartsPainter(scene, sprites);
   final _paint = Paint()..isAntiAlias = false;
   final _stroke = Paint()
     ..isAntiAlias = false
@@ -43,18 +46,19 @@ class ShipPainter {
     c
       ..save()
       ..translate(0, bob);
-    // 등급 그림은 t1 상자의 오른쪽 아래(뱃머리·물 닿는 줄)에 맞추고, 사용자 지시 '배를 키워라'로 뱃머리 포구 높이(kShipPivotY)를
-    // 기준점 삼아 [_scale]배 — 발사 위치·포구 화염·엔진 shipX(적이 멈추는 곳)는 그대로, 배는 고물·위·아래로 커진다.
+    // 등급 그림 + 부품 외형 단계 덧그림 + 뱃머리 대포 (ShipGeometry: 뱃머리·포구 높이 기준 shipScale배).
     final sheet = sprites.sheet('ship:$tier');
     final box = sheet == null
         ? const Rect.fromLTWH(kShipLeft, kShipTop, kShipWidth, kShipHeight)
-        : _scaledBox(sheet.frameW, sheet.frameH);
+        : ShipGeometry.box(scene, sheet.frameW, sheet.frameH);
     if (!sprites.draw(c, 'ship:$tier', box.center.dx, box.center.dy, w: box.width, h: box.height, flash: flash)) {
       _placeholder(c, tier, flash);
+    } else {
+      _parts.paint(c, tier, box, sheet!.frameW, flash: flash);
     }
     c.restore();
     if (scene.shipHpRatio < 1) {
-      final w = math.min(box.width - 4, kShipWidth * _scale);
+      final w = math.min(box.width - 4, kShipWidth * ShipGeometry.scale(scene));
       _fill(c, box.right - 2 - w, box.top - 5, w, 2, _hpBack);
       _fill(c, box.right - 2 - w, box.top - 5, w * scene.shipHpRatio, 2, _hpFront);
     }
@@ -84,25 +88,6 @@ class ShipPainter {
     _fill(c, kShipNoseX - w, bottom - h / 2, w, h / 2, color);
     _fill(c, kShipNoseX - w + 8, bottom - h, 4, h / 2, flash ? _white : _deck);
     _fill(c, kShipNoseX - w / 2, bottom - h + 4, w / 3, h / 3, flash ? _white : _deck);
-  }
-
-  /// 배 배율: fx_map shipScale(1.5)을 필드 배율 k에 맞춰 정수 물리 픽셀이 되게 내림(도트가 고르게, k=1 테스트 배치는 1배).
-  double get _scale {
-    final k = scene.layout.k;
-    return math.max(1, (scene.fx.raw.number('shipScale') * k).floor()) / k;
-  }
-
-  /// t1 상자 오른쪽 아래에 맞춘 [w]×[h] 그림을 (오른쪽 끝, kShipPivotY) 기준으로 [_scale]배 한 상자.
-  Rect _scaledBox(double w, double h) {
-    const right = kShipLeft + kShipWidth;
-    const bottom = kShipTop + kShipHeight;
-    final s = _scale;
-    return Rect.fromLTRB(
-      right - w * s,
-      kShipPivotY + (bottom - h - kShipPivotY) * s,
-      right,
-      kShipPivotY + (bottom - kShipPivotY) * s,
-    );
   }
 
   void _pillar(Canvas c) {

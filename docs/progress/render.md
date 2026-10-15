@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 배 부품 외형 단계 + 대포 레이어 + 배 1.3배 (사용자 지시)
+- `tools/art/gen_ship_parts.py` → `assets/ship/part_t<n>_<part>.png`(등급마다 hull 7·sail 5·crowsnest 6·cargo 7 프레임, 배 그림과 같은 크기 덧그림) + `part_cannon.png`(7단계). PB 배 모듈 디자인을 도트로. OWN.
+  선체: 쇠 띠 → 가로 띠 → 구리 바닥 → 금 테 → 금 문장 → 마호가니(유령선은 깊은 보라). 돛: 기운 자국 → 깨끗 → 빨간 겹줄 → 해골 → 금 테. 망루: 바구니 → 난간 → 깃발 → 망원경 → 등불 → 금 깃발. 화물: 통 → 상자 → 보물상자 → 금 더미. 대포: 쇠 → 긴 쇠 → 청동 → 띠 → 강철 바퀴 → 쌍포 → 금 용.
+- 렌더: `scene/ship_geometry.dart`(배 상자·포구 끝 공용), `paint/ship_parts_painter.dart`(BattleView.shipLook 단계, 0단계 = 1단계 그림). 대포는 cannonScale 1.4배, 포구 끝 기준, 발사 때 반동(recoilMs 180). 발사체·포구 화염이 포구 끝에서 나간다.
+- ShipLookChanged: 그 부위 흰빛 맥박(glowMs 1400) + level_up 이펙트 + promote 소리.
+- 배 1.3배(정수 물리 픽셀 반올림: S24 1.25, 태블릿 1.33). 비교 `docs/specs/render-ship-parts/ships_4devices.png`.
+
 ### 2026-10-15 · S3 · 폭탄이 보이게 + 등급 꼬리 + 40명 발사체 구별 (사용자 직접 지시)
 - 1배속 비행: 투척 1.4초, 물수제비 1.25, 수중 1.15, 공중 1.0, 충격 0.9, 직사·관통·강습 0.8초. 틱 단위라 배속(순풍 등)이 오르면 그만큼 빨라진다(테스트). 표시 지연 lookahead 16 → 30틱(1.5초).
 - 폭탄 크기: 그림 '내용'(투명 여백 뺀 긴 변) 기준 화면 24dp(태블릿 최소 12도트). fx_map pbFx.weaponContent(36개 실측).

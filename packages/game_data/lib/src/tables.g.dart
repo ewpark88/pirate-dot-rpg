@@ -439,6 +439,10 @@ const Map<String, String> rawTables = {
     "crewPromoted": {
       "fx": "level_up",
       "sfx": "promote"
+    },
+    "shipLookChanged": {
+      "fx": "level_up",
+      "sfx": "promote"
     }
   },
   "projectiles": {
@@ -1184,7 +1188,7 @@ const Map<String, String> rawTables = {
     "spinFrameMs": 70,
     "frames": 4
   },
-  "shipScale": 1.5,
+  "shipScale": 1.3,
   "rarityTrail": {
     "samples": 10,
     "step": 0.022,
@@ -1207,6 +1211,20 @@ const Map<String, String> rawTables = {
       "#C07BFF"
     ],
     "ring": "#FFFFFF"
+  },
+  "shipParts": {
+    "stages": {
+      "hull": 7,
+      "sail": 5,
+      "crowsnest": 6,
+      "cargo": 7
+    },
+    "cannonStages": 7,
+    "recoilMs": 180,
+    "recoilPx": 3,
+    "glowMs": 1400,
+    "sparkles": 5,
+    "cannonScale": 1.4
   }
 }
 ''',

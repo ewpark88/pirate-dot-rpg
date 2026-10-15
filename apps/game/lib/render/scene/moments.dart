@@ -52,6 +52,20 @@ class Moments {
     _tierUp();
   }
 
+  /// 배 부품 외형이 바뀐 부위와 남은 빛(ms) — ShipLookChanged (S2). 그리는 쪽이 그 부위 덧그림을 반짝인다.
+  String? glowPart;
+  double glowMs = 0;
+
+  /// 대포 발사 시각 (장면 시계 ms) — 반동. 포구 화염 지연만큼 미래일 수 있다.
+  double cannonFiredAtMs = -1000000000;
+
+  void onPartUp(String part) {
+    glowPart = part;
+    glowMs = scene.fx.raw.obj('shipParts').number('glowMs');
+    final fx = scene.fx.fxFor('shipLookChanged');
+    if (fx != null) scene.spawnEffect(fx, kShipCenterX, kShipCenterY - 8);
+  }
+
   /// 해역 보스 첫 등장이면 컷인.
   void onBossSpawned(String kind, int stage) {
     if (kind != scene.tables.regions.regionAt(stage).regionBoss || !_seenBosses.add(kind)) return;
@@ -68,6 +82,7 @@ class Moments {
   void update(double dtMs) {
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
+    if (glowMs > 0) glowMs -= dtMs;
   }
 
   void reset() {

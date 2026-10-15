@@ -888,6 +888,74 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/torpedo.png",
       "license": "OWN"
     },
+    "ship/part_cannon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t1_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t1_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t1_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t1_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t2_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t2_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t2_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t2_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t3_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t3_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t3_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t3_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t4_cargo.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t4_crowsnest.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t4_hull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ship/part_t4_sail.png": {
+      "source": "Pirate Busters v0.24 자체 IP(배 모듈 디자인) → tools/art/gen_ship_parts.py 픽셀 격자",
+      "license": "OWN"
+    },
     "ship/ship_t1.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
       "license": "OWN"
