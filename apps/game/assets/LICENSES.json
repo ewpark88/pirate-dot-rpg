@@ -144,6 +144,62 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/td_deep_sub.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_enemy_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_fire_pirate.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_ghost_admiral.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_ghost_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_giant_hermit.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_iceberg_walrus.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_icebreaker.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_kraken.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_kraken_tentacle.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_lava_whale.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_raider_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_storm_pirate.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_thunder_ray.png": {
+      "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
     "bosses/thunder_ray.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
@@ -730,6 +786,114 @@
     },
     "enemies/stormgull.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_angler.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_crab.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_cursegull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_eel.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_firebird.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_flyingfish.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_ghostjelly.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_gull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_icecrab.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_icecrab_small.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_jelly.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_lavacrab.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_lavacrab_small.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_lavaturtle.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_penguin.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_piranha.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_puffer.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_seal.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_siphon.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_skeleton.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_snowgull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_squid.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_starfish.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_starfish_small.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_stormgull.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_urchin.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/td_wraith.png": {
+      "source": "Pirate Busters v0.24 자체 IP(적 디자인) → tools/art/gen_topdown_enemies.py 위에서 본 픽셀 격자",
       "license": "OWN"
     },
     "enemies/urchin.png": {

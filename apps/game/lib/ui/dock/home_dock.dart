@@ -4,6 +4,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -23,7 +24,8 @@ class HomeDock extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final items = [
-      (UiSprites.tabMap, l10n.uiTabVoyage, null, false),
+      // 항해: 보물지도 상점에서 살 수 있는 칸이 있으면 점 1개 (환생 v2).
+      (UiSprites.tabMap, l10n.uiTabVoyage, null, ref.watch(rebirthShopProvider.select((s) => s.anyAffordable))),
       (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
       (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
       (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(summonBadgeProvider)),

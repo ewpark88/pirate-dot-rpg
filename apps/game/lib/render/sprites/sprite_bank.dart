@@ -20,7 +20,7 @@ typedef SpriteEntry = ({String key, String path, int frames});
 
 /// 아트 팩 이미지 (docs/specs/render-art-pack-v02.md 규칙 5). 없는 키는 null → 그리는 쪽이 플레이스홀더를 쓴다.
 ///
-/// 키: `crew:<id>` · `enemy:<kind>` · `boss:<kind>` · `ship:<tierId>` · `ship_part:<tierId>:<part>` · `ship_cannon` · `projectile:<family>` · `fx:<sheetId>` · `coin`.
+/// 키: `crew:<id>` · `enemy:<kind>` · `boss:<kind>` · `td_enemy:<kind>` · `td_boss:<kind>` · `ship:<tierId>` · `ship_part:<tierId>:<part>` · `ship_cannon` · `projectile:<family>` · `fx:<sheetId>` · `coin`.
 class SpriteBank {
   final Map<String, SpriteSheet> _sheets = {};
 
@@ -39,6 +39,9 @@ class SpriteBank {
       for (final c in t.crews.crews) (key: 'crew:${c.id}', path: c.portrait, frames: 1),
       for (final k in t.regions.enemies.keys) (key: 'enemy:$k', path: 'enemies/$k.png', frames: enemyFrames),
       for (final b in fx.bossLook.keys) (key: 'boss:$b', path: 'bosses/$b.png', frames: 1),
+      // 탑다운 적·보스 (T2: gen_topdown_enemies·gen_topdown_bosses, 머리가 위, 2프레임)
+      for (final k in t.regions.enemies.keys) (key: 'td_enemy:$k', path: 'enemies/td_$k.png', frames: 2),
+      for (final b in fx.bossLook.keys) (key: 'td_boss:$b', path: 'bosses/td_$b.png', frames: 2),
       for (final tier in t.shipTiers.tiers) (key: 'ship:${tier.id}', path: 'ship/${tier.sprite}.png', frames: 1),
       // 배 부품 외형 단계 (tools/art/gen_ship_parts.py): 등급마다 부품 시트, 프레임 = 단계.
       for (final tier in t.shipTiers.tiers)
@@ -49,6 +52,16 @@ class SpriteBank {
             frames: part.value as int,
           ),
       (key: 'ship_cannon', path: 'ship/part_cannon.png', frames: fx.raw.obj('shipParts').integer('cannonStages')),
+      // 탑다운 배 층 (tools/art/gen_topdown_ships.py, T2): 바탕 1장 + 부위별 단계 시트.
+      for (final tier in t.shipTiers.tiers) ...[
+        (key: 'td:${tier.id}:base', path: 'ship/td_${tier.sprite.replaceFirst('ship_', '')}_base.png', frames: 1),
+        for (final part in fx.raw.obj('topShip').obj('stages').raw.entries)
+          (
+            key: 'td:${tier.id}:${part.key}',
+            path: 'ship/td_${tier.sprite.replaceFirst('ship_', '')}_${part.key}.png',
+            frames: part.value as int,
+          ),
+      ],
       for (final f in t.skills.families)
         if (f.projectile != null) (key: 'projectile:${f.id}', path: 'projectiles/${f.projectile}.png', frames: 1),
       for (final s in fx.sheets) (key: 'fx:${s.id}', path: 'fx/${s.id}.png', frames: s.frames),

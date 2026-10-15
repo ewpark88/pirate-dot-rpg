@@ -4,7 +4,6 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/engine/events.dart';
-import 'package:game_core/src/engine/units.dart';
 
 /// 실제 시간 기준 쿨타임 하한을 지키는 슬롯 쿨타임 (공격 속도 배율 적용 전 단위).
 /// 슬롯 쿨타임은 `dt × 공격 속도`씩 줄므로, 실제 시간 = 쿨타임 ÷ 속도 ≥ [minSec].
@@ -35,18 +34,18 @@ extension SkillRound on Round {
       field
         ..buffValue = math.max(field.buffValue, s.attackSpeedBuff)
         ..buffLeft = math.max(field.buffLeft, s.buffSec);
-      ctx.emit(SkillCast(ctx.tick, crewId: g.crewId, skillId: s.id, x: w.field.shipX, y: w.field.shipY));
+      ctx.emit(SkillCast(ctx.tick, crewId: g.crewId, skillId: s.id, x: geo.ship.x, y: geo.ship.y));
       return true;
     }
-    final volleys = aimMany(a, a.count, field.foes, w, ctx.rng);
+    final volleys = geo.aimMany(a, a.count, field.foes, ctx.rng);
     if (volleys.isEmpty) return false;
     final base = damageOf(g, s.multiplier);
     if (_screenScope(g)) {
       // 전설 이상: 화면 안 전부, 대상당 비율로 예산 유지.
-      final all = eligible(a, field.foes, w.field);
+      final all = geo.eligible(a, field.foes);
       final normal = volleys.fold(0, (n, v) => n + v.hits.length);
       final k = math.min(1, normal / all.length).toDouble();
-      final v = (x: w.field.width * half, y: w.field.shipY, hits: [for (final e in all) (foe: e, factor: k)]);
+      final v = (x: geo.center.x, y: geo.center.y, hits: [for (final e in all) (foe: e, factor: k)]);
       ctx.emit(SkillCast(ctx.tick, crewId: g.crewId, skillId: s.id, x: v.x, y: v.y, scope: 'screen'));
       land(g, a, v, base);
       return true;

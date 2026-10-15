@@ -7,9 +7,13 @@ import 'package:game_core/src/engine/units.dart';
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
 
+/// 무리 한 파 — 전장 모양(옆모습·탑다운, [Field.geometry])이 자리를 정한다.
+void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
+    f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
+
 /// 무리 한 파 (규칙 2). 마리 수 = `mobCountAt(stage)`, 마리당 HP = 단일 HP × `waveHpPoolFactor` × 적 `hpScale`.
-/// 적은 오른쪽(`spawnX`)부터 `spawnSpacing` 간격으로 줄지어 들어온다.
-void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
+/// 옆모습: 적은 오른쪽(`spawnX`)부터 `spawnSpacing` 간격으로 줄지어 들어온다. 탑다운은 이것으로 만든 뒤 자리만 옮긴다.
+void spawnWaveSide(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
   final t = ctx.tables;
   final w = t.waves;
   final region = t.regions.regionAt(stage);
@@ -48,6 +52,7 @@ void startBoss(
   bool emit = true,
   double hpRatio = 1,
   double? x,
+  double? y,
   double hpScale = 1,
   double extraSec = 0,
 }) {
@@ -92,6 +97,7 @@ void startBoss(
       );
     }
   }
+  f.geometryOr(w).placeBoss(f, x: x, y: y);
   f
     ..bossActive = true
     ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)

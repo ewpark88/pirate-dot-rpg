@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
@@ -57,7 +58,7 @@ ScenarioResult runScenario(File file, Directory root, {GameTables? tables}) {
         ..enqueue(Command.fromJson(input is String ? {'type': input} : _plain(input)! as Json))
         ..tick();
     } else if (step['expect'] != null) {
-      final actual = observe(engine.state);
+      final actual = observe(engine.state, t);
       for (final e in (step['expect'] as YamlMap).entries) {
         final key = '${e.key}';
         if (!actual.containsKey(key)) {
@@ -73,8 +74,8 @@ ScenarioResult runScenario(File file, Directory root, {GameTables? tables}) {
   return ScenarioResult(name, failures: failures);
 }
 
-/// expect에서 쓸 수 있는 관찰값. 새 키가 필요하면 여기에 추가한다.
-Map<String, Object?> observe(GameState s) => {
+/// expect에서 쓸 수 있는 관찰값. 새 키가 필요하면 여기에 추가한다. [t]가 있으면 탑다운 키도.
+Map<String, Object?> observe(GameState s, [GameTables? t]) => {
   'stage': s.progress.stage,
   'wave': s.progress.wave,
   'bestStage': s.progress.bestStage,
@@ -91,7 +92,26 @@ Map<String, Object?> observe(GameState s) => {
   'offlineRewarded': s.lastOfflineGold != null,
   // 배 외형 단계 (ship_parts.json visualStages). 부위마다 키 하나 — 예: { look.cannon: 2 }
   for (final e in (s.battle?.shipLook ?? const <String, int>{}).entries) 'look.${e.key}': e.value,
+  // 탑다운(탑다운 전환 T1): 전장 방식, 적이 있는 사분면 수(배 중심 기준), 보스가 standoff 원에 섰는가.
+  'mode': s.battle?.mode,
+  if (t != null) ...topObservations(s, t),
 };
+
+/// 탑다운 관찰값. 옆모습이면 비어 있다.
+Map<String, Object?> topObservations(GameState s, GameTables t) {
+  final b = s.battle;
+  if (b == null || b.mode != 'top') return const {};
+  final top = t.waves.top;
+  final cx = b.shipX ?? top.shipX;
+  final cy = b.shipY ?? top.shipY;
+  double dist(EnemyView e) => math.sqrt(math.pow(e.x - cx, 2) + math.pow(e.y - cy, 2));
+  final boss = b.enemies.where((e) => e.boss).firstOrNull;
+  return {
+    'quadrants': {for (final e in b.enemies.where((e) => !e.boss)) (e.x >= cx ? 1 : 0) + (e.y >= cy ? 2 : 0)}.length,
+    // 원 안으로 들어오지 않고, 밀려도 standoff + 20 안(옆모습 시나리오처럼 숫자 대신 규칙으로 — 표 값이 바뀌어도 그대로).
+    'bossAtStandoff': boss != null && dist(boss) >= top.bossStandoff - 1e-6 && dist(boss) <= top.bossStandoff + 20,
+  };
+}
 
 int _ticks(String text, int tickMs) {
   final m = RegExp(r'^(\d+(?:\.\d+)?)\s*(s|t|ms)$').firstMatch(text.trim());

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
+import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
@@ -182,7 +183,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           top: 0,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [const GoalBar(), const BossWeakness(), if (tutorial) const TutorialBubble()],
+            children: [
+              const GoalBar(),
+              const BossWeakness(),
+              const FarmingPill(),
+              const BossFailNotice(),
+              if (tutorial) const TutorialBubble(),
+            ],
           ),
         ),
         // 도크·튜토리얼·상자 광고: 시트 위(닫힘이면 화면 아래).

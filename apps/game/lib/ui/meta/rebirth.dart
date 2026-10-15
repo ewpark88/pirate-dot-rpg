@@ -9,7 +9,14 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_chest.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_shop.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/rebirth/treasure_route.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -37,6 +44,9 @@ class RebirthCard extends ConsumerWidget {
     final (preview, stage, _, _, _, _) = view;
     final l10n = AppLocalizations.of(context);
     final bonus = percentText(l10n, preview.bonusNow);
+    final shopDot = ref.watch(rebirthShopProvider.select((s) => s.anyAffordable));
+    final earned = ref.watch(gameStateProvider.select((s) => s.wallet.mapPieces));
+    final forecast = preview.locked ? null : ref.watch(rebirthForecastProvider)(stage, preview.gain, earned);
 
     return PixelFrame(
       key: const Key('rebirth.card'),
@@ -48,7 +58,7 @@ class RebirthCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const PixelSprite(UiSprites.tabMap, dots: 16, scale: 1),
+                const SkinIcon(UiSprites.tabMap),
                 const SizedBox(width: 6),
                 Text(l10n.uiRebirthTitle, style: Theme.of(context).textTheme.titleMedium),
               ],
@@ -59,25 +69,44 @@ class RebirthCard extends ConsumerWidget {
             if (!preview.locked) ...[
               Text(l10n.uiRebirthGain(preview.gain), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(l10n.uiRebirthNext(preview.nextPieceInStages)),
+              if (forecast != null)
+                Text(
+                  forecastText(l10n, forecast),
+                  key: const Key('rebirth.forecast'),
+                  style: Skin.text(15, color: Skin.mintInk),
+                ),
               const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: PixelButton(
-                  key: const Key('rebirth.open'),
-                  primary: true,
-                  child: Text(l10n.uiRebirthButton),
-                  onPressed: () => unawaited(
-                    showDialog<void>(
-                      context: context,
-                      builder: (_) => RebirthDialog(preview: preview),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _ShopButton(dot: shopDot),
+                  PixelButton(
+                    key: const Key('rebirth.open'),
+                    primary: true,
+                    child: Text(l10n.uiRebirthButton),
+                    onPressed: () => unawaited(
+                      showDialog<void>(
+                        context: context,
+                        builder: (_) => RebirthDialog(preview: preview),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ] else ...[
               Text(l10n.uiRebirthLocked(preview.minStage)),
               const SizedBox(height: 4),
               PixelBar(value: (stage / preview.minStage).clamp(0.0, 1.0), fill: Skin.goldBottom),
+              // 환생 전에도 조각이 있으면 상점을 볼 수 있다.
+              if (earned > 0) ...[
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _ShopButton(dot: shopDot),
+                ),
+              ],
             ],
           ],
         ),
@@ -86,7 +115,26 @@ class RebirthCard extends ConsumerWidget {
   }
 }
 
-/// 환생 확인 창: 잃는 것 / 그대로인 것 / 얻는 것. 되돌릴 수 없으니 한 번 더 누른다.
+/// '보물지도 상점' 버튼 — 살 수 있는 칸이 있으면 빨간 점 (스펙 7장 ①).
+class _ShopButton extends StatelessWidget {
+  const _ShopButton({required this.dot});
+
+  final bool dot;
+
+  @override
+  Widget build(BuildContext context) => PixelDot(
+    show: dot,
+    dotKey: const Key('rebirth.shop.cardDot'),
+    child: SkinButton(
+      key: const Key('rebirth.shop.open'),
+      tone: SkinTone.gold,
+      onPressed: () => showRebirthShop(context),
+      child: Text(AppLocalizations.of(context).uiRebirthShop),
+    ),
+  );
+}
+
+/// 환생 확인 창: 잃는 것 / 그대로인 것(+배 외형) / 얻는 것(+상자). 보물 바다가 열렸으면 항로 고르기. 되돌릴 수 없으니 한 번 더 누른다.
 class RebirthDialog extends ConsumerWidget {
   const RebirthDialog({required this.preview, super.key});
 
@@ -97,6 +145,8 @@ class RebirthDialog extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final from = percentText(l10n, preview.bonusNow);
     final to = percentText(l10n, preview.bonusAfter);
+    final next = ref.watch(gameStateProvider.select((s) => s.progress.rebirths)) + 1;
+    final chest = chestFor(next);
     return PixelDialog(
       title: l10n.uiRebirthTitle,
       content: Column(
@@ -104,11 +154,13 @@ class RebirthDialog extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Line(icon: UiSprites.rebirth, text: l10n.uiRebirthLose),
-          _Line(icon: UiSprites.lock, text: l10n.uiRebirthKeep),
+          _Line(icon: UiSprites.lock, text: l10n.uiRebirthKeepLook),
           _Line(
             icon: UiSprites.tabMap,
             text: l10n.uiRebirthGainLine(preview.gain, '+$from', '+$to'),
           ),
+          _Line(icon: UiSprites.gem, text: l10n.uiRebirthChestLine(chest.gems, chest.summons)),
+          const TreasureRoute(),
         ],
       ),
       actions: [
@@ -144,7 +196,7 @@ class _Line extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PixelSprite(icon, dots: 16, scale: 1),
+        SkinIcon(icon),
         const SizedBox(width: 8),
         Expanded(child: Text(text)),
       ],
@@ -173,7 +225,12 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
       unawaited(
         showDialog<void>(
           context: context,
-          builder: (_) => _RebirthDoneDialog(gain: gain, bonus: bonus),
+          // 환생 v2: 상자 팝업(조각 + 젬·소환·스킨·칭호). 계약 전엔 상자 내용을 스펙 식으로 흉내 낸다.
+          builder: (_) => RebirthChestDialog(
+            chest: chestFor(after.$1),
+            pieces: gain,
+            bonus: percentText(AppLocalizations.of(context), bonus),
+          ),
         ),
       );
     });
@@ -181,25 +238,4 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-class _RebirthDoneDialog extends StatelessWidget {
-  const _RebirthDoneDialog({required this.gain, required this.bonus});
-
-  final int gain;
-  final double bonus;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return PixelDialog(
-      key: const Key('rebirth.done'),
-      icon: const PixelSprite(UiSprites.tabMap, dots: 16),
-      title: l10n.uiRebirthDoneTitle,
-      content: Text(l10n.uiRebirthDoneGain(gain, percentText(l10n, bonus)), textAlign: TextAlign.center),
-      actions: [
-        PixelButton(primary: true, onPressed: () => Navigator.of(context).pop(), child: Text(l10n.uiOk)),
-      ],
-    );
-  }
 }

@@ -99,7 +99,7 @@ void main() {
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
     expect(find.text('Reset: stage, gold, ship upgrades'), findsOneWidget);
-    expect(find.text('Kept: crew, collection, gems'), findsOneWidget);
+    expect(find.text('Kept: crew, collection, gems, ship look'), findsOneWidget);
     expect(find.text('Gain: +7 pieces, bonus +0% to +35%'), findsOneWidget);
     await tester.tap(find.byKey(const Key('rebirth.confirm')));
     await tester.pumpAndSettle();
@@ -138,7 +138,13 @@ void main() {
           ),
         );
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('rebirth.done')), findsOneWidget);
+    // 환생 v2: 상자 팝업 → 열기 → 조각 줄이 튀어나온다.
+    expect(find.byKey(const Key('rebirth.chest')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('rebirth.chest.open')));
+    await tester.pumpAndSettle();
     expect(find.textContaining('+7 map pieces'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('rebirth.chest.sail')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('rebirth.chest')), findsNothing);
   });
 }
