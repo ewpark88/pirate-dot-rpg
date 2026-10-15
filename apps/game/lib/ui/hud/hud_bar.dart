@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -36,7 +37,7 @@ class HudBar extends ConsumerWidget {
     return Material(
       color: Theme.of(context).colorScheme.primaryContainer,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -70,6 +71,21 @@ class HudBar extends ConsumerWidget {
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+              ],
+            ),
+            const SizedBox(height: 2),
+            // 누르는 것(궁극기·톱니, 48dp)은 게이지 줄에 모아 HUD 높이를 줄인다 — 캔버스 HUD로 넘어가기 전 임시.
+            Row(
+              children: [
+                Expanded(child: LinearProgressIndicator(value: rageRatio, minHeight: 8)),
+                const SizedBox(width: 8),
+                PixelButton(
+                  key: const Key('hud.ultimate'),
+                  primary: true,
+                  onPressed: rageFull ? () => ref.read(commandSinkProvider).send(const TriggerUltimate()) : null,
+                  child: Text(l10n.uiHudUltimate),
+                ),
                 IconButton(
                   key: const Key('hud.settings'),
                   tooltip: l10n.uiSettingsTitle,
@@ -77,18 +93,6 @@ class HudBar extends ConsumerWidget {
                   onPressed: () => unawaited(
                     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen())),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Expanded(child: LinearProgressIndicator(value: rageRatio, minHeight: 8)),
-                const SizedBox(width: 8),
-                FilledButton(
-                  key: const Key('hud.ultimate'),
-                  onPressed: rageFull ? () => ref.read(commandSinkProvider).send(const TriggerUltimate()) : null,
-                  child: Text(l10n.uiHudUltimate),
                 ),
               ],
             ),

@@ -20,17 +20,14 @@ import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 /// 격자 한 줄에 선원 수.
 const _columns = 5;
 
-/// 카드 가로:세로.
-const _cardAspect = 0.34;
-
-/// 카드 최소 높이 — 초상·이름·별·레벨·카드 수·출전·승급 버튼(48dp)이 들어가는 높이.
-const _minCardHeight = 214.0;
-
 /// 카드 사이 간격.
 const _spacing = 4.0;
 
-/// 미보유 선원 카드의 불투명도.
-const _unownedOpacity = 0.35;
+/// 초상 그림 한 변의 도트 수 (도트 팩 32×32).
+const _portraitDots = 32;
+
+/// 미보유 선원 실루엣 색 (도트 윤곽색).
+const Color _silhouette = PixelPalette.outline;
 
 /// 승급 버튼을 보이는 상태 = 승급 문 앞(레벨은 됐고 카드·골드·증표만 남음).
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
@@ -91,23 +88,28 @@ class CrewTab extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        LayoutBuilder(
-          builder: (context, box) {
-            // 좁은 화면(360dp)에서는 가로:세로만으로 카드가 내용보다 낮아진다 → 최소 높이를 둔다.
-            final cardWidth = (box.maxWidth - _spacing * (_columns - 1)) / _columns;
-            final cardHeight = math.max(cardWidth / _cardAspect, _minCardHeight);
-            return GridView.count(
-              crossAxisCount: _columns,
-              childAspectRatio: cardWidth / cardHeight,
-              mainAxisSpacing: _spacing,
-              crossAxisSpacing: _spacing,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                for (final c in crews) CrewCard(def: c, owned: owned.contains(c.id)),
-              ],
-            );
-          },
+        // 기준 gif 아래 선원 바처럼 큰 정사각 초상 카드. 줄마다 높이가 달라도 되게(승급 버튼이 있는 줄만 길어짐) 격자 대신 줄.
+        // 테스트·도감이 40장을 모두 찾을 수 있게 한 덩어리로 짓는다(ListView는 화면 밖 자식을 안 지음).
+        Column(
+          children: [
+            for (var i = 0; i < crews.length; i += _columns)
+              Padding(
+                padding: const EdgeInsets.only(bottom: _spacing),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var j = i; j < i + _columns; j++) ...[
+                      if (j > i) const SizedBox(width: _spacing),
+                      Expanded(
+                        child: j < crews.length
+                            ? CrewCard(def: crews[j], owned: owned.contains(crews[j].id))
+                            : const SizedBox(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+          ],
         ),
       ],
     );
@@ -142,28 +144,107 @@ class CrewCard extends ConsumerWidget {
         ? tables.rarities.rarities.firstWhere((r) => r.id == def.baseRarity)
         : rarityOfLevel(tables.rarities, level);
     final small = Theme.of(context).textTheme.labelSmall;
+    final color = rarityColor(rarity);
 
-    // 등급색 도트 테두리 (하이라이트 없이 — 등급색이 잘 보이게).
-    final card = PixelFrame(
-      border: rarityColor(rarity),
-      highlight: null,
-      padding: 2,
-      child: Column(
-        children: [
-          CrewPortrait(crew: def),
-          Text(tableText(l10n, def.nameKey), maxLines: 1, overflow: TextOverflow.ellipsis, style: small),
-          _Stars(rarity: rarity),
-          if (level != null && cards != null) ...[
-            Text(l10n.uiLevel(level), style: small),
-            Text(l10n.uiCrewCards(cards), style: small),
-          ],
-          if (deployed) Text(l10n.uiCrewDeployed, style: small?.copyWith(color: PixelPalette.accent)),
-          const Spacer(),
-          if (_atGate.contains(status)) _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
-        ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _PortraitBox(def: def, color: color, owned: owned, rarity: rarity, deployed: deployed),
+        // 이름은 두 줄까지 (영어 "Octo the Brawler"가 말줄임 없이 들어가게).
+        Text(
+          tableText(l10n, def.nameKey),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: (owned ? small : small?.copyWith(color: PixelPalette.textDim)),
+        ),
+        // 레벨 · 카드 수를 한 줄에 작게.
+        if (level != null && cards != null)
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: l10n.uiLevel(level)),
+                TextSpan(
+                  text: ' ×$cards',
+                  style: const TextStyle(color: PixelPalette.textDim),
+                ),
+              ],
+            ),
+            key: Key('crew.info.${def.id}'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: small,
+          ),
+        if (_atGate.contains(status)) _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
+      ],
+    );
+  }
+}
+
+/// 등급색 두꺼운 도트 테두리 안의 정사각 초상 (등급색을 옅게 깐 바탕, 아래 별, 출전이면 위 띠).
+/// 미보유는 어두운 단색 실루엣 — 테두리·별은 그대로 보여 무엇을 모을지 알 수 있다.
+class _PortraitBox extends StatelessWidget {
+  const _PortraitBox({
+    required this.def,
+    required this.color,
+    required this.owned,
+    required this.rarity,
+    required this.deployed,
+  });
+
+  final CrewDef def;
+  final Color color;
+  final bool owned;
+  final RarityDef rarity;
+  final bool deployed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    return AspectRatio(
+      aspectRatio: 1,
+      child: PixelFrame(
+        border: color,
+        fill: Color.lerp(PixelPalette.navy, color, owned ? 0.35 : 0.18)!,
+        highlight: null,
+        borderDots: 2,
+        child: LayoutBuilder(
+          builder: (context, box) {
+            // 초상은 실제 픽셀의 정수배로만 키운다(최근접 확대가 고르게).
+            final scale = math.max(1, (box.maxWidth * dpr / _portraitDots).floor());
+            final portrait = CrewPortrait(crew: def, size: scale * _portraitDots / dpr);
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                if (owned)
+                  portrait
+                else
+                  ColorFiltered(colorFilter: const ColorFilter.mode(_silhouette, BlendMode.srcIn), child: portrait),
+                Positioned(left: 0, right: 0, bottom: 1, child: _Stars(rarity: rarity)),
+                if (deployed)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    child: ColoredBox(
+                      color: PixelPalette.outline,
+                      child: Text(
+                        l10n.uiCrewDeployed,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.accent),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
-    return owned ? card : Opacity(opacity: _unownedOpacity, child: card);
   }
 }
 
