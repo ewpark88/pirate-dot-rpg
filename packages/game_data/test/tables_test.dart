@@ -11,11 +11,14 @@ void main() {
       expect(t.shipParts.parts.map((p) => p.id), shipPartIds);
     });
 
-    test('한 파 마리 수 = min(14, 6 + floor(stage/10))', () {
+    test('한 파 마리 수 = min(14, 6 + floor(stage/10)) = 총량 기준 pool, 탑다운은 무리 32 + floor(stage/2) 최대 150', () {
       final w = GameTables.load().waves;
       expect(w.mobCountAt(1), 6);
       expect(w.mobCountAt(37), 9);
       expect(w.mobCountAt(500), 14);
+      expect(w.mobPoolAt(37), 9);
+      expect(w.topMobCountAt(1), 32);
+      expect(w.topMobCountAt(9999), 150);
     });
 
     test('배 등급은 스테이지로 정해진다', () {

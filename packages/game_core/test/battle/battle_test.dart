@@ -46,7 +46,7 @@ void main() {
   String crewOf(String familyId, [int nth = 0]) =>
       tables.crews.crews.where((c) => c.family == familyId).elementAt(nth).id;
 
-  test('1. 첫 틱에 mobCountAt(1)마리가 오른쪽에 생기고, HP 합 = 단일 HP × 마리 수 × waveHpPoolFactor', () {
+  test('1. 첫 틱에 mobCountAt(1)마리가 오른쪽에 생기고, HP 합 = 단일 HP × mobPoolAt(1) × waveHpPoolFactor', () {
     final e = engineOf(game())..tick();
     final enemies = e.state.battle!.enemies;
     expect(enemies, hasLength(w.mobCountAt(1)));
@@ -55,7 +55,7 @@ void main() {
     final f = fieldWith([]);
     spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1
     final total = f.foes.fold(BigNum.zero, (s, x) => s + x.maxHp);
-    expect(total.closeTo(BigNum.from(w.hpBase * w.mobCountAt(1) * w.waveHpPoolFactor)), isTrue);
+    expect(total.closeTo(BigNum.from(w.hpBase * w.mobPoolAt(1) * w.waveHpPoolFactor)), isTrue);
   });
 
   test('2. 아무 공격도 없으면 적이 배에 닿고 ShipDamaged가 나온다', () {

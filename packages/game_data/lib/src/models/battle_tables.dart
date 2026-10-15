@@ -7,6 +7,9 @@ class WavesTable {
       mobBase = raw.obj('mobCount').integer('base'),
       mobStagesPerExtra = raw.obj('mobCount').integer('stagesPerExtra'),
       mobMax = raw.obj('mobCount').integer('max'),
+      mobPoolBase = raw.obj('mobCount').obj('pool').integer('base'),
+      mobPoolStagesPerExtra = raw.obj('mobCount').obj('pool').integer('stagesPerExtra'),
+      mobPoolMax = raw.obj('mobCount').obj('pool').integer('max'),
       waveHpPoolFactor = raw.number('waveHpPoolFactor'),
       bossTimeLimitSec = raw.obj('boss').number('timeLimitSec'),
       field = FieldDef.fromJson(raw.obj('field')),
@@ -18,6 +21,11 @@ class WavesTable {
   final int mobBase;
   final int mobStagesPerExtra;
   final int mobMax;
+
+  /// 한 파 총량(HP·공격·골드) 기준 마리 수. 보이는 마리([mobCountAt])가 이만큼의 몫을 나눠 갖는다.
+  final int mobPoolBase;
+  final int mobPoolStagesPerExtra;
+  final int mobPoolMax;
   final double waveHpPoolFactor;
   final double bossTimeLimitSec;
   final FieldDef field;
@@ -72,10 +80,23 @@ class WavesTable {
   double get chainFalloff => raw.number('chainFalloff');
   int get chainMax => raw.integer('chainMax');
 
-  /// 한 파 마리 수 = min(max, base + floor(stage / stagesPerExtra)).
+  /// 한 파 보이는 마리 수 = min(max, base + floor(stage / stagesPerExtra)) (사용자 지시 2026-10-15: ‘무리’로 보이게).
   int mobCountAt(int stage) {
     final n = mobBase + stage ~/ mobStagesPerExtra;
     return n < mobMax ? n : mobMax;
+  }
+
+  /// 탑다운 한 파 마리 수 = min(top.mobCount.max, base + floor(stage / stagesPerExtra)) — 무리 습격(핵&슬래시, 2026-10-15).
+  int topMobCountAt(int stage) {
+    final m = raw.obj('top').obj('mobCount');
+    final n = m.integer('base') + stage ~/ m.integer('stagesPerExtra');
+    return n < m.integer('max') ? n : m.integer('max');
+  }
+
+  /// 한 파 총량 기준 = min(pool.max, pool.base + floor(stage / pool.stagesPerExtra)). 총 HP·공격·골드 = 단일 곡선 × 이 값.
+  int mobPoolAt(int stage) {
+    final n = mobPoolBase + stage ~/ mobPoolStagesPerExtra;
+    return n < mobPoolMax ? n : mobPoolMax;
   }
 
   List<String> validate() {
