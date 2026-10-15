@@ -14,6 +14,20 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 밤 · S3 · 사용자 버그 '몬스터가 다가오다 전부 멈춘다' + 60fps 상한 + 폭발 크기 상한
+- 원인: TopScenePainter가 poseCount를 무시하고 player.poses 전체를 그렸다 → 파가 끝나 적이 0이 돼도 지난 파의 적이 마지막 자리에 그대로(다음 파까지 최대 약 2초). 엔진은 정상(S1 측정과 일치).
+  라이브 재생(엔진 push 50ms·렌더 60fps, stage 23, 30초) '보이는 적 전부 정지' 프레임: 12.7%·가장 긴 126프레임(2.1초) → 5.2%·가장 긴 9프레임(남는 건 엔진 히트스톱 1~2틱). 회귀 테스트 top_live_freeze_test.
+  히트스톱 값(juice crit 40·multiKill4 70)을 줄이면 2.0%까지 내려가지만 선원 균형(balance crews)이 바뀌어 되돌림 — S1·S2 결정 사항.
+- 0e62424: 전투 프레임 상한 평소 60(fx_map frameCap.battleFps)·절전 30.
+- 탑다운 폭발 그림 지름 상한 30단위(S2 topRadius 34로 폭발이 배를 덮던 것).
+
+### 2026-10-15 · S3 · 배터리·CPU: 화면 밖 컬링·항적 점 묶음·가벼운 폭발
+- 탑다운 화면 밖 컬링: 적(drawAtlas 묶음에서 제외)·발사체·이펙트·코인·숫자 — 보이는 전장 + 여유 24(TopScenePainter.visibleWorld).
+- 항적: 점마다 drawRect(약 90번) → 알파 4단계 drawRawPoints(재사용 버퍼, 할당 없음).
+- 가벼운 폭발: 절전이거나 폭발이 4개 넘으면 연기·파편·불씨를 빼고 번쩍·불덩이·충격파만(PbFxPainter.lite).
+- 부하(150마리, 매 틱 6발·처치) 프레임당 그리기: 302 → 164(이미지 146 → 66, 사각형 71 → 9). 넓게 퍼진 장면(화면 밖 많음) 154. 기록 ms는 이 PC에서 0.8~1.6으로 들쭉날쭉해 비교 못 함(실기기 S5 측정으로).
+- 피버·폭풍 덮개는 `top/top_overlays.dart`로 분리(300줄).
+
 ### 2026-10-15 · S3 · 지루함 해소 3종 연출 (S2 c5193fa 계약)
 - `scene/fun_director.dart`: FeverStarted(금빛 번쩍·흔들림·진동·소리), GoldfishCaught(금화 터짐 + 금 숫자 + 그 금액 금화가 배로), BottlePicked(병 자리 반짝), SeaEventStarted·ShipLookChanged 소리. EventDirector default → funEvent.
 - TopScenePainter: 이벤트 적(goldfish·sea_serpent·merchant_ship)은 td_event 그림, 피버 중 금화 비(결정론, 절전 ½) + 금빛 테두리(선명 테 + 안쪽 번짐, 맥박), 유리병은 배 오른쪽 앞에서 출렁, 폭풍이면 분위기에 비·어둡게·번개 번쩍(번쩍임 설정 따름).

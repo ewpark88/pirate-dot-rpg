@@ -68,9 +68,10 @@ class HudPainter {
 
   /// 데미지 숫자: 도트 글꼴, 0.6초 동안 떠오름. 글자는 숫자가 바뀔 때만 다시 굽는다.
   /// [scale]: 탑다운은 전장 1단위가 옆모습 1도트보다 커서(S24 2.13 : 1.42dp) 숫자를 옆모습과 같은 화면 크기로 줄인다.
-  void paintNumbers(Canvas c, {double scale = 1}) {
+  void paintNumbers(Canvas c, {double scale = 1, Rect cull = Rect.largest}) {
     final layer = scene.numbers;
     for (final n in layer.active) {
+      if (!cull.contains(Offset(n.x, n.y))) continue;
       final text = (n.cache ??= _NumberText()) as _NumberText;
       if (text.version != n.version || text.kind != n.kind) {
         text

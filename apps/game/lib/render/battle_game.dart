@@ -137,8 +137,9 @@ class BattleGame extends FlameGame with _UiLinks {
     _applyCap();
   }
 
-  /// 절전이면 실제 프레임(그리기 포함)을 juice powerSave.fps로 묶는다. 붙기 전(onMount 전)·테스트에서는 update 누적으로만.
-  void _applyCap() => !isMounted ? null : (_settings.powerSave ? _cap.start(scene.juice.powerSaveFps) : _cap.stop());
+  /// 실제 프레임(그리기 포함)을 묶는다: 평소 fx_map frameCap.battleFps(60), 절전 juice powerSave.fps(30). 붙기 전·테스트에서는 update 누적으로만.
+  void _applyCap() => !isMounted ? null : _cap.start(_capFps);
+  num get _capFps => _settings.powerSave ? scene.juice.powerSaveFps : scene.fx.raw.obj('frameCap').number('battleFps');
 
   @override
   void onMount() {
@@ -150,7 +151,7 @@ class BattleGame extends FlameGame with _UiLinks {
   void lifecycleStateChange(AppLifecycleState state) {
     super.lifecycleStateChange(state);
     if (state == AppLifecycleState.resumed) {
-      _cap.resume(scene.juice.powerSaveFps);
+      _cap.resume(_capFps);
     } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
       _cap.suspend();
     }

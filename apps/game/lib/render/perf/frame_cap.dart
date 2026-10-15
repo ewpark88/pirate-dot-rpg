@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flame/game.dart';
 
-/// 절전 fps 상한 (S5 실측: 전투 중 CPU 120~130%). Flame 게임 루프는 화면 주사율(60~120Hz)마다 update + 다시 그리기를 하므로,
+/// 전투 fps 상한 (S5 실측: 120Hz 폰에서 전투 120fps·CPU 코어 하나 100% → 평소 60, 절전 30). Flame 게임 루프는 화면 주사율(60~120Hz)마다 update + 다시 그리기를 하므로,
 /// 장면 진행만 줄여서는 래스터 스레드가 그대로 돈다. 상한이 켜지면 엔진 루프를 멈추고 타이머로 fps번만 한 프레임씩
 /// 진행·그리기(stepEngine)를 한다 → Flutter도 그 프레임만 그린다. 앱이 백그라운드면 타이머도 멈춘다.
 class FrameCap {
@@ -16,9 +16,20 @@ class FrameCap {
   /// 타이머가 프레임을 몰고 있는가 (그동안 update의 dt는 실제 경과 시간).
   bool get active => _timer != null;
 
-  /// fps로 상한을 건다. 이미 걸려 있으면 그대로.
+  num _fps = 0;
+
+  /// fps로 상한을 건다. 같은 fps로 이미 걸려 있으면 그대로, 다르면 다시 건다(절전 켜고 끔).
   void start(num fps) {
-    if (_timer != null || _suspended) return;
+    if (_suspended) {
+      _fps = fps;
+      return;
+    }
+    if (_timer != null) {
+      if (fps == _fps) return;
+      _timer!.cancel();
+      _timer = null;
+    }
+    _fps = fps;
     game.pauseEngine();
     _clock
       ..reset()
@@ -52,6 +63,6 @@ class FrameCap {
   void resume(num fps) {
     if (!_suspended) return;
     _suspended = false;
-    start(fps);
+    start(_fps == 0 ? fps : _fps);
   }
 }

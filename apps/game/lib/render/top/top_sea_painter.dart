@@ -169,34 +169,60 @@ class TopSeaPainter {
   /// 배 항적: 고물 뒤 흰 거품 소용돌이 + 뒤로 벌어지는 V자 두 줄(2단위 굵기, 끝으로 갈수록 흐림·끊김) + 뱃머리 양옆 물보라.
   /// 배 기준 좌표(뱃머리 위, 고물 = +[stern], 뱃머리 = −[bow])로 그린다.
   void wake(Canvas c, double stern, double bow, double halfWidth, double clockMs) {
+    // 점들을 알파 4단계 묶음으로 모아 drawRawPoints 몇 번(S1 배터리 — 전에는 점마다 drawRect 약 90번).
     const length = 60;
+    for (final b in _wakeBuckets) {
+      b.n = 0;
+    }
     final phase = (clockMs / 50) % 6;
     for (var i = 0; i < length; i += 2) {
       final fade = 1 - i / length;
       final spread = halfWidth * 0.7 + i * 0.6;
-      final y = stern + i;
+      final y = stern + i + 1;
       if ((i + phase).floor() % 6 < 4) {
-        _paint.color = _foam.withValues(alpha: 0.9 * fade);
-        c
-          ..drawRect(Rect.fromLTWH((-spread - 1).floorToDouble(), y, 2, 2), _paint)
-          ..drawRect(Rect.fromLTWH(spread.floorToDouble() - 1, y, 2, 2), _paint);
+        _wakeBuckets[(fade * 3.99).floor()]
+          ..add((-spread).floorToDouble(), y)
+          ..add(spread.floorToDouble(), y);
       }
-      // 가운데 소용돌이(고물 가까이 진하게)
       if (i < 24) {
+        // 가운데 소용돌이(고물 가까이 진하게)
         final wob = math.sin(clockMs / 140 + i * 0.7) * (2 + i * 0.15);
-        _paint.color = _foam.withValues(alpha: 0.75 * (1 - i / 24));
-        c.drawRect(Rect.fromLTWH((wob - 1).roundToDouble(), y, 2 + (i < 8 ? 2 : 0), 1), _paint);
+        final k = ((1 - i / 24) * 3.99).floor();
+        _wakeBuckets[k].add(wob.roundToDouble(), y - 0.5);
+        if (i < 8) _wakeBuckets[k].add(wob.roundToDouble() + 2, y - 0.5);
       }
     }
     // 뱃머리 물보라: 양옆 짧은 흰 줄
     final spray = 0.5 + 0.5 * math.sin(clockMs / 120);
-    _paint.color = _foam.withValues(alpha: 0.5 + 0.4 * spray);
     for (var k = 0; k < 5; k++) {
       final y = -bow + 10 + k * 2;
       final x = halfWidth * 0.55 + k * 1.2 + spray;
-      c
-        ..drawRect(Rect.fromLTWH(-x - 2, y, 2, 1), _paint)
-        ..drawRect(Rect.fromLTWH(x, y, 2, 1), _paint);
+      _wakeBuckets[3]
+        ..add(-x - 1, y)
+        ..add(x + 1, y);
     }
+    _points.strokeWidth = 2;
+    for (var k = 0; k < 4; k++) {
+      final b = _wakeBuckets[k];
+      if (b.n == 0) continue;
+      _points.color = _foam.withValues(alpha: 0.2 + 0.7 * (k + 1) / 4);
+      c.drawRawPoints(PointMode.points, Float32List.sublistView(b.xy, 0, b.n * 2), _points);
+    }
+  }
+
+  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(160));
+}
+
+/// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.
+class _Points {
+  _Points(int cap) : xy = Float32List(cap * 2);
+  final Float32List xy;
+  int n = 0;
+
+  void add(double x, double y) {
+    if (n * 2 >= xy.length) return;
+    xy[n * 2] = x;
+    xy[n * 2 + 1] = y;
+    n++;
   }
 }

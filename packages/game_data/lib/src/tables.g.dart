@@ -1516,6 +1516,9 @@ const Map<String, String> rawTables = {
       "flashMs": 120,
       "dim": 0.25
     }
+  },
+  "frameCap": {
+    "battleFps": 60
   }
 }
 ''',
