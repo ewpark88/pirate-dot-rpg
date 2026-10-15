@@ -7,6 +7,7 @@ import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
+import 'package:pirate_dot/ui/hud/power_badge.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -47,9 +48,16 @@ class TopBar extends ConsumerWidget {
           const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
           const SizedBox(width: 4),
           Text(gems.toString(), key: const Key('top.gems')),
+          const SizedBox(width: 8),
+          const PowerBadge(),
         ],
       ),
     );
+    // 운영자 빌드에서만 골드 글자 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
+    Widget moneyTap = money;
+    if (kOperator) {
+      moneyTap = OperatorTapGate(child: money);
+    }
     // 하늘 바탕 위에 떠 있는 알약·동그라미들 (스킨 r1) — 바 자체는 투명.
     return DecoratedBox(
       decoration: const BoxDecoration(),
@@ -59,11 +67,19 @@ class TopBar extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 8),
           child: Row(
             children: [
-              // 운영자 빌드에서만 골드 글자 5번 → 운영자 패널. 배포 빌드에는 제스처가 없다.
-              if (kOperator) OperatorTapGate(child: money) else money,
+              // 돈 알약(골드·젬·전투력)은 좁으면 글자째 줄인다 — 순풍·광고보다 넓게(3:2).
+              Flexible(
+                flex: 3,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: moneyTap,
+                ),
+              ),
               const SizedBox(width: 8),
               // 순풍·광고는 남는 폭 안에서만 (좁으면 줄여서 넣는다).
               const Expanded(
+                flex: 2,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,

@@ -4,138 +4,10 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/state_parts.dart';
 import 'package:meta/meta.dart';
 
+part 'battle_view_items.dart';
+
 /// 전장 좌표계: 논리 화면 320×180 중 전장 0~148 (docs/GAME_DESIGN.md 10장).
 /// 렌더는 이 좌표를 두 틱 사이로 보간해 그린다. 세이브에는 들어가지 않는다.
-@immutable
-class EnemyView {
-  const EnemyView({
-    required this.id,
-    required this.kind,
-    required this.x,
-    required this.y,
-    required this.hpRatio,
-    this.layer = 'surface',
-    this.boss = false,
-    this.stunned = false,
-    this.shielded = false,
-    this.tier = 0,
-    this.slowed = false,
-    this.burning = false,
-    this.vulnerable = false,
-    this.heading = sideHeading,
-  });
-
-  factory EnemyView.fromJson(Json j) => EnemyView(
-    id: j['id'] as int,
-    kind: j['kind'] as String,
-    x: (j['x'] as num).toDouble(),
-    y: (j['y'] as num).toDouble(),
-    hpRatio: (j['hpRatio'] as num).toDouble(),
-    layer: j['layer'] as String? ?? 'surface',
-    boss: j['boss'] as bool? ?? false,
-    stunned: j['stunned'] as bool? ?? false,
-    shielded: j['shielded'] as bool? ?? false,
-    tier: j['tier'] as int? ?? 0,
-    slowed: j['slowed'] as bool? ?? false,
-    burning: j['burning'] as bool? ?? false,
-    vulnerable: j['vulnerable'] as bool? ?? false,
-    heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
-  );
-
-  /// 옆모습의 적 진행 방향(왼쪽) — 라디안, 0 = 오른쪽, 반시계(수학 좌표, y는 화면 아래로).
-  static const double sideHeading = math.pi;
-
-  /// 전투 동안 유일한 id. 이벤트가 이 id로 대상을 가리킨다.
-  final int id;
-
-  /// regions.json의 enemies[].id 또는 보스 id.
-  final String kind;
-  final double x;
-  final double y;
-  final double hpRatio;
-
-  /// `surface` | `underwater` | `air`.
-  final String layer;
-  final bool boss;
-
-  /// 기절 중 (머리 위 별).
-  final bool stunned;
-
-  /// 보호막 중 (보스 패턴: 피해 0).
-  final bool shielded;
-
-  /// 무한 항해 등급 테두리: 0 없음, 1 희귀, 2 영웅, 3 전설.
-  final int tier;
-
-  /// 상태 표시 (전설 능력): 감속 중, 화상 중, 받는 피해 증가 중.
-  final bool slowed;
-  final bool burning;
-  final bool vulnerable;
-
-  /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
-  final double heading;
-
-  Json toJson() => {
-    'id': id,
-    'kind': kind,
-    'x': x,
-    'y': y,
-    'hpRatio': hpRatio,
-    'layer': layer,
-    'boss': boss,
-    'stunned': stunned,
-    'shielded': shielded,
-    'tier': tier,
-    'slowed': slowed,
-    'burning': burning,
-    'vulnerable': vulnerable,
-    if (heading != sideHeading) 'heading': heading,
-  };
-}
-
-/// 화면 아래 무기 슬롯 하나 (출전 선원).
-@immutable
-class FleetSlot {
-  const FleetSlot({required this.crewId, this.cooldown = 0, this.skillCooldown = 0, this.rarity = 0});
-
-  factory FleetSlot.fromJson(Json j) => FleetSlot(
-    crewId: j['crewId'] as String,
-    cooldown: (j['cooldown'] as num).toDouble(),
-    skillCooldown: (j['skillCooldown'] as num).toDouble(),
-    rarity: (j['rarity'] as int?) ?? 0,
-  );
-
-  final String crewId;
-
-  /// 현재 등급 순번 (`rarities.json` 순서, 0 = 일반). 승급하면 바로 바뀐다 — 선원 바 테두리 색 (계약 I, 렌더 요청).
-  final int rarity;
-
-  /// 남은 공격 쿨타임 비율 0(준비)~1(방금 발사). 슬롯의 어두운 덮개.
-  final double cooldown;
-
-  /// 남은 스킬 쿨타임 비율.
-  final double skillCooldown;
-
-  Json toJson() => {'crewId': crewId, 'cooldown': cooldown, 'skillCooldown': skillCooldown, 'rarity': rarity};
-}
-
-/// 바다에 떠 있는 보물상자 (설계서 4.6). 탭하면 TapChest. 경제 레인이 띄우고 치운다.
-@immutable
-class ChestView {
-  const ChestView({required this.x, required this.y, required this.ticksLeft});
-
-  factory ChestView.fromJson(Json j) =>
-      ChestView(x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble(), ticksLeft: j['ticksLeft'] as int);
-
-  final double x;
-  final double y;
-
-  /// 가라앉을 때까지 남은 틱.
-  final int ticksLeft;
-
-  Json toJson() => {'x': x, 'y': y, 'ticksLeft': ticksLeft};
-}
-
 @immutable
 class BattleView {
   const BattleView({
@@ -159,6 +31,13 @@ class BattleView {
     this.shipX,
     this.shipY,
     this.shipHeading = 0,
+    this.shipTierLook,
+    this.shipSkin,
+    this.treasureSea,
+    this.fever = 0,
+    this.feverTicksLeft = 0,
+    this.seaEvent,
+    this.challenge,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -182,6 +61,13 @@ class BattleView {
     shipX: (j['shipX'] as num?)?.toDouble(),
     shipY: (j['shipY'] as num?)?.toDouble(),
     shipHeading: (j['shipHeading'] as num?)?.toDouble() ?? 0,
+    shipTierLook: j['shipTierLook'] as String?,
+    shipSkin: j['shipSkin'] as String?,
+    treasureSea: j['treasureSea'] as int?,
+    fever: (j['fever'] as num?)?.toDouble() ?? 0,
+    feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
+    seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
+    challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -228,6 +114,23 @@ class BattleView {
   /// 배가 향하는 방향(라디안, 0 = 화면 위쪽, 시계 방향). 탑다운 렌더가 배를 돌린다.
   final double shipHeading;
 
+  /// 배 등급 그림 id = max(지금 등급, 명예 등급) (환생 v2 — 그림만, 능력치는 지금 등급). 없으면 렌더가 스테이지로 고른다.
+  final String? shipTierLook;
+
+  /// 장착한 환생 스킨 id (meta.rebirth.skins, null = 기본 배).
+  final String? shipSkin;
+
+  /// 이번 회차 보물 바다 해역 번호 (null = 보통 바다) — 렌더가 금빛 물결을 덮는다.
+  final int? treasureSea;
+
+  /// 피버 게이지 0~1 (전장 위 얇은 막대). 피버 중이면 [feverTicksLeft] > 0.
+  final double fever;
+  final int feverTicksLeft;
+
+  /// 진행 중인 돌발 이벤트·즉석 도전 (없으면 null).
+  final SeaEventView? seaEvent;
+  final ChallengeView? challenge;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -246,6 +149,12 @@ class BattleView {
     int? wave,
     double? rage,
     BigNum? gold,
+    double? fever,
+    int? feverTicksLeft,
+    SeaEventView? seaEvent,
+    bool clearSeaEvent = false,
+    ChallengeView? challenge,
+    bool clearChallenge = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -267,11 +176,18 @@ class BattleView {
     wave: wave ?? this.wave,
     rage: rage ?? this.rage,
     gold: gold ?? this.gold,
+    fever: fever ?? this.fever,
+    feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
+    seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
+    challenge: clearChallenge ? null : challenge ?? this.challenge,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
     shipY: shipY ?? this.shipY,
     shipHeading: shipHeading ?? this.shipHeading,
+    shipTierLook: shipTierLook,
+    shipSkin: shipSkin,
+    treasureSea: treasureSea,
   );
 
   Json toJson() => {
@@ -296,5 +212,43 @@ class BattleView {
     if (shipX != null) 'shipX': shipX,
     if (shipY != null) 'shipY': shipY,
     if (shipHeading != 0) 'shipHeading': shipHeading,
+    if (shipTierLook != null) 'shipTierLook': shipTierLook,
+    if (shipSkin != null) 'shipSkin': shipSkin,
+    if (treasureSea != null) 'treasureSea': treasureSea,
+    if (fever != 0) 'fever': fever,
+    if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
+    if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
+    if (challenge != null) 'challenge': challenge!.toJson(),
   };
+
+  /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
+  BattleView withShipDress({String? tierLook, String? skin, int? treasureSea}) => BattleView(
+    tick: tick,
+    shipHp: shipHp,
+    shipHpMax: shipHpMax,
+    bossActive: bossActive,
+    bossTicksLeft: bossTicksLeft,
+    enemies: enemies,
+    fleet: fleet,
+    captainId: captainId,
+    hitStopTicks: hitStopTicks,
+    speed: speed,
+    stage: stage,
+    chest: chest,
+    wave: wave,
+    rage: rage,
+    gold: gold,
+    shipLook: shipLook,
+    mode: mode,
+    shipX: shipX,
+    shipY: shipY,
+    shipHeading: shipHeading,
+    shipTierLook: tierLook,
+    shipSkin: skin,
+    treasureSea: treasureSea,
+    fever: fever,
+    feverTicksLeft: feverTicksLeft,
+    seaEvent: seaEvent,
+    challenge: challenge,
+  );
 }

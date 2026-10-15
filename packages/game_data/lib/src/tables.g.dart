@@ -1308,7 +1308,24 @@ const Map<String, String> rawTables = {
           "#FF7A9A"
         ]
       },
-      "royal": {
+      "storm": {
+        "hull": [
+          "#4A5266",
+          "#353B4C",
+          "#7A8498",
+          "#8E98AC",
+          "#5E6678"
+        ],
+        "sail": [
+          "#3E4C70",
+          "#2A3654",
+          "#5A6C96"
+        ],
+        "flag": [
+          "#FAD646"
+        ]
+      },
+      "gold": {
         "hull": [
           "#3A3E78",
           "#262A58",
@@ -1323,23 +1340,6 @@ const Map<String, String> rawTables = {
         ],
         "flag": [
           "#F2C94C"
-        ]
-      },
-      "shadow": {
-        "hull": [
-          "#3A3440",
-          "#26222C",
-          "#5C5464",
-          "#6E6676",
-          "#48424E"
-        ],
-        "sail": [
-          "#2A2A30",
-          "#1A1A20",
-          "#44444C"
-        ],
-        "flag": [
-          "#D63A3A"
         ]
       },
       "phantom": {
@@ -1587,6 +1587,9 @@ const Map<String, String> rawTables = {
       { "id": "fastSail", "row": 3, "perLevel": 0.05, "maxLevel": 4, "costBase": 12, "costGrowth": 1.6, "nameKey": "econRebirthShopFastSailName", "descKey": "econRebirthShopFastSailDesc" }
     ],
     "fleetSlotsMax": 7,
+    "forecastRoundMin": 5,
+    "forecastMinWaveSec": 7,
+    "forecastFarmWaves": 400,
     "skins": [
       { "id": "coral", "rebirths": 1, "nameKey": "shipSkinCoral" },
       { "id": "storm", "rebirths": 3, "nameKey": "shipSkinStorm" },
@@ -1664,7 +1667,8 @@ const Map<String, String> rawTables = {
       "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
       "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
-      "rebirthRecoverSec": { "min": 0, "max": 300 }
+      "rebirthRecoverSec": { "min": 0, "max": 300 },
+      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" }
     }
   }
 }
@@ -1757,10 +1761,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 12, "topHalfLength": 30, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 13, "topHalfLength": 33, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
@@ -1852,6 +1856,7 @@ const Map<String, String> rawTables = {
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,
+    "mobSpeedScale": 2,
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

@@ -27,7 +27,12 @@ class TopField {
     this.spawnWeights,
     double? viewWidth,
     double? viewHeight,
-  }) : bossSpawnRadius = bossSpawnRadius ?? approachRadius,
+    double? hullHalfWidth,
+    double? hullHalfLength,
+    this.mobSpeedScale = 1,
+  }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
+       hullHalfLength = hullHalfLength ?? shipRadius,
+       bossSpawnRadius = bossSpawnRadius ?? approachRadius,
        viewWidth = viewWidth ?? width,
        viewHeight = viewHeight ?? height;
 
@@ -64,6 +69,7 @@ class TopField {
           : null,
       viewWidth: j.numberOr('viewWidth', d.width),
       viewHeight: j.numberOr('viewHeight', d.height),
+      mobSpeedScale: j.numberOr('mobSpeedScale', 1),
     );
   }
 
@@ -74,6 +80,13 @@ class TopField {
   /// 배 중심 (고정).
   final double shipX;
   final double shipY;
+
+  /// 선체 캡슐(배 중심, 위아래 축): 반폭·반길이. 적은 이 몸통에 닿을 때까지 오고, 사거리도 몸통에서 잰다. 없으면 반경 [shipRadius]의 원.
+  final double hullHalfWidth;
+  final double hullHalfLength;
+
+  /// 잡몹 이동 속도 배율(탑다운 화면에서 배까지 몇 초 안에 닿게, 사용자 신고 2026-10-15 '멈춰 있는 것 같다'). 보스는 그대로.
+  final double mobSpeedScale;
 
   /// 배·적 크기(원). 사거리와 접촉은 둘레끼리 잰다.
   final double shipRadius;
@@ -115,8 +128,8 @@ class TopField {
   final double viewWidth;
   final double viewHeight;
 
-  /// 배 반경만 바꾼 사본([r]이 null이면 그대로).
-  TopField withShipRadius(double? r) => r == null
+  /// 배 반경·선체 캡슐을 바꾼 사본(null이면 그대로).
+  TopField withShipRadius(double? r, {double? halfWidth, double? halfLength}) => r == null
       ? this
       : TopField(
           width: width,
@@ -141,6 +154,9 @@ class TopField {
           spawnWeights: spawnWeights,
           viewWidth: viewWidth,
           viewHeight: viewHeight,
+          hullHalfWidth: halfWidth ?? r,
+          hullHalfLength: halfLength ?? r,
+          mobSpeedScale: mobSpeedScale,
         );
 
   /// [e]의 원 반지름.

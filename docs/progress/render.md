@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 사용자 실기기 긴급: 탑다운 카메라 넓게·HUD 정리·발사체/이펙트 크기
+- 카메라 가로 180 → 270단위(= 전장 폭): S24 배 약 70dp(폭의 18%), 전장 270이 다 보여 보스 궤도·정지가 화면 안. 태블릿은 320단위.
+- 탑다운 HUD: 캔버스 스테이지 글자·보스 타이머를 그리지 않음(UI 진행 게이지가 대신), 콤보는 보이는 높이 18%로(게이지 아래).
+- 발사체 상한: 탑다운이면 배 폭의 1/4(12단위, 높이 +45% 포함). 무기·코인 크기는 탑다운 1단위 dp로(PbFxPainter.unitDp). 이펙트는 옆모습 화면 크기 × 0.7.
+- paintTop은 part `paint/scene_painter_top.dart`(extension)로 — scene_painter 300줄 안.
+- 비교 `docs/specs/render-topdown/wide_camera_4devices.png`(4기기 + S24 보스).
+
 ### 2026-10-15 · S3 · 환생 v2 렌더 준비: 스킨 색 바꾸기·금빛 물결·배 미리보기 위젯
 - `render/top/ship_skins.dart`: 탑다운 배 층의 정해진 색(테두리·갑판·판자 틈 / 돛 3색 / 깃발)만 바꾼 사본을 스킨마다 한 번(비동기) 만들어 은행에 `<key>@<skin>`으로. TopShipPainter가 있으면 그것으로. 계약 전 값은 fx_map topShip.skinPreview(coral·royal·shadow·phantom, phantom은 돛 은은한 맥박).
 - 보물 바다: TopSeaPainter.gold(=TopScenePainter.goldSea) — 바탕·물결·거품·반짝임을 금빛으로, 반짝임 더 빠르게.

@@ -64,6 +64,13 @@ abstract interface class BattleGeometry {
   ({double x, double y, double angle})? muzzle(double tx, double ty);
 }
 
-/// 전장 모양(탑다운 — 옆모습은 T4-2에서 삭제). 배 반경은 [stage]의 배 등급(ship_tiers topRadius).
-BattleGeometry geometryFor(GameTables t, int stage) =>
-    TopGeometry.of(t.waves, shipRadius: t.shipTiers.tierAt(stage).topRadius);
+/// 전장 모양(탑다운 — 옆모습은 T4-2에서 삭제). 배 반경·선체 캡슐은 [stage]의 배 등급(ship_tiers).
+BattleGeometry geometryFor(GameTables t, int stage) {
+  final tier = t.shipTiers.tierAt(stage);
+  return TopGeometry.of(
+    t.waves,
+    shipRadius: tier.topRadius,
+    hullHalfWidth: tier.topHalfWidth,
+    hullHalfLength: tier.topHalfLength,
+  );
+}

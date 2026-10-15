@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
-import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -47,8 +46,9 @@ void main() {
     );
     expect(find.byKey(const Key('goal')), findsOneWidget);
     expect(find.textContaining('in 4 stages'), findsOneWidget);
-    final bar = tester.widget<PixelBar>(
-      find.descendant(of: find.byKey(const Key('goal')), matching: find.byType(PixelBar)),
+    // 목표는 진행 게이지 안 얇은 한 줄(S1 지시) — 막대는 작은 LinearProgressIndicator.
+    final bar = tester.widget<LinearProgressIndicator>(
+      find.descendant(of: find.byKey(const Key('goal')), matching: find.byType(LinearProgressIndicator)),
     );
     expect(bar.value, 0.6);
   });

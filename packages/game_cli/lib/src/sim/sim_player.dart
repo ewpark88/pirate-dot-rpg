@@ -53,6 +53,9 @@ class SimPlayer {
 
   /// 역대 최고 스테이지 (보스 카드가 새 보스인지 반복 보스인지 가르는 기준, 엔진 bestStage와 같게 센다).
   int _best = 1;
+
+  /// 첫 환생 시각(접속 시간)과 그때 스테이지 — 넘으면 rebirthBeatBest.
+  ({Duration at, int stage})? _beatTarget;
   Object? _crewsSeen;
   Duration? _lastBoss;
   var _reached = <int, Duration>{};
@@ -120,7 +123,8 @@ class SimPlayer {
         break;
       }
     }
-    _buyCheapest(s);
+    result.upgrades += buyCheapest(engine, t, s);
+    buyRebirthShop(engine, t, s);
     // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
     if (!identical(s.crews, _crewsSeen)) {
       _crewsSeen = s.crews;
@@ -137,6 +141,10 @@ class SimPlayer {
       _farmSince = null;
       _recovering = (at: _online, stage: (s.progress.stage * t.meta.rebirth.number('recoverTargetRatio')).ceil());
       result.rebirths++;
+      if (result.firstRebirth == null) {
+        _beatTarget = (at: _online, stage: s.progress.stage);
+        result.rebirthForecastMin = rebirthForecast(s, t)?.minutesRaw;
+      }
       result.firstRebirth ??= _elapsed;
       result.firstRebirthStage ??= s.progress.stage;
       result.rebirthStages.add(s.progress.stage);
@@ -184,22 +192,6 @@ class SimPlayer {
     _wallSince = null;
   }
 
-  /// 골드가 되는 만큼 가장 싼 부위부터 산다 (승급 골드는 남기지 않는다 — 단순 정책).
-  void _buyCheapest(GameState s) {
-    var gold = s.wallet.gold;
-    final levels = {...s.ship.parts};
-    while (true) {
-      final next = cheapestUpgrade(t, levels);
-      if (next == null) return;
-      final cost = next.cost.times(upgradeCostMultiplier(s, t)); // 상점 할인(환생 v2)
-      if (gold < cost) return;
-      gold = gold - cost;
-      levels[next.part] = (levels[next.part] ?? 0) + 1;
-      engine.enqueue(UpgradePart(next.part));
-      result.upgrades++;
-    }
-  }
-
   void _recordLook(Map<String, int> best, Duration within, String part, int stage) {
     if (_elapsed <= within && stage > (best[part] ?? 0)) best[part] = stage;
   }
@@ -232,6 +224,11 @@ class SimPlayer {
           result.firstBossFailStage ??= stage;
           _wallSince ??= _online;
         case StageAdvanced(:final stage):
+          final beat = _beatTarget;
+          if (beat != null && stage > beat.stage) {
+            result.rebirthBeatBest = _online - beat.at;
+            _beatTarget = null;
+          }
           if (stage >= 10) result.stage10 ??= _elapsed;
           if (stage >= 40) result.stage40 ??= _elapsed;
           _endWall();

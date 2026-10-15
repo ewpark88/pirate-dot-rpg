@@ -23,6 +23,11 @@ class PbFxPainter {
 
   late final JsonReader _cfg = scene.fx.raw.obj('pbFx');
   late final _trails = TrailPainter(scene);
+
+  /// 전장 1단위의 dp (탑다운이면 TopFrame.dot — ScenePainter.paintTop이 넣고, 옆모습이면 null = 옆모습 배치).
+  double? unitDp;
+  double get _unitDp => unitDp ?? scene.layout.dot;
+  static const _topMax = 12.0;
   late final _hooks = HookPainter(sprites);
   late final double _weaponDp = _cfg.number('weaponDp');
   late final double _weaponMinDots = _cfg.number('weaponMinDots');
@@ -38,10 +43,13 @@ class PbFxPainter {
   bool projectile(Canvas c, Projectile p) {
     final key = 'weapon:${p.crewId}';
     final sheet = sprites.sheet(key);
-    if (sheet == null) return _hooks.paint(c, p, math.max(_weaponDp / scene.layout.dot, _weaponMinDots));
+    if (sheet == null) return _hooks.paint(c, p, math.max(_weaponDp / _unitDp, _weaponMinDots));
     // 사용자 지시 '폭탄 그림이 보이게': 그림 '내용'(투명 여백 뺀 긴 변)이 화면 weaponDp dp(전장이 큰 태블릿은 최소 weaponMinDots 도트).
     final content = _weaponContent.has(p.crewId) ? _weaponContent.number(p.crewId) : sheet.frameW / 2;
-    final size = math.max(_weaponDp / scene.layout.dot, _weaponMinDots);
+    // 탑다운(사용자 '큰 검은 원이 거슬린다'): 배 폭의 1/4(약 12단위) 넘지 않게. 높이에 따른 +45%도 이 안에서.
+    final size = unitDp == null
+        ? math.max(_weaponDp / _unitDp, _weaponMinDots)
+        : math.min(_weaponDp / _unitDp, _topMax / 1.45);
     final w = sheet.frameW * size / content;
     final h = sheet.frameH * size / content;
     if (p.flat) return _flat(c, p, key, size, w, h);

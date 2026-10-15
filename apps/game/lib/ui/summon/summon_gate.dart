@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_result.dart';
 
@@ -22,12 +23,20 @@ class _SummonResultGateState extends ConsumerState<SummonResultGate> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(gameStateProvider.select((s) => s.lastSummon), (_, results) => _show(results));
+    // 다음 프레임에 연다: 같은 갱신에서 환생 상자가 열리면(상자의 영웅 소환) 상자를 닫은 뒤로 미룬다.
+    ref
+      ..listenManual(
+        gameStateProvider.select((s) => s.lastSummon),
+        (_, results) => WidgetsBinding.instance.addPostFrameCallback((_) => _show(results)),
+      )
+      ..listenManual(rebirthChestOpenProvider, (_, open) {
+        if (!open) _show(ref.read(gameStateProvider).lastSummon);
+      });
     WidgetsBinding.instance.addPostFrameCallback((_) => _show(ref.read(gameStateProvider).lastSummon));
   }
 
   void _show(List<SummonResult>? results) {
-    if (_open || results == null || results.isEmpty || !mounted) return;
+    if (_open || results == null || results.isEmpty || !mounted || ref.read(rebirthChestOpenProvider)) return;
     _open = true;
     unawaited(
       Navigator.of(context)

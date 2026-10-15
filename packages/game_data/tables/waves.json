@@ -23,6 +23,7 @@
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,
+    "mobSpeedScale": 2,
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

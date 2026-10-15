@@ -25,11 +25,19 @@ class TopAim {
   /// 관통 광선의 반폭: `topWidth`(없으면 width의 절반).
   double beamHalfWidth(AttackDef a) => a.raw.has('topWidth') ? a.raw.number('topWidth') : a.width * half;
 
+  /// 강습 부채꼴 길이(배 몸통에서): `topRange`.
+  double coneRange(AttackDef a) => a.raw.numberOr('topRange', a.range);
+
   /// 강습 부채꼴 각(도): `topArcDeg`.
   double arcDeg(AttackDef a) => a.raw.numberOr('topArcDeg', a.angleDeg);
 
   /// 배 둘레에서 [e] 가장자리까지.
-  double edge(Foe e) => _centerDist(e) - top.shipRadius - top.radiusOf(e);
+  double edge(Foe e) {
+    // 선체 캡슐 몸통에서(없으면 반경 shipRadius 원 — 캡슐 반폭·반길이가 모두 shipRadius).
+    final reach = math.max(0, top.hullHalfLength - top.hullHalfWidth);
+    final cy = (e.y - top.shipY).clamp(-reach, reach).toDouble();
+    return _dist(e.x, e.y, top.shipX, top.shipY + cy) - top.hullHalfWidth - top.radiusOf(e);
+  }
 
   bool onScreen(Foe e) =>
       (e.x - top.shipX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;
@@ -133,7 +141,7 @@ class TopAim {
         final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if ((e.boss || edge(e) <= a.range) &&
+            if ((e.boss || edge(e) <= coneRange(a)) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,
