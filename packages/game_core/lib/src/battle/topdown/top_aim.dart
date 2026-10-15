@@ -48,7 +48,13 @@ class TopAim {
     final reach = r == null ? null : r * top.reachScale + reachBonus;
     return [
       for (final e in foes)
-        if (e.alive && onScreen(e) && !a.excludeLayers.contains(e.layer) && (reach == null || edge(e) <= reach)) e,
+        // 황금 물고기(돌발 이벤트)는 탭으로만 잡는다 — 자동 조준에서 뺀다(S2 스펙).
+        if (e.alive &&
+            e.eventKind != 'goldfish' &&
+            onScreen(e) &&
+            !a.excludeLayers.contains(e.layer) &&
+            (reach == null || edge(e) <= reach))
+          e,
     ];
   }
 

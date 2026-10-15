@@ -143,8 +143,7 @@ class BattleSystem implements GameSystem {
     return s;
   }
 
-  /// 첫 회차 초반(1~earlyStageMax) 보스는 입력 없이도 시작 편성으로 잡히게 약하게,
-  /// 튜토리얼 3단계의 첫 보스는 일부러 못 잡게 (설계서 4.12). 실패 후 재도전(파밍 → ChallengeBoss)은 보통 보스.
+  /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
   double _tutorialBossScale(GameState s, SystemContext ctx) {
     final w = ctx.tables.waves;
     final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
