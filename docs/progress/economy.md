@@ -5,10 +5,17 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 초반 흐름(S1 요청: 스테이지 1·2 보스 무입력 처치, 첫 실패는 튜토리얼 3단계) → 환생 규칙 결정 2건 |
+| 바로 다음 할 일 | 환생 3 결정 대기(추천 c3+f0, 계획 파일 표) → 결정 뒤 구현·신화 숫자 조정 |
 | 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S2 · 환생 남은 벗어남 선택지 비교 + platform 요청
+- 한 일: platform 요청 meta-notify — MetaTable.notificationsDailyMax 파싱·검증 0~1(fd535ed, 테스트는 game_core/test/economy).
+  sim 계측: 환생 스테이지 최대, 상대 회복(회복 ÷ 직전 회차 같은 스테이지 시간), SimResult 분리(fc39079). main 2e976cb 머지.
+  임시 실험 스위치(커밋 안 함)로 보스 카드 5종 × 빠른 항해 2종, 12개 변형을 하루 일정 60일×10명으로 비교 → 계획 파일 ‘환생 3’ 표.
+- 결과: 첫 소환은 e25de1d로 이미 OK(3.42분). 추천 c3+f0 = 벗어남 1개(첫 신화 22일). 상대 회복 기준은 효과 없음(약 1.0).
+- 남은 문제: 규칙 결정(사용자) — 반복 보스 카드 축소, 빠른 항해(battle, S1 소유). 첫 신화는 결정 뒤 숫자 조정.
 
 ### 2026-10-14 · S2 · 초반 흐름 (S1 우선 요청)
 - 한 일: waves boss.earlyHpMultiplier 0.25·monster.hpBase 8, 무료 10연은 튜토리얼 보스 처치 뒤, sim 튜토리얼 재도전 정책(강화 2번), 지표(첫 보스 실패 스테이지, 옥토 첫 등급 상승).

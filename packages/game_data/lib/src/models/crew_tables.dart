@@ -197,7 +197,9 @@ class BossCardsDef {
       starterCrew = j.str('starterCrew'),
       starterCount = j.integer('starterCount'),
       starterEvery = j.integer('starterEvery'),
-      starterFirstStage = j.integer('starterFirstStage');
+      starterFirstStage = j.integer('starterFirstStage'),
+      repeatEvery = j.integer('repeatEvery'),
+      repeatCount = j.integer('repeatCount');
 
   final int earlyStageMax;
   final int early;
@@ -216,6 +218,13 @@ class BossCardsDef {
     return k >= 0 && k % starterEvery == 0 && k ~/ starterEvery < starterCount;
   }
 
-  /// [stage] 보스를 잡았을 때 받는 카드 수.
+  /// 환생 뒤 이미 깬 스테이지(bestStage 미만) 보스는 [repeatEvery]번째 스테이지마다 [repeatCount]장 (환생 3, 사용자 결정 2026-10-15).
+  final int repeatEvery;
+  final int repeatCount;
+
+  /// 반복 보스 [stage]를 잡았을 때 받는 카드 수.
+  int repeatCountAt(int stage) => stage % repeatEvery == 0 ? repeatCount : 0;
+
+  /// [stage] 보스를 처음 잡았을 때 받는 카드 수.
   int countAt(int stage) => stage <= earlyStageMax ? early : base + stage ~/ stagesPerExtra;
 }

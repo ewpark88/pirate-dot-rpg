@@ -1,3 +1,4 @@
+import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_result.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
 import 'package:game_core/game_core.dart';
@@ -44,6 +45,10 @@ class SimPlayer {
 
   /// 이번 회차 시작(접속 시간)과 스테이지별 첫 도달 시각, 직전 회차의 같은 기록. 상대 회복 지표용.
   Duration _runStart = Duration.zero;
+
+  /// 역대 최고 스테이지 (보스 카드가 새 보스인지 반복 보스인지 가르는 기준, 엔진 bestStage와 같게 센다).
+  int _best = 1;
+  Duration? _lastBoss;
   var _reached = <int, Duration>{};
   var _prevReached = <int, Duration>{};
   Duration? _lastWave;
@@ -105,6 +110,7 @@ class SimPlayer {
       if (canSummon(s, t, n)) {
         engine.enqueue(Summon(count: n));
         result.summons += n;
+        result.cardsByRun.last.summons += n;
         break;
       }
     }
@@ -123,6 +129,7 @@ class SimPlayer {
       result.firstRebirth ??= _elapsed;
       result.firstRebirthStage ??= s.progress.stage;
       result.rebirthStages.add(s.progress.stage);
+      result.cardsByRun.add(RunCards());
       _prevReached = _reached;
       _reached = {};
       _runStart = _online;
@@ -182,6 +189,14 @@ class SimPlayer {
           final last = _lastWave;
           if (last != null) _waveGaps.add((_elapsed, _elapsed - last));
           _lastWave = _elapsed;
+        case BossCleared(:final stage):
+          final lastBoss = _lastBoss;
+          if (_recovering != null && lastBoss != null) {
+            result.recoverBossGaps.add((_online - lastBoss).inMilliseconds / Duration.millisecondsPerSecond);
+          }
+          _lastBoss = _recovering != null ? _online : null;
+          result.cardsByRun.last.bossCleared(t, stage: stage, bestBefore: _best, rebirths: result.rebirths);
+          if (stage + 1 > _best) _best = stage + 1;
         case BossFailed(:final stage):
           result.firstBossFail ??= _elapsed;
           result.firstBossFailStage ??= stage;

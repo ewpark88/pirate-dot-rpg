@@ -1,3 +1,4 @@
+import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
@@ -19,6 +20,19 @@ void main() {
   test('골드로 살 수 있는 강화 횟수', () {
     expect(upgradesAffordable(t, const {}, BigNum.from(9)), 0);
     expect(upgradesAffordable(t, const {}, BigNum.from(20)), 2); // 대포 10 + 선체 10
+  });
+
+  test('회차별 보스 카드: 시작 카드·새 보스·반복 보스를 나누고 등급은 기댓값', () {
+    final b = t.growth.bossCards;
+    final run = RunCards()
+      ..bossCleared(t, stage: b.starterFirstStage, bestBefore: 1, rebirths: 0)
+      ..bossCleared(t, stage: 1, bestBefore: 1, rebirths: 0)
+      ..bossCleared(t, stage: 2, bestBefore: 50, rebirths: 1)
+      ..bossCleared(t, stage: 50, bestBefore: 50, rebirths: 1);
+    expect([run.starterCards, run.newBosses, run.repeatBosses], [1, 2, 1]);
+    expect(RunCards.sum(run.repeatByRarity), closeTo(b.countAt(2), 1e-9));
+    expect(RunCards.sum(run.newByRarity), closeTo(b.countAt(1) + b.countAt(50), 1e-9));
+    expect(run.repeatByRarity['common'], closeTo(b.countAt(2) * t.rarities.bossDropRates['common']!, 1e-9));
   });
 
   test('중앙값: 미도달(null)은 가장 큰 값으로', () {

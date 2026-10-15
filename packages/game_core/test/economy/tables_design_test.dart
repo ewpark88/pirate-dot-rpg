@@ -68,4 +68,15 @@ void main() {
     expect(b.starterCount, 14);
     expect(b.starterEvery, greaterThanOrEqualTo(1));
   });
+
+  test('반복 보스 카드: 짝수 스테이지에서만 1장 (환생 3, 사용자 결정 2026-10-15)', () {
+    final b = t.growth.bossCards;
+    expect([b.repeatEvery, b.repeatCount], [2, 1]);
+    expect(
+      [
+        for (final s in [1, 2, 3, 10, 11, 150]) b.repeatCountAt(s),
+      ],
+      [0, 1, 0, 1, 0, 1],
+    );
+  });
 }

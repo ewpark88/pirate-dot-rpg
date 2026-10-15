@@ -1,3 +1,4 @@
+import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_core/game_core.dart';
 
 /// 가상 플레이어 한 명의 결과. 시간은 모두 게임 시작부터의 경과(오프라인 포함).
@@ -50,6 +51,12 @@ class SimResult {
 
   /// 환생한 스테이지들 (순서대로).
   final rebirthStages = <int>[];
+
+  /// 환생 뒤 회복 중 연속 보스 처치 간격(초) — 빠른 항해(waves.rebirthSkip)에서 이동 시간 확인용.
+  final recoverBossGaps = <double>[];
+
+  /// 회차별 카드 수입 (첫 회차가 0번, 환생할 때마다 하나씩 늘어난다).
+  final cardsByRun = <RunCards>[RunCards()];
 }
 
 /// 접속 일정. [online]마다 [offline]만큼 쉰다. [offline]이 0이면 계속 접속.

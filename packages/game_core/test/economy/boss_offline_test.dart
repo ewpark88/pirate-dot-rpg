@@ -81,6 +81,38 @@ void main() {
       expect(s.crews['octo']!.cards, 0);
     });
 
+    test('환생 3(사용자 결정 2026-10-15): 이미 깬 스테이지(bestStage 미만) 보스는 repeatEvery번째 스테이지에서만 repeatCount장', () {
+      final b = t.growth.bossCards;
+      int tokensAt(int stage, {required int best}) {
+        final hs = EconomyHarness();
+        final s0 = hs.newGame().copyWith(
+          progress: Progress(stage: stage, bestStage: best, rebirths: 1),
+          crews: {'octo': CrewState(level: t.growth.maxLevel)},
+        );
+        return grantBossCards(s0, hs.ctx, ['octo']).tokens ~/ t.growth.tokenPerSurplusCard;
+      }
+
+      final even = b.repeatEvery * 4; // 초반(1~10) 2장 구간 안의 반복 보스
+      expect(tokensAt(even, best: 50), b.repeatCount);
+      expect(tokensAt(even + 1, best: 50), 0);
+      expect(tokensAt(even * 10, best: 300), b.repeatCount);
+      // 역대 최고 스테이지의 보스(bestStage 이상)는 처음 잡는 보스 — 원래 장수
+      expect(tokensAt(50, best: 50), b.countAt(50));
+      expect(tokensAt(51, best: 50), b.countAt(51));
+    });
+
+    test('첫 회차에는 반복 보스 규칙이 없다', () {
+      final hs = EconomyHarness();
+      final s0 = hs.newGame().copyWith(
+        progress: const Progress(stage: 21, bestStage: 30),
+        crews: {'octo': CrewState(level: t.growth.maxLevel)},
+      );
+      expect(
+        grantBossCards(s0, hs.ctx, ['octo']).tokens,
+        t.growth.bossCards.countAt(21) * t.growth.tokenPerSurplusCard,
+      );
+    });
+
     test('출전이 비면 시작 카드 외에는 주지 않는다', () {
       final s0 = atStage(starter(), 20, rebirths: 1);
       expect(totalCards(grantBossCards(s0, h.ctx, const <String>[])), 0);
