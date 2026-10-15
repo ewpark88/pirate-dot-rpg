@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_chest.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
@@ -25,11 +26,24 @@ const _available = RebirthPreview(
 /// 항해 패널을 끝까지 펴야 환생 카드가 보인다 → 세로로 긴 화면.
 const _tall = Size(400, 1300);
 
-GameState _state({int pieces = 40, int rebirths = 0, int stage = 37}) {
+GameState _state({
+  int pieces = 40,
+  int rebirths = 0,
+  int stage = 37,
+  Map<String, int> shop = const {},
+  Set<String> skins = const {},
+  String? skin,
+  List<String> titles = const [],
+  String? title,
+  int? route,
+}) {
   final s = loadFixture('stage37_midgame');
   return s.copyWith(
-    progress: s.progress.copyWith(rebirths: rebirths, stage: stage),
+    progress: s.progress.copyWith(rebirths: rebirths, stage: stage, titles: titles, treasureRoute: route),
     wallet: s.wallet.copyWith(mapPieces: pieces),
+    rebirthShop: shop,
+    ship: s.ship.copyWith(skinsOwned: skins, skin: skin),
+    settings: s.settings.withTitle(title),
   );
 }
 
@@ -44,7 +58,7 @@ bool _enabled(WidgetTester tester, String key) => tester.widget<SkinButton>(find
 
 void main() {
   testWidgets('상점: 2·3줄 잠김 안내, 칸을 누르면 레벨·효과, 사면 조각이 줄고 레벨이 오른다', (tester) async {
-    await pumpGame(tester, _state(), size: _tall);
+    final log = await pumpGame(tester, _state(), size: _tall);
     await _openShop(tester);
     expect(find.text('40 pieces to spend'), findsOneWidget);
     expect(find.text('Spend 30 more pieces to unlock'), findsOneWidget);
@@ -57,8 +71,9 @@ void main() {
     expect(find.text('Effect +0 lv → +5 lv'), findsOneWidget);
     await tester.tap(find.byKey(const Key('rebirth.shop.buy')));
     await tester.pump();
-    expect(find.text('37 pieces to spend'), findsOneWidget);
-    expect(find.text('Level 1 → 2'), findsOneWidget);
+    expect(log.sent.whereType<BuyRebirthUpgrade>().map((c) => c.toJson()), [
+      const BuyRebirthUpgrade('startParts').toJson(),
+    ]);
     await tester.pumpAndSettle(const Duration(seconds: 3));
   });
 
@@ -68,19 +83,16 @@ void main() {
     await tester.tap(find.byKey(const Key('rebirth.shop.item.offline')));
     await tester.pumpAndSettle();
     expect(_enabled(tester, 'rebirth.shop.buy'), isFalse);
-    // startParts 3+5+6+8+10 = 32 ≥ 30.
-    await tester.tap(find.byKey(const Key('rebirth.shop.item.startParts')));
-    await tester.pumpAndSettle();
-    for (var i = 0; i < 5; i++) {
-      await tester.tap(find.byKey(const Key('rebirth.shop.buy')));
-      await tester.pump();
-    }
+    // startParts 5레벨 = 3+5+6+8+10 = 32 ≥ 30.
+    await pumpGame(tester, _state(pieces: 200, shop: {'startParts': 5}), size: _tall);
+    await _openShop(tester);
     expect(find.text('Spend 30 more pieces to unlock'), findsNothing);
     expect(find.text('Spend 118 more pieces to unlock'), findsOneWidget);
+    expect(find.text('Lv 5/10'), findsOneWidget);
     await tester.tap(find.byKey(const Key('rebirth.shop.item.offline')));
     await tester.pumpAndSettle();
     expect(_enabled(tester, 'rebirth.shop.buy'), isTrue);
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+    expect(find.text('Effect +0h → +1h'), findsOneWidget);
   });
 
   testWidgets('조각이 모자라면 구매 버튼이 꺼지고 항해 점이 없다', (tester) async {
@@ -110,7 +122,7 @@ void main() {
   });
 
   testWidgets('확인 창: 배 외형 그대로 · 상자 줄 · 환생 3회부터 보물 바다 항로', (tester) async {
-    await pumpGame(
+    final log = await pumpGame(
       tester,
       _state(rebirths: 3, stage: 50),
       size: _tall,
@@ -125,6 +137,20 @@ void main() {
     expect(find.byKey(const Key('rebirth.sea.2')), findsNothing);
     await tester.tap(find.byKey(const Key('rebirth.sea.1')));
     await tester.pump();
+    expect(log.sent.whereType<SetTreasureRoute>().map((c) => c.toJson()), [const SetTreasureRoute(1).toJson()]);
+  });
+
+  testWidgets('확인 창: 항로가 정해져 있으면(progress.treasureRoute) 체력·조각 배수', (tester) async {
+    await pumpGame(
+      tester,
+      _state(rebirths: 3, stage: 50, route: 1),
+      size: _tall,
+      overrides: [rebirthPreviewProvider.overrideWithValue((_) => _available)],
+    );
+    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('rebirth.open')));
+    await tester.pumpAndSettle();
     expect(find.text('Enemy HP ×2.0 · Pieces ×1.5'), findsOneWidget);
   });
 
@@ -163,8 +189,12 @@ void main() {
     expect(find.byKey(const Key('rebirth.chest.skin')), findsOneWidget);
   });
 
-  testWidgets('배 스킨: 환생 3회 = coral·storm 보유(처음은 coral 장착), gold는 환생 5회 잠김, 고르면 장착', (tester) async {
-    await pumpGame(tester, _state(rebirths: 3), tab: shipTab);
+  testWidgets('배 스킨: coral·storm 보유(coral 장착), gold는 환생 5회 잠김, 고르면 SelectShipSkin', (tester) async {
+    final log = await pumpGame(
+      tester,
+      _state(rebirths: 3, skins: {'coral', 'storm'}, skin: 'coral'),
+      tab: shipTab,
+    );
     await tester.tap(find.byKey(const Key('ship.skin')));
     await tester.pumpAndSettle();
     expect(find.text('Rebirth ×5'), findsOneWidget);
@@ -172,13 +202,11 @@ void main() {
     expect(find.text('Equipped'), findsOneWidget);
     await tester.tap(find.byKey(const Key('ship.skin.storm')));
     await tester.pump();
-    final container = ProviderScope.containerOf(tester.element(find.byKey(const Key('ship.skin.sheet'))));
-    expect(container.read(shipSkinProvider).equipped, 'storm');
     await tester.ensureVisible(find.byKey(const Key('ship.skin.gold')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('ship.skin.gold')), warnIfMissed: false);
     await tester.pump();
-    expect(container.read(shipSkinProvider).equipped, 'storm');
+    expect(log.sent.whereType<SelectShipSkin>().map((c) => c.toJson()), [const SelectShipSkin('storm').toJson()]);
   });
 
   testWidgets('환생 전에는 스킨 버튼·칭호 띠가 없다', (tester) async {
@@ -189,17 +217,51 @@ void main() {
     expect(find.byKey(const Key('ship.skin')), findsNothing);
   });
 
-  testWidgets('칭호: 띠를 누르면 목록, 고르면 띠 글자가 바뀐다', (tester) async {
-    await pumpGame(tester, _state(rebirths: 3));
+  testWidgets('칭호: 띠를 누르면 목록, 고르면 SelectTitle · 고른 칭호가 띠에 보인다', (tester) async {
+    final log = await pumpGame(tester, _state(rebirths: 3, titles: ['deckhand', 'navigator']));
     expect(find.text('Title'), findsOneWidget);
     await tester.tap(find.byKey(const Key('title.chip')));
     await tester.pumpAndSettle();
     expect(find.text('Rebirth ×5'), findsOneWidget);
     await tester.tap(find.byKey(const Key('title.navigator')));
     await tester.pump();
-    await tester.tapAt(const Offset(10, 60));
-    await tester.pumpAndSettle();
+    expect(log.sent.whereType<SelectTitle>().map((c) => c.toJson()), [const SelectTitle('navigator').toJson()]);
+    await pumpGame(tester, _state(rebirths: 3, titles: ['deckhand', 'navigator'], title: 'navigator'));
     expect(find.text('Seasoned Navigator'), findsOneWidget);
+  });
+
+  test('화면 스킨·칭호 목록 = 경제 meta.rebirth (id·회차)', () {
+    final meta = GameTables.load().meta.rebirth;
+    expect(
+      [for (final s in skinDefs) (s.id, s.rebirths)],
+      [
+        for (final o in meta.objs('skins')) (o.str('id'), o.integer('rebirths')),
+      ],
+    );
+    expect(titleDefs, [for (final o in meta.objs('titles')) (o.str('id'), o.integer('rebirths'))]);
+  });
+
+  testWidgets('명예 외형: 환생 전 단계가 지금 레벨 단계보다 높으면 부위 칸에 표시', (tester) async {
+    final s = _state();
+    final honored = s.copyWith(ship: s.ship.copyWith(honorParts: {'cannon': 6}));
+    await pumpGame(tester, honored, tab: shipTab);
+    expect(find.byKey(const Key('ship.honor.cannon')), findsOneWidget);
+    expect(find.byKey(const Key('ship.honor.hull')), findsNothing);
+  });
+
+  testWidgets('해금 안내: ContentUnlocked(crewMaxLevel 80 · shopRow 2) → 토스트', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = _state();
+    await pumpGame(tester, s, openTab: false, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    feed.add(RecordedTick(s.battle!, const [ContentUnlocked(1, kind: 'crewMaxLevel', value: 80)]));
+    await tester.pump();
+    expect(find.text('Crew max level 80!'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    feed.add(RecordedTick(s.battle!, const [ContentUnlocked(1, kind: 'shopRow', value: 2)]));
+    await tester.pump();
+    expect(find.text('Treasure Map Shop row 2 unlocked!'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
   });
 
   group('골든', () {
@@ -207,7 +269,12 @@ void main() {
 
     for (final lang in ['ko', 'en']) {
       testWidgets('상점 $lang', (tester) async {
-        await pumpGame(tester, _state(pieces: 60), locale: Locale(lang), size: _tall);
+        await pumpGame(
+          tester,
+          _state(pieces: 60, shop: {'startParts': 1}),
+          locale: Locale(lang),
+          size: _tall,
+        );
         await precacheImages(tester);
         await _openShop(tester);
         await tester.tap(find.byKey(const Key('rebirth.shop.item.startParts')));
@@ -248,7 +315,12 @@ void main() {
     });
 
     testWidgets('배 스킨 ko', (tester) async {
-      await pumpGame(tester, _state(rebirths: 5), locale: const Locale('ko'), tab: shipTab);
+      await pumpGame(
+        tester,
+        _state(rebirths: 5, skins: {'coral', 'storm', 'gold'}, skin: 'coral'),
+        locale: const Locale('ko'),
+        tab: shipTab,
+      );
       await precacheImages(tester);
       await tester.tap(find.byKey(const Key('ship.skin')));
       await tester.pumpAndSettle();

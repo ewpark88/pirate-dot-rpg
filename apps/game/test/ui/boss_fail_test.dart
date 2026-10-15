@@ -42,6 +42,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
 
+    // 두 번째 실패: 경제 누계 bossFails 2 → 짧게.
+    final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    container.read(gameStateProvider.notifier).replace(s.copyWith(progress: s.progress.copyWith(bossFails: 2)));
+    await tester.pump();
     _fail(feed, s);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.short')), findsOneWidget);
@@ -62,11 +66,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
 
+    final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    final again = s.copyWith(progress: s.progress.copyWith(bossFails: 3));
+    container.read(gameStateProvider.notifier).replace(again);
+    await tester.pump();
     _fail(feed, s);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.short')), findsOneWidget);
-    final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
-    container.read(gameStateProvider.notifier).replace(s.copyWith(progress: s.progress.copyWith(farming: false)));
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('bossFail.short')), findsNothing);
+    _fail(feed, s);
+    await tester.pumpAndSettle();
+    container
+        .read(gameStateProvider.notifier)
+        .replace(again.copyWith(progress: again.progress.copyWith(farming: false)));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.short')), findsNothing);
   });

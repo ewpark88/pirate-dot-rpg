@@ -53,7 +53,7 @@ class TitleSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final titles = ref.watch(titleProvider);
-    final control = ref.read(rebirthV2Provider.notifier);
+    final control = ref.read(rebirthV2Provider);
     Widget row(String? id, String name, {required bool owned, int? need}) {
       final selected = titles.selected == id;
       return Padding(

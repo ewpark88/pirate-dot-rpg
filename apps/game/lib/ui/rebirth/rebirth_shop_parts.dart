@@ -78,10 +78,10 @@ class ShopTile extends StatelessWidget {
                 style: Skin.text(13, color: dim ? Skin.sub : Skin.ink),
               ),
               const SizedBox(height: 4),
-              ShopPips(level: item.level, max: item.def.maxLevel),
+              ShopPips(level: item.level, max: item.maxLevel),
               const SizedBox(height: 2),
               Text(
-                item.maxed ? l10n.uiRebirthShopMax : l10n.uiRebirthShopLevel(item.level, item.def.maxLevel),
+                item.maxed ? l10n.uiRebirthShopMax : l10n.uiRebirthShopLevel(item.level, item.maxLevel),
                 style: Skin.text(12, color: item.maxed ? Skin.mintInk : Skin.sub),
               ),
             ],
@@ -167,19 +167,19 @@ class ShopDetail extends StatelessWidget {
                 children: [
                   Text(shopName(l10n, it.id), style: Skin.text(19)),
                   const SizedBox(height: 2),
-                  Text(shopDesc(l10n, it.id), style: Skin.text(14, color: Skin.sub)),
+                  Text(shopDesc(l10n, it), style: Skin.text(14, color: Skin.sub)),
                   const SizedBox(height: 8),
                   if (it.maxed)
                     Text(
-                      '${l10n.uiRebirthShopMax} · ${shopFx(l10n, it.def.fx, it.effectNow)}',
+                      '${l10n.uiRebirthShopMax} · ${shopFx(l10n, it.id, it.effectNow)}',
                       style: Skin.text(16, color: Skin.mintInk),
                     )
                   else ...[
                     Text(l10n.uiRebirthShopNext(it.level, it.level + 1), style: Skin.text(15)),
                     Text(
                       l10n.uiRebirthShopEffect(
-                        shopFx(l10n, it.def.fx, it.effectNow),
-                        shopFx(l10n, it.def.fx, it.effectNext),
+                        shopFx(l10n, it.id, it.effectNow),
+                        shopFx(l10n, it.id, it.effectNext ?? it.effectNow),
                       ),
                       style: Skin.text(15, color: Skin.mintInk),
                     ),
