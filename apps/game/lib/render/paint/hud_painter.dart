@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/pixel_font.dart';
+import 'package:pirate_dot/render/paint/slot_skin_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
@@ -18,6 +19,9 @@ class HudPainter {
   final Map<String, String> _family;
 
   final _paint = Paint()..isAntiAlias = false;
+
+  /// 새 스킨 선원 줄(PB 초상이 있으면). 없으면 아래 도트 칸.
+  late final _skin = SlotSkinPainter(scene, sprites);
 
   final _stage = PixelText();
   final _timer = PixelText();
@@ -146,6 +150,10 @@ class HudPainter {
       ..save()
       ..translate(layout.bandOrigin.dx, layout.bandOrigin.dy)
       ..scale(layout.bandScale);
+    if (_skin.paint(c)) {
+      c.restore();
+      return;
+    }
     _fill(c, 0, 0, layout.bandWidth + 1, layout.bandHeight + 1, _slotBar);
     _fill(c, 0, 0, layout.bandWidth + 1, 1, _slotLine);
     final fleet = scene.frame.fleet;
