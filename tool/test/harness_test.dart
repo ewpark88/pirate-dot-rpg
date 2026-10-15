@@ -176,7 +176,7 @@ void main() {
 
     test('테이블을 바꾼 레인은 생성물 tables.g.dart도 바꿀 수 있다', () {
       expect(checkLane(cfg, 'lane/economy', ['packages/game_data/tables/ads.json', tablesOut]), isEmpty);
-      expect(checkLane(cfg, 'lane/economy', ['packages/game_data/tables/skills.json']), hasLength(1));
+      expect(checkLane(cfg, 'lane/economy', ['packages/game_data/tables/regions.json']), hasLength(1));
     });
 
     test('main과 레인이 아닌 브랜치는 검사하지 않는다', () {

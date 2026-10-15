@@ -56,6 +56,8 @@ android {
 
     buildTypes {
         release {
+            // R8 예외 규칙(WorkManager의 Room 구현 클래스) — 없으면 릴리스가 실행 즉시 종료된다(proguard-rules.pro).
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig =
                 if (hasReleaseKey) {
                     signingConfigs.getByName("release")

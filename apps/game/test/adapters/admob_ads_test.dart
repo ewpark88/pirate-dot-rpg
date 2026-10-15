@@ -127,19 +127,29 @@ void main() {
     expect(await f, AdResult.rewarded);
   });
 
-  test('6. 로드 실패 → 30초·60초 … 상한 10분 백오프, 성공하면 초기화', () async {
-    sdk.loadResults.addAll(List.filled(8, false));
+  test('6. 로드 실패 → 30초·60초 … 백오프, 성공하면 초기화', () async {
+    sdk.loadResults.addAll([false, false, false, true]);
     await ads.start();
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < 3; i++) {
       await runPending();
     }
-    expect(scheduled.map((d) => d.inSeconds).toList(), [30, 60, 120, 240, 480, 600, 600, 600]);
-    await runPending(); // 9번째 로드는 성공
+    expect(scheduled.map((d) => d.inSeconds).toList(), [30, 60, 120]);
     expect(ads.ready.value, isTrue);
     sdk.loadResults.add(false);
     await ads.show(AdPlacement.chest);
     await pumpEventQueue();
     expect(scheduled.last, const Duration(seconds: 30));
+  });
+
+  test('연속 실패 상한: 6번 연속 실패하면 이번 실행에선 더 시도하지 않는다(실패한 로드가 WebView 메모리를 남기는 것 방지)', () async {
+    sdk.loadResults.addAll(List.filled(10, false));
+    await ads.start();
+    for (var i = 0; i < 8; i++) {
+      await runPending();
+    }
+    expect(scheduled.map((d) => d.inSeconds).toList(), [30, 60, 120, 240, 480]);
+    expect(sdk.loads, AdMobAds.maxConsecutiveFailures);
+    expect(ads.ready.value, isFalse);
   });
 
   test('7. SDK 초기화 예외는 밖으로 안 나가고 준비 안 됨', () async {

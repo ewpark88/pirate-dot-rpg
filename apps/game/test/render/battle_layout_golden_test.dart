@@ -33,7 +33,8 @@ class _Painter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// 실기기 캡처(device_voyage.png)와 같은 장면: 산호초 stage 14, 보스전 남은 30초, 선원 3명, 함성 60%.
+/// 실기기 캡처(device_voyage.png)와 비슷한 장면: stage 31(배 2등급 = 4칸 열림), 보스전 남은 30초, 선원 3명, 함성 60%.
+/// → 칸 3상태가 한 화면에: 출전 3 · 열림 1 · 잠김 2.
 List<RecordedTick> _recording() => [
   for (var t = 0; t < 8; t++)
     RecordedTick(
@@ -41,7 +42,7 @@ List<RecordedTick> _recording() => [
         tick: t,
         shipHp: BigNum.from(60),
         shipHpMax: BigNum.from(60),
-        stage: 14,
+        stage: 31,
         wave: 2,
         bossActive: true,
         bossTicksLeft: (30 * 1000 / tickMs).round() - t,
