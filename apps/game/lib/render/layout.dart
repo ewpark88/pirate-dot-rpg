@@ -18,6 +18,9 @@ const double kShipHeight = 48;
 const double kShipCenterX = kShipLeft + kShipWidth / 2;
 const double kShipCenterY = kShipTop + kShipHeight / 2;
 
+/// 배를 키울 때 기준이 되는 높이 (뱃머리 포구 근처) — 이 줄과 오른쪽 끝은 크기가 바뀌어도 그대로.
+const double kShipPivotY = 102;
+
 /// 발사체가 떠나는 포구 (엔진 shipX 56 근처, 기준 56~60·100~104).
 const double kShipNoseX = 58;
 const double kShipNoseY = 100;
@@ -56,6 +59,12 @@ const double kSlotBandMinDp = 56;
 
 /// 선원 줄 도트 1칸의 최대 dp — 태블릿에서 슬롯(36칸)이 72dp를 넘지 않게(S1: 72~80dp 상한).
 const double kBandDotMaxDp = 2;
+
+/// 큰 칸 배치(기기): 칸 최대 변·가장자리·칸 사이·위아래 여백 (dp). 6칸 + 궁극기가 한 줄에 들어가는 가장 큰 정사각.
+const double kSlotMaxDp = 72;
+const double kSlotEdgeDp = 6;
+const double kSlotGapDp = 4;
+const double kSlotPadDp = 8;
 
 /// 버튼 칸 사이·가장자리 여백, 가장 작은 버튼 (도트).
 const double kButtonGap = 3;

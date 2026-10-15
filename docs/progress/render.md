@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 배 1.5배 + 선원 칸 크게 (사용자 지시 '배를 더 키워라, 초상도 키워라')
+- 배: fx_map shipScale 1.5, 필드 배율 k에 맞춰 정수 물리 픽셀로 내림(k=1 골든은 1배). 뱃머리 오른쪽 끝·포구 높이(kShipPivotY 102)를 기준점으로 → 발사 위치·포구 화염·엔진 shipX 그대로, 고물 쪽으로 커진다(폰에서 고물 약 30% 잘림 — S1 판단 대기).
+- 선원 줄: 기기 배치는 6칸 + 궁극기 7개가 한 줄에 들어가는 가장 큰 정사각 칸(최대 72dp, 가장자리 6·사이 4·위아래 8dp). 보스 도전 칸은 궁극기 바로 위(줄 밖, bossRect y < bandTop)로. 기본(테스트) 배치는 예전 도트 칸 그대로.
+  BattleFrame.slotRectInBand·slotSize·bossAbove, layout kSlotMaxDp 등. battle_frame_test 갱신.
+- 비교 `docs/specs/render-ship-portrait/layout_4devices.png`. 레이아웃 골든 4장 갱신. S4 골든 2장(en_m3_hud·en_hud_boss_fight)은 S4가 갱신.
+
 ### 2026-10-15 · S3 · 보상 코인 연출 (사용자 지시 '돈이 금색 점처럼 들어와 모르겠다') + 태블릿 줄
 - `tools/art/gen_coin.py` → `assets/fx/coin_hd.png`: PB 재화 아이콘 화풍 매끈한 금화 4프레임 회전(96px, 4배 그려 줄임), OWN.
 - 처치마다 금화 1개(그 처치 골드를 실음), 크게 튀어 오른 뒤 위로 휘는 곡선(베지에)으로 UI 상단 바 골드 자리까지, 회전·화면 18dp 고정(태블릿 최소 11도트).

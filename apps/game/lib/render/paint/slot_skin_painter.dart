@@ -131,7 +131,7 @@ class SlotSkinPainter {
     c.drawRect(Rect.fromLTWH(0, 0, layout.bandWidth + 1, layout.bandHeight + 1), _paint);
     final fleet = scene.frame.fleet;
     for (var i = 0; i < kSlotCount; i++) {
-      final r = layout.slotInBand(i) & kSlotPlateSize;
+      final r = layout.slotRectInBand(i);
       if (i >= fleet.length) {
         final rr = RRect.fromRectAndRadius(r, Radius.circular(_dp('radius')));
         _paint.color = Color(_empty);
