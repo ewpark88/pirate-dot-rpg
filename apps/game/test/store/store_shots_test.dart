@@ -41,15 +41,28 @@ void main() {
   SpriteBank? bank;
   late final _Run mid;
   late final _Run ult;
-  late final _Run late;
   late final _Run boss;
+  // 탭 화면: 후반 샘플(전 선원 신화·큰 배)을 해역마다 옮겨 하늘·바다 색이 장마다 다르게. 필요할 때 만든다(메모리).
+  final lateRuns = <int, _Run>{};
+  _Moment late(int stage) => lateRuns
+      .putIfAbsent(
+        stage,
+        () => _Run(
+          tables,
+          _fixture('all_crews_mythic'),
+          ticks: 320,
+          commands: {
+            0: [OpJumpStage(stage)],
+          },
+        ),
+      )
+      .at(300);
 
   setUpAll(() async {
     if (!enabled) return;
     await loadGoldenFonts();
-    // 전장 장면은 모두 산호해(1–50) — 지금 스프라이트가 다 있는 해역은 여기뿐이다(폭풍해부터 적·보스 그림이 빠져 대체 도형으로 그려진다).
-    // 중반 함대(스테이지 37 샘플)를 산호해 44로, 무리를 30마리로(운영자 도구 — listing: "샘플 상태로 화면을 맞춘다").
-    // 실제 스테이지 37 무리(7마리)는 화면 오른쪽 끝에서 다 죽어 장면이 비어 보인다. 무적.
+    // 해역 다양화(2026-10-15, 산호~유령 6해역 그림 다 있음). 운영자 명령은 엔진 기록에만 쓴다 — listing: "샘플 상태로 화면을 맞춘다".
+    // 중반 함대(스테이지 37 샘플)를 산호해 44·무리 30으로: 실제 37 무리(7마리)는 화면 오른쪽 끝에서 다 죽어 장면이 비어 보인다. 무적.
     mid = _Run(
       tables,
       _fixture('stage37_midgame'),
@@ -58,7 +71,8 @@ void main() {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 30)],
       },
     );
-    // 같은 장면, 함성 게이지 0.95에서 시작 → 무리가 화면에 찬 채로 궁극기.
+    // 궁극기: 같은 산호해 44 장면을 함성 게이지 0.95에서 시작 → 무리가 화면에 찬 채로 궁극기.
+    // (폭풍해 51은 중반 함대가 거의 못 잡아 게이지가 안 차 궁극기가 안 난다 — 2026-10-15 확인)
     ult = _Run(
       tables,
       _fixture('stage37_midgame', rage: 0.95),
@@ -67,23 +81,15 @@ void main() {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 30)],
       },
     );
-    // 해역 보스(산호해 50): 중반 함대라 오래 싸워 보스가 화면에 남는다.
+    // 해역 보스: 화산해 200(용암 고래). 신화 함대는 보스를 몇 초 만에 잡으니 중반 함대로 오래 싸운다.
+    // 폭풍해 번개 가오리는 관통 선원이 없으면 보호막(청록 상자)이 내내 켜져 있어 고르지 않았다.
     boss = _Run(
       tables,
       _fixture('stage37_midgame'),
-      ticks: 400,
+      ticks: 900,
       commands: {
-        0: [const OpJumpStage(50), const OpSetInvincible(on: true)],
+        0: [const OpJumpStage(200), const OpSetInvincible(on: true)],
         20: [const OpSpawnBoss()],
-      },
-    );
-    // 탭 화면: 후반 샘플(전 선원 신화·큰 배)을 산호해 45로 옮겨 패널은 후반 숫자, 전장은 그림이 다 있는 바다.
-    late = _Run(
-      tables,
-      _fixture('all_crews_mythic'),
-      ticks: 400,
-      commands: {
-        0: [const OpJumpStage(45)],
       },
     );
   });
@@ -116,7 +122,7 @@ void main() {
     });
 
     testWidgets('03 배 탭', (tester) async {
-      await shot(tester, '03_ship', late.at(300), tab: shipTab);
+      await shot(tester, '03_ship', late(60), tab: shipTab);
     });
 
     testWidgets('04 10연 소환 결과', (tester) async {
@@ -132,7 +138,7 @@ void main() {
         SummonResult(crewId: 'pingu', rarity: 'common'),
         SummonResult(crewId: 'bones', rarity: 'common'),
       ];
-      final m = late.at(300);
+      final m = late(120);
       await shot(
         tester,
         '04_summon',
@@ -150,19 +156,30 @@ void main() {
     });
 
     testWidgets('05 선원 탭', (tester) async {
-      await shot(tester, '05_crew', late.at(300), tab: crewTab);
+      await shot(tester, '05_crew', late(270), tab: crewTab);
     });
 
     testWidgets('06 해역 보스', (tester) async {
       // 컷인이 끝난 뒤(5초) 보스와 싸우는 장면.
-      await shot(tester, '06_boss', boss.after((e) => e is BossSpawned, ticks: 100));
+      // 보스가 화면 가운데쯤이고, 최근 6틱 안에 공격이 없어 폭발이 보스를 덮지 않은 순간.
+      await shot(
+        tester,
+        '06_boss',
+        boss.firstClear(
+          after: (e) => e is BossSpawned,
+          skip: 80,
+          frame: (f) => f.enemies.any((e) => e.boss && !e.shielded && e.x > 140 && e.x < 240),
+          quiet: (e) => e is AttackFired || e is AoeDamageSum,
+          quietTicks: 6,
+        ),
+      );
     });
 
     testWidgets('07 복귀 보상', (tester) async {
       await shot(
         tester,
         '07_offline',
-        late.at(300),
+        late(220),
         away: const Duration(hours: 7, minutes: 25),
         act: () async {
           for (var i = 0; i < 10; i++) {
@@ -177,7 +194,7 @@ void main() {
       await shot(
         tester,
         '08_rebirth',
-        late.at(300),
+        late(75),
         // 후반 상태라 환생이 열려 있다 — 보물지도 카드의 버튼으로 확인 창(얻을 조각·보너스)을 연다.
         act: () async {
           final open = find.byKey(const Key('rebirth.open'));
@@ -238,6 +255,23 @@ class _Run {
     }
     if (bestAt < 0) throw StateError('기록에 원하는 이벤트가 없다 — 틱 수를 늘린다');
     return _at(bestAt + ticks);
+  }
+
+  /// [after] 이벤트 뒤 [skip]틱부터, 화면이 [frame]을 만족하고 앞 [quietTicks] 안에 [quiet] 이벤트가 없는 첫 틱.
+  _Moment firstClear({
+    required bool Function(GameEvent e) after,
+    required int skip,
+    required bool Function(BattleView f) frame,
+    required bool Function(GameEvent e) quiet,
+    required int quietTicks,
+  }) {
+    final start = ticks.indexWhere((t) => t.events.any(after));
+    if (start < 0) throw StateError('기록에 원하는 이벤트가 없다 — 틱 수를 늘린다');
+    for (var i = start + skip; i < ticks.length; i++) {
+      final calm = ticks.sublist(i - quietTicks, i + 1).every((t) => !t.events.any(quiet));
+      if (calm && frame(ticks[i].frame)) return _at(i);
+    }
+    throw StateError('조건에 맞는 순간이 없다 — 틱 수를 늘린다');
   }
 
   /// 정해진 틱 (탭 화면 배경용).
@@ -329,7 +363,7 @@ Future<void> _pump(
   );
   await tester.pump();
   if (tab != voyageTab) {
-    await tester.tap(find.byType(NavigationDestination).at(tab));
+    await tester.tap(find.byKey(Key('tab.$tab')));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
   }
