@@ -8,12 +8,11 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-
-/// 시트 최대 높이 비율 — 위쪽 HUD를 가리지 않는다 (운영자 패널과 같음).
-const _sheetMaxHeight = 0.7;
 
 /// 지금 퀘스트·출석 화면 값. 경제 함수(B7·B8)가 오기 전에는 (null, null).
 (List<QuestView>?, AttendanceView?) _daily(WidgetRef ref) {
@@ -39,19 +38,9 @@ class DailyIcon extends ConsumerWidget {
       key: const Key('daily.icon'),
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
       child: const PixelSprite(UiSprites.quest, dots: 16, scale: 1),
-      onPressed: () => unawaited(
-        showModalBottomSheet<void>(
-          context: context,
-          isScrollControlled: true,
-          useSafeArea: true,
-          constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * _sheetMaxHeight),
-          builder: (_) => const DailySheet(),
-        ),
-      ),
+      onPressed: () => unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet())),
     );
-    return claimable
-        ? Badge(key: const Key('daily.dot'), smallSize: 10, backgroundColor: PixelPalette.danger, child: icon)
-        : icon;
+    return claimable ? PixelDot(key: const Key('daily.dot'), child: icon) : icon;
   }
 }
 
@@ -66,7 +55,7 @@ class DailySheet extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       children: [
         if (quests != null) _Quests(quests),
-        if (quests != null && attendance != null) const Divider(height: 32),
+        if (quests != null && attendance != null) const _DotRule(),
         if (attendance != null) _Attendance(attendance),
       ],
     );
@@ -92,20 +81,37 @@ class _Quests extends ConsumerWidget {
       children: [
         Text(l10n.uiQuestTitle, style: Theme.of(context).textTheme.titleMedium),
         for (final q in quests)
-          ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            leading: PixelSprite(q.done ? UiSprites.check : UiSprites.checkEmpty, dots: 8),
-            title: Text(name(q)),
-            subtitle: Text(l10n.uiQuestProgress(q.progress, q.target)),
-            trailing: q.claimed
-                ? Text(l10n.uiQuestClaimed)
-                : PixelButton(
+          // 퀘스트 한 줄: 체크 · 이름/진행 · 받기 (ListTile 대신).
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                PixelSprite(q.done ? UiSprites.check : UiSprites.checkEmpty, dots: 8),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name(q)),
+                      Text(
+                        l10n.uiQuestProgress(q.progress, q.target),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.textDim),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (q.claimed)
+                  Text(l10n.uiQuestClaimed, style: const TextStyle(color: PixelPalette.textDim))
+                else
+                  PixelButton(
                     key: Key('daily.claim.${q.id}'),
                     primary: true,
                     onPressed: _claimable(q) ? () => ref.read(commandSinkProvider).send(ClaimDaily(q.id)) : null,
                     child: Text(l10n.uiQuestClaimGems(ref.watch(tablesProvider).meta.dailyQuestRewardGems)),
                   ),
+              ],
+            ),
           ),
       ],
     );
@@ -168,35 +174,49 @@ class _DayCell extends StatelessWidget {
     final ticket = !reward.has('gems');
     // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
     final checked = day < view.day || (today && view.claimedToday);
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
+    // 도트 칸: 오늘은 금색 2칸 테두리(아직 안 받았으면 파란 바탕), 나머지는 1칸 테두리.
+    return Padding(
       key: Key('attendance.day.$day.${checked ? 'checked' : (today ? 'today' : 'later')}'),
-      margin: const EdgeInsets.all(2),
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      decoration: BoxDecoration(
-        color: today && !checked ? scheme.primaryContainer : null,
-        border: Border.all(color: today ? scheme.primary : scheme.outlineVariant, width: today ? 2 : 1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
-          if (checked)
-            const PixelSprite(UiSprites.check, dots: 8)
-          else if (ticket)
-            const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
-          else
-            const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
-          if (ticket)
-            Text(
-              l10n.uiAttendanceTicket,
-              style: Theme.of(context).textTheme.labelSmall,
-              textAlign: TextAlign.center,
-            )
-          else
-            Text(reward.integer('gems').toString(), style: Theme.of(context).textTheme.labelSmall),
-        ],
+      padding: const EdgeInsets.all(2),
+      child: PixelFrame(
+        fill: today && !checked ? PixelPalette.actionDark : PixelPalette.navy,
+        border: today ? PixelPalette.gold : PixelPalette.border,
+        borderDots: today ? 2 : 1,
+        highlight: null,
+        child: Column(
+          children: [
+            Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
+            if (checked)
+              const PixelSprite(UiSprites.check, dots: 8)
+            else if (ticket)
+              const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
+            else
+              const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
+            if (ticket)
+              Text(
+                l10n.uiAttendanceTicket,
+                style: Theme.of(context).textTheme.labelSmall,
+                textAlign: TextAlign.center,
+              )
+            else
+              Text(reward.integer('gems').toString(), style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ),
       ),
     );
   }
+}
+
+/// 칸 나눔 1칸 도트 줄 (Divider 대신).
+class _DotRule extends StatelessWidget {
+  const _DotRule();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: SizedBox(
+      height: pixelUnit(context),
+      child: const ColoredBox(color: PixelPalette.border),
+    ),
+  );
 }

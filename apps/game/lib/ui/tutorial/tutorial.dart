@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -38,9 +41,9 @@ class TutorialSpot extends ConsumerWidget {
       children: [
         DecoratedBox(
           position: DecorationPosition.foreground,
+          // 도트 강조: 금색 네모 테두리 2칸.
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.amber, width: 3),
-            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: PixelPalette.gold, width: pixelUnit(context) * 2),
           ),
           child: child,
         ),
@@ -75,23 +78,27 @@ class TutorialBubble extends ConsumerWidget {
     };
     void send(Command c) => ref.read(commandSinkProvider).send(c);
 
-    return Material(
+    // 도트 말풍선: 금색 테두리 도트 프레임 + 말풍선 아이콘, 버튼은 도트 버튼.
+    return Padding(
       key: const Key('tutorial.bubble'),
-      color: Theme.of(context).colorScheme.tertiaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      child: PixelFrame(
+        border: PixelPalette.gold,
+        padding: 4,
         child: Row(
           children: [
             const PixelSprite(UiSprites.bubble, dots: 16, scale: 1),
             const SizedBox(width: 6),
             Expanded(child: Text(text)),
             if (_ackSteps.contains(step))
-              TextButton(
+              PixelButton(
                 key: const Key('tutorial.ok'),
+                primary: true,
                 onPressed: () => send(TutorialAck(step)),
                 child: Text(l10n.uiTutOk),
               ),
-            TextButton(
+            const SizedBox(width: 4),
+            PixelButton(
               key: const Key('tutorial.skip'),
               onPressed: () => send(const SkipTutorial()),
               child: Text(l10n.uiTutSkip),
