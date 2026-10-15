@@ -39,6 +39,11 @@ COLORS = {
     "s": (150, 155, 170),  # 물범
     "S": (105, 110, 128),
     "d": (40, 40, 50),
+    "t": (82, 74, 80),  # 용암 거북 등딱지(현무암)
+    "T": (60, 54, 60),
+    "L": (255, 140, 40),  # 용암 빛
+    "g": (190, 160, 112),  # 거북 머리·다리 (어두운 바다 위에서 보이게 밝게)
+    "G": (140, 112, 78),
 }
 
 # 날치 (폭풍해, 수면·빠름): 머리 왼쪽, 프레임 1 날개 위 · 프레임 2 날개 펼침. 프레임 17×10 (팩 piranha와 같은 크기).
@@ -158,19 +163,86 @@ SEAL = [
     ],
 ]
 
+
+# 용암 거북 (화산, 단단함): 프레임 20×12, 머리 왼쪽, 현무암 등딱지에 용암 금. 프레임 2는 다리를 바꾼다.
+LAVATURTLE = [
+    [
+        "....................",
+        "......tttttttt......",
+        "....ttTtLttTtttt....",
+        "...tttLtttLtttLttt..",
+        "..ttTttttLttttTtttt.",
+        ".ggtLtttTtttLttttTt.",
+        "gekgTTTTTTTTTTTTTTT.",
+        "ggggggGGGGGGGGGGGgg.",
+        ".gggg.............g.",
+        "..GG...GG....GG..GG.",
+        "..GG...GG....GG..GG.",
+        "....................",
+    ],
+    [
+        "....................",
+        "......tttttttt......",
+        "....ttTtLttTtttt....",
+        "...tttLtttLtttLttt..",
+        "..ttTttttLttttTtttt.",
+        ".ggtLtttTtttLttttTt.",
+        "gekgTTTTTTTTTTTTTTT.",
+        "ggggggGGGGGGGGGGGgg.",
+        ".gggg.............g.",
+        "...GG...GG....GG..G.",
+        "....GG...GG....GG...",
+        "....................",
+    ],
+]
+
+
+def star_frames(size: int, outer: float, inner: float, rots: tuple[float, ...], body, shade, dot, eyes: bool):
+    """다섯 팔 불가사리: 다각형 안쪽 칠하기, 오른쪽 아래 그늘, 점무늬, 가운데 눈. 프레임마다 조금 돌린다."""
+    import math
+
+    frames = []
+    for rot in rots:
+        pts = []
+        for i in range(10):
+            a = math.radians(-90 + rot + i * 36)
+            r = outer if i % 2 == 0 else inner
+            pts.append((size / 2 + r * math.cos(a), size / 2 + 0.5 + r * math.sin(a)))
+        rows = []
+        for y in range(size):
+            row = ""
+            for x in range(size):
+                if _b._in_poly(x + 0.5, y + 0.5, pts):
+                    dx, dy = x + 0.5 - size / 2, y + 0.5 - size / 2
+                    row += "2" if dx + dy > outer * 0.5 else ("3" if (x * 7 + y * 3) % 11 == 0 else "1")
+                else:
+                    row += "."
+            rows.append(row)
+        if eyes:
+            c = size // 2
+            rows[c - 1] = rows[c - 1][: c - 2] + "ek.ek"[0:2] + rows[c - 1][c:c + 1] + "ek" + rows[c - 1][c + 3 :]
+        frames.append(rows)
+    return frames, {"1": body, "2": shade, "3": dot}
+
+
+STAR_COLORS = ((255, 190, 90), (220, 120, 60), (255, 236, 170))
+
 # 팔레트 바꿈 변형: 팩 적 → 색 표 (외곽선 (27,23,38)은 그대로).
 RECOLORS = {
     "icecrab": ("crab", {(220, 70, 60): (205, 232, 250), (150, 40, 40): (95, 150, 205)}),  # 서리 흰빛 + 얼음 파랑 그늘(바다 위 대비)
     "snowgull": ("gull", {(245, 245, 250): (215, 235, 255), (250, 150, 60): (120, 200, 240)}),  # 눈빛 + 얼음 부리
+    "lavacrab": ("crab", {(220, 70, 60): (120, 108, 112), (150, 40, 40): (255, 140, 40)}),  # 현무암 + 아래 용암 빛
+    "firebird": ("gull", {(245, 245, 250): (255, 225, 120), (250, 150, 60): (230, 70, 40)}),  # 달아오른 노랑(주황 하늘 위 대비) + 붉은 부리
     "stormgull": ("gull", {(245, 245, 250): (196, 204, 226), (250, 150, 60): (250, 210, 70)}),  # 푸른 잿빛(폭풍 하늘 위에서도 보이게) + 노란 부리
 }
 
 
-def from_grid(frames: list[list[str]]) -> list[list]:
+def from_grid(frames: list[list[str]], colors: dict | None = None) -> list[list]:
+    pal = {**COLORS, **(colors or {})}
     out: list[list] = [[] for _ in frames[0]]
     for rows in frames:
         assert all(len(r) == len(rows[0]) for r in rows), f"행 길이가 다름: {rows}"
-        px = [[None if ch == "." else COLORS[ch] for ch in r] for r in rows]
+        px = [[None if ch == "." else pal[ch] for ch in r] for r in rows]
         _b.outline(px)
         for y, row in enumerate(px):
             out[y].extend(row)
@@ -188,7 +260,13 @@ def build() -> dict[str, list[list]]:
         "enemies/icecrab_small.png": from_grid(ICECRAB_SMALL),
         "enemies/penguin.png": from_grid(PENGUIN),
         "enemies/seal.png": from_grid(SEAL),
+        "enemies/lavacrab_small.png": from_grid(ICECRAB_SMALL, {"a": (120, 108, 112), "A": (255, 140, 40)}),
+        "enemies/lavaturtle.png": from_grid(LAVATURTLE),
     }
+    big, pal = star_frames(15, 7.2, 3.0, (0, 9), *STAR_COLORS, eyes=True)
+    files["enemies/starfish.png"] = from_grid(big, pal)
+    small, pal = star_frames(11, 5.2, 2.2, (0, 9), *STAR_COLORS, eyes=False)
+    files["enemies/starfish_small.png"] = from_grid(small, pal)
     for name, (base, table) in RECOLORS.items():
         files[f"enemies/{name}.png"] = recolor(base, table)
     return files

@@ -1,4 +1,4 @@
-"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus). 격자 → PNG, LICENSES OWN.
+"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus / 묶음 4 화산: fire_pirate · lava_whale). 격자 → PNG, LICENSES OWN.
 
     python -I tools/art/gen_bosses.py            # apps/game/assets/bosses/ 에 쓴다
     python -I tools/art/gen_bosses.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -435,6 +435,97 @@ def iceberg_walrus() -> list[list]:
     return px
 
 
+# ---------- 묶음 4 화산: fire_pirate · lava_whale ----------
+FIRE_SWAP = {
+    (60, 50, 60): (205, 82, 36),  # 돛: 불꽃 주홍
+    (179, 48, 43): (40, 30, 40),  # 줄무늬: 그을린 검정
+    (140, 90, 50): (88, 64, 52),  # 그을린 선체
+    (95, 58, 32): (62, 44, 36),
+    (70, 44, 26): (44, 32, 28),
+    (220, 70, 60): (255, 200, 80),  # 꼭대기 깃발: 불꽃 노랑
+}
+FLAME = [
+    "...y...",
+    "..yy...",
+    "..yyo..",
+    ".yyoo.y",
+    ".yoooyy",
+    "yoorooy",
+    "yorrroy",
+    ".orrro.",
+    "..ooo..",
+]
+
+
+def fire_pirate() -> list[list]:
+    """불꽃 주홍 돛(그을린 끝)·검은 줄·불꽃 문양·그을린 선체·노란 깃발 꼬리 (화산 중간 보스)."""
+    return ship_variant(
+        FIRE_SWAP,
+        (205, 82, 36),
+        (150, 52, 26),
+        FLAME,
+        {"y": (255, 220, 90), "o": (255, 150, 40), "r": (220, 60, 30)},
+        (21, 6),
+        True,
+        (255, 200, 80),
+    )
+
+
+WHALE = (70, 64, 72)
+WHALE_SHADE = (52, 46, 54)
+WHALE_BELLY = (120, 108, 112)
+LAVA = (255, 140, 40)
+LAVA_HOT = (255, 220, 110)
+
+
+def lava_whale() -> list[list]:
+    """용암 고래 64×46: 현무암 몸·배 쪽 밝은 줄무늬·용암 금·빛나는 눈·숨구멍 용암 분수·꼬리. 머리 왼쪽(배 쪽)."""
+    w, h = 64, 46
+    px = [[None] * w for _ in range(h)]
+
+    def ellipse(cx, cy, rx, ry, color_at):
+        for y in range(h):
+            for x in range(w):
+                dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                if dx * dx + dy * dy <= 1:
+                    c = color_at(x, y, dx, dy)
+                    if c is not None:
+                        px[y][x] = c
+
+    def body(x, y, dx, dy):
+        if dy > 0.55:
+            return WHALE_SHADE if y % 3 == 0 else WHALE_BELLY  # 목 주름(가로 줄)
+        return WHALE_SHADE if dy > 0.25 else WHALE
+
+    ellipse(28, 30, 25, 12, body)  # 몸(머리 쪽이 크다)
+    ellipse(46, 31, 12, 8, body)  # 몸 뒤
+    tail = [(52, 30), (58, 24), (62, 20), (61, 27), (59, 31), (62, 38), (57, 36), (53, 33)]
+    for y in range(h):
+        for x in range(w):
+            if _in_poly(x + 0.5, y + 0.5, tail):
+                px[y][x] = WHALE
+    ellipse(26, 40, 5, 2.5, lambda x, y, dx, dy: WHALE_SHADE)  # 앞 지느러미
+    # 숨구멍 용암 분수: 기둥 + 위에서 퍼지는 물보라
+    for y in range(12, 19):
+        px[y][20] = LAVA
+        px[y][21] = LAVA
+    for y, (x0, x1) in ((11, (17, 24)), (10, (16, 25)), (9, (16, 18)), (9, (23, 25)), (8, (15, 16)), (8, (25, 26))):
+        for x in range(x0, x1 + 1):
+            px[y][x] = LAVA_HOT if y < 11 else LAVA
+    outline(px)
+    _line(px, [(12, 28), (24, 31), (34, 30)], OUTLINE)  # 입
+    _line(px, [(30, 22), (33, 25), (31, 27), (35, 29)], LAVA)  # 용암 금
+    _line(px, [(41, 24), (44, 27), (42, 30)], LAVA)
+    _line(px, [(16, 21), (18, 23)], LAVA)
+    for x, y in ((31, 24), (43, 26)):
+        px[y][x] = LAVA_HOT
+    for dx in (0, 1):  # 빛나는 눈
+        for dy in (0, 1):
+            px[24 + dy][10 + dx] = LAVA_HOT
+    px[24][10] = BONE
+    return px
+
+
 FILES = {
     "bosses/raider_ship.png": raider_ship,
     "bosses/giant_hermit.png": giant_hermit,
@@ -442,6 +533,8 @@ FILES = {
     "bosses/thunder_ray.png": thunder_ray,
     "bosses/icebreaker.png": icebreaker,
     "bosses/iceberg_walrus.png": iceberg_walrus,
+    "bosses/fire_pirate.png": fire_pirate,
+    "bosses/lava_whale.png": lava_whale,
 }
 
 

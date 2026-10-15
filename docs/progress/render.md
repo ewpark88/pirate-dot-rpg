@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: 묶음 3 빙하 승인 대기 → 묶음 4 화산(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | art: 묶음 4 화산 승인 대기 → 묶음 5 심연(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 3 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 묶음 4 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 4: 화산
+- 묶음 3 승인·main 머지. 화산 배경(주황 하늘·검붉은 바다)에 맞춰 대비 우선 색.
+- gen_enemies: lavacrab(현무암 + 아래 용암 빛), lavacrab_small(작은 게 격자 재사용), starfish 15×15·starfish_small 11×11(다각형 별, 프레임마다 9° 돌림),
+  lavaturtle 20×12(현무암 등딱지 용암 금, 머리 밝게), firebird(gull 달아오른 노랑 — 주황 하늘 위 대비). `from_grid(colors=)` 팔레트 덮어쓰기.
+- gen_bosses: fire_pirate(불꽃 주홍 돛·그을린 끝·불꽃 문양), lava_whale 64×46(현무암·목 주름·용암 금·빛나는 눈·숨구멍 용암 분수).
+- sprites_test 해역 volcano 추가. 비교 `docs/specs/render-art-enemies/compare_volcano.png`. 수중 적(불가사리)은 렌더 수중 색조로 어두워짐(팩 적과 같은 규칙).
 
 ### 2026-10-15 · S3 · art 묶음 3: 빙하
 - 배 t2~t4 승인·main 머지(고물이 화면 밖으로 나가는 건 그대로).
