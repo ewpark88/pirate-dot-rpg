@@ -45,6 +45,10 @@ flutter:
     - assets/projectiles/
     - assets/coin.png
     - assets/ui/
+    - assets/weapons/
+    - assets/fx/pb/
+    - assets/crew_art/
+    - assets/ui/cards/
     - assets/audio/sfx/
     - assets/audio/bgm/
     - assets/fonts/Galmuri-OFL.txt
