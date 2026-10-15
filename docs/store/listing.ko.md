@@ -67,6 +67,10 @@
 7. 복귀 팝업: 오프라인 보상 — "꺼 둬도 8시간 쌓인다"
 8. 환생(보물지도) 카드 — "더 강하게 다시 출항"
 - 운영자 모드(`OPERATOR=true` 빌드)의 샘플 상태(예: 스테이지 37)로 화면을 빠르게 맞출 수 있다. **캡처에 운영자 패널이 보이면 안 된다.**
+- **자동 굽기(2026-10-15)**: `cd apps/game` → `STORE_SHOTS=ko flutter test test/store/store_shots_test.dart`(영어는 `en`, 한 번에 한 언어)
+  → `build/store/screens/<ko|en>/01_multikill.png … 08_rebirth.png` (1080×1920). 실제 엔진을 샘플 상태에서 돌린 전투 + 실제 위젯.
+  전장은 산호해만 쓴다(폭풍해부터 적·보스·배 등급 그림이 아직 없어 대체 도형으로 그려진다). 정지 화면이라 흔들림·번쩍임은 끈다.
+  그래픽 이미지: `python -I -B docs/store/feature_graphic.py` → `build/store/feature_graphic.png`(1024×500, 글자 없음, 아이콘 배 + 전투, 도트 ×4).
 - 테스트 광고 화면은 넣지 않는다.
 
 ## 연락처·웹사이트
