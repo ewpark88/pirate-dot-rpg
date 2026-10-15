@@ -19,7 +19,8 @@
     "mapPiecesEarned": 0,
     "titles": [],
     "treasureSea": null,
-    "treasureRoute": null
+    "treasureRoute": null,
+    "bossFails": 0
   },
   "ship": {
     "parts": {
