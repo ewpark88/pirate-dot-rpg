@@ -62,6 +62,9 @@ class Foe {
   /// 남은 기절(초). 기절 중에는 이동·접촉 공격을 하지 않는다.
   double stunTimer = 0;
 
+  /// 등장 대기(초, 스폰 패턴 scatter): 0보다 크면 화면 밖에서 기다린다 — 움직이지도 겹침을 풀지도 않는다.
+  double holdSec = 0;
+
   /// 부활을 이미 썼다.
   bool revived = false;
 
