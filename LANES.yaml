@@ -73,6 +73,7 @@ lanes:
       # 보유·도감 효과 전투 적용, 배 외형 시나리오 (2026-10-15 S1 위임)
       - packages/game_core/lib/src/battle/combat_stats.dart
       - packages/game_core/lib/src/battle/spawner.dart
+      - packages/game_data/test/tables_test.dart
       - packages/game_data/lib/src/models/battle_tables.dart
       - scenarios/
       - packages/game_cli/lib/src/scenario/runner.dart
