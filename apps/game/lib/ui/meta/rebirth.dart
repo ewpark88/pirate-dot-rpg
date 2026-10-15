@@ -238,6 +238,7 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
       final chest = e != null && e.rebirths == after.$1
           ? (gems: e.gems, summons: e.summons, title: e.title, skin: e.skin)
           : chestFor(after.$1);
+      final open = ref.read(rebirthChestOpenProvider.notifier)..opened();
       unawaited(
         showDialog<void>(
           context: context,
@@ -246,7 +247,7 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
             pieces: e != null && e.rebirths == after.$1 ? e.gain : gain,
             bonus: percentText(AppLocalizations.of(context), bonus),
           ),
-        ),
+        ).whenComplete(open.closed),
       );
     });
   }
