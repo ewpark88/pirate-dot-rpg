@@ -13,11 +13,12 @@ import 'package:game_data/game_data.dart';
 int summonCost(MetaTable meta, int count) => meta.summonCostGems * count;
 
 /// 첫 10연 무료인가 (설계서 4.9·4.12 튜토리얼 4단계 ‘보스 처치, 젬 획득’ 뒤, `meta.tutorial`):
-/// 첫 보스를 잡았고(bestStage > 1), 아직 한 번도 소환하지 않았고, `firstTenCount`연.
+/// 튜토리얼 보스(`waves.boss.tutorialFailStage`, 3단계에서 일부러 실패)를 잡았고, 아직 한 번도 소환하지 않았고,
+/// `firstTenCount`연. 그 전에 주면 영웅 카드로 3단계 실패가 사라진다.
 bool isFreeFirstTen(GameState state, GameTables t, int count) {
   final tut = t.meta.raw.obj('tutorial');
   return tut.boolean('firstTenSummonFree') &&
-      state.progress.bestStage > 1 &&
+      state.progress.bestStage > t.waves.tutorialFailStage &&
       state.summonsTotal == 0 &&
       count == tut.integer('firstTenCount');
 }
