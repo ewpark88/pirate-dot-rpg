@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -135,12 +137,9 @@ class _Back extends StatelessWidget {
   const _Back({super.key});
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primary,
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: const Center(child: Icon(Icons.help_outline, color: Colors.white)),
+  Widget build(BuildContext context) => const PixelFrame(
+    fill: PixelPalette.action,
+    child: Center(child: PixelSprite(UiSprites.cardBack, dots: 32, scale: 1)),
   );
 }
 

@@ -1,19 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 
-/// 아트 레인 그림이 오기 전 임시 도트 그림 (`#` = 칠함). 그림이 오면 `PixelSprite`로 바꾸고 지운다.
+/// 아트 레인 그림이 없는 작은 도트 표시 (`#` = 칠함): 화살표·꺾쇠.
 abstract final class PixelBitmaps {
-  /// 목표 깃발 (S3 `flag` 요청 중).
-  static const flag = [
-    '.#.......',
-    '.######..',
-    '.#######.',
-    '.######..',
-    '.#.......',
-    '.#.......',
-    '.#.......',
-    '###......',
-  ];
+  /// 다음으로 (›).
+  static const chevron = ['#..', '.#.', '..#', '.#.', '#..'];
 
   /// 승급 화살표.
   static const up = [

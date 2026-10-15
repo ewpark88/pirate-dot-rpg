@@ -6,6 +6,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/no_ads.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -56,7 +57,7 @@ class AdButton extends ConsumerWidget {
       onPressed: () => watchAd(ref, placement, choice: choice),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [const Icon(Icons.ondemand_video, size: 16), const SizedBox(width: 4), Text(label)],
+        children: [const PixelSprite(UiSprites.ad, dots: 16, scale: 1), const SizedBox(width: 4), Text(label)],
       ),
     );
   }

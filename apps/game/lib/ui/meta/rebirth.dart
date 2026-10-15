@@ -102,11 +102,10 @@ class RebirthDialog extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Line(icon: Icons.restart_alt, color: Colors.red, text: l10n.uiRebirthLose),
-          _Line(icon: Icons.lock_outline, color: Colors.blueGrey, text: l10n.uiRebirthKeep),
+          _Line(icon: UiSprites.rebirth, text: l10n.uiRebirthLose),
+          _Line(icon: UiSprites.lock, text: l10n.uiRebirthKeep),
           _Line(
-            icon: Icons.add_circle_outline,
-            color: Colors.green,
+            icon: UiSprites.tabMap,
             text: l10n.uiRebirthGainLine(preview.gain, '+$from', '+$to'),
           ),
         ],
@@ -132,10 +131,10 @@ class RebirthDialog extends ConsumerWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({required this.icon, required this.color, required this.text});
+  const _Line({required this.icon, required this.text});
 
-  final IconData icon;
-  final Color color;
+  /// 아이콘 그림 경로 (`UiSprites`).
+  final String icon;
   final String text;
 
   @override
@@ -144,7 +143,7 @@ class _Line extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: color, size: 18),
+        PixelSprite(icon, dots: 16, scale: 1),
         const SizedBox(width: 8),
         Expanded(child: Text(text)),
       ],

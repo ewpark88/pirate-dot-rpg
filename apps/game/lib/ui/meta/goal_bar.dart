@@ -5,7 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
-import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -56,7 +56,7 @@ class GoalBar extends ConsumerWidget {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: u * 2),
           child: Row(
             children: [
-              const PixelBitmap(PixelBitmaps.flag, color: PixelPalette.gold, scale: 1),
+              const PixelSprite(UiSprites.flag, dots: 16, scale: 1),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(

@@ -38,7 +38,7 @@ class DailyIcon extends ConsumerWidget {
     final icon = PixelButton(
       key: const Key('daily.icon'),
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
-      child: const Icon(Icons.assignment_turned_in, size: 18),
+      child: const PixelSprite(UiSprites.quest, dots: 16, scale: 1),
       onPressed: () => unawaited(
         showModalBottomSheet<void>(
           context: context,
@@ -95,10 +95,7 @@ class _Quests extends ConsumerWidget {
           ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            leading: Icon(
-              q.done ? Icons.check_circle : Icons.radio_button_unchecked,
-              color: q.done ? Colors.green : null,
-            ),
+            leading: PixelSprite(q.done ? UiSprites.check : UiSprites.checkEmpty, dots: 8),
             title: Text(name(q)),
             subtitle: Text(l10n.uiQuestProgress(q.progress, q.target)),
             trailing: q.claimed
@@ -184,9 +181,8 @@ class _DayCell extends StatelessWidget {
       child: Column(
         children: [
           Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
-          // 받은 날 체크는 S3 그림(check) 오기 전까지 Material.
           if (checked)
-            const Icon(Icons.check, size: 18, color: Colors.green)
+            const PixelSprite(UiSprites.check, dots: 8)
           else if (ticket)
             const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
           else

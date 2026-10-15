@@ -148,7 +148,7 @@ class _RateRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(Icons.circle, size: 10, color: rarityColor(rarity)),
+          SizedBox.square(dimension: 8, child: ColoredBox(color: rarityColor(rarity))),
           const SizedBox(width: 6),
           Expanded(child: Text(tableText(l10n, rarity.nameKey))),
           Text(percentText(l10n, rarity.summonRate)),
