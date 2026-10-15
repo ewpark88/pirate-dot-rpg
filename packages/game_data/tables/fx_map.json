@@ -718,5 +718,26 @@
       "debris_2",
       "debris_plank"
     ]
+  },
+  "slotSkin": {
+    "bar": "#FFFAF0",
+    "shadow": "#1E3C78",
+    "empty": "#E3ECF7",
+    "emptyBorder": "#B9C6DA",
+    "ultimateTop": "#FFE27A",
+    "ultimateBottom": "#FFB31F",
+    "ultimateEdge": "#D98A00",
+    "gauge": "#FF5A6E",
+    "gaugeBack": "#7A4A12",
+    "radius": 12,
+    "ultimateRadius": 14,
+    "border": 3,
+    "rarity": [
+      "#9AA3AD",
+      "#58A6FF",
+      "#C07BFF",
+      "#FFCF4A",
+      "#7AF0FF"
+    ]
   }
 }

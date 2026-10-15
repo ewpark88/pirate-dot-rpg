@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 스킨 r1 선원 줄 (사용자 승인 새 스킨, S4 값)
+- 골든 battle_reference·battle_sprites 다시 찍음(98138ff, pubspec PB 등록 반영).
+- `SlotSkinPainter`(fx_map slotSkin, dp 값을 줄 도트로 환산): 크림 줄 + 위로 그림자, 칸 = 등급 색(PB cards.json main) 테두리 3dp·반지름 12dp·등급 색 세로 그라데이션·흰 하이라이트·아래 그림자,
+  PB 얼굴 초상(portrait:<id>, crew_art)을 둥글게 잘라 넣음, 빈 칸 연한 바탕·회청 테두리(+는 UI), 궁극기 금 그라데이션 통통 버튼(아래 4dp 진한 테두리)·게이지 #FF5A6E·번개.
+  그라데이션 셰이더는 칸 자리별 캐시(프레임당 할당 없음). PB 초상이 없으면 도트 칸.
+- 골든 8장 갱신(스프라이트 읽는 장면). 비교 `docs/specs/render-skin-r1/crew_row_4devices.png`. check --full: S4 en_hud_boss_fight만 실패(S4 레인에서 이미 다시 찍음, main 대기).
+
 ### 2026-10-15 · S3 · 포탄·폭발 퀄리티 (사용자 직접 지시) + 태블릿
 - 스펙 `docs/specs/render-bombs.md`. PB 무기 36종·폭발 부품 16장 가져오기(import_pb.py), `PbFxPainter`(무기 회전·꼬리, 폭발 단계 합성), 계열별 flightMs·lookahead 16·범위 계열 한 발, 폭발 합치기·상한.
 - 태블릿 800×1280: 검사 기기 4종(battle_frame_test·layout 골든). 선원 줄 도트 ≤1.6dp 상한(kBandDotMaxDp) — 휴대폰 3종은 그대로.
