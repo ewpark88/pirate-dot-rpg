@@ -48,4 +48,13 @@ abstract final class UiSprites {
 
   /// 젬 8×8 × 3프레임.
   static const gem = 'assets/ui/gem.png';
+
+  /// 금화 16×16.
+  static const coin = 'assets/ui/coin.png';
+
+  /// 등급 별 16×16.
+  static const star = 'assets/ui/star.png';
+
+  /// 배 부위 아이콘 16×16 (`ship_parts.json` id).
+  static String part(String id) => 'assets/ui/part_$id.png';
 }

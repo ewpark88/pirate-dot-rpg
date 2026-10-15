@@ -9,7 +9,17 @@ import 'ui_harness.dart';
 
 GameState _withSetting(GameState s, String key, Object value) => s.copyWith(settings: s.settings.withValue(key, value));
 
-const _switches = ['bgm', 'sfx', 'vibration', 'shake', 'flash', 'powerSave', 'autoBoss', 'autoUpgrade'];
+const _switches = [
+  'bgm',
+  'sfx',
+  'vibration',
+  'shake',
+  'flash',
+  'powerSave',
+  'autoBoss',
+  'autoUpgrade',
+  'notifications',
+];
 
 Future<CommandLog> _openSettings(WidgetTester tester, GameState state) async {
   final log = await pumpGame(tester, state);
@@ -28,6 +38,13 @@ void main() {
     }
     await tester.tap(find.byKey(const Key('settings.shake')));
     expect(log.sent.map((c) => c.toJson()), [const SetSetting('shake', false).toJson()]);
+  });
+
+  testWidgets('세이브 v4: 알림 끄기 → SetSetting(notifications, false)', (tester) async {
+    final log = await _openSettings(tester, loadFixture('stage37_midgame'));
+    await tester.scrollUntilVisible(find.byKey(const Key('settings.notifications')), 100);
+    await tester.tap(find.byKey(const Key('settings.notifications')));
+    expect(log.sent.map((c) => c.toJson()), [const SetSetting('notifications', false).toJson()]);
   });
 
   testWidgets('기준 8: English 선택 → SetSetting(lang, en)', (tester) async {

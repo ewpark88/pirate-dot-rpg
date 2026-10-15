@@ -1,16 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
-import 'package:pirate_dot/ui/ads/ad_buttons.dart';
-import 'package:pirate_dot/ui/hud/boss_challenge.dart';
-import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/battle_overlay.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
-import 'package:pirate_dot/ui/hud/hud_bar.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
-import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
-import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
@@ -25,7 +22,7 @@ import 'package:pirate_dot/ui/tabs/summon_tab.dart';
 import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// 세로 화면 하나: 위는 HUD와 전장(항상 보임), 아래 절반만 탭에 따라 바뀐다 (설계서 4.12).
+/// 세로 화면 하나: 위는 전장(항상 보임, HUD는 캔버스 + 누르는 것만 도트 오버레이), 아래 절반만 탭에 따라 바뀐다 (설계서 4.12).
 /// 탭 4개 고정: 항해(전투)·배·선원·소환 (4.9 피로 금지 규칙). 버튼은 Command만 보낸다.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -34,9 +31,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-/// 전장 : 탭 패널 높이 비율 (설계서 4.12의 38% : 37%).
-const _battleFlex = 38;
-const _panelFlex = 37;
+/// 전장이 차지할 수 있는 최대 높이 비율 (가로·낮은 화면에서 탭 패널을 남긴다).
+const _battleMax = 0.5;
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _tab = 0;
@@ -67,64 +63,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: RebirthDoneGate(
           child: Scaffold(
             body: SafeArea(
-              child: Column(
-                children: [
-                  const SaveFailureBanner(),
-                  const HudBar(),
-                  const GoalBar(),
-                  Expanded(
-                    flex: _battleFlex,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: AspectRatio(
-                            key: const Key('battle.area'),
-                            aspectRatio: kLogicalWidth / kLogicalHeight,
-                            // 전장(렌더) 위에 UI의 탭 영역(보물상자)을 같은 좌표로 겹친다.
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                ref.watch(battleViewBuilderProvider)?.call(context) ??
-                                    GameWidget(game: ref.watch(battleGameProvider)),
-                                const ChestLayer(),
-                              ],
+              child: LayoutBuilder(
+                builder: (context, screen) => Column(
+                  children: [
+                    const SaveFailureBanner(),
+                    const GoalBar(),
+                    // 전장은 폭에 맞춘 320×180 비율 높이(빈 띠 없이), 가로 화면처럼 낮으면 화면 높이의 절반까지.
+                    SizedBox(
+                      height: math.min(screen.maxWidth * kLogicalHeight / kLogicalWidth, screen.maxHeight * _battleMax),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: AspectRatio(
+                              key: const Key('battle.area'),
+                              aspectRatio: kLogicalWidth / kLogicalHeight,
+                              // 전장(렌더) 위에 UI의 탭 영역(보물상자)을 같은 좌표로 겹친다.
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  ref.watch(battleViewBuilderProvider)?.call(context) ??
+                                      GameWidget(game: ref.watch(battleGameProvider)),
+                                  const ChestLayer(),
+                                  // 누르는 것만 전장 위 도트 오버레이로 (골드·스테이지·게이지는 캔버스 HUD).
+                                  const BattleOverlay(),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [BossChallenge(), BossWeakness()],
-                          ),
-                        ),
-                        const Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [TailwindBadge(), TailwindAdButton(), SizedBox(height: 4), DailyIcon()],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  // 튜토리얼 중에만 자리를 차지한다 — 전장도 탭 패널도 가리지 않는다.
-                  const TutorialBubble(),
-                  Expanded(
-                    flex: _panelFlex,
-                    child: IndexedStack(
-                      index: _tab,
-                      children: const [
-                        VoyageTab(),
-                        ShipTab(),
-                        CrewTab(),
-                        SummonTab(),
-                      ],
+                    // 튜토리얼 중에만 자리를 차지한다 — 전장도 탭 패널도 가리지 않는다.
+                    const TutorialBubble(),
+                    Expanded(
+                      child: IndexedStack(
+                        index: _tab,
+                        children: const [
+                          VoyageTab(),
+                          ShipTab(),
+                          CrewTab(),
+                          SummonTab(),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             bottomNavigationBar: NavigationBar(

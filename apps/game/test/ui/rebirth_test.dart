@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -69,8 +70,8 @@ void main() {
     await _pump(tester, _locked);
     expect(find.byKey(const Key('rebirth.open')), findsNothing);
     expect(find.text('Rebirth unlocks at stage 40'), findsOneWidget);
-    final bar = tester.widget<LinearProgressIndicator>(
-      find.descendant(of: find.byKey(const Key('rebirth.card')), matching: find.byType(LinearProgressIndicator)),
+    final bar = tester.widget<PixelBar>(
+      find.descendant(of: find.byKey(const Key('rebirth.card')), matching: find.byType(PixelBar)),
     );
     expect(bar.value, closeTo(37 / 40, 1e-9));
   });

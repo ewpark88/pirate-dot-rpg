@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -48,7 +50,10 @@ class GoalBar extends ConsumerWidget {
             const SizedBox(width: 4),
             Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)),
             const SizedBox(width: 8),
-            SizedBox(width: 80, child: LinearProgressIndicator(value: progress, minHeight: 6)),
+            SizedBox(
+              width: 80,
+              child: PixelBar(value: progress, fill: PixelPalette.gold),
+            ),
           ],
         ),
       ),
