@@ -554,7 +554,11 @@ const Map<String, String> rawTables = {
       "pattern": "sweep",
       "fx": "slash",
       "count": 1,
-      "durationMs": 500
+      "durationMs": 500,
+      "scale": 2,
+      "y": 112,
+      "fromX": 40,
+      "toX": 330
     },
     "ult_great_wave": {
       "pattern": "sweep",
