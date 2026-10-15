@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · Pirate Busters 선원 그림 가져오기 (사용자 결정: PB 차용, 유료 도구 0회)
+- `tools/art/import_pb.py`: 40명 카드 그림(355×480)·얼굴 초상(@2x) → `assets/crew_art/`, 등급 테두리 5종 back·front + legend_rays·shine·sparkle + cards.json → `assets/ui/cards/`.
+  무손실 WebP(원본과 픽셀 같음 확인), 94개 1.2MB, 카드 최대 ~14KB(150KB 한도). LICENSES OWN(출처 PB 경로). `--check` 같음.
+- 표정 SVG는 아직 안 가져옴 — Flutter에 SVG 의존이 없어 PNG 부위 합성이 필요(상세 화면 설계 때).
+- check --full: S4 골든 en_m3_hud만 실패(v3 프레임 대기 중, S4가 재생성) — 이 변경과 무관.
+
 ### 2026-10-15 · S3 · 전장 배율 +1 (사용자 직접 지시, v3)
 - battleFrameFor: 필드 k+1(왼쪽 기준, 오른쪽 잘림 — S24 보이는 폭 270), 선원 줄은 이전 배율 그대로(줄 좌표 + bandOrigin·bandScale), 줄 윗변 정수 물리 픽셀.
 - 보스 clampBossX(그림·발사체 목표·숫자·불꽃), 궁극기 비·코인 비·타격 목표는 보이는 폭 안. 상자 45%는 S4.
