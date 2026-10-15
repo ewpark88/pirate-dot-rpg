@@ -431,5 +431,14 @@
   "uiUnlockShopRow": "보물지도 상점 {n}줄이 열렸어요!",
   "uiShipLookTitle": "배가 새 모습이 됐어요!",
   "uiShipLookPart": "{part} {stage}단계",
-  "uiShipNextLook": "다음 외형 Lv {level}"
+  "uiShipNextLook": "다음 외형 Lv {level}",
+  "uiLookSailUp": "돛 +1!",
+  "uiLookSailGold": "금빛 돛!",
+  "uiLookCannonUp": "대포 +1!",
+  "uiLookCannon": "대포 강화!",
+  "uiLookHull": "선체 확장!",
+  "uiLookRam": "충각 장착!",
+  "uiLookFigurehead": "선수상!",
+  "uiLookCrowsnest": "망루 강화!",
+  "uiLookCargo": "짐 +1"
 }

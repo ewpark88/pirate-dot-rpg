@@ -96,6 +96,21 @@ int? nextLookLevel(ShipPartDef def, int level) {
   return null;
 }
 
+/// 한쪽 대포 수 (렌더 탑다운 그림, 단계 1~7 — S3 표). 늘어나는 단계에서만 '대포 +1!'.
+const _cannonsPerSide = [0, 1, 2, 2, 3, 3, 4, 4];
+
+/// 외형 축하 큰 글 (렌더 S3 제안: 돛 = 돛대 수, 선체 = 길이·충각·선수상, 대포 = 한쪽 포 수).
+String shipLookHeadline(AppLocalizations l, String part, int stage) {
+  int guns(int s) => _cannonsPerSide[s.clamp(0, _cannonsPerSide.length - 1)];
+  return switch (part) {
+    'sail' => stage >= 5 ? l.uiLookSailGold : l.uiLookSailUp,
+    'cannon' => guns(stage) > guns(stage - 1) ? l.uiLookCannonUp : l.uiLookCannon,
+    'hull' => stage == 5 ? l.uiLookRam : (stage == 6 ? l.uiLookFigurehead : l.uiLookHull),
+    'crowsnest' => l.uiLookCrowsnest,
+    _ => l.uiLookCargo,
+  };
+}
+
 /// 부위 외형이 바뀌면(ShipLookChanged) 축하 팝업: 새 배를 크게, 바뀐 부위가 흰빛으로 빛났다 사라진다.
 class ShipLookCelebrationGate extends ConsumerStatefulWidget {
   const ShipLookCelebrationGate({required this.child, super.key});
@@ -190,11 +205,16 @@ class _ShipLookCelebrationState extends ConsumerState<ShipLookCelebration> with 
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(l10n.uiShipLookTitle, style: Skin.text(22, color: Skin.primaryEdge)),
-                  const SizedBox(height: 4),
+                  Text(l10n.uiShipLookTitle, style: Skin.text(15, color: Skin.sub)),
+                  const SizedBox(height: 2),
                   Text(
-                    l10n.uiShipLookPart(tableText(l10n, def.nameKey), widget.stage + 1),
-                    style: Skin.text(15, color: Skin.sub),
+                    shipLookHeadline(l10n, widget.part, widget.stage),
+                    key: const Key('ship.look.headline'),
+                    style: Skin.text(26, color: Skin.primaryEdge),
+                  ),
+                  Text(
+                    l10n.uiShipLookPart(tableText(l10n, def.nameKey), widget.stage),
+                    style: Skin.text(14, color: Skin.sub),
                   ),
                   SizedBox(
                     height: 200,

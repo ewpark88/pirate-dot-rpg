@@ -431,5 +431,14 @@
   "uiUnlockShopRow": "Treasure Map Shop row {n} unlocked!",
   "uiShipLookTitle": "Your ship got a new look!",
   "uiShipLookPart": "{part} stage {stage}",
-  "uiShipNextLook": "Next look Lv {level}"
+  "uiShipNextLook": "Next look Lv {level}",
+  "uiLookSailUp": "Sail +1!",
+  "uiLookSailGold": "Golden sails!",
+  "uiLookCannonUp": "Cannon +1!",
+  "uiLookCannon": "Cannons upgraded!",
+  "uiLookHull": "Hull extended!",
+  "uiLookRam": "Ram mounted!",
+  "uiLookFigurehead": "Figurehead!",
+  "uiLookCrowsnest": "Crow's nest upgraded!",
+  "uiLookCargo": "Cargo +1"
 }
