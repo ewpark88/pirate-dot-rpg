@@ -91,6 +91,29 @@ class BattleGame extends FlameGame {
   int get spriteCount => _sprites?.length ?? 0;
 
   late BattleScene scene;
+
+  /// 장면을 새로 만들 때(데모·부하·라이브 전환) 상자 배치를 이어받는다.
+  BattleFrame? get scene0Layout => _sceneReady ? scene.layout : null;
+  bool _sceneReady = false;
+
+  Offset? _goldTargetDp;
+  void Function(BigNum amount)? _onCoinArrive;
+
+  /// 상단 바 골드 아이콘 자리 (전장 상자 왼쪽 위 기준 dp, 상자 위면 y < 0). UI가 레이아웃 때마다 알려 준다.
+  /// 코인이 이 자리(상자 위면 상자 맨 위)로 날아간다. null이면 배로.
+  Offset? get goldTargetDp => _goldTargetDp;
+  set goldTargetDp(Offset? v) {
+    _goldTargetDp = v;
+    if (_sceneReady) scene.coinFlow.goldTargetDp = v;
+  }
+
+  /// 코인이 목표에 닿은 프레임마다 금액 합계 — UI가 골드 아이콘을 통통 튀기고 '+금액'을 띄운다.
+  void Function(BigNum amount)? get onCoinArrive => _onCoinArrive;
+  set onCoinArrive(void Function(BigNum amount)? f) {
+    _onCoinArrive = f;
+    if (_sceneReady) scene.coinFlow.onCoinArrive = f;
+  }
+
   late ScenePainter painter;
   late BattleMode mode;
   StreamSubscription<RecordedTick>? _sub;
@@ -146,11 +169,17 @@ class BattleGame extends FlameGame {
       BattleMode.demo => _recording ?? decodeRecording(sampleBattleJsonl),
     };
     mode = m;
-    scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic)..audio = audio;
+    final frame = scene0Layout;
+    scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic)
+      ..audio = audio
+      ..coinFlow.goldTargetDp = _goldTargetDp
+      ..coinFlow.onCoinArrive = _onCoinArrive;
+    if (frame != null) scene.layout = frame;
     painter = ScenePainter(scene)
       ..showHitboxes = _showHitboxes
       ..sprites = _sprites
       ..useSprites = _useSprites;
+    _sceneReady = true;
     _cache.dispose();
     _dirty = true;
   }

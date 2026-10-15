@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/fx/transients.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/hud_painter.dart';
 import 'package:pirate_dot/render/paint/pb_fx_painter.dart';
@@ -222,6 +223,20 @@ class ScenePainter {
     }
   }
 
+  late final JsonReader _coinCfg = scene.fx.raw.obj('coinFx');
+
+  /// 큰 금화(fx/coin_hd.png 4프레임 회전): 화면 크기 coinFx.sizeDp dp 고정, 목표 가까이서 조금 작아진다.
+  bool _coinHd(Canvas c, Coin coin) {
+    final sheet = _sprite.sheet('coin_hd');
+    if (sheet == null) return false;
+    final t = (coin.ageMs / coin.flyMs).clamp(0.0, 1.0);
+    // 폰은 sizeDp dp, 전장이 아주 큰 태블릿에서는 최소 minDots 필드 도트(전장 대비 너무 작지 않게).
+    final base = math.max(_coinCfg.number('sizeDp') / scene.layout.dot, _coinCfg.number('minDots'));
+    final size = base * (1 - 0.25 * t * t);
+    final frame = (coin.ageMs / _coinCfg.number('spinFrameMs')).floor() % sheet.frames;
+    return _sprite.drawSmoothFrame(c, 'coin_hd', frame, coin.x, coin.y, size, size * sheet.frameH / sheet.frameW);
+  }
+
   /// 코인 반짝임 3프레임을 초당 12장 (기준 장면).
   static const _coinFps = 12;
 
@@ -233,6 +248,7 @@ class ScenePainter {
   void _coins(Canvas c) {
     for (final coin in scene.coins.active) {
       if (coin.ageMs < 0) continue;
+      if (_coinHd(c, coin)) continue;
       if (_sprite.draw(c, 'coin', coin.x, coin.y, frame: (coin.ageMs * _coinFps / 1000).floor())) continue;
       _fill(c, coin.x - 1, coin.y - 1, 2, 2, 0xFFFFD23F);
     }

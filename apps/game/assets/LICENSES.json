@@ -768,6 +768,10 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/coin_burst.png",
       "license": "OWN"
     },
+    "fx/coin_hd.png": {
+      "source": "Pirate Busters 자체 IP 화풍 → tools/art/gen_coin.py 코드 그림",
+      "license": "OWN"
+    },
     "fx/explosion_aoe.png": {
       "source": "Pirate Busters v0.24 자체 IP 수작업 보정 → tools/art/overrides/fx/explosion_aoe.png",
       "license": "OWN"

@@ -95,6 +95,12 @@ class BattleFrame {
   Rect get ultimateDots => bandRectToDots(ultimateInBand);
   Rect get bossDots => bandRectToDots(bossInBand);
 
+  /// 보이는 오른쪽 끝 (도트) — 필드를 키우면 320보다 작다(오른쪽이 잘림).
+  double get visibleRight => math.min(kLogicalWidth, viewDots.right);
+
+  /// 보스는 등장 자리(엔진 x 300)가 잘린 화면 밖이어도 보이는 오른쪽 끝 안에 그린다(보스 발사체·숫자도 같은 x).
+  double clampBossX(double x) => math.min(x, visibleRight - kBossEdgeInset);
+
   /// 도트 → dp (전장 상자 기준).
   Offset toDp(Offset dots) => Offset((dots.dx - viewDots.left) * dot, (dots.dy - viewDots.top) * dot);
 
