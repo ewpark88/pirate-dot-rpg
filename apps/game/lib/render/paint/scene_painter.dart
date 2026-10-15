@@ -64,7 +64,8 @@ class ScenePainter {
   static const _underwaterTint = Color(0xFF0B2A44);
 
   void paint(Canvas canvas) {
-    _numberScale = _fxScale = 1; // 옆모습: 탑다운 배율 되돌림
+    _numberScale = _fxScale = 1; // 옆모습: 탑다운 배율·컬링 되돌림
+    _cull = Rect.largest;
     _pb.unitDp = null;
     canvas
       ..save()
@@ -96,13 +97,17 @@ class ScenePainter {
   late final TopScenePainter top = TopScenePainter(scene, _sprite);
   // ignore: prefer_function_declarations_over_variables — 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
   late final void Function(Canvas c) _worldFx = (c) {
+    _cull = top.visibleWorld; // top.paint가 이번 프레임 값을 넣은 뒤 불린다
     _projectiles(c);
     _effects(c);
     _coins(c);
-    _hud.paintNumbers(c, scale: _numberScale);
+    _hud.paintNumbers(c, scale: _numberScale, cull: _cull);
   };
   double _numberScale = 1;
   double _fxScale = 1;
+
+  Rect _cull = Rect.largest;
+  static const _liteBlasts = 4; // 이보다 폭발이 많으면 가벼운 폭발
 
   void _fill(Canvas c, double l, double t, double w, double h, int argb) {
     _paint.color = Color(argb);
@@ -206,6 +211,7 @@ class ScenePainter {
 
   void _projectiles(Canvas c) {
     for (final p in scene.projectiles.active) {
+      if (!_cull.contains(Offset(p.x, p.y))) continue;
       if (scene.player.position < p.startIndex) continue;
       if (_pb.projectile(c, p)) continue;
       if (_sprite.draw(c, 'projectile:${p.family}', p.x, p.y)) continue;
@@ -215,8 +221,13 @@ class ScenePainter {
   }
 
   void _effects(Canvas c) {
+    var blasts = 0;
     for (final e in scene.effects.active) {
-      if (!e.visible) continue;
+      if (e.sheetId == 'explosion_aoe' && e.visible) blasts++;
+    }
+    _pb.lite = scene.settings.powerSave || blasts > _liteBlasts;
+    for (final e in scene.effects.active) {
+      if (!e.visible || !_cull.contains(Offset(e.x, e.y))) continue;
       // 탑다운: 전장 1단위가 옆모습 1도트보다 커서 이펙트를 옆모습과 같은 화면 크기로(숫자와 같은 배율).
       final scaled = _fxScale != 1;
       if (scaled) {
@@ -279,6 +290,7 @@ class ScenePainter {
 
   void _coins(Canvas c) {
     for (final coin in scene.coins.active) {
+      if (!_cull.contains(Offset(coin.x, coin.y))) continue;
       if (coin.ageMs < 0) continue;
       if (_coinHd(c, coin)) continue;
       if (_sprite.draw(c, 'coin', coin.x, coin.y, frame: (coin.ageMs * _coinFps / 1000).floor())) continue;

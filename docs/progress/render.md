@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 배터리·CPU: 화면 밖 컬링·항적 점 묶음·가벼운 폭발
+- 탑다운 화면 밖 컬링: 적(drawAtlas 묶음에서 제외)·발사체·이펙트·코인·숫자 — 보이는 전장 + 여유 24(TopScenePainter.visibleWorld).
+- 항적: 점마다 drawRect(약 90번) → 알파 4단계 drawRawPoints(재사용 버퍼, 할당 없음).
+- 가벼운 폭발: 절전이거나 폭발이 4개 넘으면 연기·파편·불씨를 빼고 번쩍·불덩이·충격파만(PbFxPainter.lite).
+- 부하(150마리, 매 틱 6발·처치) 프레임당 그리기: 302 → 164(이미지 146 → 66, 사각형 71 → 9). 넓게 퍼진 장면(화면 밖 많음) 154. 기록 ms는 이 PC에서 0.8~1.6으로 들쭉날쭉해 비교 못 함(실기기 S5 측정으로).
+- 피버·폭풍 덮개는 `top/top_overlays.dart`로 분리(300줄).
+
 ### 2026-10-15 · S3 · 지루함 해소 3종 연출 (S2 c5193fa 계약)
 - `scene/fun_director.dart`: FeverStarted(금빛 번쩍·흔들림·진동·소리), GoldfishCaught(금화 터짐 + 금 숫자 + 그 금액 금화가 배로), BottlePicked(병 자리 반짝), SeaEventStarted·ShipLookChanged 소리. EventDirector default → funEvent.
 - TopScenePainter: 이벤트 적(goldfish·sea_serpent·merchant_ship)은 td_event 그림, 피버 중 금화 비(결정론, 절전 ½) + 금빛 테두리(선명 테 + 안쪽 번짐, 맥박), 유리병은 배 오른쪽 앞에서 출렁, 폭풍이면 분위기에 비·어둡게·번개 번쩍(번쩍임 설정 따름).
