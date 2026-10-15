@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -58,37 +60,45 @@ class CrewCard extends ConsumerWidget {
     final small = Theme.of(context).textTheme.labelSmall;
     final color = rarityColor(rarity);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _PortraitBox(
-          def: def,
-          color: color,
-          owned: owned,
-          rarity: rarity,
-          level: level,
-          cards: cards,
-          // 승급은 카드 안 오른쪽 아래 작은 도트 버튼 (빈 줄을 차지하지 않게).
-          promote: _atGate.contains(status) ? _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok) : null,
-        ),
-        // 짧은 이름 한 줄 (별명은 상세 창에서, layout-v2-brief).
-        Text(
-          shortCrewName(l10n, def),
-          key: Key('crew.name.${def.id}'),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: owned ? small : small?.copyWith(color: PixelPalette.textDim),
-        ),
-        if (deployed)
+    // 누르면 상세 창 (승급 작은 버튼은 자기 탭을 먼저 받는다).
+    return GestureDetector(
+      key: Key('crew.card.${def.id}'),
+      behavior: HitTestBehavior.opaque,
+      onTap: () => unawaited(showCrewDetail(context, def)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _PortraitBox(
+            def: def,
+            color: color,
+            owned: owned,
+            rarity: rarity,
+            level: level,
+            cards: cards,
+            // 승급은 카드 안 오른쪽 아래 작은 도트 버튼 (빈 줄을 차지하지 않게).
+            promote: _atGate.contains(status)
+                ? _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok)
+                : null,
+          ),
+          // 짧은 이름 한 줄 (별명은 상세 창에서, layout-v2-brief).
           Text(
-            l10n.uiCrewDeployed,
+            shortCrewName(l10n, def),
+            key: Key('crew.name.${def.id}'),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: small?.copyWith(color: PixelPalette.accent),
+            style: owned ? small : small?.copyWith(color: PixelPalette.textDim),
           ),
-      ],
+          if (deployed)
+            Text(
+              l10n.uiCrewDeployed,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: small?.copyWith(color: PixelPalette.accent),
+            ),
+        ],
+      ),
     );
   }
 }
