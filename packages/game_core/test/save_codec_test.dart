@@ -59,6 +59,16 @@ void main() {
     expect(v4.toJson()['settings'], containsPair('notifications', v4.settings.notifications));
   });
 
+  test('v4 → v5: 편성이 비고 fleetInit false(첫 틱에 자동 편성), v5는 빈 칸(null)까지 왕복', () {
+    final v4 = SaveCodec.decode(File('test/fixtures/saves/v4.json').readAsStringSync());
+    expect(v4.fleet, isEmpty);
+    expect(v4.fleetInit, isFalse);
+    final v5 = SaveCodec.decode(File('test/fixtures/saves/v5.json').readAsStringSync());
+    expect(v5.fleetInit, isTrue);
+    expect(v5.fleet, contains(null));
+    expect(SaveCodec.decode(SaveCodec.encode(v5)).fleet, v5.fleet);
+  });
+
   test('본문을 고치면 체크섬이 깨진다', () {
     final text = SaveCodec.encode(sample).replaceFirst('"gems": 0', '"gems": 999');
     expect(() => SaveCodec.decode(text), throwsA(isA<SaveCorruptException>()));

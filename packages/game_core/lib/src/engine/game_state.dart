@@ -17,6 +17,8 @@ class GameState {
     this.progress = const Progress(),
     this.ship = const ShipState(),
     this.crews = const {},
+    this.fleet = const [],
+    this.fleetInit = false,
     this.tokens = 0,
     this.pityCount = 0,
     this.summonsTotal = 0,
@@ -60,6 +62,9 @@ class GameState {
     crews: {
       for (final e in (j['crews'] as Json).entries) e.key: CrewState.fromJson(e.value as Json),
     },
+    // v5 키. 마이그레이션을 거치지 않는 상태 픽스처(fixtures/states)에는 없을 수 있다 → ‘편성 전’.
+    fleet: (j['fleet'] as List?)?.cast<String?>() ?? const [],
+    fleetInit: j['fleetInit'] as bool? ?? false,
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
     summonsTotal: (j['summon'] as Json)['total'] as int,
@@ -82,6 +87,13 @@ class GameState {
 
   /// 보유 선원 id → 상태. 없는 선원은 미보유.
   final Map<String, CrewState> crews;
+
+  /// 출전 편성 (세이브 v5, ADR-0010): 슬롯 순서대로 선원 id, null은 빈 칸. 배 등급 슬롯 수보다 길면
+  /// 앞 칸만 출전한다(환생으로 슬롯이 줄어도 뒤 칸 기록은 남김). 편성 판정은 `activeFleet`.
+  final List<String?> fleet;
+
+  /// 한 번이라도 편성됐는가. false면(새 게임·v4 이전 세이브) 경제가 첫 틱에 자동 편성으로 채운다.
+  final bool fleetInit;
 
   /// 해적의 증표.
   final int tokens;
@@ -120,6 +132,8 @@ class GameState {
     Progress? progress,
     ShipState? ship,
     Map<String, CrewState>? crews,
+    List<String?>? fleet,
+    bool? fleetInit,
     int? tokens,
     int? pityCount,
     int? summonsTotal,
@@ -143,6 +157,8 @@ class GameState {
     progress: progress ?? this.progress,
     ship: ship ?? this.ship,
     crews: crews ?? this.crews,
+    fleet: fleet ?? this.fleet,
+    fleetInit: fleetInit ?? this.fleetInit,
     tokens: tokens ?? this.tokens,
     pityCount: pityCount ?? this.pityCount,
     summonsTotal: summonsTotal ?? this.summonsTotal,
@@ -167,6 +183,8 @@ class GameState {
     'progress': progress.toJson(),
     'ship': ship.toJson(),
     'crews': {for (final e in crews.entries) e.key: e.value.toJson()},
+    'fleet': fleet,
+    'fleetInit': fleetInit,
     'tokens': tokens,
     'summon': {'pityCount': pityCount, 'total': summonsTotal},
     'tutorialStep': tutorialStep,

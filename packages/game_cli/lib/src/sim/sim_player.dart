@@ -51,6 +51,7 @@ class SimPlayer {
 
   /// 역대 최고 스테이지 (보스 카드가 새 보스인지 반복 보스인지 가르는 기준, 엔진 bestStage와 같게 센다).
   int _best = 1;
+  Object? _crewsSeen;
   Duration? _lastBoss;
   var _reached = <int, Duration>{};
   var _prevReached = <int, Duration>{};
@@ -118,6 +119,11 @@ class SimPlayer {
       }
     }
     _buyCheapest(s);
+    // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
+    if (!identical(s.crews, _crewsSeen)) {
+      _crewsSeen = s.crews;
+      engine.enqueue(const AutoFleet());
+    }
     // 튜토리얼: UI 확인 단계(첫 연출·소환 결과·마지막 말풍선)는 바로 넘긴다. 나머지는 코어가 판정.
     final step = s.tutorialStep;
     final acks = t.meta.raw.obj('tutorial').obj('steps').raw['ack'] as List;

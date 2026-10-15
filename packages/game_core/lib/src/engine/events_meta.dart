@@ -21,6 +21,12 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'chestOpened' => ChestOpened(t, gold: big('gold')),
     'offlineReward' => OfflineReward(t, gold: big('gold'), cards: j['cards'] as int, seconds: j['seconds'] as int),
     'rebirthDone' => RebirthDone(t, gain: j['gain'] as int, pieces: j['pieces'] as int, rebirths: j['rebirths'] as int),
+    'fleetRejected' => FleetRejected(
+      t,
+      slot: j['slot'] as int,
+      crewId: j['crewId'] as String,
+      reason: j['reason'] as String,
+    ),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };
@@ -184,4 +190,19 @@ class RebirthDone extends GameEvent {
 
   @override
   Json _fields() => {'gain': gain, 'pieces': pieces, 'rebirths': rebirths};
+}
+
+/// 편성 거절 (SetFleetSlot). [reason]: `family` = 같은 계열 상한(skills.maxSameFamilyInFleet) 초과. UI는 안내 문구를 띄운다.
+class FleetRejected extends GameEvent {
+  const FleetRejected(super.tick, {required this.slot, required this.crewId, required this.reason});
+
+  final int slot;
+  final String crewId;
+  final String reason;
+
+  @override
+  String get type => 'fleetRejected';
+
+  @override
+  Json _fields() => {'slot': slot, 'crewId': crewId, 'reason': reason};
 }

@@ -7,6 +7,8 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
+export 'package:game_core/src/economy/formation.dart' show activeFleet, autoFleet, emptySlotCount, fleetSlots;
+
 // 소환 비용·승급 판정·카드 받기 (설계서 4.3.1, 4.3.3). UI가 버튼 상태에 그대로 쓴다.
 
 /// [count]회 소환에 드는 젬.
@@ -58,6 +60,21 @@ PromoteStatus promoteStatus(GameState state, GameTables t, String crewId) {
 }
 
 bool canPromote(GameState state, GameTables t, String crewId) => promoteStatus(state, t, crewId) == PromoteStatus.ok;
+
+/// 합치기로 [crew]의 레벨이 하나 오르는가: 등급 마지막 레벨(승급 문) 전이고 적립 경험치가 그 등급 `expToNext` 이상.
+bool canLevelUp(CrewState crew, GameTables t) {
+  final rarity = rarityOfLevel(t.rarities, crew.level);
+  final need = t.growth.expToNext[rarity.id] ?? 0;
+  return crew.level < rarity.levelMax && need > 0 && crew.exp >= need;
+}
+
+/// 일괄 합치기(MergeAllCards)로 레벨이 오르는 선원이 있는가 — UI 선원 탭 ‘할 일’ 점(매 틱 호출, 할당 없음).
+bool canMergeAny(GameState state, GameTables t) {
+  for (final c in state.crews.values) {
+    if (canLevelUp(c, t)) return true;
+  }
+  return false;
+}
 
 /// 카드 한 장 받기 (소환·보스·오프라인 공통, 스펙 결정 ①, 사용자 결정 A).
 /// - 처음 보는 선원: 카드 등급 첫 레벨로 보유 + 도감

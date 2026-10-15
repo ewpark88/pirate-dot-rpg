@@ -10,12 +10,10 @@ import 'package:game_data/game_data.dart';
 /// 선원 하나의 적립 경험치를 레벨로 바꾼다. 등급 마지막 레벨(승급 문)에서 멈춘다.
 CrewState mergeCrew(CrewState crew, GameTables t) {
   var c = crew;
-  while (true) {
-    final rarity = rarityOfLevel(t.rarities, c.level);
-    final need = t.growth.expToNext[rarity.id] ?? 0;
-    if (c.level >= rarity.levelMax || need <= 0 || c.exp < need) return c;
-    c = c.copyWith(level: c.level + 1, exp: c.exp - need);
+  while (canLevelUp(c, t)) {
+    c = c.copyWith(level: c.level + 1, exp: c.exp - t.growth.expToNext[rarityOfLevel(t.rarities, c.level).id]!);
   }
+  return c;
 }
 
 /// 일괄 합치기 (설계서 4.3.1). 바뀐 선원이 없으면 상태 그대로, 이벤트 없음.

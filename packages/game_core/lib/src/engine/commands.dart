@@ -36,6 +36,8 @@ sealed class Command {
       'skipTutorial' => const SkipTutorial(),
       'tutorialAck' => TutorialAck(j['step'] as int),
       'ackSummonResult' => const AckSummonResult(),
+      'setFleetSlot' => SetFleetSlot(j['slot'] as int, j['crewId'] as String?),
+      'autoFleet' => const AutoFleet(),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
@@ -86,6 +88,29 @@ class MergeAllCards extends Command {
 
   @override
   String get type => 'mergeAllCards';
+}
+
+/// 출전 칸 [slot](0부터)에 선원을 넣는다. [crewId]가 null이면 비운다 (수동 편성, ADR-0010).
+/// 다른 칸에 있던 선원이면 두 칸이 자리를 바꾼다. 미보유·슬롯 밖은 무시, 같은 계열 상한을 넘기면 거절(FleetRejected).
+class SetFleetSlot extends Command {
+  const SetFleetSlot(this.slot, [this.crewId]);
+
+  final int slot;
+  final String? crewId;
+
+  @override
+  String get type => 'setFleetSlot';
+
+  @override
+  Json _fields() => {'slot': slot, 'crewId': crewId};
+}
+
+/// ‘자동 편성’ 버튼: 파워 순·같은 계열 상한으로 슬롯을 모두 채운다 (설계서 4.3).
+class AutoFleet extends Command {
+  const AutoFleet();
+
+  @override
+  String get type => 'autoFleet';
 }
 
 /// 해적 한 명 승급 (연출을 보여주려고 해적별 버튼).
