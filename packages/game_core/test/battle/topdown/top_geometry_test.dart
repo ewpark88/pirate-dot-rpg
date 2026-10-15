@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_aim.dart';
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
@@ -231,9 +230,20 @@ void main() {
     test('탑다운 모양 키(T4-B): topWidth·topRadius·topArcDeg가 있으면 그것, 없으면 옆모습 값', () {
       AttackDef withKeys(String family, Map<String, Object> extra) =>
           AttackDef.fromJson(JsonReader({...attack(family).raw.raw, ...extra}, 'test'));
+      // 실제 표에 탑다운 키가 들어가도(T4-B 값) ‘없으면 옆모습 값’을 보도록 키를 뺀 사본.
+      AttackDef plain(String family) => AttackDef.fromJson(
+        JsonReader(
+          {...attack(family).raw.raw}
+            ..remove('topWidth')
+            ..remove('topRadius')
+            ..remove('topArcDeg')
+            ..remove('topRange'),
+          'test',
+        ),
+      );
       final aim = TopAim(topField, w);
       // 관통: 반폭 3(width 6의 절반) → topWidth 10이면 옆으로 8 떨어진 적도 맞는다.
-      final pierce = attack('pierce');
+      final pierce = plain('pierce');
       final first = mob(topField.shipX, topField.shipY - 40);
       final aside = mob(topField.shipX + 8, topField.shipY - 70, id: 2);
       expect(aim.beamHalfWidth(pierce), pierce.width / 2);
@@ -243,11 +253,12 @@ void main() {
       // 수중: 장판 반지름도 topRadius.
       final under = withKeys('underwater', {'topRadius': 30});
       expect(geo.zoneRadius(under), 30);
-      expect(geo.zoneRadius(attack('underwater')), attack('underwater').radius);
-      expect(SideGeometry(w).zoneRadius(under), attack('underwater').radius, reason: '옆모습은 그대로');
-      // 강습: 부채꼴 각.
+      expect(geo.zoneRadius(plain('underwater')), attack('underwater').radius);
+      // 강습: 부채꼴 각·길이.
       expect(aim.arcDeg(withKeys('assault', {'topArcDeg': 48})), 48);
-      expect(aim.arcDeg(attack('assault')), attack('assault').angleDeg);
+      expect(aim.arcDeg(plain('assault')), attack('assault').angleDeg);
+      expect(aim.coneRange(withKeys('assault', {'topRange': 30})), 30);
+      expect(aim.coneRange(plain('assault')), attack('assault').range);
       // 충격: 고리 범위.
       expect(aim.ringRange(withKeys('shock', {'topRadius': 70})), 70);
     });
@@ -329,23 +340,8 @@ void main() {
       expect(dist(e), closeTo(32 + topField.mobRadius, 1e-9));
       expect(big.muzzle(topField.shipX, 0).y, closeTo(topField.shipY - 32, 1e-9));
       // 배 등급별(ship_tiers topRadius): 스테이지 1 소형선 28, 30 슬루프 29, 80 군함 32.
-      double r(int stage) => (geometryFor('top', t, stage) as TopGeometry).top.shipRadius;
+      double r(int stage) => (geometryFor(t, stage) as TopGeometry).top.shipRadius;
       expect([r(1), r(30), r(80), r(150)], [28, 29, 32, 32]);
-      expect(geometryFor('side', t, 80), isA<SideGeometry>());
-    });
-
-    test('옆모습 SideGeometry는 지금 규칙 그대로(앞머리에서 멈춤, 오른쪽으로 밀림)', () {
-      final s = SideGeometry(w);
-      final stop = w.field.shipX + w.field.contactGap;
-      final e = mob(stop + 5, w.field.shipY);
-      expect(s.advance(e, 20, 0.05), isFalse);
-      expect(e.x, stop + 4);
-      e.x = stop;
-      expect(s.advance(e, 20, 0.05), isTrue);
-      s.push(e, 10);
-      expect(e.x, stop + 10);
-      expect(s.mode, 'side');
-      expect(geo.mode, 'top');
     });
   });
 }

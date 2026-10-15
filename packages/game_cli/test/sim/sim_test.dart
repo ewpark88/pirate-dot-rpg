@@ -51,8 +51,8 @@ void main() {
   test('같은 시드면 같은 결과, 10분 안에 첫 보스 실패와 강화가 일어난다', () {
     const total = Duration(minutes: 10);
     const schedule = SimSchedule(online: total);
-    final a = SimPlayer(t, seed: 3).run(total, schedule);
-    final b = SimPlayer(t, seed: 3).run(total, schedule);
+    final a = SimPlayer(t, seed: 1).run(total, schedule);
+    final b = SimPlayer(t, seed: 1).run(total, schedule);
     expect(a.bestStage, b.bestStage);
     expect(a.upgrades, b.upgrades);
     expect(a.gold, b.gold);

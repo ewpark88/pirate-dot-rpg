@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/spawner.dart' as side;
+import 'package:game_core/src/battle/spawner.dart' show spawnWaveFoes;
 import 'package:game_core/src/battle/targeting.dart' show Volley;
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_aim.dart';
@@ -64,13 +64,13 @@ class TopGeometry implements BattleGeometry {
       ..y = top.shipY + math.sin(angle) * distance;
   }
 
-  /// 수치·종류는 옆모습 spawner 그대로 만들고, 자리만 옮긴다: 방향 묶음(1~3개)마다 퍼져서
+  /// 수치·종류는 spawnWaveFoes가 만들고, 여기서 자리를 정한다: 방향 묶음(1~3개)마다 퍼져서
   /// 화면 테두리 바깥과 approachRadius 원 중 먼 곳에서(어느 방향이든 원 안의 걷는 거리가 같게),
   /// 묶음 안 k번째는 k × spawnSpacing만큼 더 바깥(옆모습의 줄 간격과 같은 시간차).
   @override
   void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
     final before = f.foes.length;
-    side.spawnWaveSide(f, stage, ctx, count: count, kind: kind);
+    spawnWaveFoes(f, stage, ctx, count: count, kind: kind);
     final added = f.foes.sublist(before);
     if (added.isEmpty) return;
     final rng = ctx.rng;

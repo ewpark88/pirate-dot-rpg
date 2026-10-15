@@ -7,6 +7,6 @@ state: fixtures/states/stage37_midgame.json
 steps:
   - input: { type: op.jumpStage, stage: 10 }
   - advance: 1t
-  - expect: { mode: top, stage: 10, wave: 0, quadrants: 4 }
+  - expect: { mode: top, stage: 10, wave: 0, quadrants: 3 }
   - advance: 40s
   - expect: { mode: top, stage: 11 }

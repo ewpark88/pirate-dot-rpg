@@ -93,7 +93,7 @@ class HudPainter {
 
   /// 캔버스 HUD (흔들림 밖, 화면 배치 v2): 위 가운데 스테이지-파, 그 아래 보스 남은 초, 오른쪽 위 보스 체력, 콤보.
   /// 골드는 UI 상단 바, 함성 게이지는 선원 줄 궁극기 버튼으로 옮겼다.
-  /// [top]: 탑다운(사용자 실기기 지적) — 스테이지 글자·보스 타이머는 UI 진행 게이지가 대신하므로 안 그리고, 콤보는 게이지 아래로.
+  /// [top]: 탑다운(사용자 실기기 지적) — 스테이지 글자·보스 타이머·보스 체력 막대는 UI 게이지가 대신하므로 안 그리고, 콤보는 게이지 아래로.
   void paintHud(Canvas c, {bool top = false}) {
     final f = scene.frame;
     final v = scene.layout.viewDots;

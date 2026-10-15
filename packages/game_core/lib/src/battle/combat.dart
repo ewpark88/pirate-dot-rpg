@@ -36,7 +36,7 @@ class Round {
   WavesTable get w => t.waves;
   double get dt => w.tickMs * secondsPerMillisecond;
 
-  /// 전장 모양(옆모습·탑다운) — 위치에 관한 것은 여기에 묻는다.
+  /// 전장 모양(탑다운) — 위치에 관한 것은 여기에 묻는다.
   BattleGeometry get geo => field.geometryOr(w);
 
   /// 공격 속도 배율 = 돛 + 지원 버프, 상한 `caps.attackSpeedMax` (설계서 4.8).
@@ -152,7 +152,7 @@ class Round {
     }
   }
 
-  /// 함성 게이지가 가득이면 선장의 궁극기: 보이는 화면 전체(visibleRight까지) 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
+  /// 함성 게이지가 가득이면 선장의 궁극기: 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
   bool castUltimate() {
     final captain = field.captainId;
     if (rage < t.skills.rageMax || captain == null) return false;
