@@ -1599,6 +1599,23 @@ const Map<String, String> rawTables = {
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "standoff": 110, "slowZone": 30, "slowFloor": 0.2, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
+  "top": {
+    "width": 270,
+    "height": 480,
+    "shipX": 135,
+    "shipY": 240,
+    "shipRadius": 20,
+    "mobRadius": 6,
+    "bossRadius": 24,
+    "bossStandoff": 48,
+    "spawnMargin": 12,
+    "approachRadius": 206,
+    "approachBoost": 3,
+    "swarmGroupsMin": 1,
+    "swarmGroupsMax": 3,
+    "swarmSpreadDeg": 20,
+    "reachScale": 1
+  },
   "field": {
     "width": 320,
     "shipX": 86,
