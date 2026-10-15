@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,21 +11,17 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
-import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
-import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
-/// 상세 초상 목표 크기(dp) — 실제 픽셀 정수배 중 가장 가까운 것.
-const _portraitTargetDp = 96.0;
-
-/// 초상 그림 한 변(도트).
-const _portraitDots = 32;
+/// 상세 카드 폭(dp).
+const _cardWidth = 132.0;
 
 /// 승급 버튼을 보이는 상태 = 승급 문 앞.
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
@@ -86,7 +81,7 @@ class CrewDetailDialog extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _BigPortrait(def: def, color: color, owned: crew != null),
+                _BigPortrait(def: def, rarity: rarity, owned: crew != null, name: shortCrewName(l10n, def)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -95,7 +90,8 @@ class CrewDetailDialog extends ConsumerWidget {
                       Text(shortCrewName(l10n, def), style: Theme.of(context).textTheme.titleMedium),
                       Text(tableText(l10n, def.nameKey), style: dim),
                       const SizedBox(height: 4),
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(tableText(l10n, rarity.nameKey), style: TextStyle(color: color)),
                           const SizedBox(width: 6),
@@ -183,10 +179,11 @@ class _Growth extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          // 레벨 · 파워: 좁으면 다음 줄로.
+          Wrap(
+            spacing: 12,
             children: [
               Text(l10n.uiLevelMax(crew.level, rarity.levelMax), style: const TextStyle(fontWeight: FontWeight.bold)),
-              const Spacer(),
               Text(
                 l10n.uiCrewPower(shortDecimal(crewPowerOf(tables, crew.level))),
                 key: const Key('crew.detail.power'),
@@ -207,27 +204,18 @@ class _Growth extends StatelessWidget {
   }
 }
 
-/// 정수배 큰 초상 (등급 색 도트 테두리, 미보유는 실루엣).
+/// 큰 카드 (Pirate Busters 카드, 미보유는 실루엣).
 class _BigPortrait extends StatelessWidget {
-  const _BigPortrait({required this.def, required this.color, required this.owned});
+  const _BigPortrait({required this.def, required this.rarity, required this.owned, required this.name});
 
   final CrewDef def;
-  final Color color;
+  final RarityDef rarity;
   final bool owned;
+  final String name;
 
   @override
-  Widget build(BuildContext context) {
-    final dpr = MediaQuery.devicePixelRatioOf(context);
-    final scale = math.max(1, (_portraitTargetDp * dpr / _portraitDots).round());
-    final portrait = CrewPortrait(crew: def, size: scale * _portraitDots / dpr);
-    return PixelFrame(
-      border: color,
-      borderDots: 2,
-      highlight: null,
-      fill: Color.lerp(PixelPalette.navy, color, 0.3)!,
-      child: owned
-          ? portrait
-          : ColorFiltered(colorFilter: const ColorFilter.mode(PixelPalette.outline, BlendMode.srcIn), child: portrait),
-    );
-  }
+  Widget build(BuildContext context) => SizedBox(
+    width: _cardWidth,
+    child: PbCardFront(crew: def, rarity: rarity, name: name, silhouette: !owned),
+  );
 }

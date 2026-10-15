@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -58,8 +59,13 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
 
     return Container(
       key: const Key('tailwind'),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: const BoxDecoration(color: PixelPalette.outline),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      // 순풍 칩: 연한 민트 알약 (스킨 r1).
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F8EF),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: Skin.shadowSmall,
+      ),
       child: Opacity(
         opacity: active ? 1 : _inactiveOpacity,
         child: Row(
@@ -68,11 +74,11 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
             const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
             if (active) ...[
               const SizedBox(width: 4),
-              Text(remainingText(left), style: const TextStyle(color: Colors.white)),
+              Text(remainingText(left), style: Skin.text(15, color: Skin.mintInk)),
               const SizedBox(width: 4),
               Text(
                 l10n.uiEffectMultiplier(shortDecimal(multiplier)),
-                style: const TextStyle(color: Colors.amberAccent, fontWeight: FontWeight.bold),
+                style: Skin.text(15, color: PixelPalette.accent, weight: FontWeight.bold),
               ),
             ],
           ],

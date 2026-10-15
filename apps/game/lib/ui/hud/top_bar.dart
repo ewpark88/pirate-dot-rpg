@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/settings/settings_screen.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
 
@@ -25,31 +26,30 @@ class TopBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final (gold, gems) = ref.watch(gameStateProvider.select((s) => (s.wallet.gold, s.wallet.gems)));
-    final u = pixelUnit(context);
-    final money = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
-        const SizedBox(width: 4),
-        // 길게 누르면 전체 자릿수.
-        BigNumText(
-          gold,
-          key: const Key('top.gold'),
-          style: const TextStyle(color: PixelPalette.gold),
-        ),
-        const SizedBox(width: 10),
-        const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
-        const SizedBox(width: 4),
-        Text(gems.toString(), key: const Key('top.gems')),
-      ],
-    );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: PixelPalette.navyDark,
-        border: Border(
-          bottom: BorderSide(color: PixelPalette.border, width: u),
-        ),
+    final money = Container(
+      padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
+      decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(18), boxShadow: Skin.shadowSmall),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
+          const SizedBox(width: 4),
+          // 길게 누르면 전체 자릿수.
+          BigNumText(
+            gold,
+            key: const Key('top.gold'),
+            style: const TextStyle(color: PixelPalette.gold),
+          ),
+          const SizedBox(width: 10),
+          const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
+          const SizedBox(width: 4),
+          Text(gems.toString(), key: const Key('top.gems')),
+        ],
       ),
+    );
+    // 하늘 바탕 위에 떠 있는 알약·동그라미들 (스킨 r1) — 바 자체는 투명.
+    return DecoratedBox(
+      decoration: const BoxDecoration(),
       child: SizedBox(
         height: kMinTap,
         child: Padding(

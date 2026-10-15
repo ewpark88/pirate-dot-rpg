@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 
 /// 그림 아이콘 크기 목표(dp) — 실기기에서 24~28dp (layout-v2-brief 1).
-const kIconTargetDp = 26.0;
+const kIconTargetDp = 24.0;
 
 /// 16px 그림을 실제 픽셀 정수배로, [targetDp]에 가장 가까운 크기(dp).
 double pixelIconSize(double devicePixelRatio, {int dots = 16, double targetDp = kIconTargetDp}) {
@@ -61,25 +62,37 @@ class _PixelIconButtonState extends State<PixelIconButton> {
               child: Transform.translate(
                 offset: Offset(0, _down ? pixelUnit(context) : 0),
                 child: Opacity(
-                  opacity: !enabled ? 0.4 : (_down ? 0.7 : 1),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        widget.asset,
-                        width: size,
-                        height: size,
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.none,
-                      ),
-                      if (widget.trailing case final t?) ...[
-                        const SizedBox(width: 2),
-                        DefaultTextStyle.merge(
-                          style: const TextStyle(color: PixelPalette.gold, fontWeight: FontWeight.bold),
-                          child: t,
+                  opacity: !enabled ? 0.4 : (_down ? 0.75 : 1),
+                  // 흰 동그라미 뱃지 (글자가 붙으면 알약).
+                  child: Container(
+                    height: 44,
+                    constraints: const BoxConstraints(minWidth: 44),
+                    padding: EdgeInsets.symmetric(horizontal: widget.trailing == null ? 0 : 8),
+                    decoration: BoxDecoration(
+                      color: Skin.card,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: Skin.shadowSmall,
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          widget.asset,
+                          width: size,
+                          height: size,
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.none,
                         ),
+                        if (widget.trailing case final t?) ...[
+                          const SizedBox(width: 2),
+                          DefaultTextStyle.merge(
+                            style: Skin.text(15, color: Skin.goldInk),
+                            child: t,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

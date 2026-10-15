@@ -1,53 +1,55 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 
-/// 도트 팔레트 (기준: 이미지참고용 전투 v0.3 scene3.py, 스펙 ui-quality-v1). UI의 색은 모두 여기서.
+/// UI 색 이름표 — 스킨 r1(파스텔, ui/skin/skin.dart)로 다시 칠했다. 이름은 예전 도트 시절 그대로 두어 화면 코드가 한 번에 바뀐다.
+/// 새 코드는 `Skin`을 직접 쓴다.
 abstract final class PixelPalette {
-  /// 패널 바탕 남색.
-  static const navy = Color.fromARGB(255, 24, 30, 52);
+  /// 판(카드·창) 바탕 — 흰색.
+  static const Color navy = Skin.card;
 
-  /// 패널 테두리.
-  static const border = Color.fromARGB(255, 60, 70, 110);
+  /// 판 테두리·구분선 — 옅은 하늘 회색.
+  static const border = Color(0xFFD5E2F2);
 
-  /// 테두리 안쪽 하이라이트 (위·왼쪽 1px).
-  static const highlight = Color.fromARGB(255, 92, 104, 150);
+  /// 하이라이트(흰).
+  static const highlight = Color(0xFFFFFFFF);
 
-  /// 도트 윤곽선 (글자·아이콘 바깥 1px).
-  static const outline = Color.fromARGB(255, 27, 23, 38);
+  /// 작은 띠·칩 바탕 — 아주 옅은 하늘.
+  static const outline = Color(0xFFEEF5FC);
 
-  /// 눌린 버튼 바탕.
-  static const navyPressed = Color.fromARGB(255, 16, 20, 36);
+  /// 눌린·비활성 바탕.
+  static const Color navyPressed = Skin.plainBottom;
 
-  /// 글자.
-  static const text = Color.fromARGB(255, 255, 255, 255);
+  /// 글자 — 잉크 남색.
+  static const Color text = Skin.ink;
 
-  /// 흐린 글자 (비활성·부가 설명).
-  static const textDim = Color.fromARGB(255, 150, 160, 190);
+  /// 흐린 글자.
+  static const Color textDim = Skin.sub;
 
-  /// 골드 숫자.
-  static const gold = Color.fromARGB(255, 242, 201, 76);
+  /// 골드 숫자(흰 바탕에서 읽히게 진하게).
+  static const gold = Color(0xFF8A5A00);
 
-  /// 함성 막대·위험·빨간 점.
-  static const danger = Color.fromARGB(255, 255, 90, 90);
+  /// 위험·빨간 점.
+  static const Color danger = Skin.danger;
 
-  /// 콤보·강조.
-  static const accent = Color.fromARGB(255, 255, 210, 63);
+  /// 강조.
+  static const accent = Color(0xFFA34D00);
 
   /// 선원 슬롯 바탕.
-  static const slot = Color.fromARGB(255, 150, 176, 214);
+  static const slot = Color(0xFFB9E3FF);
 
-  /// 주 버튼 바탕(강화·소환 등 누르면 이득인 버튼).
-  static const action = Color.fromARGB(255, 46, 120, 190);
+  /// 주 버튼 바탕.
+  static const Color action = Skin.primaryBottom;
 
-  /// 주 버튼 밝은 줄 (위·왼쪽).
-  static const actionLight = Color.fromARGB(255, 130, 196, 248);
+  /// 주 버튼 밝은 쪽.
+  static const Color actionLight = Skin.primaryTop;
 
-  /// 주 버튼 그늘·테두리 (아래·오른쪽).
-  static const actionDark = Color.fromARGB(255, 26, 70, 124);
+  /// 주 버튼 진한 쪽.
+  static const Color actionDark = Skin.primaryEdge;
 
-  /// 보조 버튼 그늘.
-  static const navyDark = Color.fromARGB(255, 12, 15, 28);
+  /// 막대 바탕(상단 바·탭 바 아래 판).
+  static const navyDark = Color(0xFFF4FAFF);
 }
 
 /// 기준 화면의 논리 폭 (320×180, 기기에 맞춰 정수배 확대).

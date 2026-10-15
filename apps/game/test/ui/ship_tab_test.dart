@@ -11,11 +11,14 @@ import 'ui_harness.dart';
 PixelButton _button(WidgetTester tester, String part) =>
     tester.widget<PixelButton>(find.byKey(Key('ship.upgrade.$part')));
 
+/// 부위 5줄이 모두 지어지게 세로로 긴 화면 (스킨 r1 줄이 높아 S24에서는 아래 줄이 화면 밖).
+const _tall = Size(384, 1300);
+
 void main() {
   final tables = GameTables.load();
 
   testWidgets('기준 4: 부위 5줄, 레벨·효과·비용, 누르면 UpgradePart', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab);
+    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall);
     for (final name in ['Cannon', 'Hull', 'Sail', "Crow's Nest", 'Cargo Hold']) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
@@ -33,7 +36,7 @@ void main() {
   });
 
   testWidgets('기준 5: 최대 레벨이면 비활성 + MAX', (tester) async {
-    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab);
+    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab, size: _tall);
     expect(_button(tester, 'sail').onPressed, isNull);
     expect(_button(tester, 'crowsnest').onPressed, isNull);
     expect(find.text('MAX'), findsNWidgets(2));
@@ -42,14 +45,14 @@ void main() {
   });
 
   testWidgets('기준 5: 골드가 모자라면 비활성', (tester) async {
-    await pumpGame(tester, loadFixture('new_player'), tab: shipTab);
+    await pumpGame(tester, loadFixture('new_player'), tab: shipTab, size: _tall);
     for (final p in tables.shipParts.parts) {
       expect(_button(tester, p.id).onPressed, isNull, reason: p.id);
     }
   });
 
   testWidgets('부위마다 아이콘 그림이 있다 (assets/ui/part_<id>.png)', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab);
+    await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall);
     for (final p in tables.shipParts.parts) {
       expect(find.byKey(Key('ship.icon.${p.id}')), findsOneWidget, reason: p.id);
       expect(File('assets/ui/part_${p.id}.png').existsSync(), isTrue, reason: p.id);

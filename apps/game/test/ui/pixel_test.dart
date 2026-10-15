@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 
 Future<void> _pump(WidgetTester tester, Widget child, {double dpr = 1, Size size = const Size(400, 300)}) async {
   tester.view
@@ -32,17 +32,6 @@ void main() {
     }
   });
 
-  testWidgets('기준 2: 프레임 바깥 윤곽이 칸 단위(테두리 두께 = 칸의 정수배)', (tester) async {
-    await _pump(
-      tester,
-      const SizedBox(width: 80, height: 40, child: PixelFrame(child: SizedBox.expand())),
-      dpr: 2,
-      size: const Size(320, 200),
-    );
-    final painter = tester.widget<CustomPaint>(find.byType(CustomPaint).last).painter! as PixelFramePainter;
-    expect(painter.unit * 2, 2); // 물리 640 → k=2 → 1칸 = 1dp = 2px
-  });
-
   testWidgets('도트 버튼: 누르면 콜백, 최소 48dp, 비활성은 콜백 없음', (tester) async {
     var taps = 0;
     await _pump(tester, PixelButton(onPressed: () => taps++, child: const Text('OK')));
@@ -55,20 +44,24 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('도트 버튼: 누르는 동안 1칸 내려간다', (tester) async {
+  testWidgets('스킨 버튼: 누르는 동안 내려앉았다가 놓으면 돌아온다', (tester) async {
     await _pump(tester, PixelButton(onPressed: () {}, child: const Text('OK')));
-    final before = tester.getTopLeft(find.byType(PixelFrame));
+    Finder face() => find.descendant(of: find.byType(PixelButton), matching: find.text('OK'));
+    final before = tester.getTopLeft(face());
     final gesture = await tester.startGesture(tester.getCenter(find.byType(PixelButton)));
-    await tester.pump();
-    expect(tester.getTopLeft(find.byType(PixelFrame)).dy, before.dy + 1);
+    // 탭 시작은 제스처 판정(약 100ms) 뒤에 온다.
+    await tester.pump(const Duration(milliseconds: 150));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(face()).dy, greaterThan(before.dy));
     await gesture.up();
-    await tester.pump();
-    expect(tester.getTopLeft(find.byType(PixelFrame)), before);
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(face()).dy, closeTo(before.dy, 0.01));
   });
 
-  test('팔레트는 기준 scene3.py 값', () {
-    expect(PixelPalette.outline, const Color.fromARGB(255, 27, 23, 38));
-    expect(PixelPalette.gold, const Color.fromARGB(255, 242, 201, 76));
-    expect(PixelPalette.slot, const Color.fromARGB(255, 150, 176, 214));
+  test('팔레트는 스킨 r1 값 (docs/specs/ui-skin-r1.md)', () {
+    expect(Skin.sky, const Color(0xFFDDF2FF));
+    expect(Skin.primaryBottom, const Color(0xFF1460C4));
+    expect(Skin.goldBottom, const Color(0xFFFFB31F));
+    expect(PixelPalette.text, Skin.ink);
   });
 }

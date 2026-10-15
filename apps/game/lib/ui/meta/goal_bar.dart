@@ -6,6 +6,7 @@ import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -41,37 +42,39 @@ class GoalBar extends ConsumerWidget {
     };
 
     final u = pixelUnit(context);
-    // 전장 바로 아래 도트 띠 (윤곽색 바탕 + 아래 1칸 테두리): 깃발 · 문구 · 진행 막대.
+    // 전장 바로 아래 크림색 알약 (스킨 r1): 깃발 · 문구 · 진행 막대.
     return TutorialSpot(
       id: 'goal',
-      child: DecoratedBox(
-        key: const Key('goal'),
-        decoration: BoxDecoration(
-          color: PixelPalette.outline,
-          border: Border(
-            bottom: BorderSide(color: PixelPalette.border, width: u),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 6, 10, 2),
+        child: DecoratedBox(
+          key: const Key('goal'),
+          decoration: BoxDecoration(
+            color: Skin.cream,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: Skin.shadowSmall,
           ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: u * 2),
-          child: Row(
-            children: [
-              const PixelSprite(UiSprites.flag, dots: 16, scale: 1),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  text,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: u * 3),
+            child: Row(
+              children: [
+                const PixelSprite(UiSprites.flag, dots: 16, scale: 1),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 80,
-                child: PixelBar(value: progress, fill: PixelPalette.gold),
-              ),
-            ],
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 80,
+                  child: PixelBar(value: progress, fill: PixelPalette.gold),
+                ),
+              ],
+            ),
           ),
         ),
       ),

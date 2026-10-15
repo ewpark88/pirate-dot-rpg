@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 
@@ -29,14 +29,14 @@ class BossWeakness extends ConsumerWidget {
     final boss = bossId == null ? null : tables.regions.bosses[bossId];
     if (boss == null || boss.weakFamilies.isEmpty) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
-    final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white);
+    final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Skin.ink);
 
     // 전장 바로 아래 한 줄 띠 (전장을 가리지 않게, layout-v2-brief 2).
     return Container(
       key: const Key('boss.weak'),
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      color: PixelPalette.outline,
+      color: const Color(0xFFFFF0F2),
       child: Wrap(
         spacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
