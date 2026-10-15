@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
@@ -5,7 +6,8 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 
-/// 해역 배경(하늘·바다·깊은 바다 + 원경 장식)과 보스 경고·실패 덮개 (docs/specs/render-regions.md).
+/// 해역 배경과 보스 경고·실패 덮개, 보물상자, 컷인 (render-regions · render-quality-v1).
+/// 배경은 기준 battle_ship.gif 구조 그대로: 하늘 띠 4단 + 흐르는 타원 구름 + 바다 띠 3단 + 움직이는 물결 대시.
 class StagePainter {
   StagePainter(this.scene, this.sprites);
 
@@ -18,28 +20,61 @@ class StagePainter {
     c.drawRect(Rect.fromLTWH(l, t, w, h), _paint);
   }
 
+  JsonReader get _l => scene.fx.backgroundLayout;
+  late final List<double> _skyY = [for (final v in _l.raw['skyY'] as List) (v as num).toDouble()];
+  late final List<double> _seaY = [for (final v in _l.raw['seaY'] as List) (v as num).toDouble()];
+  late final List<double> _waveRows = [for (final v in _l.raw['waveRows'] as List) (v as num).toDouble()];
+  late final List<double> _waveSpeed = [for (final v in _l.raw['waveSpeed'] as List) (v as num).toDouble()];
+  late final List<(double, double, double)> _clouds = [
+    for (final c in (_l.raw['clouds'] as List).cast<List<dynamic>>())
+      ((c[0] as num).toDouble(), (c[1] as num).toDouble(), (c[2] as num).toDouble()),
+  ];
+  late final double _waveSplit = _l.number('waveSplitY');
+  late final int _waveGap = _l.integer('waveGap');
+  late final double _waveLen = _l.number('waveLen');
+  late final double _cloudSpeed = _l.number('cloudSpeed');
+  late final double _squash = _l.number('cloudSquash');
+
   void paintBackground(Canvas c) {
     final b = scene.backdrop;
-    _rect(c, 0, 0, kLogicalWidth, kHorizonY, b.sky);
-    _decor(c, b.decor, b.decorColor);
-    _rect(c, 0, kHorizonY, kLogicalWidth, kWaterlineY - kHorizonY, b.sea);
-    _rect(c, 0, kWaterlineY, kLogicalWidth, kFieldBottom - kWaterlineY, b.deep);
+    final t = scene.clockMs / Duration.millisecondsPerSecond;
+    for (var i = 0; i < _skyY.length; i++) {
+      final bottom = i + 1 < _skyY.length ? _skyY[i + 1] : _seaY.first;
+      _rect(c, 0, _skyY[i], kLogicalWidth, bottom - _skyY[i], b.sky(i));
+    }
+    _paint.color = Color(b.cloud);
+    for (final (x0, cy, r) in _clouds) {
+      final cx = (x0 - t * _cloudSpeed) % (kLogicalWidth + 40) - 20;
+      _cloud(c, cx, cy, r);
+    }
+    for (var i = 0; i < _seaY.length; i++) {
+      final bottom = i + 1 < _seaY.length ? _seaY[i + 1] : kFieldBottom;
+      _rect(c, 0, _seaY[i], kLogicalWidth, bottom - _seaY[i], b.sea(i));
+    }
+    for (final y in _waveRows) {
+      final upper = y < _waveSplit;
+      _paint.color = Color(b.wave(upper ? 0 : 1));
+      final speed = _waveSpeed[upper ? 0 : 1];
+      for (var x = -16; x < kLogicalWidth + 16; x += _waveGap) {
+        final xx = (x + t * speed).floor() % (kLogicalWidth.toInt() + 32) - 16;
+        final l = xx < 0 ? 0.0 : xx.toDouble();
+        final r = xx + _waveLen > kLogicalWidth ? kLogicalWidth : xx + _waveLen;
+        if (r > l) c.drawRect(Rect.fromLTWH(l, y, r - l, 1), _paint);
+      }
+    }
   }
 
-  // 원경 장식: 수평선 위에 단색 사각 몇 개 (아트가 오면 원경 이미지로 바뀐다).
-  static const _decorShapes = <String, List<(double, double, double, double)>>{
-    'islands': [(120, 56, 30, 8), (128, 50, 12, 6), (250, 58, 22, 6)],
-    'clouds': [(60, 10, 70, 12), (150, 18, 90, 14), (260, 8, 50, 10)],
-    'icebergs': [(100, 48, 24, 16), (108, 40, 10, 8), (230, 52, 30, 12)],
-    'smoke': [(200, 20, 14, 36), (196, 10, 22, 12), (214, 2, 18, 10)],
-    'fog': [(0, 50, 320, 6), (40, 42, 120, 4), (200, 44, 100, 4)],
-  };
-
-  void _decor(Canvas c, String decor, int color) {
-    final shapes = _decorShapes[decor];
-    if (shapes == null) return;
-    for (final (l, t, w, h) in shapes) {
-      _rect(c, l, t, w, h, color);
+  /// 타원 구름: (x−cx)² + ((y−cy)·squash)² < r² 인 픽셀 (기준과 같은 모양).
+  void _cloud(Canvas c, double cx, double cy, double r) {
+    final rows = (r / _squash).ceil();
+    for (var dy = -rows; dy <= rows; dy++) {
+      final y = cy + dy;
+      final rest = r * r - (dy * _squash) * (dy * _squash);
+      if (rest <= 0) continue;
+      final hw = math.sqrt(rest);
+      final left = (cx - hw).floor() + 1;
+      final right = (cx + hw).ceil() - 1;
+      if (right >= left) c.drawRect(Rect.fromLTWH(left.toDouble(), y, (right - left + 1).toDouble(), 1), _paint);
     }
   }
 

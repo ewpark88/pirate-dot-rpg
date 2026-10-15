@@ -192,6 +192,18 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/urchin.png",
       "license": "OWN"
     },
+    "fonts/Galmuri-OFL.txt": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo) — 라이선스 원문",
+      "license": "OFL-1.1"
+    },
+    "fonts/Galmuri11-Bold.ttf": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
+      "license": "OFL-1.1"
+    },
+    "fonts/Galmuri11.ttf": {
+      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
+      "license": "OFL-1.1"
+    },
     "fx/coin_burst.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/coin_burst.png",
       "license": "OWN"
@@ -248,17 +260,25 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
       "license": "OWN"
     },
-    "fonts/Galmuri11.ttf": {
-      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
-      "license": "OFL-1.1"
+    "ui/gem.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
     },
-    "fonts/Galmuri11-Bold.ttf": {
-      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
-      "license": "OFL-1.1"
+    "ui/tab_crew.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
     },
-    "fonts/Galmuri-OFL.txt": {
-      "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo) — 라이선스 원문",
-      "license": "OFL-1.1"
+    "ui/tab_map.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/tab_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/tab_summon.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
     }
   }
 }

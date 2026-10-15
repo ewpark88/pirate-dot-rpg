@@ -80,7 +80,7 @@ class Moments {
     pillarMs = p.number('ms');
     pillarCount++;
     scene
-      ..spawnEffect('level_up', kShipCenterX, kShipTop, scale: p.number('fxScale'))
+      ..spawnEffect('level_up', kShipCenterX, kShipTop + kShipHeight, scale: p.number('fxScale'))
       ..shipFlashMs = scene.juice.flashFrames * kFrameMs;
   }
 

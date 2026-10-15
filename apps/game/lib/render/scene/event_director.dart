@@ -62,6 +62,9 @@ class EventDirector implements ReplayListener {
           ..y = kShipNoseY;
       }
     }
+    if (_muzzleFamilies.contains(e.family)) {
+      scene.spawnEffect(scene.fx.muzzle.str('fx'), kMuzzleX, kMuzzleY + scene.shipBob);
+    }
     _flashSlot(frame, e.crewId);
   }
 
@@ -71,7 +74,9 @@ class EventDirector implements ReplayListener {
     }
   }
 
-  static const _slotFlashMs = 120.0;
+  static const _slotFlashMs = 200.0;
+
+  late final Set<String> _muzzleFamilies = {...scene.fx.muzzle.strs('families')};
 
   @override
   void onNow(RecordedTick tick, int index) {
@@ -187,14 +192,15 @@ class EventDirector implements ReplayListener {
   }
 
   void _kill(Kill e, int index) {
+    scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
     for (var c = 0; c < _juice.coinCount; c++) {
       final spread = _juice.coinCount <= 1 ? 0.0 : c / (_juice.coinCount - 1) * 2 - 1;
       scene.coins.obtain()
         ..fromX = e.x
         ..fromY = e.y
-        ..toX = kShipCenterX
-        ..toY = kShipCenterY
+        ..toX = kCoinTargetX
+        ..toY = kCoinTargetY
         ..spread = spread
         ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
         ..fallPx = 0

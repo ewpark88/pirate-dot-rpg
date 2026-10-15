@@ -39,11 +39,18 @@ class ShipPainter {
   void paint(Canvas c) {
     final flash = scene.shipFlashMs > 0 && scene.settings.flash;
     final tier = scene.moments.shipTierId;
-    if (!sprites.draw(c, 'ship:$tier', kShipCenterX, kShipTop + kShipHeight / 2, flash: flash)) {
+    final bob = scene.shipBob;
+    c
+      ..save()
+      ..translate(0, bob);
+    if (!sprites.draw(c, 'ship:$tier', kShipCenterX, kShipCenterY, flash: flash)) {
       _placeholder(c, tier, flash);
     }
-    _fill(c, kShipLeft + 2, kShipTop - 5, kShipWidth - 4, 2, _hpBack);
-    _fill(c, kShipLeft + 2, kShipTop - 5, (kShipWidth - 4) * scene.shipHpRatio, 2, _hpFront);
+    c.restore();
+    if (scene.shipHpRatio < 1) {
+      _fill(c, kShipLeft + 2, kShipTop - 5, kShipWidth - 4, 2, _hpBack);
+      _fill(c, kShipLeft + 2, kShipTop - 5, (kShipWidth - 4) * scene.shipHpRatio, 2, _hpFront);
+    }
     if (scene.shipHealMs > 0 && scene.settings.flash) {
       _fill(c, kShipLeft, kShipTop, kShipWidth, kShipHeight, (0x88 << 24) | (_heal & 0xFFFFFF));
     }

@@ -54,7 +54,7 @@ void main() {
         _crowd(2, 3),
       ]);
       final e = s.effects.active.where((e) => e.sheetId == 'level_up').single;
-      expect((e.x, e.y), (kShipCenterX, kShipCenterY));
+      expect((e.x, e.y), (kShipCenterX, kShipTop + kShipHeight), reason: 'level_up은 아래 끝 기준');
       expect(s.shipHealMs, greaterThan(0));
     });
   });
@@ -93,7 +93,7 @@ void main() {
       }
     });
 
-    test('sweep은 durationMs 중간에 화면 가운데를 지난다', () {
+    test('sweep은 durationMs 중간에 시작·끝의 가운데를 지난다', () {
       final pattern = fx.ultimates['ult_tidal_wave']!;
       final halfTicks = pattern.durationMs / 2 / tickMs;
       final s = _play([
@@ -105,7 +105,9 @@ void main() {
           ),
       ], ticksToPlay: 1 + halfTicks);
       final wave = s.effects.active.where((e) => e.sheetId == 'tidal_wave').single;
-      expect(wave.x, closeTo(kLogicalWidth / 2, 12));
+      final from = pattern.raw.numberOr('fromX', 0);
+      final to = pattern.raw.numberOr('toX', kLogicalWidth);
+      expect(wave.x, closeTo((from + to) / 2, 12));
     });
 
     test('8종을 한 틱에 터뜨려도 동시 이펙트 40 이하', () {

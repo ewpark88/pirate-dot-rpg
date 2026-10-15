@@ -55,11 +55,11 @@ void main() {
 
   testWidgets('수용 기준 1: 감속이면 파란 색조, 풀리면 원래 색', (tester) async {
     await tester.runAsync(() async {
-      final plain = await _rgb(await _image(ScenePainter(_scene([_at(0), _at(1)]))), 200, 100);
+      final plain = await _rgb(await _image(ScenePainter(_scene([_at(0), _at(1)]))), 200, 94);
       final slowed = await _rgb(
         await _image(ScenePainter(_scene([_at(0, slowed: true), _at(1, slowed: true)]))),
         200,
-        100,
+        94,
       );
       expect(plain, tables.fxMap.enemyLook['basic']!.color & 0xFFFFFF);
       expect(_blue(slowed), greaterThan(_blue(plain) + 40));
@@ -72,7 +72,7 @@ void main() {
         final s = _scene([for (var t = 0; t < 10; t++) _at(t, burning: true)], settings: settings);
         final p = ScenePainter(s);
         final xs = StatusPainter.iconXs(1, 200, st.number('iconGap'));
-        final y = StatusPainter.iconTop(100 - 6.0).toInt() + 1;
+        final y = StatusPainter.iconTop(100 - 12.0).toInt() + 1;
         final out = <int>[];
         for (var i = 0; i < 6; i++) {
           out.add(await _rgb(await _image(p), xs.first.toInt(), y));
@@ -90,7 +90,7 @@ void main() {
     await tester.runAsync(() async {
       final img = await _image(ScenePainter(_scene([_at(0, vulnerable: true), _at(1, vulnerable: true)])));
       final xs = StatusPainter.iconXs(1, 200, st.number('iconGap'));
-      final y = StatusPainter.iconTop(100 - 6.0).toInt();
+      final y = StatusPainter.iconTop(100 - 12.0).toInt();
       final red = int.parse(st.str('vulnerableColor').substring(1), radix: 16);
       var found = false;
       for (var dy = 0; dy < 3 && !found; dy++) {
