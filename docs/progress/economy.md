@@ -10,6 +10,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S2 · 환생 v2 완료 + 탑다운 T1 균형 일부 + 렌더 계약
+- 환생 v2: 3단계 보상·해금(a38c5d3), 보물 바다 골드·체력(5f999c2·11135d6, Field.enemyHpScale), 명예 등급 ShipTierUp, bossFails(f9a3f58), 4단계 rebirthForecast + sim rebirthBeatBestMin 22.2분·미리보기 ÷ 실제 0.87(75d3a2e).
+- 탑다운: T1 훅 검토 OK(S5), 무리 습격 waves.top.mobCount 32~150(pool 총량 유지, 옆모습 불변, 26e0879), 상자 위치·ShipDamaged 피격 방향(39406ec), sim-view·hits·swarm 리뷰 OK.
+  탑다운 파 지연 원인 = 묶음 줄 간격(HP 아님) → swarmSpacing 3(S5 연결).
+- 렌더 계약 shipTierLook·shipSkin·treasureSea(d9593dc).
+- 실수 기록: 워크트리 공유 stash 목록에서 S5의 stash를 pop함(충돌로 지워지지 않아 즉시 HEAD로 되돌림, S5에 알림) → stash 대신 커밋·브랜치 사용.
+- 남은 일: 탑다운 spawnWeights·초반 base·오프라인 8시간(T4 전), 이벤트·피버 규칙(S5 기획 승인분), 환생 v2 기준 13의 45·60·90 세 점 확인.
+
 ### 2026-10-15 · S2 · 탑다운 T0 계약 + 환생 v2 1·2단계
 - T0(7a2663c): Settings.battleView, BattleView.mode·shipX·shipY·shipHeading, EnemyView.heading, AttackFired.fromX·fromY·angle(모두 선택 키), waves.top(TopFieldDef). S5 검토 채택.
 - 환생 v2 1단계(2946d2c): 조각 분리(누계 보너스), 상점 9칸·shopView, 세이브 v6(+bounty 자리), 스킨·칭호·명예 필드·소급, 명령 6·이벤트 4, ARB econ.*·shipSkin*.
