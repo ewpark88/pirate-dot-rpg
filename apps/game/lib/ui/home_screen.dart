@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/dock/dock_panels.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
 import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
+import 'package:pirate_dot/ui/hud/bottle_choices.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
@@ -182,6 +183,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                 ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: ref.watch(battleGameProvider)),
                 const ChestLayer(),
                 const BattleButtons(),
+                // 유리병 쪽지 3장 (전장 안 말풍선).
+                const BottleChoices(),
                 // 코인 도착: 골드 아이콘 자리를 렌더에 알린다(그림·누름 없음).
                 const IgnorePointer(child: CoinLink()),
               ],
