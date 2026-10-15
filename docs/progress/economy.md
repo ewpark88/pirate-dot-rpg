@@ -10,6 +10,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S2 · 선원 사거리 + shipX 86 (사용자 지시 최우선)
+- 사거리: waves.field.visibleRight 266, skills.json 모든 공격·스킬 reach(직사 172·관통 168·공중 160·물수제비 155·투척 135·수중 125·강습 95·충격 85), crews.json reachBonus(±6).
+  targeting.eligible = x ≤ min(visibleRight, shipX + reach + 보정), 궁극기는 visibleRight까지. 수용 테스트: 강한 함대 60초 모든 공격·스킬 x ≤ visibleRight.
+- shipX 56 → 86(S3). 초반 속도 보정: spawnX 272·travelSec 1.5·boss.speed 25 (계속 접속 첫 보스 실패 2.99분·첫 소환 3.95분·스테이지 10 7.3분). 강습 power ×0.78(balance 1.198 → 1.064).
+- 그 사이 커밋: 보유·도감 효과(438ab6e), 버그 5분 미만 부재(3801947), 일괄 강화·함대 전투력(3801947), 배 외형 단계(b5afe9c).
+- 골든 7장(shipX 이동)은 S1이 main에서 갱신(승인). 남은 일: 첫 전설(드롭 0.3% 재조정), 몬스터 수(stash), 바다 이벤트·피버(S5 기획 승인, 위임).
+
 ### 2026-10-15 · S2 · 배 외형 단계 + 보유·도감 효과 전투 적용 + 야간 리포트
 - 배 외형 단계(사용자 지시): ship_parts visualStages(대포·선체 1·15·35·55·90·140·250, 돛 1·8·16·24·30, 망루 1·8·16·26·36·45, 화물칸 1·10·20·35·60·100·160),
   partLookStage·partLook, BattleView.shipLook(없으면 빈 맵), ShipLookChanged(강화로 단계가 오를 때 1번). sim: 모든 부위 첫날 4단계·첫 주 5~6단계. 시나리오 ship_look_upgrade(observe look.<부위>).
