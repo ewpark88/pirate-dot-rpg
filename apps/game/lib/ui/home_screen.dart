@@ -11,7 +11,9 @@ import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
+import 'package:pirate_dot/ui/hud/power_badge.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
+import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
@@ -184,9 +186,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const StageGauge(),
               const GoalBar(),
               const BossWeakness(),
-              const FarmingPill(),
+              // 전투력(왼쪽) · 파밍 중 띠.
+              const Padding(
+                padding: EdgeInsets.fromLTRB(10, 4, 10, 0),
+                child: Row(
+                  children: [
+                    PowerBadge(),
+                    SizedBox(width: 8),
+                    Flexible(child: FarmingPill()),
+                  ],
+                ),
+              ),
               const BossFailNotice(),
               if (tutorial) const TutorialBubble(),
             ],

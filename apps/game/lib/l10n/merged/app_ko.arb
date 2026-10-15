@@ -416,5 +416,8 @@
   "uiBossFailRule": "보스는 제한 시간 안에 쓰러뜨려야 해요. 지금은 이 스테이지에서 골드를 모으는 중 — 배를 강화하고 다시 도전해요!",
   "uiBossFailShort": "보스를 놓쳤어요 — 강화하고 다시 도전!",
   "uiBossFailUpgrade": "{part} 강화",
-  "uiFarmingRetry": "파밍 중 · 보스 재도전 가능"
+  "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
+  "uiPower": "전투력",
+  "uiGaugeStage": "{stage}-{wave}",
+  "uiGaugeSeconds": "{sec}초"
 }
