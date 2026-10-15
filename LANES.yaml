@@ -102,6 +102,7 @@ lanes:
     paths:
       - apps/game/lib/adapters/
       - apps/game/test/adapters/
+      - apps/game/test/store/
       - apps/game/android/
       - apps/game/ios/
       - docs/store/
