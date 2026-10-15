@@ -34,9 +34,13 @@ void main() {
       final c = s.battle!.chest!;
       expect(h.of<ChestSpawned>(), hasLength(1));
       expect(c.ticksLeft, ticks(chest.number('floatSec')));
-      final w = t.waves.raw.obj('field');
-      expect(c.x, inInclusiveRange(w.number('width') * chest.number('xMin'), w.number('width') * chest.number('xMax')));
-      expect(c.y, w.obj('laneY').number('surface'));
+      // 탑다운(기본): 카메라 사각형 안, 배 둘레 밖.
+      final top = t.waves.raw.obj('top');
+      final dx = c.x - top.number('shipX');
+      final dy = c.y - top.number('shipY');
+      expect(dx.abs(), lessThanOrEqualTo(top.number('viewWidth') / 2));
+      expect(dy.abs(), lessThanOrEqualTo(top.number('viewHeight') / 2));
+      expect(dx * dx + dy * dy, greaterThan(top.number('shipRadius') * top.number('shipRadius')));
       for (var i = 1; i < ticks(chest.number('floatSec')); i++) {
         s = at(s, first + i);
       }

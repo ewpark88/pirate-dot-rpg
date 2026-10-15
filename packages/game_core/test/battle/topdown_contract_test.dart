@@ -9,11 +9,12 @@ void main() {
   final t = GameTables.load();
 
   group('Settings.battleView', () {
-    test('기본 side, 옆모습이면 본문에 쓰지 않는다(옛 세이브와 같은 본문)', () {
+    test('기본 top(T4), 탑다운이면 본문에 쓰지 않는다 — 키 없는 옛 세이브도 탑다운으로 읽힌다', () {
       const s = Settings();
-      expect(s.battleView, 'side');
+      expect(s.battleView, 'top');
       expect(s.toJson().containsKey('battleView'), isFalse);
-      expect(Settings.fromJson(s.toJson()).battleView, 'side');
+      expect(Settings.fromJson(s.toJson()).battleView, 'top');
+      expect(Settings.fromJson(const Settings(battleView: 'side').toJson()).battleView, 'side');
     });
 
     test('SetSetting(battleView, top) → 왕복', () {

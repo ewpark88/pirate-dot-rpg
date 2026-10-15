@@ -14,6 +14,7 @@ void main() {
     tables: t,
     clock: ManualClock(start),
     initial: GameState.newGame(playerId: 's', seed: 2, now: start).copyWith(
+      settings: const Settings(battleView: 'side'), // 옆모습 전용 — T4-2(SideGeometry 삭제)에서 지우거나 탑다운으로
       progress: const Progress(stage: 40, bestStage: 40),
       ship: ShipState(parts: {'hull': 200, ...parts}),
     ),

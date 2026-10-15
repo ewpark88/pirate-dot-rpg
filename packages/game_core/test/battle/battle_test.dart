@@ -19,6 +19,7 @@ void main() {
 
   GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
+        settings: const Settings(battleView: 'side'), // 옆모습 전용 — T4-2(SideGeometry 삭제)에서 지우거나 탑다운으로
         progress: Progress(stage: stage, bestStage: stage, rage: rage),
         crews: crews,
       );

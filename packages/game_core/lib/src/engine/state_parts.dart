@@ -150,7 +150,7 @@ class Settings {
     this.shake = true,
     this.flash = true,
     this.notifications = true,
-    this.battleView = 'side',
+    this.battleView = 'top',
     this.title,
   });
 
@@ -165,7 +165,7 @@ class Settings {
     shake: j['shake'] as bool,
     flash: j['flash'] as bool,
     notifications: j['notifications'] as bool,
-    battleView: j['battleView'] as String? ?? 'side',
+    battleView: j['battleView'] as String? ?? 'top',
     title: j['title'] as String?,
   );
 
@@ -184,7 +184,7 @@ class Settings {
   final bool notifications;
 
   /// 전투 화면 방식 `side`(옆모습) | `top`(탑다운) — 탑다운 전환 T0 (docs/plans/active/topdown-migration.md).
-  /// 세이브 선택 키(없으면 side). 전환이 끝나면(T4) 기본값을 top으로 바꾼다.
+  /// 세이브 선택 키(없으면 top — T4 전환 2026-10-15, 옛 세이브도 탑다운). side는 옆모습 코드 삭제 전까지만 남는다.
   final String battleView;
 
   /// 고른 칭호 id (progress.titles 중, null = 없음 — 세이브 v6).
@@ -202,7 +202,7 @@ class Settings {
     'flash': flash,
     'notifications': notifications,
     // 옆모습(기본)은 쓰지 않는다 — 옛 픽스처·세이브와 같은 본문.
-    if (battleView != 'side') 'battleView': battleView,
+    if (battleView != 'top') 'battleView': battleView,
     if (title != null) 'title': title,
   };
 
