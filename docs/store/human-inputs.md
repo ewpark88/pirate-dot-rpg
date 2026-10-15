@@ -20,7 +20,7 @@
 - [ ] 스크린샷 8장 · 그래픽 이미지 1024×500 — `listing.ko.md`
 
 ## art(S3) 담당 (사람 입력 아님, 2026-10-15 S1 결정)
-- [ ] 아이콘 원본 격자 PNG (`foreground` 54·`legacy` 24 필수, 나머지 선택) + 배경색 — `icon.md` 4절. 오면 platform이 `apply_icons.py` 한 번.
+- [x] (2026-10-15 적용, 원본 `tools/art/icon/`, 배경·스플래시 #5AA9E6) 아이콘 원본 격자 PNG (`foreground` 54·`legacy` 24 필수, 나머지 선택) + 배경색 — `icon.md` 4절. 오면 platform이 `apply_icons.py` 한 번.
 
 ## 실기기 확인 (S1 main.dart 연결 뒤)
 - [ ] 테스트 광고 로드·시청·보상, UMP 폼(EU 아니면 안 뜸), 개인정보 옵션 버튼

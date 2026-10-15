@@ -1,8 +1,8 @@
 # 앱 아이콘·스플래시 — 규격과 적용 절차
 
 - 상태: 2026-10-14, S5. 그림은 사람/아트(render 레인이 `assets/`·`tools/art/` 소유), `android/` 적용은 platform.
-- 지금: Flutter 기본 아이콘(`mipmap-*/ic_launcher.png`, 48~192px) + 흰 배경 스플래시(`drawable*/launch_background.xml`).
-  **그림이 오기 전엔 아무것도 바꾸지 않는다**(M2 기기 확인용 빌드를 흔들지 않기 위해).
+- 지금(2026-10-15): S3 원본 `tools/art/icon/`(6장 전부)을 `apply_icons.py --bg "#5AA9E6" --splash-bg "#5AA9E6"`로 적용. 스토어 512px는 `build/store/icon-512.png`(커밋 안 함, 다시 굽기).
+  실기기 확인(원형·사각·테마 아이콘·스플래시 12+/11 이하)은 DEVICE_TEST 3절과 함께.
 
 ## 핵심: 도트 그림은 정수 배율로만 키운다
 보통의 아이콘 생성기(flutter_launcher_icons 등)는 부드럽게 리샘플해서 도트가 뭉갠다. 그래서 **밀도별 PNG를 정수 배율(최근접)로 미리 만들어** 넣는다.
