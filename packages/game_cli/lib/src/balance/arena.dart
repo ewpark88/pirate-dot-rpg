@@ -86,14 +86,17 @@ class Arena {
   double get bossScale => config.seconds / t.waves.bossTimeLimitSec;
 
   /// [fleet] 선원들(모두 [level])로 [scene]을 잰다. 보조 선원 없음 = [fleet]에 한 명.
-  RunResult run(Scene scene, List<String> fleet, int level) {
+  /// [owned]: 보유 선원(기본 = [fleet]). 비교 쌍(혼자/함께)은 같은 [owned]를 줘야 보유 효과·도감 보너스가 상쇄된다(S2 요청).
+  RunResult run(Scene scene, List<String> fleet, int level, {List<String>? owned}) {
+    final have = owned ?? fleet;
+    assert(fleet.every(have.contains), '출전 선원은 보유 선원 안에 있어야 한다');
     final clock = ManualClock(_start);
     final engine = CoreEngine(
       tables: t,
       clock: clock,
-      initial: GameState.newGame(playerId: 'balance', seed: config.seed, now: _start, crews: fleet),
+      initial: GameState.newGame(playerId: 'balance', seed: config.seed, now: _start, crews: have),
     );
-    for (final id in fleet) {
+    for (final id in have) {
       engine.enqueue(OpSetCrew(id, level: level));
     }
     engine

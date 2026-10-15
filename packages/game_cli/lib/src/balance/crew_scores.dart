@@ -192,8 +192,10 @@ bool _isSupport(GameTables t, CrewDef c) {
 /// 지원 환산: 자기 피해 + 파트너 증가분 + κ·(막은 배 피해 비율). 장면마다 (파트너 혼자, 함께) 두 판.
 CrewScore _support(Arena arena, CrewScore solo, String partnerId, int level, double shieldUnit) {
   (double, double, double) part(Scene scene) {
-    final alone = arena.run(scene, [partnerId], level);
-    final together = arena.run(scene, [partnerId, solo.id], level);
+    // 두 실행 모두 같은 보유 선원(파트너 + 지원) — 출전만 다르다. 보유 효과가 '파트너 증가'로 잡히지 않게.
+    final owned = [partnerId, solo.id];
+    final alone = arena.run(scene, [partnerId], level, owned: owned);
+    final together = arena.run(scene, owned, level, owned: owned);
     final scale = scene == Scene.boss ? arena.bossScale : 1.0;
     final own = _d(together.damageOf(solo.id)) * scale;
     final uplift = (_d(together.damageOf(partnerId)) - _d(alone.damageOf(partnerId))) * scale;

@@ -41,6 +41,13 @@ void main() {
       expect(run.kills, 0);
     });
 
+    test('보유 선원(owned)은 출전과 따로 — 보유만 한 선원은 피해가 없고, 출전 선원 피해는 보유 목록과 무관(지금 엔진)', () {
+      final solo = arena.run(Scene.swarm, [direct], 45);
+      final owning = arena.run(Scene.swarm, [direct], 45, owned: [direct, shock]);
+      expect(owning.damageOf(shock), BigNum.zero, reason: '출전 안 한 선원');
+      expect(owning.damageOf(direct).toDouble(), closeTo(solo.damageOf(direct).toDouble(), 1e-6));
+    });
+
     test('S_tank가 25의 배수면 거절 (중간·해역 보스 약점이 끼어듦)', () {
       expect(() => Arena(t, arena.config.copyWith(stage: 2000)), throwsA(isA<MeasureError>()));
     });
