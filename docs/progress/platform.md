@@ -2,7 +2,7 @@
 
 ## 2026-10-15 · S5 · 세로 고정(+게임 카테고리), 실기기 캡처 스크립트
 - 한 일: manifest `screenOrientation="portrait"` + `android:appCategory="game"`(debug 빌드·병합 manifest 확인). release-checklist A4 갱신.
-  `docs/store/device/device_shots.py`(+테스트 8): adb 자동 탐색 → 기기 고르기 → 꺼짐·잠김이면 안내만(입력 없음) → 설치(선택) → 실행 → uiautomator 덤프로 탭 좌표(없으면 4등분) → 탭 4장 캡처 → build/device/shots/<시각>/·latest/.
+  `docs/store/device/device_shots.py`(+테스트 7): adb 자동 탐색 → 기기 고르기 → 꺼짐·잠김이면 안내만(입력 없음) → 설치(선택) → 실행 → uiautomator 덤프로 탭 좌표(없으면 4등분) → 탭 4장 캡처 → build/device/shots/<시각>/·latest/.
 - 발견: Android 16(API 36) 큰 화면 방향 무시에는 **게임 예외**(공식 문서: "Games (based on the android:appCategory flag)") → appCategory=game으로 태블릿도 세로 유지. 600dp 레이아웃 요청서는 불필요.
 - 다음 할 일: S1 main.dart SystemChrome 세로 고정(diff 전달), 실기기 연결 시 스크립트 첫 실행 확인.
 
