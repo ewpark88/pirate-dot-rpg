@@ -1,7 +1,7 @@
 {
   "maxLevel": 75,
   "cardExp": { "common": 1, "rare": 4, "hero": 15, "legend": 60 },
-  "expToNext": { "common": 1, "rare": 3, "hero": 8, "legend": 20, "mythic": 30 },
+  "expToNext": { "common": 1, "rare": 3, "hero": 8, "legend": 30, "mythic": 30 },
   "powerPerLevel": 0.08,
   "promotionMultiplier": 1.35,
   "ownedBonusPerLevel": 0.001,

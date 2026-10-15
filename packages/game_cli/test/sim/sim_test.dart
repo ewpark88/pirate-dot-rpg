@@ -30,9 +30,9 @@ void main() {
       ..bossCleared(t, stage: 2, bestBefore: 50, rebirths: 1)
       ..bossCleared(t, stage: 50, bestBefore: 50, rebirths: 1);
     expect([run.starterCards, run.newBosses, run.repeatBosses], [1, 2, 1]);
-    expect(RunCards.sum(run.repeatByRarity), closeTo(b.countAt(2), 1e-9));
+    expect(RunCards.sum(run.repeatByRarity), closeTo(b.repeatCountAt(2), 1e-9));
     expect(RunCards.sum(run.newByRarity), closeTo(b.countAt(1) + b.countAt(50), 1e-9));
-    expect(run.repeatByRarity['common'], closeTo(b.countAt(2) * t.rarities.bossDropRates['common']!, 1e-9));
+    expect(run.repeatByRarity['common'], closeTo(b.repeatCountAt(2) * t.rarities.bossDropRates['common']!, 1e-9));
   });
 
   test('중앙값: 미도달(null)은 가장 큰 값으로', () {

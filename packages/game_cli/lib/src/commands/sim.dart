@@ -16,6 +16,7 @@ class SimCommand extends Command<int> {
       ..addOption('seed', defaultsTo: '1')
       ..addOption('players', defaultsTo: '1')
       ..addOption('hours', defaultsTo: '2', help: '게임 시작부터의 총 시간(오프라인 포함)')
+      ..addOption('days', help: '--hours 대신 일 단위 (야간 시뮬: --players 100 --days 30 --schedule daily, 설계서 6.4)')
       ..addOption('policy', defaultsTo: 'greedy', allowed: ['greedy'])
       ..addOption(
         'schedule',
@@ -24,7 +25,8 @@ class SimCommand extends Command<int> {
         help: 'continuous: 계속 접속 · daily: 하루 40분(20분씩 두 번) + 오프라인(설계서 4.3.3)',
       )
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
-      ..addOption('out', help: 'JSON 리포트 경로');
+      ..addOption('out', help: 'JSON 리포트 경로')
+      ..addOption('report', help: '사람이 읽는 표(마크다운) 저장 경로 — 예: docs/balance/nightly-30d.md');
   }
 
   @override
@@ -39,12 +41,23 @@ class SimCommand extends Command<int> {
     final t = GameTables.load();
     final seed = int.parse(a['seed'] as String);
     final players = int.parse(a['players'] as String);
-    final total = Duration(minutes: (double.parse(a['hours'] as String) * Duration.minutesPerHour).round());
+    final days = a['days'] as String?;
+    final hours = days != null ? double.parse(days) * Duration.hoursPerDay : double.parse(a['hours'] as String);
+    final total = Duration(minutes: (hours * Duration.minutesPerHour).round());
     final schedule = a['schedule'] == 'daily' ? SimSchedule.daily : SimSchedule(online: total);
 
     final results = [for (var i = 0; i < players; i++) SimPlayer(t, seed: seed + i).run(total, schedule)];
     final checks = judge(t, results, schedule: a['schedule'] as String);
-    stdout.write(formatReport(t, results, checks));
+    final report = formatReport(t, results, checks);
+    stdout.write(report);
+    final md = a['report'] as String?;
+    if (md != null) {
+      final how =
+          '--seed $seed --players $players ${days != null ? '--days $days' : '--hours ${a['hours']}'} --schedule ${a['schedule']}';
+      File(md)
+        ..createSync(recursive: true)
+        ..writeAsStringSync('<!-- game_cli sim $how — 생성물, 손으로 고치지 않는다 -->\n\n$report');
+    }
 
     final out = a['out'] as String?;
     if (out != null) {
