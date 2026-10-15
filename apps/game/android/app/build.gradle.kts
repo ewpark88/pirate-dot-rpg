@@ -41,6 +41,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // 탑다운 시험판 빌드(-Pproto): 본 게임과 나란히 설치되게 다른 ID(덮어쓰지 않음 — 세이브 보존)
+        if (project.hasProperty("proto")) applicationIdSuffix = ".proto"
     }
 
     signingConfigs {
