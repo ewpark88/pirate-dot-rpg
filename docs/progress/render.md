@@ -14,6 +14,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 바다 분위기 탑다운판 (platform-fun-atmosphere)
+- `render/top/top_atmosphere.dart`(fx_map atmosphere): 12분 순환 낮·노을·밤·새벽(전환 20초), 유령해 늘 밤·심연 늘 어둡게. 색조·어둡게는 바다·풍경에만 → 적·발사체·숫자는 밤에도 같은 색(픽셀 테스트).
+  날씨(시간대마다 굴림, 해역별): 비(수면 동그라미 + 옅은 빗줄), 안개(흐르는 흰 막), 오로라 반사(밤 빙하), 화산재(화산 늘), 밤 수면 별 반짝임. 절전 = 파티클 ½·풍경 멈춤.
+  풍경: 시작 20초 뒤부터 40~90초마다 배 앞쪽 옆에서 나타나 바다 흐름과 함께 지나감(동시 2개).
+- `tools/art/gen_topdown_landmarks.py` → `assets/fx/td_land_<id>.png` 7종(야자섬·등대·고래·난파선·빙산·화산섬·먼 유령선), 2프레임.
+- 운영자·테스트용 `ScenePainter.top.atmosphere.offsetMs`(시간대 미리보기). 테스트 top_atmosphere_test 5개. 시안 `docs/specs/render-topdown/atmosphere_s24.png`.
+- 탑다운 배 63% 커밋(2ebab76) 비교 `docs/specs/render-topdown/ship63_s24.png`.
+
 ### 2026-10-15 · S3 · T2 탑다운 마무리 1: 숫자 배율·투척 높이·골든 4기기·부하 150마리·침몰/축하
 - 숫자: 탑다운은 전장 1단위가 옆모습 1도트보다 커서 숫자를 옆모습 화면 크기로(paintNumbers scale = 옆모습 dot / 탑다운 dot).
 - 투척·물수제비·떨어지기: Projectile.flat(탑다운) — 땅 위 자리는 직선, 높이(heightAt)는 크기 +45%·수면 그림자(높을수록 작고 흐림).

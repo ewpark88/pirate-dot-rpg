@@ -6,6 +6,7 @@ import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
@@ -21,6 +22,7 @@ class TopScenePainter {
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
+  late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
   double _lastMs = 0;
@@ -50,6 +52,10 @@ class TopScenePainter {
     _sea
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
+    final powerSave = scene.settings.powerSave;
+    atmosphere
+      ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, view.shipHeading, powerSave: powerSave)
+      ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
     // 전장 좌표로: 배 중심이 원점.
     c
       ..save()
@@ -82,9 +88,9 @@ class TopScenePainter {
       ..translate(-ship.dx, -ship.dy);
     _enemies(c, under: false);
     fx(c);
-    c
-      ..restore()
-      ..restore();
+    c.restore();
+    atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
+    c.restore();
   }
 
   late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
