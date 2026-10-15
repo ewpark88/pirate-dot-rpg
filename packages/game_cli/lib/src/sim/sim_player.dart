@@ -10,8 +10,10 @@ export 'package:game_cli/src/sim/sim_result.dart';
 /// 설계서 7.2의 가상 플레이어: 가장 싼 강화 구매, 젬이 모이면 소환, 합치기·승급,
 /// 보스 실패 시 `meta.sim.farmRetrySec` 파밍 후 재도전. 실제 엔진(CoreEngine)을 돌린다.
 class SimPlayer {
-  SimPlayer(this.t, {required this.seed, this.bossAd = false}) : clock = ManualClock(_start) {
-    final initial = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
+  SimPlayer(this.t, {required this.seed, this.bossAd = false, String view = 'side'}) : clock = ManualClock(_start) {
+    final fresh = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
+    // 전장 방식(탑다운 전환 T1): 옆모습과 탑다운의 sim 지표 비교.
+    final initial = view == 'side' ? fresh : fresh.copyWith(settings: Settings(battleView: view));
     engine = CoreEngine(tables: t, clock: clock, initial: initial);
     result = SimResult(seed);
     final sim = t.meta.raw.obj('sim');
