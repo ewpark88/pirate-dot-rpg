@@ -54,6 +54,9 @@ abstract interface class BattleGeometry {
   /// 점 ([x],[y]) 쪽으로 [amount]만큼 끌어당김(음수면 밀어냄). 지나치지 않는다.
   void pull(Foe e, double x, double y, double amount);
 
+  /// [a]가 남기는 장판(수중)의 반지름.
+  double zoneRadius(AttackDef a);
+
   /// 분열한 작은 적 [n]마리 중 [i]번째 자리.
   Point splitAt(Foe parent, int i, int n);
 
@@ -131,6 +134,9 @@ class SideGeometry implements BattleGeometry {
     final step = math.min(dx.abs(), amount.abs());
     e.x += (amount > 0 ? dx.sign : -dx.sign) * step;
   }
+
+  @override
+  double zoneRadius(AttackDef a) => a.radius;
 
   @override
   Point splitAt(Foe parent, int i, int n) => (x: parent.x + (i - (n - 1) * half) * _f.spawnSpacing, y: parent.y);

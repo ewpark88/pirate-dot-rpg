@@ -17,6 +17,17 @@ class TopAim {
 
   double _centerDist(Foe e) => _dist(e.x, e.y, top.shipX, top.shipY);
 
+  // 탑다운 모양 키(skills.json attack, 선택): 없으면 옆모습 값 그대로. T4-B(S3 제안) — 줄 서는 무리가 없는 탑다운에 맞춘 모양.
+  /// 원(투척·수중 장판) 반지름 / 충격 고리 범위: `topRadius`.
+  double circleRadius(AttackDef a) => a.raw.numberOr('topRadius', a.radius);
+  double ringRange(AttackDef a) => a.raw.numberOr('topRadius', a.range);
+
+  /// 관통 광선의 반폭: `topWidth`(없으면 width의 절반).
+  double beamHalfWidth(AttackDef a) => a.raw.has('topWidth') ? a.raw.number('topWidth') : a.width * half;
+
+  /// 강습 부채꼴 각(도): `topArcDeg`.
+  double arcDeg(AttackDef a) => a.raw.numberOr('topArcDeg', a.angleDeg);
+
   /// 배 둘레에서 [e] 가장자리까지.
   double edge(Foe e) => _centerDist(e) - top.shipRadius - top.radiusOf(e);
 
@@ -61,13 +72,14 @@ class TopAim {
     double ay;
     switch (a.shape) {
       case 'circle':
-        int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= a.radius).length;
+        final radius = circleRadius(a);
+        int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
         final center = pickable.reduce((m, e) {
           final d = around(e) - around(m);
           return d > 0 || (d == 0 && _centerDist(e) < _centerDist(m)) ? e : m;
         });
         (ax, ay) = (center.x, center.y);
-        hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= a.radius).toList()
+        hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= radius).toList()
           ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
       case 'line':
         // 배 → 대상 방향 광선(폭 안, 배 앞쪽만, 가까운 순 pierce마리). 대상은 그 광선에 가장 많이 걸리는 적
@@ -78,7 +90,7 @@ class TopAim {
           final uy = len == 0 ? 0.0 : (t.y - top.shipY) / len;
           double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
           double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
-          return (targets.where((e) => proj(e) > 0 && off(e) <= a.width * half).toList()
+          return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
                 ..sort((p, q) => proj(p).compareTo(proj(q))))
               .take(a.pierce)
               .toList();
@@ -118,7 +130,7 @@ class TopAim {
         // 가장 가까운 적 방향 부채꼴. 배 둘레에서 range 안(보스는 사거리 안이면 됨), coneNearPx 안은 각도와 상관없이.
         final t = first();
         final dir = math.atan2(t.y - top.shipY, t.x - top.shipX);
-        final halfAngle = a.angleDeg * half * radiansPerDegree;
+        final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
             if ((e.boss || edge(e) <= a.range) &&
@@ -130,7 +142,8 @@ class TopAim {
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'push':
         // 배 둘레 고리: 둘레에서 range 안 전부. 보스는 사거리 안이면 range와 상관없이(옆모습과 같은 규칙 — 보스는 멀리 선다).
-        hit = targets.where((e) => e.boss || edge(e) <= a.range).toList()..sort((p, q) => edge(p).compareTo(edge(q)));
+        hit = targets.where((e) => e.boss || edge(e) <= ringRange(a)).toList()
+          ..sort((p, q) => edge(p).compareTo(edge(q)));
         if (hit.isEmpty) return null;
         (ax, ay) = (top.shipX, top.shipY);
       default: // single

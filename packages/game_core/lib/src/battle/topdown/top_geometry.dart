@@ -199,6 +199,9 @@ class TopGeometry implements BattleGeometry {
   }
 
   @override
+  double zoneRadius(AttackDef a) => _aim.circleRadius(a);
+
+  @override
   Point splitAt(Foe parent, int i, int n) {
     final a = i * _turn / n;
     return (x: parent.x + math.cos(a) * top.mobRadius, y: parent.y + math.sin(a) * top.mobRadius);
