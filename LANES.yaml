@@ -70,6 +70,10 @@ lanes:
       - packages/game_core/test/battle/
       - docs/decisions/
       - docs/GAME_DESIGN.md
+      # 보유·도감 효과 전투 적용, 배 외형 시나리오 (2026-10-15 S1 위임)
+      - packages/game_core/lib/src/battle/combat_stats.dart
+      - scenarios/
+      - packages/game_cli/lib/src/scenario/runner.dart
       - packages/game_cli/lib/src/commands/sim.dart
       - packages/game_cli/lib/src/sim/
       - packages/game_cli/test/sim/
