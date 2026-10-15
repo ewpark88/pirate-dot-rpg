@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -104,7 +105,7 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.monetization_on, color: Colors.amber),
+              const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
               const SizedBox(width: 6),
               Text(preview.gold.format(), style: Theme.of(context).textTheme.headlineSmall),
             ],

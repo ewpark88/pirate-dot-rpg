@@ -40,8 +40,14 @@ abstract final class PixelPalette {
   /// 주 버튼 바탕(강화·소환 등 누르면 이득인 버튼).
   static const action = Color.fromARGB(255, 46, 120, 190);
 
-  /// 주 버튼 테두리.
-  static const actionBorder = Color.fromARGB(255, 110, 180, 240);
+  /// 주 버튼 밝은 줄 (위·왼쪽).
+  static const actionLight = Color.fromARGB(255, 130, 196, 248);
+
+  /// 주 버튼 그늘·테두리 (아래·오른쪽).
+  static const actionDark = Color.fromARGB(255, 26, 70, 124);
+
+  /// 보조 버튼 그늘.
+  static const navyDark = Color.fromARGB(255, 12, 15, 28);
 }
 
 /// 기준 화면의 논리 폭 (320×180, 기기에 맞춰 정수배 확대).

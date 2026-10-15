@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -183,11 +184,13 @@ class _DayCell extends StatelessWidget {
       child: Column(
         children: [
           Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
-          Icon(
-            checked ? Icons.check : (ticket ? Icons.auto_awesome : Icons.diamond),
-            size: 18,
-            color: checked ? Colors.green : null,
-          ),
+          // 받은 날 체크는 S3 그림(check) 오기 전까지 Material.
+          if (checked)
+            const Icon(Icons.check, size: 18, color: Colors.green)
+          else if (ticket)
+            const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
+          else
+            const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
           if (ticket)
             Text(
               l10n.uiAttendanceTicket,

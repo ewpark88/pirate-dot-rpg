@@ -13,6 +13,7 @@ class PixelButton extends StatefulWidget {
     required this.child,
     this.primary = false,
     this.semanticLabel,
+    this.compact = false,
     super.key,
   });
 
@@ -24,6 +25,9 @@ class PixelButton extends StatefulWidget {
 
   /// 글자가 없는 버튼(아이콘만)의 화면 낭독 라벨.
   final String? semanticLabel;
+
+  /// 작은 버튼: 누르는 영역은 48dp 그대로, 그림은 오른쪽 아래에 내용 크기로만 (카드 안 승급 등).
+  final bool compact;
 
   @override
   State<PixelButton> createState() => _PixelButtonState();
@@ -43,7 +47,40 @@ class _PixelButtonState extends State<PixelButton> {
         : widget.primary
         ? PixelPalette.action
         : PixelPalette.navy;
-    final border = !enabled ? PixelPalette.border : (widget.primary ? PixelPalette.actionBorder : PixelPalette.border);
+    final border = !enabled ? PixelPalette.border : (widget.primary ? PixelPalette.actionDark : PixelPalette.border);
+
+    // 떠 있을 때는 맨 아래 1칸이 그림자, 누르면 그림자 자리로 1칸 내려앉는다(전체 크기는 그대로).
+    final frame = Padding(
+      padding: EdgeInsets.only(top: _down ? u : 0),
+      child: PixelFrame(
+        fill: fill,
+        border: border,
+        // 팔레트 명암: 위·왼쪽 밝은 줄 1칸, 아래·오른쪽 그늘 2칸.
+        highlight: _down || !enabled
+            ? null
+            : widget.primary
+            ? PixelPalette.actionLight
+            : PixelPalette.highlight,
+        shade: _down || !enabled ? null : (widget.primary ? PixelPalette.actionDark : PixelPalette.navyDark),
+        shadeDots: 2,
+        dropShadow: !_down,
+        padding: widget.compact ? 3 : 4,
+        child: Center(
+          widthFactor: 1,
+          heightFactor: 1,
+          child: DefaultTextStyle.merge(
+            style: TextStyle(
+              color: enabled ? PixelPalette.text : PixelPalette.textDim,
+              fontWeight: FontWeight.bold,
+            ),
+            child: IconTheme.merge(
+              data: IconThemeData(color: enabled ? PixelPalette.text : PixelPalette.textDim),
+              child: widget.child,
+            ),
+          ),
+        ),
+      ),
+    );
 
     return Semantics(
       button: true,
@@ -57,32 +94,7 @@ class _PixelButtonState extends State<PixelButton> {
         onTap: widget.onPressed,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minWidth: kMinTap, minHeight: kMinTap),
-          // 떠 있을 때는 맨 아래 1칸이 그림자, 누르면 그림자 자리로 1칸 내려앉는다(전체 크기는 그대로).
-          child: Padding(
-            padding: EdgeInsets.only(top: _down ? u : 0),
-            child: PixelFrame(
-              fill: fill,
-              border: border,
-              highlight: _down || !enabled ? null : Color.lerp(fill, PixelPalette.text, 0.3),
-              shade: _down || !enabled ? null : Color.lerp(fill, PixelPalette.outline, 0.45),
-              dropShadow: !_down,
-              padding: 4,
-              child: Center(
-                widthFactor: 1,
-                heightFactor: 1,
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(
-                    color: enabled ? PixelPalette.text : PixelPalette.textDim,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  child: IconTheme.merge(
-                    data: IconThemeData(color: enabled ? PixelPalette.text : PixelPalette.textDim),
-                    child: widget.child,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          child: widget.compact ? Align(alignment: Alignment.bottomRight, child: frame) : frame,
         ),
       ),
     );
