@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: `docs/specs/render-art-enemies.md` 묶음 2(폭풍해) 승인 대기 · 배 등급 스프라이트 t2~t4 없음(제안) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 현재 계획 | art: 배 등급 t2~t4 승인 대기 → 묶음 3 빙하(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 2·S4 아이콘 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 배 등급 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art: 배 등급 t2~t4
+- `tools/art/gen_ships.py`(ship_t1 바탕): x=24 무늬 없는 줄을 끼워 길이를 늘리고(t2 +8, t3·t4 +16), 위로 윗돛을 얹는다.
+  t2 sloop 70×58(윗돛·지브·깃발 꼬리), t3 warship 78×58(돛대 둘·고물 선실 불빛 창·금 띠·포문 한 줄 더), t4 ghost(t3 모양, 보라 잿빛 선체·반투명 청록 찢긴 돛·초록 빛 창/포문).
+  t1의 작은 꼭대기 깃발은 지우고 새 깃발 꼬리. gen_bosses.write_png가 알파(4번째 값)를 받는다(기존 그림 바이트 그대로).
+- 렌더: `ShipPainter`가 등급 그림을 t1 상자 오른쪽 아래(뱃머리·물 닿는 줄)에 맞춘다 → 포구 화염·발사 위치가 등급마다 맞음. t3·t4는 고물 약 16px가 화면 왼쪽 밖.
+- 테스트: 배 등급 파일 t1~t4 있음, 큰 배 오른쪽 아래 기준(픽셀). 비교 `docs/specs/render-art-enemies/compare_ships.png`(t1~t4 + 해역 4곳 발사 장면).
+- main(음원 b8a06f5) 머지, 생성기 5개 --check 모두 같음.
 
 ### 2026-10-15 · S3 · art 묶음 2: 폭풍해 + giant_hermit 집게
 - gen_bosses.py: raider 코드를 `ship_variant()`로 일반화(raider 바이트 그대로) → storm_pirate(먹구름 돛·노란 줄·번개 문양·바랜 선체).
