@@ -44,10 +44,41 @@ void main() {
       expect(s.projectiles.active, isEmpty, reason: '엔진 피해 틱(20)에 도착');
     });
 
-    test('직선 계열은 투척보다 짧게 난다', () {
+    test('직선 계열은 투척보다 짧게 난다 (1배속 비행 시간)', () {
       expect(flightTicks('pierce'), lessThan(flightTicks('lob')));
-      expect(flightTicks('direct') * tickMs, inInclusiveRange(250, 400));
+      // 사용자 지시 '그림이 보이게': 1배속 투척 약 1.4초, 직사 약 0.8초. 배속이 오르면 틱이 빨라져 같이 빨라진다.
+      expect(flightTicks('direct') * tickMs, inInclusiveRange(600, 900));
+      expect(flightTicks('lob') * tickMs, inInclusiveRange(1100, 1400));
+      expect(tables.juice.lookaheadTicks, greaterThanOrEqualTo(flightTicks('lob')), reason: '표시 지연이 가장 긴 비행을 덮는다');
     });
+  });
+
+  test('배속 2배면 같은 발사체가 실제 시간 절반에 도착한다', () {
+    double arriveMs(int speed) {
+      final ticks = [
+        for (var i = 0; i < 60; i++)
+          tickOf(
+            i,
+            enemies: [(1, 200)],
+            speed: speed,
+            events: i == 40 ? [_fire(40, family: 'lob')] : const [],
+          ),
+      ];
+      final s = _scene(ticks);
+      var ms = 0.0;
+      var seen = false;
+      while (ms < 6000) {
+        s.update(10);
+        ms += 10;
+        if (s.projectiles.active.any((p) => p.progress > 0)) seen = true;
+        if (seen && s.projectiles.active.isEmpty) return ms;
+      }
+      return ms;
+    }
+
+    final one = arriveMs(1);
+    final two = arriveMs(2);
+    expect(two, closeTo(one / 2, one * 0.1));
   });
 
   group('수용 기준 4·5·6: 상한과 풀링', () {

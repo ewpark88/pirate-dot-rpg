@@ -13,6 +13,7 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/perf_overlay.dart';
 import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
+import 'package:pirate_dot/render/perf/frame_cap.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
@@ -121,6 +122,7 @@ class BattleGame extends FlameGame {
   final perf = PerfMonitor();
   final _overlay = PerfOverlay();
   final _cache = PowerSaveCache();
+  late final _cap = FrameCap(this);
 
   /// 장면을 진행한 횟수 (절전 확인용).
   int sceneUpdates = 0;
@@ -150,6 +152,26 @@ class BattleGame extends FlameGame {
     if (!v.powerSave) _cache.dispose();
     _settings = v;
     scene.settings = v;
+    _applyCap();
+  }
+
+  /// 절전이면 실제 프레임(그리기 포함)을 juice powerSave.fps로 묶는다. 붙기 전(onMount 전)·테스트에서는 update 누적으로만.
+  void _applyCap() => !isMounted ? null : (_settings.powerSave ? _cap.start(scene.juice.powerSaveFps) : _cap.stop());
+
+  @override
+  void onMount() {
+    super.onMount();
+    _applyCap();
+  }
+
+  @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    super.lifecycleStateChange(state);
+    if (state == AppLifecycleState.resumed) {
+      _cap.resume(scene.juice.powerSaveFps);
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      _cap.suspend();
+    }
   }
 
   /// 운영자 모드: 적 히트박스 표시.
@@ -229,8 +251,8 @@ class BattleGame extends FlameGame {
       }
     }
     var stepMs = dtMs;
-    if (settings.powerSave) {
-      // 절전: juice powerSave.fps 주기로만 장면을 진행하고, 그 사이 프레임은 직전 그림을 다시 그린다.
+    if (settings.powerSave && !_cap.active) {
+      // 절전(상한 타이머가 없을 때 — 테스트 등): juice powerSave.fps 주기로만 장면을 진행하고, 그 사이 프레임은 직전 그림을 다시 그린다.
       _powerSaveAccum += dtMs;
       final period = Duration.millisecondsPerSecond / scene.juice.powerSaveFps;
       if (_powerSaveAccum + _periodSlackMs < period) return;
@@ -256,6 +278,7 @@ class BattleGame extends FlameGame {
   void onRemove() {
     unawaited(_sub?.cancel());
     _sub = null;
+    _cap.stop();
     _cache.dispose();
     super.onRemove();
   }
