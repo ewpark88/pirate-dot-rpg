@@ -87,6 +87,12 @@ Future<void> loadGoldenFonts() async {
     galmuri.addFont(Future.value(ByteData.sublistView(File('${assets.path}/$f').readAsBytesSync())));
   }
   await galmuri.load();
+  // 스킨 r1 글꼴 (Jua + 없는 기호 보충).
+  for (final (family, file) in [('Jua', 'Jua-Regular.ttf'), ('GowunDodumSymbols', 'GowunDodumSymbols.ttf')]) {
+    final loader = FontLoader(family)
+      ..addFont(Future.value(ByteData.sublistView(File('${assets.path}/$file').readAsBytesSync())));
+    await loader.load();
+  }
 }
 
 /// 탭 전환 뒤 화면이 자리 잡을 시간 (넉넉히).

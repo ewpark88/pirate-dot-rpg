@@ -157,5 +157,10 @@
   "uiFleetClear": "Clear slot",
   "uiFleetSwapTitle": "Swap out which crew?",
   "uiFleetAuto": "Auto Fleet",
-  "uiFleetEmptySlot": "Empty slot"
+  "uiFleetEmptySlot": "Empty slot",
+  "uiSummonAgain": "Summon Again",
+  "uiSummonDupe": "+Card",
+  "uiSummonCutinLegend": "A legendary pirate joins the crew!",
+  "uiSummonCutinMythic": "A mythic pirate awakens!",
+  "uiSummonTapContinue": "Tap to continue"
 }

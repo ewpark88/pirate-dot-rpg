@@ -1,71 +1,35 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
-import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
-import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
-import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/crew_name.dart';
+import 'package:pirate_dot/ui/summon/summon_card.dart';
+import 'package:pirate_dot/ui/summon/summon_cutin.dart';
+import 'package:pirate_dot/ui/summon/summon_fx.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
-import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
-import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
-/// 결과 카드 한 줄에 몇 장 (10연 = 2줄 × 5장).
-const _perRow = 5;
-
-/// 카드 가로:세로.
-const _cardAspect = 0.45;
-
-/// 카드 뒤집기 시간.
-const _flip = Duration(milliseconds: 250);
+/// 결과 격자 열 수 범위 (10연은 3~5열 중 카드가 가장 큰 것).
+const _minColumns = 3;
+const _maxColumns = 5;
 
 /// 튜토리얼에서 소환을 배우는 단계 — 결과 창을 닫으면 끝난다 (설계서 4.12 표).
 const _summonTutorialStep = 4;
 
-/// `lastSummon`이 생기면 소환 결과 창을 하나 띄운다 (설계서 4.12 팝업 3가지 중 ‘소환 결과’).
-class SummonResultGate extends ConsumerStatefulWidget {
-  const SummonResultGate({required this.child, super.key});
+/// 카드가 날아와 깔리는 시간(장마다 [_landStagger]씩 늦게), 뒷면 기대감, 뒤집기 시간.
+const _landEach = Duration(milliseconds: 380);
+const _landStagger = Duration(milliseconds: 70);
+const _hint = Duration(milliseconds: 1200);
+const _flip = Duration(milliseconds: 820);
 
-  final Widget child;
-
-  @override
-  ConsumerState<SummonResultGate> createState() => _SummonResultGateState();
-}
-
-class _SummonResultGateState extends ConsumerState<SummonResultGate> {
-  var _open = false;
-
-  @override
-  void initState() {
-    super.initState();
-    ref.listenManual(gameStateProvider.select((s) => s.lastSummon), (_, results) => _show(results));
-    // 시작할 때 이미 결과가 있으면(복원 직후 등) 첫 프레임 뒤에 띄운다.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _show(ref.read(gameStateProvider).lastSummon));
-  }
-
-  void _show(List<SummonResult>? results) {
-    if (_open || results == null || results.isEmpty || !mounted) return;
-    _open = true;
-    unawaited(
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => SummonResultDialog(results: results),
-      ).whenComplete(() => _open = false),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
-}
-
-/// 카드 뒤집기: 눌러서 한 장씩 또는 ‘모두 뒤집기’. 다 뒤집으면 확인 → AckSummonResult.
+/// 소환 연출: 카드가 날아와 뒷면으로 깔림 → 등급 기대감 → 탭(또는 모두 열기)으로 3D 뒤집기 → 전설·신화 컷인 → 결과.
 class SummonResultDialog extends ConsumerStatefulWidget {
   const SummonResultDialog({required this.results, super.key});
 
@@ -75,199 +39,229 @@ class SummonResultDialog extends ConsumerStatefulWidget {
   ConsumerState<SummonResultDialog> createState() => _SummonResultDialogState();
 }
 
-class _SummonResultDialogState extends ConsumerState<SummonResultDialog> {
-  late final List<bool> _revealed = List.filled(widget.results.length, false);
+class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with TickerProviderStateMixin {
+  late final int _n = widget.results.length;
+  late final AnimationController _hintCtl = AnimationController(vsync: this, duration: _hint);
+  late final AnimationController _land = AnimationController(vsync: this, duration: _landEach + _landStagger * _n);
+  late final List<AnimationController> _flips = [
+    for (var i = 0; i < _n; i++) AnimationController(vsync: this, duration: _flip),
+  ];
+  late final List<bool> _revealed = List.filled(_n, false);
 
-  void _close() {
+  /// 뒤집힌 뒤 보여 줄 전설·신화 컷인 줄.
+  final _cutIns = <int>[];
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_land.forward().whenComplete(() => _hintCtl.forward()));
+  }
+
+  @override
+  void dispose() {
+    _land.dispose();
+    _hintCtl.dispose();
+    for (final f in _flips) {
+      f.dispose();
+    }
+    super.dispose();
+  }
+
+  /// [i]번 카드 착지 진행 (0→1, 장마다 조금씩 늦게).
+  double _landFor(int i) {
+    final total = _land.duration!.inMilliseconds;
+    final start = (_landStagger * i).inMilliseconds / total;
+    final end = start + _landEach.inMilliseconds / total;
+    return Curves.easeOutBack.transform(((_land.value - start) / (end - start)).clamp(0, 1).toDouble());
+  }
+
+  int _tier(RarityTable r, int i) => r.rarities.indexWhere((x) => x.id == widget.results[i].rarity);
+
+  void _reveal(int i) {
+    if (_revealed[i]) return;
+    final tier = _tier(ref.read(tablesProvider).rarities, i);
+    setState(() => _revealed[i] = true);
+    unawaited(
+      _flips[i].forward().whenComplete(() {
+        if (mounted && tier >= Tier.legend) setState(() => _cutIns.add(i));
+      }),
+    );
+    // 등장음: 일반·희귀 pop, 영웅 작은 팡파르, 전설·신화 팡파르 (fx_map sfx id).
+    ref
+        .read(audioPortProvider)
+        ?.playSfx(tier >= Tier.legend ? 'fanfare' : (tier >= Tier.hero ? 'fanfare_small' : 'pop'));
+  }
+
+  void _revealAll() {
+    for (var i = 0; i < _n; i++) {
+      _reveal(i);
+    }
+  }
+
+  void _ack() {
     final sink = ref.read(commandSinkProvider)..send(const AckSummonResult());
     if (ref.read(tutorialStepProvider) == _summonTutorialStep) {
       sink.send(const TutorialAck(_summonTutorialStep));
     }
+  }
+
+  void _close() {
+    _ack();
     Navigator.of(context).pop();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final rarities = ref.watch(tablesProvider).rarities;
-    final allRevealed = _revealed.every((r) => r);
-    return PixelDialog(
-      title: l10n.uiSummonResultTitle,
-      content: SizedBox(
-        width: double.maxFinite,
-        child: GridView.count(
-          shrinkWrap: true,
-          crossAxisCount: widget.results.length < _perRow ? widget.results.length : _perRow,
-          childAspectRatio: _cardAspect,
-          mainAxisSpacing: 6,
-          crossAxisSpacing: 6,
-          children: [
-            for (var i = 0; i < widget.results.length; i++)
-              GestureDetector(
-                onTap: () => setState(() => _revealed[i] = true),
-                child: AnimatedSwitcher(
-                  duration: _flip,
-                  child: _revealed[i]
-                      ? _Face(index: i, result: widget.results[i], rarities: rarities)
-                      : _Back(key: Key('summon.card.$i.back')),
-                ),
-              ),
-          ],
-        ),
-      ),
-      actions: [
-        if (allRevealed)
-          PixelButton(
-            key: const Key('summon.result.ok'),
-            primary: true,
-            onPressed: _close,
-            child: Text(l10n.uiSummonResultOk),
-          )
-        else
-          PixelButton(
-            key: const Key('summon.revealAll'),
-            onPressed: () => setState(() => _revealed.fillRange(0, _revealed.length, true)),
-            child: Text(l10n.uiSummonRevealAll),
-          ),
-      ],
-    );
-  }
-}
-
-class _Back extends StatelessWidget {
-  const _Back({super.key});
-
-  @override
-  Widget build(BuildContext context) => const PixelFrame(
-    fill: PixelPalette.action,
-    child: Center(child: PixelSprite(UiSprites.cardBack, dots: 32, scale: 1)),
-  );
-}
-
-/// 등장 연출 길이: 기본 + 등급 순번마다 더 (높은 등급일수록 길게).
-const _revealBaseMs = 200;
-const _revealStepMs = 120;
-
-/// 등급 순번별 번쩍임 최대 세기 (일반 → 신화).
-const _flashPeak = [0.3, 0.5, 0.7, 0.9, 0.9];
-
-/// 테두리 빛을 받는 등급 수 (위에서부터: 전설·신화).
-const _glowTiers = 2;
-
-/// 번쩍임은 4단계로 끊어서 줄인다 (부드러운 페이드 대신 도트 느낌).
-const _flashSteps = 4;
-
-/// 앞면: 등급 색 도트 테두리 안 정수배 초상 · 이름 · 별. 처음 그려질 때 등급별 도트 번쩍임,
-/// 전설·신화는 테두리가 깜빡인 뒤 바깥 1칸 빛 테두리가 남는다. 설정 ‘번쩍임’이 꺼져 있으면 번쩍이지 않는다.
-class _Face extends ConsumerStatefulWidget {
-  const _Face({required this.index, required this.result, required this.rarities});
-
-  final int index;
-  final SummonResult result;
-  final RarityTable rarities;
-
-  @override
-  ConsumerState<_Face> createState() => _FaceState();
-}
-
-class _FaceState extends ConsumerState<_Face> with SingleTickerProviderStateMixin {
-  late final int _tier = widget.rarities.rarities.indexWhere((r) => r.id == widget.result.rarity);
-  late final AnimationController _reveal = AnimationController(
-    vsync: this,
-    duration: Duration(milliseconds: _revealBaseMs + _revealStepMs * _tier),
-  )..forward();
-
-  @override
-  void dispose() {
-    _reveal.dispose();
-    super.dispose();
+  void _again() {
+    _ack();
+    Navigator.of(context).pop();
+    ref.read(commandSinkProvider).send(Summon(count: _n));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final flashOn = ref.watch(gameStateProvider.select((s) => s.settings.flash));
-    final rarities = widget.rarities;
-    final rarity = rarities.rarities[_tier];
-    final order = rarities.rarities.map((r) => r.id).toList();
-    // 천장 등급(영웅) 이상은 강조 — 10연 확정 카드가 눈에 띄게.
-    final highlight = _tier >= order.indexOf(rarities.pityMinRarity);
-    final glow = _tier >= rarities.rarities.length - _glowTiers;
-    final color = rarityColor(rarity);
-    final crew = tables.crews.byId(widget.result.crewId);
-    final small = Theme.of(context).textTheme.labelSmall;
-    final u = pixelUnit(context);
-    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final (shakeOn, flashOn) = ref.watch(gameStateProvider.select((s) => (s.settings.shake, s.settings.flash)));
+    final canAgain = ref.watch(gameStateProvider.select((s) => canSummon(s, tables, _n)));
+    final rarities = tables.rarities;
+    final tiers = [for (var i = 0; i < _n; i++) _tier(rarities, i)];
+    final best = tiers.reduce(math.max);
+    final allRevealed = _revealed.every((r) => r);
 
-    return AnimatedBuilder(
-      animation: _reveal,
-      builder: (context, _) {
-        final t = _reveal.value;
-        // 전설·신화: 연출 동안 테두리가 흰색과 등급 색을 3번 오간다.
-        final blinkWhite = glow && t < 1 && (t * 6).floor().isEven;
-        final flash = flashOn && t < 1
-            ? _flashPeak[_tier.clamp(0, _flashPeak.length - 1)] * ((1 - t) * _flashSteps).ceil() / _flashSteps
-            : 0.0;
-        final card = PixelFrame(
-          key: Key('summon.card.${widget.index}.face'),
-          border: blinkWhite ? PixelPalette.text : color,
-          fill: Color.lerp(PixelPalette.navy, color, 0.3)!,
-          highlight: null,
-          borderDots: highlight ? 2 : 1,
-          padding: highlight ? 3 : 2,
-          child: Stack(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: AnimatedBuilder(
+        animation: Listenable.merge([_land, _hintCtl]),
+        builder: (context, _) {
+          final hint = _hintCtl.value;
+          // 화면 흔들림(전설 이상)·번쩍(신화) — 설정의 흔들림·번쩍임 끄기를 따른다.
+          final shake = shakeOn && best >= Tier.legend ? math.sin(hint * math.pi * 20) * 4 * (1 - hint) : 0.0;
+          final flash = flashOn && best >= Tier.mythic ? math.max(0, 1 - (hint - 0.5).abs() * 6) : 0.0;
+          return Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (highlight) SizedBox.shrink(key: Key('summon.card.${widget.index}.highlight')),
-                  if (widget.result.isNew)
-                    Text(
-                      l10n.uiSummonNew,
-                      style: small?.copyWith(color: PixelPalette.danger, fontWeight: FontWeight.bold),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      colors: [const Color(0xFF243565), Skin.night.withValues(alpha: 0.97)],
+                      radius: 1.1,
                     ),
-                  // 초상: 카드 폭 안에서 실제 픽셀 정수배로 가장 크게.
-                  LayoutBuilder(
-                    builder: (context, box) {
-                      final scale = (box.maxWidth * dpr / 32).floor().clamp(1, 1 << 10);
-                      return CrewPortrait(crew: crew, size: scale * 32 / dpr);
-                    },
                   ),
-                  // 별 줄을 이름 위로, 이름은 짧은 이름 한 줄 (요청서 platform-ui-store-shots).
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
+                ),
+              ),
+              if (best >= Tier.mythic) Positioned.fill(child: AuroraSweep(t: hint)),
+              if (best >= Tier.legend)
+                Positioned.fill(
+                  child: SparkBurst(t: hint, rainbow: best >= Tier.mythic),
+                ),
+              SafeArea(
+                child: Transform.translate(
+                  offset: Offset(shake, 0),
+                  child: Column(
                     children: [
-                      const PixelSprite(UiSprites.star, dots: 16, scale: 1),
-                      Text(rarity.stars.toString(), style: small?.copyWith(color: color)),
+                      const SizedBox(height: 16),
+                      Text(l10n.uiSummonResultTitle, style: Skin.text(24, color: Colors.white)),
+                      Expanded(child: _grid(l10n, tables, tiers, hint)),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 480),
+                          child: allRevealed ? _resultButtons(l10n, canAgain: canAgain) : _revealAllButton(l10n),
+                        ),
+                      ),
                     ],
                   ),
-                  Text(
-                    shortCrewName(l10n, crew),
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: small,
-                  ),
-                ],
+                ),
               ),
               if (flash > 0)
                 Positioned.fill(
                   child: IgnorePointer(
-                    child: ColoredBox(color: PixelPalette.text.withValues(alpha: flash)),
+                    child: ColoredBox(color: Colors.white.withValues(alpha: flash * 0.8)),
+                  ),
+                ),
+              if (_cutIns.isNotEmpty)
+                Positioned.fill(
+                  child: SummonCutIn(
+                    key: ValueKey(_cutIns.first),
+                    crew: tables.crews.byId(widget.results[_cutIns.first].crewId),
+                    rarity: rarities.rarities[tiers[_cutIns.first]],
+                    tier: tiers[_cutIns.first],
+                    onDone: () => setState(() => _cutIns.removeAt(0)),
                   ),
                 ),
             ],
-          ),
-        );
-        if (!glow) return card;
-        // 테두리 빛: 바깥 1칸 등급 색(밝게) 테두리.
-        return DecoratedBox(
-          key: Key('summon.card.${widget.index}.glow'),
-          decoration: BoxDecoration(color: Color.lerp(color, PixelPalette.text, 0.35)),
-          child: Padding(padding: EdgeInsets.all(u), child: card),
-        );
-      },
+          );
+        },
+      ),
     );
   }
+
+  Widget _revealAllButton(AppLocalizations l10n) => SkinButton(
+    key: const Key('summon.revealAll'),
+    height: 56,
+    onPressed: _revealAll,
+    child: Text(l10n.uiSummonRevealAll),
+  );
+
+  Widget _resultButtons(AppLocalizations l10n, {required bool canAgain}) => Row(
+    children: [
+      Expanded(
+        child: SkinButton(
+          key: const Key('summon.again'),
+          tone: SkinTone.gold,
+          height: 56,
+          onPressed: canAgain ? _again : null,
+          child: Text(l10n.uiSummonAgain),
+        ),
+      ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: SkinButton(
+          key: const Key('summon.result.ok'),
+          height: 56,
+          onPressed: _close,
+          child: Text(l10n.uiSummonResultOk),
+        ),
+      ),
+    ],
+  );
+
+  /// 카드 격자: 화면 폭·높이에 맞춰 가장 크게 (10연 2×5, 1회 1장).
+  Widget _grid(AppLocalizations l10n, GameTables tables, List<int> tiers, double hint) => LayoutBuilder(
+    builder: (context, box) {
+      // 열 수 3~5 중 카드가 가장 크게 나오는 것 (세로 화면은 3~4열, 태블릿·가로는 5열).
+      const gap = 10.0;
+      double widthFor(int cols) {
+        final rows = (_n / cols).ceil();
+        final maxW = (box.maxWidth - 32 - gap * (cols - 1)) / cols;
+        final maxH = (box.maxHeight - 24 - gap * (rows - 1)) / rows;
+        return math.min(maxW, maxH * pbCardAspect);
+      }
+
+      final options = _n <= _maxColumns ? [_n] : [for (var c = _minColumns; c <= _maxColumns; c++) c];
+      final best = options.reduce((a, b) => widthFor(b) > widthFor(a) ? b : a);
+      final w = widthFor(best).clamp(40.0, _n == 1 ? 260.0 : 180.0);
+      return Center(
+        child: Wrap(
+          spacing: gap,
+          runSpacing: gap,
+          alignment: WrapAlignment.center,
+          children: [
+            for (var i = 0; i < _n; i++)
+              SizedBox(
+                width: w,
+                child: SummonRevealCard(
+                  index: i,
+                  result: widget.results[i],
+                  tier: tiers[i],
+                  hint: hint,
+                  land: _landFor(i),
+                  flip: _flips[i],
+                  onTap: () => _reveal(i),
+                ),
+              ),
+          ],
+        ),
+      );
+    },
+  );
 }
