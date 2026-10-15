@@ -141,17 +141,20 @@ class HudPainter {
   /// 방금 발사 = 흰 테두리, 스킬 막대(우리 추가).
   void paintSlots(Canvas c) {
     final layout = scene.layout;
-    final v = layout.viewDots;
-    final top = layout.bandTop;
-    _fill(c, v.left, top, v.width + 1, v.bottom - top + 1, _slotBar);
-    _fill(c, v.left, top, v.width + 1, 1, _slotLine);
+    // 선원 줄은 필드와 다른 배율(줄 도트) — 줄 왼쪽 위로 옮겨 bandScale배 하고 줄 좌표로 그린다.
+    c
+      ..save()
+      ..translate(layout.bandOrigin.dx, layout.bandOrigin.dy)
+      ..scale(layout.bandScale);
+    _fill(c, 0, 0, layout.bandWidth + 1, layout.bandHeight + 1, _slotBar);
+    _fill(c, 0, 0, layout.bandWidth + 1, 1, _slotLine);
     final fleet = scene.frame.fleet;
     final s = _fx.slots;
     final bw = s.number('border');
     final (w, h) = (kSlotPlateSize.width, kSlotPlateSize.height);
     final (iw, ih) = (w - bw * 2, h - bw * 2);
     for (var i = 0; i < kSlotCount; i++) {
-      final at = layout.slotAt(i);
+      final at = layout.slotInBand(i);
       final (x, y) = (at.dx, at.dy);
       final (ix, iy) = (x + bw, y + bw);
       if (i >= fleet.length) {
@@ -185,7 +188,8 @@ class HudPainter {
       final badge = s.number('badge');
       _fill(c, ix, iy, badge, badge, family);
     }
-    _ultimate(c, layout.ultimateDots);
+    _ultimate(c, layout.ultimateInBand);
+    c.restore();
   }
 
   static const _blinkMs = 250.0;

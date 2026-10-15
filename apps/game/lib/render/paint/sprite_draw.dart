@@ -70,4 +70,38 @@ class SpriteDraw {
     );
     return true;
   }
+
+  final _smooth = Paint()
+    ..isAntiAlias = true
+    ..filterQuality = FilterQuality.medium;
+
+  /// 매끈한 그림(Pirate Busters 무기·폭발 부품) — 크기 [w]×[h], 가운데 ([cx],[cy]), [angle] 라디안 회전, 반투명.
+  /// 도트 그림과 달리 부드럽게 줄인다. 뱅크에 없으면 false.
+  bool drawSmooth(
+    Canvas c,
+    String key,
+    double cx,
+    double cy,
+    double w,
+    double h, {
+    double angle = 0,
+    double alpha = 1,
+  }) {
+    final s = sheet(key);
+    if (s == null || alpha <= 0) return false;
+    _smooth.color = Color.fromRGBO(0, 0, 0, alpha);
+    c
+      ..save()
+      ..translate(cx, cy);
+    if (angle != 0) c.rotate(angle);
+    c
+      ..drawImageRect(
+        s.image,
+        Rect.fromLTWH(0, 0, s.frameW, s.frameH),
+        Rect.fromLTWH(-w / 2, -h / 2, w, h),
+        _smooth,
+      )
+      ..restore();
+    return true;
+  }
 }
