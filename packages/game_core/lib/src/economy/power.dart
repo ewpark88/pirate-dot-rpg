@@ -1,6 +1,7 @@
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/formation.dart';
 import 'package:game_core/src/economy/offline.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
@@ -52,9 +53,10 @@ class UpgradePreview {
 UpgradePreview previewUpgrade(GameState s, GameTables t, String part, {int times = 1, bool max = false}) {
   final def = t.shipParts.byId(part);
   final from = s.ship.level(part);
-  final can = affordableLevels(def, from, s.wallet.gold);
+  final mult = upgradeCostMultiplier(s, t);
+  final can = affordableLevels(def, from, s.wallet.gold / BigNum.from(mult));
   final n = max || times > can ? can : times;
   final before = fleetPower(s, t);
   final after = n == 0 ? before : fleetPower(s.copyWith(ship: s.ship.withLevel(part, from + n)), t);
-  return UpgradePreview(levels: n, cost: partCostSum(def, from, n), before: before, after: after);
+  return UpgradePreview(levels: n, cost: partCostSum(def, from, n).times(mult), before: before, after: after);
 }

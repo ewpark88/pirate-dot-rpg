@@ -69,6 +69,7 @@ void main() {
       expect(v.items, hasLength(9));
       final sp = v.items.firstWhere((i) => i.id == 'startParts');
       expect([sp.level, sp.maxLevel, sp.cost, sp.unlocked, sp.affordable], [1, 10, 5, true, true]);
+      expect([sp.effectNow, sp.effectNext, sp.effectNowMinor, sp.effectNextMinor], [5, 10, 1, 2]);
       final off = v.items.firstWhere((i) => i.id == 'offline');
       expect([off.unlocked, off.affordable], [false, false]);
       expect(v.spentTotal, 3);

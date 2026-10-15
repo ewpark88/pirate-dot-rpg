@@ -14,13 +14,17 @@ export 'package:game_core/src/economy/rebirth_shop.dart'
     show
         RebirthShopView,
         ShopItemView,
+        fastSailFraction,
+        offlineMaxSec,
         shopCost,
         shopEffect,
         shopLevel,
         shopRowUnlocked,
         shopSpent,
         shopView,
-        treasureSeasUnlocked;
+        startLevel,
+        treasureSeasUnlocked,
+        upgradeCostMultiplier;
 
 // 소환 비용·승급 판정·카드 받기 (설계서 4.3.1, 4.3.3). UI가 버튼 상태에 그대로 쓴다.
 

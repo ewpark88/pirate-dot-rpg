@@ -1,4 +1,6 @@
+import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/daily.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -13,11 +15,12 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
   final def = defs.first;
 
   final start = state.ship.level(def.id);
-  final can = affordableLevels(def, start, state.wallet.gold);
+  final mult = upgradeCostMultiplier(state, ctx.tables);
+  final can = affordableLevels(def, start, state.wallet.gold / BigNum.from(mult));
   final n = command.max || command.times > can ? can : command.times;
   if (n <= 0) return state;
   // 비용은 공식 합 한 번 (일괄·최대 강화 성능). 이벤트는 레벨마다 (스펙 economy-m1 기준 1).
-  final gold = state.wallet.gold - partCostSum(def, start, n);
+  final gold = state.wallet.gold - partCostSum(def, start, n).times(mult);
   final level = start + n;
   final every = def.milestoneEvery;
   for (var l = start + 1; l <= level; l++) {

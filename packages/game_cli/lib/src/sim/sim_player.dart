@@ -188,8 +188,10 @@ class SimPlayer {
     final levels = {...s.ship.parts};
     while (true) {
       final next = cheapestUpgrade(t, levels);
-      if (next == null || gold < next.cost) return;
-      gold = gold - next.cost;
+      if (next == null) return;
+      final cost = next.cost.times(upgradeCostMultiplier(s, t)); // 상점 할인(환생 v2)
+      if (gold < cost) return;
+      gold = gold - cost;
       levels[next.part] = (levels[next.part] ?? 0) + 1;
       engine.enqueue(UpgradePart(next.part));
       result.upgrades++;

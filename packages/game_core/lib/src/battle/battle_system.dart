@@ -10,6 +10,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
+import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec, fastSailFraction;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -40,7 +41,7 @@ class BattleSystem implements GameSystem {
         final f = _sync(state, ctx);
         if (f.bossActive) return state;
         f.foes.clear();
-        startBoss(f, state.progress.stage, ctx);
+        startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
       case TriggerUltimate():
         return _round(state, ctx, (r) => r.castUltimate());
@@ -58,7 +59,7 @@ class BattleSystem implements GameSystem {
         return _project(state, f, ctx.tables);
       case OpSpawnBoss():
         final f = _sync(state, ctx)..foes.clear();
-        startBoss(f, state.progress.stage, ctx);
+        startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state, f, ctx.tables);
       case OpSetInvincible(:final on):
         _invincible = on;
@@ -105,14 +106,13 @@ class BattleSystem implements GameSystem {
     return _tailwindSpeed(_project(after, f, ctx.tables), ctx);
   }
 
-  /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스.
-  /// 빠른 항해: 환생 뒤 bestStage × rebirthSkip.fraction(올림) 이하 스테이지는 rebirthSkip.waves개만 (사용자 결정 2026-10-15).
+  /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
     final w = ctx.tables.waves;
-    final fast = p.rebirths > 0 && p.stage <= (p.bestStage * w.rebirthSkip.fraction).ceil();
+    final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: _tutorialBossScale(s, ctx));
+      startBoss(f, p.stage, ctx, hpScale: _tutorialBossScale(s, ctx), extraSec: bossExtraSec(s, ctx.tables));
     } else {
       spawnWave(f, p.stage, ctx);
     }

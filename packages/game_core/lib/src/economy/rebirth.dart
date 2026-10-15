@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -57,7 +58,7 @@ class RebirthPreview {
 RebirthPreview rebirthPreview(GameState s, GameTables t) {
   final r = t.meta.rebirth;
   final stage = s.progress.stage;
-  final gain = piecesFor(t, stage);
+  final gain = (piecesFor(t, stage) * pieceGainMultiplier(s, t)).floor();
   var next = stage + 1;
   while (piecesFor(t, next) <= gain) {
     next++;
@@ -94,7 +95,8 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
       titles: s.progress.titles,
       treasureRoute: s.progress.treasureRoute,
     ),
-    ship: ShipState(parts: {for (final id in s.ship.parts.keys) id: 0}),
+    // 능력치만 초기화(시작 레벨은 상점 startParts), 명예 외형·스킨은 유지.
+    ship: s.ship.copyWith(parts: {for (final id in s.ship.parts.keys) id: startLevel(s, t, id)}),
     battle: BattleView(tick: old.tick, shipHp: BigNum.one, shipHpMax: BigNum.one, speed: old.speed),
   );
 }

@@ -67,6 +67,8 @@ class ShopItemView {
     required this.effectNext,
     required this.nameKey,
     required this.descKey,
+    this.effectNowMinor,
+    this.effectNextMinor,
   });
 
   final String id;
@@ -82,6 +84,10 @@ class ShopItemView {
 
   /// 다음 레벨 효과. 상한이면 null.
   final double? effectNext;
+
+  /// 두 번째 효과값이 있는 항목만 (startParts: 돛·망루 시작 레벨 = 레벨 × perLevelMinor). 없으면 null.
+  final double? effectNowMinor;
+  final double? effectNextMinor;
   final String nameKey;
   final String descKey;
 }
@@ -125,6 +131,8 @@ RebirthShopView shopView(GameState s, GameTables t) {
           effectNext: cost == null ? null : (level + 1) * i.number('perLevel'),
           nameKey: i.str('nameKey'),
           descKey: i.str('descKey'),
+          effectNowMinor: i.has('perLevelMinor') ? level * i.number('perLevelMinor') : null,
+          effectNextMinor: i.has('perLevelMinor') && cost != null ? (level + 1) * i.number('perLevelMinor') : null,
         );
       }(),
   ];
@@ -218,4 +226,38 @@ GameState ensureRebirthRewards(GameState s, GameTables t) {
         ? s.progress.copyWith(titles: [...s.progress.titles, ...titles.where((k) => !s.progress.titles.contains(k))])
         : null,
   );
+}
+
+// ── 상점 효과 (환생 v2 1절). 전투·오프라인·강화가 이 함수들만 부른다. ──
+
+/// 배 강화 골드 비용 배율 (discount: 레벨당 −perLevel).
+double upgradeCostMultiplier(GameState s, GameTables t) => 1 - shopEffect(s, t, 'discount');
+
+/// 오프라인 보상 최대 시간(초) = meta.offline.maxSec + offline 효과. 오프라인 보상·상자 추정·platform 알림이 같은 값을 쓴다.
+int offlineMaxSec(GameState s, GameTables t) => t.meta.offlineMaxSec + shopEffect(s, t, 'offline').round();
+
+/// 빠른 항해 범위 (waves.rebirthSkip.fraction + fastSail).
+double fastSailFraction(GameState s, GameTables t) => t.waves.rebirthSkip.fraction + shopEffect(s, t, 'fastSail');
+
+/// 보스 제한 시간 추가(초).
+double bossExtraSec(GameState s, GameTables t) => shopEffect(s, t, 'bossTime');
+
+/// 출전 칸 추가.
+int fleetSlotBonus(GameState s, GameTables t) => shopEffect(s, t, 'fleetSlot').round();
+
+/// 치명타 확률 추가(배 상한 critChanceMax는 그대로), 치명타 배수 추가.
+double critChanceBonus(GameState s, GameTables t) => shopEffect(s, t, 'critChance');
+double critDamageBonus(GameState s, GameTables t) => shopEffect(s, t, 'critDamage');
+
+/// 환생 조각 배율 (pieceGain).
+double pieceGainMultiplier(GameState s, GameTables t) => 1 + shopEffect(s, t, 'pieceGain');
+
+/// 환생 직후 부위 시작 레벨 (startParts: 대포·선체·화물 perLevel, 돛·망루 perLevelMinor). 부위 최대 레벨을 넘지 않는다.
+int startLevel(GameState s, GameTables t, String part) {
+  final i = _item(t, 'startParts');
+  if (i == null) return 0;
+  final minor = part == 'sail' || part == 'crowsnest';
+  final n = shopLevel(s, 'startParts') * (minor ? i.number('perLevelMinor') : i.number('perLevel')).round();
+  final max = t.shipParts.byId(part).maxLevel;
+  return max != null && n > max ? max : n;
 }
