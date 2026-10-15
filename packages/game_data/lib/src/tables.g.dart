@@ -1360,7 +1360,8 @@ const Map<String, String> rawTables = {
         ],
         "glow": true
       }
-    }
+    },
+    "scale": 0.85
   },
   "topSea": {
     "base": "#2A7FCC",
