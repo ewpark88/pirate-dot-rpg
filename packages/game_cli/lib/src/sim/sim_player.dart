@@ -48,6 +48,7 @@ class SimPlayer {
 
   /// 역대 최고 스테이지 (보스 카드가 새 보스인지 반복 보스인지 가르는 기준, 엔진 bestStage와 같게 센다).
   int _best = 1;
+  Duration? _lastBoss;
   var _reached = <int, Duration>{};
   var _prevReached = <int, Duration>{};
   Duration? _lastWave;
@@ -189,6 +190,11 @@ class SimPlayer {
           if (last != null) _waveGaps.add((_elapsed, _elapsed - last));
           _lastWave = _elapsed;
         case BossCleared(:final stage):
+          final lastBoss = _lastBoss;
+          if (_recovering != null && lastBoss != null) {
+            result.recoverBossGaps.add((_online - lastBoss).inMilliseconds / Duration.millisecondsPerSecond);
+          }
+          _lastBoss = _recovering != null ? _online : null;
           result.cardsByRun.last.bossCleared(t, stage: stage, bestBefore: _best, rebirths: result.rebirths);
           if (stage + 1 > _best) _best = stage + 1;
         case BossFailed(:final stage):

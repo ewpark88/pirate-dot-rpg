@@ -151,6 +151,11 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '${_fmt(m((r) => r.rebirthStages.isEmpty ? null : r.rebirthStages.reduce((a, b) => a > b ? a : b).toDouble()))} · '
       '${_fmt(m((r) => r.rebirthRecoverRatioMax))} |',
     )
+    ..writeln(
+      '| 환생 뒤 회복 중 연속 보스 간격(중앙값 · 최소) | '
+      '${_fmt(m((r) => r.recoverBossGaps.isEmpty ? null : median(r.recoverBossGaps)), '초')} · '
+      '${_fmt(m((r) => r.recoverBossGaps.isEmpty ? null : r.recoverBossGaps.reduce((a, b) => a < b ? a : b)), '초')} |',
+    )
     ..writeln('| 첫 보스 실패 스테이지 | ${_fmt(m((r) => r.firstBossFailStage?.toDouble()))} |')
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')

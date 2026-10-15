@@ -52,6 +52,9 @@ class SimResult {
   /// 환생한 스테이지들 (순서대로).
   final rebirthStages = <int>[];
 
+  /// 환생 뒤 회복 중 연속 보스 처치 간격(초) — 빠른 항해(waves.rebirthSkip)에서 이동 시간 확인용.
+  final recoverBossGaps = <double>[];
+
   /// 회차별 카드 수입 (첫 회차가 0번, 환생할 때마다 하나씩 늘어난다).
   final cardsByRun = <RunCards>[RunCards()];
 }
