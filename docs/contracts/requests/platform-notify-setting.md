@@ -27,4 +27,4 @@ class Settings {
 `OfflineFullNotifier(enabled: () => true)` — 항상 켜짐.
 
 ## 처리 결과 (S1 작성)
-- [ ] 반영 / 거절 / 수정 반영 — 커밋:
+- [x] 반영 (2026-10-15, S1) — 세이브 v4 ADR-0009, main.dart enabled·onSettingChanged 연결. 설정 토글은 ui(S4).

@@ -75,8 +75,13 @@ Future<void> main() async {
     fullAfter: Duration(seconds: tables.meta.offlineMaxSec),
     minAway: Duration(seconds: tables.meta.offlineMinSec),
     dailyMax: tables.meta.notificationsDailyMax,
-    enabled: () => true, // TODO(platform): settings.notifications (세이브 계약 반영 뒤)
+    enabled: () => container.read(gameStateProvider).settings.notifications,
     lang: () => container.read(gameStateProvider).settings.lang,
+  );
+  // 설정에서 끄면 남은 예약을 바로 취소한다.
+  container.listen(
+    gameStateProvider.select((s) => s.settings.notifications),
+    (_, on) => unawaited(notifier.onSettingChanged(enabled: on)),
   );
   // 백그라운드로 가면 저장하고 멈춘다. 돌아오면 다시 돈다 (오프라인 보상은 UI 복귀 팝업이 ClaimOffline으로 받는다).
   AppLifecycleListener(

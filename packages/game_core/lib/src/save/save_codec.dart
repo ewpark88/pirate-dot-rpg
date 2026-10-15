@@ -6,11 +6,11 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 
 /// 현재 세이브 스키마 버전. 올리면 [migrations]에 함수 + test/fixtures/saves/에 픽스처 필수.
-const currentSchemaVersion = 3;
+const currentSchemaVersion = 4;
 
 /// `migrations[i]`는 v(i+1) → v(i+2). 순수 함수만 둔다.
 /// 예: `Json migrateV1ToV2(Json j) => {...j, 'schemaVersion': 2, 'newField': 0};`
-const List<Json Function(Json)> migrations = [migrateV1ToV2, migrateV2ToV3];
+const List<Json Function(Json)> migrations = [migrateV1ToV2, migrateV2ToV3, migrateV3ToV4];
 
 /// v1 → v2: `summon.total`(누적 소환 횟수) 추가. 출시 전이라 실제 플레이어 세이브가 없어 0으로 둔다
 /// → v1에서 올라온 세이브도 첫 10연 무료를 한 번 받는다 (docs/decisions/0007-save-v2-summon-total.md).
@@ -91,4 +91,11 @@ Json migrateV2ToV3(Json j) => {
   'schemaVersion': 3,
   'daily': {...(j['daily'] as Json), 'questsClaimed': <String>[], 'attendanceClaimed': false},
   'tutorialStep': null,
+};
+
+/// v3 → v4: 설정 `notifications`(오프라인 가득 알림, 기본 켜짐) (docs/decisions/0009-save-v4-notifications.md).
+Json migrateV3ToV4(Json j) => {
+  ...j,
+  'schemaVersion': 4,
+  'settings': {...(j['settings'] as Json), 'notifications': true},
 };
