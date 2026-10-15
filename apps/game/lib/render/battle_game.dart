@@ -116,6 +116,7 @@ class BattleGame extends FlameGame with _UiLinks {
   int sceneUpdates = 0;
   bool _dirty = true;
   bool _top = false;
+  @override
   TopFrame _topFrame = topFrameFor(const Size(320, 180), 1);
   double _powerSaveAccum = 0;
   double _summaryAccum = 0;

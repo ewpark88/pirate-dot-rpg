@@ -40,6 +40,12 @@ class TopFrame {
 
   /// 전장 좌표 → 상자 dp ([camera] = 화면 가운데 [cameraScreen]에 오는 전장 좌표).
   Offset toDp(Offset world, Offset camera, Offset cameraScreen) => cameraScreen + (world - camera) * dot;
+
+  /// 전장 좌표(배 중심 [ship]) → 상자 dp. UI 탭 판정(황금 물고기·보물상자)과 렌더 카메라가 같은 계산.
+  Offset worldToDp(Offset world, Offset ship) => toDp(world, ship, shipScreen);
+
+  /// 상자 dp → 전장 좌표 (탭 자리 → TapSeaEvent 대상 찾기).
+  Offset dpToWorld(Offset dp, Offset ship) => ship + (dp - shipScreen) / dot;
 }
 
 /// [box](dp) 전장 상자의 탑다운 배치.

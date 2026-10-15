@@ -17,4 +17,14 @@ void main() {
       expect(closed.viewUnits.width, inInclusiveRange(266, 330), reason: '전장 폭 270이 다 보인다(태블릿은 조금 더)');
     });
   }
+
+  test('전장 좌표 ↔ 상자 dp 왕복(UI 탭 판정)', () {
+    final f = topFrameFor(const Size(384, 684), 2.8125);
+    const ship = Offset(135, 240);
+    expect(f.worldToDp(ship, ship), f.shipScreen);
+    const p = Offset(170, 120);
+    final back = f.dpToWorld(f.worldToDp(p, ship), ship);
+    expect(back.dx, closeTo(p.dx, 1e-9));
+    expect(back.dy, closeTo(p.dy, 1e-9));
+  });
 }
