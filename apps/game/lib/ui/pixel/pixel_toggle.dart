@@ -1,9 +1,9 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 
-/// 2상태 도트 스위치 (Material Switch 대신): 켜짐 = 파란 홈에 손잡이 오른쪽, 꺼짐 = 남색 홈에 손잡이 왼쪽.
-/// 그림은 22×11칸(한 칸 = 도트 2칸), 누르는 영역은 48dp.
+/// 2상태 스위치 (스킨 r1): 둥근 홈 + 흰 동그란 손잡이. 켜짐 = 파란 홈·손잡이 오른쪽. 누르는 영역 48dp.
 class PixelToggle extends StatelessWidget {
   const PixelToggle({required this.value, required this.onChanged, this.semanticLabel, super.key});
 
@@ -11,13 +11,11 @@ class PixelToggle extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
   final String? semanticLabel;
 
-  static const _w = 22;
-  static const _h = 11;
+  static const _w = 50.0;
+  static const _h = 30.0;
 
   @override
   Widget build(BuildContext context) {
-    // 그림 한 칸 = 도트 2칸 (작은 화면에서도 잘 보이게).
-    final u = pixelUnit(context) * 2;
     final enabled = onChanged != null;
     return Semantics(
       toggled: value,
@@ -31,9 +29,26 @@ class PixelToggle extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: CustomPaint(
-              size: Size(_w * u, _h * u),
-              painter: _TogglePainter(value: value, enabled: enabled, unit: u),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutBack,
+              width: _w,
+              height: _h,
+              padding: const EdgeInsets.all(3),
+              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+              decoration: BoxDecoration(
+                color: !enabled ? Skin.disabled : (value ? Skin.primaryBottom : Skin.track),
+                borderRadius: BorderRadius.circular(_h / 2),
+              ),
+              child: Container(
+                width: _h - 6,
+                height: _h - 6,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: Skin.shadowSmall,
+                ),
+              ),
             ),
           ),
         ),
@@ -42,43 +57,7 @@ class PixelToggle extends StatelessWidget {
   }
 }
 
-class _TogglePainter extends CustomPainter {
-  const _TogglePainter({required this.value, required this.enabled, required this.unit});
-
-  final bool value;
-  final bool enabled;
-  final double unit;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const w = PixelToggle._w;
-    const h = PixelToggle._h;
-    void rect(int x, int y, int rw, int rh, Color c) =>
-        canvas.drawRect(Rect.fromLTWH(x * unit, y * unit, rw * unit, rh * unit), Paint()..color = c);
-
-    // 홈: 윤곽(모서리 깎음) + 바탕 + 안쪽 위 그늘 1칸 (파인 느낌).
-    rect(1, 0, w - 2, 1, PixelPalette.outline);
-    rect(1, h - 1, w - 2, 1, PixelPalette.outline);
-    rect(0, 1, 1, h - 2, PixelPalette.outline);
-    rect(w - 1, 1, 1, h - 2, PixelPalette.outline);
-    final track = !enabled ? PixelPalette.navyPressed : (value ? PixelPalette.action : PixelPalette.navyDark);
-    rect(1, 1, w - 2, h - 2, track);
-    rect(1, 1, w - 2, 1, value ? PixelPalette.actionDark : PixelPalette.outline);
-
-    // 손잡이 9×9: 윤곽 + 밝은 바탕 + 위·왼쪽 하이라이트, 아래·오른쪽 그늘.
-    const k = h - 2;
-    final x = value ? w - 1 - k : 1;
-    rect(x, 1, k, k, PixelPalette.outline);
-    rect(x + 1, 2, k - 2, k - 2, enabled ? PixelPalette.text : PixelPalette.textDim);
-    rect(x + 1, k - 1, k - 2, 1, PixelPalette.textDim);
-    rect(x + k - 2, 2, 1, k - 2, PixelPalette.textDim);
-  }
-
-  @override
-  bool shouldRepaint(_TogglePainter old) => old.value != value || old.enabled != enabled || old.unit != unit;
-}
-
-/// 도트 세그먼트 (Material SegmentedButton 대신): 칸마다 도트 버튼, 고른 칸은 주 버튼 색.
+/// 세그먼트 (스킨 r1): 칸마다 버튼, 고른 칸은 파란 주 버튼.
 class PixelSegmented<T> extends StatelessWidget {
   const PixelSegmented({required this.segments, required this.selected, required this.onChanged, super.key});
 
@@ -108,7 +87,7 @@ class PixelSegmented<T> extends StatelessWidget {
   );
 }
 
-/// 설정 같은 목록의 한 줄: 글자 + 오른쪽 위젯, 아래 1칸 도트 구분선 (ListTile·Divider 대신).
+/// 설정 같은 목록의 한 줄: 글자 + 오른쪽 위젯, 아래 얇은 구분선 (ListTile·Divider 대신).
 class PixelListRow extends StatelessWidget {
   const PixelListRow({required this.title, this.trailing, this.onTap, super.key});
 

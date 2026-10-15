@@ -80,9 +80,11 @@ class _SkinButtonState extends State<SkinButton> with SingleTickerProviderStateM
           child: AnimatedBuilder(
             animation: _t,
             builder: (context, child) {
-              final p = _t.value;
+              // easeOutBack은 놓을 때 0 밑으로 살짝 넘친다 — 크기만 통 튀고, 내려앉는 거리는 0~1로 자른다.
+              final bounce = _t.value;
+              final p = bounce.clamp(0.0, 1.0);
               return Transform.scale(
-                scale: 1 - 0.05 * p,
+                scale: 1 - 0.05 * bounce,
                 child: Padding(
                   // 눌리면 아래 테두리 자리로 내려앉는다(전체 높이는 그대로).
                   padding: EdgeInsets.only(top: Skin.buttonEdge * p),

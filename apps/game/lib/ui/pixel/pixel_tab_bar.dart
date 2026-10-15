@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 
 /// 하단 탭 한 칸.
 class PixelTabItem extends StatelessWidget {
@@ -27,78 +27,74 @@ class PixelTabItem extends StatelessWidget {
   final Key? dotKey;
 
   @override
-  Widget build(BuildContext context) {
-    final u = pixelUnit(context);
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: label,
-      excludeSemantics: true,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: kMinTap),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: u * 3),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 고른 탭: 아이콘 뒤 밝은 남색 도트 판 + 위 1칸 금색 줄.
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: selected ? PixelPalette.border : null,
-                    border: selected
-                        ? Border(
-                            top: BorderSide(color: PixelPalette.gold, width: u),
-                          )
-                        : null,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: u * 8, vertical: u * 2),
-                    child: PixelDot(
-                      show: badge,
-                      dotKey: dotKey,
-                      child: Opacity(opacity: selected ? 1 : 0.6, child: icon),
-                    ),
-                  ),
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    selected: selected,
+    label: label,
+    excludeSemantics: true,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: kMinTap),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 고른 탭: 하늘색 알약 안에 그림.
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutBack,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+                decoration: BoxDecoration(
+                  color: selected ? Skin.skyDeep : const Color(0x00000000),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                SizedBox(height: u * 2),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: selected ? PixelPalette.text : PixelPalette.textDim),
+                child: PixelDot(
+                  show: badge,
+                  dotKey: dotKey,
+                  child: Opacity(opacity: selected ? 1 : 0.7, child: icon),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Skin.text(14, color: selected ? Skin.primaryEdge : Skin.sub),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
-/// 하단 탭 막대 (Material NavigationBar 대신): 윤곽색 바탕, 위 1칸 테두리, 잉크·애니메이션 없음.
+/// 하단 탭 막대 (스킨 r1): 화면 아래 떠 있는 흰 둥근 판, 고른 탭은 하늘색 알약.
 class PixelTabBar extends StatelessWidget {
   const PixelTabBar({required this.children, super.key});
 
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) {
-    final u = pixelUnit(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: PixelPalette.navyDark,
-        border: Border(
-          top: BorderSide(color: PixelPalette.border, width: u),
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      // 화면 아래 떠 있는 흰 둥근 판 (스킨 r1).
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Skin.card,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: const [BoxShadow(color: Skin.shadowColor, blurRadius: 12, offset: Offset(0, 4))],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(children: [for (final c in children) Expanded(child: c)]),
         ),
       ),
-      child: SafeArea(
-        top: false,
-        child: Row(children: [for (final c in children) Expanded(child: c)]),
-      ),
-    );
-  }
+    ),
+  );
 }

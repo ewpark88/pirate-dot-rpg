@@ -6,7 +6,7 @@ import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 const _dialogMaxWidth = 480.0;
 const _sheetMaxWidth = 640.0;
 
-/// 도트 창 (AlertDialog 대신): 도트 프레임 안에 [icon] · 제목 · 내용 · 오른쪽 아래 버튼 줄. 그림자·둥근 모서리 없음.
+/// 창 (스킨 r1): 둥근 흰 판 안에 [icon] · 제목 · 내용 · 오른쪽 아래 버튼 줄.
 class PixelDialog extends StatelessWidget {
   const PixelDialog({required this.content, this.title, this.icon, this.actions = const [], super.key});
 
@@ -25,7 +25,7 @@ class PixelDialog extends StatelessWidget {
     // 태블릿에서 창이 화면 끝까지 늘어나지 않게.
     constraints: const BoxConstraints(maxWidth: _dialogMaxWidth),
     child: PixelFrame(
-      padding: 6,
+      padding: 9,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,14 +46,14 @@ class PixelDialog extends StatelessWidget {
   );
 }
 
-/// 도트 하단 시트 틀: 위 테두리 도트 프레임 (BottomSheet 기본 모양 대신). [showPixelSheet]로 띄운다.
+/// 하단 시트 틀 (스킨 r1): 둥근 흰 판. [showPixelSheet]로 띄운다.
 class PixelSheet extends StatelessWidget {
   const PixelSheet({required this.child, super.key});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => PixelFrame(padding: 4, child: child);
+  Widget build(BuildContext context) => PixelFrame(padding: 7, child: child);
 }
 
 /// 도트 하단 시트를 띄운다. 높이는 화면의 [maxHeight] 비율까지 (전장을 가리지 않게).
@@ -68,10 +68,10 @@ Future<T?> showPixelSheet<T>(BuildContext context, {required WidgetBuilder build
       builder: (context) => PixelSheet(child: builder(context)),
     );
 
-/// 빨간 점 한 변(도트 칸).
-const _dotDots = 8;
+/// 빨간 점 지름(dp).
+const _dotSize = 12.0;
 
-/// 도트 빨간 점 (Badge 대신): [child] 오른쪽 위에 네모 점. 지금 눌러서 이득일 때만 쓴다 (설계서 4.9).
+/// 빨간 점 (스킨 r1: 흰 테두리 동그란 점): [child] 오른쪽 위. 지금 눌러서 이득일 때만 쓴다 (설계서 4.9).
 class PixelDot extends StatelessWidget {
   const PixelDot({required this.child, this.show = true, this.dotKey, super.key});
 
@@ -84,23 +84,21 @@ class PixelDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!show) return child;
-    // 실기기에서 보이게 도트 8칸(≈8dp), 모서리 바깥으로 2칸 걸친다.
-    final u = pixelUnit(context);
-    final d = u * _dotDots;
     return Stack(
       clipBehavior: Clip.none,
       children: [
         child,
         Positioned(
-          right: -u * 2,
-          top: -u * 2,
+          right: -3,
+          top: -3,
           child: DecoratedBox(
             key: dotKey,
             decoration: BoxDecoration(
               color: PixelPalette.danger,
-              border: Border.all(color: PixelPalette.outline, width: u),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
             ),
-            child: SizedBox.square(dimension: d),
+            child: const SizedBox.square(dimension: _dotSize),
           ),
         ),
       ],

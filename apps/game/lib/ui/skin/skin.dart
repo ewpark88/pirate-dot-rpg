@@ -10,20 +10,20 @@ abstract final class Skin {
   static const cream = Color(0xFFFFFAF0);
   static const track = Color(0xFFE3ECF7);
 
-  // ── 글자 ──
+  // ── 글자 ── (흰·크림·하늘 바탕 모두 대비 4.5:1 이상, WCAG)
   static const ink = Color(0xFF2B3A55);
-  static const sub = Color(0xFF7484A3);
+  static const sub = Color(0xFF56657F);
 
-  // ── 주 버튼 (파랑) ──
-  static const primaryTop = Color(0xFF63C1FF);
-  static const primaryBottom = Color(0xFF1F84F2);
-  static const primaryEdge = Color(0xFF1565C8);
+  // ── 주 버튼 (파랑) ── 흰 글자가 위쪽 밝은 곳에서도 4.5:1 이상.
+  static const primaryTop = Color(0xFF1E6FD6);
+  static const primaryBottom = Color(0xFF1460C4);
+  static const primaryEdge = Color(0xFF0D4A9E);
 
   // ── 보상 버튼 (금색) ──
   static const goldTop = Color(0xFFFFE27A);
   static const goldBottom = Color(0xFFFFB31F);
   static const goldEdge = Color(0xFFD98A00);
-  static const goldInk = Color(0xFF7A4600);
+  static const goldInk = Color(0xFF6A3C00);
 
   // ── 보조 버튼 (흰) ──
   static const plainTop = Color(0xFFFFFFFF);
@@ -33,6 +33,9 @@ abstract final class Skin {
   // ── 상태 ──
   static const danger = Color(0xFFFF5A6E);
   static const mint = Color(0xFF3CCB8A);
+
+  /// 민트 판 위 글자(순풍·출전) — 대비 4.5:1 이상.
+  static const mintInk = Color(0xFF146A43);
   static const disabled = Color(0xFFC9D3E2);
 
   /// 연출 바탕(소환 등)의 짙은 남색.
@@ -98,6 +101,7 @@ class SkinBar extends StatelessWidget {
     alignment: Alignment.centerLeft,
     child: FractionallySizedBox(
       widthFactor: value.clamp(0, 1).toDouble(),
+      heightFactor: 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: [Color.lerp(color, Colors.white, 0.3)!, color]),

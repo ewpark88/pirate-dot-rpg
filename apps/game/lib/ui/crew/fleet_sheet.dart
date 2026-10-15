@@ -8,11 +8,12 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
-import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
 /// 선원 줄 [slot] 칸을 눌렀을 때: 보유 선원 후보(파워순, 출전 중 표시) → 누르면 그 칸에 앉힌다. 찬 칸은 ‘칸 비우기’도.
@@ -139,9 +140,16 @@ class _CrewRow extends ConsumerWidget {
           constraints: const BoxConstraints(minHeight: kMinTap),
           child: Row(
             children: [
-              DecoratedBox(
-                decoration: BoxDecoration(border: Border.all(color: rarityColor(rarity), width: 2)),
-                child: CrewPortrait(crew: def, size: 40),
+              // PB 얼굴 초상, 등급 색 둥근 테두리.
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: rarityColor(rarity), width: 3),
+                  color: Skin.cream,
+                ),
+                child: ClipOval(child: Image.asset(pbPortrait(def.id), fit: BoxFit.cover)),
               ),
               const SizedBox(width: 8),
               Expanded(

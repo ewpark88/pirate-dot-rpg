@@ -20,7 +20,7 @@ class SaveFailureBanner extends ConsumerWidget {
       return DecoratedBox(
         key: const Key('hud.saveFailure'),
         decoration: BoxDecoration(
-          color: PixelPalette.outline,
+          color: const Color(0xFFFFE3E7),
           border: Border(
             bottom: BorderSide(color: PixelPalette.danger, width: u),
           ),
