@@ -30,7 +30,6 @@ void main() {
     testWidgets('HUD·배 탭', (tester) async {
       await pumpGame(tester, loadFixture('boss_fight'), locale: const Locale('ko'), tab: shipTab);
       expect(find.text('보스 20초'), findsOneWidget);
-      expect(find.text('스테이지 5-3'), findsOneWidget);
       expect(find.text('궁극기'), findsOneWidget);
       expect(find.text('대포'), findsOneWidget);
     });
@@ -63,8 +62,10 @@ void main() {
 
   testWidgets('접근성: 아이콘 버튼에는 설명(tooltip)이 있다', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
-    final gear = tester.widget<IconButton>(find.byKey(const Key('hud.settings')));
-    expect(gear.tooltip, 'Settings');
+    expect(
+      find.ancestor(of: find.byKey(const Key('hud.settings')), matching: find.byTooltip('Settings')),
+      findsOneWidget,
+    );
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   });
 }

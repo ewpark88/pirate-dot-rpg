@@ -49,7 +49,7 @@ class ApplyIconsTest(unittest.TestCase):
             fg = Image.open(self.res / f"mipmap-{d}" / "ic_launcher_foreground.png")
             self.assertEqual(fg.size, (54 * k, 54 * k))
             # 최근접: 한 도트가 k×k 블록 그대로, 경계에 중간색 없음
-            colors = {p for p in fg.convert("RGBA").getdata()}
+            colors = {c for _, c in fg.convert("RGBA").getcolors(fg.width * fg.height)}
             self.assertEqual(colors, {(0, 0, 0, 0), (200, 40, 40, 255)})
             self.assertEqual(Image.open(self.res / f"mipmap-{d}" / "ic_launcher.png").size, (24 * k, 24 * k))
 
@@ -121,6 +121,12 @@ class ApplyIconsTest(unittest.TestCase):
         first = f.read_bytes()
         self._run()
         self.assertEqual(f.read_bytes(), first)
+
+    def test_default_paths_point_into_repo(self) -> None:
+        root = apply_icons.ROOT
+        self.assertTrue((root / "LANES.yaml").exists())
+        self.assertEqual(apply_icons.STORE_OUT, root / "build" / "store" / "icon-512.png")
+        self.assertTrue(apply_icons.RES.is_dir())
 
 
 if __name__ == "__main__":

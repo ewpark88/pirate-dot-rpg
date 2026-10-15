@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: 적·보스 스프라이트 스펙 초안 `docs/specs/render-art-enemies.md`(S1 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 현재 계획 | art: `docs/specs/render-art-enemies.md` 묶음 1(산호초 보스) 승인 대기 → 묶음 2 폭풍해 · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 앱 아이콘 적용(S5 apply_icons.py) · 적 스펙 승인(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 묶음 1 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 1: 산호초 보스
+- 아이콘 승인·main 828953b 머지, Q1 승인(산호초 보스 먼저).
+- `tools/art/gen_bosses.py`(zlib PNG 읽기·쓰기, `--check`): raider_ship = enemy_ship 칸 바꿈(핏빛 돛·검은 줄·찢긴 돛 끝·해골·어두운 선체·깃발 꼬리) 62×48,
+  giant_hermit = 나선 소라 + 게 몸·눈자루·큰 집게 64×52(중간 보스보다 크게). LICENSES OWN.
+- `sprites_test`: 해역별 적·보스 파일 존재(지금 coral). 비교 이미지 `docs/specs/render-art-enemies/compare_coral.png`.
 
 ### 2026-10-15 · S3 · 계약 I + art (앱 아이콘·UI 아이콘·적 계획)
 - main 2e976cb(계약 I) 머지 → 선원 바 테두리 = `FleetSlot.rarity`(순번). slots_test는 octo rarity 3 → 전설 색으로 확인, 기준 장면 함대에 baseRarity 순번을 넣어 골든 그대로.

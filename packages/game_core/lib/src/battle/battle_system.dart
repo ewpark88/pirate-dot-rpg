@@ -100,9 +100,12 @@ class BattleSystem implements GameSystem {
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스.
+  /// 빠른 항해: 환생 뒤 bestStage × rebirthSkip.fraction(올림) 이하 스테이지는 rebirthSkip.waves개만 (사용자 결정 2026-10-15).
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
-    if (!p.farming && p.wave >= ctx.tables.waves.wavesPerStage) {
+    final w = ctx.tables.waves;
+    final fast = p.rebirths > 0 && p.stage <= (p.bestStage * w.rebirthSkip.fraction).ceil();
+    if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
       startBoss(f, p.stage, ctx, hpScale: _tutorialBossScale(s, ctx));
     } else {
       spawnWave(f, p.stage, ctx);

@@ -5,6 +5,8 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -78,7 +80,7 @@ class _RegionCard extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 4),
-            LinearProgressIndicator(value: inRegion / per, minHeight: 6),
+            PixelBar(value: inRegion / per, fill: PixelPalette.gold),
             const SizedBox(height: 8),
             Text(toBoss == 0 ? l10n.uiRegionBossNow : l10n.uiRegionBossIn(toBoss)),
             Wrap(

@@ -17,10 +17,21 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     // Settings에는 ==가 없어서 값 9개를 레코드로 골라 구독한다.
-    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, autoUpgrade) = ref.watch(
+    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, autoUpgrade, notifications) = ref.watch(
       gameStateProvider.select((s) {
         final v = s.settings;
-        return (v.lang, v.bgm, v.sfx, v.vibration, v.shake, v.flash, v.powerSave, v.autoBoss, v.autoUpgrade);
+        return (
+          v.lang,
+          v.bgm,
+          v.sfx,
+          v.vibration,
+          v.shake,
+          v.flash,
+          v.powerSave,
+          v.autoBoss,
+          v.autoUpgrade,
+          v.notifications,
+        );
       }),
     );
     final ads = ref.watch(adsPortProvider);
@@ -35,6 +46,8 @@ class SettingsScreen extends ConsumerWidget {
       ('powerSave', l10n.uiSettingsPowerSave, powerSave),
       ('autoBoss', l10n.uiSettingsAutoBoss, autoBoss),
       ('autoUpgrade', l10n.uiSettingsAutoUpgrade, autoUpgrade),
+      // 오프라인 보상 가득 알림 (세이브 v4, ADR-0009).
+      ('notifications', l10n.uiSettingsNotifications, notifications),
     ];
 
     return Scaffold(

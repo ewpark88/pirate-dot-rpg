@@ -5,16 +5,23 @@ import 'package:game_core/game_core.dart';
 import 'ui_harness.dart';
 
 void main() {
-  testWidgets('기준 1: 골드·젬·스테이지', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'));
-    expect(find.text('1.25M'), findsOneWidget);
-    expect(find.text('140'), findsOneWidget);
-    expect(find.text('Stage 37-2'), findsOneWidget);
+  // 골드·스테이지·함성 게이지는 캔버스 HUD(render)가 그린다 — UI는 누르는 것만 전장 위에 남긴다.
+  testWidgets('기준 1: Material HUD가 없고, 젬은 소환 탭에', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'), tab: summonTab);
+    expect(find.text('Stage 37-2'), findsNothing);
+    expect(find.descendant(of: find.byKey(const Key('summon.gems')), matching: find.text('140')), findsOneWidget);
   });
 
-  testWidgets('기준 1 (ko): 스테이지 문구', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'), locale: const Locale('ko'));
-    expect(find.text('스테이지 37-2'), findsOneWidget);
+  testWidgets('기준 1: 누르는 것(설정·궁극기)은 전장 상자 안', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'));
+    final area = tester.getRect(find.byKey(const Key('battle.area')));
+    for (final key in ['hud.settings', 'hud.ultimate']) {
+      final r = tester.getRect(find.byKey(Key(key)));
+      expect(area.contains(r.topLeft) && area.contains(r.bottomRight - const Offset(1, 1)), isTrue, reason: key);
+    }
+    // 궁극기는 선원 슬롯 줄(논리 y 148~180) 위
+    final k = area.width / 320;
+    expect(tester.getRect(find.byKey(const Key('hud.ultimate'))).bottom, lessThanOrEqualTo(area.top + 148 * k));
   });
 
   testWidgets('기준 2: 보스전이면 남은 초 (400틱 × 50ms = 20초)', (tester) async {
