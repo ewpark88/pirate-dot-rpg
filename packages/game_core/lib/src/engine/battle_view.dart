@@ -34,6 +34,10 @@ class BattleView {
     this.shipTierLook,
     this.shipSkin,
     this.treasureSea,
+    this.fever = 0,
+    this.feverTicksLeft = 0,
+    this.seaEvent,
+    this.challenge,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -60,6 +64,10 @@ class BattleView {
     shipTierLook: j['shipTierLook'] as String?,
     shipSkin: j['shipSkin'] as String?,
     treasureSea: j['treasureSea'] as int?,
+    fever: (j['fever'] as num?)?.toDouble() ?? 0,
+    feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
+    seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
+    challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -115,6 +123,14 @@ class BattleView {
   /// 이번 회차 보물 바다 해역 번호 (null = 보통 바다) — 렌더가 금빛 물결을 덮는다.
   final int? treasureSea;
 
+  /// 피버 게이지 0~1 (전장 위 얇은 막대). 피버 중이면 [feverTicksLeft] > 0.
+  final double fever;
+  final int feverTicksLeft;
+
+  /// 진행 중인 돌발 이벤트·즉석 도전 (없으면 null).
+  final SeaEventView? seaEvent;
+  final ChallengeView? challenge;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -133,6 +149,12 @@ class BattleView {
     int? wave,
     double? rage,
     BigNum? gold,
+    double? fever,
+    int? feverTicksLeft,
+    SeaEventView? seaEvent,
+    bool clearSeaEvent = false,
+    ChallengeView? challenge,
+    bool clearChallenge = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -154,6 +176,10 @@ class BattleView {
     wave: wave ?? this.wave,
     rage: rage ?? this.rage,
     gold: gold ?? this.gold,
+    fever: fever ?? this.fever,
+    feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
+    seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
+    challenge: clearChallenge ? null : challenge ?? this.challenge,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
@@ -189,6 +215,10 @@ class BattleView {
     if (shipTierLook != null) 'shipTierLook': shipTierLook,
     if (shipSkin != null) 'shipSkin': shipSkin,
     if (treasureSea != null) 'treasureSea': treasureSea,
+    if (fever != 0) 'fever': fever,
+    if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
+    if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
+    if (challenge != null) 'challenge': challenge!.toJson(),
   };
 
   /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
@@ -216,5 +246,9 @@ class BattleView {
     shipTierLook: tierLook,
     shipSkin: skin,
     treasureSea: treasureSea,
+    fever: fever,
+    feverTicksLeft: feverTicksLeft,
+    seaEvent: seaEvent,
+    challenge: challenge,
   );
 }

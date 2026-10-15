@@ -29,6 +29,16 @@ GameEvent _metaEventFromJson(int t, Json j) {
       crewId: j['crewId'] as String,
       reason: j['reason'] as String,
     ),
+    'seaEventStarted' ||
+    'seaEventEnded' ||
+    'goldfishCaught' ||
+    'bottleOpened' ||
+    'bottlePicked' ||
+    'feverStarted' ||
+    'feverEnded' ||
+    'challengeStarted' ||
+    'challengeProgress' ||
+    'challengeEnded' => _funEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };
