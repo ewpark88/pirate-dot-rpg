@@ -7,19 +7,18 @@ import 'package:game_core/src/engine/units.dart';
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
 
-/// 무리 한 파 — 전장 모양(옆모습·탑다운, [Field.geometry])이 자리를 정한다.
+/// 무리 한 파 — 전장 모양([Field.geometry], 탑다운)이 자리를 정한다.
 void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
     f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
 
-/// 무리 한 파 (규칙 2). 마리 수 = 옆모습 `mobCountAt` / 탑다운 `topMobCountAt`(무리 습격, 2026-10-15),
+/// 무리 한 파의 적들(수치만, 자리는 (0,0) — 전장 모양이 놓는다). 마리 수 = `topMobCountAt`(무리 습격, 2026-10-15),
 /// 마리당 HP·공격·골드 = 단일 곡선 × 몫(`mobPoolAt / 마리 수`) — 한 파 총량은 pool 기준 그대로(진행·경제 불변).
-/// 운영자 [count](측정 장면)는 몫 없이 마리당 원래 값. 옆모습은 오른쪽(`spawnX`)부터 `spawnSpacing` 간격으로,
-/// 탑다운은 이것으로 만든 뒤 자리만 옮긴다.
-void spawnWaveSide(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
+/// 운영자 [count](측정 장면)는 몫 없이 마리당 원래 값.
+void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
   final t = ctx.tables;
   final w = t.waves;
   final region = t.regions.regionAt(stage);
-  final n = count ?? (f.geometry?.mode == 'top' ? w.topMobCountAt(stage) : w.mobCountAt(stage));
+  final n = count ?? w.topMobCountAt(stage);
   final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
@@ -32,8 +31,8 @@ void spawnWaveSide(Field f, int stage, SystemContext ctx, {int? count, String? k
         id: f.nextId(),
         kind: def.id,
         layer: def.layer,
-        x: w.field.spawnX + i * w.field.spawnSpacing,
-        y: (w.field.laneY[def.layer] ?? w.field.shipY) + (ctx.rng.nextDouble() - half) * w.field.laneJitter,
+        x: 0,
+        y: 0,
         maxHp: hp.times(def.hpScale * f.enemyHpScale),
         speed: def.speed,
         attack: attack,
@@ -66,8 +65,8 @@ void startBoss(
     id: f.nextId(),
     kind: def.id,
     layer: 'surface',
-    x: x ?? w.field.spawnX,
-    y: w.field.laneY['surface'] ?? w.field.shipY,
+    x: x ?? 0,
+    y: y ?? 0,
     maxHp: stageCurve(
       w.hpBase,
       w.hpGrowth,
@@ -92,8 +91,8 @@ void startBoss(
           id: f.nextId(),
           kind: '${def.id}_tentacle',
           layer: i.isEven ? 'surface' : 'underwater',
-          x: boss.x - (i + 1) * w.field.spawnSpacing,
-          y: w.field.laneY[i.isEven ? 'surface' : 'underwater'] ?? w.field.shipY,
+          x: 0,
+          y: 0,
           maxHp: boss.maxHp.times(m.hpRatio),
           speed: 0,
           attack: BigNum.zero,

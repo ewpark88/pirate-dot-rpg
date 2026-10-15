@@ -112,8 +112,8 @@ void main() {
     spawnWave(f, 301, ctx(), kind: 'crab');
     expect(f.foes.first.tier, 1);
     expect(f.view(BattleView.empty).enemies.first.tier, 1);
-    // 마리당 = 곡선 × waveHpPoolFactor × 몫(mobPoolAt / mobCountAt — 총량 유지, battle_mobs_test)
-    final share = w.mobPoolAt(301) / w.mobCountAt(301);
+    // 마리당 = 곡선 × waveHpPoolFactor × 몫(mobPoolAt / topMobCountAt — 총량 유지, battle_mobs_test)
+    final share = w.mobPoolAt(301) / w.topMobCountAt(301);
     expect(f.foes.first.maxHp.closeTo(stageCurve(w.hpBase, w.hpGrowth, 301).times(w.waveHpPoolFactor * share)), isTrue);
   });
 

@@ -1,10 +1,17 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 사용자 버그 '적이 일정 간격에서 멈춰 보임' 수정 (review/topdown-approach-fix dcc29f2)
+- 원인: ① 접촉이 반경 28 원(배는 길쭉 — 옆구리 11 떨어져 멈춤) ② 화면 끝 → 몸통 6~9초, 사거리 끝에서 맞고 죽어 정지처럼 보임(프레임 띠로 확인).
+- 수정: 선체 캡슐 접촉(ship_tiers topHalfWidth·topHalfLength), waves.top.mobSpeedScale 2. 몸통 접촉 39 → 129, 접촉 공격 68 → 243. 회귀 테스트·골든 4장.
+- 도구: apps/game/test/proto/top_strip_test.dart(TOP_STRIP=<폴더> — 실제 기록을 프레임 띠로).
+- 다음: T4-2 엔진 옆모습 삭제(WIP 브랜치 review/topdown-t4-2), T4-B 균형은 S2·S3.
+
 ## 2026-10-15 · S5 · 탑다운 T4 리드 시작(S1 지시, 사용자 "옆모습 안 쓴다")
 - **현재 위치**: T4 세부 계획(docs/plans/active/topdown-migration.md, d3f6089).
   - [x] T4-1 기본 top(review/topdown-t4 bfe4030, check --full) — S2 검토 대기
   - [ ] T4-B 탑다운 균형(S3·S2): balance crews top 비율 강습 1.22·투척 1.15·수중 0.70·관통 0.42
-  - [ ] T4-2 엔진 옆모습 삭제(S5) → T4-3 렌더(S3) ∥ T4-4 UI(S4) → T4-5 출시 점검(S5)
+  - [~] T4-2 엔진 옆모습 삭제(review/topdown-t4-2 8fe4db2) — 코드 완료, check는 balance crews만 실패 → T4-B 뒤 머지
+  - [ ] T4-3 렌더(S3) ∥ T4-4 UI(S4) → T4-5 출시 점검(S5)
 - 한 일
   - Settings.battleView 기본 top, main.dart 임시 줄 제거, sim·시나리오 기본 top
   - 옆모습 전용 테스트를 side로 고정, balance crews --view(기본 side 유지)
