@@ -24,6 +24,7 @@ import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/state/platform_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,21 +54,7 @@ Future<void> main() async {
   final ads = AdMobAds(GoogleAdsSdk());
   // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
   ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
-  final container = ProviderContainer(
-    overrides: [
-      tablesProvider.overrideWithValue(tables),
-      initialGameStateProvider.overrideWithValue(host.state),
-      commandSinkProvider.overrideWithValue(host),
-      battleFeedProvider.overrideWithValue(host.ticks),
-      adsPortProvider.overrideWithValue(ads),
-      audioPortProvider.overrideWithValue(audio),
-      analyticsPortProvider.overrideWithValue(analytics),
-    ],
-  );
-  final controller = container.read(gameStateProvider.notifier);
-  host
-    ..onState = controller.replace
-    ..start();
+  late final ProviderContainer container;
   final notifier = OfflineFullNotifier(
     sdk: LocalNotificationsSdk(),
     clock: clock,
@@ -78,6 +65,23 @@ Future<void> main() async {
     enabled: () => container.read(gameStateProvider).settings.notifications,
     lang: () => container.read(gameStateProvider).settings.lang,
   );
+  container = ProviderContainer(
+    overrides: [
+      tablesProvider.overrideWithValue(tables),
+      initialGameStateProvider.overrideWithValue(host.state),
+      commandSinkProvider.overrideWithValue(host),
+      battleFeedProvider.overrideWithValue(host.ticks),
+      adsPortProvider.overrideWithValue(ads),
+      audioPortProvider.overrideWithValue(audio),
+      analyticsPortProvider.overrideWithValue(analytics),
+      notifierProvider.overrideWithValue(notifier),
+      saveFailureProvider.overrideWithValue(store.failure),
+    ],
+  );
+  final controller = container.read(gameStateProvider.notifier);
+  host
+    ..onState = controller.replace
+    ..start();
   // 설정에서 끄면 남은 예약을 바로 취소한다.
   container.listen(
     gameStateProvider.select((s) => s.settings.notifications),
