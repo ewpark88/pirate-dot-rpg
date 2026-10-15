@@ -7,6 +7,7 @@ import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
 import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart';
+import 'package:game_core/src/economy/sea_events.dart' show pickBottle;
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
@@ -52,6 +53,7 @@ class EconomySystem implements GameSystem {
     final SetTreasureRoute c => setTreasureRoute(state, c, ctx),
     final OpGrantPieces c => opGrantPieces(state, c),
     final OpSetRebirths c => opSetRebirths(state, c),
+    final PickBottle c => pickBottle(state, c, ctx),
     _ => null,
   };
 
