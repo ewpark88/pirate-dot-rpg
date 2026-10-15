@@ -191,6 +191,7 @@ class TopScenePainter {
       b.clear();
     }
     final cull = visibleWorld;
+    final clock = scene.clockMs;
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -203,12 +204,13 @@ class TopScenePainter {
       (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
         ..xf.add(
           RSTransform.fromComponents(
-            rotation: e.heading + math.pi / 2,
+            // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
+            rotation: e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08,
             scale: 1,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
-            translateX: e.drawX.roundToDouble(),
-            translateY: e.drawY.roundToDouble(),
+            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7).roundToDouble(),
+            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7).roundToDouble(),
           ),
         )
         ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
