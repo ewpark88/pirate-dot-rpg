@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,7 @@ const devices = {
   's24': (Size(384, 832), 2.8125),
   '360x640': (Size(360, 640), 3.0),
   '411x891': (Size(411, 891), 2.625),
+  'tablet800x1280': (Size(800, 1280), 2.0),
 };
 
 Size boxOf(Size screen) => Size(screen.width, (screen.height * 0.45).roundToDouble());
@@ -20,7 +22,7 @@ void main() {
 
       test('필드는 폭 기준 정수배 + 1, 선원 줄은 폭 기준 정수배 — 보이는 영역이 상자를 빈 띠 없이 덮는다', () {
         final base = (screen.width * dpr / kLogicalWidth).floor();
-        expect(f.kb, base);
+        expect(f.kb, math.min(base, (kBandDotMaxDp * dpr).floor()));
         expect(f.k, base + 1);
         expect(f.viewDots.width * f.dot, closeTo(box.width, 1e-6));
         expect(f.viewDots.height * f.dot, closeTo(box.height, 1e-6));
@@ -44,6 +46,11 @@ void main() {
         expect(b.height, greaterThanOrEqualTo(kSlotBandMinDp - 1e-6));
         expect(b.bottom, closeTo(box.height, 1e-6));
         expect(b.width, closeTo(box.width, 1e-6));
+      });
+
+      test('선원 줄 도트 상한: 슬롯 판 ≤ 58dp (태블릿에서 과하게 커지지 않음)', () {
+        expect(f.bandScale * f.dot, lessThanOrEqualTo(kBandDotMaxDp + 1e-9));
+        expect(f.slotRects.first.width, lessThanOrEqualTo(kSlotPlateSize.width * kBandDotMaxDp + 1e-6));
       });
 
       test('궁극기·보스 도전 버튼: 48dp 이상, 상자 안 오른쪽 끝, 슬롯 6칸과 겹치지 않음', () {

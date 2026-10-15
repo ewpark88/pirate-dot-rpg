@@ -8,6 +8,7 @@ import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
+import 'package:pirate_dot/render/scene/projectile_rules.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (docs/GAME_DESIGN.md 4.4 타격감 규칙, 수치는 juice.json·fx_map.json).
 ///
@@ -42,15 +43,20 @@ class EventDirector implements ReplayListener {
 
   void _launch(AttackFired e, int index, BattleView frame) {
     final style = scene.fx.projectileFor(e.family);
-    final start = (index - _juice.lookaheadTicks).toDouble();
     final tickMs = _player.tickMs;
-    final targets = e.targetIds.isEmpty ? const [-1] : e.targetIds;
+    // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
+    final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
+    final start = index - flightTicks;
+    // 범위 계열(투척·수중, fx_map single)은 조준점에 한 발 — 대상마다 따로 날리면 같은 자리에 포탄이 겹친다.
+    final single = _rules.single(e.family);
+    final targets = e.targetIds.isEmpty || single ? const [-1] : e.targetIds;
     for (final id in targets) {
       final target = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
       for (var b = 0; b < style.burst; b++) {
         scene.projectiles.obtain()
           ..style = style
           ..family = e.family
+          ..crewId = e.crewId
           ..fromX = kShipNoseX
           ..fromY = kShipNoseY
           ..toX = target == null ? e.x : (target.boss ? scene.clampBossX(target.x) : target.x)
@@ -63,10 +69,13 @@ class EventDirector implements ReplayListener {
       }
     }
     if (_muzzleFamilies.contains(e.family)) {
-      scene.spawnEffect(scene.fx.muzzle.str('fx'), kMuzzleX, kMuzzleY + scene.shipBob);
+      final delayMs = math.max(0, (start - _player.position) * tickMs).toDouble();
+      scene.spawnEffect(scene.fx.muzzle.str('fx'), kMuzzleX, kMuzzleY + scene.shipBob, delayMs: delayMs);
     }
     _flashSlot(frame, e.crewId);
   }
+
+  late final _rules = ProjectileRules(scene.fx, fallbackMs: _juice.lookaheadTicks * _player.tickMs);
 
   void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {

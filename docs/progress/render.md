@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 피해 숫자 가독성(E8) 승인 대기 · `plans/active/render-perf.md`(실기기 측정 대기) · 디자인 2·3단계는 S1 배정 대기 |
+| 현재 계획 | 포탄·폭발(`docs/specs/render-bombs.md`) 승인 대기 → 배 부품 단계 디자인(사용자 지시, S2 shipLook 계약 대기) → B HD 도트 → C 연출 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | S4 UI 골든 en_m3_hud가 v2.1(하늘 0.7) 전 값 — S4 재생성 · 숫자 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
+| 막힌 것 | pubspec assets/weapons·fx/pb·crew_art·ui/cards 등록(S1) · S4 en_m3_hud 재생성 · BattleView.shipLook(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 포탄·폭발 퀄리티 (사용자 직접 지시) + 태블릿
+- 스펙 `docs/specs/render-bombs.md`. PB 무기 36종·폭발 부품 16장 가져오기(import_pb.py), `PbFxPainter`(무기 회전·꼬리, 폭발 단계 합성), 계열별 flightMs·lookahead 16·범위 계열 한 발, 폭발 합치기·상한.
+- 태블릿 800×1280: 검사 기기 4종(battle_frame_test·layout 골든). 선원 줄 도트 ≤1.6dp 상한(kBandDotMaxDp) — 휴대폰 3종은 그대로.
+- event_director·battle_scene 300줄 → ProjectileRules·mergeBlast로 나눔.
+- 골든 4장 갱신 + layout_tablet 새로(PB 그림 미등록 상태로 찍음 — S1이 pubspec 등록하면 스프라이트 골든 다시 찍어야 함). check --full: S4 en_m3_hud만 실패(대기 중).
 
 ### 2026-10-15 · S3 · Pirate Busters 선원 그림 가져오기 (사용자 결정: PB 차용, 유료 도구 0회)
 - `tools/art/import_pb.py`: 40명 카드 그림(355×480)·얼굴 초상(@2x) → `assets/crew_art/`, 등급 테두리 5종 back·front + legend_rays·shine·sparkle + cards.json → `assets/ui/cards/`.

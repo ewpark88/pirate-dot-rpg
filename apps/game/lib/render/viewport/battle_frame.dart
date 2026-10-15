@@ -119,16 +119,19 @@ class BattleFrame {
 }
 
 /// 전장 상자 [box](dp)를 빈 띠 없이 채우는 배치.
-/// - 줄 배율 kb = floor(폭·dpr / 320)(최소 1), 필드 배율 k = kb + [boost] (사용자 지시 '전장을 키워라' — 기본 +1).
+/// - 필드 배율 k = floor(폭·dpr / 320) + [boost] (사용자 지시 '전장을 키워라' — 기본 +1). 줄 배율 kb = floor(폭·dpr / 320),
+///   단 1줄 도트 ≤ [kBandDotMaxDp] dp (태블릿에서 슬롯·버튼 상한).
 ///   필드 148 + 선원 줄이 상자 높이에 안 들어가면 k를 줄인다(kb ≤ k).
 /// - 선원 줄 높이 = max(32줄 도트, 56dp). 줄 윗변은 정수 물리 픽셀.
 /// - 필드 가로: 보이는 폭 < 320이면 왼쪽(배 쪽) 기준, 넓으면 가운데. 남는 높이는 위 70% 하늘, 아래 30% 깊은 바다.
 BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
   final physW = box.width * dpr;
   final physH = box.height * dpr;
-  var kb = math.max(1, (physW / kLogicalWidth).floor());
+  // 태블릿처럼 넓으면 줄 배율을 1줄 도트 ≤ kBandDotMaxDp dp로 묶는다(슬롯·버튼이 과하게 커지지 않게).
+  var kb = math.max(1, math.min((physW / kLogicalWidth).floor(), (kBandDotMaxDp * dpr).floor()));
+  final base = math.max(1, (physW / kLogicalWidth).floor());
   double band(int kb) => math.max(kSlotBandMinDots, (kSlotBandMinDp * dpr / kb).ceilToDouble());
-  var k = kb + boost;
+  var k = base + boost;
   while (k > 1 && (physH - band(math.min(kb, k)) * math.min(kb, k)) / k < kFieldBottom) {
     k--;
   }

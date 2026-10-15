@@ -8,6 +8,8 @@
   crew_art/<id>_card.webp      카드 그림 창용 (PB png/characters/<id>/<id>_blue_card@2x.png, 355×480)
   crew_art/<id>_portrait.webp  얼굴 초상 (PB png/ui/portraits/<id>_blue@2x.png)
 - 카드 테두리: ui/cards/card_<등급>_{back,front}.webp 5등급 + card_legend_rays · card_shine · card_sparkle, cards.json(그림 창·리본 자리 규칙).
+- 발사체(사용자 지시 '폭탄 퀄리티'): weapons/<id>.webp 선원별 무기 40종 + bomblet (PB png/weapons/<id>@2x.png, 128×96, 가운데 기준 +x 방향).
+- 폭발 부품: fx/pb/<이름>.webp — 번쩍·별 폭발·충격파·불덩이 5단계·연기 덩이·물보라·불티·파편 (PB png/fx/impact/<이름>@2x.png).
 - 무손실 WebP(Pillow)로 용량만 줄인다(그림은 같다). 카드 1장 150KB 이하 검사.
 - PB 스크립트는 실행하지 않는다(이미지·json만 읽는다). LICENSES OWN, 출처 PB 경로.
 같은 입력·같은 Pillow면 같은 바이트.
@@ -34,6 +36,12 @@ RARITIES = ["common", "rare", "hero", "legend", "mythic"]
 MAX_BYTES = 150 * 1024
 CARD_SIZE = (355, 480)
 FRAME_SIZE = (504, 716)
+WEAPON_SIZE = (128, 96)
+BLAST_PARTS = [
+    "flash", "burst", "shockwave",
+    "fireball_0_hot", "fireball_1_fire", "fireball_2_cool", "fireball_3_smoke_hot", "fireball_4_smoke",
+    "puff_3", "puff_6", "splash_small", "ember", "debris_0", "debris_1", "debris_2", "debris_plank",
+]
 
 
 class ImportError_(Exception):
@@ -76,6 +84,13 @@ def plan(src: Path) -> dict[str, tuple[bytes, str]]:
     take("png/ui/cards/card_shine@2x.png", "ui/cards/card_shine.webp")
     take("png/ui/cards/card_sparkle@2x.png", "ui/cards/card_sparkle.webp")
     take("ui/cards/cards.json", "ui/cards/cards.json", raw=True)
+    for c in crews:
+        # 강습 계열(crabby·davy·king·lobster·shark)은 PB에서 직접 날아가 때려 무기 그림이 없다 → 계열 발사체를 쓴다.
+        if (src / f"png/weapons/{c['id']}@2x.png").is_file():
+            take(f"png/weapons/{c['id']}@2x.png", f"weapons/{c['id']}.webp", WEAPON_SIZE)
+    take("png/weapons/bomblet@2x.png", "weapons/bomblet.webp", WEAPON_SIZE)
+    for name in BLAST_PARTS:
+        take(f"png/fx/impact/{name}@2x.png", f"fx/pb/{name}.webp")
     return out
 
 

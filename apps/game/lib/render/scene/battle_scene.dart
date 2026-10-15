@@ -86,6 +86,9 @@ class BattleScene {
   /// 보이는 영역·선원 줄 배치 (화면 배치 v2). BattleGame이 상자 크기마다 바꾼다. 기본은 320×180 그대로.
   BattleFrame layout = BattleFrame.standard;
 
+  late final JsonReader pbFx = fx.raw.obj('pbFx');
+  static const _blastSheet = 'explosion_aoe';
+
   /// 보이는 오른쪽 끝 (도트) — 필드를 키우면 320보다 작다(오른쪽이 잘림).
   double get visibleRight => math.min(kLogicalWidth, layout.viewDots.right);
 
@@ -197,6 +200,11 @@ class BattleScene {
   }) {
     final sheet = fx.sheet(sheetId);
     if (sheet == null) return null;
+    if (sheetId == _blastSheet && durationMs == null) {
+      final (merged, full) = mergeBlast(this, x, y, delayMs, sheet.w * scale);
+      if (merged != null || full) return merged;
+    }
+    final duration = sheetId == _blastSheet && durationMs == null ? pbFx.number('blastMs') : durationMs;
     return effects.obtain()
       ..sheetId = sheetId
       ..x = x
@@ -205,7 +213,7 @@ class BattleScene {
       ..w = sheet.w * scale
       ..h = sheet.h * scale
       ..frames = sheet.frames
-      ..frameMs = durationMs == null ? fx.sheetFrameMs : durationMs / sheet.frames
+      ..frameMs = duration == null ? fx.sheetFrameMs : duration / sheet.frames
       ..ageMs = 0
       ..delayMs = delayMs
       ..vx = vx

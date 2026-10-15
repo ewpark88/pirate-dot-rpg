@@ -54,6 +54,9 @@ const double kSlotStep = 40;
 const double kSlotBandMinDots = 32;
 const double kSlotBandMinDp = 56;
 
+/// 선원 줄 도트 1칸의 최대 dp — 태블릿에서 슬롯(36칸)이 약 58dp, 버튼이 약 50dp를 넘지 않게.
+const double kBandDotMaxDp = 1.6;
+
 /// 버튼 칸 사이·가장자리 여백, 가장 작은 버튼 (도트).
 const double kButtonGap = 3;
 const double kButtonMinDots = 16;

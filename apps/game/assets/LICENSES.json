@@ -772,6 +772,70 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/muzzle.png",
       "license": "OWN"
     },
+    "fx/pb/burst.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/burst@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/debris_0.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/debris_0@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/debris_1.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/debris_1@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/debris_2.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/debris_2@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/debris_plank.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/debris_plank@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/ember.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/ember@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/fireball_0_hot.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/fireball_0_hot@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/fireball_1_fire.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/fireball_1_fire@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/fireball_2_cool.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/fireball_2_cool@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/fireball_3_smoke_hot.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/fireball_3_smoke_hot@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/fireball_4_smoke.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/fireball_4_smoke@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/flash.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/flash@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/puff_3.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/puff_3@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/puff_6.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/puff_6@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/shockwave.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/shockwave@2x.png",
+      "license": "OWN"
+    },
+    "fx/pb/splash_small.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/fx/impact/splash_small@2x.png",
+      "license": "OWN"
+    },
     "fx/slash.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/slash.png",
       "license": "OWN"
@@ -974,6 +1038,150 @@
     },
     "ui/tailwind.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "weapons/alba.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/alba@2x.png",
+      "license": "OWN"
+    },
+    "weapons/bara.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/bara@2x.png",
+      "license": "OWN"
+    },
+    "weapons/bomblet.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/bomblet@2x.png",
+      "license": "OWN"
+    },
+    "weapons/bones.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/bones@2x.png",
+      "license": "OWN"
+    },
+    "weapons/cook.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/cook@2x.png",
+      "license": "OWN"
+    },
+    "weapons/corey.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/corey@2x.png",
+      "license": "OWN"
+    },
+    "weapons/crabs.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/crabs@2x.png",
+      "license": "OWN"
+    },
+    "weapons/dolphy.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/dolphy@2x.png",
+      "license": "OWN"
+    },
+    "weapons/gull.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/gull@2x.png",
+      "license": "OWN"
+    },
+    "weapons/hippo.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/hippo@2x.png",
+      "license": "OWN"
+    },
+    "weapons/jelly.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/jelly@2x.png",
+      "license": "OWN"
+    },
+    "weapons/kraki.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/kraki@2x.png",
+      "license": "OWN"
+    },
+    "weapons/lamp.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/lamp@2x.png",
+      "license": "OWN"
+    },
+    "weapons/lion.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/lion@2x.png",
+      "license": "OWN"
+    },
+    "weapons/manta.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/manta@2x.png",
+      "license": "OWN"
+    },
+    "weapons/moby.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/moby@2x.png",
+      "license": "OWN"
+    },
+    "weapons/moray.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/moray@2x.png",
+      "license": "OWN"
+    },
+    "weapons/nar.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/nar@2x.png",
+      "license": "OWN"
+    },
+    "weapons/octo.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/octo@2x.png",
+      "license": "OWN"
+    },
+    "weapons/orca.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/orca@2x.png",
+      "license": "OWN"
+    },
+    "weapons/otter.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/otter@2x.png",
+      "license": "OWN"
+    },
+    "weapons/pang.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/pang@2x.png",
+      "license": "OWN"
+    },
+    "weapons/pelly.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/pelly@2x.png",
+      "license": "OWN"
+    },
+    "weapons/pingu.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/pingu@2x.png",
+      "license": "OWN"
+    },
+    "weapons/polly.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/polly@2x.png",
+      "license": "OWN"
+    },
+    "weapons/puffer.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/puffer@2x.png",
+      "license": "OWN"
+    },
+    "weapons/pumpum.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/pumpum@2x.png",
+      "license": "OWN"
+    },
+    "weapons/saw.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/saw@2x.png",
+      "license": "OWN"
+    },
+    "weapons/sheldon.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/sheldon@2x.png",
+      "license": "OWN"
+    },
+    "weapons/starry.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/starry@2x.png",
+      "license": "OWN"
+    },
+    "weapons/sword.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/sword@2x.png",
+      "license": "OWN"
+    },
+    "weapons/turtle.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/turtle@2x.png",
+      "license": "OWN"
+    },
+    "weapons/uni.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/uni@2x.png",
+      "license": "OWN"
+    },
+    "weapons/volke.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/volke@2x.png",
+      "license": "OWN"
+    },
+    "weapons/volt.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/volt@2x.png",
+      "license": "OWN"
+    },
+    "weapons/walrus.webp": {
+      "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/walrus@2x.png",
       "license": "OWN"
     }
   }
