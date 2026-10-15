@@ -101,4 +101,14 @@ void main() {
     expect(find.byType(OfflineRewardDialog), findsOneWidget);
     expect(find.text(expected.gold.format()), findsOneWidget);
   });
+
+  testWidgets('경제 기본값: 5분 미만 부재면 복귀 창이 뜨지 않는다 (minSec 300)', (tester) async {
+    await _pump(tester, const Duration(minutes: 4), fake: false);
+    expect(find.byType(OfflineRewardDialog), findsNothing);
+  });
+
+  testWidgets('경제 기본값: 10분 부재면 복귀 창이 뜬다', (tester) async {
+    await _pump(tester, const Duration(minutes: 10), fake: false);
+    expect(find.byType(OfflineRewardDialog), findsOneWidget);
+  });
 }

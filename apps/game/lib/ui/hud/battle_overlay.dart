@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -36,6 +37,12 @@ class BattleButtons extends ConsumerWidget {
           clipBehavior: Clip.none,
           children: [
             // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
+            // 잠긴 칸: 누르면 ‘배 등급 N에서 열려요’ 안내 (그림은 렌더).
+            for (var i = slotCount; i < f.slotRects.length; i++)
+              Positioned.fromRect(
+                rect: hit(f.slotRects[i]),
+                child: _LockedSlotButton(slot: i),
+              ),
             for (final (i, r) in f.slotRects.take(slotCount).indexed)
               Positioned.fromRect(
                 rect: hit(r),
@@ -123,6 +130,33 @@ class _SlotButton extends ConsumerWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () => openFleetPicker(context, slot),
         child: id == null ? const Center(child: PixelBitmap(PixelBitmaps.plus, color: PixelPalette.textDim)) : null,
+      ),
+    );
+  }
+}
+
+/// 아직 잠긴 선원 줄 칸: 이 칸이 열리는 배 등급(ship_tiers.json `slots`)과 스테이지를 알려 준다.
+class _LockedSlotButton extends ConsumerWidget {
+  const _LockedSlotButton({required this.slot});
+
+  final int slot;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final tiers = ref.watch(tablesProvider).shipTiers.tiers;
+    final opens = tiers.where((t) => t.slots > slot).firstOrNull;
+    if (opens == null) return const SizedBox.shrink();
+    // 생성된 함수 인자 순서: (stage, tier).
+    final text = l10n.uiFleetSlotLocked(opens.stage, tableText(l10n, opens.nameKey));
+    return Semantics(
+      button: true,
+      label: text,
+      excludeSemantics: true,
+      child: GestureDetector(
+        key: Key('fleet.locked.$slot'),
+        behavior: HitTestBehavior.opaque,
+        onTap: () => showSkinToast(context, text),
       ),
     );
   }

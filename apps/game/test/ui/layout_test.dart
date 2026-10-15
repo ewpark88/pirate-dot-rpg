@@ -52,11 +52,7 @@ void main() {
     });
   });
 
-  testWidgets('가로 화면(800×360)에서도 넘치지 않는다 — 세로 고정 전까지 안전망', (tester) async {
-    for (final tab in [voyageTab, shipTab, crewTab, summonTab]) {
-      await pumpGame(tester, loadFixture('stage37_midgame'), tab: tab, size: const Size(800, 360));
-    }
-  });
+  // 가로 화면 안전망은 뺐다 — 앱이 세로 고정이다(main 53b8831, 태블릿도 세로).
 
   testWidgets('접근성: 아이콘 버튼에는 설명(tooltip)이 있다', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
