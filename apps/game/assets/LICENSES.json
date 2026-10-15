@@ -100,6 +100,14 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/ghost_admiral.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/ghost_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
     "bosses/giant_hermit.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
@@ -308,6 +316,10 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/crab.png",
       "license": "OWN"
     },
+    "enemies/cursegull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/eel.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
@@ -317,6 +329,10 @@
       "license": "OWN"
     },
     "enemies/flyingfish.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/ghostjelly.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
@@ -368,6 +384,10 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
+    "enemies/skeleton.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/snowgull.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
@@ -390,6 +410,10 @@
     },
     "enemies/urchin.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/urchin.png",
+      "license": "OWN"
+    },
+    "enemies/wraith.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
     "fonts/Galmuri-OFL.txt": {
