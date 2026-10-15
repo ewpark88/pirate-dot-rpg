@@ -1299,6 +1299,108 @@ const Map<String, String> rawTables = {
     "foam": "#F2FBFF",
     "tile": 128,
     "flowSpeed": 14
+  },
+  "atmosphere": {
+    "cycleSec": 720,
+    "fadeSec": 20,
+    "phases": [
+      {
+        "id": "day",
+        "sec": 360
+      },
+      {
+        "id": "dusk",
+        "sec": 90,
+        "tint": "#FF9A5A",
+        "tintAlpha": 0.25
+      },
+      {
+        "id": "night",
+        "sec": 180,
+        "tint": "#1B2A55",
+        "tintAlpha": 0.2,
+        "dim": 0.45,
+        "stars": 40
+      },
+      {
+        "id": "dawn",
+        "sec": 90,
+        "tint": "#FFB3C7",
+        "tintAlpha": 0.15
+      }
+    ],
+    "weather": {
+      "rain": {
+        "chance": 0.25,
+        "regions": [
+          "coral",
+          "storm",
+          "abyss"
+        ],
+        "ripples": 40,
+        "streaks": 80
+      },
+      "fog": {
+        "chance": 0.4,
+        "phase": "dawn",
+        "regions": [
+          "glacier",
+          "phantom"
+        ]
+      },
+      "aurora": {
+        "chance": 0.5,
+        "phase": "night",
+        "regions": [
+          "glacier"
+        ]
+      },
+      "ash": {
+        "always": true,
+        "regions": [
+          "volcano"
+        ],
+        "flakes": 60
+      }
+    },
+    "landmarks": {
+      "intervalSec": [
+        40,
+        90
+      ],
+      "maxOnScreen": 2,
+      "ahead": 260,
+      "lateral": 70,
+      "despawn": 420,
+      "byRegion": {
+        "coral": [
+          "island",
+          "lighthouse",
+          "whale"
+        ],
+        "storm": [
+          "wreck",
+          "lighthouse",
+          "whale"
+        ],
+        "glacier": [
+          "iceberg",
+          "whale"
+        ],
+        "volcano": [
+          "volcano_isle",
+          "wreck"
+        ],
+        "abyss": [
+          "whale",
+          "wreck"
+        ],
+        "phantom": [
+          "ghost_ship_far",
+          "wreck"
+        ]
+      }
+    }
   }
 }
 ''',
