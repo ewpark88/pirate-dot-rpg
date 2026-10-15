@@ -1411,6 +1411,9 @@ const Map<String, String> rawTables = {
       { "id": "fastSail", "row": 3, "perLevel": 0.05, "maxLevel": 4, "costBase": 12, "costGrowth": 1.6, "nameKey": "econRebirthShopFastSailName", "descKey": "econRebirthShopFastSailDesc" }
     ],
     "fleetSlotsMax": 7,
+    "forecastRoundMin": 5,
+    "forecastMinWaveSec": 7,
+    "forecastFarmWaves": 400,
     "skins": [
       { "id": "coral", "rebirths": 1, "nameKey": "shipSkinCoral" },
       { "id": "storm", "rebirths": 3, "nameKey": "shipSkinStorm" },
@@ -1488,7 +1491,8 @@ const Map<String, String> rawTables = {
       "firstLegendOwnedDays": { "min": 1, "max": 4, "schedule": "daily" },
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
       "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
-      "rebirthRecoverSec": { "min": 0, "max": 300 }
+      "rebirthRecoverSec": { "min": 0, "max": 300 },
+      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" }
     }
   }
 }
