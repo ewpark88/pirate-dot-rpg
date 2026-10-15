@@ -4,6 +4,7 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:meta/meta.dart';
 
+part 'commands_fun.dart';
 part 'commands_rebirth.dart';
 part 'operator_commands.dart';
 
@@ -46,6 +47,8 @@ sealed class Command {
       'selectShipSkin' => SelectShipSkin(j['id'] as String?),
       'selectTitle' => SelectTitle(j['id'] as String?),
       'setTreasureRoute' => SetTreasureRoute(j['sea'] as int?),
+      'tapSeaEvent' => TapSeaEvent(j['targetId'] as int),
+      'pickBottle' => PickBottle(j['index'] as int),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
