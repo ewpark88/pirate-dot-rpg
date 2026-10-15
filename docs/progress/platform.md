@@ -1,5 +1,14 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 스토어 스크린샷 8장(ko·en)·그래픽 이미지 자동 굽기
+- 한 일: `apps/game/test/store/store_shots_test.dart`(STORE_SHOTS=ko|en일 때만, 기본 check는 skip): 샘플 상태에서 실제 CoreEngine을 돌려 기록 →
+  원하는 순간(동시 처치·궁극기·해역 보스)을 BattleScene·ScenePainter로 재생 → battleViewBuilderProvider로 실제 앱 화면에 넣고 1080×1920(411dp×2.625) PNG.
+  운영자 명령은 엔진 기록에만(스테이지 이동·무리 30·무적·보스 소환), 화면엔 운영자 패널 없음. `docs/store/feature_graphic.py`: 아이콘 배 + 게임 스프라이트, 256×125 ×4.
+- 발견: ① 재생은 시간 아니라 **위치**로 멈춰야 한다(배속 ×2 기록이라 끝을 지나 돌리면 이펙트가 다 사라짐). ② 정지 화면에 번쩍임이 찍히면 하얗게 씻김 → 끔.
+  ③ 스테이지 37 무리(7마리)는 화면 오른쪽 끝에서 다 죽어 장면이 빔 → 산호해 44·무리 30. 신화 함대는 보스를 몇 초 만에 잡음 → 보스 장면은 중반 함대.
+  ④ **아트 공백**: 폭풍해 이후 적 대부분·보스 10종·배 2등급 이상 스프라이트 없음(대체 도형/갈색 상자) → 전장은 산호해만. ⑤ ui: 360dp 소환 결과 0.7px overflow, 카드 이름 잘림 → 요청서 platform-ui-store-shots.
+- 다음 할 일: 사람 승인. 아트가 채워지면 해역 다양화(폭풍해 보스 등).
+
 ## 2026-10-15 · S5 · 효과음·배경음 후보: CC0 조사 + 자작 칩튠 생성기 (사용자 지시 "음원을 최대한 신경 써서")
 - 한 일: CC0 조사(서브에이전트 2개, 페이지 라이선스 원문 인용, 다운로드 없음) → `docs/store/audio-candidates.md`(id별 CC0 A·B vs 자작, 추천, 제외 목록).
   자작: `docs/store/audio-gen/chipsynth.py`(sfxr 방식, 표준 라이브러리만)·`gen_audio.py` → `docs/store/audio-preview/`(wav, 커밋 안 함, 결정론):
