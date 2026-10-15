@@ -9,7 +9,7 @@
 ## 듣는 법 (자작)
 1. 브라우저로 열기: **`D:\Projects\pde-platform\docs\store\audio-preview\index.html`** — 전부 한 페이지에서 재생할 수 있다.
 2. 파일이 없으면 다시 굽기(약 20초, 같은 입력이면 같은 바이트):
-   `python -I -B docs/store/audio-gen/gen_audio.py` → `docs/store/audio-preview/`. wav는 커밋하지 않는다(약 12MB).
+   `python -I -B tools/art/audio/gen_audio.py` → `tools/art/audio/preview/`. wav는 커밋하지 않는다(약 12MB).
 3. 먼저 **`mix/battle_coral.wav`**(전투 10초 모의)를 들어 본다. 산호해 배경음 위에 타격·처치·콤보·스킬·궁극기가 겹침 상한 규칙대로 깔린다. 귀가 피곤한지는 이걸로 판단한다.
 
 파일 이름 규칙(게임 `audio_adapter`와 같음):
@@ -41,7 +41,7 @@ CC0 칩튠 세트의 1순위는 **512 Sound Effects (8-bit style)**(Juhani Junka
 | (추가) coin | 골드 획득 — **fx_map에 없음** | `sfx/coin_0~2.wav` 0.26초. sfxr 고전 2음 | 512팩 `sfx_coin_single*.wav` | — | 골드 획득 연출이 생기면 |
 
 ### 자작 효과음 설계
-- 합성기: `docs/store/audio-gen/chipsynth.py`. 표준 라이브러리만 쓰는 sfxr 방식이다.
+- 합성기: `tools/art/audio/chipsynth.py`. 표준 라이브러리만 쓰는 sfxr 방식이다.
 - 음원: 펄스(duty 12.5/25/50%), NES풍 16단 계단 삼각파, 샘플 앤 홀드 노이즈.
 - 피치·duty 미끄럼, 비브라토, 아르페지오, 1극 필터, 메아리를 쓴다.
 - 품질 처리:
@@ -71,7 +71,7 @@ CC0 칩튠 세트의 1순위는 **512 Sound Effects (8-bit style)**(Juhani Junka
 ## 고른 뒤 할 일 (S1/S3)
 1. **ogg 변환**: 게임은 `.ogg`만 찾는다(`audio_adapter`: `sfx/<id>.ogg`·`sfx/<id>_<n>.ogg`·`bgm/<id>.ogg`). 이 PC에는 ffmpeg·oggenc·sox가 없다.
    → 사람이 ffmpeg를 설치(`winget install Gyan.FFmpeg`)한 뒤 `ffmpeg -i x.wav -c:a libvorbis -q:a 4 x.ogg`. 또는 Audacity로 내보내기.
-2. 자작을 고르면 `apps/game/assets/audio/` 아래 위 이름으로 넣고 `LICENSES.json`에 `OWN`(생성 스크립트 `docs/store/audio-gen/gen_audio.py`). 스크립트는 art 레인 `tools/art/`로 옮기는 게 맞다.
+2. 자작을 고르면 `apps/game/assets/audio/` 아래 위 이름으로 넣고 `LICENSES.json`에 `OWN`(생성 스크립트 `tools/art/audio/gen_audio.py`). 스크립트는 art 레인 `tools/art/`로 옮기는 게 맞다.
 3. CC0를 고르면 `LICENSES.json`에 출처 URL과 라이선스 문구, 다운로드 날짜를 적는다. 길이를 재서 hit 계열이 0.2초를 넘으면 자르거나 탈락시킨다.
 4. 섞어 써도 된다. 예: 효과음은 자작(톤 통일, 겹침 설계), 배경음은 CC0(곡 품질).
 
@@ -105,4 +105,4 @@ CC0 칩튠 세트의 1순위는 **512 Sound Effects (8-bit style)**(Juhani Junka
   - 효과음: `ffmpeg -y -i in.wav -ac 1 -c:a libvorbis -q:a 4 out.ogg`
   - 배경음: `ffmpeg -y -i in.wav -ac 1 -ar 32000 -c:a libvorbis -q:a 3 out.ogg`
 - 크기: `assets/audio` 합계 약 2.9MB (배경음 최대 bgm_phantom 0.74MB, 효과음 16개 합계 약 0.16MB).
-- 자작 wav는 `python -I -B docs/store/audio-gen/gen_audio.py`로 다시 구울 수 있다(같은 입력이면 같은 바이트).
+- 자작 wav는 `python -I -B tools/art/audio/gen_audio.py`로 다시 구울 수 있다(같은 입력이면 같은 바이트).
