@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 
 import 'ui_harness.dart';
@@ -67,15 +68,21 @@ void main() {
   });
 
   testWidgets('B: 빈 칸이 있으면 출전은 그 칸으로', (tester) async {
-    // 샘플은 보유 4명이 모두 출전 중 → 출전 안 한 보유 선원(스타리)을 더한다.
+    // 편성: 샘플 전장 선원 중 마지막 칸을 비운다. 출전 안 한 보유 선원(스타리)을 더한다.
     final base = loadFixture('stage37_midgame');
-    final s = base.copyWith(crews: {...base.crews, 'starry': base.crews['octo']!});
+    final ids = [for (final f in base.battle!.fleet) f.crewId];
+    final s = base.copyWith(
+      crews: {...base.crews, 'starry': base.crews['octo']!},
+      fleet: [...ids.take(ids.length - 1), null],
+      fleetInit: true,
+    );
+    expect(fleetSlots(s, GameTables.load()), ids.length, reason: '샘플 배 등급 칸 수 = 전장 선원 수');
     final fleet = await _pump(tester, state: s);
     const free = 'starry';
     await _openDetail(tester, free);
     await tester.tap(find.byKey(const Key('crew.detail.deploy.$free')));
     await tester.pumpAndSettle();
-    expect(fleet.calls, ['set ${s.battle!.fleet.length} $free']);
+    expect(fleet.calls, ['set ${ids.length - 1} $free']);
   });
 
   testWidgets('B: 선원 줄 칸 → 후보 시트(보유 선원) → 고르면 그 칸에', (tester) async {

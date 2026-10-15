@@ -16,8 +16,10 @@ import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 export 'package:pirate_dot/ui/tabs/crew_card.dart' show CrewCard;
 
-/// 격자 한 줄에 선원 수.
-const _columns = 4;
+/// 카드 한 장의 목표 폭(dp) — 폭이 넓으면(태블릿) 열을 늘린다: 폰 4열 … 최대 8열.
+const _cardTargetWidth = 96.0;
+const _minColumns = 4;
+const _maxColumns = 8;
 
 /// 카드 사이 간격.
 const _spacing = 4.0;
@@ -122,26 +124,31 @@ class CrewTab extends ConsumerWidget {
         const SizedBox(height: 6),
         // 기준 gif 아래 선원 바처럼 큰 정사각 초상 카드. 줄마다 높이가 달라도 되게(승급 버튼이 있는 줄만 길어짐) 격자 대신 줄.
         // 테스트·도감이 40장을 모두 찾을 수 있게 한 덩어리로 짓는다(ListView는 화면 밖 자식을 안 지음).
-        Column(
-          children: [
-            for (var i = 0; i < crews.length; i += _columns)
-              Padding(
-                padding: const EdgeInsets.only(bottom: _spacing),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var j = i; j < i + _columns; j++) ...[
-                      if (j > i) const SizedBox(width: _spacing),
-                      Expanded(
-                        child: j < crews.length
-                            ? CrewCard(def: crews[j], owned: owned.contains(crews[j].id))
-                            : const SizedBox(),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-          ],
+        LayoutBuilder(
+          builder: (context, box) {
+            final columns = (box.maxWidth / _cardTargetWidth).floor().clamp(_minColumns, _maxColumns);
+            return Column(
+              children: [
+                for (var i = 0; i < crews.length; i += columns)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: _spacing),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var j = i; j < i + columns; j++) ...[
+                          if (j > i) const SizedBox(width: _spacing),
+                          Expanded(
+                            child: j < crews.length
+                                ? CrewCard(def: crews[j], owned: owned.contains(crews[j].id))
+                                : const SizedBox(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       ],
     );

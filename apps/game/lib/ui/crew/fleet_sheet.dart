@@ -63,7 +63,7 @@ class _FleetPicker extends ConsumerWidget {
         Row(
           children: [
             Expanded(child: Text(l10n.uiFleetSlotTitle(slot + 1), style: Theme.of(context).textTheme.titleMedium)),
-            if (slots[slot] != null)
+            if (slot < slots.length && slots[slot] != null)
               PixelButton(key: const Key('fleet.clear'), onPressed: () => pick(null), child: Text(l10n.uiFleetClear)),
           ],
         ),

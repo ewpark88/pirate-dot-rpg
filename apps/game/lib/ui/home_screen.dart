@@ -94,11 +94,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: IndexedStack(
                         index: _tab,
+                        // 넓은 화면(태블릿)에서 글 위주 탭은 최대 폭 + 가운데, 선원 탭은 열을 늘린다(AGENTS 유동 크기).
                         children: const [
-                          VoyageTab(),
-                          ShipTab(),
+                          _MaxWidth(child: VoyageTab()),
+                          _MaxWidth(child: ShipTab()),
                           CrewTab(),
-                          SummonTab(),
+                          _MaxWidth(child: SummonTab()),
                         ],
                       ),
                     ),
@@ -134,4 +135,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
+}
+
+/// 탭 내용 최대 폭(dp) — 태블릿에서 줄이 너무 길어지지 않게.
+const _tabMaxWidth = 640.0;
+
+class _MaxWidth extends StatelessWidget {
+  const _MaxWidth({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.topCenter,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: _tabMaxWidth),
+      child: child,
+    ),
+  );
 }

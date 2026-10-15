@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 
+/// 창·시트 최대 폭(dp) — 태블릿에서 가운데에 알맞은 크기로.
+const _dialogMaxWidth = 480.0;
+const _sheetMaxWidth = 640.0;
+
 /// 도트 창 (AlertDialog 대신): 도트 프레임 안에 [icon] · 제목 · 내용 · 오른쪽 아래 버튼 줄. 그림자·둥근 모서리 없음.
 class PixelDialog extends StatelessWidget {
   const PixelDialog({required this.content, this.title, this.icon, this.actions = const [], super.key});
@@ -18,6 +22,8 @@ class PixelDialog extends StatelessWidget {
     backgroundColor: Colors.transparent,
     elevation: 0,
     insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+    // 태블릿에서 창이 화면 끝까지 늘어나지 않게.
+    constraints: const BoxConstraints(maxWidth: _dialogMaxWidth),
     child: PixelFrame(
       padding: 6,
       child: Column(
@@ -58,7 +64,7 @@ Future<T?> showPixelSheet<T>(BuildContext context, {required WidgetBuilder build
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * maxHeight),
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * maxHeight, maxWidth: _sheetMaxWidth),
       builder: (context) => PixelSheet(child: builder(context)),
     );
 
