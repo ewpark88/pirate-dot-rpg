@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show Offset;
 
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
@@ -6,10 +7,12 @@ import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/coin_rain.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/ship_geometry.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
 /// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
@@ -42,7 +45,11 @@ class EventDirector implements ReplayListener {
 
   void _launch(AttackFired e, int index, BattleView frame) {
     final style = scene.fx.projectileFor(e.family);
-    final (tickMs, tip) = (_player.tickMs, ShipGeometry.cannonTip(scene));
+    final ship = scene.topShip;
+    final (tickMs, tip) = (
+      _player.tickMs,
+      scene.isTop ? Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy) : ShipGeometry.cannonTip(scene),
+    );
     // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
     final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
     final start = index - flightTicks;
@@ -118,7 +125,12 @@ class EventDirector implements ReplayListener {
           scene
             ..shipFlashMs = _juice.flashFrames * kFrameMs
             ..shipHpRatio = e.hpRatio
-            ..numbers.add(e.amount, kShipCenterX, kShipTop - kNumberLiftPx, DamageKind.ship);
+            ..numbers.add(
+              e.amount,
+              scene.shipCenter.dx,
+              scene.shipCenter.dy - kShipHeight / 2 - kNumberLiftPx,
+              DamageKind.ship,
+            );
           if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
         case BossCleared():
           _bossKill();
@@ -225,7 +237,7 @@ class EventDirector implements ReplayListener {
     _fx('kill', e.x, e.y);
     final n = _juice.coinCount;
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
-    final (tx, ty) = scene.coinFlow.target(scene.layout);
+    final (tx, ty) = scene.coinTo;
     for (var c = 0; c < n; c++) {
       if (scene.coins.active.length >= _juice.maxCoins) {
         // 상한: 새 코인 대신 마지막 코인에 금액을 더한다(합계 보존, 화면은 덜 붐빈다).
@@ -261,36 +273,7 @@ class EventDirector implements ReplayListener {
     scene.slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
     _fx('bossCleared', kUltimateX, kUltimateY);
-    _coinRain();
-  }
-
-  // 코인 비: 화면 위 결정론적 x에서 떨어진다 (render-regions 규칙 5).
-  static const _rainLeft = 70.0;
-  static const _rainSpan = 240;
-  static const _rainPrime = 37;
-  static const _rainTopY = -4.0;
-  static const _rainFallMin = 60.0;
-  static const _rainFallSpread = 40;
-
-  /// 보이는 폭 안에서만 떨어지게 (필드를 키우면 오른쪽이 잘린다).
-  int get _rainSpanIn => math.min(_rainSpan, (scene.layout.visibleRight - _rainLeft - 8).floor());
-
-  void _coinRain() {
-    for (var i = 0; i < _juice.bossCoinRain; i++) {
-      scene.coins.obtain()
-        ..fromX = _rainLeft + i * _rainPrime % _rainSpanIn
-        ..fromY = _rainTopY
-        ..toX = scene.coinFlow.target(scene.layout).$1
-        ..toY = scene.coinFlow.target(scene.layout).$2
-        ..amount = BigNum.zero
-        ..spread = 0
-        ..lift = 0
-        ..fallPx = _rainFallMin + i * _rainPrime % _rainFallSpread
-        ..ageMs = -(i * _juice.coinFlyMs / _juice.bossCoinRain)
-        ..flyMs = _juice.coinFlyMs * 2
-        ..x = _rainLeft + i * _rainPrime % _rainSpanIn
-        ..y = _rainTopY;
-    }
+    coinRain(scene);
   }
 
   void _fx(String event, double x, double y) {
