@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
@@ -43,6 +45,14 @@ void main() {
     await pumpGame(tester, loadFixture('new_player'), tab: shipTab);
     for (final p in tables.shipParts.parts) {
       expect(_button(tester, p.id).onPressed, isNull, reason: p.id);
+    }
+  });
+
+  testWidgets('부위마다 아이콘 그림이 있다 (assets/ui/part_<id>.png)', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab);
+    for (final p in tables.shipParts.parts) {
+      expect(find.byKey(Key('ship.icon.${p.id}')), findsOneWidget, reason: p.id);
+      expect(File('assets/ui/part_${p.id}.png').existsSync(), isTrue, reason: p.id);
     }
   });
 }

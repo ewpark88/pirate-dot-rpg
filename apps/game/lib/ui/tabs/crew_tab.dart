@@ -9,7 +9,7 @@ import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
-import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -222,7 +222,7 @@ class _PortraitBox extends StatelessWidget {
                   portrait
                 else
                   ColorFiltered(colorFilter: const ColorFilter.mode(_silhouette, BlendMode.srcIn), child: portrait),
-                Positioned(left: 0, right: 0, bottom: 1, child: _Stars(rarity: rarity)),
+                Positioned(right: 0, bottom: 0, child: _Stars(rarity: rarity)),
                 if (deployed)
                   Positioned(
                     left: 0,
@@ -248,21 +248,29 @@ class _PortraitBox extends StatelessWidget {
   }
 }
 
+/// 등급 별: 별 그림 하나 + 개수 (16px 별 5개는 초상 폭을 넘는다). 숫자는 등급 색.
 class _Stars extends StatelessWidget {
   const _Stars({required this.rarity});
 
   final RarityDef rarity;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      for (var i = 0; i < rarity.stars; i++)
+  Widget build(BuildContext context) => ColoredBox(
+    color: PixelPalette.outline,
+    child: Row(
+      key: const Key('crew.stars'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const PixelSprite(UiSprites.star, dots: 16, scale: 1),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0.5),
-          child: PixelIcon(PixelIcons.star, color: rarityColor(rarity), scale: 1),
+          padding: const EdgeInsets.only(left: 1, right: 2),
+          child: Text(
+            rarity.stars.toString(),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: rarityColor(rarity), height: 1),
+          ),
         ),
-    ],
+      ],
+    ),
   );
 }
 
