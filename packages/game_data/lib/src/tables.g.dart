@@ -1377,7 +1377,7 @@ const Map<String, String> rawTables = {
         "glow": true
       }
     },
-    "scale": 0.85
+    "scale": 0.74
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1803,10 +1803,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 12, "topHalfLength": 30, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 13, "topHalfLength": 33, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 10, "topHalfLength": 26, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 11, "topHalfLength": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 13, "topHalfLength": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 13, "topHalfLength": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
