@@ -97,14 +97,25 @@ class EngineHost implements CommandSink {
   void resume() {
     final at = _pausedAt;
     if (at != null) {
-      engine = CoreEngine(
-        tables: _tables,
-        clock: clock,
-        initial: engine.state.copyWith(savedAt: at),
-      );
+      _rebuild(savedAt: at);
       _pausedAt = null;
     }
     start();
+  }
+
+  /// 사람이 지금 보고 있다(예: 광고 화면이 앞에 와서 생긴 가짜 pause·resume) — 오프라인 기준 시각을 지금으로 맞춘다.
+  /// 엔진 상태의 savedAt은 세션 내내 시작 시각이라, 그대로 두면 UI 복귀 창이 세션 길이만큼의 보상을 보여 줬다(2026-10-15 사용자 신고).
+  /// 전장은 새 엔진에서 현재 파를 처음부터 다시 만든다(광고가 화면을 덮고 있을 때 부른다).
+  void markPresent() => _rebuild(savedAt: clock.now());
+
+  /// 엔진을 [savedAt]으로 다시 만들고 UI에 **바로** 알린다 — 다음 틱(50ms)까지 UI가 옛 savedAt을 읽어 복귀 창을 잘못 띄우지 않게.
+  void _rebuild({required DateTime savedAt}) {
+    engine = CoreEngine(
+      tables: _tables,
+      clock: clock,
+      initial: engine.state.copyWith(savedAt: savedAt),
+    );
+    onState?.call(engine.state);
   }
 
   DateTime? _pausedAt;

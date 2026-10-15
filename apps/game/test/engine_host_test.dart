@@ -67,6 +67,60 @@ void main() {
     await host.dispose();
   });
 
+  test('pause 두 번(onPause → onDetach)이어도 멈춘 시각은 처음 것, 타이머는 꺼진 채', () async {
+    final clock = ManualClock(start);
+    final host = EngineHost(
+      tables: tables,
+      initial: GameState.newGame(playerId: 't', seed: 1, now: start, crews: tables.meta.startingCrews),
+      clock: clock,
+    )..start();
+    clock.advance(const Duration(minutes: 10));
+    await host.pause();
+    clock.advance(const Duration(seconds: 5));
+    await host.pause();
+    expect(host.running, isFalse);
+    host
+      ..resume()
+      ..stop();
+    expect(host.state.savedAt, start.add(const Duration(minutes: 10)));
+    await host.dispose();
+  });
+
+  test('markPresent(광고 화면): 오프라인 기준 시각을 지금으로 + UI에 바로 알림 → 복귀 보상 없음', () async {
+    final clock = ManualClock(start);
+    final seen = <GameState>[];
+    final host = EngineHost(
+      tables: tables,
+      initial: GameState.newGame(playerId: 't', seed: 1, now: start, crews: tables.meta.startingCrews),
+      clock: clock,
+    )..onState = seen.add;
+    clock.advance(const Duration(hours: 2)); // 세션이 오래 돎(savedAt은 시작 시각 그대로)
+    host.markPresent();
+    expect(host.state.savedAt, start.add(const Duration(hours: 2)));
+    expect(seen.last.savedAt, start.add(const Duration(hours: 2)));
+    clock.advance(const Duration(seconds: 30)); // 광고 30초
+    expect(offlinePreview(host.state, tables, clock.now()), isNull);
+    await host.dispose();
+  });
+
+  test('resume은 다시 만든 상태를 UI에 바로 알린다(다음 틱까지 옛 savedAt을 읽지 않게)', () async {
+    final clock = ManualClock(start);
+    final seen = <GameState>[];
+    final host = EngineHost(
+      tables: tables,
+      initial: GameState.newGame(playerId: 't', seed: 1, now: start, crews: tables.meta.startingCrews),
+      clock: clock,
+    )..onState = seen.add;
+    clock.advance(const Duration(hours: 1));
+    await host.pause();
+    clock.advance(const Duration(seconds: 20));
+    host
+      ..resume()
+      ..stop();
+    expect(seen.last.savedAt, start.add(const Duration(hours: 1)));
+    await host.dispose();
+  });
+
   test('저장이 한 번 던져도 다음 저장은 계속된다', () async {
     final store = _FlakyStore();
     final host = EngineHost(
