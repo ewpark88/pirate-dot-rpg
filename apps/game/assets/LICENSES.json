@@ -284,6 +284,18 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/ship_t1.png",
       "license": "OWN"
     },
+    "ship/ship_t2.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ships.py 픽셀 격자 (ship_t1 바탕)",
+      "license": "OWN"
+    },
+    "ship/ship_t3.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ships.py 픽셀 격자 (ship_t1 바탕)",
+      "license": "OWN"
+    },
+    "ship/ship_t4.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ships.py 픽셀 격자 (ship_t1 바탕)",
+      "license": "OWN"
+    },
     "ui/ad.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"

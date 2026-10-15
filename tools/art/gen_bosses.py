@@ -84,7 +84,7 @@ def write_png(px: list[list[tuple[int, int, int] | None]]) -> bytes:
     for row in px:
         raw.append(0)
         for c in row:
-            raw.extend((0, 0, 0, 0) if c is None else (*c[:3], 255))
+            raw.extend((0, 0, 0, 0) if c is None else (*c[:3], c[3] if len(c) > 3 else 255))
 
     def chunk(kind: bytes, data: bytes) -> bytes:
         return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
