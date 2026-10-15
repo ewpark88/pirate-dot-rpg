@@ -1,6 +1,7 @@
 import 'package:game_core/src/economy/ads.dart';
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
+import 'package:game_core/src/economy/formation.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
@@ -25,6 +26,8 @@ class EconomySystem implements GameSystem {
     final Summon c => summon(state, c, ctx),
     final MergeAllCards c => tutorialAfterMerge(mergeAllCards(state, c, ctx), ctx.tables),
     final PromoteCrew c => promoteCrew(state, c, ctx),
+    final SetFleetSlot c => setFleetSlot(state, c, ctx),
+    final AutoFleet c => onAutoFleet(state, c, ctx),
     final ClaimOffline c => claimOffline(state, c, ctx),
     final ClaimDaily c => claimDaily(state, c, ctx),
     final ClaimAttendance c => claimAttendance(state, c, ctx),
@@ -47,5 +50,5 @@ class EconomySystem implements GameSystem {
 
   @override
   GameState update(GameState state, SystemContext ctx) =>
-      tickChest(tutorialTick(rollDay(state, ctx.clock.now()), ctx.tables), ctx);
+      tickChest(tutorialTick(rollDay(ensureFleet(state, ctx.tables), ctx.clock.now()), ctx.tables), ctx);
 }

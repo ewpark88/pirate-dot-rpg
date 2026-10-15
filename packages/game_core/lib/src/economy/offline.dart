@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:game_core/src/battle/fleet.dart' show autoFleet;
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart';
@@ -50,7 +49,7 @@ BigNum goldPerSecEstimate(GameState s, GameTables t, List<String> fleet) {
 }
 
 /// 오프라인 동안의 출전 선원 = 지금 배 등급 슬롯으로 자동 편성.
-List<String> offlineFleet(GameState s, GameTables t) => autoFleet(s, t, t.shipTiers.tierAt(s.progress.stage).slots);
+List<String> offlineFleet(GameState s, GameTables t) => activeFleet(s, t);
 
 /// 복귀 보상 미리보기 (UI 복귀 팝업). [ClaimOffline]과 같은 계산이고 난수를 쓰지 않는다.
 /// 경과 = `now − savedAt`을 `offline.maxSec`로 자른다. `offline.minSec` 미만(시계 역행 포함)이면 null.

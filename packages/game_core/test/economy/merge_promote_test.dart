@@ -25,6 +25,22 @@ void main() {
     expect(h.of<SaveRequested>(), hasLength(1));
   });
 
+  test('canMergeAny: 일괄 합치기로 레벨이 오르는 선원이 있을 때만 true (UI 선원 탭 빨간 점, S4 요청)', () {
+    expect(canMergeAny(withCrews({'octo': const CrewState()}), t), isFalse);
+    expect(canMergeAny(withCrews({'octo': const CrewState(), 'turtle': const CrewState(exp: 1)}), t), isTrue);
+    // 승급 문(일반 Lv15)에서는 경험치가 남아도 합치기로 오르지 않는다
+    expect(canMergeAny(withCrews({'octo': const CrewState(level: 15, exp: 50)}), t), isFalse);
+    // 희귀는 3 필요
+    expect(canMergeAny(withCrews({'octo': const CrewState(level: 16, exp: 2)}), t), isFalse);
+    expect(canMergeAny(withCrews({'octo': const CrewState(level: 16, exp: 3)}), t), isTrue);
+    // MergeAllCards와 같은 판정
+    for (final c in const [CrewState(exp: 1), CrewState(level: 15, exp: 9), CrewState(level: 16, exp: 3)]) {
+      final s0 = withCrews({'octo': c});
+      final merged = sys.handle(s0, const MergeAllCards(), EconomyHarness().ctx)!;
+      expect(canMergeAny(s0, t), merged.crews['octo']!.level != c.level);
+    }
+  });
+
   test('합치기는 등급별 경험치(희귀 3)로 레벨을 올린다, 모든 선원 한 번에', () {
     final s0 = withCrews({'octo': const CrewState(level: 16, exp: 7), 'turtle': const CrewState(exp: 2)});
     final s = sys.handle(s0, const MergeAllCards(), h.ctx)!;
