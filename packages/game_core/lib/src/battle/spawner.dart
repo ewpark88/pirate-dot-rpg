@@ -11,16 +11,19 @@ BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth,
 void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
     f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
 
-/// 무리 한 파 (규칙 2). 마리 수 = `mobCountAt(stage)`, 마리당 HP = 단일 HP × `waveHpPoolFactor` × 적 `hpScale`.
-/// 옆모습: 적은 오른쪽(`spawnX`)부터 `spawnSpacing` 간격으로 줄지어 들어온다. 탑다운은 이것으로 만든 뒤 자리만 옮긴다.
+/// 무리 한 파 (규칙 2). 마리 수 = 옆모습 `mobCountAt` / 탑다운 `topMobCountAt`(무리 습격, 2026-10-15),
+/// 마리당 HP·공격·골드 = 단일 곡선 × 몫(`mobPoolAt / 마리 수`) — 한 파 총량은 pool 기준 그대로(진행·경제 불변).
+/// 운영자 [count](측정 장면)는 몫 없이 마리당 원래 값. 옆모습은 오른쪽(`spawnX`)부터 `spawnSpacing` 간격으로,
+/// 탑다운은 이것으로 만든 뒤 자리만 옮긴다.
 void spawnWaveSide(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
   final t = ctx.tables;
   final w = t.waves;
   final region = t.regions.regionAt(stage);
-  final n = count ?? w.mobCountAt(stage);
-  final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor);
-  final attack = stageCurve(w.attackBase, w.attackGrowth, stage);
-  final gold = stageCurve(w.goldBase, w.goldGrowth, stage);
+  final n = count ?? (f.geometry?.mode == 'top' ? w.topMobCountAt(stage) : w.mobCountAt(stage));
+  final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
+  final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
+  final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
+  final gold = stageCurve(w.goldBase, w.goldGrowth, stage).times(share);
   for (var i = 0; i < n; i++) {
     final id = kind ?? region.enemies[ctx.rng.nextInt(region.enemies.length)];
     final def = t.regions.enemies[id] ?? t.regions.enemies.values.first;

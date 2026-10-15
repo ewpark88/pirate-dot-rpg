@@ -1,13 +1,14 @@
 {
   "tickMs": 50,
   "wavesPerStage": 3,
-  "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14 },
+  "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 7, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "standoff": 110, "slowZone": 30, "slowFloor": 0.2, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
+    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
     "chestMargin": 12,
     "width": 270,
     "height": 480,

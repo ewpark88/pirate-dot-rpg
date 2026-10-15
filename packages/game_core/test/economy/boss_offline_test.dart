@@ -128,7 +128,7 @@ void main() {
       final dps = fleetDps(s, t, fleet);
       expect(dps > BigNum.zero, isTrue);
       final w = t.waves;
-      final n = w.mobCountAt(1);
+      final n = w.mobPoolAt(1);
       final waveGold = BigNum.from(w.goldBase * n);
       final waveHp = BigNum.from(w.hpBase * w.waveHpPoolFactor * n);
       final waveSec = math.max((waveHp / dps).toDouble(), t.meta.offlineMinWaveSec);
