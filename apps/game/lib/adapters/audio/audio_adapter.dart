@@ -10,10 +10,12 @@ class AudioAdapter implements AudioPort {
   AudioAdapter._(this._sdk, this._files);
 
   /// 목록을 못 읽으면 빈 목록(전부 무음).
-  static Future<AudioAdapter> load(AudioSdk sdk) async {
+  /// [timeout]: 목록 읽기가 이보다 오래 걸리면 무음으로 시작한다(첫 프레임을 막지 않게).
+  static Future<AudioAdapter> load(AudioSdk sdk, {Duration? timeout}) async {
     var files = <String>{};
     try {
-      files = await sdk.listAssets();
+      final listing = sdk.listAssets();
+      files = await (timeout == null ? listing : listing.timeout(timeout));
     } on Object catch (e) {
       debugPrint('audio: asset list failed — silent ($e)');
     }
@@ -33,9 +35,26 @@ class AudioAdapter implements AudioPort {
 
   bool hasSfx(String id) => _files.contains(_sfxPath(id));
 
+  bool _suspended = false;
+
+  /// 광고가 화면을 덮는 동안: 효과음을 끊고 받지 않으며, 배경음은 일시정지.
+  void suspend() {
+    if (_suspended) return;
+    _suspended = true;
+    _fire(_sdk.stopAllSfx());
+    if (_bgmPlaying) _fire(_sdk.pauseBgm());
+  }
+
+  /// 광고가 닫히면 다시 (배경음은 울리던 경우만 이어서).
+  void unsuspend() {
+    if (!_suspended) return;
+    _suspended = false;
+    if (_bgmPlaying) _fire(_sdk.resumeBgm());
+  }
+
   @override
   void playSfx(String id, {int variant = 0, double pitch = 1}) {
-    if (_sfx <= 0) return;
+    if (_sfx <= 0 || _suspended) return;
     final varied = _sfxPath('${id}_$variant');
     final path = _files.contains(varied) ? varied : _sfxPath(id);
     if (!_files.contains(path)) return;

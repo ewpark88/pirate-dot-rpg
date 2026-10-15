@@ -34,11 +34,17 @@ class FakeAudioSdk implements AudioSdk {
   @override
   Future<void> stopBgm() async => bgmStopped = true;
 
-  @override
-  Future<void> pauseBgm() async {}
+  int sfxStops = 0;
+  final bgmCalls = <String>[];
 
   @override
-  Future<void> resumeBgm() async {}
+  Future<void> stopAllSfx() async => sfxStops++;
+
+  @override
+  Future<void> pauseBgm() async => bgmCalls.add('pause');
+
+  @override
+  Future<void> resumeBgm() async => bgmCalls.add('resume');
 }
 
 void main() {
@@ -104,6 +110,34 @@ void main() {
     await pumpEventQueue();
     expect(sdk.bgmStopped, isTrue);
   });
+  test('목록 읽기가 시간 제한을 넘으면 무음으로 시작한다(첫 프레임을 막지 않음)', () async {
+    final a = await AudioAdapter.load(_HangingSdk(), timeout: const Duration(milliseconds: 20));
+    expect(a.hasSfx('hit'), isFalse);
+  });
+  test('광고 동안(suspend): 효과음 끊고 받지 않음, 배경음 일시정지 → unsuspend면 이어서', () async {
+    final sdk = FakeAudioSdk({'sfx/hit.ogg', 'bgm/bgm_coral.ogg'});
+    final a = await AudioAdapter.load(sdk)
+      ..playBgm('bgm_coral')
+      ..suspend()
+      ..playSfx('hit')
+      ..suspend(); // 두 번 불러도 한 번만
+    expect(sdk.sfx, isEmpty);
+    expect(sdk.sfxStops, 1);
+    expect(sdk.bgmCalls, ['pause']);
+    a
+      ..unsuspend()
+      ..playSfx('hit');
+    expect(sdk.bgmCalls, ['pause', 'resume']);
+    expect(sdk.sfx.single.$1, 'sfx/hit.ogg');
+  });
+
+  test('배경음이 안 울리던 중이면 unsuspend가 배경음을 켜지 않는다', () async {
+    final sdk = FakeAudioSdk({'sfx/hit.ogg'});
+    (await AudioAdapter.load(sdk))
+      ..suspend()
+      ..unsuspend();
+    expect(sdk.bgmCalls, isEmpty);
+  });
 }
 
 class _ThrowingSdk extends FakeAudioSdk {
@@ -111,4 +145,12 @@ class _ThrowingSdk extends FakeAudioSdk {
 
   @override
   Future<Set<String>> listAssets() async => throw StateError('manifest');
+}
+
+/// 목록 읽기가 끝나지 않는 SDK (같은 프로세스 재실행에서 플랫폼 응답이 안 오는 경우를 흉내).
+class _HangingSdk extends FakeAudioSdk {
+  _HangingSdk() : super({});
+
+  @override
+  Future<Set<String>> listAssets() => Completer<Set<String>>().future;
 }

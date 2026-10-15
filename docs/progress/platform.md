@@ -1,5 +1,18 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 재실행 멈춤 버그 원인 확정·수정 (S24 실기기, 사용자 자리 확인 후)
+- 원인(logcat 근거): ① 첫 화면 BACK이 액티비티를 **finish**(`wm_finish_activity app-request`) → 다시 열면 같은 프로세스에서 새 Flutter 엔진.
+  ② 템플릿 `taskAffinity=""` 때문에 런처로 열 때마다 **새 작업·새 엔진**. ③ 이전 엔진 정리 `performDestroy`가 **8349ms**(배경음이 백그라운드에서도 재생 중이던 때) — 메인 스레드(Flutter 3.29+ 합쳐진 스레드)가 막혀 새 화면이 스플래시에 머묾. 배경음을 멈춘 뒤엔 103ms.
+- 수정: MainActivity `finish()`가 작업 맨 아래면 `moveTaskToBack`(Android 16 예측형 뒤로 가기는 popSystemNavigator를 안 거침) · manifest `singleTask` + 기본 affinity · onPause/onResume에 배경음 pause/resume · FlameAudioSdk 효과음 timeout 타입 오류(`onTimeout: () {}`) 수정.
+- 확인(실기기): 60초 전투 → 첫 화면 BACK → 홈(같은 pid, finish·destroy 0) → 다시 열기 0.94초, `boot:` 0줄(엔진 재사용). 수정 전 약 10초.
+- 발견: device_shots의 `in_front`(topResumedActivity)가 Samsung에서 런처가 앞인데도 우리 앱이라고 답함 → `dumpsys window` mCurrentFocus로 바꿔야 함(다음 커밋).
+
+## 2026-10-15 · S5 · 재실행 멈춤 1차 대응 + 매일 콘텐츠 4종 기획서
+- 한 일(버그, S1 위임): MainActivity.popSystemNavigator → moveTaskToBack, SDK 초기화 3초 제한(Firebase·오디오 목록 → Noop·무음), onDetach 정리, `boot:` 단계 로그, EngineHost.pause 두 번 안전.
+  원인 확정은 실기기 재현이 필요 — **사용자가 폰 앞에 있다는 S1 확인 전엔 입력 금지**(대기 중).
+  실수: check 출력을 `| tail`로 받아 실패(레인 밖 engine_host_test.dart)를 놓치고 커밋 → 미머지 커밋 2개를 soft reset으로 합쳐 정리. **check는 종료 코드로 판단한다.**
+- 한 일(기획): docs/specs/platform-content-{overview,achievements,bounty,crew-bond,voyage-log}.md — 피로 규칙과 부딪히는 곳(시즌·한정·티켓)을 '쌓이는 티켓·자동 지급·첫 등장 의상·주말은 보너스만'으로 푼 안, 테이블 키·세이브·명령·이벤트·UI·수용 기준·레인 분담, 우선순위(업적+주말 → 현상금 → 선원 → 일지).
+
 ## 2026-10-15 · S5 · 실기기 캡처 스크립트 실기기 검증(S24) — 덤프 실패 대응, 복귀 창, 안전장치
 - 한 일: 덤프 실패(Flame이 늘 움직여 "null root node") → 좌표를 배치 규칙으로(dumpsys window 상태·내비 바 틀 + wm density). S24 실측과 맞춤(설정 1012,171 · 퀘스트 878,171 · 탭 y 2126).
   창 감지는 그림으로(상단 바 바탕 27→13이면 막) → 밝은 기본 버튼(받기, 실기기 색 67,118,185) 누르기 → 남으면 BACK. **캡처마다** 확인(복귀 창이 늦게 뜬다). 앞 화면과 같으면 경고. 00_start.png 남김. 테스트 13.

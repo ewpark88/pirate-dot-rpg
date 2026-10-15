@@ -27,12 +27,21 @@ import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/state/platform_providers.dart';
 
+/// 첫 프레임 전 SDK 초기화가 이보다 오래 걸리면 포기하고 없이 시작한다(Noop·무음) — 스플래시에 갇히지 않게.
+const _sdkTimeout = Duration(seconds: 3);
+
 Future<void> main() async {
+  // 단계별 시간 (logcat `boot:`) — 같은 프로세스에서 다시 열 때 어디서 멈추는지 바로 보이게 (재실행 멈춤 버그, 2026-10-15).
+  final boot = Stopwatch()..start();
+  void step(String name) => debugPrint('boot: $name ${boot.elapsedMilliseconds}ms');
+  step('start');
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  step('orientation');
   final tables = GameTables.load();
   const clock = SystemClock();
   final supportDir = await getApplicationSupportDirectory();
+  step('supportDir');
   final store = FileSaveStore(supportDir);
   // 세이브가 없거나 둘 다 깨졌으면 새 게임 (loadSave가 save.json → save.bak 순서로 시도).
   GameState? saved;
@@ -41,6 +50,7 @@ Future<void> main() async {
   } on SaveCorruptException {
     saved = null;
   }
+  step('loadSave');
   final initial =
       saved ??
       GameState.newGame(
@@ -51,9 +61,14 @@ Future<void> main() async {
       );
   final host = EngineHost(tables: tables, initial: initial, clock: clock, store: store);
   // 어댑터 (platform-m4): 실패해도 던지지 않는다 — google-services.json이 없으면 Noop, 음원 목록 실패면 무음.
-  final analytics = await startAnalytics(() => initFirebase(collectCrashes: kReleaseMode && !kOperator));
-  final audio = await AudioAdapter.load(FlameAudioSdk());
-  final ads = AdMobAds(GoogleAdsSdk());
+  final analytics = await startAnalytics(
+    () => initFirebase(collectCrashes: kReleaseMode && !kOperator).timeout(_sdkTimeout),
+  );
+  step('analytics');
+  final audio = await AudioAdapter.load(FlameAudioSdk(), timeout: _sdkTimeout);
+  step('audio');
+  // 광고가 화면을 덮는 동안 게임 소리를 멈춘다(광고 소리와 겹치거나 오디오 포커스를 다투지 않게 — 2026-10-15 광고 뒤 버벅임).
+  final ads = AdMobAds(GoogleAdsSdk(), onShowStart: audio.suspend, onShowEnd: audio.unsuspend);
   // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
   ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
   late final ProviderContainer container;
@@ -90,17 +105,25 @@ Future<void> main() async {
     (_, on) => unawaited(notifier.onSettingChanged(enabled: on)),
   );
   // 백그라운드로 가면 저장하고 멈춘다. 돌아오면 다시 돈다 (오프라인 보상은 UI 복귀 팝업이 ClaimOffline으로 받는다).
+  // 엔진이 떨어지면(액티비티 종료) 타이머·배경음을 멈춘다 — 떨어진 엔진에 플랫폼 메시지를 계속 보내지 않게.
   AppLifecycleListener(
     onPause: () {
       unawaited(host.pause());
       unawaited(notifier.onPause());
+      audio.pauseBgm(); // 뒤로 가면 배경음도 멈춘다(실기기: 홈 화면에서도 계속 울렸다)
     },
     onResume: () {
       host.resume();
       unawaited(notifier.onResume());
+      audio.resumeBgm();
+    },
+    onDetach: () {
+      unawaited(host.pause());
+      audio.stopBgm();
     },
   );
   runApp(UncontrolledProviderScope(container: container, child: const PirateDotApp()));
+  step('runApp');
   // UMP 동의 폼은 화면이 있어야 뜬다 → 첫 프레임 뒤에 광고 시작.
   WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(ads.start()));
 }

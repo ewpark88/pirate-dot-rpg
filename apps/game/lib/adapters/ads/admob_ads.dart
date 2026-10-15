@@ -13,7 +13,11 @@ void _timerSchedule(Duration d, void Function() run) => Timer(d, run);
 /// AdMob 보상형 + UMP (스펙 platform-m4 a). 보상형은 형식이 하나라 로드된 광고 1개를 모든 장치가 공유한다.
 /// 일일 한도는 세지 않는다(코어·UI 몫). 실패는 모두 삼키고 "준비 안 됨"으로 남는다.
 class AdMobAds implements AdsPort {
-  AdMobAds(this._sdk, {this._schedule = _timerSchedule});
+  AdMobAds(this._sdk, {this._schedule = _timerSchedule, this.onShowStart, this.onShowEnd});
+
+  /// 광고가 화면을 덮기 직전·닫힌 뒤(실패 포함). 게임 소리 멈춤·재개에 쓴다(main.dart → AudioAdapter.suspend).
+  final void Function()? onShowStart;
+  final void Function()? onShowEnd;
 
   static const _firstRetry = Duration(seconds: 30);
   static const _maxRetry = Duration(minutes: 10);
@@ -58,6 +62,7 @@ class AdMobAds implements AdsPort {
     if (!_ready.value) return AdResult.notLoaded;
     _ready.value = false;
     AdResult result;
+    onShowStart?.call();
     try {
       result = switch (await _sdk.show()) {
         AdShowOutcome.rewarded => AdResult.rewarded,
@@ -67,6 +72,8 @@ class AdMobAds implements AdsPort {
     } on Object catch (e) {
       debugPrint('ads: show failed $e');
       result = AdResult.failed;
+    } finally {
+      onShowEnd?.call();
     }
     unawaited(_load());
     return result;
