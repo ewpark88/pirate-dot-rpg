@@ -411,5 +411,10 @@
   "uiTitleNavigator": "Seasoned Navigator",
   "uiTitleCaptain": "Sea Captain",
   "uiTitleAdmiral": "Legendary Admiral",
-  "uiTitleSeaKing": "King of Seven Seas"
+  "uiTitleSeaKing": "King of Seven Seas",
+  "uiBossFailTitle": "The boss got away",
+  "uiBossFailRule": "Beat the boss before time runs out. For now you're farming gold on this stage — upgrade your ship and try again!",
+  "uiBossFailShort": "Boss got away — upgrade and retry!",
+  "uiBossFailUpgrade": "Upgrade {part}",
+  "uiFarmingRetry": "Farming · boss retry ready"
 }
