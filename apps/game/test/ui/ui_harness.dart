@@ -34,6 +34,7 @@ Future<CommandLog> pumpGame(
   Size size = s24Size,
   double dpr = s24Dpr,
   List<Override> overrides = const [],
+  bool openTab = true,
 }) async {
   tester.view
     ..physicalSize = size * dpr
@@ -42,6 +43,8 @@ Future<CommandLog> pumpGame(
   final log = CommandLog();
   await tester.pumpWidget(
     ProviderScope(
+      // 같은 테스트에서 다시 그려도 새 앱으로 시작한다(시트 열림 같은 화면 상태를 이어받지 않게).
+      key: UniqueKey(),
       overrides: [
         // 샘플은 모두 tutorialStep=1이다. 튜토리얼을 시험하는 테스트만 그대로 두고, 나머지는 끝난 상태로 그린다.
         initialGameStateProvider.overrideWithValue(keepTutorial ? state : state.copyWith(clearTutorial: true)),
@@ -56,10 +59,12 @@ Future<CommandLog> pumpGame(
     ),
   );
   await tester.pump();
-  if (tab != 0) {
+  // 도크 + 시트(2026-10-15): 탭 내용은 시트를 열어야 보인다 → 고른 탭 아이콘을 눌러 시트를 연다(항해 포함).
+  if (openTab) {
     await tester.tap(find.byKey(Key('tab.$tab')));
-    // 탭 표시 애니메이션을 끝까지.
-    await tester.pump(); // 탭 상태 반영 → 애니메이션 시작
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600)); // 시트 열기 시작
     await tester.pump(_tabAnimation);
   }
   return log;

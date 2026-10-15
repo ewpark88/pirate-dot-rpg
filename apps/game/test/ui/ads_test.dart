@@ -71,7 +71,9 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
   await tester.pump();
   if (tab != 0) {
     await tester.tap(find.byKey(Key('tab.$tab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
   }
   return log;
 }
@@ -84,7 +86,9 @@ void main() {
     await pumpGame(tester, farming.copyWith(progress: farming.progress.copyWith(farming: true)));
     expect(_ad(), findsNothing);
     await tester.tap(find.byKey(const Key('tab.$summonTab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(_ad(), findsNothing);
   });
 
@@ -116,7 +120,9 @@ void main() {
     await tester.tap(find.byKey(const Key('ad.bossSupport')));
     await tester.pump();
     await tester.tap(find.byKey(const Key('tab.$summonTab')));
+    // 시트가 올라오는 시간 (첫 프레임에 애니메이션이 시작된다).
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.textContaining('Free summon · '), findsOneWidget);
     await tester.tap(find.byKey(const Key('ad.freeSummon')));
     await tester.pump();

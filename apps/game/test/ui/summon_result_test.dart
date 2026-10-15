@@ -99,7 +99,7 @@ void main() {
   });
 
   testWidgets('등장 연출: 신화는 기대감 중 화면이 번쩍이고 끝나면 사라진다', (tester) async {
-    await pumpGame(tester, _withResult(results: _mythicOnly));
+    await pumpGame(tester, _withResult(results: _mythicOnly), openTab: false);
     await _toHintPeak(tester);
     expect(_flashes(tester), isNotEmpty);
     await tester.pumpAndSettle();
@@ -108,7 +108,7 @@ void main() {
 
   testWidgets('등장 연출: 설정 번쩍임을 끄면 번쩍이지 않는다', (tester) async {
     final off = _withResult(results: _mythicOnly);
-    await pumpGame(tester, off.copyWith(settings: off.settings.withValue('flash', false)));
+    await pumpGame(tester, off.copyWith(settings: off.settings.withValue('flash', false)), openTab: false);
     await _toHintPeak(tester);
     expect(_flashes(tester), isEmpty);
   });

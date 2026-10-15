@@ -4,11 +4,11 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -99,7 +99,7 @@ class SummonTab extends ConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: PixelBar(value: pity / rarities.pityCount, fill: PixelPalette.accent, dots: 7),
+                    child: PixelBar(value: pity / rarities.pityCount, fill: Skin.goldBottom, dots: 7),
                   ),
                   const SizedBox(width: 8),
                   Text(l10n.uiSummonPityProgress(pity, rarities.pityCount)),
