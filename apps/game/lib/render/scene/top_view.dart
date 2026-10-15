@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/layout.dart';
@@ -14,4 +15,7 @@ extension TopView on BattleScene {
 
   /// 코인이 날아갈 곳: 탑다운은 배, 옆모습은 UI 골드 자리(없으면 배).
   (double, double) get coinTo => isTop ? (topShip.dx, topShip.dy) : coinFlow.target(layout);
+
+  /// 유리병(돌발 이벤트 bottle)이 떠 있는 자리 — 배 오른쪽 앞, 천천히 출렁임.
+  Offset get bottleAt => topShip + Offset(30, -12 + math.sin(clockMs / 600) * 2);
 }

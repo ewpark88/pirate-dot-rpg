@@ -60,6 +60,9 @@ class Moments {
   /// 대포 발사 시각 (장면 시계 ms) — 반동. 포구 화염 지연만큼 미래일 수 있다.
   double cannonFiredAtMs = -1000000000;
 
+  /// 피버 시작 금빛 번쩍 남은 시간(ms).
+  double feverFlashMs = 0;
+
   /// 무리전 침몰(배 HP 0, 엔진이 배를 고치고 파를 다시) 연출 남은 시간(ms): 앞 절반 기울며 가라앉고, 뒤 절반 고쳐져 떠오른다.
   double sinkMs = 0;
 
@@ -92,6 +95,7 @@ class Moments {
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
     if (glowMs > 0) glowMs -= dtMs;
+    if (feverFlashMs > 0) feverFlashMs -= dtMs;
     if (sinkMs > 0) {
       final half = scene.fx.raw.obj('shipHp').number('sinkMs') / 2;
       final before = sinkMs;
