@@ -62,11 +62,12 @@ class _PartRow extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final mult = ref.watch(upgradeMultiplierProvider);
     // 골드는 틱마다 바뀌므로 (레벨, 살 레벨 수, 비용)만 구독한다.
-    final (level, levels, cost) = ref.watch(
+    final (level, levels, cost, honor) = ref.watch(
       gameStateProvider.select((s) {
         final lv = s.ship.parts[def.id] ?? 0;
         final (n, c) = bulkUpgrade(def, lv, s.wallet.gold, mult);
-        return (lv, n, c);
+        // 명예 외형: 환생 전에 도달한 외형 단계가 지금 레벨의 단계보다 높다(그림은 명예 단계로 보인다).
+        return (lv, n, c, (s.ship.honorParts[def.id] ?? 0) > partLookStage(def, lv));
       }),
     );
     final affordable = levels > 0;
@@ -91,6 +92,12 @@ class _PartRow extends ConsumerWidget {
                 children: [
                   Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                  if (honor)
+                    Text(
+                      l10n.uiRebirthHonorLook,
+                      key: Key('ship.honor.${def.id}'),
+                      style: Skin.text(12, color: Skin.goldInk),
+                    ),
                 ],
               ),
             ),

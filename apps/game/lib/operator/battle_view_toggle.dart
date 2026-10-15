@@ -5,7 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 렌더가 탑다운(BattleView.mode 'top')을 그릴 수 있나. T2에서 렌더(S3)가 BattleGame에 연결하면 true로 바꾼다.
-const kTopRenderReady = false;
+const kTopRenderReady = true;
 
 /// 운영자 패널 '전장 방식' 토글 (요청서 platform-topdown-operator, S1 결정 (b)): 옆모습 / 탑다운.
 /// 누르면 SetSetting('battleView', …). 렌더 연결 전에는 탑다운 옆에 '렌더 준비 중'.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -215,25 +216,45 @@ class RebirthDoneGate extends ConsumerStatefulWidget {
 }
 
 class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
+  StreamSubscription<RecordedTick>? _sub;
+
+  /// 마지막으로 받은 RebirthDone (상자 내용: 젬·소환·칭호·스킨).
+  RebirthDone? _done;
+
   @override
   void initState() {
     super.initState();
+    _sub = ref.read(battleFeedProvider)?.listen((tick) {
+      for (final e in tick.events) {
+        if (e is RebirthDone) _done = e;
+      }
+    });
     ref.listenManual(gameStateProvider.select((s) => (s.progress.rebirths, s.wallet.mapPieces)), (before, after) {
       if (before == null || after.$1 <= before.$1) return;
       final gain = after.$2 - before.$2;
       final bonus = rebirthBonus(ref.read(gameStateProvider), ref.read(tablesProvider));
+      // 상자 내용은 경제 이벤트 그대로. 이벤트를 못 받았으면(테스트·전장 없음) 같은 식으로 계산한 값.
+      final e = _done;
+      final chest = e != null && e.rebirths == after.$1
+          ? (gems: e.gems, summons: e.summons, title: e.title, skin: e.skin)
+          : chestFor(after.$1);
       unawaited(
         showDialog<void>(
           context: context,
-          // 환생 v2: 상자 팝업(조각 + 젬·소환·스킨·칭호). 계약 전엔 상자 내용을 스펙 식으로 흉내 낸다.
           builder: (_) => RebirthChestDialog(
-            chest: chestFor(after.$1),
-            pieces: gain,
+            chest: chest,
+            pieces: e != null && e.rebirths == after.$1 ? e.gain : gain,
             bonus: percentText(AppLocalizations.of(context), bonus),
           ),
         ),
       );
     });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_sub?.cancel());
+    super.dispose();
   }
 
   @override
