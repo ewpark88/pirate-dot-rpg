@@ -1137,7 +1137,8 @@ const Map<String, String> rawTables = {
     "minDots": 11,
     "spinFrameMs": 70,
     "frames": 4
-  }
+  },
+  "shipScale": 1.5
 }
 ''',
   'growth': r'''

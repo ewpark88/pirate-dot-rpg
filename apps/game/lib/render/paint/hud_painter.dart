@@ -159,11 +159,10 @@ class HudPainter {
     final fleet = scene.frame.fleet;
     final s = _fx.slots;
     final bw = s.number('border');
-    final (w, h) = (kSlotPlateSize.width, kSlotPlateSize.height);
-    final (iw, ih) = (w - bw * 2, h - bw * 2);
     for (var i = 0; i < kSlotCount; i++) {
-      final at = layout.slotInBand(i);
-      final (x, y) = (at.dx, at.dy);
+      final rect = layout.slotRectInBand(i);
+      final (x, y, w, h) = (rect.left, rect.top, rect.width, rect.height);
+      final (iw, ih) = (w - bw * 2, h - bw * 2);
       final (ix, iy) = (x + bw, y + bw);
       if (i >= fleet.length) {
         _fill(c, x, y, w, h, _slotLine);

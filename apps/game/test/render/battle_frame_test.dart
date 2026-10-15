@@ -41,7 +41,7 @@ void main() {
         expect(f.bandTop - kFieldBottom, greaterThanOrEqualTo(0), reason: '필드 148이 선원 줄 위에 다 들어간다');
       });
 
-      test('선원 줄: 56dp 이상, 상자 맨 아래, 폭 전체', () {
+      test('선원 줄: 56dp 이상(칸 + 위아래 여백), 상자 맨 아래, 폭 전체', () {
         final b = f.slotBand;
         expect(b.height, greaterThanOrEqualTo(kSlotBandMinDp - 1e-6));
         expect(b.bottom, closeTo(box.height, 1e-6));
@@ -50,23 +50,27 @@ void main() {
 
       test('선원 줄 도트 상한: 슬롯 판 ≤ 58dp (태블릿에서 과하게 커지지 않음)', () {
         expect(f.bandScale * f.dot, lessThanOrEqualTo(kBandDotMaxDp + 1e-9));
-        expect(f.slotRects.first.width, lessThanOrEqualTo(kSlotPlateSize.width * kBandDotMaxDp + 1e-6));
+        expect(f.slotRects.first.width, lessThanOrEqualTo(kSlotMaxDp + 1e-6));
       });
 
-      test('궁극기·보스 도전 버튼: 48dp 이상, 상자 안 오른쪽 끝, 슬롯 6칸과 겹치지 않음', () {
-        for (final r in [f.ultimateRect, f.bossRect]) {
-          expect(r.width, greaterThanOrEqualTo(48));
-          expect(r.height, greaterThanOrEqualTo(48));
-          expect(f.slotBand.contains(r.topLeft) && r.right <= box.width + 1e-6, isTrue);
-        }
-        expect(f.bossRect.right, lessThanOrEqualTo(f.ultimateRect.left));
+      test('큰 칸(사용자 지시): 6칸 + 궁극기가 한 줄, 칸 44~72dp, 보스 도전은 궁극기 바로 위(줄 밖)', () {
         final slots = f.slotRects;
         expect(slots, hasLength(kSlotCount));
-        expect(slots.last.right, lessThanOrEqualTo(f.buttonsRect.left));
         for (final s in slots) {
+          expect(s.width, inInclusiveRange(44, kSlotMaxDp + 1e-6));
           expect(s.top, greaterThanOrEqualTo(f.slotBand.top));
           expect(s.bottom, lessThanOrEqualTo(f.slotBand.bottom + 1e-6));
         }
+        final u = f.ultimateRect;
+        expect(u.width, greaterThanOrEqualTo(44), reason: '그림은 44dp 이상, 누르는 영역은 UI가 48dp로 키운다');
+        expect(u.right, lessThanOrEqualTo(box.width + 1e-6));
+        expect(u.top, greaterThanOrEqualTo(f.slotBand.top - 1e-6));
+        expect(slots.last.right, lessThanOrEqualTo(u.left));
+        final b = f.bossRect;
+        expect(b.width, closeTo(u.width, 1e-6));
+        expect(b.left, closeTo(u.left, 1e-6));
+        expect(b.bottom, lessThanOrEqualTo(f.slotBand.top), reason: '줄 위에 뜬다');
+        expect(b.top, greaterThanOrEqualTo(0));
       });
     });
   }
