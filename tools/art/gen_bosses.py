@@ -1,4 +1,4 @@
-"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray). 격자 → PNG, LICENSES OWN.
+"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus). 격자 → PNG, LICENSES OWN.
 
     python -I tools/art/gen_bosses.py            # apps/game/assets/bosses/ 에 쓴다
     python -I tools/art/gen_bosses.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -346,11 +346,102 @@ def thunder_ray() -> list[list]:
     return px
 
 
+# ---------- 묶음 3 빙하: icebreaker · iceberg_walrus ----------
+ICE_SWAP = {
+    (60, 50, 60): (185, 215, 235),  # 돛: 얼음빛
+    (179, 48, 43): (245, 250, 255),  # 줄무늬: 흰색
+    (140, 90, 50): (110, 120, 135),  # 강철 선체
+    (95, 58, 32): (80, 88, 102),
+    (70, 44, 26): (56, 62, 74),
+    (220, 70, 60): (120, 200, 240),  # 꼭대기 깃발: 얼음 파랑
+}
+SNOWFLAKE = [
+    "...w...",
+    ".w.w.w.",
+    "..www..",
+    "wwwwwww",
+    "..www..",
+    ".w.w.w.",
+    "...w...",
+]
+ICE = (225, 240, 250)
+ICE_MID = (170, 210, 235)
+ICE_DARK = (130, 180, 215)
+
+
+def icebreaker() -> list[list]:
+    """얼음빛 돛·흰 줄·눈꽃 문양·강철 선체 + 뱃머리 아래 얼음 고드름 (빙하 중간 보스)."""
+    px = ship_variant(ICE_SWAP, (185, 215, 235), (150, 185, 210), SNOWFLAKE, {"w": (60, 120, 190)}, (21, 9), False, (120, 200, 240))
+    # 선체 밑 고드름: 바닥 외곽선 아래로 3칸마다 1~2칸
+    h, w = len(px), len(px[0])
+    for x in range(w):
+        ys = [y for y in range(h) if px[y][x] is not None]
+        if not ys or x % 3:
+            continue
+        bottom = max(ys)
+        if bottom + 2 < h and px[bottom - 1][x] is not None and px[bottom - 1][x] != OUTLINE:
+            continue
+        for dy in range(1, 2 + (x // 3) % 2 + 1):
+            if bottom + dy < h:
+                px[bottom + dy][x] = ICE_MID if dy == 1 else ICE
+    return px
+
+
+WALRUS = (156, 110, 82)
+WALRUS_SHADE = (120, 82, 60)
+MUZZLE = (196, 156, 124)
+
+
+def iceberg_walrus() -> list[list]:
+    """빙산 위에 앉은 바다코끼리 64×52: 엄니·수염 주둥이·눈·앞 지느러미, 등에 서리. 머리 왼쪽(배 쪽)."""
+    w, h = 64, 52
+    px = [[None] * w for _ in range(h)]
+
+    def ellipse(cx, cy, rx, ry, color_at):
+        for y in range(h):
+            for x in range(w):
+                dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+                if dx * dx + dy * dy <= 1:
+                    c = color_at(x, y, dx, dy)
+                    if c is not None:
+                        px[y][x] = c
+
+    floe = [(3, 40), (12, 35), (28, 37), (44, 33), (60, 38), (58, 47), (42, 50), (18, 50), (5, 46)]
+    for y in range(h):
+        for x in range(w):
+            if _in_poly(x + 0.5, y + 0.5, floe):
+                px[y][x] = ICE_MID if y > 45 else ICE
+    _line(px, [(20, 41), (24, 44), (23, 47)], ICE_DARK)  # 빙산 금
+    _line(px, [(46, 39), (49, 43)], ICE_DARK)
+    ellipse(37, 24, 19, 14, lambda x, y, dx, dy: WALRUS_SHADE if dy > 0.45 else WALRUS)  # 몸
+    ellipse(17, 19, 10, 9, lambda x, y, dx, dy: WALRUS)  # 머리
+    ellipse(12, 25, 7, 4.5, lambda x, y, dx, dy: MUZZLE)  # 주둥이
+    ellipse(25, 35, 6, 3, lambda x, y, dx, dy: WALRUS_SHADE)  # 앞 지느러미
+    for tx in (9, 14):  # 엄니
+        for y in range(28, 38):
+            px[y][tx] = BONE
+            px[y][tx + 1] = BONE if y < 36 else None
+    outline(px)
+    for x, y in ((8, 24), (11, 23), (14, 24), (9, 26), (12, 26), (15, 26)):
+        px[y][x] = WALRUS_SHADE  # 수염 자리
+    _line(px, [(26, 10), (28, 18), (26, 27)], WALRUS_SHADE)  # 목 주름: 머리와 몸을 가른다
+    for x, y in ((12, 14), (19, 14)):  # 눈 2×2 + 반짝임
+        for dx in (0, 1):
+            for dy in (0, 1):
+                px[y + dy][x + dx] = OUTLINE
+        px[y][x] = BONE
+    for x, y in ((34, 12), (35, 12), (42, 13), (28, 14), (47, 17), (40, 11)):
+        px[y][x] = ICE  # 등에 서리
+    return px
+
+
 FILES = {
     "bosses/raider_ship.png": raider_ship,
     "bosses/giant_hermit.png": giant_hermit,
     "bosses/storm_pirate.png": storm_pirate,
     "bosses/thunder_ray.png": thunder_ray,
+    "bosses/icebreaker.png": icebreaker,
+    "bosses/iceberg_walrus.png": iceberg_walrus,
 }
 
 

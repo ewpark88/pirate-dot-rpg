@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: 배 등급 t2~t4 승인 대기 → 묶음 3 빙하(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | art: 묶음 3 빙하 승인 대기 → 묶음 4 화산(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 배 등급 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 묶음 3 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 3: 빙하
+- 배 t2~t4 승인·main 머지(고물이 화면 밖으로 나가는 건 그대로).
+- gen_enemies: icecrab(팩 crab 서리 흰빛 색 바꿈 — 처음 얼음 파랑은 바다에 묻혀 밝게), icecrab_small 11×8, penguin 13×13(뒤뚱), seal 20×11(꼬리 듦), snowgull(gull 색 바꿈).
+- gen_bosses: icebreaker(얼음빛 돛·흰 줄·눈꽃·강철 선체·고드름), iceberg_walrus 64×52(빙산 위 바다코끼리, 엄니·눈·목 주름·서리).
+- sprites_test 해역 glacier 추가. 비교 `docs/specs/render-art-enemies/compare_glacier.png`.
 
 ### 2026-10-15 · S3 · art: 배 등급 t2~t4
 - `tools/art/gen_ships.py`(ship_t1 바탕): x=24 무늬 없는 줄을 끼워 길이를 늘리고(t2 +8, t3·t4 +16), 위로 윗돛을 얹는다.
