@@ -9,6 +9,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/demo/sample_battle.g.dart';
 import 'package:pirate_dot/render/demo/stress_recording.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
+import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/perf_overlay.dart';
 import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
@@ -16,7 +17,6 @@ import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
-import 'package:pirate_dot/render/viewport/integer_scale.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
 export 'package:pirate_dot/render/layout.dart' show kLogicalHeight, kLogicalWidth;
@@ -178,10 +178,12 @@ class BattleGame extends FlameGame {
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     final dpr = PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 1;
-    final s = integerScale(size.x, size.y, dpr: dpr);
+    // 화면 배치 v2: 폭 기준 정수배, 필드는 가운데, 남는 위·아래·좌우는 배경으로 채운다(UI 버튼과 같은 계산).
+    final frame = battleFrameFor(Size(size.x, size.y), dpr);
+    scene.layout = frame;
     camera.viewfinder
-      ..zoom = s.scale
-      ..position = Vector2(-s.offsetX / s.scale, -s.offsetY / s.scale);
+      ..zoom = frame.dot
+      ..position = Vector2(frame.viewDots.left, frame.viewDots.top);
   }
 
   @override

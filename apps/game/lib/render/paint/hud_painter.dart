@@ -20,19 +20,24 @@ class HudPainter {
   final _paint = Paint()..isAntiAlias = false;
 
   final _stage = PixelText();
-  final _gold = PixelText();
+  final _timer = PixelText();
   final _combo = PixelText();
-  String _goldShown = '';
   int _stageShown = -1;
   int _waveShown = -1;
+  int _timerShown = -1;
 
   FxMapTable get _fx => scene.fx;
   late final int _white = parseArgb(_fx.hud.str('textColor'), 'hud.textColor');
   late final int _goldColor = parseArgb(_fx.hud.str('goldColor'), 'hud.goldColor');
   late final int _rageFill = parseArgb(_fx.hud.str('rageFill'), 'hud.rageFill');
   late final int _rageFull = parseArgb(_fx.hud.str('rageFull'), 'hud.rageFull');
-  late final int _rageBack = parseArgb(_fx.hud.str('rageBack'), 'hud.rageBack');
-  late final List<double> _rage = [for (final v in _fx.hud.raw['rage'] as List) (v as num).toDouble()];
+  late final int _barBack = parseArgb(_fx.hud.str('barBack'), 'hud.barBack');
+  late final int _bossFill = parseArgb(_fx.hud.str('bossFill'), 'hud.bossFill');
+  late final int _timerColor = parseArgb(_fx.hud.str('bossTimerColor'), 'hud.bossTimerColor');
+  late final int _empty = parseArgb(_fx.slots.str('empty'), 'slots.empty');
+
+  /// 보스 체력 막대 [왼, 위, 오른, 아래] — x는 보이는 영역 오른쪽 끝에서 잰다(음수).
+  late final List<double> _bossBar = [for (final v in _fx.hud.raw['bossBar'] as List) (v as num).toDouble()];
   late final int _comboColor = parseArgb(_fx.combo.str('color'), 'combo.color');
   late final int _plate = parseArgb(_fx.slots.str('plate'), 'slots.plate');
   late final int _cooldown =
@@ -72,59 +77,90 @@ class HudPainter {
     }
   }
 
-  /// HUD (흔들림 밖): 골드·스테이지·게이지·콤보.
+  /// 캔버스 HUD (흔들림 밖, 화면 배치 v2): 위 가운데 스테이지-파, 그 아래 보스 남은 초, 오른쪽 위 보스 체력, 콤보.
+  /// 골드는 UI 상단 바, 함성 게이지는 선원 줄 궁극기 버튼으로 옮겼다.
   void paintHud(Canvas c) {
     final f = scene.frame;
-    sprites.draw(c, 'coin', 8, 8);
-    final gold = f.gold.isZero ? '0' : f.gold.format();
-    if (gold != _goldShown) {
-      _goldShown = gold;
-      _gold.set(gold, _goldColor, 1);
-    }
-    _gold.draw(c, 14, 6);
+    final v = scene.layout.viewDots;
     if (f.stage != _stageShown || f.wave != _waveShown) {
       _stageShown = f.stage;
       _waveShown = f.wave;
       _stage.set('${f.stage}-${f.wave + 1}', _white, 1);
     }
-    _stage.draw(c, _fx.hud.number('stageX'), _fx.hud.number('stageY'));
-    final (l, t, r, b) = (_rage[0], _rage[1], _rage[2], _rage[3]);
-    _fill(c, l, t, r - l + 1, b - t + 1, _rageBack);
-    final rage = f.rage.clamp(0.0, 1.0);
-    if (rage > 0) _fill(c, l + 1, t + 1, (r - l - 2) * rage, b - t - 1, rage >= 1 ? _rageFull : _rageFill);
+    final cx = (v.left + v.width / 2).floorToDouble();
+    _stage.draw(c, cx - (_stage.width / 2).floorToDouble(), v.top + _fx.hud.number('stageY'));
+    if (f.bossActive) {
+      final sec = (f.bossTicksLeft * scene.player.tickMs / Duration.millisecondsPerSecond).ceil();
+      if (sec != _timerShown) {
+        _timerShown = sec;
+        _timer.set('$sec', _timerColor, 1);
+      }
+      final ty = v.top + _fx.hud.number('timerY');
+      final tx = cx - ((_timer.width + _skullW + 2) / 2).floorToDouble();
+      _skull(c, tx, ty);
+      _timer.draw(c, tx + _skullW + 2, ty);
+    }
+    final boss = _bossRatio(f);
+    if (boss != null) {
+      final (l, t, r, b) = (v.right + _bossBar[0], v.top + _bossBar[1], v.right + _bossBar[2], v.top + _bossBar[3]);
+      _fill(c, l, t, r - l + 1, b - t + 1, _barBack);
+      if (boss > 0) _fill(c, l + 1, t + 1, (r - l - 1) * boss, b - t - 1, _bossFill);
+    }
     final combo = scene.combo.count(scene.clockMs);
     if (combo >= _fx.combo.integer('minKills')) {
       _combo
         ..set('x$combo COMBO', _comboColor, _fx.combo.integer('scale'))
-        ..draw(c, _fx.combo.number('x'), _fx.combo.number('y'));
+        ..draw(c, _fx.combo.number('x'), v.top + _fx.combo.number('y'));
     }
   }
 
-  /// 선원 슬롯 6칸 (render-quality-v2): 등급 색 두꺼운 테두리 안에 32px 초상을 꽉 채우고(넘치는 줄은 잘라냄),
-  /// 왼쪽 위 계열 색 표식, 쿨타임 덮개, 방금 발사 = 흰 테두리, 스킬 막대(우리 추가).
+  static double? _bossRatio(BattleView f) {
+    for (final e in f.enemies) {
+      if (e.boss) return e.hpRatio.clamp(0.0, 1.0);
+    }
+    return null;
+  }
+
+  static const _skullW = 5.0;
+
+  /// 보스 남은 초 앞 작은 해골 5×5.
+  void _skull(Canvas c, double x, double y) {
+    _fill(c, x, y, 5, 4, _timerColor);
+    _fill(c, x + 1, y + 4, 1, 1, _timerColor);
+    _fill(c, x + 3, y + 4, 1, 1, _timerColor);
+    _fill(c, x + 1, y + 1, 1, 1, _barBack);
+    _fill(c, x + 3, y + 1, 1, 1, _barBack);
+  }
+
+  /// 선원 줄 (화면 배치 v2): 폭 전체 띠, 슬롯 6칸(빈 칸은 빈 테두리), 오른쪽 끝 궁극기 버튼(보스 도전 자리는 비움 — UI).
+  /// 슬롯: 등급 색 두꺼운 테두리 안에 32px 초상을 꽉 채우고(넘치는 줄은 잘라냄), 왼쪽 위 계열 색 표식, 쿨타임 덮개,
+  /// 방금 발사 = 흰 테두리, 스킬 막대(우리 추가).
   void paintSlots(Canvas c) {
-    _fill(c, 0, kFieldBottom, kLogicalWidth, kLogicalHeight - kFieldBottom, _slotBar);
-    _fill(c, 0, kFieldBottom, kLogicalWidth, 1, _slotLine);
+    final layout = scene.layout;
+    final v = layout.viewDots;
+    final top = layout.bandTop;
+    _fill(c, v.left, top, v.width + 1, v.bottom - top + 1, _slotBar);
+    _fill(c, v.left, top, v.width + 1, 1, _slotLine);
     final fleet = scene.frame.fleet;
     final s = _fx.slots;
-    final (x0, step, w, h, bw) = (
-      s.number('x'),
-      s.number('step'),
-      s.number('plateW'),
-      s.number('plateH'),
-      s.number('border'),
-    );
+    final bw = s.number('border');
+    final (w, h) = (kSlotPlateSize.width, kSlotPlateSize.height);
     final (iw, ih) = (w - bw * 2, h - bw * 2);
-    final iy = kSlotTop + bw;
-    for (var i = 0; i < fleet.length && i < kMaxSlots; i++) {
-      final x = x0 + i * step;
-      final ix = x + bw;
+    for (var i = 0; i < kSlotCount; i++) {
+      final at = layout.slotAt(i);
+      final (x, y) = (at.dx, at.dy);
+      final (ix, iy) = (x + bw, y + bw);
+      if (i >= fleet.length) {
+        _fill(c, x, y, w, h, _slotLine);
+        _fill(c, x + 1, y + 1, w - 2, h - 2, _empty);
+        continue;
+      }
       final slot = fleet[i];
       final family = _familyColor[_family[slot.crewId]] ?? _white32;
       _fill(
         c,
         x,
-        kSlotTop,
+        y,
         w,
         h,
         scene.slotFlashMs[i] > 0 ? _white32 : _rarityColor[slot.rarity.clamp(0, _rarityColor.length - 1)],
@@ -133,7 +169,7 @@ class HudPainter {
       c
         ..save()
         ..clipRect(Rect.fromLTWH(ix, iy, iw, ih));
-      if (!sprites.draw(c, 'crew:${slot.crewId}', ix + kSlotSize / 2, s.number('portraitTop') + kSlotSize / 2)) {
+      if (!sprites.draw(c, 'crew:${slot.crewId}', ix + kSlotSize / 2, iy - 1 + kSlotSize / 2)) {
         _fill(c, ix + 1, iy + 1, iw - 2, ih - 2, family);
       }
       c.restore();
@@ -145,7 +181,40 @@ class HudPainter {
       final badge = s.number('badge');
       _fill(c, ix, iy, badge, badge, family);
     }
+    _ultimate(c, layout.ultimateDots);
   }
+
+  static const _blinkMs = 250.0;
+
+  /// 궁극기 버튼 그림: 2도트 테두리(가득 차면 금빛·흰빛 깜빡임) + 선장 초상 + 아래 함성 게이지. 누르는 건 UI.
+  void _ultimate(Canvas c, Rect r) {
+    final f = scene.frame;
+    final rage = f.rage.clamp(0.0, 1.0);
+    final full = rage >= 1;
+    final blink = full && (scene.clockMs / _blinkMs).floor().isEven;
+    _fill(c, r.left, r.top, r.width, r.height, full ? (blink ? _rageFull : _goldColor) : _slotLine);
+    final inner = r.deflate(2);
+    _fill(c, inner.left, inner.top, inner.width, inner.height, _plate);
+    final captain = f.captainId;
+    if (captain != null) {
+      c
+        ..save()
+        ..clipRect(inner);
+      sprites.draw(
+        c,
+        'crew:$captain',
+        inner.center.dx.floorToDouble(),
+        (inner.top + kSlotSize / 2 - 1).floorToDouble(),
+      );
+      c.restore();
+    }
+    final gy = inner.bottom - _gaugePx;
+    _fill(c, inner.left, gy, inner.width, _gaugePx, _barBack);
+    if (rage > 0) _fill(c, inner.left, gy, inner.width * rage, _gaugePx, full ? _rageFull : _rageFill);
+    if (!full) _fill(c, inner.left, inner.top, inner.width, (inner.height - _gaugePx) * (1 - rage), _cooldown);
+  }
+
+  static const _gaugePx = 3.0;
 }
 
 /// 데미지 숫자 하나의 도트 글자. [DamageNumber.cache]에 붙어 풀과 함께 재사용된다.

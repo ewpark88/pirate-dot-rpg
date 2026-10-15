@@ -77,6 +77,9 @@ class BattleScene {
   late final sound = SoundDirector(fx, juice);
   late final moments = Moments(this);
 
+  /// 보이는 영역·선원 줄 배치 (화면 배치 v2). BattleGame이 상자 크기마다 바꾼다. 기본은 320×180 그대로.
+  BattleFrame layout = BattleFrame.standard;
+
   /// 효과음·배경음 포트. null이면 무음.
   AudioPort? get audio => sound.audio;
   set audio(AudioPort? v) => sound.audio = v;

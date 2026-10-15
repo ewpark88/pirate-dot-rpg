@@ -35,34 +35,48 @@ class StagePainter {
   late final double _cloudSpeed = _l.number('cloudSpeed');
   late final double _squash = _l.number('cloudSquash');
 
+  /// 보이는 영역 전체를 채운다(화면 배치 v2): 맨 위 하늘 띠는 위로, 마지막 바다 띠는 선원 줄까지 아래로 늘이고,
+  /// 구름·물결은 보이는 폭 전체에서 돈다. 깊은 바다(필드 아래)에도 어두운 물결 줄을 더한다.
   void paintBackground(Canvas c) {
     final b = scene.backdrop;
     final t = scene.clockMs / Duration.millisecondsPerSecond;
+    final v = scene.layout.viewDots;
+    final bottom = scene.layout.bandTop;
     for (var i = 0; i < _skyY.length; i++) {
-      final bottom = i + 1 < _skyY.length ? _skyY[i + 1] : _seaY.first;
-      _rect(c, 0, _skyY[i], kLogicalWidth, bottom - _skyY[i], b.sky(i));
+      final top = i == 0 ? v.top : _skyY[i];
+      final end = i + 1 < _skyY.length ? _skyY[i + 1] : _seaY.first;
+      _rect(c, v.left, top, v.width + 1, end - top, b.sky(i));
     }
     _paint.color = Color(b.cloud);
+    final span = v.width + 40;
     for (final (x0, cy, r) in _clouds) {
-      final cx = (x0 - t * _cloudSpeed) % (kLogicalWidth + 40) - 20;
+      final cx = (x0 - v.left - t * _cloudSpeed) % span - 20 + v.left;
       _cloud(c, cx, cy, r);
+      if (v.top < -_highCloudRoom) _cloud(c, (cx + span / 2 - v.left) % span + v.left - 20, cy - _highCloudLift, r);
     }
     for (var i = 0; i < _seaY.length; i++) {
-      final bottom = i + 1 < _seaY.length ? _seaY[i + 1] : kFieldBottom;
-      _rect(c, 0, _seaY[i], kLogicalWidth, bottom - _seaY[i], b.sea(i));
+      final end = i + 1 < _seaY.length ? _seaY[i + 1] : bottom;
+      _rect(c, v.left, _seaY[i], v.width + 1, end - _seaY[i], b.sea(i));
     }
-    for (final y in _waveRows) {
+    final rows = [..._waveRows, for (var y = kFieldBottom + _deepWaveGap / 2; y < bottom - 2; y += _deepWaveGap) y];
+    final wrap = v.width.ceil() + 32;
+    for (final y in rows) {
       final upper = y < _waveSplit;
       _paint.color = Color(b.wave(upper ? 0 : 1));
-      final speed = _waveSpeed[upper ? 0 : 1];
-      for (var x = -16; x < kLogicalWidth + 16; x += _waveGap) {
-        final xx = (x + t * speed).floor() % (kLogicalWidth.toInt() + 32) - 16;
-        final l = xx < 0 ? 0.0 : xx.toDouble();
-        final r = xx + _waveLen > kLogicalWidth ? kLogicalWidth : xx + _waveLen;
+      final speed = _waveSpeed[upper ? 0 : 1] * (y > kFieldBottom ? _deepWaveSlow : 1);
+      for (var x = -16; x < v.width + 16; x += _waveGap) {
+        final xx = (x + t * speed).floor() % wrap - 16 + v.left;
+        final l = xx < v.left ? v.left : xx;
+        final r = xx + _waveLen > v.right ? v.right : xx + _waveLen;
         if (r > l) c.drawRect(Rect.fromLTWH(l, y, r - l, 1), _paint);
       }
     }
   }
+
+  static const _highCloudRoom = 24.0;
+  static const _highCloudLift = 40.0;
+  static const _deepWaveGap = 10.0;
+  static const _deepWaveSlow = 0.5;
 
   /// 타원 구름: (x−cx)² + ((y−cy)·squash)² < r² 인 픽셀 (기준과 같은 모양).
   void _cloud(Canvas c, double cx, double cy, double r) {
@@ -105,21 +119,24 @@ class StagePainter {
     final holdMs = cfg.number('holdMs');
     final outMs = cfg.number('outMs');
     final age = cut.ageMs;
-    final x = age < inMs
-        ? kLogicalWidth * (1 - age / inMs)
-        : age < inMs + holdMs
-        ? 0.0
-        : -kLogicalWidth * ((age - inMs - holdMs) / outMs);
+    final v = scene.layout.viewDots;
+    final x =
+        v.left +
+        (age < inMs
+            ? v.width * (1 - age / inMs)
+            : age < inMs + holdMs
+            ? 0.0
+            : -v.width * ((age - inMs - holdMs) / outMs));
     final h = cfg.number('bandH');
     final top = kFieldBottom / 2 - h / 2;
     final band = parseArgb(cfg.str('bandColor'), 'cutIn.bandColor');
-    _rect(c, x, top, kLogicalWidth, h, ((cfg.number('bandAlpha') * 0xFF).round() << 24) | (band & 0xFFFFFF));
+    _rect(c, x, top, v.width + 1, h, ((cfg.number('bandAlpha') * 0xFF).round() << 24) | (band & 0xFFFFFF));
     final line = parseArgb(cfg.str('lineColor'), 'cutIn.lineColor');
-    _rect(c, x, top, kLogicalWidth, 1, line);
-    _rect(c, x, top + h - 1, kLogicalWidth, 1, line);
+    _rect(c, x, top, v.width + 1, 1, line);
+    _rect(c, x, top + h - 1, v.width + 1, 1, line);
     final kind = cut.kind!;
     final scale = cfg.number('bossScale');
-    final cx = x + kLogicalWidth / 2;
+    final cx = x + v.width / 2;
     final sheet = sprites.sheet('boss:$kind');
     if (sheet != null) {
       sprites.draw(c, 'boss:$kind', cx, top + h / 2, w: sheet.frameW * scale / 2, h: sheet.frameH * scale / 2);
@@ -135,9 +152,11 @@ class StagePainter {
   void paintOverlays(Canvas c) {
     paintCutIn(c);
     final fx = scene.fx;
+    final v = scene.layout.viewDots;
+    final (l, t, w, h) = (v.left, v.top, v.width + 1, scene.layout.bandTop - v.top);
     if (scene.bossFailMs > 0) {
       final a = (fx.bossFailed.number('alpha') * 0xFF).round();
-      _rect(c, 0, 0, kLogicalWidth, kFieldBottom, a << 24);
+      _rect(c, l, t, w, h, a << 24);
     }
     if (scene.bossWarnMs > 0) {
       final e = fx.bossEntrance;
@@ -146,10 +165,10 @@ class StagePainter {
       if (!on) return;
       final px = e.number('borderPx');
       final color = _warnColor ??= parseArgb(e.str('color'), 'bossEntrance.color');
-      _rect(c, 0, 0, kLogicalWidth, px, color);
-      _rect(c, 0, kFieldBottom - px, kLogicalWidth, px, color);
-      _rect(c, 0, 0, px, kFieldBottom, color);
-      _rect(c, kLogicalWidth - px, 0, px, kFieldBottom, color);
+      _rect(c, l, t, w, px, color);
+      _rect(c, l, t + h - px, w, px, color);
+      _rect(c, l, t, px, h, color);
+      _rect(c, l + w - 1 - px, t, px, h, color);
     }
   }
 
