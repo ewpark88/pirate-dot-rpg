@@ -7,15 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
-import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
-import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
+import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
-import 'package:pirate_dot/ui/hud/power_badge.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
-import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
-import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -174,37 +171,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                 ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: ref.watch(battleGameProvider)),
                 const ChestLayer(),
                 const BattleButtons(),
+                // 코인 도착: 골드 아이콘 자리를 렌더에 알린다(그림·누름 없음).
+                const IgnorePointer(child: CoinLink()),
               ],
             ),
           ),
         ),
-        // 위쪽 띠: 다음 목표 · 보스 약점 · 튜토리얼 말풍선 (선원 줄·시트를 가리지 않게 위쪽에).
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const StageGauge(),
-              const GoalBar(),
-              const BossWeakness(),
-              // 전투력(왼쪽) · 파밍 중 띠.
-              const Padding(
-                padding: EdgeInsets.fromLTRB(10, 4, 10, 0),
-                child: Row(
-                  children: [
-                    PowerBadge(),
-                    SizedBox(width: 8),
-                    Flexible(child: FarmingPill()),
-                  ],
-                ),
-              ),
-              const BossFailNotice(),
-              if (tutorial) const TutorialBubble(),
-            ],
-          ),
-        ),
+        // 위쪽 띠 (게이지·목표·전투력·안내·말풍선).
+        Positioned(left: 0, right: 0, top: 0, child: BattleTopStrip(tutorial: tutorial)),
         // 도크·튜토리얼·상자 광고: 시트 위(닫힘이면 화면 아래).
         Positioned(
           left: 0,
