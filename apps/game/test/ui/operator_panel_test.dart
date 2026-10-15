@@ -68,7 +68,8 @@ void main() {
 
   testWidgets('기준 1-1: 상태가 바뀌면 HUD가 바로 따라온다', (tester) async {
     await pumpGame(tester, loadFixture('new_player'));
-    String gold() => tester.widget<Text>(find.byKey(const Key('top.gold'))).data!;
+    String gold() =>
+        tester.widget<Text>(find.descendant(of: find.byKey(const Key('top.gold')), matching: find.byType(Text))).data!;
     final before = gold();
     final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
     final boss = loadSampleState('boss_fight');

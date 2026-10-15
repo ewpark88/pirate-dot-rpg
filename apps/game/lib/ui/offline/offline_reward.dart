@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/big_num_text.dart';
 
 /// 상태·지금 시각 → 복귀 보상 미리보기 (경제 `offlinePreview`, ClaimOffline과 같은 계산). null이면 팝업 없음(최소 시간 미만).
 final offlinePreviewProvider = Provider<OfflinePreview? Function(GameState state, DateTime now)>((ref) {
@@ -108,7 +109,7 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
             children: [
               const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
               const SizedBox(width: 6),
-              Text(preview.gold.format(), style: Theme.of(context).textTheme.headlineSmall),
+              BigNumText(preview.gold, style: Theme.of(context).textTheme.headlineSmall),
             ],
           ),
           if (preview.cards > 0) Text(l10n.uiCrewCards(preview.cards)),
