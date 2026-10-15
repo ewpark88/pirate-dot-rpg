@@ -75,7 +75,10 @@ class ScenePainter {
     _hud
       ..paintHud(canvas)
       ..paintSlots(canvas);
-    if (scene.screenFlashMs > 0) _fill(canvas, 0, 0, kLogicalWidth, kFieldBottom, 0x99FFFFFF);
+    if (scene.screenFlashMs > 0) {
+      final v = scene.layout.viewDots;
+      _fill(canvas, v.left, v.top, v.width + 1, scene.layout.bandTop - v.top, 0x99FFFFFF);
+    }
   }
 
   void _fill(Canvas c, double l, double t, double w, double h, int argb) {

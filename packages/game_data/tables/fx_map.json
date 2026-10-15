@@ -644,26 +644,24 @@
   "hud": {
     "textColor": "#FFFFFF",
     "goldColor": "#F2C94C",
-    "rage": [
-      250,
+    "bossBar": [
+      -70,
       6,
-      313,
+      -7,
       11
     ],
+    "bossFill": "#FF5A5A",
+    "barBack": "#1B1726",
+    "bossTimerColor": "#FF8A8A",
     "rageFill": "#FF5A5A",
     "rageFull": "#FFFFFF",
-    "rageBack": "#1B1726",
-    "stageX": 150,
-    "stageY": 6
+    "stageY": 6,
+    "timerY": 14
   },
   "slots": {
-    "x": 12,
-    "step": 52,
-    "plateW": 36,
-    "plateH": 31,
     "border": 2,
     "badge": 4,
-    "portraitTop": 150,
+    "empty": "#1E2640",
     "plate": "#96B0D6",
     "cooldown": "#0A0C18",
     "cooldownAlpha": 0.59,

@@ -1,6 +1,10 @@
 /// 전장 배치 (논리 픽셀, docs/GAME_DESIGN.md 10장 · 기준 battle_ship.gif = 팩 scene3.py). 화면 배치라 코드에 둔다.
 library;
 
+import 'dart:ui' show Size;
+
+export 'package:pirate_dot/render/viewport/battle_frame.dart' show BattleFrame, battleFrameFor;
+
 /// 논리 해상도 320×180: 전장 0~148 / 선원 슬롯 148~180.
 const double kLogicalWidth = 320;
 const double kLogicalHeight = 180;
@@ -34,10 +38,25 @@ const double kBossSize = 40;
 const double kUltimateX = kLogicalWidth / 2;
 const double kUltimateY = 96;
 
-/// 선원 슬롯 6칸 윗변 y와 초상 크기 (판 크기·테두리는 fx_map slots).
-const double kSlotTop = 149;
+/// 선원 줄 (화면 배치 v2): 슬롯 6칸 + 오른쪽 끝 궁극기·보스 도전 버튼. 위치는 BattleFrame이 계산한다.
+/// 슬롯 판 36×31(등급 테두리 2도트 — 색은 fx_map slots), 초상 32px.
 const double kSlotSize = 32;
 const int kMaxSlots = 8;
+const int kSlotCount = 6;
+const Size kSlotPlateSize = Size(36, 31);
+const double kSlotLeft = 6;
+const double kSlotStep = 40;
+
+/// 선원 줄 높이: 최소 32도트(기준 화면)이면서 56dp 이상(버튼이 들어가게).
+const double kSlotBandMinDots = 32;
+const double kSlotBandMinDp = 56;
+
+/// 버튼 칸 사이·가장자리 여백, 가장 작은 버튼 (도트).
+const double kButtonGap = 3;
+const double kButtonMinDots = 16;
+
+/// 늘어난 높이 중 하늘(위)로 가는 몫 — 나머지는 깊은 바다(필드 아래).
+const double kSkyShare = 0.55;
 
 /// 화면 1프레임(60fps) 길이 — juice.flashFrames를 시간으로 바꿀 때.
 const double kFrameMs = 1000 / 60;

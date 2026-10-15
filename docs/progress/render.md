@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: 묶음 4 화산 승인 대기 → 묶음 5 심연(`docs/specs/render-art-enemies.md`) · 음원 생성기 tools/art/audio/ 이전(여유 있을 때) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | 화면 배치 v2 렌더(`docs/specs/render-layout-v2.md`) 승인 대기 → art 묶음 5 심연 · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 4 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 배치 v2 골든 승인(S1)·UI 연결(S4) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · 화면 배치 v2 (사용자 실기기 피드백, 최우선)
+- 묶음 4 승인·main a89cb6a 머지, 브리프 `layout-v2-brief.md`·실기기 캡처 확인. S4와 좌표 약속(`battleFrameFor`) 합의.
+- `render/viewport/battle_frame.dart`(layout.dart에서 export): 폭 기준 정수배·필드 가운데·늘어난 위 하늘/아래 깊은 바다·선원 줄 56dp+·슬롯 6칸·궁극기/보스 도전 칸 dp 좌표.
+  `BattleGame.onGameResize`가 같은 프레임으로 카메라(zoom = k/dpr, 위치 = 보이는 영역 왼쪽 위)·`scene.layout`.
+- 배경 보이는 영역 전체 채움, 캔버스 HUD 골드·함성 게이지 제거 → 스테이지·보스 남은 초·보스 체력, 선원 줄 빈 슬롯 + 궁극기 버튼 그림(선장 초상·게이지).
+  fx_map slots/hud 정리(위치 값은 layout.dart 상수로).
+- 테스트 `battle_frame_test`(3기기), 골든 `layout_*` 3장 새로 + 기존 7장 갱신. 비교 `docs/specs/render-layout-v2/`. check --full 통과.
 
 ### 2026-10-15 · S3 · art 묶음 4: 화산
 - 묶음 3 승인·main 머지. 화산 배경(주황 하늘·검붉은 바다)에 맞춰 대비 우선 색.
