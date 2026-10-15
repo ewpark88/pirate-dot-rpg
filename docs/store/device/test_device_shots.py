@@ -18,6 +18,8 @@ DUMP = """<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
   <node text="" content-desc="배&#10;탭 2/4" bounds="[270,2100][540,2220]" />
   <node text="" content-desc="선원&#10;탭 3/4" bounds="[540,2100][810,2220]" />
   <node text="Summon" content-desc="" bounds="[810,2100][1080,2220]" />
+  <node text="" content-desc="퀘스트·출석" bounds="[900,100][1000,200]" />
+  <node text="" content-desc="설정" bounds="[1000,100][1080,200]" />
 </hierarchy>"""
 
 
@@ -80,12 +82,24 @@ class DeviceShotsTest(unittest.TestCase):
         run = Run(AWAKE)
         with tempfile.TemporaryDirectory() as d:
             shots = ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
-            self.assertEqual([p.name for p in shots], ["01_voyage.png", "02_ship.png", "03_crew.png", "04_summon.png"])
+            self.assertEqual([p.name for p in shots], ["01_voyage.png", "02_ship.png", "03_crew.png", "04_summon.png",
+                                                       "05_quest.png", "06_settings.png"])
             self.assertEqual(shots[0].read_bytes(), b"\x89PNG")
         taps = [c[3:] for c in run.calls if c[:3] == ["shell", "input", "tap"]]
         self.assertEqual(taps[:4], [["135", "2160"], ["405", "2160"], ["675", "2160"], ["945", "2160"]])
-        # 입력은 탭 누르기뿐 — 문자 입력·키 이벤트(잠금 해제 등)는 보내지 않는다
-        self.assertFalse([c for c in run.calls if c[:3] in (["shell", "input", "text"], ["shell", "input", "keyevent"])])
+        self.assertIn(["950", "150"], taps)  # 퀘스트
+        self.assertIn(["1040", "150"], taps)  # 설정
+        # 입력은 누르기와 BACK 키뿐 — 문자 입력·다른 키(전원·잠금 해제 등)는 보내지 않는다
+        self.assertFalse([c for c in run.calls if c[:3] == ["shell", "input", "text"]])
+        keys = [c[3:] for c in run.calls if c[:3] == ["shell", "input", "keyevent"]]
+        self.assertEqual(keys, [["4"]])
+
+    def test_missing_top_buttons_are_skipped(self):
+        run = Run({**AWAKE, "shell cat": DUMP.replace("퀘스트·출석", "x").replace('content-desc="설정"', 'content-desc="y"')})
+        with tempfile.TemporaryDirectory() as d:
+            shots = ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
+        self.assertEqual(len(shots), 4)
+        self.assertFalse([c for c in run.calls if c[:3] == ["shell", "input", "keyevent"]])
 
     def test_locked_stops_without_input(self):
         run = Run({**AWAKE, "shell dumpsys window": "isKeyguardShowing=true"})

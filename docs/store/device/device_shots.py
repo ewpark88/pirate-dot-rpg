@@ -1,4 +1,4 @@
-"""실기기(USB) 화면 자동 캡처: 설치 → 실행 → 탭 4개 이동 → 스크린샷 → build/device/shots/.
+"""실기기(USB) 화면 자동 캡처: 설치 → 실행 → 탭 4개 + 퀘스트 시트·설정 화면 → 스크린샷 → build/device/shots/.
 
     python -I -B docs/store/device/device_shots.py                     # 이미 설치된 앱으로 실행·캡처
     python -I -B docs/store/device/device_shots.py --apk build/app/outputs/flutter-apk/app-profile.apk
@@ -6,7 +6,7 @@
     python -I -B docs/store/device/device_shots.py --serial R5CT... --wait 8
 
 안전 규칙: **잠금 해제·비밀번호·문자 입력은 절대 자동으로 하지 않는다.** 화면이 꺼져 있거나 잠겨 있으면 안내하고 끝낸다.
-보내는 입력은 우리 앱 화면의 탭 버튼 누르기(input tap)뿐이다. 앱 데이터(세이브)를 지우는 일도 하지 않는다 —
+보내는 입력은 우리 앱 화면 누르기(input tap)와 설정 화면을 닫는 뒤로 키(KEYCODE_BACK) 하나뿐이다. 앱 데이터(세이브)를 지우는 일도 하지 않는다 —
 서명이 달라 설치가 실패하면 지우고 다시 깔지 사람에게 묻는다(--reinstall을 줄 때만 adb uninstall).
 
 탭 위치: uiautomator 화면 덤프에서 탭 이름(항해·배·선원·소환 / Voyage·Ship·Crew·Summon)의 좌표를 찾는다.
@@ -32,6 +32,9 @@ OUT = ROOT / "build" / "device" / "shots"
 PACKAGE = "repo.dot.pirate"
 ACTIVITY = f"{PACKAGE}/.MainActivity"
 TABS = [("voyage", ("항해", "Voyage")), ("ship", ("배", "Ship")), ("crew", ("선원", "Crew")), ("summon", ("소환", "Summon"))]
+# 상단 바 버튼 (배치 v2) — 접근성 라벨 = ARB uiDailyTooltip·uiSettingsTitle. 못 찾으면 그 화면은 건너뛴다.
+BUTTONS = [("quest", ("퀘스트·출석", "Quests & Attendance")), ("settings", ("설정", "Settings"))]
+KEYCODE_BACK = "4"
 
 
 class DeviceError(Exception):
@@ -88,8 +91,8 @@ def screen_state(power: str, window: str) -> str:
     return "locked" if locked else "awake"
 
 
-def tab_centers(xml: str) -> dict[str, tuple[int, int]]:
-    """uiautomator 덤프에서 탭 이름이 든 노드의 가운데 좌표. 같은 이름이 여럿이면 화면 맨 아래 것(탭 바)."""
+def tab_centers(xml: str, targets=TABS, bottom: bool = True) -> dict[str, tuple[int, int]]:
+    """uiautomator 덤프에서 이름이 든 노드의 가운데 좌표. 같은 이름이 여럿이면 [bottom]이면 맨 아래(탭 바), 아니면 맨 위(상단 바)."""
     found: dict[str, tuple[int, int]] = {}
     try:
         root = ET.fromstring(xml)
@@ -103,10 +106,10 @@ def tab_centers(xml: str) -> dict[str, tuple[int, int]]:
         if not m:
             continue
         x1, y1, x2, y2 = map(int, m.groups())
-        for key, names in TABS:
+        for key, names in targets:
             if any(n in lines for n in names):
                 c = ((x1 + x2) // 2, (y1 + y2) // 2)
-                if key not in found or c[1] > found[key][1]:
+                if key not in found or (c[1] > found[key][1]) == bottom:
                     found[key] = c
     return found
 
@@ -143,7 +146,9 @@ def capture(adb: Adb, out_dir: Path, *, wait: float, tab_y: int | None, sleep=ti
     sleep(wait)
     width, height = parse_size(adb("shell", "wm", "size"))
     adb("shell", "uiautomator", "dump", "/sdcard/pde_ui.xml", check=False)
-    centers = tab_centers(adb("shell", "cat", "/sdcard/pde_ui.xml", check=False))
+    dump = adb("shell", "cat", "/sdcard/pde_ui.xml", check=False)
+    centers = tab_centers(dump)
+    buttons = tab_centers(dump, BUTTONS, bottom=False)
     adb("shell", "rm", "-f", "/sdcard/pde_ui.xml", check=False)
     fb = fallback_centers(width, height, tab_y)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -156,7 +161,23 @@ def capture(adb: Adb, out_dir: Path, *, wait: float, tab_y: int | None, sleep=ti
         path.write_bytes(adb("exec-out", "screencap", "-p", binary=True))
         shots.append(path)
     adb("shell", "input", "tap", *map(str, centers.get("voyage", fb["voyage"])))  # 항해로 돌려놓기
-    print(f"탭 좌표: {'덤프' if len(centers) == len(TABS) else '4등분 대체'} {centers or fb}")
+    sleep(1.0)
+    # 상단 바: 퀘스트 시트(바깥 위쪽을 눌러 닫음) · 설정 화면(뒤로 키로 닫음 — 보내는 키는 BACK 하나뿐)
+    for i, (key, _) in enumerate(BUTTONS, start=len(TABS) + 1):
+        if key not in buttons:
+            print(f"건너뜀: {key} 버튼을 덤프에서 못 찾음")
+            continue
+        adb("shell", "input", "tap", *map(str, buttons[key]))
+        sleep(1.2)
+        path = out_dir / f"{i:02d}_{key}.png"
+        path.write_bytes(adb("exec-out", "screencap", "-p", binary=True))
+        shots.append(path)
+        if key == "quest":
+            adb("shell", "input", "tap", str(width // 2), str(round(height * 0.12)))
+        else:
+            adb("shell", "input", "keyevent", KEYCODE_BACK)
+        sleep(1.0)
+    print(f"탭 좌표: {'덤프' if len(centers) == len(TABS) else '4등분 대체'} {centers or fb} · 상단 바 {buttons}")
     return shots
 
 
