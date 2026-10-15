@@ -11,11 +11,11 @@ import 'package:game_data/game_data.dart';
 // 전설 고유 능력의 효과 부품 (docs/specs/battle-m3-legend.md).
 
 /// extraChains·noFalloff: 마지막 대상에서 가까운 적으로 더 잇고, 비율을 다시 매긴다.
-Volley extendVolley(Gun g, Volley v, List<Foe> foes, WavesTable w, {BattleGeometry? geometry}) {
+Volley extendVolley(Gun g, Volley v, List<Foe> foes, WavesTable w, {required BattleGeometry geometry}) {
   final l = g.legend;
   if (l == null || (l.extraChains == 0 && !l.noFalloff) || v.hits.isEmpty) return v;
   final hit = [for (final h in v.hits) h.foe];
-  final pool = (geometry ?? SideGeometry(w)).eligible(g.attack, foes).where((e) => !hit.contains(e)).toList();
+  final pool = geometry.eligible(g.attack, foes).where((e) => !hit.contains(e)).toList();
   for (var i = 0; i < l.extraChains && pool.isNotEmpty; i++) {
     final last = hit.last;
     final next = pool.reduce((m, e) => _d2(e, last) < _d2(m, last) ? e : m);

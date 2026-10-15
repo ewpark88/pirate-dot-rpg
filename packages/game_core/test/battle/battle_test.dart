@@ -8,6 +8,8 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/src/battle/topdown/top_aim.dart';
+import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -19,7 +21,6 @@ void main() {
 
   GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
-        settings: const Settings(battleView: 'side'), // 옆모습 전용 — T4-2(SideGeometry 삭제)에서 지우거나 탑다운으로
         progress: Progress(stage: stage, bestStage: stage, rage: rage),
         crews: crews,
       );
@@ -47,11 +48,15 @@ void main() {
   String crewOf(String familyId, [int nth = 0]) =>
       tables.crews.crews.where((c) => c.family == familyId).elementAt(nth).id;
 
-  test('1. 첫 틱에 mobCountAt(1)마리가 오른쪽에 생기고, HP 합 = 단일 HP × mobPoolAt(1) × waveHpPoolFactor', () {
+  test('1. 첫 틱에 topMobCountAt(1)마리가 화면 밖에 생기고, HP 합 = 단일 HP × mobPoolAt(1) × waveHpPoolFactor', () {
     final e = engineOf(game())..tick();
     final enemies = e.state.battle!.enemies;
-    expect(enemies, hasLength(w.mobCountAt(1)));
-    expect(enemies.every((x) => x.x >= w.field.spawnX - w.field.width && x.hpRatio == 1), isTrue);
+    final top = w.raw.obj('top');
+    expect(enemies, hasLength(w.topMobCountAt(1)));
+    bool offCamera(EnemyView x) =>
+        (x.x - top.number('shipX')).abs() > top.number('viewWidth') / 2 ||
+        (x.y - top.number('shipY')).abs() > top.number('viewHeight') / 2;
+    expect(enemies.every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
 
     final f = fieldWith([]);
     spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1
@@ -88,7 +93,7 @@ void main() {
 
   test('4. 원형 범위: 8마리를 맞히고 7·8번째는 overflowDamage, AoeDamageSum이 나온다', () {
     final foes = [for (var i = 0; i < 8; i++) foeAt(200, 100.0 + i)];
-    final v = aim(family('lob').attack, foes, w, XorShiftRng(1))!;
+    final v = TopAim(TopField.of(w), w).aim(family('lob').attack, foes, XorShiftRng(1))!;
     expect(v.hits, hasLength(8));
     expect(
       [for (final h in v.hits) h.factor],
@@ -111,8 +116,8 @@ void main() {
     for (var i = 1; i < hits.length; i++) {
       expect(hits[i].factor, closeTo(hits[i - 1].factor * (1 - w.chainFalloff), 1e-12));
     }
-    final v = aim(family('skip').attack, foes, w, XorShiftRng(1))!;
-    expect(v.hits.first.foe.x, 100); // 배에 가장 가까운 적부터
+    final v = TopAim(TopField.of(w), w).aim(family('skip').attack, foes, XorShiftRng(1))!;
+    expect(v.hits.first.foe.x, 130); // 배(중심 135, 240)에 가장 가까운 적부터
   });
 
   test('6. 0.5초 안에 5마리 처치 → 창이 닫히면 MultiKill(5) + 히트스톱', () {

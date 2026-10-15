@@ -8,7 +8,7 @@ import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
 /// 탑다운 조준: 계열 8종의 2D 모양 (docs/contracts/requests/platform-topdown-t0.md D).
-/// 거리는 배 둘레 → 적 가장자리. 옆모습(targeting.dart)과 같은 규칙을 '배에서 x 거리' 대신 '배에서 반경'으로.
+/// 거리는 배 둘레 → 적 가장자리(skills.json reach를 배에서 반경으로).
 class TopAim {
   TopAim(this.top, this.w);
 
@@ -24,6 +24,9 @@ class TopAim {
 
   /// 관통 광선의 반폭: `topWidth`(없으면 width의 절반).
   double beamHalfWidth(AttackDef a) => a.raw.has('topWidth') ? a.raw.number('topWidth') : a.width * half;
+
+  /// 강습 부채꼴 길이(배 몸통에서): `topRange`.
+  double coneRange(AttackDef a) => a.raw.numberOr('topRange', a.range);
 
   /// 강습 부채꼴 각(도): `topArcDeg`.
   double arcDeg(AttackDef a) => a.raw.numberOr('topArcDeg', a.angleDeg);
@@ -138,7 +141,7 @@ class TopAim {
         final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if ((e.boss || edge(e) <= a.range) &&
+            if ((e.boss || edge(e) <= coneRange(a)) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,

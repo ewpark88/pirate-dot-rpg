@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 // 전설 고유 능력 수용 기준 (docs/specs/battle-m3-legend.md).
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/combat.dart';
@@ -6,6 +8,8 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/src/battle/topdown/top_field.dart';
+import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -63,12 +67,12 @@ void main() {
   test('3. extraChains는 연쇄 대상을 늘리고, noFalloff면 감쇠가 없다', () {
     final foes = [for (var i = 0; i < 6; i++) foe(100.0 + i * 15, 100)];
     final volt = gun('volt', legend);
-    final v = extendVolley(volt, (x: 100, y: 100, hits: spread([foes.first], w)), foes, w);
+    final v = extendVolley(volt, (x: 100, y: 100, hits: spread([foes.first], w)), foes, w, geometry: TopGeometry.of(w));
     expect(v.hits, hasLength(1 + volt.legend!.extraChains));
     expect(v.hits[1].factor, lessThan(1));
     final nar = gun('nar', legend);
     final pierced = (x: 100.0, y: 100.0, hits: spread(foes.take(4).toList(), w, falloff: true));
-    expect(extendVolley(nar, pierced, foes, w).hits.every((h) => h.factor == 1), isTrue);
+    expect(extendVolley(nar, pierced, foes, w, geometry: TopGeometry.of(w)).hits.every((h) => h.factor == 1), isTrue);
   });
 
   test('4. 장판 감속: 안의 적은 (1 − slow)배로 움직이고, 보스는 절반만', () {
@@ -83,8 +87,13 @@ void main() {
       ..tickZones()
       ..moveFoes();
     final slow = octo.legend!.zone!.slow;
-    expect(240 - mob.x, closeTo(20 * r.dt * (1 - slow), 1e-9));
-    expect(240 - boss.x, closeTo(20 * r.dt * (1 - slow * tables.skills.bossControlFactor), 1e-9));
+    // 탑다운: 배 중심 쪽으로 다가간 거리. 잡몹은 mobSpeedScale배(보스 제외), 접근 원 안이라 해류 없음.
+    final top = TopField.of(w);
+    double dist(Foe e) => math.sqrt(math.pow(e.x - top.shipX, 2) + math.pow(e.y - top.shipY, 2));
+    final d0 = math.sqrt(math.pow(240 - top.shipX, 2) + math.pow(100 - top.shipY, 2));
+    expect(d0, lessThan(top.approachRadius));
+    expect(d0 - dist(mob), closeTo(20 * r.dt * (1 - slow) * top.mobSpeedScale, 1e-9));
+    expect(d0 - dist(boss), closeTo(20 * r.dt * (1 - slow * tables.skills.bossControlFactor), 1e-9));
   });
 
   test('5. 화상: burnSec 동안 Damage, 합 = 맞힌 피해 × burnRatio', () {
