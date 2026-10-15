@@ -4,10 +4,16 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | 설정 도트화·소환 등장 연출·Material 감사 교체 — 골든 S1 승인 대기 |
+| 상태 | 창·시트·튜토리얼까지 도트화(운영자 패널만 Material) — 골든 S1 승인 대기 · S24 실기기 피드백 대기 |
 | 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S4 · 창·시트·튜토리얼 도트화
+- 한 일: c596c26 승인. `pixel/pixel_dialog.dart`: PixelDialog(도트 프레임 창: 아이콘·제목·내용·버튼 줄), PixelSheet + `showPixelSheet`(투명 바탕 시트 + 도트 프레임), PixelDot(Badge 대신 네모 빨간 점).
+  환생 확인·환생 결과·복귀 보상·소환 결과 창 → PixelDialog, TextButton → PixelButton. 퀘스트·출석 시트: ListTile → 도트 줄, Divider → 1칸 줄, 출석 칸 PixelFrame(오늘 = 금색 2칸).
+  튜토리얼 말풍선 = 금색 테두리 PixelFrame + bubble 아이콘 + 도트 버튼, 가리키기 강조 = 금색 네모 2칸 + hand. ui/에 Material 모양 위젯 없음(운영자 패널 제외). `check --full` 통과(59.6s).
+- 다음 할 일: 골든 승인, S24 실기기 피드백 오면 우선 처리
 
 ### 2026-10-15 · S4 · 설정 도트화 · 소환 연출 · Material 감사
 - 한 일: 700576a 승인·머지. ① 설정: `pixel/pixel_toggle.dart`(PixelToggle 2상태 스위치, 한 칸 = 도트 2칸 · PixelSegmented · PixelListRow), AppBar 대신 도트 머리줄(뒤로 버튼).
