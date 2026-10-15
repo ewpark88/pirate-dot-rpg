@@ -85,7 +85,7 @@ class TopGeometry implements BattleGeometry {
     }
   }
 
-  /// 보스는 배 위쪽 화면 밖에서 나온다. 촉수는 보스가 설 원 위에 고르게(보스 자리 빼고).
+  /// 보스는 배 위쪽, 출발 원(bossSpawnRadius) 바로 밖에서 나온다. 촉수는 보스가 설 원 위에 고르게(보스 자리 빼고).
   @override
   void placeBoss(Field f, {double? x, double? y}) {
     final boss = f.foes.where((e) => e.boss).lastOrNull;
@@ -96,7 +96,7 @@ class TopGeometry implements BattleGeometry {
         ..x = x
         ..y = y;
     } else {
-      _place(boss, up, _toBorder(up) + top.spawnMargin + top.bossRadius);
+      _place(boss, up, top.bossSpawnRadius + top.bossRadius);
     }
     final arms = f.foes.where((e) => e.ownerId == boss.id).toList();
     for (var i = 0; i < arms.length; i++) {

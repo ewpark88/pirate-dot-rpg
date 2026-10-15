@@ -214,7 +214,8 @@ void main() {
       final boss = mob(0, 0, boss: true);
       f.foes.add(boss);
       geo.placeBoss(f);
-      expect(boss.y, lessThan(0), reason: '위쪽 화면 밖');
+      expect(boss.x, topField.shipX, reason: '배 위쪽');
+      expect(dist(boss), closeTo(topField.approachRadius + topField.bossRadius, 1e-9), reason: '접근 원 바로 밖에서 출발');
       var touched = false;
       for (var i = 0; i < 400 && !touched; i++) {
         touched = geo.advance(boss, 25, 0.05);
