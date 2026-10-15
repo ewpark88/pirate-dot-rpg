@@ -27,3 +27,16 @@ class PickBottle extends Command {
   @override
   Json _fields() => {'index': index};
 }
+
+/// 운영자: 돌발 이벤트 [id]를 지금 시작 (QA·연출 확인).
+class OpSeaEvent extends OperatorCommand {
+  const OpSeaEvent(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'op.seaEvent';
+
+  @override
+  Json _fields() => {'id': id};
+}

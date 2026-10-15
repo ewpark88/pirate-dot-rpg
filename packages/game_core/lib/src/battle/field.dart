@@ -23,6 +23,7 @@ class Foe {
     this.bossDef,
     this.ownerId,
     this.tier = 0,
+    this.eventKind,
   }) : hp = maxHp;
 
   final int id;
@@ -40,6 +41,9 @@ class Foe {
   /// 처치 골드 (화물칸·동시 처치 보너스 전).
   final BigNum gold;
   final bool boss;
+
+  /// 돌발 이벤트 적(goldfish | merchant | ambush). 파 끝 판정에서 빠진다(Field.waveFoes).
+  final String? eventKind;
 
   /// 잡몹 정의 (역할: 분열·부활). 보스는 null.
   final EnemyDef? def;
@@ -97,6 +101,7 @@ class Foe {
     burning: burnTicks > 0,
     vulnerable: vulnerableTimer > 0,
     heading: heading ?? EnemyView.sideHeading,
+    eventKind: eventKind,
   );
 }
 
@@ -235,6 +240,9 @@ class Field {
   int nextId() => _nextId++;
 
   Iterable<Foe> get living => foes.where((f) => f.alive);
+
+  /// 파를 이루는 살아 있는 적(돌발 이벤트 적 제외) — 파 끝·다음 파 판정.
+  Iterable<Foe> get waveFoes => living.where((f) => f.eventKind == null);
 
   /// 이 Field가 [view]·[stage]와 그대로 이어지는가 (아니면 BattleSystem이 새로 만든다).
   bool matches(BattleView view, int stage) => tick == view.tick && this.stage == stage && bossActive == view.bossActive;
