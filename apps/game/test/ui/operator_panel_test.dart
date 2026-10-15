@@ -73,7 +73,6 @@ void main() {
     container.read(gameStateProvider.notifier).replace(loadSampleState('boss_fight'));
     await tester.pump();
     expect(find.text('Boss 20s'), findsOneWidget);
-    expect(find.text('Stage 5-3'), findsOneWidget);
   });
 
   testWidgets('기준 2: 배속 ×1 · ×2 · ×4', (tester) async {
@@ -130,8 +129,11 @@ void main() {
 
   testWidgets('기준 8: 기본 빌드(kOperator 꺼짐)에서는 스테이지 5번 탭으로 열리지 않는다', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
+    // 스테이지 글자는 캔버스 HUD(논리 x 150, y 6) — 그 자리를 누른다.
+    final area = tester.getRect(find.byKey(const Key('battle.area')));
+    final stage = area.topLeft + const Offset(160, 8) * (area.width / 320);
     for (var i = 0; i < 5; i++) {
-      await tester.tap(find.text('Stage 37-2'));
+      await tester.tapAt(stage);
       await tester.pump();
     }
     await tester.pump(const Duration(seconds: 1));

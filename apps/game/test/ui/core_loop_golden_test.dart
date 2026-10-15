@@ -33,6 +33,7 @@ void main() {
         ),
       ),
     );
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_offline_reward.png'));
   });
 
@@ -40,6 +41,7 @@ void main() {
     await pumpGame(tester, loadFixture('stage37_midgame'));
     await tester.tap(find.byKey(const Key('hud.settings')));
     await tester.pumpAndSettle();
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_settings.png'));
   });
 }

@@ -69,6 +69,7 @@ void main() {
         ...daily,
       ],
     );
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_m3_hud.png'));
   });
 
@@ -76,11 +77,13 @@ void main() {
     await pump(tester, base, extra: daily);
     await tester.tap(find.byKey(const Key('daily.icon')));
     await tester.pumpAndSettle();
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_daily_sheet.png'));
   });
 
   testWidgets('골든: en_tutorial_step2', (tester) async {
     await pump(tester, base.copyWith(tutorialStep: 2));
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_tutorial_step2.png'));
   });
 
@@ -119,6 +122,7 @@ void main() {
 
   testWidgets('골든: en_rebirth_card', (tester) async {
     await pump(tester, base, extra: [rebirth]);
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_card.png'));
   });
 
@@ -128,6 +132,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
+    await precacheImages(tester);
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_rebirth_dialog.png'));
   });
 }

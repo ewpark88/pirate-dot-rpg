@@ -4,6 +4,8 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -36,12 +38,24 @@ class SummonTab extends ConsumerWidget {
         ),
       ),
     );
+    final gems = ref.watch(gameStateProvider.select((s) => s.wallet.gems));
     final rarities = tables.rarities;
     final pityRarity = rarities.rarities.firstWhere((r) => r.id == rarities.pityMinRarity);
 
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
+        // 보유 젬 — 캔버스 HUD에는 골드만 있어 젬은 쓰는 곳(소환 탭)에 보인다.
+        Row(
+          key: const Key('summon.gems'),
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const PixelSprite(UiSprites.gem, dots: 8, frames: 3, scale: 1),
+            const SizedBox(width: 4),
+            Text(gems.toString()),
+          ],
+        ),
+        const SizedBox(height: 4),
         Row(
           children: [
             for (final (key, count, label) in [
@@ -70,7 +84,9 @@ class SummonTab extends ConsumerWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            Expanded(child: LinearProgressIndicator(value: pity / rarities.pityCount, minHeight: 8)),
+            Expanded(
+              child: PixelBar(value: pity / rarities.pityCount, fill: PixelPalette.accent),
+            ),
             const SizedBox(width: 8),
             Text(l10n.uiSummonPityProgress(pity, rarities.pityCount)),
           ],
