@@ -22,10 +22,12 @@ class PirateDotApp extends ConsumerWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: pixelTheme(),
-      // 글자 크기는 화면 픽셀 정수배(도트 한 칸)에 맞춘다 — MediaQuery가 있어야 해서 여기서.
-      builder: (context, child) => Theme(
-        data: pixelTheme(devicePixelRatio: MediaQuery.devicePixelRatioOf(context)),
-        child: child!,
+      // 태블릿은 UI 전체를 확대해 그린다(글자·버튼·패널·창 모두 같은 비율) — 사용자 원칙 '태블릿에서도 유동적으로'.
+      builder: (context, child) => UiScale(
+        child: Theme(
+          data: pixelTheme(devicePixelRatio: MediaQuery.devicePixelRatioOf(context)),
+          child: child!,
+        ),
       ),
       home: const HomeScreen(),
     );
@@ -34,3 +36,44 @@ class PirateDotApp extends ConsumerWidget {
 
 /// 설정의 lang → Locale. `system`(또는 모르는 값)이면 null = OS 언어.
 Locale? _localeOf(String lang) => AppLocalizations.supportedLocales.where((l) => l.languageCode == lang).firstOrNull;
+
+/// 화면 짧은 변 [_baseShortest]dp를 기준으로 UI 배율(1 ~ [_maxScale]). 폰은 1, 10인치 태블릿(800dp)은 1.4.
+const _baseShortest = 480.0;
+const _maxScale = 1.4;
+
+double uiScaleFor(Size size) => (size.shortestSide / _baseShortest).clamp(1.0, _maxScale);
+
+/// UI 배율: 화면을 (크기 ÷ 배율)로 줄인 논리 화면에 그린 뒤 배율만큼 키운다.
+/// 누르기·스크롤은 Transform이 좌표를 되돌려 주므로 그대로 동작한다.
+/// dpr은 바꾸지 않는다 — 렌더(BattleGame)가 창의 실제 dpr로 battleFrameFor를 계산하므로, UI 버튼 자리도 같은 값으로 맞아야 한다.
+class UiScale extends StatelessWidget {
+  const UiScale({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final s = uiScaleFor(mq.size);
+    if (s == 1) return child;
+    final logical = mq.size / s;
+    return MediaQuery(
+      data: mq.copyWith(
+        size: logical,
+        padding: mq.padding / s,
+        viewPadding: mq.viewPadding / s,
+        viewInsets: mq.viewInsets / s,
+      ),
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topLeft,
+          minWidth: logical.width,
+          maxWidth: logical.width,
+          minHeight: logical.height,
+          maxHeight: logical.height,
+          child: Transform.scale(scale: s, alignment: Alignment.topLeft, child: child),
+        ),
+      ),
+    );
+  }
+}

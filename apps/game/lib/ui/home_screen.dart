@@ -36,10 +36,12 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (사용자 지시 2026-10-15: 폰 55%). 태블릿(폭 600dp 이상)은 45% 상한 유지.
+/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (사용자 지시 2026-10-15: 폰 55%). 태블릿(배율 뒤 폭 540dp 이상)은 45% 상한 유지.
 const _battleShare = 0.55;
 const _battleShareWide = 0.45;
-const _wideWidth = 600.0;
+
+/// UI 배율 뒤 논리 폭 기준 (태블릿 800dp ÷ 1.4 ≈ 571 → 넓은 화면, 폰 411 이하는 아님).
+const _wideWidth = 540.0;
 
 /// 전장 아래에 늘 남기는 최소 높이(dp) — 목표 띠 + 스크롤되는 탭 내용.
 const _belowBattleMin = 220.0;
