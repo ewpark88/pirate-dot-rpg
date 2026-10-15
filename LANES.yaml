@@ -129,6 +129,9 @@ lanes:
       - apps/game/lib/proto/
       - apps/game/test/proto/
       - tools/art/proto/
+      # 탑다운 전환 T1 엔진 2D화(2026-10-15 사용자 결정, S5 위임 — S2와 공유 경로는 커밋 전 서로 알림)
+      - packages/game_core/lib/src/battle/topdown/
+      - packages/game_core/test/battle/topdown/
       # 뒤로 가기 후 재실행 멈춤 수정(2026-10-15 S1 위임)
       - apps/game/lib/main.dart
       - apps/game/lib/engine_host.dart
