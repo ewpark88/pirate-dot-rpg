@@ -8,7 +8,7 @@ import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
 /// 탑다운 조준: 계열 8종의 2D 모양 (docs/contracts/requests/platform-topdown-t0.md D).
-/// 거리는 배 둘레 → 적 가장자리. 옆모습(targeting.dart)과 같은 규칙을 '배에서 x 거리' 대신 '배에서 반경'으로.
+/// 거리는 배 둘레 → 적 가장자리(skills.json reach를 배에서 반경으로).
 class TopAim {
   TopAim(this.top, this.w);
 
@@ -17,8 +17,27 @@ class TopAim {
 
   double _centerDist(Foe e) => _dist(e.x, e.y, top.shipX, top.shipY);
 
+  // 탑다운 모양 키(skills.json attack, 선택): 없으면 옆모습 값 그대로. T4-B(S3 제안) — 줄 서는 무리가 없는 탑다운에 맞춘 모양.
+  /// 원(투척·수중 장판) 반지름 / 충격 고리 범위: `topRadius`.
+  double circleRadius(AttackDef a) => a.raw.numberOr('topRadius', a.radius);
+  double ringRange(AttackDef a) => a.raw.numberOr('topRadius', a.range);
+
+  /// 관통 광선의 반폭: `topWidth`(없으면 width의 절반).
+  double beamHalfWidth(AttackDef a) => a.raw.has('topWidth') ? a.raw.number('topWidth') : a.width * half;
+
+  /// 강습 부채꼴 길이(배 몸통에서): `topRange`.
+  double coneRange(AttackDef a) => a.raw.numberOr('topRange', a.range);
+
+  /// 강습 부채꼴 각(도): `topArcDeg`.
+  double arcDeg(AttackDef a) => a.raw.numberOr('topArcDeg', a.angleDeg);
+
   /// 배 둘레에서 [e] 가장자리까지.
-  double edge(Foe e) => _centerDist(e) - top.shipRadius - top.radiusOf(e);
+  double edge(Foe e) {
+    // 선체 캡슐 몸통에서(없으면 반경 shipRadius 원 — 캡슐 반폭·반길이가 모두 shipRadius).
+    final reach = math.max(0, top.hullHalfLength - top.hullHalfWidth);
+    final cy = (e.y - top.shipY).clamp(-reach, reach).toDouble();
+    return _dist(e.x, e.y, top.shipX, top.shipY + cy) - top.hullHalfWidth - top.radiusOf(e);
+  }
 
   bool onScreen(Foe e) =>
       (e.x - top.shipX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;
@@ -61,28 +80,40 @@ class TopAim {
     double ay;
     switch (a.shape) {
       case 'circle':
-        int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= a.radius).length;
+        final radius = circleRadius(a);
+        int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
         final center = pickable.reduce((m, e) {
           final d = around(e) - around(m);
           return d > 0 || (d == 0 && _centerDist(e) < _centerDist(m)) ? e : m;
         });
         (ax, ay) = (center.x, center.y);
-        hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= a.radius).toList()
+        hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= radius).toList()
           ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
       case 'line':
-        // 배 → 첫 대상 방향 광선. 폭 안, 배 앞쪽(투영 > 0)만, 가까운 순 pierce마리.
-        final t = first();
-        (ax, ay) = (t.x, t.y);
-        final len = _centerDist(t);
-        final ux = len == 0 ? 1.0 : (t.x - top.shipX) / len;
-        final uy = len == 0 ? 0.0 : (t.y - top.shipY) / len;
-        double along(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
-        double across(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
-        hit =
-            (targets.where((e) => along(e) > 0 && across(e) <= a.width * half).toList()
-                  ..sort((p, q) => along(p).compareTo(along(q))))
-                .take(a.pierce)
-                .toList();
+        // 배 → 대상 방향 광선(폭 안, 배 앞쪽만, 가까운 순 pierce마리). 대상은 그 광선에 가장 많이 걸리는 적
+        // (같으면 가까운 쪽) — 옆모습에서 한 줄(레인)로 오는 무리를 꿰뚫던 것과 같은 몫.
+        List<Foe> along(Foe t) {
+          final len = _centerDist(t);
+          final ux = len == 0 ? 1.0 : (t.x - top.shipX) / len;
+          final uy = len == 0 ? 0.0 : (t.y - top.shipY) / len;
+          double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
+          double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
+          return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
+                ..sort((p, q) => proj(p).compareTo(proj(q))))
+              .take(a.pierce)
+              .toList();
+        }
+        var best = first();
+        var bestHit = along(best);
+        for (final c in pickable) {
+          final h = along(c);
+          if (h.length > bestHit.length || (h.length == bestHit.length && _centerDist(c) < _centerDist(best))) {
+            best = c;
+            bestHit = h;
+          }
+        }
+        (ax, ay) = (best.x, best.y);
+        hit = bestHit;
         falloff = true;
       case 'chain':
         final start = first();
@@ -107,10 +138,10 @@ class TopAim {
         // 가장 가까운 적 방향 부채꼴. 배 둘레에서 range 안(보스는 사거리 안이면 됨), coneNearPx 안은 각도와 상관없이.
         final t = first();
         final dir = math.atan2(t.y - top.shipY, t.x - top.shipX);
-        final halfAngle = a.angleDeg * half * radiansPerDegree;
+        final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if ((e.boss || edge(e) <= a.range) &&
+            if ((e.boss || edge(e) <= coneRange(a)) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,
@@ -119,7 +150,8 @@ class TopAim {
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'push':
         // 배 둘레 고리: 둘레에서 range 안 전부. 보스는 사거리 안이면 range와 상관없이(옆모습과 같은 규칙 — 보스는 멀리 선다).
-        hit = targets.where((e) => e.boss || edge(e) <= a.range).toList()..sort((p, q) => edge(p).compareTo(edge(q)));
+        hit = targets.where((e) => e.boss || edge(e) <= ringRange(a)).toList()
+          ..sort((p, q) => edge(p).compareTo(edge(q)));
         if (hit.isEmpty) return null;
         (ax, ay) = (top.shipX, top.shipY);
       default: // single

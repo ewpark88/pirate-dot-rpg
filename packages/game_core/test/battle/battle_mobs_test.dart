@@ -34,7 +34,7 @@ void main() {
 
   for (final stage in [1, 10, 37, 120]) {
     test('스테이지 $stage 탑다운: 한 파 HP·공격·골드 합 = 단일 곡선 × pool (마리 수와 무관)', () {
-      final f = Field(stage: stage, shipHpMax: BigNum.one, shipHp: BigNum.one)..geometry = geometryFor('top', t, stage);
+      final f = Field(stage: stage, shipHpMax: BigNum.one, shipHp: BigNum.one)..geometry = geometryFor(t, stage);
       final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: (_) {});
       spawnWave(f, stage, ctx, kind: 'crab'); // crab hpScale 1
       expect(f.foes, hasLength(w.topMobCountAt(stage)));

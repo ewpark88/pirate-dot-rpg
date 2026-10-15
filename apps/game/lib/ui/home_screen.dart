@@ -5,6 +5,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/ui/dock/dock_panels.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
 import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
@@ -15,15 +17,12 @@ import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_gate.dart';
-import 'package:pirate_dot/ui/tabs/crew_tab.dart';
-import 'package:pirate_dot/ui/tabs/ship_tab.dart';
-import 'package:pirate_dot/ui/tabs/summon_tab.dart';
-import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 한 화면 (사용자 결정 2026-10-15 ‘도크 + 끌어올리는 시트’): 평소엔 전투가 상단 바 아래 화면 전체,
@@ -60,6 +59,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     // 이탈 분석(설계서 4.9): 마지막으로 본 화면·스테이지.
     ref.listenManual(gameStateProvider.select((s) => s.progress.stage), (_, _) => _reportLastSeen());
     _reportLastSeen();
+    // 배 미리보기 그림을 미리 읽어 둔다(배 탭 첫 그림 깜빡임 없음 — 렌더 S3 권장). 실패해도 위젯이 스스로 읽는다.
+    final tables = ref.read(tablesProvider);
+    unawaited(
+      ShipPreview.preload(
+        tables,
+        skins: {
+          for (final id in ['coral', 'storm', 'gold', 'phantom']) id: ?skinPalette(tables, id),
+        },
+      ).catchError((Object _) {}),
+    );
   }
 
   @override
@@ -112,31 +121,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     return OfflineRewardGate(
       child: SummonResultGate(
         child: RebirthDoneGate(
-          child: FleetRejectedToast(
-            child: PopScope(
-              // 뒤로 가기 = 시트 닫기 (열려 있을 때).
-              canPop: false,
-              onPopInvokedWithResult: (didPop, _) {
-                if (!didPop && _open) _close();
-              },
-              child: Scaffold(
-                body: SafeArea(
-                  child: Column(
-                    children: [
-                      const SaveFailureBanner(),
-                      const TopBar(),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, body) {
-                            _bodyHeight = body.maxHeight;
-                            return AnimatedBuilder(
-                              animation: _sheet,
-                              builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                            );
-                          },
+          child: ShipLookCelebrationGate(
+            child: FleetRejectedToast(
+              child: PopScope(
+                // 뒤로 가기 = 시트 닫기 (열려 있을 때).
+                canPop: false,
+                onPopInvokedWithResult: (didPop, _) {
+                  if (!didPop && _open) _close();
+                },
+                child: Scaffold(
+                  body: SafeArea(
+                    child: Column(
+                      children: [
+                        const SaveFailureBanner(),
+                        const TopBar(),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, body) {
+                              _bodyHeight = body.maxHeight;
+                              return AnimatedBuilder(
+                                animation: _sheet,
+                                builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -179,20 +190,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ),
         // 위쪽 띠 (게이지·목표·전투력·안내·말풍선).
         Positioned(left: 0, right: 0, top: 0, child: BattleTopStrip(tutorial: tutorial)),
-        // 도크·튜토리얼·상자 광고: 시트 위(닫힘이면 화면 아래).
+        // 도크: 시트 위(닫힘이면 화면 아래). 도크 위에는 아무것도 얹지 않는다 — 전장 상자가 도크 높이만큼만 비켜 있으므로(선원 줄 가림 버그).
         Positioned(
           left: 0,
           right: 0,
           bottom: sheetH,
           child: Column(
+            key: const Key('dock.bottom'),
             mainAxisSize: MainAxisSize.min,
             children: [
-              const ChestAdStrip(),
               if (!_open) HomeDock(open: null, onTap: _tapIcon),
             ],
           ),
         ),
-        if (_open) Positioned(left: 0, right: 0, bottom: 0, height: sheetH, child: _sheetPanel(context)),
+        if (_open)
+          Positioned(
+            key: const Key('sheet.panel'),
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: sheetH,
+            child: _sheetPanel(context),
+          ),
       ],
     );
   }
@@ -210,40 +229,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          child: Column(
-            children: [
-              GestureDetector(
-                key: const Key('sheet.handle'),
-                behavior: HitTestBehavior.opaque,
-                onVerticalDragUpdate: _dragUpdate,
-                onVerticalDragEnd: _dragEnd,
-                child: Semantics(
-                  label: AppLocalizations.of(context).uiPanelHandle,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 6),
-                      Container(
-                        width: 44,
-                        height: 5,
-                        decoration: BoxDecoration(color: Skin.plainEdge, borderRadius: BorderRadius.circular(3)),
+          // 여닫는 동안 시트가 손잡이·도크보다 낮으면 내용을 위에 맞춰 자른다(넘침 없이).
+          child: LayoutBuilder(
+            builder: (context, box) => OverflowBox(
+              alignment: Alignment.topCenter,
+              minHeight: math.max(box.maxHeight, _sheetMinContent),
+              maxHeight: math.max(box.maxHeight, _sheetMinContent),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    key: const Key('sheet.handle'),
+                    behavior: HitTestBehavior.opaque,
+                    onVerticalDragUpdate: _dragUpdate,
+                    onVerticalDragEnd: _dragEnd,
+                    child: Semantics(
+                      label: AppLocalizations.of(context).uiPanelHandle,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 6),
+                          Container(
+                            width: 44,
+                            height: 5,
+                            decoration: BoxDecoration(color: Skin.plainEdge, borderRadius: BorderRadius.circular(3)),
+                          ),
+                          HomeDock(open: _tab, onTap: _tapIcon),
+                        ],
                       ),
-                      HomeDock(open: _tab, onTap: _tapIcon),
-                    ],
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: DockPanels(tab: _tab),
+                  ),
+                ],
               ),
-              Expanded(
-                child: IndexedStack(
-                  index: _tab,
-                  children: const [
-                    _MaxWidth(child: VoyageTab()),
-                    _MaxWidth(child: ShipTab()),
-                    CrewTab(),
-                    _MaxWidth(child: SummonTab()),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -251,23 +270,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   );
 }
 
+/// 시트 내용이 넘치지 않는 최소 높이(dp): 손잡이 + 도크 + 탭 내용 조금.
+const double _sheetMinContent = 6 + 5 + kDockHeight + 48;
+
 /// 시트 최대 폭(dp) — 태블릿에서 가운데.
 const _sheetMaxWidth = 720.0;
-
-/// 탭 내용 최대 폭(dp) — 태블릿에서 줄이 너무 길어지지 않게.
-const _tabMaxWidth = 640.0;
-
-class _MaxWidth extends StatelessWidget {
-  const _MaxWidth({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.topCenter,
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: _tabMaxWidth),
-      child: child,
-    ),
-  );
-}

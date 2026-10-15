@@ -1,10 +1,11 @@
+import 'dart:math' as math;
+
 // 전투 M3 수용 기준 (docs/specs/battle-m3-skills.md). 번호는 스펙의 수용 기준 번호.
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/skills.dart';
-import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -97,8 +98,12 @@ void main() {
       ..captainId = crewOf('shock');
     final r = Round(f, ctx(), CombatStats.of(game(), tables), rage: tables.skills.rageMax)..castUltimate();
     final ult = tables.skills.byId('shock').ultimate;
-    expect(mob.x, closeTo(120 + ult.knockback, 1e-9));
-    expect(boss.x, closeTo(120 + ult.knockback * tables.skills.bossControlFactor, 1e-9));
+    // 탑다운: 배 중심에서 바깥쪽(방사)으로 밀린다.
+    final top = tables.waves.top;
+    double dist(Foe e) => math.sqrt(math.pow(e.x - top.shipX, 2) + math.pow(e.y - top.shipY, 2));
+    final d0 = math.sqrt(math.pow(120 - top.shipX, 2) + math.pow(100 - top.shipY, 2));
+    expect(dist(mob), closeTo(d0 + ult.knockback, 1e-9));
+    expect(dist(boss), closeTo(d0 + ult.knockback * tables.skills.bossControlFactor, 1e-9));
     expect(mob.stunTimer, closeTo(ult.stunSec, 1e-9));
     expect(boss.stunTimer, closeTo(ult.stunSec * tables.skills.bossControlFactor, 1e-9));
     expect(r.rage, 0);
@@ -180,10 +185,10 @@ void main() {
       clock: ManualClock(start),
       initial: game(crews: {crew: const CrewState(level: 5)}),
     );
-    // 적이 화면 밖(spawnX)에서 스킬 사거리 안으로 들어올 때까지 (사거리, 사용자 지시 2026-10-15).
-    final f = tables.waves.field;
-    final edge = f.shipX + attackReach(tables.skills.byId('skip').skill.area, f)!;
-    while ((engine.state.battle?.enemies.where((e) => e.x <= edge - 10).length ?? 0) < 6) {
+    // 적이 화면 밖에서 스킬 사거리 안으로 들어올 때까지 (사거리, 사용자 지시 2026-10-15) — 탑다운: 배 중심 근처.
+    final top = tables.waves.top;
+    bool near(EnemyView e) => (e.x - top.shipX).abs() < 60 && (e.y - top.shipY).abs() < 60;
+    while ((engine.state.battle?.enemies.where(near).length ?? 0) < 6) {
       engine.tick();
     }
     engine
@@ -212,14 +217,6 @@ void main() {
       expect(engine.state.battle!.enemies.every((e) => region.enemies.contains(e.kind)), isTrue);
       expect(roles, contains(role), reason: '스테이지 $stage');
     }
-  });
-
-  test('강습 부채꼴: 배에 붙은 적(dx = 0, 레인 흔들림 dy)은 맞는다 (각도 90° 버그)', () {
-    final f = w.field;
-    final touching = foe(f.shipX, f.shipY + f.laneJitter * 0.5);
-    final g = gun(crewOf('assault'))..cooldown = 0;
-    round(field([touching])..guns = [g]).fireGuns();
-    expect(events.whereType<Damage>().map((d) => d.targetId), contains(touching.id));
   });
 
   test('계약 I. 슬롯 투영이 현재 등급 순번을 싣고 JSON 왕복에서 유지된다 (없는 옛 기록은 0)', () {

@@ -61,7 +61,7 @@ void main() {
     expect(quadrants.length, greaterThanOrEqualTo(3));
   });
 
-  test('피격 방향: 탑다운 ShipDamaged에 때린 적 위치(JSON 왕복), 옆모습은 없음', () {
+  test('피격 방향: ShipDamaged에 때린 적 위치(JSON 왕복)', () {
     List<ShipDamaged> hits(String view) {
       final e = engineOf(game(view: view))..enqueue(const OpSpawnBoss());
       final out = <ShipDamaged>[];
@@ -77,10 +77,30 @@ void main() {
     final h = top.first;
     expect(h.fromX, isNotNull);
     expect(GameEvent.fromJson(h.toJson()).toJson(), h.toJson());
-    final side = hits('side');
-    expect(side, isNotEmpty);
-    expect(side.first.fromX, isNull);
-    expect(side.first.toJson().containsKey('fromX'), isFalse);
+  });
+
+  test('적은 선체 몸통(캡슐)까지 와서 닿고 접촉 공격한다 — 멈춰 보이지 않게(사용자 신고 2026-10-15)', () {
+    final e = engineOf(game().copyWith(progress: const Progress(stage: 10, bestStage: 10)));
+    final tier = tables.shipTiers.tierAt(10);
+    final r = tier.topHalfLength - tier.topHalfWidth;
+    double gap(EnemyView x) {
+      final cy = (x.y - top.shipY).clamp(-r, r);
+      return math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY - cy, 2)) - tier.topHalfWidth;
+    }
+
+    var hits = 0;
+    final touched = <int>{};
+    for (var i = 0; i < ticksFor(20); i++) {
+      e.tick();
+      hits += e.drainEvents().whereType<ShipDamaged>().length;
+      for (final x in e.state.battle!.enemies.where((x) => !x.boss)) {
+        final g = gap(x);
+        expect(g, greaterThan(top.mobRadius - 0.5), reason: '몸통 안으로 들어가지 않는다');
+        if (g <= top.mobRadius + 0.5) touched.add(x.id);
+      }
+    }
+    expect(touched.length, greaterThan(10), reason: '많은 적이 몸통에 닿는다(옆구리 포함)');
+    expect(hits, greaterThan(10));
   });
 
   test('결정론: 같은 시드·같은 명령이면 같은 상태', () {
@@ -90,17 +110,6 @@ void main() {
     }
 
     expect(run(), run());
-  });
-
-  test('옆모습 → 탑다운 전환: SetSetting 다음 틱부터 top, 진행(스테이지·골드)은 그대로', () {
-    final e = engineOf(game(view: 'side'))..advance(ticksFor(30));
-    expect(e.state.battle!.mode, 'side');
-    final stage = e.state.progress.stage;
-    e
-      ..enqueue(const SetSetting('battleView', 'top'))
-      ..advance(2);
-    expect(e.state.battle!.mode, 'top');
-    expect(e.state.progress.stage, stage);
   });
 
   test('보스: 위에서 나와 standoff 원에 멈추고, 원을 벗어나지 않는다', () {

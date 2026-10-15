@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -19,6 +20,8 @@ class BattleTopStrip extends StatelessWidget {
       const BossWeakness(),
       const Padding(padding: EdgeInsets.only(top: 4), child: FarmingPill()),
       const BossFailNotice(),
+      // 상자 광고 줄(상자가 떠 있고 광고가 준비됐을 때만) — 예전엔 도크 위라 선원 줄을 가렸다.
+      const ChestAdStrip(),
       if (tutorial) const TutorialBubble(),
     ],
   );

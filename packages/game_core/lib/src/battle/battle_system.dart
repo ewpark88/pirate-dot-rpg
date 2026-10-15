@@ -9,6 +9,7 @@ import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
+import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/rebirth_shop.dart'
     show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
@@ -28,6 +29,7 @@ class BattleSystem implements GameSystem {
   Object? _crewsSeen;
   Object? _fleetSeen;
   final _dress = ShipDressCache();
+  int _kills = 0;
   List<String>? _fixedFleet;
   bool _invincible = false;
   bool _zeroCooldown = false;
@@ -101,7 +103,8 @@ class BattleSystem implements GameSystem {
     final after = _resolve(next, _field!, ctx);
     // 보스 처치는 새 Field를 만든다 → _resolve 뒤 다시 읽는다.
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
-    return _tailwindSpeed(_project(after, f, ctx.tables), ctx);
+    final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
+    return feverStep(_tailwindSpeed(_project(after, f, ctx.tables), ctx), ctx, kills: _kills, bossKilled: boss);
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
@@ -231,6 +234,7 @@ class BattleSystem implements GameSystem {
       zeroCooldown: _zeroCooldown,
     );
     body(r);
+    _kills = r.kills;
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
     final s = counted.copyWith(
       wallet: r.gold.isZero ? null : state.wallet.copyWith(gold: state.wallet.gold + r.gold),
@@ -239,11 +243,11 @@ class BattleSystem implements GameSystem {
     return _project(s, f, ctx.tables);
   }
 
-  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동, 전장 방식 변경) 새로 만든다.
+  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.
   Field _sync(GameState s, SystemContext ctx) {
     final view = s.battle ?? BattleView.empty;
     final f = _field;
-    if (f != null && f.matches(view, s.progress.stage, s.settings.battleView)) {
+    if (f != null && f.matches(view, s.progress.stage)) {
       if (!identical(_crewsSeen, s.crews) || !identical(_fleetSeen, s.fleet)) _arm(f, s, ctx);
       return f;
     }
@@ -251,7 +255,7 @@ class BattleSystem implements GameSystem {
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..geometry = geometryFor(s.settings.battleView, ctx.tables, s.progress.stage)
+      ..geometry = geometryFor(ctx.tables, s.progress.stage)
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

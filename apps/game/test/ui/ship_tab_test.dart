@@ -18,7 +18,7 @@ void main() {
   final tables = GameTables.load();
 
   testWidgets('기준 4: 부위 5줄, 레벨·효과·비용, 누르면 UpgradePart', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall);
+    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall, fullSheet: true);
     for (final name in ['Cannon', 'Hull', 'Sail', "Crow's Nest", 'Cargo Hold']) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
@@ -36,7 +36,7 @@ void main() {
   });
 
   testWidgets('기준 5: 최대 레벨이면 비활성 + MAX', (tester) async {
-    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab, size: _tall);
+    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab, size: _tall, fullSheet: true);
     expect(_button(tester, 'sail').onPressed, isNull);
     expect(_button(tester, 'crowsnest').onPressed, isNull);
     // 배수 알약의 MAX 1개 + 최대 레벨 부위 2개.
@@ -46,14 +46,14 @@ void main() {
   });
 
   testWidgets('기준 5: 골드가 모자라면 비활성', (tester) async {
-    await pumpGame(tester, loadFixture('new_player'), tab: shipTab, size: _tall);
+    await pumpGame(tester, loadFixture('new_player'), tab: shipTab, size: _tall, fullSheet: true);
     for (final p in tables.shipParts.parts) {
       expect(_button(tester, p.id).onPressed, isNull, reason: p.id);
     }
   });
 
   testWidgets('부위마다 아이콘 그림이 있다 (assets/ui/part_<id>.png)', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall);
+    await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall, fullSheet: true);
     for (final p in tables.shipParts.parts) {
       expect(find.byKey(Key('ship.icon.${p.id}')), findsOneWidget, reason: p.id);
       expect(File('assets/ui/part_${p.id}.png').existsSync(), isTrue, reason: p.id);

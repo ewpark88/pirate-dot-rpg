@@ -35,6 +35,7 @@ Future<CommandLog> pumpGame(
   double dpr = s24Dpr,
   List<Override> overrides = const [],
   bool openTab = true,
+  bool fullSheet = false,
 }) async {
   tester.view
     ..physicalSize = size * dpr
@@ -66,6 +67,12 @@ Future<CommandLog> pumpGame(
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600)); // 시트 열기 시작
     await tester.pump(_tabAnimation);
+    // 시트를 끝까지(90%) 끌어올린다 — 긴 패널 전체를 보는 테스트용.
+    if (fullSheet) {
+      await tester.drag(find.byKey(const Key('sheet.handle')), Offset(0, -size.height * 0.45));
+      await tester.pump();
+      await tester.pump(_tabAnimation);
+    }
   }
   return log;
 }

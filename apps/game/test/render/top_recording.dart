@@ -15,7 +15,6 @@ List<RecordedTick> topRecording(GameTables t, {int ticks = 240, int stage = 31, 
       'turtle': CrewState(level: 24),
     },
     collection: const {'octo', 'pang', 'sword', 'turtle'},
-    settings: const Settings(battleView: 'top'),
   );
   final engine = CoreEngine(tables: t, clock: ManualClock(start), initial: state);
   final out = <RecordedTick>[];
