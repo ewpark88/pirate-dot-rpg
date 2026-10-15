@@ -84,9 +84,10 @@ class EngineHost implements CommandSink {
   }
 
   /// 백그라운드로 갈 때: 멈추고, 지금 시각을 savedAt으로 저장한다.
+  /// 두 번 불러도 안전하다(onPause 뒤 onDetach) — 멈춘 시각은 처음 것을 지킨다.
   Future<void> pause() {
     stop();
-    _pausedAt = clock.now();
+    _pausedAt ??= clock.now();
     return save();
   }
 
