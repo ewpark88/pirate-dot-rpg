@@ -28,7 +28,7 @@ BigNum fleetDps(GameState s, GameTables t, List<String> fleet) {
     final a = t.skills.byId(t.crews.byId(id).family).attack;
     perAttack += crewPowerMultiplier(t.growth, t.rarities, crew.level) * a.power / a.intervalSec;
   }
-  return ship.attack.times(perAttack * tier * crit * ship.attackSpeed * (1 + rebirthBonus(s, t)));
+  return ship.attack.times(perAttack * tier * crit * ship.attackSpeed * (1 + damageBonus(s, t)));
 }
 
 /// 초당 골드 추정 = 한 파 골드 / (max(한 파 HP ÷ DPS, offline.minWaveSec) + 이동 시간). 보스는 넘지 않는다.

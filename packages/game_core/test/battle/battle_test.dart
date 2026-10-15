@@ -198,8 +198,8 @@ void main() {
     final on = CombatStats.of(s, tables, now: start);
     final off = CombatStats.of(s, tables, now: start.add(const Duration(hours: 2)));
     expect(on.goldMultiplier, closeTo(off.goldMultiplier * reward['tailwind']!.number('goldMultiplier'), 1e-9));
-    expect(on.bonus, reward['bossSupport']!.number('damageBonus'));
-    expect(off.bonus, 0);
+    // off.bonus = 보유 효과·도감(damageBonus) — 버프·조각은 그 위에 더해진다.
+    expect(on.bonus - off.bonus, closeTo(reward['bossSupport']!.number('damageBonus'), 1e-9));
     final e = engineOf(s)..tick();
     expect(e.state.battle!.speed, reward['tailwind']!.integer('speedMultiplier'));
 
@@ -207,7 +207,7 @@ void main() {
     final pieces = s.copyWith(wallet: s.wallet.copyWith(mapPieces: 10));
     final per = tables.meta.rebirth.number('bonusPerPiece');
     final withPieces = CombatStats.of(pieces, tables, now: start.add(const Duration(hours: 2)));
-    expect(withPieces.bonus, closeTo(per * 10, 1e-9));
+    expect(withPieces.bonus - off.bonus, closeTo(per * 10, 1e-9));
     expect(withPieces.goldMultiplier, closeTo(off.goldMultiplier * (1 + per * 10), 1e-9));
   });
 
