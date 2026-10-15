@@ -9,7 +9,7 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-15 · S1 |
-| 바로 다음 할 일 | **사람: `docs/DEVICE_TEST.md`로 M2 관문(손맛·60fps)** · **사람: 환생 2 규칙 선택(S2 비교표 대기)** · S1: 렌더 v2·UI v2 골든 승인·머지, 캔버스 HUD 전환 신호 |
+| 바로 다음 할 일 | **화면 배치 v2(실기기 피드백, `docs/specs/layout-v2-brief.md`) — S3 전장·S4 상단 바·탭** → 폰 재설치 확인 → 디자인 퀄리티 단계 계획 사용자 논의(S5 자료 준비) |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -111,6 +111,12 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ```
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S1 · 실기기 첫 설치 (S24), 화면 배치 v2
+- 한 일: 운영자 profile APK(32b7fb3)를 사용자 S24(SM-S921N, Android 16)에 adb 설치. 사용자 피드백 "버튼이 가리고 게임 화면이 안 보인다" →
+  adb 화면 캡처로 전 탭 점검, 지시서 `docs/specs/layout-v2-brief.md`(전장 폭 채우기·높이 약 40%, 누르는 버튼은 전장 밖 상단 바·선원 줄, 탭 글자 14sp·선원 4열).
+  머지: render 빙하·화산 적·보스·배 t2~t4, ui 창·시트·튜토리얼 도트화·설정 도트·소환 연출, platform 스토어 스크린샷 도구, economy c3.
+- 배정: S3·S4 배치 v2 최우선, S2 신화 비용 sim(순차)·30일 리포트·미결 2건, S5 디자인 퀄리티 벤치마크·단계안(사용자 논의 자료).
 
 ### 2026-10-15 · S1 · PC 재시작 후 재개, 레인 4개 재배정
 - 세션 4개 모두 main 폴더에서 열림 → 각자 worktree 절대경로(D:\Projects\pde-<레인>)에서만 작업하도록 지시. c7=economy, 96=render, b7=ui, a1=platform.
