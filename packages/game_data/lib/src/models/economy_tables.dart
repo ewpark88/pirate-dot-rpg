@@ -148,7 +148,8 @@ class MetaTable {
       offlineMinSec = j.obj('offline').integer('minSec'),
       dailyQuests = j.objs('dailyQuests'),
       dailyQuestRewardGems = j.integer('dailyQuestRewardGems'),
-      autoUpgradeUnlockStage = j.integer('autoUpgradeUnlockStage');
+      autoUpgradeUnlockStage = j.integer('autoUpgradeUnlockStage'),
+      notificationsDailyMax = j.obj('notifications').integer('dailyMax');
 
   final JsonReader raw;
   final JsonReader rebirth;
@@ -173,11 +174,19 @@ class MetaTable {
   final int dailyQuestRewardGems;
   final int autoUpgradeUnlockStage;
 
+  /// 오프라인 가득 로컬 알림의 하루 최대 횟수 (울릴 현지 날짜 기준, platform OfflineFullNotifier).
+  final int notificationsDailyMax;
+
   List<String> validate() {
     final e = <String>[];
     expect(e, that: dailyQuests.length <= 4, message: 'meta: 일일 퀘스트는 4개 이하 (피로 금지 규칙)');
     expect(e, that: rebirth.number('exponent') > 1, message: 'meta: rebirth.exponent > 1');
     expect(e, that: !raw.obj('attendance').boolean('resetOnMiss'), message: 'meta: 출석 초기화 금지 (피로 금지 규칙)');
+    expect(
+      e,
+      that: notificationsDailyMax >= 0 && notificationsDailyMax <= 1,
+      message: 'meta: notifications.dailyMax는 0~1 (피로 금지 규칙: 알림 하루 1회)',
+    );
     return e;
   }
 }
