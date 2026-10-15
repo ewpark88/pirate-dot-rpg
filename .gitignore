@@ -30,3 +30,5 @@ save.bak2
 
 # Kotlin 컴파일 캐시 (Gradle)
 .kotlin/
+# 골든 실패 산출물 (flutter test)
+**/test/**/failures/

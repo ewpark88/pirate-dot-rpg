@@ -74,7 +74,7 @@ Future<void> main() async {
     dir: supportDir,
     fullAfter: Duration(seconds: tables.meta.offlineMaxSec),
     minAway: Duration(seconds: tables.meta.offlineMinSec),
-    dailyMax: 1, // TODO(platform): meta.notifications.dailyMax 파싱 뒤 테이블 값
+    dailyMax: tables.meta.notificationsDailyMax,
     enabled: () => true, // TODO(platform): settings.notifications (세이브 계약 반영 뒤)
     lang: () => container.read(gameStateProvider).settings.lang,
   );
