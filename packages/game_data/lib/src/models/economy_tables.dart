@@ -98,6 +98,7 @@ class ShipTierDef {
   final double topRadius;
 
   /// 탑다운 선체 캡슐(위아래로 긴 배)의 반폭·반길이 — 적이 멈추는 곳(배 몸통에 닿게, 사용자 신고 2026-10-15).
+  /// 값 = 렌더 배(그리기 배율 0.85, 선체 강화 4단계 크기)의 선체 — 돛·옆 포신은 넣지 않는다(적이 돛 밑까지 오게, S3).
   final double topHalfWidth;
   final double topHalfLength;
   final double damageBonus;
