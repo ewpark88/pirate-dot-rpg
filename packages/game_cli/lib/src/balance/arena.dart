@@ -24,6 +24,7 @@ class ArenaConfig {
     this.waveKind = 'crab',
     this.hullLevel = 100000,
     this.seconds = 60,
+    this.view = 'side',
   });
 
   final int seed;
@@ -37,13 +38,17 @@ class ArenaConfig {
   final int hullLevel;
   final double seconds;
 
-  ArenaConfig copyWith({int? seed, int? stage, String? waveKind, int? hullLevel}) => ArenaConfig(
+  /// 전장 방식. 기본 side — 선원 균형 표가 아직 옆모습 기준(T4-B 탑다운 균형 뒤 top으로).
+  final String view;
+
+  ArenaConfig copyWith({int? seed, int? stage, String? waveKind, int? hullLevel, String? view}) => ArenaConfig(
     seed: seed ?? this.seed,
     stage: stage ?? this.stage,
     waveCount: waveCount,
     waveKind: waveKind ?? this.waveKind,
     hullLevel: hullLevel ?? this.hullLevel,
     seconds: seconds,
+    view: view ?? this.view,
   );
 }
 
@@ -94,7 +99,13 @@ class Arena {
     final engine = CoreEngine(
       tables: t,
       clock: clock,
-      initial: GameState.newGame(playerId: 'balance', seed: config.seed, now: _start, crews: have),
+      // T4-1: 기본이 탑다운이 됐지만 선원 균형 표(skills.json)는 아직 옆모습 기준 — 탑다운 균형(T4-B, S3·S2)이 끝나면 이 줄을 지운다.
+      initial: GameState.newGame(
+        playerId: 'balance',
+        seed: config.seed,
+        now: _start,
+        crews: have,
+      ).copyWith(settings: Settings(battleView: config.view)),
     );
     for (final id in have) {
       engine.enqueue(OpSetCrew(id, level: level));

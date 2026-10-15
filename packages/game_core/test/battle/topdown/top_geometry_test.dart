@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
+import 'package:game_core/src/battle/topdown/top_aim.dart';
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/testing.dart';
@@ -225,6 +226,30 @@ void main() {
       final vs = geo.aimMany(a, 2, [...pack, lone], XorShiftRng(1));
       expect(vs.first.hits.map((h) => h.foe).toSet(), pack.toSet());
       expect(vs.last.hits.single.foe, lone);
+    });
+
+    test('탑다운 모양 키(T4-B): topWidth·topRadius·topArcDeg가 있으면 그것, 없으면 옆모습 값', () {
+      AttackDef withKeys(String family, Map<String, Object> extra) =>
+          AttackDef.fromJson(JsonReader({...attack(family).raw.raw, ...extra}, 'test'));
+      final aim = TopAim(topField, w);
+      // 관통: 반폭 3(width 6의 절반) → topWidth 10이면 옆으로 8 떨어진 적도 맞는다.
+      final pierce = attack('pierce');
+      final first = mob(topField.shipX, topField.shipY - 40);
+      final aside = mob(topField.shipX + 8, topField.shipY - 70, id: 2);
+      expect(aim.beamHalfWidth(pierce), pierce.width / 2);
+      expect(geo.aimMany(pierce, 1, [first, aside], XorShiftRng(1)).single.hits, hasLength(1));
+      final wide = withKeys('pierce', {'topWidth': 10});
+      expect(geo.aimMany(wide, 1, [first, aside], XorShiftRng(1)).single.hits, hasLength(2));
+      // 수중: 장판 반지름도 topRadius.
+      final under = withKeys('underwater', {'topRadius': 30});
+      expect(geo.zoneRadius(under), 30);
+      expect(geo.zoneRadius(attack('underwater')), attack('underwater').radius);
+      expect(SideGeometry(w).zoneRadius(under), attack('underwater').radius, reason: '옆모습은 그대로');
+      // 강습: 부채꼴 각.
+      expect(aim.arcDeg(withKeys('assault', {'topArcDeg': 48})), 48);
+      expect(aim.arcDeg(attack('assault')), attack('assault').angleDeg);
+      // 충격: 고리 범위.
+      expect(aim.ringRange(withKeys('shock', {'topRadius': 70})), 70);
     });
 
     test('8계열 모두 사방의 적을 맞힌다(옆모습처럼 오른쪽만이 아님)', () {

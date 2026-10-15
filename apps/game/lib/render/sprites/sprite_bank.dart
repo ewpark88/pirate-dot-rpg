@@ -42,6 +42,9 @@ class SpriteBank {
       // 탑다운 적·보스 (T2: gen_topdown_enemies·gen_topdown_bosses, 머리가 위, 2프레임)
       for (final k in t.regions.enemies.keys) (key: 'td_enemy:$k', path: 'enemies/td_$k.png', frames: 2),
       for (final b in fx.bossLook.keys) (key: 'td_boss:$b', path: 'bosses/td_$b.png', frames: 2),
+      // 탑다운 돌발 이벤트 그림 (gen_topdown_events, S2 c5193fa)
+      for (final e in fx.raw.obj('topEvents').strs('sprites'))
+        (key: 'td_event:$e', path: 'fx/td_event_$e.png', frames: 2),
       // 탑다운 지나가는 풍경 (gen_topdown_landmarks, 바다 분위기)
       for (final l in {
         for (final v in fx.raw.obj('atmosphere').obj('landmarks').obj('byRegion').raw.values) ...(v as List),

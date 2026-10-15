@@ -16,7 +16,7 @@ void main() {
       () => ShipPreview.preload(
         tables,
         skins: {
-          for (final s in ['coral', 'royal', 'shadow', 'phantom']) s: skins.obj(s),
+          for (final s in ['coral', 'storm', 'gold', 'phantom']) s: skins.obj(s),
         },
       ),
     );
@@ -41,7 +41,7 @@ void main() {
                 Row(
                   children: [
                     ShipPreview(tables: tables, tier: 'warship', look: look(4), size: 100),
-                    for (final s in ['coral', 'royal', 'shadow', 'phantom'])
+                    for (final s in ['coral', 'storm', 'gold', 'phantom'])
                       ShipPreview(
                         tables: tables,
                         tier: 'warship',

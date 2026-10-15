@@ -34,6 +34,7 @@ class TopAtmosphere {
   ];
   late final JsonReader _weather = cfg.obj('weather');
   late final JsonReader _land = cfg.obj('landmarks');
+  late final double _stormDim = 0.25;
   late final double _despawn = _land.number('despawn');
   late final int _maxLand = _land.integer('maxOnScreen');
   late final int _ripples = _weather.obj('rain').integer('ripples');
@@ -70,7 +71,11 @@ class TopAtmosphere {
     return (h ^ (h >> 16)) & 0x7FFFFFFF;
   }
 
+  /// 돌발 이벤트 폭풍(S2 seaEvent 'storm'): 비 + 어둡게 + 번개 번쩍임(번쩍임 설정 따름).
+  bool storm = false;
+
   /// 시계 [clockMs](+ offsetMs)·해역 [region]으로 시간대·날씨를 정하고, 풍경을 [flow](바다 흐름, 단위)만큼 옮긴다.
+
   void update(double clockMs, String region, Offset flow, double heading, {required bool powerSave}) {
     final ms = clockMs + offsetMs;
     _nextLandMs ??= ms + _firstLandMs;
@@ -114,6 +119,10 @@ class TopAtmosphere {
       fog = pick('fog', 2);
       aurora = pick('aurora', 3);
       ash = pick('ash', 4);
+    }
+    if (storm) {
+      rain = true;
+      dim = math.max(dim, _stormDim);
     }
     // 풍경: 간격마다 하나, 배 앞쪽 옆(보이는 영역 밖)에서 나타나 흐름과 함께 지나간다.
     if (!powerSave) {
@@ -214,6 +223,13 @@ class TopAtmosphere {
       }
       _soft.style = PaintingStyle.fill;
     }
+  }
+
+  /// 폭풍 번개: [ms]가 번쩍 구간이면 0~1 (그리는 쪽이 번쩍임 설정이 켜졌을 때만 흰 막).
+  double lightning(double ms) {
+    if (!storm) return 0;
+    final t = ms % 3700;
+    return t < 90 ? 1 - t / 90 : (t > 260 && t < 320 ? 0.6 : 0);
   }
 
   /// 맨 위(옅게): 빗줄·화산재. 파티클 상한 fx_map, 절전이면 ½.

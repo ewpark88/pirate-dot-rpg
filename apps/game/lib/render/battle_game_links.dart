@@ -4,6 +4,7 @@ part of 'battle_game.dart';
 mixin _UiLinks on FlameGame {
   BattleScene get scene;
   bool get _sceneReady;
+  TopFrame get _topFrame;
 
   Offset? _goldTargetDp;
   void Function(BigNum amount)? _onCoinArrive;
@@ -30,4 +31,8 @@ mixin _UiLinks on FlameGame {
     _bottomInset = v;
     if (hasLayout) onGameResize(size);
   }
+
+  /// 탑다운: 전장 좌표 ↔ 상자 dp (UI 탭 판정용 — 황금 물고기·보물상자, 시트를 끄는 중에도 지금 배치 기준).
+  Offset worldToDp(Offset world) => _topFrame.worldToDp(world, scene.topShip);
+  Offset dpToWorld(Offset dp) => _topFrame.dpToWorld(dp, scene.topShip);
 }

@@ -83,6 +83,30 @@ void main() {
     expect(side.first.toJson().containsKey('fromX'), isFalse);
   });
 
+  test('적은 선체 몸통(캡슐)까지 와서 닿고 접촉 공격한다 — 멈춰 보이지 않게(사용자 신고 2026-10-15)', () {
+    final e = engineOf(game().copyWith(progress: const Progress(stage: 10, bestStage: 10)));
+    final tier = tables.shipTiers.tierAt(10);
+    final r = tier.topHalfLength - tier.topHalfWidth;
+    double gap(EnemyView x) {
+      final cy = (x.y - top.shipY).clamp(-r, r);
+      return math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY - cy, 2)) - tier.topHalfWidth;
+    }
+
+    var hits = 0;
+    final touched = <int>{};
+    for (var i = 0; i < ticksFor(20); i++) {
+      e.tick();
+      hits += e.drainEvents().whereType<ShipDamaged>().length;
+      for (final x in e.state.battle!.enemies.where((x) => !x.boss)) {
+        final g = gap(x);
+        expect(g, greaterThan(top.mobRadius - 0.5), reason: '몸통 안으로 들어가지 않는다');
+        if (g <= top.mobRadius + 0.5) touched.add(x.id);
+      }
+    }
+    expect(touched.length, greaterThan(10), reason: '많은 적이 몸통에 닿는다(옆구리 포함)');
+    expect(hits, greaterThan(10));
+  });
+
   test('결정론: 같은 시드·같은 명령이면 같은 상태', () {
     String run() {
       final e = engineOf(game(seed: 11))..advance(ticksFor(60));

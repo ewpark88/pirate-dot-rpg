@@ -483,6 +483,22 @@ const Map<String, String> rawTables = {
     "shipLookChanged": {
       "fx": "level_up",
       "sfx": "promote"
+    },
+    "feverStarted": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "goldfishCaught": {
+      "fx": null,
+      "sfx": "coin"
+    },
+    "bottlePicked": {
+      "fx": null,
+      "sfx": "pop"
+    },
+    "seaEventStarted": {
+      "fx": null,
+      "sfx": "combo"
     }
   },
   "projectiles": {
@@ -1308,7 +1324,24 @@ const Map<String, String> rawTables = {
           "#FF7A9A"
         ]
       },
-      "royal": {
+      "storm": {
+        "hull": [
+          "#4A5266",
+          "#353B4C",
+          "#7A8498",
+          "#8E98AC",
+          "#5E6678"
+        ],
+        "sail": [
+          "#3E4C70",
+          "#2A3654",
+          "#5A6C96"
+        ],
+        "flag": [
+          "#FAD646"
+        ]
+      },
+      "gold": {
         "hull": [
           "#3A3E78",
           "#262A58",
@@ -1323,23 +1356,6 @@ const Map<String, String> rawTables = {
         ],
         "flag": [
           "#F2C94C"
-        ]
-      },
-      "shadow": {
-        "hull": [
-          "#3A3440",
-          "#26222C",
-          "#5C5464",
-          "#6E6676",
-          "#48424E"
-        ],
-        "sail": [
-          "#2A2A30",
-          "#1A1A20",
-          "#44444C"
-        ],
-        "flag": [
-          "#D63A3A"
         ]
       },
       "phantom": {
@@ -1360,7 +1376,8 @@ const Map<String, String> rawTables = {
         ],
         "glow": true
       }
-    }
+    },
+    "scale": 0.85
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1474,6 +1491,30 @@ const Map<String, String> rawTables = {
           "wreck"
         ]
       }
+    }
+  },
+  "topEvents": {
+    "sprites": [
+      "goldfish",
+      "sea_serpent",
+      "merchant_ship",
+      "bottle"
+    ],
+    "fever": {
+      "border": "#FFD84A",
+      "borderDp": 6,
+      "pulseMs": 420,
+      "coinsPerSec": 10,
+      "flashMs": 500,
+      "coins": 18
+    },
+    "storm": {
+      "flashEveryMs": [
+        2400,
+        5200
+      ],
+      "flashMs": 120,
+      "dim": 0.25
     }
   }
 }
@@ -1619,6 +1660,7 @@ const Map<String, String> rawTables = {
       { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
     ]
   },
+  "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
@@ -1761,10 +1803,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 12, "topHalfLength": 30, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 13, "topHalfLength": 33, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 15, "topHalfLength": 37, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
@@ -1856,6 +1898,7 @@ const Map<String, String> rawTables = {
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,
+    "mobSpeedScale": 2,
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

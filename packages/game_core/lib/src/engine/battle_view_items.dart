@@ -19,6 +19,7 @@ class EnemyView {
     this.burning = false,
     this.vulnerable = false,
     this.heading = sideHeading,
+    this.eventKind,
   });
 
   factory EnemyView.fromJson(Json j) => EnemyView(
@@ -36,6 +37,7 @@ class EnemyView {
     burning: j['burning'] as bool? ?? false,
     vulnerable: j['vulnerable'] as bool? ?? false,
     heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
+    eventKind: j['eventKind'] as String?,
   );
 
   /// 옆모습의 적 진행 방향(왼쪽) — 라디안, 0 = 오른쪽, 반시계(수학 좌표, y는 화면 아래로).
@@ -71,6 +73,9 @@ class EnemyView {
   /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
   final double heading;
 
+  /// 돌발 이벤트 적이면 종류(goldfish | merchant | ambush) — 렌더가 그림을 고른다. 보통 적은 null.
+  final String? eventKind;
+
   Json toJson() => {
     'id': id,
     'kind': kind,
@@ -86,6 +91,7 @@ class EnemyView {
     'burning': burning,
     'vulnerable': vulnerable,
     if (heading != sideHeading) 'heading': heading,
+    if (eventKind != null) 'eventKind': eventKind,
   };
 }
 
@@ -130,4 +136,45 @@ class ChestView {
   final int ticksLeft;
 
   Json toJson() => {'x': x, 'y': y, 'ticksLeft': ticksLeft};
+}
+
+/// 진행 중인 돌발 이벤트 (전장 위 띠·유리병 말풍선). 저장하지 않는다.
+@immutable
+class SeaEventView {
+  const SeaEventView({required this.id, required this.ticksLeft, this.choices = const []});
+
+  factory SeaEventView.fromJson(Json j) => SeaEventView(
+    id: j['id'] as String,
+    ticksLeft: j['ticksLeft'] as int,
+    choices: (j['choices'] as List?)?.cast<String>() ?? const [],
+  );
+
+  /// goldfish | merchant | ambush | bottle | storm.
+  final String id;
+  final int ticksLeft;
+
+  /// 유리병 쪽지 종류(bottle일 때만, PickBottle(index)).
+  final List<String> choices;
+
+  Json toJson() => {'id': id, 'ticksLeft': ticksLeft, if (choices.isNotEmpty) 'choices': choices};
+}
+
+/// 진행 중인 즉석 도전 (전장 위 띠: '30초 안에 [value]/[target]').
+@immutable
+class ChallengeView {
+  const ChallengeView({required this.id, required this.target, required this.value, required this.ticksLeft});
+
+  factory ChallengeView.fromJson(Json j) => ChallengeView(
+    id: j['id'] as String,
+    target: j['target'] as int,
+    value: j['value'] as int,
+    ticksLeft: j['ticksLeft'] as int,
+  );
+
+  final String id;
+  final int target;
+  final int value;
+  final int ticksLeft;
+
+  Json toJson() => {'id': id, 'target': target, 'value': value, 'ticksLeft': ticksLeft};
 }

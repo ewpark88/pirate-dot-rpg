@@ -135,8 +135,6 @@ Future<void> main() async {
   host
     ..onState = controller.replace
     ..start();
-  // 탑다운 전환(T4, 사용자 결정 2026-10-15): 모든 빌드가 탑다운으로 시작한다. 옆모습 코드 제거 전까지의 연결.
-  if (host.state.settings.battleView != 'top') host.send(const SetSetting('battleView', 'top'));
   // 설정에서 끄면 남은 예약을 바로 취소한다.
   container.listen(
     gameStateProvider.select((s) => s.settings.notifications),

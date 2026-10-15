@@ -35,6 +35,7 @@ class _CrewsCommand extends Command<int> {
       ..addOption('kappa', defaultsTo: '$defaultKappa', help: '배 보호분 환산 (기획 판단, 조정 가능)')
       ..addOption('partner', help: '지원 환산 기준 파트너 (기본 첫 직사 선원)')
       ..addOption('out', help: 'JSON 리포트 경로')
+      ..addOption('view', defaultsTo: 'side', allowed: ['side', 'top'], help: '전장 방식(탑다운 균형 비교, T4-B)')
       ..addFlag('quick', negatable: false, help: '레벨 45만, 조합 50 (check용)');
   }
 
@@ -51,7 +52,11 @@ class _CrewsCommand extends Command<int> {
     List<String>? list(String key) =>
         a.option(key)?.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
     final levels = quick ? const [45] : (list('levels')?.map(int.parse).toList() ?? defaultLevels);
-    final config = ArenaConfig(seed: int.parse(a.option('seed')!), stage: int.parse(a.option('stage')!));
+    final config = ArenaConfig(
+      seed: int.parse(a.option('seed')!),
+      stage: int.parse(a.option('stage')!),
+      view: a.option('view')!,
+    );
     final watch = Stopwatch()..start();
     final BalanceReport report;
     try {

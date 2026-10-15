@@ -206,13 +206,13 @@ class Round {
         crewId: g.crewId,
         x: x,
         y: y,
-        radius: a.radius,
+        radius: geo.zoneRadius(a),
         ticksLeft: ticks,
         perTick: total.times(1 / ticks),
         excludeLayers: a.excludeLayers,
       ),
     );
-    ctx.emit(ZoneSpawned(ctx.tick, crewId: g.crewId, x: x, y: y, radius: a.radius, ticks: ticks));
+    ctx.emit(ZoneSpawned(ctx.tick, crewId: g.crewId, x: x, y: y, radius: geo.zoneRadius(a), ticks: ticks));
   }
 
   /// 피해를 주고 처치를 처리한다. 2마리 이상이면 합산 숫자(AoeDamageSum).

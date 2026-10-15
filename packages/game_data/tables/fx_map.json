@@ -55,6 +55,22 @@
     "shipLookChanged": {
       "fx": "level_up",
       "sfx": "promote"
+    },
+    "feverStarted": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "goldfishCaught": {
+      "fx": null,
+      "sfx": "coin"
+    },
+    "bottlePicked": {
+      "fx": null,
+      "sfx": "pop"
+    },
+    "seaEventStarted": {
+      "fx": null,
+      "sfx": "combo"
     }
   },
   "projectiles": {
@@ -880,7 +896,24 @@
           "#FF7A9A"
         ]
       },
-      "royal": {
+      "storm": {
+        "hull": [
+          "#4A5266",
+          "#353B4C",
+          "#7A8498",
+          "#8E98AC",
+          "#5E6678"
+        ],
+        "sail": [
+          "#3E4C70",
+          "#2A3654",
+          "#5A6C96"
+        ],
+        "flag": [
+          "#FAD646"
+        ]
+      },
+      "gold": {
         "hull": [
           "#3A3E78",
           "#262A58",
@@ -895,23 +928,6 @@
         ],
         "flag": [
           "#F2C94C"
-        ]
-      },
-      "shadow": {
-        "hull": [
-          "#3A3440",
-          "#26222C",
-          "#5C5464",
-          "#6E6676",
-          "#48424E"
-        ],
-        "sail": [
-          "#2A2A30",
-          "#1A1A20",
-          "#44444C"
-        ],
-        "flag": [
-          "#D63A3A"
         ]
       },
       "phantom": {
@@ -932,7 +948,8 @@
         ],
         "glow": true
       }
-    }
+    },
+    "scale": 0.85
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1046,6 +1063,30 @@
           "wreck"
         ]
       }
+    }
+  },
+  "topEvents": {
+    "sprites": [
+      "goldfish",
+      "sea_serpent",
+      "merchant_ship",
+      "bottle"
+    ],
+    "fever": {
+      "border": "#FFD84A",
+      "borderDp": 6,
+      "pulseMs": 420,
+      "coinsPerSec": 10,
+      "flashMs": 500,
+      "coins": 18
+    },
+    "storm": {
+      "flashEveryMs": [
+        2400,
+        5200
+      ],
+      "flashMs": 120,
+      "dim": 0.25
     }
   }
 }

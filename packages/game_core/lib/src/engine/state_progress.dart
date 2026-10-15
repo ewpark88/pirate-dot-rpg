@@ -17,6 +17,10 @@ class Progress {
     this.treasureSea,
     this.treasureRoute,
     this.bossFails = 0,
+    this.fever = 0,
+    this.seaEventInSec,
+    this.seaEventLast,
+    this.challengeInSec,
   });
 
   factory Progress.fromJson(Json j) => Progress(
@@ -31,6 +35,12 @@ class Progress {
     treasureSea: j['treasureSea'] as int?,
     treasureRoute: j['treasureRoute'] as int?,
     bossFails: j['bossFails'] as int? ?? 0,
+    fever: (j['fever'] as num?)?.toDouble() ?? 0,
+    seaEventInSec: (j['seaEvents'] as Json?)?['inSec'] == null
+        ? null
+        : ((j['seaEvents'] as Json)['inSec'] as num).toDouble(),
+    seaEventLast: (j['seaEvents'] as Json?)?['last'] as String?,
+    challengeInSec: (j['challengeInSec'] as num?)?.toDouble(),
   );
 
   final int stage;
@@ -61,6 +71,17 @@ class Progress {
   /// 보스 실패 누계 (UI ‘처음만 자세히’ 안내용, 세이브 v6 선택 키). 환생해도 유지.
   final int bossFails;
 
+  /// 피버 게이지 0~1 (선택 키, 피버 진행 중은 저장하지 않는다 — platform-fun-fever).
+  final double fever;
+
+  /// 다음 돌발 이벤트까지 남은 초(없으면 다음 파부터 새로 뽑음)와 마지막 이벤트 id(연속 금지) — 선택 키 seaEvents.
+  /// 전투 틱은 불러오면 0부터라 기획서의 nextAtTick 대신 남은 초로 저장한다.
+  final double? seaEventInSec;
+  final String? seaEventLast;
+
+  /// 다음 즉석 도전까지 남은 초 (선택 키).
+  final double? challengeInSec;
+
   Progress copyWith({
     int? stage,
     int? wave,
@@ -75,6 +96,10 @@ class Progress {
     int? treasureRoute,
     bool clearTreasureRoute = false,
     int? bossFails,
+    double? fever,
+    double? seaEventInSec,
+    String? seaEventLast,
+    double? challengeInSec,
   }) => Progress(
     stage: stage ?? this.stage,
     wave: wave ?? this.wave,
@@ -87,6 +112,10 @@ class Progress {
     treasureSea: clearTreasureSea ? null : treasureSea ?? this.treasureSea,
     treasureRoute: clearTreasureRoute ? null : treasureRoute ?? this.treasureRoute,
     bossFails: bossFails ?? this.bossFails,
+    fever: fever ?? this.fever,
+    seaEventInSec: seaEventInSec ?? this.seaEventInSec,
+    seaEventLast: seaEventLast ?? this.seaEventLast,
+    challengeInSec: challengeInSec ?? this.challengeInSec,
   );
 
   Json toJson() => {
@@ -101,6 +130,9 @@ class Progress {
     'treasureSea': treasureSea,
     'treasureRoute': treasureRoute,
     'bossFails': bossFails,
+    if (fever != 0) 'fever': fever,
+    if (seaEventInSec != null || seaEventLast != null) 'seaEvents': {'inSec': seaEventInSec, 'last': seaEventLast},
+    if (challengeInSec != null) 'challengeInSec': challengeInSec,
   };
 }
 

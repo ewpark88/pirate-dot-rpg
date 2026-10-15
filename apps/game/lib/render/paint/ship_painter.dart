@@ -41,7 +41,7 @@ class ShipPainter {
 
   void paint(Canvas c) {
     final flash = scene.shipFlashMs > 0 && scene.settings.flash;
-    final tier = scene.moments.shipTierId;
+    final tier = scene.frame.shipTierLook ?? scene.moments.shipTierId; // 환생 명예 등급 그림(S2)
     final bob = scene.shipBob;
     c
       ..save()

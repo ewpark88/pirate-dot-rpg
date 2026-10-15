@@ -54,6 +54,9 @@ abstract interface class BattleGeometry {
   /// 점 ([x],[y]) 쪽으로 [amount]만큼 끌어당김(음수면 밀어냄). 지나치지 않는다.
   void pull(Foe e, double x, double y, double amount);
 
+  /// [a]가 남기는 장판(수중)의 반지름.
+  double zoneRadius(AttackDef a);
+
   /// 분열한 작은 적 [n]마리 중 [i]번째 자리.
   Point splitAt(Foe parent, int i, int n);
 
@@ -69,7 +72,17 @@ abstract interface class BattleGeometry {
 
 /// Settings.battleView(`side` | `top`)에 맞는 전장 모양. 탑다운 배 반경은 [stage]의 배 등급(ship_tiers topRadius).
 BattleGeometry geometryFor(String mode, GameTables t, int stage) =>
-    mode == 'top' ? TopGeometry.of(t.waves, shipRadius: t.shipTiers.tierAt(stage).topRadius) : SideGeometry(t.waves);
+    mode == 'top' ? _topFor(t, stage) : SideGeometry(t.waves);
+
+TopGeometry _topFor(GameTables t, int stage) {
+  final tier = t.shipTiers.tierAt(stage);
+  return TopGeometry.of(
+    t.waves,
+    shipRadius: tier.topRadius,
+    hullHalfWidth: tier.topHalfWidth,
+    hullHalfLength: tier.topHalfLength,
+  );
+}
 
 /// 옆모습: 배는 왼쪽(shipX), 적은 오른쪽에서 줄지어 걸어온다. 지금 동작 그대로.
 class SideGeometry implements BattleGeometry {
@@ -131,6 +144,9 @@ class SideGeometry implements BattleGeometry {
     final step = math.min(dx.abs(), amount.abs());
     e.x += (amount > 0 ? dx.sign : -dx.sign) * step;
   }
+
+  @override
+  double zoneRadius(AttackDef a) => a.radius;
 
   @override
   Point splitAt(Foe parent, int i, int n) => (x: parent.x + (i - (n - 1) * half) * _f.spawnSpacing, y: parent.y);

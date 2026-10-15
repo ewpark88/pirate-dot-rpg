@@ -93,9 +93,14 @@ class HudPainter {
 
   /// 캔버스 HUD (흔들림 밖, 화면 배치 v2): 위 가운데 스테이지-파, 그 아래 보스 남은 초, 오른쪽 위 보스 체력, 콤보.
   /// 골드는 UI 상단 바, 함성 게이지는 선원 줄 궁극기 버튼으로 옮겼다.
-  void paintHud(Canvas c) {
+  /// [top]: 탑다운(사용자 실기기 지적) — 스테이지 글자·보스 타이머는 UI 진행 게이지가 대신하므로 안 그리고, 콤보는 게이지 아래로.
+  void paintHud(Canvas c, {bool top = false}) {
     final f = scene.frame;
     final v = scene.layout.viewDots;
+    if (top) {
+      _comboAt(c, v.top + v.height * _topComboAt);
+      return;
+    }
     if (f.stage != _stageShown || f.wave != _waveShown) {
       _stageShown = f.stage;
       _waveShown = f.wave;
@@ -121,12 +126,17 @@ class HudPainter {
       _fill(c, l, t, r - l + 1, b - t + 1, _barBack);
       if (boss > 0) _fill(c, l + 1, t + 1, (r - l - 1) * boss, b - t - 1, _bossFill);
     }
+    _comboAt(c, v.top + _fx.combo.number('y'));
+  }
+
+  static const _topComboAt = 0.18;
+
+  void _comboAt(Canvas c, double y) {
     final combo = scene.combo.count(scene.clockMs);
-    if (combo >= _fx.combo.integer('minKills')) {
-      _combo
-        ..set('x$combo COMBO', _comboColor, _fx.combo.integer('scale'))
-        ..draw(c, _fx.combo.number('x'), v.top + _fx.combo.number('y'));
-    }
+    if (combo < _fx.combo.integer('minKills')) return;
+    _combo
+      ..set('x$combo COMBO', _comboColor, _fx.combo.integer('scale'))
+      ..draw(c, _fx.combo.number('x'), y);
   }
 
   static double? _bossRatio(BattleView f) {

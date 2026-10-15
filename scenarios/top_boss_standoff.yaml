@@ -5,7 +5,6 @@ name: 탑다운 — 보스 원 둘레 정지
 seed: 2
 state: fixtures/states/new_player.json
 steps:
-  - input: { type: setSetting, key: battleView, value: top }
   - input: { type: op.jumpStage, stage: 30 }
   - input: { type: op.invincible, on: true }
   - input: op.spawnBoss

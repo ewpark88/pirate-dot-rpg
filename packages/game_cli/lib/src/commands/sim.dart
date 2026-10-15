@@ -25,7 +25,7 @@ class SimCommand extends Command<int> {
         allowed: ['continuous', 'daily'],
         help: 'continuous: 계속 접속 · daily: 하루 40분(20분씩 두 번) + 오프라인(설계서 4.3.3)',
       )
-      ..addOption('view', defaultsTo: 'side', allowed: ['side', 'top'], help: '전장 방식(탑다운 전환 T1 비교)')
+      ..addOption('view', defaultsTo: 'top', allowed: ['top', 'side'], help: '전장 방식(기본 탑다운, side는 삭제 전 비교용)')
       ..addFlag('boss-ad', help: '보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지)')
       ..addMultiOption('set', splitCommas: false, help: '테이블 값 덮어쓰기(탐색용) — 예: --set meta.rebirth.minStage=30 (값은 JSON)')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
@@ -61,7 +61,7 @@ class SimCommand extends Command<int> {
     if (md != null) {
       final how =
           '--seed $seed --players $players ${days != null ? '--days $days' : '--hours ${a['hours']}'} --schedule ${a['schedule']}'
-          '${a['view'] == 'side' ? '' : ' --view ${a['view']}'}${a['boss-ad'] as bool ? ' --boss-ad' : ''}${[for (final x in a['set'] as List<String>) ' --set $x'].join()}';
+          '${a['view'] == 'top' ? '' : ' --view ${a['view']}'}${a['boss-ad'] as bool ? ' --boss-ad' : ''}${[for (final x in a['set'] as List<String>) ' --set $x'].join()}';
       File(md)
         ..createSync(recursive: true)
         ..writeAsStringSync('<!-- game_cli sim $how — 생성물, 손으로 고치지 않는다 -->\n\n$report');
