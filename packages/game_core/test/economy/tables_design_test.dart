@@ -45,9 +45,10 @@ void main() {
     expect(t.rarities.bossDropRates, {'common': 0.8, 'rare': 0.17, 'hero': 0.028, 'legend': 0.002});
   });
 
-  test('레벨 1 올리는 경험치는 등급별 1·3·8·20·30', () {
+  test('레벨 1 올리는 경험치는 등급별 1·3·8·30·30', () {
     // 영웅 6 → 8: 하루 40분 sim으로 ‘승급으로 만든 첫 전설 4~8일’에 맞춤 (사용자 결정 B, 2026-10-14)
-    expect(t.growth.expToNext, {'common': 1, 'rare': 3, 'hero': 8, 'legend': 20, 'mythic': 30});
+    // 전설 20 → 30: 환생 3(c3+f0) 뒤 첫 신화 22일 → 30일(목표 28~56일). 신화 승급의 병목은 카드·증표가 아니라 Lv60 경험치.
+    expect(t.growth.expToNext, {'common': 1, 'rare': 3, 'hero': 8, 'legend': 30, 'mythic': 30});
   });
 
   test('승급: 카드 3·6·10·20, 증표는 신화만 50, 골드는 처치 골드 × 100·300·1000·3000', () {

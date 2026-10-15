@@ -5,10 +5,17 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 환생 3 결정 대기(추천 c3+f0, 계획 파일 표) → 결정 뒤 구현·신화 숫자 조정 |
+| 바로 다음 할 일 | M3 완료 조건: 야간 30일 리포트(경로·CI는 S1 요청), 환생 해금 40 vs 30 sim 근거, bossSupport 근거 |
 | 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S2 · 환생 3 구현(c3) + 첫 신화 조정
+- 사용자 결정 c3+f0 채택. c3: growth bossCards.repeatEvery 2·repeatCount 1 — 환생 뒤 bestStage 미만 보스는 짝수 스테이지만 1장(c6647bc, 테스트 먼저). f0은 S1 main db0c4bc.
+- 첫 신화: 신화 카드 30·증표 100/150은 효과 없음(병목은 전설 Lv46→60 경험치) → expToNext.legend 20 → 30. 하루 40분 60일 첫 신화 30.0일(시드 11~20: 33.4일), 모든 목표 OK.
+- sim: 회차별 카드 수입(등급별 기댓값, c3 규칙 반영), 회복 중 연속 보스 간격(3.05초 = 이동 3초 포함), `--days`·`--report` 옵션.
+- 실수 기록: 메모리 부족으로 sim 6개 동시 실행이 강제 종료 → S1 허락 뒤 동시 2개로. 컴파일 직후 exe가 잠겨(Permission denied) e34 두 번 실패 — 건너뜀. 회차별 카드 지표가 처음엔 반복 보스도 countAt으로 셈 → repeatCountAt으로 고침.
+- 남은 문제: 첫 전설 보유는 시드 묶음에 따라 3.4~5.0일(운, 10명 중앙값 흔들림) — 야간 100명 리포트로 다시 볼 것. 옥토 첫 등급 상승 17.9분(계속 접속, 기존 해석 문제).
 
 ### 2026-10-15 · S2 · 환생 남은 벗어남 선택지 비교 + platform 요청
 - 한 일: platform 요청 meta-notify — MetaTable.notificationsDailyMax 파싱·검증 0~1(fd535ed, 테스트는 game_core/test/economy).

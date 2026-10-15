@@ -1,7 +1,7 @@
 import 'package:game_data/game_data.dart';
 
 /// 환생 회차 하나의 카드 수입. 보스 카드는 기댓값(장수 × `bossDropRates`)으로 센다 — 등급별 수입을
-/// 운과 무관하게 비교하려고(반복 보스 규칙 결정용, 2026-10-15 S1 요청). 시작 카드(옥토)는 따로.
+/// 운과 무관하게 비교하려고(반복 보스 규칙 결정용, 2026-10-15 S1 요청). 장수는 grantBossCards와 같은 규칙(반복 보스는 repeatCountAt), 시작 카드(옥토)는 따로.
 class RunCards {
   /// 역대 최고를 처음 넘은 보스 / 환생 뒤 이미 깬 스테이지(bestStage 미만)의 보스.
   int newBosses = 0;
@@ -25,7 +25,7 @@ class RunCards {
     } else {
       newBosses++;
     }
-    final n = b.countAt(stage);
+    final n = repeat ? b.repeatCountAt(stage) : b.countAt(stage);
     for (final e in t.rarities.bossDropRates.entries) {
       into[e.key] = (into[e.key] ?? 0) + n * e.value;
     }
