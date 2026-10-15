@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 폭발·포탄 보정 (S1 실기기 지적: 무늬 없는 큰 노란 원)
+- 원인: 팩 explosion_aoe 앞 프레임(0~2)이 단색 원. 렌더는 팩 시트를 그대로 쓰고 있었다(플레이스홀더 아님).
+- `tools/art/gen_fx.py` → `tools/art/overrides/`(import_pack.py의 수작업 보정 경로): explosion_aoe 64×64×8(같은 크기) — 번쩍 별 →
+  울퉁불퉁한 불덩이(흰 심 왼쪽 위·노랑·주황·붉은 테) → 충격파 고리·연기 덩이·불티 → 흩어지는 연기, 외곽선. cannonball 7×7(쇠·반짝임).
+  import_pack.py로 assets·LICENSES 반영(출처 '수작업 보정').
+- 골든 battle_reference·battle_sprites 갱신. 비교 `docs/specs/render-layout-v2/compare_explosion.png`(시트 전후, S24 3장면 전후, 골든 전후).
+
 ### 2026-10-15 · S3 · 1단계 마감 점검 (S24, 6해역 × 보스 등장·궁극기·동시 처치)
 - 점검 그림 `docs/specs/render-layout-v2/regions_s24.png`(골든 아님, 스크래치 테스트로 18장). 잘림·배치 깨짐 없음.
 - 고침 1: 도트 글리프에 '.'·'T'·소문자 a~z가 없어 '3.4K'가 '3 4K', 10^15부터 'aa' 접미사가 통째로 안 보임 → 글리프 추가(UI 공용),

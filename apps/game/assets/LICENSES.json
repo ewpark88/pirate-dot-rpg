@@ -433,7 +433,7 @@
       "license": "OWN"
     },
     "fx/explosion_aoe.png": {
-      "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/explosion_aoe.png",
+      "source": "Pirate Busters v0.24 자체 IP 수작업 보정 → tools/art/overrides/fx/explosion_aoe.png",
       "license": "OWN"
     },
     "fx/hit_spark.png": {
@@ -465,7 +465,7 @@
       "license": "OWN"
     },
     "projectiles/cannonball.png": {
-      "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/cannonball.png",
+      "source": "Pirate Busters v0.24 자체 IP 수작업 보정 → tools/art/overrides/projectiles/cannonball.png",
       "license": "OWN"
     },
     "projectiles/harpoon.png": {
