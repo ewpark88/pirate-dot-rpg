@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
@@ -71,7 +72,9 @@ class ScenePainter {
     _hud.paintNumbers(canvas);
     canvas.restore();
     _stage.paintOverlays(canvas);
-    _hud.paintSlots(canvas);
+    _hud
+      ..paintHud(canvas)
+      ..paintSlots(canvas);
     if (scene.screenFlashMs > 0) _fill(canvas, 0, 0, kLogicalWidth, kFieldBottom, 0x99FFFFFF);
   }
 
@@ -91,13 +94,29 @@ class ScenePainter {
     }
   }
 
+  /// 같은 층 안에서는 y 순서로(뒤 → 앞). 정렬 버퍼는 재사용한다.
+  final List<int> _order = [];
+
   void _enemies(Canvas c, String layer) {
+    _order.clear();
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
       if (e.layer != layer || e.drawX > kLogicalWidth + kBossSize) continue;
-      _enemy(c, e);
+      var i = _order.length;
+      _order.add(k);
+      while (i > 0 && scene.poses[_order[i - 1]].drawY > e.drawY) {
+        _order[i] = _order[i - 1];
+        i--;
+      }
+      _order[i] = k;
+    }
+    for (final k in _order) {
+      _enemy(c, scene.poses[k]);
     }
   }
+
+  static const _bobAmp = 1.2;
+  static const _bobRate = 3.0;
 
   void _enemy(Canvas c, EnemyPose e) {
     final looks = scene.looks;
@@ -106,15 +125,17 @@ class ScenePainter {
     final sheet = _sprite.sheet(key);
     final w = sheet?.frameW ?? bossShape?.w ?? looks.sizeOf(e.kind);
     final h = sheet?.frameH ?? bossShape?.h ?? w;
+    // 발밑 기준(y = 발) + 출렁임 sin(t·3 + 위상)·1.2px (기준 장면).
+    final bob = (math.sin(scene.clockMs / Duration.millisecondsPerSecond * _bobRate + e.id) * _bobAmp).roundToDouble();
     final l = e.drawX - w / 2;
-    final t = e.drawY - h / 2;
+    final t = e.drawY - h + bob;
     final under = e.layer == 'underwater';
     final alpha = bossShape == null ? looks.alphaOf(e.kind) : 1.0;
     if (!_sprite.draw(
       c,
       key,
       e.drawX,
-      e.drawY,
+      t + h / 2,
       frame: _animFrame(e.id),
       flash: e.flash,
       underwater: under,
@@ -127,14 +148,14 @@ class ScenePainter {
       color = ((alpha * 0xFF).round() << 24) | (color & 0xFFFFFF);
       _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);
     }
-    if (bossShape != null || e.hpRatio < 1) {
+    if (bossShape != null) {
       _fill(c, l, t - 3, w, 1, _hpBack.toARGB32());
       _fill(c, l, t - 3, w * e.hpRatio, 1, _hpFront.toARGB32());
     }
     final tierColor = looks.tierColor(e.tier);
     if (tierColor != null) _outline(c, l, t, w, h, 1, 1, tierColor);
     if (e.shielded) _outline(c, l, t, w, h, _shieldGap, _shieldPx, _shieldColor);
-    _status.paint(c, e, t, t + h);
+    _status.paint(c, e, e.drawY - h, e.drawY);
     if (showHitboxes) {
       _stroke.color = _hitbox;
       c.drawRect(Rect.fromLTWH(l, t, w, h), _stroke);
@@ -169,7 +190,8 @@ class ScenePainter {
   void _effects(Canvas c) {
     for (final e in scene.effects.active) {
       if (!e.visible) continue;
-      if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, e.y, frame: e.frame, w: e.w, h: e.h)) continue;
+      final cy = _bottomAnchored.contains(e.sheetId) ? e.y - e.h / 2 : e.y;
+      if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, cy, frame: e.frame, w: e.w, h: e.h)) continue;
       final t = e.frame / e.frames;
       final scale = 0.5 + 0.5 * t;
       final alpha = ((1 - t) * 0xCC).round() << 24;
@@ -191,10 +213,18 @@ class ScenePainter {
     }
   }
 
+  /// 코인 반짝임 3프레임을 초당 12장 (기준 장면).
+  static const _coinFps = 12;
+
+  late final Set<String> _bottomAnchored = {
+    for (final e in scene.fx.sheetAnchors.raw.entries)
+      if (e.value == 'bottom') e.key,
+  };
+
   void _coins(Canvas c) {
     for (final coin in scene.coins.active) {
       if (coin.ageMs < 0) continue;
-      if (_sprite.draw(c, 'coin', coin.x, coin.y, frame: _animFrame(0))) continue;
+      if (_sprite.draw(c, 'coin', coin.x, coin.y, frame: (coin.ageMs * _coinFps / 1000).floor())) continue;
       _fill(c, coin.x - 1, coin.y - 1, 2, 2, 0xFFFFD23F);
     }
   }

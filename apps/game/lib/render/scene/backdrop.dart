@@ -1,24 +1,20 @@
 import 'package:game_data/game_data.dart';
 
-/// 해역 배경 한 벌 (아트 전 플레이스홀더): 하늘·바다·깊은 바다 색 + 원경 장식.
+/// 해역 배경 팔레트 (기준 battle_ship.gif 구조): 하늘 띠 4단·구름·바다 띠 3단·물결 대시 2색.
 class BackgroundPalette {
   BackgroundPalette.fromJson(JsonReader j)
-    : sky = parseArgb(j.str('sky'), '${j.path}.sky'),
-      sea = parseArgb(j.str('sea'), '${j.path}.sea'),
-      deep = parseArgb(j.str('deep'), '${j.path}.deep'),
-      decor = j.str('decor'),
-      decorColor = parseArgb(j.str('decorColor'), '${j.path}.decorColor');
+    : sky = [for (final c in j.strs('sky')) parseArgb(c, '${j.path}.sky')],
+      cloud = parseArgb(j.str('cloud'), '${j.path}.cloud'),
+      sea = [for (final c in j.strs('sea')) parseArgb(c, '${j.path}.sea')],
+      waves = [for (final c in j.strs('waves')) parseArgb(c, '${j.path}.waves')];
 
-  final int sky;
-  final int sea;
-  final int deep;
-
-  /// `islands` | `clouds` | `icebergs` | `smoke` | `none` | `fog`.
-  final String decor;
-  final int decorColor;
+  final List<int> sky;
+  final int cloud;
+  final List<int> sea;
+  final List<int> waves;
 }
 
-/// 스테이지 → 해역 배경, 해역이 바뀌면 `fx_map.backgroundFadeMs` 동안 색을 섞는다 (docs/specs/render-regions.md 규칙 1~3).
+/// 스테이지 → 해역 배경, 해역이 바뀌면 `fx_map.backgroundFadeMs` 동안 색을 섞는다 (render-regions 규칙 1~3).
 /// 해역은 `regions.regionAt(stage)` — 무한 항해 반복(loopStages)까지 테이블이 정한다.
 class Backdrop {
   Backdrop(this._fx, this._regions) {
@@ -27,7 +23,6 @@ class Backdrop {
   }
 
   final FxMapTable _fx;
-
   final RegionsTable _regions;
   final Map<String, BackgroundPalette> _palettes = {};
   late BackgroundPalette _current;
@@ -62,13 +57,13 @@ class Backdrop {
 
   double get _t => _fx.backgroundFadeMs <= 0 ? 1 : (_fadeAge / _fx.backgroundFadeMs).clamp(0.0, 1.0);
 
-  int get sky => _mix(_prev.sky, _current.sky);
-  int get sea => _mix(_prev.sea, _current.sea);
-  int get deep => _mix(_prev.deep, _current.deep);
-  int get decorColor => _mix(_prev.decorColor, _current.decorColor);
-
-  /// 장식은 섞지 않고 절반에서 바꾼다.
-  String get decor => _t < 0.5 ? _prev.decor : _current.decor;
+  /// 하늘 띠 [i]번(0 = 맨 위).
+  int sky(int i) => _mix(_prev.sky[i], _current.sky[i]);
+  int sea(int i) => _mix(_prev.sea[i], _current.sea[i]);
+  int wave(int i) => _mix(_prev.waves[i], _current.waves[i]);
+  int get cloud => _mix(_prev.cloud, _current.cloud);
+  int get skyBands => _current.sky.length;
+  int get seaBands => _current.sea.length;
 
   int _mix(int a, int b) {
     final t = _t;

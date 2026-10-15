@@ -147,12 +147,16 @@ class UltimatePattern {
     : kind = UltimatePatternKind.values.byName(j.str('pattern')),
       fx = j.str('fx'),
       count = j.integer('count'),
-      durationMs = j.number('durationMs');
+      durationMs = j.number('durationMs'),
+      raw = j;
 
   final UltimatePatternKind kind;
   final String fx;
   final int count;
   final double durationMs;
+
+  /// sweep 선택값: 크기 배율·높이(중심 y)·시작·끝 중심 x (`numberOr`로 읽는다).
+  final JsonReader raw;
 }
 
 /// 적 역할별 플레이스홀더 모양 (fx_map.json enemyLook).
@@ -218,8 +222,7 @@ class FxMapTable {
   final String backgroundDefault;
   final String bossLookDefault;
 
-  /// 무한 항해 테두리 tier 1~3 색.
-  final List<int> tierColors;
+  final List<int> tierColors; // 무한 항해 테두리 tier 1~3 색
 
   /// fx_map.json 원문. 아래 설정 묶음은 처음 읽을 때 한 번만 만든다(프레임당 할당 없음).
   final JsonReader raw;
@@ -243,6 +246,15 @@ class FxMapTable {
   JsonReader get pillar => _o('pillar');
   JsonReader get shipLook => _o('shipLook');
   JsonReader get regionSweep => _o('regionSweep');
+
+  /// render-quality-v1 (기준 battle_ship.gif): 배경 배치, 시트 기준점, 계열 색, 콤보 배너, 캔버스 HUD, 슬롯, 포구 화염.
+  JsonReader get backgroundLayout => _o('backgroundLayout');
+  JsonReader get sheetAnchors => _o('sheetAnchors');
+  JsonReader get familyColors => _o('familyColors');
+  JsonReader get combo => _o('combo');
+  JsonReader get hud => _o('hud');
+  JsonReader get slots => _o('slots');
+  JsonReader get muzzle => _o('muzzle');
 
   /// 계열 이름 → 발사체 모양. 별칭(옛 이름)을 풀고, 모르는 계열은 기본 모양.
   ProjectileStyle projectileFor(String family) =>

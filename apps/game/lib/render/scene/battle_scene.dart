@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/fx/pool.dart';
@@ -71,6 +73,7 @@ class BattleScene {
   final shake = ScreenShake();
   final stats = SceneStats();
   final chest = ChestPose();
+  late final combo = ComboTracker(windowMs: fx.combo.number('windowMs'));
   late final sound = SoundDirector(fx, juice);
   late final moments = Moments(this);
 
@@ -113,6 +116,11 @@ class BattleScene {
   int get poseCount => player.poseCount;
   EnemyPose? poseOf(int id) => player.poseOf(id);
 
+  static double _down(double v, double dt) => v > 0 ? v - dt : v;
+
+  /// 배 위아래 출렁임(px): round(sin(t·2)) — 기준 장면 그대로.
+  double get shipBob => math.sin(clockMs / Duration.millisecondsPerSecond * 2).roundToDouble();
+
   /// 한 화면 프레임. [dtMs]는 실제 경과 시간.
   void update(double dtMs) {
     clockMs += dtMs;
@@ -122,7 +130,7 @@ class BattleScene {
     _updateStage();
     // 히트스톱 구간은 이펙트 시계도 멈춘다. 흔들림은 실제 시간으로 돈다.
     final fxDt = player.inHitStop ? 0.0 : dtMs * rate;
-    _updateProjectiles();
+    updateProjectiles(this);
     for (final e in effects.active) {
       e.ageMs += fxDt;
       moveEffect(e);
@@ -137,17 +145,17 @@ class BattleScene {
     numbers.update(fxDt);
     shake.update(dtMs);
     for (var i = 0; i < kMaxSlots; i++) {
-      if (slotFlashMs[i] > 0) slotFlashMs[i] -= dtMs;
+      slotFlashMs[i] = _down(slotFlashMs[i], dtMs);
     }
-    if (shipFlashMs > 0) shipFlashMs -= fxDt;
-    if (shipHealMs > 0) shipHealMs -= fxDt;
-    if (shipBuffMs > 0) shipBuffMs -= dtMs;
-    if (screenFlashMs > 0) screenFlashMs -= dtMs;
-    if (bossWarnMs > 0) bossWarnMs -= dtMs;
-    if (bossFailMs > 0) bossFailMs -= dtMs;
+    shipFlashMs = _down(shipFlashMs, fxDt);
+    shipHealMs = _down(shipHealMs, fxDt);
+    shipBuffMs = _down(shipBuffMs, dtMs);
+    screenFlashMs = _down(screenFlashMs, dtMs);
+    bossWarnMs = _down(bossWarnMs, dtMs);
+    bossFailMs = _down(bossFailMs, dtMs);
     backdrop.update(dtMs);
     moments.update(dtMs);
-    _applyHits(fxDt);
+    applyHits(this, fxDt);
     _updateStats();
   }
 
@@ -157,11 +165,9 @@ class BattleScene {
 
   static bool _effectDone(Effect e) => e.done;
   static bool _coinDone(Coin c) => c.done;
-  static bool _projectileDone(Projectile p) => p.progress >= 1;
   // 장면 위치를 읽는 술어라 필드 클로저로 한 번만 만든다(프레임당 할당 0).
   // ignore: prefer_function_declarations_over_variables
   late final bool Function(Zone) _zoneDone = (z) => player.position >= z.endIndex;
-  static bool _hitDone(HitState h) => h.flashMs <= 0 && h.knockAgeMs >= h.knockMs;
 
   /// 이펙트 시트 한 번 재생. 상한을 넘으면 가장 오래된 것을 회수한다.
   /// [scale]배 크기, [delayMs] 뒤 시작, [durationMs]가 있으면 그 시간에 맞춰 프레임을 늘리고 [vx](px/ms)로 움직인다.
@@ -243,41 +249,7 @@ class BattleScene {
     bossWarnMs = 0;
     bossFailMs = 0;
     moments.reset();
-  }
-
-  void _updateProjectiles() {
-    final pos = player.position;
-    for (final p in projectiles.active) {
-      if (pos < p.startIndex) {
-        p.progress = 0;
-        continue;
-      }
-      final total = player.motionBetween(p.startIndex, p.impactIndex);
-      p.progress = total <= 0 ? 1 : (player.motionBetween(p.startIndex, pos) / total).clamp(0.0, 1.0);
-      placeProjectile(p);
-    }
-    projectiles.releaseWhere(_projectileDone);
-  }
-
-  void _applyHits(double dtMs) {
-    for (final h in hits.active) {
-      if (h.flashMs > 0) h.flashMs -= dtMs;
-      if (h.knockAgeMs < h.knockMs) h.knockAgeMs += dtMs;
-    }
-    hits.releaseWhere(_hitDone);
-    for (var k = 0; k < player.poseCount; k++) {
-      final pose = player.poses[k];
-      for (final h in hits.active) {
-        if (h.id != pose.id) continue;
-        pose.flash = settings.flash && h.flashMs > 0;
-        if (h.knockMs > 0 && h.knockAgeMs < h.knockMs) {
-          final k = h.px * (1 - h.knockAgeMs / h.knockMs);
-          pose
-            ..drawX = pose.x + h.dirX * k
-            ..drawY = pose.y + h.dirY * k;
-        }
-      }
-    }
+    combo.clear();
   }
 
   void _updateStats() {

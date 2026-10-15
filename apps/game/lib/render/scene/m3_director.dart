@@ -34,7 +34,7 @@ class M3Director {
     final skill = _skills[e.skillId];
     if (skill?.shape == 'ship') {
       scene
-        ..spawnEffect(skill!.fx, kShipCenterX, kShipCenterY)
+        ..spawnEffect(skill!.fx, kShipCenterX, kShipTop + kShipHeight)
         ..shipHealMs = _fx.shipSkill.number('healFlashMs')
         ..shipBuffMs = skill.raw.numberOr('buffSec', 0) * Duration.millisecondsPerSecond;
       return;
@@ -61,7 +61,11 @@ class M3Director {
     }
   }
 
+  /// 궁극기 순간 화면 흰 번쩍임 (기준 장면 15fps 3프레임).
+  static const _ultimateFlashMs = 200.0;
+
   void onUltimate(UltimateCast e, int index) {
+    if (scene.settings.flash) scene.screenFlashMs = _ultimateFlashMs;
     final pattern = _fx.ultimates[e.ultimateId];
     if (pattern == null) {
       final id = _fx.fxFor('ultimateCast');
@@ -72,7 +76,16 @@ class M3Director {
     final gap = d / pattern.count;
     switch (pattern.kind) {
       case UltimatePatternKind.sweep:
-        scene.spawnEffect(pattern.fx, 0, kUltimateY, durationMs: d, vx: kLogicalWidth / d);
+        final from = pattern.raw.numberOr('fromX', 0);
+        final to = pattern.raw.numberOr('toX', kLogicalWidth);
+        scene.spawnEffect(
+          pattern.fx,
+          from,
+          pattern.raw.numberOr('y', kUltimateY),
+          durationMs: d,
+          vx: (to - from) / d,
+          scale: pattern.raw.numberOr('scale', 1),
+        );
       case UltimatePatternKind.rain:
         for (var i = 0; i < pattern.count; i++) {
           final x = _rainLeft + (i * _rainPrimeX + index * _rainTickX) % _rainSpanX;

@@ -1,22 +1,69 @@
 {
-  "hitStopMs": { "crit": 40, "multiKill4": 70, "ultimate": 120 },
+  "hitStopMs": {
+    "crit": 40,
+    "multiKill4": 70,
+    "ultimate": 120
+  },
   "shake": {
-    "aoe": { "px": 2, "ms": 150 },
-    "ultimate": { "px": 4, "ms": 400 },
-    "bossKill": { "px": 6, "ms": 500 }
+    "aoe": {
+      "px": 2,
+      "ms": 150
+    },
+    "ultimate": {
+      "px": 4,
+      "ms": 400
+    },
+    "bossKill": {
+      "px": 6,
+      "ms": 500
+    }
   },
   "flashFrames": 2,
-  "knockbackPx": { "assault": 4, "explosion": 6 },
+  "knockbackPx": {
+    "assault": 4,
+    "explosion": 6
+  },
   "knockbackMs": 120,
   "damageNumber": {
-    "normalScale": 2, "critScale": 3, "normalColor": "#FFFFFF", "critColor": "#FFE14D", "sumColor": "#FF9A3D",
-    "lifeMs": 700, "risePx": 14, "critBouncePx": 6
+    "normalScale": 1,
+    "critScale": 2,
+    "normalColor": "#FFFFFF",
+    "critColor": "#F2C94C",
+    "sumColor": "#FF8A1F",
+    "lifeMs": 600,
+    "risePx": 24,
+    "critBouncePx": 0
   },
-  "bossKill": { "slowMoMs": 300, "slowMoRate": 0.3, "flash": true, "coinRain": 30 },
-  "kill": { "coinCount": 5, "coinFlyMs": 600 },
-  "vibration": { "crit": "light", "ultimate": "medium" },
-  "sound": { "hitVariants": 3, "pitchJitter": 0.08 },
-  "limits": { "effects": 40, "damageNumbers": 24, "projectiles": 48, "coins": 60 },
-  "replay": { "lookaheadTicks": 2, "liveMaxLagTicks": 6 },
-  "powerSave": { "idleSec": 120, "fps": 30 }
+  "bossKill": {
+    "slowMoMs": 300,
+    "slowMoRate": 0.3,
+    "flash": true,
+    "coinRain": 30
+  },
+  "kill": {
+    "coinCount": 2,
+    "coinFlyMs": 700
+  },
+  "vibration": {
+    "crit": "light",
+    "ultimate": "medium"
+  },
+  "sound": {
+    "hitVariants": 3,
+    "pitchJitter": 0.08
+  },
+  "limits": {
+    "effects": 40,
+    "damageNumbers": 24,
+    "projectiles": 48,
+    "coins": 60
+  },
+  "replay": {
+    "lookaheadTicks": 2,
+    "liveMaxLagTicks": 6
+  },
+  "powerSave": {
+    "idleSec": 120,
+    "fps": 30
+  }
 }

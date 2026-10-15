@@ -66,17 +66,17 @@ void main() {
 
   test('수용 기준 3: 해역 전환은 backgroundFadeMs 동안 섞인다', () {
     final b = Backdrop(fx, tables.regions)..setStage(50);
-    final coral = b.paletteOf('bg_coral').sky;
-    final storm = b.paletteOf('bg_storm').sky;
+    final coral = b.paletteOf('bg_coral').sky[0];
+    final storm = b.paletteOf('bg_storm').sky[0];
     b
       ..setStage(51)
       ..update(fx.backgroundFadeMs / 2);
     int ch(int c, int shift) => (c >> shift) & 0xFF;
     for (final shift in [16, 8, 0]) {
-      expect(ch(b.sky, shift), closeTo((ch(coral, shift) + ch(storm, shift)) / 2, 1.5));
+      expect(ch(b.sky(0), shift), closeTo((ch(coral, shift) + ch(storm, shift)) / 2, 1.5));
     }
     b.update(fx.backgroundFadeMs);
-    expect(b.sky, storm);
+    expect(b.sky(0), storm);
   });
 
   group('수용 기준 4: 보스 등장 경고', () {
@@ -182,10 +182,10 @@ void main() {
     RecordedTick at(int t, int stage) =>
         RecordedTick(BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), stage: stage), const []);
     final ticks = [at(0, 50), at(1, 50), at(2, 51), for (var t = 3; t < 60; t++) at(t, 51)];
-    final storm = Backdrop(fx, tables.regions).paletteOf('bg_storm').sky;
-    final coral = Backdrop(fx, tables.regions).paletteOf('bg_coral').sky;
-    expect(_play(ticks, 1).backdrop.sky, coral);
-    expect(_play(ticks, 2 + (fx.backgroundFadeMs + 100) / tickMs).backdrop.sky, storm);
+    final storm = Backdrop(fx, tables.regions).paletteOf('bg_storm').sky[0];
+    final coral = Backdrop(fx, tables.regions).paletteOf('bg_coral').sky[0];
+    expect(_play(ticks, 1).backdrop.sky(0), coral);
+    expect(_play(ticks, 2 + (fx.backgroundFadeMs + 100) / tickMs).backdrop.sky(0), storm);
   });
 
   group('수용 기준 12: 보물상자', () {

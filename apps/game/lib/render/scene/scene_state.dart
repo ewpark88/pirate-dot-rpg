@@ -52,3 +52,30 @@ class ChestPose {
     y = c.y + cfg.number('bobPx') * math.sin(clockMs / cfg.number('bobMs') * 2 * math.pi) + cfg.number('sinkPx') * sink;
   }
 }
+
+/// 최근 처치 시각 고리 버퍼 — `xN COMBO` 배너(render-quality-v1 규칙 5). 할당 없이 [capacity]개까지 기억.
+class ComboTracker {
+  ComboTracker({required this.windowMs, this.capacity = 64})
+    : _times = List<double>.filled(capacity, double.negativeInfinity);
+
+  final double windowMs;
+  final int capacity;
+  final List<double> _times;
+  int _next = 0;
+
+  void add(double clockMs) {
+    _times[_next] = clockMs;
+    _next = (_next + 1) % capacity;
+  }
+
+  /// [nowMs]에서 [windowMs] 안에 들어온 처치 수.
+  int count(double nowMs) {
+    var n = 0;
+    for (final t in _times) {
+      if (nowMs - t < windowMs) n++;
+    }
+    return n;
+  }
+
+  void clear() => _times.fillRange(0, capacity, double.negativeInfinity);
+}
