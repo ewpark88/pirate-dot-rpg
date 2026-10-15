@@ -88,19 +88,22 @@ class ScenePainter {
     }
   }
 
-  late final TopScenePainter _top = TopScenePainter(scene, _sprite);
+  /// 탑다운 장면 그리기 (운영자·테스트: top.atmosphere.offsetMs로 시간대 미리보기).
+  late final TopScenePainter top = TopScenePainter(scene, _sprite);
   // 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
   // ignore: prefer_function_declarations_over_variables
   late final void Function(Canvas c) _worldFx = (c) {
     _projectiles(c);
     _effects(c);
     _coins(c);
-    _hud.paintNumbers(c);
+    _hud.paintNumbers(c, scale: _numberScale);
   };
+  double _numberScale = 1;
 
   /// 탑다운(T2, BattleView.mode 'top'): 상자 dp 캔버스. 전장은 탑다운 카메라, 덮개·HUD·선원 줄은 옆모습 배치(같은 상자)로.
   void paintTop(Canvas canvas, TopFrame frame) {
-    _top.paint(canvas, frame, _worldFx);
+    _numberScale = scene.layout.dot / frame.dot;
+    top.paint(canvas, frame, _worldFx);
     final l = scene.layout;
     canvas
       ..save()

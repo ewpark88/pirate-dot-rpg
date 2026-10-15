@@ -44,6 +44,7 @@ class PbFxPainter {
     final size = math.max(_weaponDp / scene.layout.dot, _weaponMinDots);
     final w = sheet.frameW * size / content;
     final h = sheet.frameH * size / content;
+    if (p.flat) return _flat(c, p, key, size, w, h);
     _trails.paint(c, p, size);
     final spins = p.style.path != ProjectilePath.line;
     if (spins) {
@@ -59,6 +60,23 @@ class PbFxPainter {
       sprites.drawSmooth(c, key, x, y, w, h, angle: angle, alpha: 0.42 - i * 0.12);
     }
     sprites.drawSmooth(c, key, p.x, p.y, w, h, angle: angle);
+    return true;
+  }
+
+  final _shadow = Paint()..color = const Color(0x401B1726);
+
+  /// 탑다운: 수면 그림자(높을수록 작고 흐림) + 높이만큼 위로·크게 그린 무기. 회전은 옆모습과 같게.
+  bool _flat(Canvas c, Projectile p, String key, double size, double w, double h) {
+    final height = heightAt(p, p.progress);
+    final lift = height / (p.style.arcPx <= 0 ? 1 : p.style.arcPx);
+    c.drawOval(
+      Rect.fromCenter(center: Offset(p.x, p.y), width: size * (0.7 - 0.25 * lift), height: size * (0.35 - 0.12 * lift)),
+      _shadow,
+    );
+    final grow = 1 + 0.45 * lift;
+    final turn = p.progress * _spinTurns * 2 * math.pi;
+    final angle = p.style.path == ProjectilePath.line ? math.atan2(p.toY - p.fromY, p.toX - p.fromX) : turn;
+    sprites.drawSmooth(c, key, p.x, p.y - height * 0.35, w * grow, h * grow, angle: angle);
     return true;
   }
 

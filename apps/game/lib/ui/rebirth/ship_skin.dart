@@ -62,7 +62,7 @@ class ShipSkinSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final skins = ref.watch(shipSkinProvider);
-    final control = ref.read(rebirthV2Provider.notifier);
+    final control = ref.read(rebirthV2Provider);
     return Column(
       key: const Key('ship.skin.sheet'),
       mainAxisSize: MainAxisSize.min,

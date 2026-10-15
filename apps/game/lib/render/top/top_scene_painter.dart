@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
-import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/ship_skins.dart';
+import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
@@ -21,6 +25,7 @@ class TopScenePainter {
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
+  late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
   double _lastMs = 0;
@@ -50,6 +55,10 @@ class TopScenePainter {
     _sea
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
+    final powerSave = scene.settings.powerSave;
+    atmosphere
+      ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, view.shipHeading, powerSave: powerSave)
+      ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
     // 전장 좌표로: 배 중심이 원점.
     c
       ..save()
@@ -63,44 +72,145 @@ class TopScenePainter {
         ..save()
         ..rotate(view.shipHeading);
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
+      final sinking = _sink(c, m.sinkMs);
+      final skinGlow = skin != null && _skinGlow(skin!);
+      final celebrate = m.glowMs > 0;
       _ship.paint(
         c,
         tier,
         view.shipLook,
         flash: scene.shipFlashMs > 0 && scene.settings.flash,
-        glowPart: m.glowMs > 0 ? m.glowPart : null,
-        glow: m.glowMs > 0 ? 0.5 + 0.5 * math.sin(clockMs / 70) : 0,
+        // 부품 축하가 우선, 없으면 빛나는 스킨(phantom)의 돛이 은은하게 맥박.
+        glowPart: celebrate ? m.glowPart : (skinGlow ? 'sail' : null),
+        glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
+        recoil: _recoil(clockMs - m.cannonFiredAtMs),
+        skin: skin != null && skins.ready(skin!) ? skin : null,
       );
+      if (sinking) c.restore();
       c.restore();
-      _hp.paint(c, Rect.fromCenter(center: Offset.zero, width: size.width, height: size.height));
+      if (m.sinkMs <= 0) _hp.paint(c, Rect.fromCenter(center: Offset.zero, width: size.width, height: size.height));
     }
     c
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _enemies(c, under: false);
     fx(c);
-    c
-      ..restore()
-      ..restore();
+    c.restore();
+    atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
+    c.restore();
   }
 
+  late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
+
+  /// 발사 뒤 [since] ms의 반동 0~1 (발사 순간 1 → recoilMs에 0).
+  double _recoil(double since) => since >= 0 && since < _recoilMs ? 1 - since / _recoilMs : 0;
+
+  /// 환생 스킨(운영자 미리보기·계약 오기 전) — 바꾸면 색 사본을 비동기로 만들고, 준비되면 그린다.
+  String? skin;
+
+  /// 보물 바다 금빛 물결(환생 v2 §4).
+  bool get goldSea => _sea.gold;
+  set goldSea(bool v) => _sea.gold = v;
+
+  final skins = ShipSkins();
+  late final JsonReader _skinCfg = scene.fx.raw.obj('topShip').obj('skinPreview');
+
+  /// 스킨 사본이 없으면 비동기로 만들기 시작한다. glow 스킨(phantom)이고 준비됐으면 true.
+  bool _skinGlow(String id) {
+    if (!_skinCfg.has(id)) return false;
+    final cfg = _skinCfg.obj(id);
+    final bank = sprites.bank;
+    if (!skins.ready(id) && bank != null) {
+      unawaited(
+        skins.prepare(id, cfg, bank, [
+          for (final t in scene.tables.shipTiers.tiers)
+            for (final l in TopShipPainter.layers) 'td:${t.id}:$l',
+        ]),
+      );
+    }
+    return cfg.raw['glow'] == true && skins.ready(id);
+  }
+
+  /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
+  bool _sink(Canvas c, double left) {
+    if (left <= 0) return false;
+    final p = 1 - left / scene.fx.raw.obj('shipHp').number('sinkMs');
+    final down = p < 0.5 ? p / 0.5 : 1 - (p - 0.5) / 0.5;
+    _bubble.color = const Color(0xCCF2FBFF);
+    for (var i = 0; i < 8; i++) {
+      final a = i * 0.785 + scene.clockMs / 400;
+      c.drawCircle(Offset(math.cos(a) * 26 * down, math.sin(a) * 40 * down), 1 + (i % 3) * down, _bubble);
+    }
+    final s = 1 - 0.35 * down;
+    _sinkPaint.color = Color.fromRGBO(255, 255, 255, 1 - 0.6 * down);
+    c
+      ..saveLayer(null, _sinkPaint)
+      ..scale(s);
+    return true;
+  }
+
+  final _bubble = Paint();
+  final _sinkPaint = Paint();
+
+  /// 적을 그림(종류)별로 묶어 drawAtlas 한 번씩 — 150마리여도 그리기 몇 번(S1 부하: 100~150마리 60fps).
+  /// 맞은 적(흰 번쩍임)은 흰 실루엣 묶음으로 따로, 물속은 반투명 붓으로.
   void _enemies(Canvas c, {required bool under}) {
+    for (final b in _batches.values.followedBy(_flashBatches.values)) {
+      b.clear();
+    }
     for (final e in scene.poses) {
       if ((e.layer == 'underwater') != under) continue;
-      _enemy(c, e, alpha: under ? _underwaterAlpha : 1);
+      final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= e.boss ? 'td_boss:${e.kind}' : 'td_enemy:${e.kind}';
+      final sheet = sprites.sheet(key);
+      if (sheet == null) continue;
+      final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
+      (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
+        ..xf.add(
+          RSTransform.fromComponents(
+            rotation: e.heading + math.pi / 2,
+            scale: 1,
+            anchorX: sheet.frameW / 2,
+            anchorY: sheet.frameH / 2,
+            translateX: e.drawX.roundToDouble(),
+            translateY: e.drawY.roundToDouble(),
+          ),
+        )
+        ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
+    }
+    for (final b in _batches.values.followedBy(_flashBatches.values)) {
+      if (b.xf.isEmpty) continue;
+      final paint = b.flash ? _flashPaint : (under ? _underPaint : _atlasPaint);
+      c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
     }
   }
 
-  void _enemy(Canvas c, EnemyPose e, {double alpha = 1}) {
-    final key = e.boss ? 'td_boss:${e.kind}' : 'td_enemy:${e.kind}';
-    final sheet = sprites.sheet(key);
-    if (sheet == null) return;
-    final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
-    c
-      ..save()
-      ..translate(e.drawX.roundToDouble(), e.drawY.roundToDouble())
-      ..rotate(e.heading + math.pi / 2);
-    sprites.draw(c, key, 0, 0, frame: frame, flash: e.flash, alpha: alpha);
-    c.restore();
+  final Map<SpriteSheet, _Batch> _batches = {};
+  final Map<SpriteSheet, _Batch> _flashBatches = {};
+  final Map<String, String> _enemyKeys = {};
+  final Map<String, String> _bossKeys = {};
+  final _atlasPaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none;
+  late final _underPaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none
+    ..color = const Color.fromRGBO(255, 255, 255, _underwaterAlpha);
+  final _flashPaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none
+    ..colorFilter = const ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcIn);
+}
+
+/// 같은 그림(종류·번쩍임) 적 묶음 — 프레임마다 비우고 다시 채운다(리스트 재사용).
+class _Batch {
+  _Batch(this.image, {required this.flash});
+  final Image image;
+  final bool flash;
+  final xf = <RSTransform>[];
+  final src = <Rect>[];
+
+  void clear() {
+    xf.clear();
+    src.clear();
   }
 }

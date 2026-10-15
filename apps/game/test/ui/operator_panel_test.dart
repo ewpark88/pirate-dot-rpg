@@ -171,4 +171,23 @@ void main() {
     await _pumpPanel(tester, size: const Size(400, 1400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_operator_panel.png'));
   });
+
+  testWidgets('전장 방식 토글 (요청서 platform-topdown-operator): 지금 값 side 강조, 누르면 SetSetting', (tester) async {
+    final log = await _pumpPanel(tester);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('op.battleView.side')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+    expect(tester.widget<ChoiceChip>(find.byKey(const Key('op.battleView.side'))).selected, isTrue);
+    expect(tester.widget<ChoiceChip>(find.byKey(const Key('op.battleView.top'))).selected, isFalse);
+    expect(find.byKey(const Key('op.battleView.notReady')), findsNothing); // 렌더 연결됨(S3)
+    await _tap(tester, 'op.battleView.top');
+    await _tap(tester, 'op.battleView.side');
+    expect(_json(log), [
+      const SetSetting('battleView', 'top').toJson(),
+      const SetSetting('battleView', 'side').toJson(),
+    ]);
+  });
 }

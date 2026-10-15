@@ -8,7 +8,9 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tabs/upgrade_multiplier.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -28,8 +30,22 @@ class ShipTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
-        // 배 스킨 (환생 v2 — 스킨이 생기면 보인다).
-        const Align(alignment: Alignment.centerRight, child: ShipSkinButton()),
+        // 일괄 강화 배수 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
+        const Padding(
+          padding: EdgeInsets.only(bottom: 6),
+          child: Row(
+            children: [
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: UpgradeMultiplierPills(),
+                ),
+              ),
+              ShipSkinButton(),
+            ],
+          ),
+        ),
         for (final def in tables.shipParts.parts) _PartRow(def: def),
       ],
     );
@@ -44,16 +60,19 @@ class _PartRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    // 골드는 틱마다 바뀌므로 "살 수 있나"만 구독한다.
-    final (level, affordable) = ref.watch(
+    final mult = ref.watch(upgradeMultiplierProvider);
+    // 골드는 틱마다 바뀌므로 (레벨, 살 레벨 수, 비용)만 구독한다.
+    final (level, levels, cost, honor) = ref.watch(
       gameStateProvider.select((s) {
         final lv = s.ship.parts[def.id] ?? 0;
-        return (lv, s.wallet.gold >= partCost(def, lv));
+        final (n, c) = bulkUpgrade(def, lv, s.wallet.gold, mult);
+        // 명예 외형: 환생 전에 도달한 외형 단계가 지금 레벨의 단계보다 높다(그림은 명예 단계로 보인다).
+        return (lv, n, c, (s.ship.honorParts[def.id] ?? 0) > partLookStage(def, lv));
       }),
     );
+    final affordable = levels > 0;
     final max = def.maxLevel;
     final maxed = max != null && level >= max;
-    final cost = partCost(def, level);
 
     final small = Theme.of(context).textTheme.bodySmall?.copyWith(color: PixelPalette.textDim);
     return Padding(
@@ -73,6 +92,12 @@ class _PartRow extends ConsumerWidget {
                 children: [
                   Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                  if (honor)
+                    Text(
+                      l10n.uiRebirthHonorLook,
+                      key: Key('ship.honor.${def.id}'),
+                      style: Skin.text(12, color: Skin.goldInk),
+                    ),
                 ],
               ),
             ),
@@ -91,7 +116,7 @@ class _PartRow extends ConsumerWidget {
                   primary: true,
                   onPressed: maxed || !affordable
                       ? null
-                      : () => ref.read(commandSinkProvider).send(UpgradePart(def.id)),
+                      : () => ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -103,6 +128,15 @@ class _PartRow extends ConsumerWidget {
                         const SizedBox(width: 4),
                       ],
                       if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
+                      // ×1이 아니면 실제로 오를 레벨 수.
+                      if (!maxed && mult != 1 && levels > 0) ...[
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.uiUpgradeLevels(levels),
+                          key: Key('ship.upgrade.levels.${def.id}'),
+                          style: Skin.text(12, color: Colors.white70),
+                        ),
+                      ],
                     ],
                   ),
                 ),
