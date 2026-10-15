@@ -1,5 +1,13 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 효과음·배경음 후보: CC0 조사 + 자작 칩튠 생성기 (사용자 지시 "음원을 최대한 신경 써서")
+- 한 일: CC0 조사(서브에이전트 2개, 페이지 라이선스 원문 인용, 다운로드 없음) → `docs/store/audio-candidates.md`(id별 CC0 A·B vs 자작, 추천, 제외 목록).
+  자작: `docs/store/audio-gen/chipsynth.py`(sfxr 방식, 표준 라이브러리만)·`gen_audio.py` → `docs/store/audio-preview/`(wav, 커밋 안 함, 결정론):
+  fx_map 12종 ×3 + 추가 후보 cannon·coin, 해역 bgm 6곡(4채널, 이음매 없는 루프), 전투 10초 모의 믹스, `index.html`(한 페이지에서 듣기). 테스트 7개.
+- 발견: 펄스 duty 12.5/25%의 DC 치우침(−0.13) → 0 평균 펄스 + DC 차단으로 고침. 게임은 hit·hit_crit만 변형 `_0..2`, 나머지는 `<id>.ogg` 하나(sound_director).
+  ogg 인코더(ffmpeg 등)가 PC에 없음 → 사람 단계. Claude는 소리를 못 들으므로 평가는 지표(길이·피크·RMS·DC·이음매)와 설계 근거.
+- 다음 할 일: 사람 청취·선택 → S1/S3가 ogg 변환·에셋 등록.
+
 ## 2026-10-15 · S5 · 아이콘·스플래시 적용
 - 한 일: main 828953b 머지 → `apply_icons.py --src tools/art/icon --bg "#5AA9E6" --splash-bg "#5AA9E6"`: PNG 26장(mipmap 전경·배경·단색·예전, drawable 스플래시 로고)·XML 6개. debug 빌드 성공. 미리보기로 도트가 선명한지 확인.
   스크립트 수정: cp949 콘솔 UnicodeEncodeError(S3 보고) → stdout/stderr utf-8 reconfigure. Pillow 14에서 없어질 `getdata` → `getcolors`·`getextrema`.
