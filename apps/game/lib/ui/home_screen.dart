@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/hud/boss_challenge.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/hud_bar.dart';
+import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
@@ -68,6 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             body: SafeArea(
               child: Column(
                 children: [
+                  const SaveFailureBanner(),
                   const HudBar(),
                   const GoalBar(),
                   Expanded(

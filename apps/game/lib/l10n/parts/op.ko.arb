@@ -28,5 +28,12 @@
   "opGrantTailwind": "순풍 +{minutes}분",
   "opGroupTutorial": "튜토리얼",
   "opTutorialStep": "{step}단계",
-  "opTutorialEnd": "끝"
+  "opTutorialEnd": "끝",
+  "opGroupPlatform": "플랫폼",
+  "opAdReady": "광고: 준비됨",
+  "opAdNotReady": "광고: 안 불러옴",
+  "opAdShow": "보상형 광고 보기 (보상 없음)",
+  "opAdResult": "광고 결과: {result}",
+  "opPrivacyOptions": "개인정보 옵션",
+  "opTestRing": "알림 10초 뒤"
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
+import 'package:pirate_dot/operator/platform_group.dart';
 import 'package:pirate_dot/operator/render_group.dart';
 import 'package:pirate_dot/operator/sample_states.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -132,6 +133,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
             child: Text(l10n.opGrantGems(_gemGrant)),
           ),
         ]),
+        _Group(l10n.opGroupPlatform, const [PlatformTestGroup()]),
       ],
     );
   }
