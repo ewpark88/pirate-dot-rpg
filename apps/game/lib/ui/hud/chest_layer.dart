@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
-import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
@@ -17,6 +17,9 @@ const _rewardOffset = -18.0;
 
 /// 떠내려온 보물상자 탭 영역 (설계서 4.6). 전장 위에 겹쳐, 게임 좌표를 `battleFrameFor`로 dp에 놓는다.
 /// 상자 그림은 렌더 레인이 그리고, 여기는 누를 곳·가라앉기까지 남은 시간 링·기본 보상 금액만.
+/// 배 자리를 아직 안 보낸 프레임의 기본 배 중심 (탑다운 전장 270×480의 가운데).
+const _shipHome = Offset(135, 240);
+
 class ChestLayer extends ConsumerWidget {
   const ChestLayer({super.key});
 
@@ -26,20 +29,23 @@ class ChestLayer extends ConsumerWidget {
     final rewardOf = ref.watch(chestRewardProvider);
     final chest = ref.watch(
       gameStateProvider.select((s) {
-        final c = s.battle?.chest;
-        return c == null ? null : (c.x, c.y, c.ticksLeft, rewardOf(s));
+        final b = s.battle;
+        final c = b?.chest;
+        return c == null
+            ? null
+            : (c.x, c.y, c.ticksLeft, rewardOf(s), b!.shipX ?? _shipHome.dx, b.shipY ?? _shipHome.dy);
       }),
     );
     if (chest == null) return const SizedBox.shrink();
-    final (x, y, ticksLeft, reward) = chest;
+    final (x, y, ticksLeft, reward, shipX, shipY) = chest;
     final floatTicks = tables.ads.chest.number('floatSec') * Duration.millisecondsPerSecond / tables.waves.tickMs;
 
     return LayoutBuilder(
       builder: (context, box) {
-        // 게임 좌표 → 전장 상자 dp (렌더와 같은 battleFrameFor).
-        final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
-        final at = f.toDp(Offset(x, y));
-        // 필드가 상자보다 넓으면(렌더 k+1) 상자 밖의 보물상자는 보이지 않는다 — 누를 곳도 없다.
+        // 탑다운 전장 좌표 → 전장 상자 dp (렌더와 같은 topFrameFor: 배 중심이 화면의 정해진 자리).
+        final f = topFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
+        final at = f.worldToDp(Offset(x, y), Offset(shipX, shipY));
+        // 카메라 밖(상자 밖)의 보물상자는 보이지 않는다 — 누를 곳도 없다.
         if (!(Offset.zero & box.biggest).contains(at)) return const SizedBox.shrink();
         return Stack(
           children: [
