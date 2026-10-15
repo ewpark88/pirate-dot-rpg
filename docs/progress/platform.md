@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 실기기 캡처에 퀘스트·설정, 스토어 스크린샷 재굽기(배치 v2·6해역)
+- 한 일: device_shots.py에 상단 바 퀘스트 시트·설정 화면(접근성 라벨로 찾기, 없으면 건너뜀, BACK 키 하나만) + 테스트 8.
+  store_shots: 탭 이동을 `Key('tab.N')`로(v2 탭 바), 탭 화면 5장을 해역별(폭풍 60·빙하 120·유령 270·심연 220·폭풍 75)로, 보스는 화산해 200 용암 고래(가운데·최근 공격 없는 틱 고르기 `firstClear`).
+- 발견: 폭풍해 번개 가오리는 관통 선원이 없으면 보호막이 내내 켜짐(청록 상자) → 장면에서 뺌. 폭풍해 51에선 중반 함대가 못 잡아 궁극기 게이지가 안 참 → 궁극기는 산호해 유지.
+  ui: 영어 유령해에서 boss_weakness.dart:63 Row 13px 넘침 → 요청서 platform-ui-store-shots 3번에 추가. 보스 장면 패널의 "오프라인 골드 ~0/h"는 중반 함대가 스테이지 200에 있어서(실제 계산) — 거슬리면 장면을 바꾼다.
+
 ## 2026-10-15 · S5 · 세로 고정(+게임 카테고리), 실기기 캡처 스크립트
 - 한 일: manifest `screenOrientation="portrait"` + `android:appCategory="game"`(debug 빌드·병합 manifest 확인). release-checklist A4 갱신.
   `docs/store/device/device_shots.py`(+테스트 7): adb 자동 탐색 → 기기 고르기 → 꺼짐·잠김이면 안내만(입력 없음) → 설치(선택) → 실행 → uiautomator 덤프로 탭 좌표(없으면 4등분) → 탭 4장 캡처 → build/device/shots/<시각>/·latest/.
