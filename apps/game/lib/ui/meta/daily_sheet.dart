@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -37,7 +38,7 @@ class DailyIcon extends ConsumerWidget {
     final icon = PixelButton(
       key: const Key('daily.icon'),
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
-      child: const Icon(Icons.assignment_turned_in, size: 18),
+      child: const PixelSprite(UiSprites.quest, dots: 16, scale: 1),
       onPressed: () => unawaited(
         showModalBottomSheet<void>(
           context: context,
@@ -94,10 +95,7 @@ class _Quests extends ConsumerWidget {
           ListTile(
             dense: true,
             contentPadding: EdgeInsets.zero,
-            leading: Icon(
-              q.done ? Icons.check_circle : Icons.radio_button_unchecked,
-              color: q.done ? Colors.green : null,
-            ),
+            leading: PixelSprite(q.done ? UiSprites.check : UiSprites.checkEmpty, dots: 8),
             title: Text(name(q)),
             subtitle: Text(l10n.uiQuestProgress(q.progress, q.target)),
             trailing: q.claimed
@@ -183,11 +181,12 @@ class _DayCell extends StatelessWidget {
       child: Column(
         children: [
           Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
-          Icon(
-            checked ? Icons.check : (ticket ? Icons.auto_awesome : Icons.diamond),
-            size: 18,
-            color: checked ? Colors.green : null,
-          ),
+          if (checked)
+            const PixelSprite(UiSprites.check, dots: 8)
+          else if (ticket)
+            const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
+          else
+            const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
           if (ticket)
             Text(
               l10n.uiAttendanceTicket,

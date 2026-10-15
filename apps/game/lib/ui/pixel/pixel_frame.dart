@@ -11,6 +11,7 @@ class PixelFrame extends StatelessWidget {
     this.border = PixelPalette.border,
     this.highlight = PixelPalette.highlight,
     this.shade,
+    this.shadeDots = 1,
     this.borderDots = 1,
     this.dropShadow = false,
     this.padding = 3,
@@ -24,6 +25,9 @@ class PixelFrame extends StatelessWidget {
 
   /// 아래·오른쪽 안쪽 그늘 (null이면 없음).
   final Color? shade;
+
+  /// 그늘 두께(칸).
+  final int shadeDots;
 
   /// 테두리 두께(칸).
   final int borderDots;
@@ -44,6 +48,7 @@ class PixelFrame extends StatelessWidget {
         border: border,
         highlight: highlight,
         shade: shade,
+        shadeDots: shadeDots,
         borderDots: borderDots,
         dropShadow: dropShadow,
       ),
@@ -59,6 +64,7 @@ class PixelFramePainter extends CustomPainter {
     required this.border,
     this.highlight,
     this.shade,
+    this.shadeDots = 1,
     this.borderDots = 1,
     this.dropShadow = false,
   });
@@ -68,6 +74,7 @@ class PixelFramePainter extends CustomPainter {
   final Color border;
   final Color? highlight;
   final Color? shade;
+  final int shadeDots;
   final int borderDots;
   final bool dropShadow;
 
@@ -96,8 +103,9 @@ class PixelFramePainter extends CustomPainter {
     // 아래·오른쪽 그늘, 위·왼쪽 하이라이트 (빛이 왼쪽 위에서)
     final sh = shade;
     if (sh != null) {
-      rect(i, h - i - 1, w - 2 * i, 1, sh);
-      rect(w - i - 1, i, 1, h - 2 * i, sh);
+      final d = shadeDots;
+      rect(i, h - i - d, w - 2 * i, d, sh);
+      rect(w - i - d, i, d, h - 2 * i, sh);
     }
     final hl = highlight;
     if (hl != null) {
@@ -113,6 +121,7 @@ class PixelFramePainter extends CustomPainter {
       old.border != border ||
       old.highlight != highlight ||
       old.shade != shade ||
+      old.shadeDots != shadeDots ||
       old.borderDots != borderDots ||
       old.dropShadow != dropShadow;
 }

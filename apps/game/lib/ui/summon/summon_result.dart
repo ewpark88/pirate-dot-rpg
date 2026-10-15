@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -134,12 +137,9 @@ class _Back extends StatelessWidget {
   const _Back({super.key});
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primary,
-      borderRadius: BorderRadius.circular(6),
-    ),
-    child: const Center(child: Icon(Icons.help_outline, color: Colors.white)),
+  Widget build(BuildContext context) => const PixelFrame(
+    fill: PixelPalette.action,
+    child: Center(child: PixelSprite(UiSprites.cardBack, dots: 32, scale: 1)),
   );
 }
 
@@ -185,15 +185,13 @@ class _Face extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
             style: small,
           ),
-          // 좁은 화면(360dp)에서 별 5개가 카드보다 넓어질 수 있다 → 줄여서 넣는다.
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var s = 0; s < rarity.stars; s++) Icon(Icons.star, size: 8, color: rarityColor(rarity)),
-              ],
-            ),
+          // 별 그림 하나 + 개수(등급 색) — 선원 카드와 같은 표시.
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const PixelSprite(UiSprites.star, dots: 16, scale: 1),
+              Text(rarity.stars.toString(), style: small?.copyWith(color: rarityColor(rarity))),
+            ],
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -46,7 +47,7 @@ class RebirthCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.map_outlined),
+                const PixelSprite(UiSprites.tabMap, dots: 16, scale: 1),
                 const SizedBox(width: 6),
                 Text(l10n.uiRebirthTitle, style: Theme.of(context).textTheme.titleMedium),
               ],
@@ -101,11 +102,10 @@ class RebirthDialog extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Line(icon: Icons.restart_alt, color: Colors.red, text: l10n.uiRebirthLose),
-          _Line(icon: Icons.lock_outline, color: Colors.blueGrey, text: l10n.uiRebirthKeep),
+          _Line(icon: UiSprites.rebirth, text: l10n.uiRebirthLose),
+          _Line(icon: UiSprites.lock, text: l10n.uiRebirthKeep),
           _Line(
-            icon: Icons.add_circle_outline,
-            color: Colors.green,
+            icon: UiSprites.tabMap,
             text: l10n.uiRebirthGainLine(preview.gain, '+$from', '+$to'),
           ),
         ],
@@ -131,10 +131,10 @@ class RebirthDialog extends ConsumerWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({required this.icon, required this.color, required this.text});
+  const _Line({required this.icon, required this.text});
 
-  final IconData icon;
-  final Color color;
+  /// 아이콘 그림 경로 (`UiSprites`).
+  final String icon;
   final String text;
 
   @override
@@ -143,7 +143,7 @@ class _Line extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: color, size: 18),
+        PixelSprite(icon, dots: 16, scale: 1),
         const SizedBox(width: 8),
         Expanded(child: Text(text)),
       ],
@@ -193,7 +193,7 @@ class _RebirthDoneDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       key: const Key('rebirth.done'),
-      icon: const Icon(Icons.map, size: 40, color: Colors.amber),
+      icon: const PixelSprite(UiSprites.tabMap, dots: 16),
       title: Text(l10n.uiRebirthDoneTitle),
       content: Text(l10n.uiRebirthDoneGain(gain, percentText(l10n, bonus)), textAlign: TextAlign.center),
       actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.uiOk))],

@@ -55,6 +55,26 @@ abstract final class UiSprites {
   /// 등급 별 16×16.
   static const star = 'assets/ui/star.png';
 
+  /// 16×16 UI 아이콘 (S3 render-ui-icons-s4).
+  static const gear = 'assets/ui/gear.png';
+  static const quest = 'assets/ui/quest.png';
+  static const tailwind = 'assets/ui/tailwind.png';
+  static const flag = 'assets/ui/flag.png';
+  static const ad = 'assets/ui/ad.png';
+  static const farm = 'assets/ui/farm.png';
+  static const lock = 'assets/ui/lock.png';
+  static const rebirth = 'assets/ui/rebirth.png';
+  static const moon = 'assets/ui/moon.png';
+  static const hand = 'assets/ui/hand.png';
+  static const bubble = 'assets/ui/bubble.png';
+
+  /// 소환 카드 뒷면 32×32.
+  static const cardBack = 'assets/ui/card_back.png';
+
+  /// 체크 8×8 (받음 / 안 받음).
+  static const check = 'assets/ui/check.png';
+  static const checkEmpty = 'assets/ui/check_empty.png';
+
   /// 배 부위 아이콘 16×16 (`ship_parts.json` id).
   static String part(String id) => 'assets/ui/part_$id.png';
 }

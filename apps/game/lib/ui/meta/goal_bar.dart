@@ -5,11 +5,12 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// HUD 아래 ‘다음 목표’ 한 줄 (설계서 4.5, 4.12 목표 막대). 목표가 없으면 아무것도 그리지 않는다.
+/// 전장 아래 ‘다음 목표’ 도트 띠 (설계서 4.5, 4.12 목표 막대). 목표가 없으면 아무것도 그리지 않는다.
 class GoalBar extends ConsumerWidget {
   const GoalBar({super.key});
 
@@ -39,22 +40,39 @@ class GoalBar extends ConsumerWidget {
       GoalKind.rebirth => l10n.uiGoalRebirth(remaining),
     };
 
+    final u = pixelUnit(context);
+    // 전장 바로 아래 도트 띠 (윤곽색 바탕 + 아래 1칸 테두리): 깃발 · 문구 · 진행 막대.
     return TutorialSpot(
       id: 'goal',
-      child: Padding(
+      child: DecoratedBox(
         key: const Key('goal'),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: Row(
-          children: [
-            const Icon(Icons.flag_outlined, size: 14),
-            const SizedBox(width: 4),
-            Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis)),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 80,
-              child: PixelBar(value: progress, fill: PixelPalette.gold),
-            ),
-          ],
+        decoration: BoxDecoration(
+          color: PixelPalette.outline,
+          border: Border(
+            bottom: BorderSide(color: PixelPalette.border, width: u),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: u * 2),
+          child: Row(
+            children: [
+              const PixelSprite(UiSprites.flag, dots: 16, scale: 1),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 80,
+                child: PixelBar(value: progress, fill: PixelPalette.gold),
+              ),
+            ],
+          ),
         ),
       ),
     );

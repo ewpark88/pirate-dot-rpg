@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 튜토리얼 단계 → 손가락으로 가리킬 곳 (설계서 4.12 표). 가리킬 위젯은 [TutorialSpot]으로 감싼다.
@@ -47,7 +48,7 @@ class TutorialSpot extends ConsumerWidget {
           right: -6,
           bottom: -10,
           child: IgnorePointer(
-            child: Icon(Icons.touch_app, key: Key('tutorial.spot.$id'), color: Colors.amber, size: 24),
+            child: PixelSprite(UiSprites.hand, dots: 16, key: Key('tutorial.spot.$id')),
           ),
         ),
       ],
@@ -81,7 +82,7 @@ class TutorialBubble extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           children: [
-            const Icon(Icons.chat_bubble_outline, size: 18),
+            const PixelSprite(UiSprites.bubble, dots: 16, scale: 1),
             const SizedBox(width: 6),
             Expanded(child: Text(text)),
             if (_ackSteps.contains(step))
