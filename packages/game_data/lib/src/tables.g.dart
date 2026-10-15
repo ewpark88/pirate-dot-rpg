@@ -1360,7 +1360,8 @@ const Map<String, String> rawTables = {
         ],
         "glow": true
       }
-    }
+    },
+    "scale": 0.85
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1474,6 +1475,28 @@ const Map<String, String> rawTables = {
           "wreck"
         ]
       }
+    }
+  },
+  "topEvents": {
+    "sprites": [
+      "goldfish",
+      "sea_serpent",
+      "merchant_ship",
+      "bottle"
+    ],
+    "fever": {
+      "border": "#FFD84A",
+      "borderDp": 6,
+      "pulseMs": 420,
+      "coinsPerSec": 10
+    },
+    "storm": {
+      "flashEveryMs": [
+        2400,
+        5200
+      ],
+      "flashMs": 120,
+      "dim": 0.25
     }
   }
 }
@@ -1619,6 +1642,7 @@ const Map<String, String> rawTables = {
       { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
     ]
   },
+  "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
@@ -1639,7 +1663,7 @@ const Map<String, String> rawTables = {
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.08, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -1771,14 +1795,14 @@ const Map<String, String> rawTables = {
   'skills': r'''
 {
   "families": [
-    {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.3145, 0.3499, 0.6142, 0.6142, 0.6142]}},
-    {"id": "direct", "projectile": "bullet", "attack": {"reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8639, 0.9655, 0.9752, 0.9752, 0.9752]}},
-    {"id": "pierce", "projectile": "harpoon", "attack": {"reach": 168, "shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.8154, "excludeLayers": []}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.8309, 0.7404, 0.8517, 0.8517, 0.8517]}},
+    {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.3051, 0.3394, 0.5958, 0.5958, 0.5958]}},
+    {"id": "direct", "projectile": "bullet", "attack": {"reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8985,  1.0041,  1.0142,  1.0142,  1.0142]}},
+    {"id": "pierce", "projectile": "harpoon", "attack": {"topWidth": 20, "reach": 168, "shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.8154, "excludeLayers": []}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.8309, 0.7404, 0.8517, 0.8517, 0.8517]}},
     {"id": "skip", "projectile": "stone", "attack": {"reach": 155, "shape": "chain", "chains": 3, "targets": "nearest", "intervalSec": 1.5, "power": 0.801, "excludeLayers": []}, "skill": {"reach": 155, "id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 0.5, "fx": "hit_spark", "endFx": "tidal_wave"}, "ultimate": {"id": "ult_tidal_wave", "fx": "tidal_wave", "knockback": 30}, "nameKey": "battleFamilySkip", "ladder": {"chains": [3, 4, 5, 6, 8], "power": [0.8671, 0.8061, 0.7126, 0.7126, 0.7126]}},
-    {"id": "underwater", "projectile": "torpedo", "attack": {"reach": 125, "shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"reach": 125, "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.4736, 0.5227, 0.5251, 0.5251, 0.5251]}},
+    {"id": "underwater", "projectile": "torpedo", "attack": {"topRadius": 34, "reach": 125, "shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"reach": 125, "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.4736, 0.5227, 0.5251, 0.5251, 0.5251]}},
     {"id": "air", "projectile": "lightning", "attack": {"reach": 160, "shape": "random", "count": 2, "targets": "random", "intervalSec": 2.2, "power": 1.332, "excludeLayers": []}, "skill": {"reach": 160, "id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 0.666, "fx": "lightning"}, "ultimate": {"id": "ult_thunderstorm", "fx": "lightning"}, "nameKey": "battleFamilyAir", "ladder": {"count": [2, 3, 3, 4, 5], "power": [1.4739, 1.2402, 1.2525, 1.2525, 1.2525]}},
-    {"id": "assault", "projectile": "hook", "attack": {"reach": 120, "shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 1.896, "excludeLayers": ["air"]}, "skill": {"reach": 120, "id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.1622, 0.1952, 0.1984, 0.1984, 0.1984]}},
-    {"id": "shock", "projectile": "shockwave", "attack": {"reach": 117, "shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.3676, "excludeLayers": []}, "skill": {"reach": 117, "id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.7057, 0.6826, 0.6153, 0.6153, 0.6153]}}
+    {"id": "assault", "projectile": "hook", "attack": {"reach": 120, "shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 1.896, "excludeLayers": ["air"]}, "skill": {"reach": 120, "id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.1006,  0.121,  0.123,  0.123,  0.123]}},
+    {"id": "shock", "projectile": "shockwave", "attack": {"reach": 117, "shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.3676, "excludeLayers": []}, "skill": {"reach": 117, "id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.5998,  0.5802,  0.523,  0.523,  0.523]}}
   ],
   "crewSkills": [{"id": "support_rally", "reach": 117, "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
@@ -1836,9 +1860,9 @@ const Map<String, String> rawTables = {
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 0.6,
-  "monster": { "hpBase": 7, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
+  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "standoff": 110, "slowZone": 30, "slowFloor": 0.2, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
-  "travelSec": 1,
+  "travelSec": 2,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },

@@ -1028,6 +1028,22 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/slash.png",
       "license": "OWN"
     },
+    "fx/td_event_bottle.png": {
+      "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "fx/td_event_goldfish.png": {
+      "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "fx/td_event_merchant_ship.png": {
+      "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "fx/td_event_sea_serpent.png": {
+      "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
     "fx/td_land_ghost_ship_far.png": {
       "source": "자체 디자인 → tools/art/gen_topdown_landmarks.py 위에서 본 픽셀 격자",
       "license": "OWN"

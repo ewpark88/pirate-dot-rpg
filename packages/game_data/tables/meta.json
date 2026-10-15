@@ -46,6 +46,7 @@
       { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
     ]
   },
+  "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
@@ -66,7 +67,7 @@
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.08, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
