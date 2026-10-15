@@ -10,8 +10,11 @@ const double kLogicalWidth = 320;
 const double kLogicalHeight = 180;
 const double kFieldBottom = 148;
 
-/// 내 배 (ship_t1 62×48): 왼쪽 위 (2, 70), 위아래 출렁임은 장면의 shipBob.
-const double kShipLeft = 2;
+/// 배를 기준 장면보다 오른쪽으로 옮긴 거리 (도트) — 사용자 결정 '1.5배 배가 전부 보이게'. 엔진 waves.shipX 56 → 86과 같이(1.5배 t1 93도트가 왼쪽 0부터 다 보이게).
+const double kShipShiftX = 30;
+
+/// 내 배 (ship_t1 62×48): 왼쪽 위 (2 + 이동, 70), 위아래 출렁임은 장면의 shipBob.
+const double kShipLeft = 2 + kShipShiftX;
 const double kShipTop = 70;
 const double kShipWidth = 62;
 const double kShipHeight = 48;
@@ -21,16 +24,16 @@ const double kShipCenterY = kShipTop + kShipHeight / 2;
 /// 배를 키울 때 기준이 되는 높이 (뱃머리 포구 근처) — 이 줄과 오른쪽 끝은 크기가 바뀌어도 그대로.
 const double kShipPivotY = 102;
 
-/// 발사체가 떠나는 포구 (엔진 shipX 56 근처, 기준 56~60·100~104).
-const double kShipNoseX = 58;
+/// 발사체가 떠나는 포구 (엔진 shipX 86 근처, 기준 56~60·100~104 + 이동).
+const double kShipNoseX = 58 + kShipShiftX;
 const double kShipNoseY = 100;
 
 /// 포구 화염 중심 (기준 muzzle 32px를 왼쪽 위 (50, 86)에).
-const double kMuzzleX = 66;
+const double kMuzzleX = 66 + kShipShiftX;
 const double kMuzzleY = 102;
 
 /// 코인이 빨려 드는 곳 (기준 (30, 96)).
-const double kCoinTargetX = 30;
+const double kCoinTargetX = 30 + kShipShiftX;
 const double kCoinTargetY = 96;
 
 /// 적 플레이스홀더 크기 (적 16px 안, 보스 약 48px).
@@ -60,11 +63,16 @@ const double kSlotBandMinDp = 56;
 /// 선원 줄 도트 1칸의 최대 dp — 태블릿에서 슬롯(36칸)이 72dp를 넘지 않게(S1: 72~80dp 상한).
 const double kBandDotMaxDp = 2;
 
-/// 큰 칸 배치(기기): 칸 최대 변·가장자리·칸 사이·위아래 여백 (dp). 6칸 + 궁극기가 한 줄에 들어가는 가장 큰 정사각.
+/// 큰 칸 배치(기기): 칸 최대 변·가장자리·칸 사이·위아래 여백 (dp). 6칸이 한 줄에 들어가는 가장 큰 정사각.
 const double kSlotMaxDp = 72;
 const double kSlotEdgeDp = 6;
 const double kSlotGapDp = 4;
 const double kSlotPadDp = 8;
+
+/// 뜬 궁극기 둥근 버튼 변 (dp) — 칸 크기를 따르되 이 범위. 보스 도전 버튼 변 (dp, 누르는 영역 48dp).
+const double kUltimateMinDp = 56;
+const double kUltimateMaxDp = 72;
+const double kBossButtonDp = 48;
 
 /// 버튼 칸 사이·가장자리 여백, 가장 작은 버튼 (도트).
 const double kButtonGap = 3;

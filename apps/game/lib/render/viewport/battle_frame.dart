@@ -25,7 +25,9 @@ class BattleFrame {
     this.slotSize = kSlotPlateSize,
     this.slotLeft = kSlotLeft,
     this.slotGap = kSlotStep - 36,
-    this.bossAbove = false,
+    this.floating = false,
+    this.ultimateSide = 0,
+    this.bossSide = 0,
   });
 
   /// 테스트·골든용 기본 배치: 320×180 도트 그대로(필드 0~148, 선원 줄 148~180), 1도트 = 1dp.
@@ -59,8 +61,12 @@ class BattleFrame {
   final double slotLeft;
   final double slotGap;
 
-  /// 보스 도전 칸이 줄 위(궁극기 바로 위, 전장 오른쪽 아래 구석)에 뜨는가 — 큰 칸이면 줄에 자리가 없다.
-  final bool bossAbove;
+  /// 궁극기·보스 도전이 줄 밖(전장 오른쪽 아래 구석, 줄 위에 살짝 걸침)에 뜨는가 — 사용자 결정: 줄은 6칸만, 칸을 크게.
+  final bool floating;
+
+  /// 뜬 버튼 변 (줄 도트): 궁극기 둥근 큰 버튼, 보스 도전(그 왼쪽).
+  final double ultimateSide;
+  final double bossSide;
 
   /// 1도트의 dp 크기.
   double get dot => k / dpr;
@@ -89,24 +95,30 @@ class BattleFrame {
   /// 칸 [i] 왼쪽 위 (줄 도트) — 이전 이름.
   Offset slotInBand(int i) => slotRectInBand(i).topLeft;
 
-  /// 버튼 한 칸 변 (줄 도트, 정사각). 예전 배치: 띠 높이에서 위아래 3칸씩, 슬롯 6칸 뒤 남는 폭이 모자라면 줄인다. 큰 칸 배치: 칸과 같은 크기.
+  /// 버튼 한 칸 변 (줄 도트, 정사각, 예전 배치): 띠 높이에서 위아래 3칸씩, 슬롯 6칸 뒤 남는 폭이 모자라면 줄인다.
   double get _button {
-    if (bossAbove) return slotSize.width;
     final room = (bandWidth - kSlotLeft - kSlotCount * kSlotStep - kButtonGap * 3) / 2;
     return math.max(kButtonMinDots, math.min(bandHeight - kButtonGap * 2, room)).floorToDouble();
   }
 
-  /// 궁극기 버튼 (줄 도트): 선원 줄 오른쪽 끝. 렌더가 그리고 UI가 투명 버튼을 얹는다.
+  /// 궁극기 버튼 (줄 도트). 예전 배치: 줄 오른쪽 끝. 뜬 배치: 오른쪽 끝 칸 위, 아랫변 = 칸 윗변(줄 위 여백에 살짝 걸침, y < 0).
+  /// 렌더가 그리고 UI가 투명 버튼을 얹는다.
   Rect get ultimateInBand {
+    if (floating) {
+      final d = ultimateSide;
+      return Rect.fromLTWH((bandWidth - slotLeft - d).floorToDouble(), slotRectInBand(0).top - d, d, d);
+    }
     final b = _button;
-    final edge = bossAbove ? slotLeft : kButtonGap;
-    return Rect.fromLTWH((bandWidth - edge - b).floorToDouble(), ((bandHeight - b) / 2).floorToDouble(), b, b);
+    return Rect.fromLTWH((bandWidth - kButtonGap - b).floorToDouble(), ((bandHeight - b) / 2).floorToDouble(), b, b);
   }
 
-  /// 보스 도전 버튼 자리 (줄 도트): 예전 배치는 궁극기 왼쪽, 큰 칸 배치는 궁극기 바로 위(줄 밖, y < 0). 렌더는 비워 두고 UI가 그린다.
+  /// 보스 도전 버튼 자리 (줄 도트): 궁극기 왼쪽(뜬 배치는 세로 가운데 맞춤). 렌더는 비워 두고 UI가 그린다.
   Rect get bossInBand {
     final u = ultimateInBand;
-    if (bossAbove) return u.shift(Offset(0, -(u.top + u.height + slotGap)));
+    if (floating) {
+      final b = bossSide;
+      return Rect.fromLTWH(u.left - slotGap * 2 - b, (u.center.dy - b / 2).floorToDouble(), b, b);
+    }
     return u.shift(Offset(-(_button + kButtonGap), 0));
   }
 
@@ -156,22 +168,18 @@ BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
   // 태블릿처럼 넓으면 줄 배율을 1줄 도트 ≤ kBandDotMaxDp dp로 묶는다(슬롯·버튼이 과하게 커지지 않게).
   var kb = math.max(1, math.min((physW / kLogicalWidth).floor(), (kBandDotMaxDp * dpr).floor()));
   final base = math.max(1, (physW / kLogicalWidth).floor());
+  // 칸(사용자 결정 '6칸을 키워라'): 6칸이 한 줄에 들어가는 가장 큰 정사각, 최대 kSlotMaxDp. 궁극기는 줄 밖.
+  final sideDp = math.min(kSlotMaxDp, (box.width - 2 * kSlotEdgeDp - (kSlotCount - 1) * kSlotGapDp) / kSlotCount);
   double band(int kb) => math.max(
     math.max(kSlotBandMinDots, (kSlotBandMinDp * dpr / kb).ceilToDouble()),
-    ((math.min(kSlotMaxDp, (box.width - 2 * kSlotEdgeDp - kSlotCount * kSlotGapDp) / (kSlotCount + 1)) +
-                2 * kSlotPadDp) *
-            dpr /
-            kb)
-        .ceilToDouble(),
+    ((sideDp + 2 * kSlotPadDp) * dpr / kb).ceilToDouble(),
   );
   var k = base + boost;
   while (k > 1 && (physH - band(math.min(kb, k)) * math.min(kb, k)) / k < kFieldBottom) {
     k--;
   }
   kb = math.min(kb, k);
-  // 칸(사용자 지시 '초상을 키워라'): 6칸 + 궁극기 7개가 한 줄에 들어가는 가장 큰 정사각, 최대 kSlotMaxDp.
   final bandDot = kb / dpr;
-  final sideDp = math.min(kSlotMaxDp, (box.width - 2 * kSlotEdgeDp - kSlotCount * kSlotGapDp) / (kSlotCount + 1));
   final side = (sideDp / bandDot).floorToDouble();
   final bandH = band(kb);
   final bandPhysTop = (physH - bandH * kb).floorToDouble();
@@ -190,8 +198,12 @@ BattleFrame battleFrameFor(Size box, double dpr, {int boost = 1}) {
     bandWidth: physW / kb,
     bandHeight: (physH - bandPhysTop) / kb,
     slotSize: Size(side, side),
-    slotLeft: (kSlotEdgeDp / bandDot).roundToDouble(),
+    // 칸이 상한(72dp)에 걸려 폭이 남으면(태블릿) 6칸을 가운데로.
+    slotLeft:
+        math.max(kSlotEdgeDp, (box.width - kSlotCount * sideDp - (kSlotCount - 1) * kSlotGapDp) / 2) ~/ bandDot * 1.0,
     slotGap: (kSlotGapDp / bandDot).floorToDouble(),
-    bossAbove: true,
+    floating: true,
+    ultimateSide: (sideDp.clamp(kUltimateMinDp, kUltimateMaxDp) / bandDot).floorToDouble(),
+    bossSide: (kBossButtonDp / bandDot).ceilToDouble(),
   );
 }
