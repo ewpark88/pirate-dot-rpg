@@ -162,7 +162,7 @@ void main() {
   testWidgets('기준 9: 골든 — 운영자 패널 (en)', (tester) async {
     await loadGoldenFonts();
     // 패널 전체가 보이게 세로로 길게.
-    await _pumpPanel(tester, size: const Size(400, 1300));
+    await _pumpPanel(tester, size: const Size(400, 1400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_operator_panel.png'));
   });
 }

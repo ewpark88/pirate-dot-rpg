@@ -14,8 +14,8 @@ RecordedTick _at(int t) => RecordedTick(
     shipHp: BigNum.from(60),
     shipHpMax: BigNum.from(60),
     fleet: const [
-      FleetSlot(crewId: 'octo'),
-      FleetSlot(crewId: 'crabs'),
+      FleetSlot(crewId: 'octo', rarity: 3),
+      FleetSlot(crewId: 'crabs', rarity: 1),
     ],
   ),
   const [],
@@ -36,17 +36,17 @@ void main() {
   final border = slots.integer('border');
   final top = kSlotTop.toInt();
 
-  testWidgets('render-quality-v2 선원 바: 등급 색 두꺼운 테두리 + 계열 색 표식', (tester) async {
+  testWidgets('render-quality-v2 선원 바: 지금 등급(FleetSlot.rarity) 색 두꺼운 테두리 + 계열 색 표식', (tester) async {
     await tester.runAsync(() async {
       final scene = BattleScene(tables, [_at(0), _at(1)], loop: false)..update(kFrameMs);
       final rec = ui.PictureRecorder();
       ScenePainter(scene).paint(ui.Canvas(rec));
       final img = await rec.endRecording().toImage(kLogicalWidth.toInt(), kLogicalHeight.toInt());
 
-      final common = _hex(tables.rarities.byId('common').color);
+      final legend = _hex(tables.rarities.byId('legend').color);
       final rare = _hex(tables.rarities.byId('rare').color);
       for (var k = 0; k < border; k++) {
-        expect(await _rgb(img, x0 + k, top + 12), common, reason: 'octo(일반) 테두리 $k');
+        expect(await _rgb(img, x0 + k, top + 12), legend, reason: 'octo(기본 일반 → 지금 전설) 테두리 $k');
         expect(await _rgb(img, x0 + step + k, top + 12), rare, reason: 'crabs(희귀) 테두리 $k');
       }
       final lob = _hex(tables.fxMap.familyColors.str('lob'));

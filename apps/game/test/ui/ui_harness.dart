@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
@@ -28,6 +29,7 @@ Future<CommandLog> pumpGame(
   bool keepTutorial = false,
   Size size = const Size(400, 800),
   double dpr = 1,
+  List<Override> overrides = const [],
 }) async {
   tester.view
     ..physicalSize = size * dpr
@@ -44,6 +46,7 @@ Future<CommandLog> pumpGame(
         clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),
         // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.
         battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+        ...overrides,
       ],
       child: PirateDotApp(locale: locale),
     ),

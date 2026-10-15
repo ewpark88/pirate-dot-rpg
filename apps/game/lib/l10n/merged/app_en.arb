@@ -106,6 +106,13 @@
   "opGroupTutorial": "Tutorial",
   "opTutorialStep": "Step {step}",
   "opTutorialEnd": "End",
+  "opGroupPlatform": "Platform",
+  "opAdReady": "Ad: ready",
+  "opAdNotReady": "Ad: not loaded",
+  "opAdShow": "Show Rewarded Ad (no reward)",
+  "opAdResult": "Ad result: {result}",
+  "opPrivacyOptions": "Privacy Options",
+  "opTestRing": "Notification in 10s",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -221,5 +228,7 @@
   "uiOfflineRate": "Offline gold ~{amount}/h · up to {hours}h",
   "uiTailwindStatus": "Tailwind {time} ×{mult}",
   "uiTailwindOff": "No tailwind",
-  "uiDailyTooltip": "Quests & Attendance"
+  "uiDailyTooltip": "Quests & Attendance",
+  "uiSaveFailedDiskFull": "Not enough storage to save. Progress will save again once space is freed.",
+  "uiSaveFailedIo": "Couldn't save progress. Will try again shortly."
 }

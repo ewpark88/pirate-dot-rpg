@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "savedAt": "2026-11-01T12:34:56.000Z",
   "playerId": "fixture-player",
   "rngSeed": 913377,
@@ -296,7 +296,8 @@
     "sfx": true,
     "vibration": true,
     "shake": true,
-    "flash": true
+    "flash": true,
+    "notifications": true
   },
   "battle": {
     "tick": 0,

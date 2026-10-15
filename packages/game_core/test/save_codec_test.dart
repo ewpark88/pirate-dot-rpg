@@ -51,6 +51,14 @@ void main() {
     expect(GameState.newGame(playerId: 'n', seed: 1, now: DateTime.utc(2026, 11)).tutorialStep, 1);
   });
 
+  test('v3 → v4: 알림 설정이 켜짐(true)으로 생기고, 설정 명령으로 끌 수 있다', () {
+    final v3 = SaveCodec.decode(File('test/fixtures/saves/v3.json').readAsStringSync());
+    expect(v3.settings.notifications, isTrue);
+    expect(v3.settings.withValue('notifications', false).notifications, isFalse);
+    final v4 = SaveCodec.decode(File('test/fixtures/saves/v4.json').readAsStringSync());
+    expect(v4.toJson()['settings'], containsPair('notifications', v4.settings.notifications));
+  });
+
   test('본문을 고치면 체크섬이 깨진다', () {
     final text = SaveCodec.encode(sample).replaceFirst('"gems": 0', '"gems": 999');
     expect(() => SaveCodec.decode(text), throwsA(isA<SaveCorruptException>()));

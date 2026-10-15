@@ -215,6 +215,7 @@ class Settings {
     this.vibration = true,
     this.shake = true,
     this.flash = true,
+    this.notifications = true,
   });
 
   factory Settings.fromJson(Json j) => Settings(
@@ -227,6 +228,7 @@ class Settings {
     vibration: j['vibration'] as bool,
     shake: j['shake'] as bool,
     flash: j['flash'] as bool,
+    notifications: j['notifications'] as bool,
   );
 
   /// `system` | `ko` | `en`.
@@ -240,6 +242,9 @@ class Settings {
   final bool shake;
   final bool flash;
 
+  /// 오프라인 보상 가득 로컬 알림 (platform, 하루 최대 `meta.notifications.dailyMax`). 기본 켜짐 — 세이브 v4.
+  final bool notifications;
+
   Json toJson() => {
     'lang': lang,
     'autoUpgrade': autoUpgrade,
@@ -250,6 +255,7 @@ class Settings {
     'vibration': vibration,
     'shake': shake,
     'flash': flash,
+    'notifications': notifications,
   };
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].
