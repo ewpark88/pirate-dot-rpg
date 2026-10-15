@@ -75,7 +75,16 @@ class Round {
       if (e.boss) ctx.emit(BossFired(ctx.tick, x: e.x, y: e.y));
       final hp = field.shipHp - e.attack;
       field.shipHp = hp.isNegative ? BigNum.zero : hp;
-      ctx.emit(ShipDamaged(ctx.tick, amount: e.attack, hpRatio: (field.shipHp / field.shipHpMax).toDouble()));
+      final top = geo.viewShip != null; // 탑다운이면 피격 방향(때린 적 위치)을 싣는다
+      ctx.emit(
+        ShipDamaged(
+          ctx.tick,
+          amount: e.attack,
+          hpRatio: (field.shipHp / field.shipHpMax).toDouble(),
+          fromX: top ? e.x : null,
+          fromY: top ? e.y : null,
+        ),
+      );
     }
     geo.settle(field, dt);
   }

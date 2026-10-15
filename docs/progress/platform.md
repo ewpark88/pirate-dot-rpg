@@ -5,7 +5,9 @@
   - [x] main.dart: 일반 빌드에 저장된 battleView=top을 시작 때 side로(6c83947, T4 때 제거)
   - [x] sim --view + 비교표(리뷰 브랜치 review/topdown-sim-view 9424bc9): 진행 곡선 ±10% 안, 환생 뒤 보스 간격만 +41%(목표 안). 조정은 S2
   - [x] 렌더 점검표(03b2a88): 빈칸 2개 — 상자 위치(S2 chest), 피격 방향(ShipDamaged.fromX/Y 제안)
-- 다음 할 일: S2 검토 → S1 머지. ShipDamaged 계약이 OK면 combat 훅에서 채우기. S3 추가 요청 반영.
+- 추가(review/topdown-hits 35ca5d5): ShipDamaged 피격 방향(탑다운만), 보스 출발을 접근 원 바로 밖(bossSpawnRadius). 보스 간격 3.95 → 3.45초(side 2.15) → S2에 bossSpawnRadius ≈ 152 제안.
+- 주의: git stash는 워크트리끼리 공유된다 → 쓰지 않고, 비교 기준은 임시 worktree로.
+- 다음 할 일: S2 검토 → S1 머지. S3 추가 요청 반영.
 - 남은 문제
   - 운영자 토글은 S4 몫(S1 결정 b: '렌더 준비 중' 표시).
   - 폰 작업은 S1 재연결 알림을 기다리는 중.
