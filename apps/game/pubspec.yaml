@@ -44,6 +44,7 @@ flutter:
     - assets/ship/
     - assets/projectiles/
     - assets/coin.png
+    - assets/ui/
     - assets/fonts/Galmuri-OFL.txt
   # 한글 도트 폰트 (OFL-1.1, assets/fonts/Galmuri-OFL.txt 원문 동봉)
   fonts:
