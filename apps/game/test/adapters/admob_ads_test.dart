@@ -159,6 +159,31 @@ void main() {
     expect(n.isReady(AdPlacement.chest), isFalse);
     expect(await n.show(AdPlacement.chest), AdResult.notLoaded);
   });
+
+  test('광고가 화면을 덮는 동안 훅: 보여 주기 직전 onShowStart, 끝나면(실패여도) onShowEnd', () async {
+    final calls = <String>[];
+    final s = FakeAdsSdk()..loadResults.addAll([true, true]);
+    final a = AdMobAds(
+      s,
+      schedule: (_, _) {},
+      onShowStart: () => calls.add('start'),
+      onShowEnd: () => calls.add('end'),
+    );
+    await a.start();
+    expect(await a.show(AdPlacement.chest), AdResult.rewarded);
+    expect(calls, ['start', 'end']);
+    s.showOutcome = AdShowOutcome.failed;
+    await a.start();
+    await a.show(AdPlacement.chest);
+    expect(calls, ['start', 'end', 'start', 'end']);
+  });
+
+  test('광고가 준비 안 됐으면 훅을 부르지 않는다', () async {
+    final calls = <String>[];
+    final a = AdMobAds(FakeAdsSdk(), schedule: (_, _) {}, onShowStart: () => calls.add('start'));
+    expect(await a.show(AdPlacement.chest), AdResult.notLoaded);
+    expect(calls, isEmpty);
+  });
 }
 
 class _SlowSdk extends FakeAdsSdk {

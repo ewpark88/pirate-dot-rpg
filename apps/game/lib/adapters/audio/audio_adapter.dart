@@ -35,9 +35,26 @@ class AudioAdapter implements AudioPort {
 
   bool hasSfx(String id) => _files.contains(_sfxPath(id));
 
+  bool _suspended = false;
+
+  /// 광고가 화면을 덮는 동안: 효과음을 끊고 받지 않으며, 배경음은 일시정지.
+  void suspend() {
+    if (_suspended) return;
+    _suspended = true;
+    _fire(_sdk.stopAllSfx());
+    if (_bgmPlaying) _fire(_sdk.pauseBgm());
+  }
+
+  /// 광고가 닫히면 다시 (배경음은 울리던 경우만 이어서).
+  void unsuspend() {
+    if (!_suspended) return;
+    _suspended = false;
+    if (_bgmPlaying) _fire(_sdk.resumeBgm());
+  }
+
   @override
   void playSfx(String id, {int variant = 0, double pitch = 1}) {
-    if (_sfx <= 0) return;
+    if (_sfx <= 0 || _suspended) return;
     final varied = _sfxPath('${id}_$variant');
     final path = _files.contains(varied) ? varied : _sfxPath(id);
     if (!_files.contains(path)) return;

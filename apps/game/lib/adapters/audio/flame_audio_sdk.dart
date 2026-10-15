@@ -4,12 +4,21 @@ import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/services.dart';
 import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
 
-/// 실제 재생 (flame_audio, 접두어 `assets/audio/`).
+/// 실제 재생 (flame_audio가 다시 내보내는 audioplayers, 접두어 `assets/audio/`).
+///
+/// 효과음은 **경로마다 플레이어 [voices]개를 돌려 쓴다**(낮은 지연 모드). FlameAudio.play는 부를 때마다 새 플레이어를 만들고
+/// 버리지 않아, 전투 중 초당 수십 개가 쌓여 CPU·메모리가 치솟았다(2026-10-15 실기기: CPU 278%, PSS 1.09GB, 광고 뒤 더 심함).
+/// 효과음은 오디오 포커스를 잡지 않고 다른 소리와 섞는다 — 효과음마다 포커스를 다투지 않게.
 class FlameAudioSdk implements AudioSdk {
-  static const _prefix = 'assets/audio/';
+  FlameAudioSdk({this.voices = 4});
 
-  /// 효과음이 끝났다는 신호를 못 받아도 동시 재생 칸이 영원히 막히지 않게.
-  static const _sfxTimeout = Duration(seconds: 10);
+  /// 같은 효과음을 동시에 낼 수 있는 수(= 경로당 플레이어 수). 넘치면 가장 오래된 것을 끊고 다시 쓴다.
+  final int voices;
+
+  static const _prefix = 'assets/audio/';
+  static final AudioContext _sfxContext = AudioContextConfig(focus: AudioContextConfigFocus.mixWithOthers).build();
+
+  final _pools = <String, _SfxPool>{};
 
   @override
   Future<Set<String>> listAssets() async {
@@ -21,13 +30,13 @@ class FlameAudioSdk implements AudioSdk {
   }
 
   @override
-  Future<void> playSfx(String path, {required double volume, required double rate}) async {
-    final player = await FlameAudio.play(path, volume: volume);
-    if (rate != 1) await player.setPlaybackRate(rate);
-    try {
-      await player.onPlayerComplete.first.timeout(_sfxTimeout);
-    } on TimeoutException {
-      // 끝 신호가 안 와도 동시 재생 칸을 돌려준다 (onTimeout 콜백은 AudioEvent를 돌려줘야 해 타입 오류가 났다 — 2026-10-15 실기기 로그).
+  Future<void> playSfx(String path, {required double volume, required double rate}) =>
+      _pools.putIfAbsent(path, () => _SfxPool(path, voices, _sfxContext)).play(volume, rate);
+
+  @override
+  Future<void> stopAllSfx() async {
+    for (final p in _pools.values) {
+      await p.stopAll();
     }
   }
 
@@ -45,4 +54,44 @@ class FlameAudioSdk implements AudioSdk {
 
   @override
   Future<void> resumeBgm() => FlameAudio.bgm.resume();
+}
+
+/// 한 효과음 파일의 플레이어 고리. 처음 쓸 때 하나씩 만들고(소스를 미리 실어 둠), 다 차면 가장 오래된 것부터 돌려 쓴다.
+class _SfxPool {
+  _SfxPool(this.path, this.size, this.context);
+
+  final String path;
+  final int size;
+  final AudioContext context;
+  final _players = <AudioPlayer>[];
+  int _next = 0;
+
+  Future<AudioPlayer> _player() async {
+    if (_players.length < size) {
+      final p = AudioPlayer()..audioCache = FlameAudio.audioCache;
+      _players.add(p); // 먼저 넣어 같은 프레임의 다른 요청이 플레이어를 더 만들지 않게
+      await p.setAudioContext(context);
+      await p.setPlayerMode(PlayerMode.lowLatency);
+      await p.setReleaseMode(ReleaseMode.stop);
+      await p.setSource(AssetSource(path));
+      return p;
+    }
+    final p = _players[_next];
+    _next = (_next + 1) % size;
+    await p.stop();
+    return p;
+  }
+
+  Future<void> play(double volume, double rate) async {
+    final p = await _player();
+    await p.setVolume(volume);
+    if (rate != 1) await p.setPlaybackRate(rate);
+    await p.resume();
+  }
+
+  Future<void> stopAll() async {
+    for (final p in _players) {
+      await p.stop();
+    }
+  }
 }

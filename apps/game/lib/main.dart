@@ -67,7 +67,8 @@ Future<void> main() async {
   step('analytics');
   final audio = await AudioAdapter.load(FlameAudioSdk(), timeout: _sdkTimeout);
   step('audio');
-  final ads = AdMobAds(GoogleAdsSdk());
+  // 광고가 화면을 덮는 동안 게임 소리를 멈춘다(광고 소리와 겹치거나 오디오 포커스를 다투지 않게 — 2026-10-15 광고 뒤 버벅임).
+  final ads = AdMobAds(GoogleAdsSdk(), onShowStart: audio.suspend, onShowEnd: audio.unsuspend);
   // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
   ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
   late final ProviderContainer container;
