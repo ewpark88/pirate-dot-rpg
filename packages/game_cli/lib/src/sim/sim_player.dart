@@ -10,7 +10,7 @@ export 'package:game_cli/src/sim/sim_result.dart';
 /// 설계서 7.2의 가상 플레이어: 가장 싼 강화 구매, 젬이 모이면 소환, 합치기·승급,
 /// 보스 실패 시 `meta.sim.farmRetrySec` 파밍 후 재도전. 실제 엔진(CoreEngine)을 돌린다.
 class SimPlayer {
-  SimPlayer(this.t, {required this.seed}) : clock = ManualClock(_start) {
+  SimPlayer(this.t, {required this.seed, this.bossAd = false}) : clock = ManualClock(_start) {
     final initial = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
     engine = CoreEngine(tables: t, clock: clock, initial: initial);
     result = SimResult(seed);
@@ -23,6 +23,9 @@ class SimPlayer {
 
   final GameTables t;
   final int seed;
+
+  /// 보스 실패 팝업에서 함포 지원 광고(ads.json bossSupport)를 보고 바로 재도전한다 (하루 한도까지).
+  final bool bossAd;
   final ManualClock clock;
   late final CoreEngine engine;
   late final SimResult result;
@@ -136,12 +139,19 @@ class SimPlayer {
       return;
     }
     if (s.progress.farming) {
+      // 튜토리얼 보스 단계(설계서 4.12 3단계 ‘강화 2번 후 보스 도전’)에서는 실패 뒤 강화 2번이면 바로 재도전.
+      final tutorialBoss = s.tutorialStep == t.meta.raw.obj('tutorial').obj('steps').integer('boss');
       if (_farmSince == null) {
+        if (bossAd && !tutorialBoss && canWatchAd(s, t, AdPlacement.bossSupport)) {
+          engine
+            ..enqueue(const GrantAdReward(AdPlacement.bossSupport))
+            ..enqueue(const ChallengeBoss());
+          result.bossAds++;
+          return;
+        }
         _farmSince = _elapsed;
         _upgradesAtFarm = result.upgrades;
       }
-      // 튜토리얼 보스 단계(설계서 4.12 3단계 ‘강화 2번 후 보스 도전’)에서는 실패 뒤 강화 2번이면 바로 재도전.
-      final tutorialBoss = s.tutorialStep == t.meta.raw.obj('tutorial').obj('steps').integer('boss');
       if ((tutorialBoss && result.upgrades - _upgradesAtFarm >= _tutorialRetryUpgrades) ||
           _elapsed - _farmSince! >= farmRetry) {
         engine.enqueue(const ChallengeBoss());

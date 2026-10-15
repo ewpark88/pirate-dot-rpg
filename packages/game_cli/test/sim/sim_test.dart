@@ -1,4 +1,5 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
+import 'package:game_cli/src/sim/sim_patch.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
@@ -33,6 +34,13 @@ void main() {
     expect(RunCards.sum(run.repeatByRarity), closeTo(b.repeatCountAt(2), 1e-9));
     expect(RunCards.sum(run.newByRarity), closeTo(b.countAt(1) + b.countAt(50), 1e-9));
     expect(run.repeatByRarity['common'], closeTo(b.repeatCountAt(2) * t.rarities.bossDropRates['common']!, 1e-9));
+  });
+
+  test('--set: 테이블 값을 덮어쓰고, 없는 키는 실패', () {
+    final p = GameTables.load(patchTables(rawTables, ['meta.rebirth.minStage=30', 'growth.expToNext.legend=26']));
+    expect(p.meta.rebirth.integer('minStage'), 30);
+    expect(p.growth.expToNext['legend'], 26);
+    expect(() => patchTables(rawTables, ['meta.rebirth.minStag=30']), throwsArgumentError);
   });
 
   test('중앙값: 미도달(null)은 가장 큰 값으로', () {
