@@ -9,5 +9,5 @@ steps:
   - input: { type: setSetting, key: battleView, value: top }
   - advance: 1t
   - expect: { mode: top, stage: 10, wave: 0, quadrants: 3 }
-  - advance: 80s
+  - advance: 40s
   - expect: { mode: top, stage: 11 }
