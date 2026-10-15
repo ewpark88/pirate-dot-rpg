@@ -7,10 +7,10 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 /// 일시 객체의 움직임 계산 (장면이 매 프레임 부른다).
 
 const _skipBounces = 3;
-const _fountainEnd = 0.5;
+const _fountainEnd = 0.38;
 const _hopSpeedX = 25.0;
-const _hopLiftBase = 30.0;
-const _gravityHalf = 100.0;
+const _hopLiftBase = 110.0;
+const _gravityHalf = 140.0;
 
 /// 진행률([Projectile.progress])에 맞춰 발사체 위치를 정한다.
 void placeProjectile(Projectile p) {
@@ -35,7 +35,7 @@ void placeProjectile(Projectile p) {
   }
 }
 
-/// 코인: 분수처럼 튀었다가(앞 40%) 배로 빨려간다.
+/// 코인(사용자 지시 '돈 들어오는 게 보이게'): 크게 튀어 오른 뒤(앞 [_fountainEnd]) 위로 휘는 곡선으로 목표(상단 바 골드)까지.
 void moveCoin(Coin c) {
   final t = (c.ageMs / c.flyMs).clamp(0.0, 1.0);
   if (c.fallPx > 0) {
@@ -49,14 +49,22 @@ void moveCoin(Coin c) {
     c
       ..x = hx
       ..y = hy;
-  } else {
-    final f = (t - _fountainEnd) / (1 - _fountainEnd);
-    final ease = 1 - (1 - f) * (1 - f);
-    c
-      ..x = hx + (c.toX - hx) * ease
-      ..y = hy + (c.toY - hy) * ease;
+    return;
   }
+  final f = (t - _fountainEnd) / (1 - _fountainEnd);
+  final u = f * f * (3 - 2 * f); // 부드럽게 출발·도착
+  // 조절점: 출발점 위쪽 — 목표 쪽으로 위로 휘며 날아간다.
+  final px = hx + (c.toX - hx) * 0.15;
+  final py = math.min(hy, c.toY) - _arcLift;
+  final a = (1 - u) * (1 - u);
+  final b = 2 * (1 - u) * u;
+  final d = u * u;
+  c
+    ..x = a * hx + b * px + d * c.toX
+    ..y = a * hy + b * py + d * c.toY;
 }
+
+const _arcLift = 30.0;
 
 const _rainFallEnd = 0.5;
 
@@ -112,7 +120,7 @@ void applyHits(BattleScene s, double dtMs) {
     final pose = s.poses[k];
     if (pose.boss) {
       pose
-        ..x = s.clampBossX(pose.x)
+        ..x = s.layout.clampBossX(pose.x)
         ..drawX = pose.x;
     }
     for (final h in s.hits.active) {

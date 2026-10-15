@@ -59,7 +59,7 @@ class EventDirector implements ReplayListener {
           ..crewId = e.crewId
           ..fromX = kShipNoseX
           ..fromY = kShipNoseY
-          ..toX = target == null ? e.x : (target.boss ? scene.clampBossX(target.x) : target.x)
+          ..toX = target == null ? e.x : (target.boss ? scene.layout.clampBossX(target.x) : target.x)
           ..toY = target?.y ?? e.y
           ..startIndex = start + b * style.burstGapMs / tickMs
           ..impactIndex = index.toDouble()
@@ -170,7 +170,7 @@ class EventDirector implements ReplayListener {
   void _damage(Damage e, RecordedTick tick, int index, {required bool number}) {
     final target = _player.enemyAt(index - 1, e.targetId) ?? _player.enemyAt(index, e.targetId);
     if (target == null) return;
-    final tx = target.boss ? scene.clampBossX(target.x) : target.x;
+    final tx = target.boss ? scene.layout.clampBossX(target.x) : target.x;
     if (number) {
       scene.numbers.add(
         e.amount,
@@ -220,18 +220,28 @@ class EventDirector implements ReplayListener {
   void _kill(Kill e, int index) {
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
-    for (var c = 0; c < _juice.coinCount; c++) {
-      final spread = _juice.coinCount <= 1 ? 0.0 : c / (_juice.coinCount - 1) * 2 - 1;
+    final n = _juice.coinCount;
+    final share = n <= 1 ? e.gold : e.gold.times(1 / n);
+    final (tx, ty) = scene.coinFlow.target(scene.layout);
+    for (var c = 0; c < n; c++) {
+      if (scene.coins.active.length >= _juice.maxCoins) {
+        // 상한: 새 코인 대신 마지막 코인에 금액을 더한다(합계 보존, 화면은 덜 붐빈다).
+        final last = scene.coins.active.last;
+        last.amount = last.amount + share;
+        continue;
+      }
+      final spread = n <= 1 ? ((e.targetId * 37) % 11 - 5) / 5 : c / (n - 1) * 2 - 1;
       scene.coins.obtain()
         ..fromX = e.x
         ..fromY = e.y
-        ..toX = kCoinTargetX
-        ..toY = kCoinTargetY
+        ..toX = tx
+        ..toY = ty
         ..spread = spread
         ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
         ..fallPx = 0
         ..ageMs = 0
         ..flyMs = _juice.coinFlyMs
+        ..amount = share
         ..x = e.x
         ..y = e.y;
     }
@@ -260,15 +270,16 @@ class EventDirector implements ReplayListener {
   static const _rainFallSpread = 40;
 
   /// 보이는 폭 안에서만 떨어지게 (필드를 키우면 오른쪽이 잘린다).
-  int get _rainSpanIn => math.min(_rainSpan, (scene.visibleRight - _rainLeft - 8).floor());
+  int get _rainSpanIn => math.min(_rainSpan, (scene.layout.visibleRight - _rainLeft - 8).floor());
 
   void _coinRain() {
     for (var i = 0; i < _juice.bossCoinRain; i++) {
       scene.coins.obtain()
         ..fromX = _rainLeft + i * _rainPrime % _rainSpanIn
         ..fromY = _rainTopY
-        ..toX = kShipCenterX
-        ..toY = kShipCenterY
+        ..toX = scene.coinFlow.target(scene.layout).$1
+        ..toY = scene.coinFlow.target(scene.layout).$2
+        ..amount = BigNum.zero
         ..spread = 0
         ..lift = 0
         ..fallPx = _rainFallMin + i * _rainPrime % _rainFallSpread

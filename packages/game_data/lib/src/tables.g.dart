@@ -388,6 +388,10 @@ const Map<String, String> rawTables = {
   'fx_map': r'''
 {
   "events": {
+    "coinArrive": {
+      "fx": null,
+      "sfx": "coin"
+    },
     "damage": {
       "fx": null,
       "sfx": "hit"
@@ -1127,6 +1131,12 @@ const Map<String, String> rawTables = {
       "#FFCF4A",
       "#7AF0FF"
     ]
+  },
+  "coinFx": {
+    "sizeDp": 18,
+    "minDots": 11,
+    "spinFrameMs": 70,
+    "frames": 4
   }
 }
 ''',
@@ -1192,11 +1202,11 @@ const Map<String, String> rawTables = {
     "slowMoMs": 300,
     "slowMoRate": 0.3,
     "flash": true,
-    "coinRain": 30
+    "coinRain": 16
   },
   "kill": {
-    "coinCount": 2,
-    "coinFlyMs": 700
+    "coinCount": 1,
+    "coinFlyMs": 950
   },
   "vibration": {
     "crit": "light",
@@ -1210,7 +1220,7 @@ const Map<String, String> rawTables = {
     "effects": 40,
     "damageNumbers": 24,
     "projectiles": 48,
-    "coins": 60
+    "coins": 28
   },
   "replay": {
     "lookaheadTicks": 16,

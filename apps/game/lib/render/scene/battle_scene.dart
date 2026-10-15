@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/enemy_look.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/backdrop.dart';
+import 'package:pirate_dot/render/scene/coin_flow.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/event_director.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
@@ -89,11 +90,13 @@ class BattleScene {
   late final JsonReader pbFx = fx.raw.obj('pbFx');
   static const _blastSheet = 'explosion_aoe';
 
-  /// 보이는 오른쪽 끝 (도트) — 필드를 키우면 320보다 작다(오른쪽이 잘림).
-  double get visibleRight => math.min(kLogicalWidth, layout.viewDots.right);
+  /// 보상 코인이 날아갈 곳(UI 상단 바 골드)·도착 알림 — UI가 BattleGame으로 넣는다.
+  final coinFlow = CoinFlow();
 
-  /// 보스는 등장 자리(엔진 x 300)가 잘린 화면 밖이어도 보이는 오른쪽 끝 안에 그린다(보스 발사체·숫자도 같은 x).
-  double clampBossX(double x) => math.min(x, visibleRight - kBossEdgeInset);
+  void _coinArrived(BigNum amount) {
+    coinFlow.onCoinArrive?.call(amount);
+    sound.sfx('coinArrive', clockMs: clockMs);
+  }
 
   /// 효과음·배경음 포트. null이면 무음.
   AudioPort? get audio => sound.audio;
@@ -155,11 +158,14 @@ class BattleScene {
     }
     effects.releaseWhere(_effectDone);
     zones.releaseWhere(_zoneDone);
+    var arrived = BigNum.zero;
     for (final c in coins.active) {
       c.ageMs += fxDt;
       moveCoin(c);
+      if (c.done) arrived = arrived + c.amount;
     }
     coins.releaseWhere(_coinDone);
+    if (!arrived.isZero) _coinArrived(arrived);
     numbers.update(fxDt);
     shake.update(dtMs);
     for (var i = 0; i < kMaxSlots; i++) {
@@ -187,8 +193,7 @@ class BattleScene {
   // ignore: prefer_function_declarations_over_variables
   late final bool Function(Zone) _zoneDone = (z) => player.position >= z.endIndex;
 
-  /// 이펙트 시트 한 번 재생. 상한을 넘으면 가장 오래된 것을 회수한다.
-  /// [scale]배 크기, [delayMs] 뒤 시작, [durationMs]가 있으면 그 시간에 맞춰 프레임을 늘리고 [vx](px/ms)로 움직인다.
+  /// 이펙트 시트 한 번 재생(상한이면 가장 오래된 것 회수): [scale]배, [delayMs] 뒤, [durationMs]에 맞춰 늘림, [vx] px/ms 이동.
   Effect? spawnEffect(
     String sheetId,
     double x,

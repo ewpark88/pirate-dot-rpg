@@ -104,4 +104,18 @@ class SpriteDraw {
       ..restore();
     return true;
   }
+
+  /// [drawSmooth]의 시트 프레임 버전 (가로 시트 [frame]번, 가운데 ([cx],[cy])).
+  bool drawSmoothFrame(Canvas c, String key, int frame, double cx, double cy, double w, double h) {
+    final s = sheet(key);
+    if (s == null) return false;
+    _smooth.color = const Color(0xFF000000);
+    c.drawImageRect(
+      s.image,
+      Rect.fromLTWH(frame % s.frames * s.frameW, 0, s.frameW, s.frameH),
+      Rect.fromLTWH(cx - w / 2, cy - h / 2, w, h),
+      _smooth,
+    );
+    return true;
+  }
 }

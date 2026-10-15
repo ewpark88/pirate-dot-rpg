@@ -14,6 +14,15 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 보상 코인 연출 (사용자 지시 '돈이 금색 점처럼 들어와 모르겠다') + 태블릿 줄
+- `tools/art/gen_coin.py` → `assets/fx/coin_hd.png`: PB 재화 아이콘 화풍 매끈한 금화 4프레임 회전(96px, 4배 그려 줄임), OWN.
+- 처치마다 금화 1개(그 처치 골드를 실음), 크게 튀어 오른 뒤 위로 휘는 곡선(베지에)으로 UI 상단 바 골드 자리까지, 회전·화면 18dp 고정(태블릿 최소 11도트).
+  도착 프레임마다 금액 합계를 `CoinFlow.onCoinArrive`로(UI: 아이콘 통통·'+금액'), 소리 coinArrive → sfx coin. 동시 28개 상한, 넘치면 마지막 금화에 더함(합계 보존). 보스 코인 비 30 → 16.
+  UI API: `BattleGame.goldTargetDp`·`onCoinArrive` (S4에 전달). 테스트 `coin_test`(금액·목표·도착 1번·상한 합계).
+- 태블릿 줄 상한 1.6 → 2.0dp(슬롯 72dp, S1). battle_scene 300줄 → CoinFlow, visibleRight·clampBossX는 BattleFrame으로.
+- 비교 `docs/specs/render-coins/sequence_4devices.png`. 골든 5장 갱신. check --full 통과.
+- 남은 것: coin 효과음 파일(assets/audio/sfx/coin.ogg)은 S1이 tools/art/audio로 구워 넣어야 소리가 난다.
+
 ### 2026-10-15 · S3 · 스킨 r1 선원 줄 (사용자 승인 새 스킨, S4 값)
 - 골든 battle_reference·battle_sprites 다시 찍음(98138ff, pubspec PB 등록 반영).
 - `SlotSkinPainter`(fx_map slotSkin, dp 값을 줄 도트로 환산): 크림 줄 + 위로 그림자, 칸 = 등급 색(PB cards.json main) 테두리 3dp·반지름 12dp·등급 색 세로 그라데이션·흰 하이라이트·아래 그림자,

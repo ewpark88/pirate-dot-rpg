@@ -40,11 +40,11 @@
     "slowMoMs": 300,
     "slowMoRate": 0.3,
     "flash": true,
-    "coinRain": 30
+    "coinRain": 16
   },
   "kill": {
-    "coinCount": 2,
-    "coinFlyMs": 700
+    "coinCount": 1,
+    "coinFlyMs": 950
   },
   "vibration": {
     "crit": "light",
@@ -58,7 +58,7 @@
     "effects": 40,
     "damageNumbers": 24,
     "projectiles": 48,
-    "coins": 60
+    "coins": 28
   },
   "replay": {
     "lookaheadTicks": 16,

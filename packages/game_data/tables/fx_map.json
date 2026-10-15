@@ -1,5 +1,9 @@
 {
   "events": {
+    "coinArrive": {
+      "fx": null,
+      "sfx": "coin"
+    },
     "damage": {
       "fx": null,
       "sfx": "hit"
@@ -739,5 +743,11 @@
       "#FFCF4A",
       "#7AF0FF"
     ]
+  },
+  "coinFx": {
+    "sizeDp": 18,
+    "minDots": 11,
+    "spinFrameMs": 70,
+    "frames": 4
   }
 }

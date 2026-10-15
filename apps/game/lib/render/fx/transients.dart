@@ -1,3 +1,4 @@
+import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
 /// 풀에서 꺼내 쓰는 일시 객체들. 필드는 꺼낼 때마다 다시 채운다.
@@ -66,6 +67,9 @@ class Coin {
   /// 분수처럼 퍼지는 방향(-1~1)과 높이.
   double spread = 0;
   double lift = 0;
+
+  /// 이 코인이 나르는 골드 (도착하면 UI '+금액'). 상한에 걸린 처치는 마지막 코인에 더한다.
+  BigNum amount = BigNum.zero;
 
   /// 코인 비: 0보다 크면 분수 대신 이만큼 곧장 떨어졌다가 배로 간다.
   double fallPx = 0;
