@@ -61,3 +61,6 @@ double treasurePiecesMultiplier(GameState s, GameTables t) => _treasure(s, t)?.n
     ],
   );
 }
+
+/// 배 등급 [tier]가 명예 등급을 넘는가 — ShipTierUp 연출은 이때만(환생 뒤 다시 오를 때 반복하지 않음). 능력치는 그대로 적용된다.
+bool beyondHonor(GameState s, GameTables t, ShipTierDef tier) => t.shipTiers.tiers.indexOf(tier) > s.ship.honorTier;

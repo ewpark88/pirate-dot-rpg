@@ -41,6 +41,7 @@ class CombatStats {
       goldMultiplier:
           ship.goldMultiplier *
           (1 + rebirth) *
+          treasureGoldMultiplier(s, t) *
           (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
       tierDamage: 1 + tier.damageBonus,
       bonus: damageBonus(s, t) + (active(s.buffs.bossSupportUntil) ? reward('bossSupport').number('damageBonus') : 0),

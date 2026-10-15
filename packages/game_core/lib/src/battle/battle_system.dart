@@ -10,7 +10,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
-import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec, fastSailFraction;
+import 'package:game_core/src/economy/rebirth_shop.dart' show beyondHonor, bossExtraSec, fastSailFraction;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -189,7 +189,7 @@ class BattleSystem implements GameSystem {
       ..emit(StageAdvanced(ctx.tick, stage: stage));
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);
-    if (tier.stage == stage) ctx.emit(ShipTierUp(ctx.tick, tierId: tier.id));
+    if (tier.stage == stage && beyondHonor(s, t, tier)) ctx.emit(ShipTierUp(ctx.tick, tierId: tier.id));
     // 보스 카드: 잡은 스테이지 기준이라 스테이지를 올리기 전에 (경제 레인, docs/contracts/requests/economy-stats.md).
     final carded = grantBossCards(s, ctx, [for (final g in f.guns) g.crewId]);
     ctx.emit(SaveRequested(ctx.tick, reason: 'bossCleared'));
