@@ -56,7 +56,7 @@ const double kButtonGap = 3;
 const double kButtonMinDots = 16;
 
 /// 늘어난 높이 중 하늘(위)로 가는 몫 — 나머지는 깊은 바다(필드 아래).
-const double kSkyShare = 0.55;
+const double kSkyShare = 0.7;
 
 /// 화면 1프레임(60fps) 길이 — juice.flashFrames를 시간으로 바꿀 때.
 const double kFrameMs = 1000 / 60;

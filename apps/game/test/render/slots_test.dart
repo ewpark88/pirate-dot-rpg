@@ -62,7 +62,11 @@ void main() {
         _hex(tables.fxMap.slots.str('empty')),
       );
       final u = f.ultimateDots;
-      expect(await _rgb(img, u.left.toInt(), u.top.toInt() + 5), _hex(tables.fxMap.backgroundLayout.str('slotLine')));
+      expect(
+        await _rgb(img, u.left.toInt(), u.top.toInt() + 5),
+        _hex(tables.fxMap.hud.str('goldColor')),
+        reason: '궁극기 금 테두리',
+      );
     });
   });
 }

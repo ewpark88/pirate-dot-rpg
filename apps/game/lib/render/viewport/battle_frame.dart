@@ -86,7 +86,7 @@ class BattleFrame {
 /// 전장 상자 [box](dp)를 빈 띠 없이 채우는 배치 (화면 배치 v2 규칙).
 /// - k = 폭 기준 정수배 floor(폭·dpr / 320), 필드 148 + 선원 줄이 높이에 안 들어가면 줄인다(최소 1).
 /// - 선원 줄 높이 = max(32도트, 56dp).
-/// - 남는 높이는 위 55% 하늘, 아래 45% 깊은 바다. 필드 왼쪽 위는 정수 도트 → 정수 물리 픽셀에 놓인다.
+/// - 남는 높이는 위 70% 하늘, 아래 30% 깊은 바다. 필드 왼쪽 위는 정수 도트 → 정수 물리 픽셀에 놓인다.
 BattleFrame battleFrameFor(Size box, double dpr) {
   double band(int k) => math.max(kSlotBandMinDots, (kSlotBandMinDp * dpr / k).ceilToDouble());
   var k = math.max(1, (box.width * dpr / kLogicalWidth).floor());
