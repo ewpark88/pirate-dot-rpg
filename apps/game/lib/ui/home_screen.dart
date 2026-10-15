@@ -36,16 +36,16 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (사용자 지시 2026-10-15: 폰 50%). 태블릿(폭 600dp 이상)은 45% 상한 유지.
-const _battleShare = 0.5;
+/// 전장(+ 선원 줄)이 차지하는 화면 높이 비율 (사용자 지시 2026-10-15: 폰 55%). 태블릿(폭 600dp 이상)은 45% 상한 유지.
+const _battleShare = 0.55;
 const _battleShareWide = 0.45;
 const _wideWidth = 600.0;
 
-/// 전장 아래에 늘 남기는 최소 높이(dp) — 목표 띠·튜토리얼 말풍선·탭 내용.
-const _belowBattleMin = 280.0;
+/// 전장 아래에 늘 남기는 최소 높이(dp) — 목표 띠 + 스크롤되는 탭 내용.
+const _belowBattleMin = 220.0;
 
 /// 튜토리얼 말풍선이 떠 있을 때 더 남기는 높이(dp).
-const _tutorialRoom = 90.0;
+const _tutorialRoom = 140.0;
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   var _tab = 0;

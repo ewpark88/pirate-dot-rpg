@@ -479,6 +479,10 @@ const Map<String, String> rawTables = {
     "crewPromoted": {
       "fx": "level_up",
       "sfx": "promote"
+    },
+    "shipLookChanged": {
+      "fx": "level_up",
+      "sfx": "promote"
     }
   },
   "projectiles": {
@@ -487,7 +491,7 @@ const Map<String, String> rawTables = {
       "size": 4,
       "path": "arc",
       "arcPx": 28,
-      "flightMs": 750,
+      "flightMs": 1400,
       "single": true
     },
     "direct": {
@@ -496,26 +500,26 @@ const Map<String, String> rawTables = {
       "path": "line",
       "burst": 3,
       "burstGapMs": 25,
-      "flightMs": 300
+      "flightMs": 800
     },
     "pierce": {
       "color": "#C9CED6",
       "size": 3,
       "path": "line",
-      "flightMs": 350
+      "flightMs": 800
     },
     "skip": {
       "color": "#9E8B6B",
       "size": 3,
       "path": "skip",
       "arcPx": 8,
-      "flightMs": 650
+      "flightMs": 1250
     },
     "underwater": {
       "color": "#5DADE2",
       "size": 4,
       "path": "line",
-      "flightMs": 550,
+      "flightMs": 1150,
       "single": true
     },
     "air": {
@@ -523,19 +527,19 @@ const Map<String, String> rawTables = {
       "size": 3,
       "path": "drop",
       "arcPx": 60,
-      "flightMs": 450
+      "flightMs": 1000
     },
     "assault": {
       "color": "#E74C3C",
       "size": 5,
       "path": "line",
-      "flightMs": 300
+      "flightMs": 800
     },
     "shock": {
       "color": "#A569BD",
       "size": 6,
       "path": "line",
-      "flightMs": 400
+      "flightMs": 900
     }
   },
   "projectileAliases": {
@@ -1122,7 +1126,46 @@ const Map<String, String> rawTables = {
     "fx": "muzzle"
   },
   "pbFx": {
-    "weaponScale": 0.2,
+    "weaponDp": 24,
+    "weaponMinDots": 12,
+    "weaponContent": {
+      "alba": 74,
+      "bara": 74,
+      "bomblet": 35,
+      "bones": 78,
+      "cook": 59,
+      "corey": 38,
+      "crabs": 44,
+      "dolphy": 75,
+      "gull": 42,
+      "hippo": 36,
+      "jelly": 64,
+      "kraki": 68,
+      "lamp": 56,
+      "lion": 44,
+      "manta": 70,
+      "moby": 118,
+      "moray": 72,
+      "nar": 85,
+      "octo": 55,
+      "orca": 74,
+      "otter": 30,
+      "pang": 64,
+      "pelly": 50,
+      "pingu": 57,
+      "polly": 70,
+      "puffer": 64,
+      "pumpum": 51,
+      "saw": 64,
+      "sheldon": 54,
+      "starry": 60,
+      "sword": 106,
+      "turtle": 52,
+      "uni": 60,
+      "volke": 60,
+      "volt": 80,
+      "walrus": 105
+    },
     "spinTurns": 1.5,
     "trailStep": 0.07,
     "blastSize": 0.9,
@@ -1185,7 +1228,60 @@ const Map<String, String> rawTables = {
     "spinFrameMs": 70,
     "frames": 4
   },
-  "shipScale": 1.5
+  "shipScale": 1.3,
+  "rarityTrail": {
+    "samples": 10,
+    "step": 0.022,
+    "crowd": 20,
+    "hero": [
+      "#B455FF",
+      "#FF7BE6"
+    ],
+    "legend": [
+      "#FFD84A",
+      "#FFF6C2"
+    ],
+    "myth": [
+      "#FF5A6E",
+      "#FFB31F",
+      "#FFE94A",
+      "#5BEA8A",
+      "#4AD8FF",
+      "#6B7BFF",
+      "#C07BFF"
+    ],
+    "ring": "#FFFFFF"
+  },
+  "shipParts": {
+    "stages": {
+      "hull": 7,
+      "sail": 5,
+      "crowsnest": 6,
+      "cargo": 7
+    },
+    "cannonStages": 7,
+    "recoilMs": 180,
+    "recoilPx": 3,
+    "glowMs": 1400,
+    "sparkles": 5,
+    "cannonScale": 1.4
+  },
+  "shipHp": {
+    "w": 44,
+    "h": 3,
+    "lift": 6,
+    "full": "#5BD75B",
+    "mid": "#FFD84A",
+    "low": "#FF4A4A",
+    "back": "#3A0D0D",
+    "edge": "#1B1726",
+    "lag": "#FFFFFF",
+    "lagMs": 450,
+    "healMs": 600,
+    "sinkMs": 1800,
+    "sinkDepth": 26,
+    "sinkTilt": 0.35
+  }
 }
 ''',
   'growth': r'''
@@ -1271,7 +1367,7 @@ const Map<String, String> rawTables = {
     "coins": 28
   },
   "replay": {
-    "lookaheadTicks": 16,
+    "lookaheadTicks": 30,
     "liveMaxLagTicks": 6
   },
   "powerSave": {

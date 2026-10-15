@@ -61,7 +61,7 @@
     "coins": 28
   },
   "replay": {
-    "lookaheadTicks": 16,
+    "lookaheadTicks": 30,
     "liveMaxLagTicks": 6
   },
   "powerSave": {

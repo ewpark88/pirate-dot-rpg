@@ -43,6 +43,9 @@ GameState _withGap() {
   return base.copyWith(fleet: [...ids.take(ids.length - 1), null], fleetInit: true);
 }
 
+/// [_withGap]에서 빠진(쉬는) 선원.
+String _gapBenched() => loadFixture('stage37_midgame').battle!.fleet.last.crewId;
+
 void main() {
   testWidgets('A: 보유 선원 카드 → 상세(이름·레벨·파워·계열·스킬, 출전 중이면 내리기)', (tester) async {
     final fleet = await _pump(tester);
@@ -98,9 +101,11 @@ void main() {
     await tester.tap(find.byKey(const Key('fleet.slot.3')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('fleet.picker.3')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('fleet.pick.octo')));
+    // 쉬는 선원(빈 칸에서 뺀 선원)이 맨 위.
+    final benched = _gapBenched();
+    await tester.tap(find.byKey(Key('fleet.pick.$benched')));
     await tester.pumpAndSettle();
-    expect(fleet.calls, ['set 3 octo']);
+    expect(fleet.calls, ['set 3 $benched']);
   });
 
   testWidgets('B: 출전 중 칸 → 그 선원 상세', (tester) async {
@@ -128,8 +133,9 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('fleet.slot.3')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fleet.pick.octo')));
+    final benched = _gapBenched();
+    await tester.tap(find.byKey(Key('fleet.pick.$benched')));
     await tester.pumpAndSettle();
-    expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), const SetFleetSlot(3, 'octo').toJson()]);
+    expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), SetFleetSlot(3, benched).toJson()]);
   });
 }

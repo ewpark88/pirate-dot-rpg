@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/background_paths.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 
@@ -34,6 +35,8 @@ class StagePainter {
   late final double _waveLen = _l.number('waveLen');
   late final double _cloudSpeed = _l.number('cloudSpeed');
   late final double _squash = _l.number('cloudSquash');
+  late final _paths = BackgroundPaths(squash: _squash, waveGap: _waveGap, waveLen: _waveLen);
+  BattleFrame? _pathsFrame;
 
   /// 보이는 영역 전체를 채운다(화면 배치 v2): 맨 위 하늘 띠는 위로, 마지막 바다 띠는 선원 줄까지 아래로 늘이고,
   /// 구름·물결은 보이는 폭 전체에서 돈다. 깊은 바다(필드 아래)에도 어두운 물결 줄을 더한다.
@@ -42,6 +45,10 @@ class StagePainter {
     final t = scene.clockMs / Duration.millisecondsPerSecond;
     final v = scene.layout.viewDots;
     final bottom = scene.layout.bandTop;
+    if (!identical(_pathsFrame, scene.layout)) {
+      _paths.reset();
+      _pathsFrame = scene.layout;
+    }
     for (var i = 0; i < _skyY.length; i++) {
       final top = i == 0 ? v.top : _skyY[i];
       final end = i + 1 < _skyY.length ? _skyY[i + 1] : _seaY.first;
@@ -59,32 +66,49 @@ class StagePainter {
       _rect(c, v.left, _seaY[i], v.width + 1, end - _seaY[i], b.sea(i));
     }
     _deepSea(c, t, v, bottom);
-    final rows = [..._waveRows, for (var y = kFieldBottom + _deepWaveGap / 2; y < bottom - 2; y += _deepWaveGap) y];
-    final wrap = v.width.ceil() + 32;
-    for (final y in rows) {
-      final upper = y < _waveSplit;
-      _paint.color = Color(b.wave(upper ? 0 : 1));
-      final speed = _waveSpeed[upper ? 0 : 1] * (y > kFieldBottom ? _deepWaveSlow : 1);
-      for (var x = -16; x < v.width + 16; x += _waveGap) {
-        final xx = (x + t * speed).floor() % wrap - 16 + v.left;
-        final l = xx < v.left ? v.left : xx;
-        final r = xx + _waveLen > v.right ? v.right : xx + _waveLen;
-        if (r > l) c.drawRect(Rect.fromLTWH(l, y, r - l, 1), _paint);
-      }
+    // 물결: 같은 속도·색 줄 묶음(위 바다 / 아래 바다 / 깊은 바다)마다 Path 1개를 흐름만큼 옮겨 그린다.
+    c
+      ..save()
+      ..clipRect(Rect.fromLTRB(v.left, v.top, v.right, bottom));
+    for (var g = 0; g < 3; g++) {
+      final speed = _waveSpeed[g == 0 ? 0 : 1] * (g == 2 ? _deepWaveSlow : 1);
+      final shift = (t * speed).floor() % _waveGap;
+      _paint.color = Color(b.wave(g == 0 ? 0 : 1));
+      c
+        ..save()
+        ..translate(v.left - 16 + shift, 0)
+        ..drawPath(_paths.waves(g, _waveGroup(g, bottom), v.width + 32), _paint)
+        ..restore();
     }
+    c.restore();
   }
+
+  /// 물결 줄 묶음 [g]: 0 = 위 바다(빠름), 1 = 아래 바다, 2 = 깊은 바다(필드 아래, 느림).
+  List<double> _waveGroup(int g, double bottom) => switch (g) {
+    0 => [
+      for (final y in _waveRows)
+        if (y < _waveSplit) y,
+    ],
+    1 => [
+      for (final y in _waveRows)
+        if (y >= _waveSplit && y <= kFieldBottom) y,
+    ],
+    _ => [for (var y = kFieldBottom + _deepWaveGap / 2; y < bottom - 2; y += _deepWaveGap) y],
+  };
 
   /// 깊은 바다(필드 아래 ~ 선원 줄 위): 아주 옅은 빛줄기(비스듬, 천천히 흔들림)와 느리게 오르는 거품 몇 개.
   void _deepSea(Canvas c, double t, Rect v, double bottom) {
     final top = _seaY.first + 6;
     if (bottom - kFieldBottom < _deepMin) return;
     _paint.color = const Color(_rayColor);
+    final ray = _paths.ray(top, bottom, _rayW);
     for (var i = 0; i < _rays; i++) {
       final x0 = v.left + v.width * (i + 0.5) / _rays + math.sin(t * 0.4 + i * 1.7) * 6;
-      for (var y = top; y < bottom - 1; y += 2) {
-        final x = (x0 + (y - top) * 0.35).floorToDouble();
-        c.drawRect(Rect.fromLTWH(x, y, _rayW, 2), _paint);
-      }
+      c
+        ..save()
+        ..translate(x0.floorToDouble(), 0)
+        ..drawPath(ray, _paint)
+        ..restore();
     }
     _paint.color = const Color(_bubbleColor);
     final span = bottom - kFieldBottom;
@@ -108,19 +132,12 @@ class StagePainter {
   static const _deepWaveGap = 10.0;
   static const _deepWaveSlow = 0.5;
 
-  /// 타원 구름: (x−cx)² + ((y−cy)·squash)² < r² 인 픽셀 (기준과 같은 모양).
-  void _cloud(Canvas c, double cx, double cy, double r) {
-    final rows = (r / _squash).ceil();
-    for (var dy = -rows; dy <= rows; dy++) {
-      final y = cy + dy;
-      final rest = r * r - (dy * _squash) * (dy * _squash);
-      if (rest <= 0) continue;
-      final hw = math.sqrt(rest);
-      final left = (cx - hw).floor() + 1;
-      final right = (cx + hw).ceil() - 1;
-      if (right >= left) c.drawRect(Rect.fromLTWH(left.toDouble(), y, (right - left + 1).toDouble(), 1), _paint);
-    }
-  }
+  /// 타원 구름: (x−cx)² + ((y−cy)·squash)² < r² 인 픽셀 (기준과 같은 모양) — 미리 만든 Path를 정수 자리로 옮겨 1번에.
+  void _cloud(Canvas c, double cx, double cy, double r) => c
+    ..save()
+    ..translate(cx.floorToDouble(), cy)
+    ..drawPath(_paths.cloud(r), _paint)
+    ..restore();
 
   late final int _chestColor = parseArgb(scene.fx.chest.str('color'), 'chest.color');
   late final int _lidColor = parseArgb(scene.fx.chest.str('lidColor'), 'chest.lidColor');

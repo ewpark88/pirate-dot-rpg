@@ -1,5 +1,8 @@
 {
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
-  "platformNotifyChannelName": "Offline rewards"
+  "platformNotifyChannelName": "Offline rewards",
+  "platformProtoTitle": "Top-down battle prototype",
+  "platformProtoAgain": "Play again",
+  "platformProtoResult": "Survived 3 minutes! Kills {kills} · Gold {gold}"
 }

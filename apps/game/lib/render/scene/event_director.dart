@@ -9,11 +9,10 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
+import 'package:pirate_dot/render/scene/ship_geometry.dart';
 
-/// 기록의 이벤트를 연출로 바꾼다 (docs/GAME_DESIGN.md 4.4 타격감 규칙, 수치는 juice.json·fx_map.json).
-///
-/// - 앞서 알림(onAhead, lookahead 틱 전): 발사체를 띄우고 슬롯을 번쩍인다.
-/// - 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
+/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
+/// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
 class EventDirector implements ReplayListener {
   EventDirector(this.scene)
     : _crewFamily = _familyByCrew(scene.tables),
@@ -43,13 +42,12 @@ class EventDirector implements ReplayListener {
 
   void _launch(AttackFired e, int index, BattleView frame) {
     final style = scene.fx.projectileFor(e.family);
-    final tickMs = _player.tickMs;
+    final (tickMs, tip) = (_player.tickMs, ShipGeometry.cannonTip(scene));
     // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
     final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
     final start = index - flightTicks;
     // 범위 계열(투척·수중, fx_map single)은 조준점에 한 발 — 대상마다 따로 날리면 같은 자리에 포탄이 겹친다.
-    final single = _rules.single(e.family);
-    final targets = e.targetIds.isEmpty || single ? const [-1] : e.targetIds;
+    final targets = e.targetIds.isEmpty || _rules.single(e.family) ? const [-1] : e.targetIds;
     for (final id in targets) {
       final target = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
       for (var b = 0; b < style.burst; b++) {
@@ -57,20 +55,21 @@ class EventDirector implements ReplayListener {
           ..style = style
           ..family = e.family
           ..crewId = e.crewId
-          ..fromX = kShipNoseX
-          ..fromY = kShipNoseY
+          ..fromX = tip.dx
+          ..fromY = tip.dy
           ..toX = target == null ? e.x : (target.boss ? scene.layout.clampBossX(target.x) : target.x)
           ..toY = target?.y ?? e.y
           ..startIndex = start + b * style.burstGapMs / tickMs
           ..impactIndex = index.toDouble()
           ..progress = 0
-          ..x = kShipNoseX
-          ..y = kShipNoseY;
+          ..x = tip.dx
+          ..y = tip.dy;
       }
     }
     if (_muzzleFamilies.contains(e.family)) {
-      final delayMs = math.max(0, (start - _player.position) * tickMs).toDouble();
-      scene.spawnEffect(scene.fx.muzzle.str('fx'), kMuzzleX, kMuzzleY + scene.shipBob, delayMs: delayMs);
+      final delayMs = math.max<double>(0, (start - _player.position) * tickMs / math.max(1, frame.speed));
+      scene.spawnEffect(scene.fx.muzzle.str('fx'), tip.dx + 4, tip.dy + scene.shipBob, delayMs: delayMs);
+      scene.moments.cannonFiredAtMs = scene.clockMs + delayMs;
     }
     _flashSlot(frame, e.crewId);
   }
@@ -118,7 +117,9 @@ class EventDirector implements ReplayListener {
         case ShipDamaged():
           scene
             ..shipFlashMs = _juice.flashFrames * kFrameMs
-            ..shipHpRatio = e.hpRatio;
+            ..shipHpRatio = e.hpRatio
+            ..numbers.add(e.amount, kShipCenterX, kShipTop - kNumberLiftPx, DamageKind.ship);
+          if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
         case BossCleared():
           _bossKill();
         case BossSpawned():
@@ -127,6 +128,8 @@ class EventDirector implements ReplayListener {
           scene.shake.trigger(_juice.shake['aoe']!);
         case ShipTierUp():
           scene.moments.onTierUp(e.tierId);
+        case ShipLookChanged():
+          scene.moments.onPartUp(e.part);
         case BossFailed():
           scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:

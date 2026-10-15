@@ -14,6 +14,30 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 전체 화면 전투(bottomInset) + 배 체력 막대·피격·침몰 (사용자 결정·지적)
+- `battleFrameFor(box, dpr, {bottomInset})` + `BattleGame.bottomInset`(S4 약속): 도크·시트가 가린 높이만큼 선원 줄·궁극기가 위로, 필드는 배율 그대로 위아래만(보이는 필드가 148보다 낮으면 하늘을 자름). 줄 바탕은 상자 바닥까지(bandFill). 테스트: 닫힘 72dp·시트 50%에서 k 그대로, 배 보임.
+- UI 연결값(goldTargetDp·onCoinArrive·bottomInset)은 `battle_game_links.dart`(part, mixin)로.
+- 배 체력 막대 `paint/ship_hp_painter.dart`(fx_map shipHp): 늘 보임, 초록→노랑→빨강, 25% 아래 맥박, 피격 시 흰 테두리·흔들림·흰 조각이 늦게 줄어듦, 회복 시 초록 반짝. 배 피격 숫자 DamageKind.ship(빨강).
+- 무리전 침몰(ShipDamaged hpRatio 0, 보스전 아님): 기울며 물 아래로(물 닿는 줄에서 잘림) → 반에서 수리 반짝 → 떠오름(1.8초). 보스 실패는 기존 어둡게 + UI 문구(S4).
+- 비교 `docs/specs/render-fullscreen/fullscreen_4devices.png`(도크·시트 50%), `ship_hp_sink_s24.png`.
+- 사용자 결정으로 다음은 탑다운 전환(T2). 옆모습 작업(분위기·이벤트)은 T2 뒤로.
+
+### 2026-10-15 · S3 · 배 부품 외형 단계 + 대포 레이어 + 배 1.3배 (사용자 지시)
+- `tools/art/gen_ship_parts.py` → `assets/ship/part_t<n>_<part>.png`(등급마다 hull 7·sail 5·crowsnest 6·cargo 7 프레임, 배 그림과 같은 크기 덧그림) + `part_cannon.png`(7단계). PB 배 모듈 디자인을 도트로. OWN.
+  선체: 쇠 띠 → 가로 띠 → 구리 바닥 → 금 테 → 금 문장 → 마호가니(유령선은 깊은 보라). 돛: 기운 자국 → 깨끗 → 빨간 겹줄 → 해골 → 금 테. 망루: 바구니 → 난간 → 깃발 → 망원경 → 등불 → 금 깃발. 화물: 통 → 상자 → 보물상자 → 금 더미. 대포: 쇠 → 긴 쇠 → 청동 → 띠 → 강철 바퀴 → 쌍포 → 금 용.
+- 렌더: `scene/ship_geometry.dart`(배 상자·포구 끝 공용), `paint/ship_parts_painter.dart`(BattleView.shipLook 단계, 0단계 = 1단계 그림). 대포는 cannonScale 1.4배, 포구 끝 기준, 발사 때 반동(recoilMs 180). 발사체·포구 화염이 포구 끝에서 나간다.
+- ShipLookChanged: 그 부위 흰빛 맥박(glowMs 1400) + level_up 이펙트 + promote 소리.
+- 배 1.3배(정수 물리 픽셀 반올림: S24 1.25, 태블릿 1.33). 비교 `docs/specs/render-ship-parts/ships_4devices.png`.
+
+### 2026-10-15 · S3 · 폭탄이 보이게 + 등급 꼬리 + 40명 발사체 구별 (사용자 직접 지시)
+- 1배속 비행: 투척 1.4초, 물수제비 1.25, 수중 1.15, 공중 1.0, 충격 0.9, 직사·관통·강습 0.8초. 틱 단위라 배속(순풍 등)이 오르면 그만큼 빨라진다(테스트). 표시 지연 lookahead 16 → 30틱(1.5초).
+- 폭탄 크기: 그림 '내용'(투명 여백 뺀 긴 변) 기준 화면 24dp(태블릿 최소 12도트). fx_map pbFx.weaponContent(36개 실측).
+- 등급 꼬리 `paint/trail_painter.dart`(fx_map rarityTrail): 영웅 보라 불꽃 / 전설 금빛 + 별 가루 / 신화 무지개 오로라 + 흰 빛 고리. 동시 발사체 20개 넘으면 꼬리 점 절반.
+- 무기 없는 강습 5명: 갈고리 + 밧줄 + 얼굴 배지(`paint/hook_painter.dart`). 40명 표 `docs/specs/render-bombs-v2/weapons_40crews.png` — 모두 다름(gull·octo는 둘 다 검은 폭탄이지만 경로가 다름).
+- 화면 밖 목표 발사체 측정 테스트(offscreen_target_test): 옛 데모 기록 13발 — S2 사거리 머지 뒤 라이브 기록으로 0 확인 예정.
+- 비교 `docs/specs/render-bombs-v2/sequence_4devices.png`(0.2초 간격 8장).
+- 앞선 커밋 1178b55(절전): FrameCap(절전 fps 상한을 실제 프레임에) + 배경 Path 캐시, 프레임당 그리기 482→136(평상시)·567→221(부하).
+
 ### 2026-10-15 · S3 · 배 이동 + 6칸 확대·궁극기 둥근 버튼 + 칸 3상태 (사용자 결정·지시)
 - 배·뱃머리·포구·코인 목표 +30도트(kShipShiftX): 1.5배 t1(93도트)이 4기기 모두 다 보인다. 엔진 waves.shipX 56 → 86(S2에 정정 전달, 처음 68로 말했던 것 정정).
 - 선원 줄은 6칸만: 6칸이 한 줄에 들어가는 가장 큰 정사각(360 약 52, S24 약 58, 411 약 62, 태블릿 72dp, 남으면 가운데). 궁극기는 오른쪽 끝 칸 위 둥근 큰 버튼(56~72dp), 아랫변이 줄 위 여백에 걸침. 보스 도전 48dp는 그 왼쪽.

@@ -154,7 +154,7 @@ class HudPainter {
       c.restore();
       return;
     }
-    _fill(c, 0, 0, layout.bandWidth + 1, layout.bandHeight + 1, _slotBar);
+    _fill(c, 0, 0, layout.bandWidth + 1, layout.bandFill + 1, _slotBar);
     _fill(c, 0, 0, layout.bandWidth + 1, 1, _slotLine);
     final fleet = scene.frame.fleet;
     final s = _fx.slots;

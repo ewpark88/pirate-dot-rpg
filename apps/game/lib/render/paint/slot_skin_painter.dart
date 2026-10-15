@@ -131,11 +131,11 @@ class SlotSkinPainter {
     _blur
       ..color = Color((0x2E << 24) | _shadowRgb)
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, _px(10) / 2);
-    c.drawRect(Rect.fromLTWH(0, -_px(2), layout.bandWidth + 1, layout.bandHeight), _blur);
+    c.drawRect(Rect.fromLTWH(0, -_px(2), layout.bandWidth + 1, layout.bandFill), _blur);
     _paint
       ..shader = null
       ..color = Color(_bar);
-    c.drawRect(Rect.fromLTWH(0, 0, layout.bandWidth + 1, layout.bandHeight + 1), _paint);
+    c.drawRect(Rect.fromLTWH(0, 0, layout.bandWidth + 1, layout.bandFill + 1), _paint);
     final fleet = scene.frame.fleet;
     for (var i = 0; i < kSlotCount; i++) {
       final r = layout.slotRectInBand(i);

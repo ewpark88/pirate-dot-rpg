@@ -165,5 +165,7 @@
   "uiSummonTapContinue": "탭해서 계속",
   "uiFleetSlotLocked": "{tier} 배가 되면 열려요 (스테이지 {stage})",
   "uiFleetRejectedFamily": "같은 계열은 {max}명까지만 함께 출전할 수 있어요",
-  "uiFleetSlotStage": "스테이지 {stage}"
+  "uiFleetSlotStage": "스테이지 {stage}",
+  "uiCrewReplace": "바꾸기",
+  "uiFleetSwapped": "출전 중인 선원과 자리를 바꿨어요"
 }
