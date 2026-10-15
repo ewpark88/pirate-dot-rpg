@@ -748,6 +748,22 @@
       "source": "Galmuri v2.40.4 (https://github.com/quiple/galmuri, Copyright (c) 2019–2025 Lee Minseo)",
       "license": "OFL-1.1"
     },
+    "fonts/GowunDodum-OFL.txt": {
+      "source": "Gowun Dodum — 라이선스 원문",
+      "license": "OFL-1.1"
+    },
+    "fonts/GowunDodumSymbols.ttf": {
+      "source": "Gowun Dodum (https://github.com/yangheeryu/Gowun-Dodum, Copyright 2021 The Gowun Dodum Project Authors) 기호 14자 서브셋, 이름 변경 'Gowun Dodum Symbols'",
+      "license": "OFL-1.1"
+    },
+    "fonts/Jua-OFL.txt": {
+      "source": "Jua — 라이선스 원문",
+      "license": "OFL-1.1"
+    },
+    "fonts/Jua-Regular.ttf": {
+      "source": "Jua (https://github.com/google/fonts/tree/main/ofl/jua, Copyright 2018 The Jua Project Authors)",
+      "license": "OFL-1.1"
+    },
     "fx/coin_burst.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:fx/coin_burst.png",
       "license": "OWN"
