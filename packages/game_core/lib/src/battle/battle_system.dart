@@ -241,11 +241,11 @@ class BattleSystem implements GameSystem {
     return _project(s, f, ctx.tables);
   }
 
-  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동, 전장 방식 변경) 새로 만든다.
+  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.
   Field _sync(GameState s, SystemContext ctx) {
     final view = s.battle ?? BattleView.empty;
     final f = _field;
-    if (f != null && f.matches(view, s.progress.stage, s.settings.battleView)) {
+    if (f != null && f.matches(view, s.progress.stage)) {
       if (!identical(_crewsSeen, s.crews) || !identical(_fleetSeen, s.fleet)) _arm(f, s, ctx);
       return f;
     }
@@ -253,7 +253,7 @@ class BattleSystem implements GameSystem {
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..geometry = geometryFor(s.settings.battleView, ctx.tables, s.progress.stage)
+      ..geometry = geometryFor(ctx.tables, s.progress.stage)
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

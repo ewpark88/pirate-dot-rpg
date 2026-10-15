@@ -8,7 +8,7 @@ import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
 /// 탑다운 조준: 계열 8종의 2D 모양 (docs/contracts/requests/platform-topdown-t0.md D).
-/// 거리는 배 둘레 → 적 가장자리. 옆모습(targeting.dart)과 같은 규칙을 '배에서 x 거리' 대신 '배에서 반경'으로.
+/// 거리는 배 둘레 → 적 가장자리(skills.json reach를 배에서 반경으로).
 class TopAim {
   TopAim(this.top, this.w);
 
