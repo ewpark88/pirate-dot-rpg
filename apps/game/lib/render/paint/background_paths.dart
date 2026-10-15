@@ -30,15 +30,16 @@ class BackgroundPaths {
   }();
 
   /// 물결 대시 줄들 [rows] (같은 속도·색 한 묶음): x 0부터 [span]+간격까지 [waveGap]마다 길이 [waveLen]. 그리는 쪽이 흐름만큼 옮긴다.
-  Path waves(int group, List<double> rows, double span) => _waves[(group, span, rows.isEmpty ? 0.0 : rows.first)] ??= () {
-    final p = Path();
-    for (final y in rows) {
-      for (var x = 0.0; x < span + waveGap * 2; x += waveGap) {
-        p.addRect(Rect.fromLTWH(x, y, waveLen, 1));
-      }
-    }
-    return p;
-  }();
+  Path waves(int group, List<double> rows, double span) =>
+      _waves[(group, span, rows.isEmpty ? 0.0 : rows.first)] ??= () {
+        final p = Path();
+        for (final y in rows) {
+          for (var x = 0.0; x < span + waveGap * 2; x += waveGap) {
+            p.addRect(Rect.fromLTWH(x, y, waveLen, 1));
+          }
+        }
+        return p;
+      }();
 
   /// 깊은 바다 빛줄기 하나 ([top]~[bottom], 2도트 높이 칸이 비스듬히): 그리는 쪽이 floor(x0)로 옮긴다.
   Path ray(double top, double bottom, double width) => _rays[(top, bottom)] ??= () {

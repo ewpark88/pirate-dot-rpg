@@ -69,7 +69,7 @@ class EventDirector implements ReplayListener {
       }
     }
     if (_muzzleFamilies.contains(e.family)) {
-      final delayMs = math.max(0, (start - _player.position) * tickMs).toDouble();
+      final delayMs = math.max(0, (start - _player.position) * tickMs / math.max(1, frame.speed)).toDouble();
       scene.spawnEffect(scene.fx.muzzle.str('fx'), kMuzzleX, kMuzzleY + scene.shipBob, delayMs: delayMs);
     }
     _flashSlot(frame, e.crewId);

@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 
 import 'package:pirate_dot/render/fx/transients.dart';
+import 'package:pirate_dot/render/paint/hook_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/paint/trail_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
 
@@ -20,7 +22,11 @@ class PbFxPainter {
   final SpriteDraw sprites;
 
   late final JsonReader _cfg = scene.fx.raw.obj('pbFx');
-  late final double _weaponScale = _cfg.number('weaponScale');
+  late final _trails = TrailPainter(scene);
+  late final _hooks = HookPainter(sprites);
+  late final double _weaponDp = _cfg.number('weaponDp');
+  late final double _weaponMinDots = _cfg.number('weaponMinDots');
+  late final JsonReader _weaponContent = _cfg.obj('weaponContent');
   late final double _spinTurns = _cfg.number('spinTurns');
   late final double _trail = _cfg.number('trailStep');
   late final double _blastSize = _cfg.number('blastSize');
@@ -32,9 +38,13 @@ class PbFxPainter {
   bool projectile(Canvas c, Projectile p) {
     final key = 'weapon:${p.crewId}';
     final sheet = sprites.sheet(key);
-    if (sheet == null) return false;
-    final w = sheet.frameW * _weaponScale;
-    final h = sheet.frameH * _weaponScale;
+    if (sheet == null) return _hooks.paint(c, p, math.max(_weaponDp / scene.layout.dot, _weaponMinDots));
+    // 사용자 지시 '폭탄 그림이 보이게': 그림 '내용'(투명 여백 뺀 긴 변)이 화면 weaponDp dp(전장이 큰 태블릿은 최소 weaponMinDots 도트).
+    final content = _weaponContent.has(p.crewId) ? _weaponContent.number(p.crewId) : sheet.frameW / 2;
+    final size = math.max(_weaponDp / scene.layout.dot, _weaponMinDots);
+    final w = sheet.frameW * size / content;
+    final h = sheet.frameH * size / content;
+    _trails.paint(c, p, size);
     final spins = p.style.path != ProjectilePath.line;
     if (spins) {
       final turn = p.progress * _spinTurns * 2 * math.pi * (p.toX >= p.fromX ? 1 : -1);
