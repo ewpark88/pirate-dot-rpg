@@ -1,4 +1,4 @@
-"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus / 묶음 4 화산: fire_pirate · lava_whale / 묶음 5 심연: deep_sub · kraken · kraken_tentacle). 격자 → PNG, LICENSES OWN.
+"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus / 묶음 4 화산: fire_pirate · lava_whale / 묶음 5 심연: deep_sub · kraken · kraken_tentacle / 묶음 6 유령해: ghost_ship · ghost_admiral). 격자 → PNG, LICENSES OWN.
 
     python -I tools/art/gen_bosses.py            # apps/game/assets/bosses/ 에 쓴다
     python -I tools/art/gen_bosses.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -641,6 +641,92 @@ def kraken_tentacle() -> list[list]:
     return px
 
 
+# ---------- 묶음 6 유령해: ghost_ship · ghost_admiral ----------
+GHOST_SWAP = {
+    (60, 50, 60): (214, 214, 228),  # 돛: 잿빛 흰 (반투명은 아래에서)
+    (179, 48, 43): (60, 50, 80),  # 줄무늬: 검보라
+    (140, 90, 50): (82, 70, 92),  # 썩은 선체
+    (95, 58, 32): (60, 50, 70),
+    (70, 44, 26): (44, 36, 54),
+    (220, 70, 60): (130, 255, 170),  # 꼭대기 깃발: 초록 빛
+}
+GHOST_GLOW = (130, 255, 170)
+
+
+def ghost_ship() -> list[list]:
+    """유령선 (유령해 중간 보스): 찢긴 반투명 잿빛 돛·초록 해골 문양·썩은 선체·초록 빛 깃발 꼬리 (내 배 t4 청록 유령선과 다른 색)."""
+    sail = (214, 214, 228)
+    px = ship_variant(GHOST_SWAP, sail, (170, 168, 190), SKULL, {"w": GHOST_GLOW, "k": OUTLINE}, (21, 8), True, GHOST_GLOW)
+    for row in px:  # 돛을 반투명으로
+        for x, c in enumerate(row):
+            if c in (sail, (170, 168, 190)):
+                row[x] = (*c, 175)
+    return px
+
+
+COAT = (60, 56, 104)
+COAT_SHADE = (44, 40, 80)
+GOLD = (240, 200, 80)
+SPECTRE = (170, 240, 230, 200)
+SPECTRE_SHADE = (120, 200, 196, 170)
+FACE = (205, 242, 232)
+HAT = (40, 30, 52)
+BLADE = (205, 210, 225)
+
+
+def ghost_admiral() -> list[list]:
+    """유령 제독 56×62 (유령해 해역 보스): 삼각 모자(금 테·해골)·창백한 얼굴(초록 빛 눈구멍)·금 단추 외투·견장,
+    배 쪽(왼쪽)으로 내민 녹슨 칼, 다리 대신 흔들리는 반투명 유령 꼬리."""
+    w, h = 56, 62
+    px = [[None] * w for _ in range(h)]
+    tail = [(14, 40), (42, 40), (44, 50), (39, 56), (34, 52), (30, 60), (25, 53), (20, 58), (16, 50)]
+    coat = [(16, 24), (40, 24), (44, 44), (12, 44)]
+    hat = [(13, 12), (43, 12), (38, 5), (28, 2), (18, 5)]
+    for y in range(h):
+        for x in range(w):
+            pt = (x + 0.5, y + 0.5)
+            if _in_poly(*pt, tail):
+                px[y][x] = SPECTRE_SHADE if y > 50 else SPECTRE
+            if _in_poly(*pt, coat):
+                px[y][x] = COAT_SHADE if x > 34 or y > 40 else COAT
+    _line(px, [(16, 27), (11, 31), (8, 33)], COAT)  # 칼 든 팔
+    _line(px, [(17, 28), (12, 32), (9, 34)], COAT)
+    for y in range(h):
+        for x in range(w):
+            dx, dy = (x + 0.5 - 28) / 7.5, (y + 0.5 - 17) / 7
+            if dx * dx + dy * dy <= 1:
+                px[y][x] = FACE
+            if _in_poly(x + 0.5, y + 0.5, hat):
+                px[y][x] = HAT
+    _line(px, [(8, 32), (2, 22)], BLADE)  # 칼날
+    _line(px, [(9, 32), (3, 22)], BLADE)
+    px[33][7] = FACE  # 손
+    px[33][8] = FACE
+    outline(px)
+    for x in range(14, 43):  # 모자 금 테 (모자 맨 아래 줄)
+        if px[11][x] == HAT:
+            px[11][x] = GOLD
+    for x, y in ((27, 6), (28, 6), (29, 6), (27, 7), (29, 7), (28, 8)):  # 모자 해골
+        px[y][x] = BONE
+    for ex in (23, 30):  # 눈구멍 3×3 + 가운데 초록 빛
+        for dx in range(3):
+            for dy in range(3):
+                px[15 + dy][ex + dx] = OUTLINE
+        px[16][ex + 1] = GHOST_GLOW
+    for x in range(25, 32):  # 입
+        if x % 2:
+            px[21][x] = OUTLINE
+    for y in range(27, 44, 4):  # 금 단추
+        px[y][28] = GOLD
+    for x in range(15, 19):  # 견장
+        px[24][x] = GOLD
+        px[24][x + 23] = GOLD
+    for y in range(25, 44):  # 외투 앞섶 금 테
+        if px[y][27] in (COAT, COAT_SHADE):
+            px[y][27] = GOLD
+    return px
+
+
 FILES = {
     "bosses/raider_ship.png": raider_ship,
     "bosses/giant_hermit.png": giant_hermit,
@@ -653,6 +739,8 @@ FILES = {
     "bosses/deep_sub.png": deep_sub,
     "bosses/kraken.png": kraken,
     "bosses/kraken_tentacle.png": kraken_tentacle,
+    "bosses/ghost_ship.png": ghost_ship,
+    "bosses/ghost_admiral.png": ghost_admiral,
 }
 
 

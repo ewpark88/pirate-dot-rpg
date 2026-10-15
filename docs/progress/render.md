@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: 묶음 5 심연 승인 대기 → 묶음 6 유령해(`docs/specs/render-art-enemies.md`) · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | art 묶음 6 유령해 승인 대기 — 적 27·보스 13(+촉수) 스프라이트 완료. 남은 것: 음원 생성기 이전 · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 5 승인(S1) · UI 상단 바 머지 후 실기기 확인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
+| 막힌 것 | 묶음 5·6 승인(S1) · UI 상단 바 머지 후 실기기 확인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 6: 유령해 (적·보스 스프라이트 전부 완료)
+- gen_enemies: skeleton 13×15(뼈 흰빛·녹슨 칼·걸음), wraith 14×15(두건 천·초록 눈·찢긴 끝 흔들림), ghostjelly(팩 jelly 박하 유령빛), cursegull(gull 초록 + 보라 부리).
+- gen_bosses: ghost_ship(찢긴 반투명 잿빛 돛·초록 해골·썩은 선체 — 내 배 t4 청록과 구별), ghost_admiral 56×62(삼각 모자 금 테·해골, 초록 빛 눈구멍, 금 단추 외투·견장, 칼, 반투명 유령 꼬리).
+- 실수 잡음: 새 GLOW 상수가 thunder_ray의 GLOW를 덮어 그림이 바뀜 → GHOST_GLOW로 바꾸고 --check로 기존 바이트 확인.
+- sprites_test 해역 phantom 추가 → 6해역 모두 플레이스홀더 0. 비교 `docs/specs/render-art-enemies/compare_phantom.png`.
 
 ### 2026-10-15 · S3 · art 묶음 5: 심연
 - v2.1 승인·머지. gen_enemies: angler 18×12(빛나는 초롱 흔들림, 몸 밝게), squid 17×11(다리 오므림), siphon 17×10(빛나는 청록 구슬 셋 물결), eel 24×10(사인 곡선 굽이침).

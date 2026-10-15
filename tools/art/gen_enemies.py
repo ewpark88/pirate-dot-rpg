@@ -344,12 +344,102 @@ def eel_frames() -> tuple[list[list[str]], dict]:
         frames.append(["".join(r) for r in g])
     return frames, {"g": (90, 190, 150), "G": (55, 130, 105), "e": (255, 240, 140)}
 
+
+# ---- 묶음 6 유령해 (보라 하늘·검보라 바다 → 뼈 흰빛·박하 유령빛) ----
+PHANTOM_COLORS = {
+    "B": (232, 226, 210),  # 뼈
+    "b": (176, 168, 150),
+    "c": (40, 30, 52),  # 눈구멍
+    "G": (130, 255, 170),  # 초록 빛 눈
+    "r": (150, 150, 165),  # 녹슨 칼
+    "w": (205, 240, 232),  # 망령 천
+    "W": (150, 200, 196),
+}
+
+# 해골 (부활): 프레임 13×15, 머리 왼쪽 위, 녹슨 칼을 앞으로, 걸음 번갈아.
+SKELETON = [
+    [
+        ".............",
+        ".....BBBB....",
+        "....BBBBBB...",
+        "....BcGBcG...",
+        "....BBBBBB...",
+        ".....BbBb....",
+        "......BB.....",
+        "r..BBBBBBB...",
+        ".rBB.BbB.B...",
+        "..r..BbB.B...",
+        "....BBBBB....",
+        "....B...B....",
+        "....B....B...",
+        "...BB....BB..",
+        ".............",
+    ],
+    [
+        ".............",
+        ".....BBBB....",
+        "....BBBBBB...",
+        "....BcGBcG...",
+        "....BBBBBB...",
+        ".....BbBb....",
+        "......BB.....",
+        "..rBBBBBBB...",
+        ".r.B.BbB.B...",
+        "r....BbB.B...",
+        "....BBBBB....",
+        ".....B.B.....",
+        ".....B.B.....",
+        "....BB.BB....",
+        ".............",
+    ],
+]
+
+# 망령 (부활): 프레임 14×15, 두건 쓴 떠다니는 천, 아래가 찢겨 흔들린다.
+WRAITH = [
+    [
+        "..............",
+        ".....wwww.....",
+        "....wwwwww....",
+        "...wwccccww...",
+        "...wcGccGcw...",
+        "...wccccccw...",
+        "..wwwccccwww..",
+        "..wwwwwwwwwW..",
+        ".wwwwwwwwwwWW.",
+        ".wwwwwwwwwWWW.",
+        ".wwwwwwwwwWWW.",
+        ".wWwwwWwwWWW..",
+        "..W.wW..WW.W..",
+        "..W..W...W....",
+        "..............",
+    ],
+    [
+        "..............",
+        "..............",
+        ".....wwww.....",
+        "....wwwwww....",
+        "...wwccccww...",
+        "...wcGccGcw...",
+        "...wccccccw...",
+        "..wwwccccwww..",
+        "..wwwwwwwwwW..",
+        ".wwwwwwwwwwWW.",
+        ".wwwwwwwwwWWW.",
+        ".wwwwwwwwwWWW.",
+        "..wWwwWwwWWW..",
+        "...W.W.WW.W...",
+        "..............",
+    ],
+]
+
 # 팔레트 바꿈 변형: 팩 적 → 색 표 (외곽선 (27,23,38)은 그대로).
 RECOLORS = {
     "icecrab": ("crab", {(220, 70, 60): (205, 232, 250), (150, 40, 40): (95, 150, 205)}),  # 서리 흰빛 + 얼음 파랑 그늘(바다 위 대비)
     "snowgull": ("gull", {(245, 245, 250): (215, 235, 255), (250, 150, 60): (120, 200, 240)}),  # 눈빛 + 얼음 부리
     "lavacrab": ("crab", {(220, 70, 60): (120, 108, 112), (150, 40, 40): (255, 140, 40)}),  # 현무암 + 아래 용암 빛
     "firebird": ("gull", {(245, 245, 250): (255, 225, 120), (250, 150, 60): (230, 70, 40)}),  # 달아오른 노랑(주황 하늘 위 대비) + 붉은 부리
+    "ghostjelly": ("jelly", {(240, 140, 200): (175, 250, 222), (180, 90, 170): (110, 200, 180)}),  # 박하 유령빛
+    "cursegull": ("gull", {(245, 245, 250): (150, 230, 150), (250, 150, 60): (190, 90, 220)}),  # 저주받은 초록 + 보라 부리
     "stormgull": ("gull", {(245, 245, 250): (196, 204, 226), (250, 150, 60): (250, 210, 70)}),  # 푸른 잿빛(폭풍 하늘 위에서도 보이게) + 노란 부리
 }
 
@@ -390,6 +480,8 @@ def build() -> dict[str, list[list]]:
     files["enemies/siphon.png"] = from_grid(frames, pal)
     frames, pal = eel_frames()
     files["enemies/eel.png"] = from_grid(frames, pal)
+    files["enemies/skeleton.png"] = from_grid(SKELETON, PHANTOM_COLORS)
+    files["enemies/wraith.png"] = from_grid(WRAITH, PHANTOM_COLORS)
     for name, (base, table) in RECOLORS.items():
         files[f"enemies/{name}.png"] = recolor(base, table)
     return files
