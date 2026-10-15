@@ -47,16 +47,17 @@ void main() {
     final s = sys.handle(at(50, pieces: 3), const Rebirth(), h.ctx)!;
     expect(s.wallet.mapPieces, 3 + pieces(50));
     expect(s.wallet.gold, BigNum.zero);
-    expect(s.wallet.gems, 77);
+    expect(s.wallet.gems, 77 + rebirthChest(t, 1).gems); // 환생 v2: 상자 젬
     expect(s.ship.parts.values.every((lv) => lv == 0), isTrue);
     expect(s.progress.stage, 1);
     expect(s.progress.wave, 0);
     expect(s.progress.farming, isFalse);
     expect(s.progress.rebirths, 1);
     expect(s.progress.bestStage, 55);
-    expect(s.crews['octo']!.level, 33);
-    expect(s.tokens, 4);
-    expect(s.collection, {'octo'});
+    // 환생 v2 상자의 영웅 이상 소환 1장이 선원·도감·증표를 늘릴 수 있다 — 유지는 ‘줄지 않음’으로 본다.
+    expect(s.crews['octo']!.level, greaterThanOrEqualTo(33));
+    expect(s.tokens, greaterThanOrEqualTo(4));
+    expect(s.collection, contains('octo'));
     expect(h.of<SaveRequested>().map((e) => e.reason), contains('rebirth'));
     final done = h.of<RebirthDone>().single;
     expect((done.gain, done.pieces, done.rebirths), (pieces(50), 3 + pieces(50), 1));

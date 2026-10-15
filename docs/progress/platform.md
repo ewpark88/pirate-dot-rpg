@@ -1,5 +1,15 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · T1 머지 뒤 마무리 — 일반 빌드 side 고정, 탑다운 sim 비교, 렌더 점검
+- **현재 위치**: T1 머지 완료(main 74567dd까지).
+  - [x] main.dart: 일반 빌드에 저장된 battleView=top을 시작 때 side로(6c83947, T4 때 제거)
+  - [x] sim --view + 비교표(리뷰 브랜치 review/topdown-sim-view 9424bc9): 진행 곡선 ±10% 안, 환생 뒤 보스 간격만 +41%(목표 안). 조정은 S2
+  - [x] 렌더 점검표(03b2a88): 빈칸 2개 — 상자 위치(S2 chest), 피격 방향(ShipDamaged.fromX/Y 제안)
+- 다음 할 일: S2 검토 → S1 머지. ShipDamaged 계약이 OK면 combat 훅에서 채우기. S3 추가 요청 반영.
+- 남은 문제
+  - 운영자 토글은 S4 몫(S1 결정 b: '렌더 준비 중' 표시).
+  - 폰 작업은 S1 재연결 알림을 기다리는 중.
+
 ## 2026-10-15 · S5 · 탑다운 시험판 → 사용자 결정 '탑다운으로' → T1 엔진 2D화, 환생 v2·현상금 C1 문서
 - **현재 위치**: 탑다운 전환(docs/plans/active/topdown-migration.md) T1 리드.
   - [x] T0 검토(S2 계약 채택 + 거리·해류·무리 의견, 2da8665)

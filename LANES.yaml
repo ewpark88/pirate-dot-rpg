@@ -74,6 +74,7 @@ lanes:
       - packages/game_core/lib/src/battle/combat_stats.dart
       - packages/game_core/lib/src/battle/spawner.dart
       - packages/game_core/lib/src/battle/targeting.dart
+      - packages/game_core/lib/src/battle/field.dart
       - packages/game_core/lib/src/battle/combat.dart
       - packages/game_data/tables/skills.json
       - packages/game_data/test/tables_test.dart

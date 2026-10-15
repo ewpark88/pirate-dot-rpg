@@ -27,6 +27,9 @@ class EnemyPose {
   double drawY = 0;
   bool flash = false;
 
+  /// 이동 방향 atan2(dy, dx) (탑다운 도트를 돌릴 때).
+  double heading = 0;
+
   void _set(EnemyView v, double nx, double ny) {
     id = v.id;
     kind = v.kind;
@@ -39,6 +42,7 @@ class EnemyPose {
     slowed = v.slowed;
     burning = v.burning;
     vulnerable = v.vulnerable;
+    heading = v.heading;
     x = nx;
     y = ny;
     drawX = nx;

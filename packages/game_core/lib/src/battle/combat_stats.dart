@@ -1,7 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/bonuses.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
+import 'package:game_core/src/economy/formation.dart' show fleetSlots;
 import 'package:game_core/src/economy/rebirth.dart' show rebirthBonus;
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
@@ -32,15 +36,16 @@ class CombatStats {
       attack: ship.attack,
       shipHp: ship.maxHp,
       attackSpeed: ship.attackSpeed,
-      critChance: ship.critChance,
-      critMultiplier: ship.critMultiplier,
+      critChance: math.min(ship.critChance + critChanceBonus(s, t), t.shipParts.critChanceMax),
+      critMultiplier: ship.critMultiplier + critDamageBonus(s, t),
       goldMultiplier:
           ship.goldMultiplier *
           (1 + rebirth) *
+          treasureGoldMultiplier(s, t) *
           (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
       tierDamage: 1 + tier.damageBonus,
       bonus: damageBonus(s, t) + (active(s.buffs.bossSupportUntil) ? reward('bossSupport').number('damageBonus') : 0),
-      slots: tier.slots,
+      slots: fleetSlots(s, t),
     );
   }
 

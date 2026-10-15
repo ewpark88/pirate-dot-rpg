@@ -17,7 +17,9 @@ import 'package:pirate_dot/render/perf/frame_cap.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_frame.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
 export 'package:pirate_dot/render/layout.dart' show kLogicalHeight, kLogicalWidth;
@@ -113,6 +115,8 @@ class BattleGame extends FlameGame with _UiLinks {
   /// 장면을 진행한 횟수 (절전 확인용).
   int sceneUpdates = 0;
   bool _dirty = true;
+  bool _top = false;
+  TopFrame _topFrame = topFrameFor(const Size(320, 180), 1);
   double _powerSaveAccum = 0;
   double _summaryAccum = 0;
   bool _showHitboxes = false;
@@ -218,6 +222,14 @@ class BattleGame extends FlameGame with _UiLinks {
     // 화면 배치 v2: 폭 기준 정수배, 남는 높이는 배경. 도크·시트에 가린 만큼 선원 줄·필드가 위로(UI 버튼과 같은 계산).
     final frame = battleFrameFor(Size(size.x, size.y), dpr, bottomInset: _bottomInset);
     scene.layout = frame;
+    _topFrame = topFrameFor(Size(size.x, size.y), dpr);
+    if (_top) {
+      // 탑다운(T2): 캔버스를 상자 dp 그대로 — 탑다운 카메라·옆모습 HUD는 ScenePainter.paintTop이 옮긴다.
+      camera.viewfinder
+        ..zoom = 1
+        ..position = Vector2.zero();
+      return;
+    }
     camera.viewfinder
       ..zoom = frame.dot
       ..position = Vector2(frame.viewDots.left, frame.viewDots.top);
@@ -247,11 +259,17 @@ class BattleGame extends FlameGame with _UiLinks {
     }
     scene.update(stepMs);
     sceneUpdates++;
+    if (scene.isTop != _top) {
+      _top = scene.isTop;
+      if (hasLayout) onGameResize(size);
+    }
     _dirty = true;
   }
 
   void _renderScene(Canvas canvas) {
-    if (settings.powerSave) {
+    if (_top) {
+      painter.paintTop(canvas, _topFrame);
+    } else if (settings.powerSave) {
       _cache.render(canvas, dirty: _dirty, paint: _paintScene);
     } else {
       painter.paint(canvas);

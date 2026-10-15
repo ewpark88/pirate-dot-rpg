@@ -11,3 +11,6 @@ const double radiansPerDegree = math.pi / 180;
 
 /// 밀리초 → 초.
 const double secondsPerMillisecond = 1 / Duration.millisecondsPerSecond;
+
+/// 한 바퀴 (라디안).
+const double fullTurn = math.pi * 2;

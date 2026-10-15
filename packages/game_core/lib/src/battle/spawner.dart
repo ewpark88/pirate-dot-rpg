@@ -31,7 +31,7 @@ void spawnWaveSide(Field f, int stage, SystemContext ctx, {int? count, String? k
         layer: def.layer,
         x: w.field.spawnX + i * w.field.spawnSpacing,
         y: (w.field.laneY[def.layer] ?? w.field.shipY) + (ctx.rng.nextDouble() - half) * w.field.laneJitter,
-        maxHp: hp.times(def.hpScale),
+        maxHp: hp.times(def.hpScale * f.enemyHpScale),
         speed: def.speed,
         attack: attack,
         gold: gold,
@@ -54,6 +54,7 @@ void startBoss(
   double? x,
   double? y,
   double hpScale = 1,
+  double extraSec = 0,
 }) {
   final t = ctx.tables;
   final w = t.waves;
@@ -64,7 +65,11 @@ void startBoss(
     layer: 'surface',
     x: x ?? w.field.spawnX,
     y: w.field.laneY['surface'] ?? w.field.shipY,
-    maxHp: stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier * def.hpMultiplier * hpScale),
+    maxHp: stageCurve(
+      w.hpBase,
+      w.hpGrowth,
+      stage,
+    ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale),
     speed: w.bossSpeed,
     attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
     gold: stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier),
@@ -99,11 +104,12 @@ void startBoss(
   f.geometryOr(w).placeBoss(f, x: x, y: y);
   f
     ..bossActive = true
-    ..bossTicksLeft = bossTimeLimitTicks(ctx)
+    ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)
     ..travelLeft = 0;
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }
 
 /// 보스 제한 시간(초) → 틱.
-int bossTimeLimitTicks(SystemContext ctx) =>
-    (ctx.tables.waves.bossTimeLimitSec / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
+/// [extraSec]는 보물지도 상점 bossTime.
+int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0}) =>
+    ((ctx.tables.waves.bossTimeLimitSec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
