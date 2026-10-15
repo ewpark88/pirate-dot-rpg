@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:game_core/game_core.dart';
+import 'package:game_core/src/battle/topdown/geometry.dart';
+import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -81,15 +83,12 @@ void main() {
 
   test('적은 선체 몸통(캡슐)까지 와서 닿고 접촉 공격한다 — 멈춰 보이지 않게(사용자 신고 2026-10-15)', () {
     final e = engineOf(game().copyWith(progress: const Progress(stage: 10, bestStage: 10)));
-    final tier = tables.shipTiers.tierAt(10);
-    final r = tier.topHalfLength - tier.topHalfWidth;
-    double gap(EnemyView x) {
-      final cy = (x.y - top.shipY).clamp(-r, r);
-      return math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY - cy, 2)) - tier.topHalfWidth;
-    }
+    final geo = geometryFor(tables, 10) as TopGeometry; // 선체 1단계(시작 배)
+    double gap(EnemyView x) => geo.hullGap(x.x, x.y);
 
     var hits = 0;
     final touched = <int>{};
+    final closest = <double>[];
     for (var i = 0; i < ticksFor(20); i++) {
       e.tick();
       hits += e.drainEvents().whereType<ShipDamaged>().length;
@@ -98,8 +97,18 @@ void main() {
         expect(g, greaterThan(top.mobRadius - 0.5), reason: '몸통 안으로 들어가지 않는다');
         if (g <= top.mobRadius + 0.5) touched.add(x.id);
       }
+      final mobs = e.state.battle!.enemies.where((x) => !x.boss);
+      if (i >= ticksFor(10) && mobs.isNotEmpty) {
+        closest.add(mobs.map((x) => gap(x) - top.mobRadius).reduce(math.min));
+      }
     }
     expect(touched.length, greaterThan(10), reason: '많은 적이 몸통에 닿는다(옆구리 포함)');
+    // 보이는 거리(제안 platform-ship-hitbox C-3): 10~20초 사이 적이 있는 틱의 1/4 이상에서, 가장 가까운 적이 몸통에 닿아 있다
+    // (틈 ≤ 1단위, S24 약 2dp). 틈은 '붙음 0'과 '다음 파가 다가오는 중 80~130' 두 갈래라 중앙값 대신 아래 사분위로 본다.
+    // 사용자가 본 '일정 간격에서 멈춤'이 생기면 아래 사분위가 크게 벌어진다.
+    expect(closest.isNotEmpty, isTrue);
+    closest.sort();
+    expect(closest[closest.length ~/ 4], lessThanOrEqualTo(1));
     expect(hits, greaterThan(10));
   });
 

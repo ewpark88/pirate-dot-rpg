@@ -19,8 +19,16 @@ class TopGeometry implements BattleGeometry {
   TopGeometry(this.w, this.top) : _aim = TopAim(top, w);
 
   /// `waves.json`의 `top` 절로. [shipRadius]가 있으면 배 반경만 그것으로(배 등급별 크기).
-  factory TopGeometry.of(WavesTable w, {double? shipRadius, double? hullHalfWidth, double? hullHalfLength}) =>
-      TopGeometry(w, TopField.of(w).withShipRadius(shipRadius, halfWidth: hullHalfWidth, halfLength: hullHalfLength));
+  factory TopGeometry.of(
+    WavesTable w, {
+    double? shipRadius,
+    double? hullHalfWidth,
+    double? hullHalfLength,
+    double hullOffset = 0,
+  }) => TopGeometry(
+    w,
+    TopField.of(w).withShipRadius(shipRadius, halfWidth: hullHalfWidth, halfLength: hullHalfLength, offset: hullOffset),
+  );
 
   final WavesTable w;
   final TopField top;
@@ -130,7 +138,7 @@ class TopGeometry implements BattleGeometry {
     if (e.boss ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
     final step = speed * dt * (d > top.approachRadius ? top.approachBoost : 1) * (e.boss ? 1 : top.mobSpeedScale);
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
-    final near = top.hullHalfLength + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
+    final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
     final nd = e.boss
         ? math.max(top.bossStandoff, d - step)
         : (d - step > near ? d - step : math.max(_touchDist(dx / d, dy / d), d - step));
@@ -143,9 +151,10 @@ class TopGeometry implements BattleGeometry {
   /// 선체 캡슐 몸통에서 점까지(음수 = 몸통 안). 축은 배 중심을 지나는 세로선.
   double hullGap(double x, double y) {
     final reach = math.max(0, top.hullHalfLength - top.hullHalfWidth);
-    final cy = (y - top.shipY).clamp(-reach, reach).toDouble();
+    final hy = top.shipY + top.hullOffset; // 캡슐 중심
+    final cy = (y - hy).clamp(-reach, reach).toDouble();
     final dx = x - top.shipX;
-    final dy = y - top.shipY - cy;
+    final dy = y - hy - cy;
     return math.sqrt(dx * dx + dy * dy) - top.hullHalfWidth;
   }
 
@@ -154,7 +163,7 @@ class TopGeometry implements BattleGeometry {
   /// 배 중심에서 방향 ([ux],[uy])으로 갈 때 잡몹이 몸통에 닿는 거리(이분 탐색).
   double _touchDist(double ux, double uy) {
     var lo = 0.0;
-    var hi = top.hullHalfLength + top.hullHalfWidth + top.mobRadius;
+    var hi = top.hullHalfLength + top.hullOffset.abs() + top.hullHalfWidth + top.mobRadius;
     for (var i = 0; i < top.mobRadius.ceil() * top.mobRadius.ceil(); i++) {
       final mid = (lo + hi) * half;
       if (_touching(top.shipX + ux * mid, top.shipY + uy * mid)) {

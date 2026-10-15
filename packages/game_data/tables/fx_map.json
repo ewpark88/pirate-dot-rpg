@@ -948,8 +948,7 @@
         ],
         "glow": true
       }
-    },
-    "scale": 0.74
+    }
   },
   "topSea": {
     "base": "#2A7FCC",

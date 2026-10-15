@@ -29,6 +29,7 @@ class TopField {
     double? viewHeight,
     double? hullHalfWidth,
     double? hullHalfLength,
+    this.hullOffset = 0,
     this.mobSpeedScale = 1,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
@@ -85,6 +86,9 @@ class TopField {
   final double hullHalfWidth;
   final double hullHalfLength;
 
+  /// 선체 캡슐 중심이 배 중심에서 배꼬리 쪽(+y)으로 떨어진 거리 — 선체 그림이 프레임 가운데보다 뒤로 치우쳐 있다.
+  final double hullOffset;
+
   /// 잡몹 이동 속도 배율(탑다운 화면에서 배까지 몇 초 안에 닿게, 사용자 신고 2026-10-15 '멈춰 있는 것 같다'). 보스는 그대로.
   final double mobSpeedScale;
 
@@ -129,7 +133,7 @@ class TopField {
   final double viewHeight;
 
   /// 배 반경·선체 캡슐을 바꾼 사본(null이면 그대로).
-  TopField withShipRadius(double? r, {double? halfWidth, double? halfLength}) => r == null
+  TopField withShipRadius(double? r, {double? halfWidth, double? halfLength, double offset = 0}) => r == null
       ? this
       : TopField(
           width: width,
@@ -156,6 +160,7 @@ class TopField {
           viewHeight: viewHeight,
           hullHalfWidth: halfWidth ?? r,
           hullHalfLength: halfLength ?? r,
+          hullOffset: offset,
           mobSpeedScale: mobSpeedScale,
         );
 
