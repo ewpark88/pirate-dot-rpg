@@ -4,7 +4,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
 
-export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor;
+export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor, shapeField;
 
 /// 전장의 적 하나. 시뮬 내부 값(실제 HP·접촉 타이머·기절)을 들고, 화면에는 [EnemyView]로 나간다.
 class Foe {
@@ -228,6 +228,9 @@ class Field {
 
   /// 전장 모양(탑다운). 없으면 waves.top 기본 배 반경으로 — [geometryOr].
   BattleGeometry? geometry;
+
+  /// [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다).
+  Object? shipSeen;
 
   /// [geometry], 없으면 waves.top 기본으로 정해 둔다(테스트·측정 장면).
   BattleGeometry geometryOr(WavesTable w) => geometry ??= TopGeometry.of(w);

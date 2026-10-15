@@ -1376,8 +1376,7 @@ const Map<String, String> rawTables = {
         ],
         "glow": true
       }
-    },
-    "scale": 0.74
+    }
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1803,10 +1802,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 10, "topHalfLength": 26, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 11, "topHalfLength": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 13, "topHalfLength": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 13, "topHalfLength": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "topHalfWidth": 13, "topHullBow": 22, "topHullStern": 40, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "topHalfWidth": 14, "topHullBow": 25, "topHullStern": 43, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "topHalfWidth": 16, "topHullBow": 28.5, "topHullStern": 47.5, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "topHalfWidth": 16, "topHullBow": 28.5, "topHullStern": 47.5, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
@@ -1899,6 +1898,8 @@ const Map<String, String> rawTables = {
     "approachRadius": 206,
     "approachBoost": 5,
     "mobSpeedScale": 2,
+    "shipScale": 0.74,
+    "hullGrow": { "width": 0.03, "bow": 0.083, "stern": 0.025 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

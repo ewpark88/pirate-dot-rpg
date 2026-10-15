@@ -26,8 +26,8 @@ class TopScenePainter {
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
 
-  /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). fx_map topShip.scale.
-  late final double _shipScale = scene.fx.raw.obj('topShip').number('scale');
+  /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). waves.top.shipScale — 엔진 선체 캡슐과 같은 키(platform-ship-hitbox).
+  late final double _shipScale = scene.tables.waves.raw.obj('top').number('shipScale');
   late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
