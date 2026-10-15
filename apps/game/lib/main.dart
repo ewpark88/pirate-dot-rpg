@@ -21,6 +21,7 @@ import 'package:pirate_dot/adapters/notify/offline_full_notifier.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/operator/flags.dart';
+import 'package:pirate_dot/proto/proto_screen.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
@@ -31,7 +32,16 @@ import 'package:pirate_dot/ui/state/platform_providers.dart';
 /// 첫 프레임 전 SDK 초기화가 이보다 오래 걸리면 포기하고 없이 시작한다(Noop·무음) — 스플래시에 갇히지 않게.
 const _sdkTimeout = Duration(seconds: 3);
 
+/// 탑다운 전투 시험판 빌드(`--dart-define=PROTO=true`): 게임 대신 시험판 화면만 띄운다. 보통 빌드에선 컴파일 때 빠진다.
+const _proto = bool.fromEnvironment('PROTO');
+
 Future<void> main() async {
+  if (_proto) {
+    WidgetsFlutterBinding.ensureInitialized();
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    runApp(const ProtoApp());
+    return;
+  }
   // 단계별 시간 (logcat `boot:`) — 같은 프로세스에서 다시 열 때 어디서 멈추는지 바로 보이게 (재실행 멈춤 버그, 2026-10-15).
   final boot = Stopwatch()..start();
   void step(String name) => debugPrint('boot: $name ${boot.elapsedMilliseconds}ms');
