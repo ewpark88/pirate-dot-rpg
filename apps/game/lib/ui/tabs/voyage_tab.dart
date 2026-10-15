@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -30,6 +31,8 @@ class VoyageTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: const [
+        // 칭호 띠 (환생 v2 — 칭호가 생기면 보인다, 누르면 목록).
+        Align(alignment: Alignment.centerLeft, child: TitleChip()),
         _RegionCard(),
         SizedBox(height: 8),
         PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
