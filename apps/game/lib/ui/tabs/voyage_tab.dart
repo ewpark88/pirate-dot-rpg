@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
@@ -24,20 +25,15 @@ class VoyageTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final best = ref.watch(gameStateProvider.select((s) => s.progress.bestStage));
+    // 카드 3장 (layout-v2-brief): 해역 · 오프라인/순풍 · 보물지도.
     return ListView(
-      padding: const EdgeInsets.all(12),
-      children: [
-        const _RegionCard(),
-        Padding(
-          padding: const EdgeInsets.only(left: 4, top: 4),
-          child: Text(l10n.uiBestStage(best)),
-        ),
-        const SizedBox(height: 8),
-        const _StatusLines(),
-        const SizedBox(height: 8),
-        const RebirthCard(),
+      padding: const EdgeInsets.all(8),
+      children: const [
+        _RegionCard(),
+        SizedBox(height: 8),
+        PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
+        SizedBox(height: 8),
+        RebirthCard(),
       ],
     );
   }
@@ -51,7 +47,9 @@ class _RegionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final regions = ref.watch(tablesProvider).regions;
-    final (stage, wave) = ref.watch(gameStateProvider.select((s) => (s.progress.stage, s.progress.wave)));
+    final (stage, wave, best) = ref.watch(
+      gameStateProvider.select((s) => (s.progress.stage, s.progress.wave, s.progress.bestStage)),
+    );
     final per = regions.stagesPerRegion;
     // 해역 보스는 해역 마지막 스테이지(per의 배수)에 나온다 (regions.bossAt).
     final inRegion = (stage - 1) % per + 1;
@@ -93,6 +91,7 @@ class _RegionCard extends ConsumerWidget {
               ],
             ),
             Text(l10n.uiNextRegion(tableText(l10n, next.nameKey)), style: Theme.of(context).textTheme.bodySmall),
+            Text(l10n.uiBestStage(best), style: const TextStyle(color: PixelPalette.textDim)),
           ],
         ),
       ),
@@ -124,11 +123,13 @@ class _StatusLines extends ConsumerWidget {
           icon: const PixelSprite(UiSprites.moon, dots: 16, scale: 1),
           text: Text(l10n.uiOfflineRate((perHour ?? BigNum.zero).format(), maxHours)),
         ),
+        // 순풍 줄 옆에도 같은 광고 그림 버튼 (layout-v2-brief).
         _InfoLine(
           icon: const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
           text: Text(
             left > Duration.zero ? l10n.uiTailwindStatus(shortDecimal(mult), remainingText(left)) : l10n.uiTailwindOff,
           ),
+          trailing: const TailwindAdButton(),
         ),
       ],
     );
@@ -137,10 +138,11 @@ class _StatusLines extends ConsumerWidget {
 
 /// 아이콘 + 글자 한 줄 (ListTile 대신, 도트 화면에 잉크·여백 없이).
 class _InfoLine extends StatelessWidget {
-  const _InfoLine({required this.icon, required this.text});
+  const _InfoLine({required this.icon, required this.text, this.trailing});
 
   final Widget icon;
   final Widget text;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => Padding(

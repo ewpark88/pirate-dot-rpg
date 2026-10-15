@@ -100,6 +100,9 @@ void main() {
     await _openSheet(tester);
     expect(find.byKey(const Key('attendance.day.4.today')), findsOneWidget);
     expect(find.text('Hero+ Summon'), findsOneWidget);
+    // 실기기 글자 크기에서는 시트 아래쪽 — 스크롤해서 누른다.
+    await tester.ensureVisible(find.byKey(const Key('attendance.claim')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('attendance.claim')));
     expect(log.sent, [isA<ClaimAttendance>()]);
   });

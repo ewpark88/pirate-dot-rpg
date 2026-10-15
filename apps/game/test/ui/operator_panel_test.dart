@@ -68,11 +68,14 @@ void main() {
 
   testWidgets('기준 1-1: 상태가 바뀌면 HUD가 바로 따라온다', (tester) async {
     await pumpGame(tester, loadFixture('new_player'));
-    expect(find.text('Boss 20s'), findsNothing);
+    String gold() => tester.widget<Text>(find.byKey(const Key('top.gold'))).data!;
+    final before = gold();
     final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
-    container.read(gameStateProvider.notifier).replace(loadSampleState('boss_fight'));
+    final boss = loadSampleState('boss_fight');
+    container.read(gameStateProvider.notifier).replace(boss);
     await tester.pump();
-    expect(find.text('Boss 20s'), findsOneWidget);
+    expect(gold(), boss.wallet.gold.format());
+    expect(gold(), isNot(before));
   });
 
   testWidgets('기준 2: 배속 ×1 · ×2 · ×4', (tester) async {

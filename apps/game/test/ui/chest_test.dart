@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
@@ -31,10 +32,11 @@ void main() {
     expect(find.byKey(const Key('chest')), findsNothing);
   });
 
-  testWidgets('상자는 전장 논리 좌표(가운데)에 놓인다', (tester) async {
+  testWidgets('상자는 게임 좌표 (160, 90) → 렌더와 같은 battleFrameFor.toDp 자리', (tester) async {
     await pumpGame(tester, _withChest());
     final battle = tester.getRect(find.byKey(const Key('battle.area')));
-    expect(tester.getCenter(find.byKey(const Key('chest'))), offsetMoreOrLessEquals(battle.center, epsilon: 1));
+    final at = battle.topLeft + battleFrameFor(battle.size, s24Dpr).toDp(const Offset(160, 90));
+    expect(tester.getCenter(find.byKey(const Key('chest'))), offsetMoreOrLessEquals(at, epsilon: 0.5));
   });
 
   testWidgets('가라앉기까지 남은 시간 링 = ticksLeft / (floatSec × 1000 / tickMs)', (tester) async {

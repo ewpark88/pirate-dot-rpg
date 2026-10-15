@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
-import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
@@ -14,7 +15,7 @@ const _size = 44.0;
 /// 금액 글자를 상자 위로 띄우는 높이.
 const _rewardOffset = -18.0;
 
-/// 떠내려온 보물상자 탭 영역 (설계서 4.6). 전장 위에 겹쳐, 전장 논리 좌표(320×180)를 화면 크기로 늘려 놓는다.
+/// 떠내려온 보물상자 탭 영역 (설계서 4.6). 전장 위에 겹쳐, 게임 좌표를 `battleFrameFor`로 dp에 놓는다.
 /// 상자 그림은 렌더 레인이 그리고, 여기는 누를 곳·가라앉기까지 남은 시간 링·기본 보상 금액만.
 class ChestLayer extends ConsumerWidget {
   const ChestLayer({super.key});
@@ -35,12 +36,14 @@ class ChestLayer extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, box) {
-        final scale = box.maxWidth / kLogicalWidth;
+        // 게임 좌표 → 전장 상자 dp (렌더와 같은 battleFrameFor).
+        final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
+        final at = f.toDp(Offset(x, y));
         return Stack(
           children: [
             Positioned(
-              left: x * scale - _size / 2,
-              top: y * scale - _size / 2,
+              left: at.dx - _size / 2,
+              top: at.dy - _size / 2,
               child: GestureDetector(
                 key: const Key('chest'),
                 behavior: HitTestBehavior.opaque,
@@ -65,15 +68,29 @@ class ChestLayer extends ConsumerWidget {
                 ),
               ),
             ),
-            // 광고 ×5 · 젬 (광고가 준비됐을 때만, 설계서 4.6) — 상자 바로 아래 가운데.
-            Positioned(
-              left: x * scale,
-              top: y * scale + _size / 2 + 2,
-              child: const FractionalTranslation(translation: Offset(-0.5, 0), child: ChestAdButtons()),
-            ),
           ],
         );
       },
+    );
+  }
+}
+
+/// 상자 광고 줄 (전장 바로 아래, 상자가 떠 있고 광고가 준비됐을 때만): 상자 그림 + 골드 ×5 · 젬.
+/// 전장 안에는 버튼을 두지 않는다 (layout-v2-brief 2).
+class ChestAdStrip extends ConsumerWidget {
+  const ChestAdStrip({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasChest = ref.watch(gameStateProvider.select((s) => s.battle?.chest != null));
+    if (!hasChest || !ref.watch(adOfferProvider(AdPlacement.chest))) return const SizedBox.shrink();
+    return const ColoredBox(
+      key: Key('chest.adStrip'),
+      color: PixelPalette.outline,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Center(child: ChestAdButtons()),
+      ),
     );
   }
 }

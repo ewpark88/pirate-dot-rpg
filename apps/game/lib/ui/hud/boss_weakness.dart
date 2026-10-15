@@ -31,16 +31,17 @@ class BossWeakness extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white);
 
+    // 전장 바로 아래 한 줄 띠 (전장을 가리지 않게, layout-v2-brief 2).
     return Container(
       key: const Key('boss.weak'),
-      padding: const EdgeInsets.all(6),
-      decoration: const BoxDecoration(color: PixelPalette.outline),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      color: PixelPalette.outline,
+      child: Wrap(
+        spacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(tableText(l10n, boss.nameKey), style: small?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 2),
           WeakChips(boss: boss, labelStyle: small),
         ],
       ),
