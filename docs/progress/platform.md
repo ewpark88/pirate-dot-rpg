@@ -5,8 +5,10 @@
   - [x] T0 검토(S2 계약 채택 + 거리·해류·무리 의견, 2da8665)
   - [x] T1-1 topdown/ 모양(42e1dc4)
   - [x] T1-2 기존 battle 파일 훅(리뷰 브랜치 `review/topdown-t1-hooks` d3377a2·739dc1b, S2 검토 대기 → S1 머지)
-  - [ ] 등급별 배 반경(S3 크기, 표 대기)
-  - [ ] 균형 sim ±10%(S2)
+  - [x] 등급별 배 반경 topRadius 28·29·32·32, bossStandoff 100, 카메라 180×320(리뷰 브랜치 8270538)
+  - [x] 탑다운 시나리오 2개(top_swarm_all_sides, top_boss_standoff) + replay 관찰 키 mode·quadrants·bossAtStandoff
+  - [x] 운영자 패널 side/top 토글 요청서(S4, 74567dd) — T2 전 렌더 어긋남 때문에 여는 시점은 S1 결정
+  - [ ] 균형 sim ±10%(S2) · S2 검토 OK → S1 머지 대기
 - 한 일
   - 시험판: lib/proto/ 결정론 2D 시뮬·코드 도트·drawAtlas, PROTO 빌드(앱 ID .proto, 본 게임과 나란히 설치). S1이 설치했고, 사용자 판정은 '탑다운으로 진행'.
   - 환생 v2 기획서(1f49c73): 상점 9칸·명예 외형·스킨·즉시 상자·미리보기·횟수별 해금·세이브 v6. 사람 결정 4개.
