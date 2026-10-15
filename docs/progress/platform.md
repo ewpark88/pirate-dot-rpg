@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 재실행 멈춤 1차 대응 + 매일 콘텐츠 4종 기획서
+- 한 일(버그, S1 위임): MainActivity.popSystemNavigator → moveTaskToBack, SDK 초기화 3초 제한(Firebase·오디오 목록 → Noop·무음), onDetach 정리, `boot:` 단계 로그, EngineHost.pause 두 번 안전.
+  원인 확정은 실기기 재현이 필요 — **사용자가 폰 앞에 있다는 S1 확인 전엔 입력 금지**(대기 중).
+  실수: check 출력을 `| tail`로 받아 실패(레인 밖 engine_host_test.dart)를 놓치고 커밋 → 미머지 커밋 2개를 soft reset으로 합쳐 정리. **check는 종료 코드로 판단한다.**
+- 한 일(기획): docs/specs/platform-content-{overview,achievements,bounty,crew-bond,voyage-log}.md — 피로 규칙과 부딪히는 곳(시즌·한정·티켓)을 '쌓이는 티켓·자동 지급·첫 등장 의상·주말은 보너스만'으로 푼 안, 테이블 키·세이브·명령·이벤트·UI·수용 기준·레인 분담, 우선순위(업적+주말 → 현상금 → 선원 → 일지).
+
 ## 2026-10-15 · S5 · 실기기 캡처 스크립트 실기기 검증(S24) — 덤프 실패 대응, 복귀 창, 안전장치
 - 한 일: 덤프 실패(Flame이 늘 움직여 "null root node") → 좌표를 배치 규칙으로(dumpsys window 상태·내비 바 틀 + wm density). S24 실측과 맞춤(설정 1012,171 · 퀘스트 878,171 · 탭 y 2126).
   창 감지는 그림으로(상단 바 바탕 27→13이면 막) → 밝은 기본 버튼(받기, 실기기 색 67,118,185) 누르기 → 남으면 BACK. **캡처마다** 확인(복귀 창이 늦게 뜬다). 앞 화면과 같으면 경고. 00_start.png 남김. 테스트 13.
