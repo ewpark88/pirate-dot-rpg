@@ -9,6 +9,7 @@ import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
+import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -23,6 +24,7 @@ class BattleSystem implements GameSystem {
 
   Field? _field;
   Object? _crewsSeen;
+  Object? _fleetSeen;
   List<String>? _fixedFleet;
   bool _invincible = false;
   bool _zeroCooldown = false;
@@ -242,7 +244,7 @@ class BattleSystem implements GameSystem {
     final view = s.battle ?? BattleView.empty;
     final f = _field;
     if (f != null && f.tick == view.tick && f.stage == s.progress.stage && f.bossActive == view.bossActive) {
-      if (!identical(_crewsSeen, s.crews)) _arm(f, s, ctx);
+      if (!identical(_crewsSeen, s.crews) || !identical(_fleetSeen, s.fleet)) _arm(f, s, ctx);
       return f;
     }
     final stats = CombatStats.of(s, ctx.tables);
@@ -259,13 +261,13 @@ class BattleSystem implements GameSystem {
     return nf;
   }
 
-  /// 편성(자동 또는 운영자 고정)과 선장.
+  /// 편성(GameState.fleet — 수동 편성, 또는 운영자 고정)과 선장.
   void _arm(Field f, GameState s, SystemContext ctx) {
     _crewsSeen = s.crews;
+    _fleetSeen = s.fleet;
     final t = ctx.tables;
-    final slots = CombatStats.of(s, t).slots;
     final ids = [
-      for (final id in _fixedFleet ?? autoFleet(s, t, slots))
+      for (final id in _fixedFleet ?? activeFleet(s, t))
         if (s.crews.containsKey(id)) id,
     ];
     final old = {for (final g in f.guns) g.crewId: (g.cooldown, g.skillCooldown)};
