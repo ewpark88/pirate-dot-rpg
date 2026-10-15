@@ -14,7 +14,7 @@ void main() {
   test('top이면 배 중심에서 shipRadius + chestMargin 밖, 보이는 사각형(viewWidth×viewHeight) 안', () {
     for (var seed = 1; seed <= 200; seed++) {
       final h = EconomyHarness(seed: seed);
-      final s0 = h.newGame().copyWith(settings: const Settings(battleView: 'top'));
+      final s0 = h.newGame();
       final c = spawnChest(s0, h.ctx).battle!.chest!;
       final dx = c.x - top.number('shipX');
       final dy = c.y - top.number('shipY');
@@ -31,7 +31,7 @@ void main() {
 
   test('옆모습은 그대로 (필드 폭 비율·수면 높이)', () {
     final h = EconomyHarness();
-    final c = spawnChest(h.newGame(), h.ctx).battle!.chest!;
+    final c = spawnChest(h.newGame().copyWith(settings: const Settings(battleView: 'side')), h.ctx).battle!.chest!;
     expect(c.y, t.waves.raw.obj('field').obj('laneY').number('surface'));
   });
 

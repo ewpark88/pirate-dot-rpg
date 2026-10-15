@@ -1,13 +1,12 @@
-# 수용 기준: 탑다운(Settings.battleView = top)에서 무리가 사방에서 오고, 배는 가운데에서 자동 공격으로 처치해 진행한다 (탑다운 전환 T1).
+# 수용 기준: 탑다운(기본, T4)에서 무리가 사방에서 오고, 배는 가운데에서 자동 공격으로 처치해 진행한다 (탑다운 전환 T1).
 # 담당: battle(T1 S5). 경제 연결(처치 → 파 → 보스 → 다음 스테이지)은 옆모습과 같은 코드.
 # quadrants: 첫 파가 배 중심 기준 몇 사분면에 있는가 — 이 시드는 3사분면(사방에서 몰려옴). 무리 32마리+(waves.top.mobCount)라 80초 창.
 name: 탑다운 — 사방 무리 처치로 진행
-seed: 7
+seed: 8
 state: fixtures/states/stage37_midgame.json
 steps:
   - input: { type: op.jumpStage, stage: 10 }
-  - input: { type: setSetting, key: battleView, value: top }
   - advance: 1t
-  - expect: { mode: top, stage: 10, wave: 0, quadrants: 3 }
+  - expect: { mode: top, stage: 10, wave: 0, quadrants: 4 }
   - advance: 40s
   - expect: { mode: top, stage: 11 }
