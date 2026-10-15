@@ -81,3 +81,28 @@ CC0 칩튠 세트의 1순위는 **512 Sound Effects (8-bit style)**(Juhani Junka
 - Cleyton Kauffman "Snow Theme"("CC0", 0:24, 루프 됨): 칩튠이 아니고(종·차임 앰비언트) 너무 짧아 뺐다. 빙하해를 차분하게 가고 싶으면 다시 검토.
 - Kenney Impact Sounds("Creative Commons CC0"): 라이선스는 맞지만 실제 녹음(foley) 소리라 도트 톤과 어긋나서 뺐다.
 - freesound는 효과음 1건만 조사했다. 배경음은 조사하지 못했다.
+
+## 결정 (2026-10-15, S1 — 사용자 위임)
+사용자가 고르기를 S1에 맡겼다. 넣은 파일: `apps/game/assets/audio/{sfx,bgm}/*.ogg`, 등록: `LICENSES.json`·`pubspec.yaml`.
+
+**효과음 — 전부 자작(OWN)**. 한 합성기에서 나와 톤이 통일되고, 겹침 상한(한 프레임 6개)에 맞춰 길이·음량을 설계했다.
+- `hit`·`hit_crit`: 변형 3개 모두 → `sfx/hit_0~2.ogg`, `sfx/hit_crit_0~2.ogg`
+- 나머지 10개(pop, combo, skill, ultimate, boss_horn, boss_clear, fail, fanfare, fanfare_small, promote): 변형 `_0` → `sfx/<id>.ogg`
+- cannon·coin은 넣지 않았다(게임 이벤트 없음).
+
+**배경음 — 루프가 명시된 CC0 3곡 + 톤이 더 맞는 자작 3곡**
+| bgm id | 고른 것 | 라이선스 (페이지에서 본 문구) | 길이 |
+| --- | --- | --- | --- |
+| bgm_coral | Juhani Junkala "4 Chiptunes (Adventure)" `1. Stage 1.wav` (WAV 팩) | "CC0", "Seamlessly looping." / 동봉 INFO.txt "These music tracks have been released under CC0 creative commons license." | 41.1초 |
+| bgm_storm | Juhani Junkala "5 Chiptunes (Action)" `Level 1.wav` | "CC0", "5 tracks, all seamlessly looping!" / 동봉 INFO.txt 같은 문구 | 74.3초 |
+| bgm_phantom | Zane Little "Haunting Chiptune Loop [Void Estate]" `void_estate.wav` | "CC0", "A spooky chiptune loop" | 86.5초 |
+| bgm_glacier | 자작 `bgm/bgm_glacier.wav` (OWN) — 차분함에 맞게 설계 | — | 41.7초 |
+| bgm_volcano | 자작 `bgm/bgm_volcano.wav` (OWN) — CC0 후보는 루프 구간이 짧아 피로 우려 | — | 27.8초 |
+| bgm_abyss | 자작 `bgm/bgm_abyss.wav` (OWN) — 칩튠 톤 통일 | — | 48.0초 |
+
+- CC0 곡은 루프 이음매를 지키려고 자르지 않았다(채널만 모노로, 샘플레이트만 32kHz로).
+- 변환: ffmpeg 9.0.2 (`winget install --id Gyan.FFmpeg -e`)
+  - 효과음: `ffmpeg -y -i in.wav -ac 1 -c:a libvorbis -q:a 4 out.ogg`
+  - 배경음: `ffmpeg -y -i in.wav -ac 1 -ar 32000 -c:a libvorbis -q:a 3 out.ogg`
+- 크기: `assets/audio` 합계 약 2.9MB (배경음 최대 bgm_phantom 0.74MB, 효과음 16개 합계 약 0.16MB).
+- 자작 wav는 `python -I -B docs/store/audio-gen/gen_audio.py`로 다시 구울 수 있다(같은 입력이면 같은 바이트).
