@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · T2 BattleGame mode 'top' 연결 (T1 엔진 실제 전투)
+- BattleGame: 프레임 mode가 top이면 카메라를 상자 dp로 두고 `ScenePainter.paintTop(canvas, TopFrame)` — 탑다운 카메라(바다·항적·물속 적 → 배(그림자·층·체력 막대) → 물 위·공중 적 → 발사체·폭발·코인·숫자), 덮개·HUD·선원 줄은 옆모습 배치 그대로. 모드가 바뀌면 배치 다시.
+- 연출(EventDirector): 탑다운이면 발사 = AttackFired.fromX·fromY(없으면 배 중심), 배 피격 숫자 = 배 위, 코인 = 배로. 보스 코인 비는 `scene/coin_rain.dart`(탑다운은 배 위쪽 폭). `scene/top_view.dart`(isTop·topShip·shipCenter·coinTo). EnemyPose.heading(탑다운 도트 회전).
+- 테스트: `test/render/top_recording.dart`(T1 엔진 탑다운 기록) + top_mode_test(발사체 배 근처 출발·코인 배로·적 방향). 시안 `docs/specs/render-topdown/live_4devices.png`.
+- 남은 것: 탑다운 숫자 크기(전장 1단위가 옆모습 1도트보다 커서 약 1.5배), 투척 포물선(지금은 화면 위쪽으로 휨 → 높이를 크기·그림자로), 침몰·부품 축하·대포 반동 탑다운판, 보스 정지 위치(S2 bossStandoff 100 대기), 탑다운 골든.
+
 ### 2026-10-15 · S3 · T2 위에서 본 적 27·보스 14(문어 다리 포함)
 - `tools/art/gen_topdown_enemies.py` → `assets/enemies/td_<kind>.png`(16칸, 작은 변종 12칸, 2프레임): 게·해파리·물고기·장어·갈매기·펭귄·물개·오징어·불가사리·성게·용암거북·해골·유령·수정 물고기. 옆모습 색·특징 그대로.
 - `tools/art/gen_topdown_bosses.py` → `assets/bosses/td_<kind>.png`(2프레임): 해적선 6종은 탑다운 배 그리기를 팔레트만 바꿔 앞 돛 문장(해골·번개·눈송이·불꽃·초록 해골·빨간 띠), 생물 8종(소라게·빙산 바다코끼리·번개 가오리·용암 고래·크라켄+다리·유령 제독·잠수함) 새로.
