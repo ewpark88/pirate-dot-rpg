@@ -58,6 +58,7 @@ class StagePainter {
       final end = i + 1 < _seaY.length ? _seaY[i + 1] : bottom;
       _rect(c, v.left, _seaY[i], v.width + 1, end - _seaY[i], b.sea(i));
     }
+    _deepSea(c, t, v, bottom);
     final rows = [..._waveRows, for (var y = kFieldBottom + _deepWaveGap / 2; y < bottom - 2; y += _deepWaveGap) y];
     final wrap = v.width.ceil() + 32;
     for (final y in rows) {
@@ -72,6 +73,35 @@ class StagePainter {
       }
     }
   }
+
+  /// 깊은 바다(필드 아래 ~ 선원 줄 위): 아주 옅은 빛줄기(비스듬, 천천히 흔들림)와 느리게 오르는 거품 몇 개.
+  void _deepSea(Canvas c, double t, Rect v, double bottom) {
+    final top = _seaY.first + 6;
+    if (bottom - kFieldBottom < _deepMin) return;
+    _paint.color = const Color(_rayColor);
+    for (var i = 0; i < _rays; i++) {
+      final x0 = v.left + v.width * (i + 0.5) / _rays + math.sin(t * 0.4 + i * 1.7) * 6;
+      for (var y = top; y < bottom - 1; y += 2) {
+        final x = (x0 + (y - top) * 0.35).floorToDouble();
+        c.drawRect(Rect.fromLTWH(x, y, _rayW, 2), _paint);
+      }
+    }
+    _paint.color = const Color(_bubbleColor);
+    final span = bottom - kFieldBottom;
+    for (var i = 0; i < _bubbles; i++) {
+      final x = (v.left + (i * 53 + 17) % v.width.floor() + math.sin(t * 1.3 + i) * 1.5).floorToDouble();
+      final y = (bottom - 2 - ((t * (3 + i % 3) + i * 11) % span)).floorToDouble();
+      final s = i % 3 == 0 ? 2.0 : 1.0;
+      c.drawRect(Rect.fromLTWH(x, y, s, s), _paint);
+    }
+  }
+
+  static const _deepMin = 12.0;
+  static const _rays = 3;
+  static const _rayW = 3.0;
+  static const _rayColor = 0x0FFFFFFF;
+  static const _bubbles = 9;
+  static const _bubbleColor = 0x55BFF3FF;
 
   static const _highCloudRoom = 24.0;
   static const _highCloudLift = 40.0;

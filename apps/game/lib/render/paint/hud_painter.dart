@@ -85,7 +85,7 @@ class HudPainter {
     if (f.stage != _stageShown || f.wave != _waveShown) {
       _stageShown = f.stage;
       _waveShown = f.wave;
-      _stage.set('${f.stage}-${f.wave + 1}', _white, 1);
+      _stage.set('${f.stage}-${f.wave + 1}', _white, _textScale);
     }
     final cx = (v.left + v.width / 2).floorToDouble();
     _stage.draw(c, cx - (_stage.width / 2).floorToDouble(), v.top + _fx.hud.number('stageY'));
@@ -93,12 +93,13 @@ class HudPainter {
       final sec = (f.bossTicksLeft * scene.player.tickMs / Duration.millisecondsPerSecond).ceil();
       if (sec != _timerShown) {
         _timerShown = sec;
-        _timer.set('$sec', _timerColor, 1);
+        _timer.set('$sec', _timerColor, _textScale);
       }
       final ty = v.top + _fx.hud.number('timerY');
-      final tx = cx - ((_timer.width + _skullW + 2) / 2).floorToDouble();
-      _skull(c, tx, ty);
-      _timer.draw(c, tx + _skullW + 2, ty);
+      final gap = 2.0 * _textScale;
+      final tx = cx - ((_timer.width + _skullW * _textScale + gap) / 2).floorToDouble();
+      _skull(c, tx, ty, _textScale.toDouble());
+      _timer.draw(c, tx + _skullW * _textScale + gap, ty);
     }
     final boss = _bossRatio(f);
     if (boss != null) {
@@ -123,13 +124,16 @@ class HudPainter {
 
   static const _skullW = 5.0;
 
-  /// 보스 남은 초 앞 작은 해골 5×5.
-  void _skull(Canvas c, double x, double y) {
-    _fill(c, x, y, 5, 4, _timerColor);
-    _fill(c, x + 1, y + 4, 1, 1, _timerColor);
-    _fill(c, x + 3, y + 4, 1, 1, _timerColor);
-    _fill(c, x + 1, y + 1, 1, 1, _barBack);
-    _fill(c, x + 3, y + 1, 1, 1, _barBack);
+  /// HUD 글자 배율 — 1도트가 약 1dp인 폰에서도 읽히게 정수배(기준 gif '12-2' 비율).
+  late final int _textScale = _fx.hud.integer('textScale');
+
+  /// 보스 남은 초 앞 작은 해골 5×5 (×[s]).
+  void _skull(Canvas c, double x, double y, double s) {
+    _fill(c, x, y, 5 * s, 4 * s, _timerColor);
+    _fill(c, x + s, y + 4 * s, s, s, _timerColor);
+    _fill(c, x + 3 * s, y + 4 * s, s, s, _timerColor);
+    _fill(c, x + s, y + s, s, s, _barBack);
+    _fill(c, x + 3 * s, y + s, s, s, _barBack);
   }
 
   /// 선원 줄 (화면 배치 v2): 폭 전체 띠, 슬롯 6칸(빈 칸은 빈 테두리), 오른쪽 끝 궁극기 버튼(보스 도전 자리는 비움 — UI).
@@ -192,7 +196,7 @@ class HudPainter {
     final rage = f.rage.clamp(0.0, 1.0);
     final full = rage >= 1;
     final blink = full && (scene.clockMs / _blinkMs).floor().isEven;
-    _fill(c, r.left, r.top, r.width, r.height, full ? (blink ? _rageFull : _goldColor) : _slotLine);
+    _fill(c, r.left, r.top, r.width, r.height, blink ? _rageFull : _goldColor);
     final inner = r.deflate(2);
     _fill(c, inner.left, inner.top, inner.width, inner.height, _plate);
     final captain = f.captainId;
@@ -212,7 +216,24 @@ class HudPainter {
     _fill(c, inner.left, gy, inner.width, _gaugePx, _barBack);
     if (rage > 0) _fill(c, inner.left, gy, inner.width * rage, _gaugePx, full ? _rageFull : _rageFill);
     if (!full) _fill(c, inner.left, inner.top, inner.width, (inner.height - _gaugePx) * (1 - rage), _cooldown);
+    _bolt(c, inner.left + 1, inner.top + 1);
   }
+
+  /// 궁극기 표시 번개 (5×8, 외곽선 포함) — 초상 위에 얹어 '누르는 버튼'으로 읽히게.
+  static const _boltRows = ['.kkkk', 'kyyyk', 'kyyk.', 'kyyyk', '.kyyk', '.kyk.', 'kyk..', 'kk...'];
+
+  void _bolt(Canvas c, double x, double y) {
+    for (var dy = 0; dy < _boltRows.length; dy++) {
+      final row = _boltRows[dy];
+      for (var dx = 0; dx < row.length; dx++) {
+        final ch = row[dx];
+        if (ch == '.') continue;
+        _fill(c, x + dx, y + dy, 1, 1, ch == 'y' ? _goldColor : _outline);
+      }
+    }
+  }
+
+  static const _outline = 0xFF1B1726;
 
   static const _gaugePx = 3.0;
 }

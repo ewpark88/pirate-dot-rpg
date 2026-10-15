@@ -14,6 +14,9 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 화면 배치 v2.1 (S1 후속)
+- HUD 글자 ×2·보스 막대 두껍게, 수평선 아래로(하늘 0.7)·깊은 바다 빛줄기·거품, 궁극기 금 테두리 + 번개. 골든 10장 갱신, 비교 `docs/specs/render-layout-v2/`(compare_s24·goldens_3devices·goldens_v2_to_v21).
+
 ### 2026-10-15 · S3 · 화면 배치 v2 (사용자 실기기 피드백, 최우선)
 - 묶음 4 승인·main a89cb6a 머지, 브리프 `layout-v2-brief.md`·실기기 캡처 확인. S4와 좌표 약속(`battleFrameFor`) 합의.
 - `render/viewport/battle_frame.dart`(layout.dart에서 export): 폭 기준 정수배·필드 가운데·늘어난 위 하늘/아래 깊은 바다·선원 줄 56dp+·슬롯 6칸·궁극기/보스 도전 칸 dp 좌표.

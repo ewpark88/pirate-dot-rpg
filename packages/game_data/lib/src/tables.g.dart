@@ -1025,7 +1025,7 @@ const Map<String, String> rawTables = {
     "minKills": 4,
     "windowMs": 600,
     "x": 150,
-    "y": 22,
+    "y": 34,
     "scale": 2,
     "color": "#FFD23F"
   },
@@ -1033,18 +1033,19 @@ const Map<String, String> rawTables = {
     "textColor": "#FFFFFF",
     "goldColor": "#F2C94C",
     "bossBar": [
-      -70,
-      6,
+      -82,
+      5,
       -7,
-      11
+      14
     ],
     "bossFill": "#FF5A5A",
     "barBack": "#1B1726",
     "bossTimerColor": "#FF8A8A",
     "rageFill": "#FF5A5A",
     "rageFull": "#FFFFFF",
-    "stageY": 6,
-    "timerY": 14
+    "textScale": 2,
+    "stageY": 5,
+    "timerY": 19
   },
   "slots": {
     "border": 2,
