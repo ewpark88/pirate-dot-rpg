@@ -3,11 +3,22 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/ui-quality-v1.md` |
-| 상태 | 도트 UI 1차(팔레트·정수배·프레임·버튼·Galmuri11·탭 아이콘·접근성) 구현, 골든 12장 S1 승인 대기 (미커밋) |
-| 기다리는 것 | 골든 승인 · S3 캔버스 HUD(+ BattleView H 계약) → UI HUD 걷어내기 · S3 16px 아이콘 |
+| 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
+| 상태 | Material HUD 제거(캔버스 HUD + 누르는 것만 도트 오버레이), 배 탭 부위 아이콘, 설정 알림 토글, platform 요청서 2건 — 골든 11장 S1 승인 대기 |
+| 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S4 · 도트 UI v2 → HUD 걷어내기·배 탭 줄·platform 요청서
+- 한 일: v1 커밋 12e2b20(골든 12장 승인). v2 e44f79a(승인): 선원 카드 정사각 초상(등급 색 2칸 테두리), 미보유 실루엣, 버튼 밝은 줄/그늘/그림자 1칸, S3 탭·젬 아이콘.
+  **원인 기록**: Image 기본값 BoxFit.scaleDown이라 v1 초상이 32px보다 커지지 않았다 → CrewPortrait에 BoxFit.fill.
+  2b5bb59(승인) platform 요청서: `ui/state/platform_providers.dart`(notifierProvider·saveFailureProvider), 운영자 '플랫폼' 그룹, HUD 위 저장 실패 띠.
+  3e5f72f 설정 '알림' 토글(세이브 v4). 6599b85 Material HUD 삭제(`hud_bar.dart`) → `hud/battle_overlay.dart`: 논리 좌표 × 배율로 캔버스 HUD(y 6~12) 아래에
+  퀘스트·설정·순풍(왼쪽 위), 보스 타이머(가운데), 보스 도전·약점(오른쪽 위), 궁극기(슬롯 줄 위 오른쪽). 운영자 5번 탭 = 캔버스 스테이지 글자 자리.
+  전장 높이 = 폭 × 180/320(최대 화면 절반). 젬은 소환 탭 위. 진행 막대 4개를 `PixelBar`로. 골든 테스트가 그림을 미리 디코드(precacheImages)하게.
+  dc37585 배 탭: 부위 아이콘·여백 +2칸·버튼 폭 100. 금화·별 S3 그림(별은 16px라 1개 + 개수), `pixel_icons.dart` 삭제. `check --full` 통과(89s).
+- 주의: failures/*.png 커밋했던 실수(S1이 gitignore) — add 전에 status 확인. PowerShell Set-Content는 한글을 깨뜨린다 → 파일 수정은 sed/python.
+- 다음 할 일: 골든 11장 승인 → S3 글리프 숫자, 목표 막대 위치(전장 위 캔버스로 옮길지) S1과 상의
 
 ### 2026-10-14 · S4 · 도트 UI 품질 v1 (사용자 최우선)
 - 한 일: 579dc2e(항해 탭 보강)·de99589(스펙) 커밋. `ui/pixel/`: 팔레트(scene3.py 값), 도트 한 칸 = 실제 픽셀 정수배(k = floor(물리 폭/320)),
