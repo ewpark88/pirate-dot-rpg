@@ -69,7 +69,17 @@ abstract interface class BattleGeometry {
 
 /// Settings.battleView(`side` | `top`)에 맞는 전장 모양. 탑다운 배 반경은 [stage]의 배 등급(ship_tiers topRadius).
 BattleGeometry geometryFor(String mode, GameTables t, int stage) =>
-    mode == 'top' ? TopGeometry.of(t.waves, shipRadius: t.shipTiers.tierAt(stage).topRadius) : SideGeometry(t.waves);
+    mode == 'top' ? _topFor(t, stage) : SideGeometry(t.waves);
+
+TopGeometry _topFor(GameTables t, int stage) {
+  final tier = t.shipTiers.tierAt(stage);
+  return TopGeometry.of(
+    t.waves,
+    shipRadius: tier.topRadius,
+    hullHalfWidth: tier.topHalfWidth,
+    hullHalfLength: tier.topHalfLength,
+  );
+}
 
 /// 옆모습: 배는 왼쪽(shipX), 적은 오른쪽에서 줄지어 걸어온다. 지금 동작 그대로.
 class SideGeometry implements BattleGeometry {

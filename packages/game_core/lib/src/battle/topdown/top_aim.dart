@@ -18,7 +18,12 @@ class TopAim {
   double _centerDist(Foe e) => _dist(e.x, e.y, top.shipX, top.shipY);
 
   /// 배 둘레에서 [e] 가장자리까지.
-  double edge(Foe e) => _centerDist(e) - top.shipRadius - top.radiusOf(e);
+  double edge(Foe e) {
+    // 선체 캡슐 몸통에서(없으면 반경 shipRadius 원 — 캡슐 반폭·반길이가 모두 shipRadius).
+    final reach = math.max(0, top.hullHalfLength - top.hullHalfWidth);
+    final cy = (e.y - top.shipY).clamp(-reach, reach).toDouble();
+    return _dist(e.x, e.y, top.shipX, top.shipY + cy) - top.hullHalfWidth - top.radiusOf(e);
+  }
 
   bool onScreen(Foe e) =>
       (e.x - top.shipX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;

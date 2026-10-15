@@ -84,6 +84,8 @@ class ShipTierDef {
       stage = j.integer('stage'),
       slots = j.integer('slots'),
       topRadius = j.number('topRadius'),
+      topHalfWidth = j.number('topHalfWidth'),
+      topHalfLength = j.number('topHalfLength'),
       damageBonus = j.number('damageBonus'),
       sprite = j.str('sprite'),
       nameKey = j.str('nameKey');
@@ -94,6 +96,10 @@ class ShipTierDef {
 
   /// 탑다운 배 반경(충돌·사거리 기준 둘레, S3 배 크기 t1 34×80 ~ t3 40×100).
   final double topRadius;
+
+  /// 탑다운 선체 캡슐(위아래로 긴 배)의 반폭·반길이 — 적이 멈추는 곳(배 몸통에 닿게, 사용자 신고 2026-10-15).
+  final double topHalfWidth;
+  final double topHalfLength;
   final double damageBonus;
   final String sprite;
   final String nameKey;
