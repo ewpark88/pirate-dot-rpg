@@ -115,6 +115,9 @@ lanes:
       - apps/game/lib/adapters/
       - apps/game/test/adapters/
       - apps/game/test/store/
+      # 뒤로 가기 후 재실행 멈춤 수정(2026-10-15 S1 위임)
+      - apps/game/lib/main.dart
+      - apps/game/lib/engine_host.dart
       - apps/game/android/
       - apps/game/ios/
       - docs/store/
