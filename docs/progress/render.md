@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | render-quality-v1(스펙 `docs/specs/render-quality-v1.md`, 구현 완료·골든 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 현재 계획 | render-quality-v2(스펙 `docs/specs/render-quality-v1.md` v2 절, 골든 5장 승인 대기) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
 | 상태 | v1 승인·main 머지. v2: 선원 바(등급 테두리)·범위 숫자 합산만·무리 밀도·m3 골든 번쩍임 제거, check --full 통과 |
-| 막힌 것 | 골든 7장 승인(S1) · pubspec assets/ui/(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | v2 골든 5장 승인(S1) · FleetSlot 현재 등급 계약(S1) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
