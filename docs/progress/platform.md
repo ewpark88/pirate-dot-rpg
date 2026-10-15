@@ -1,5 +1,13 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · T4-2 main 머지(33c9b5e), 폰 성능 측정, 배 충돌 크기 제안
+- **현재 위치**: T4-1·T4-2(+T4-B S2 균형) main 머지 완료. T4-2b(S2)·T4-3(S3)·T4-4(S4)에 시작 해시를 알림 → 끝나면 T4-5(S5: 스토어 스크린샷·release_smoke·실기기).
+- 한 일
+  - T4-2에 S2 균형(40351cd)을 머지해 check --full 통과(fb4db44) → S1 머지
+  - 폰 읽기 전용 측정(docs/store/device-perf-2026-10-15.md): 120fps 안정, CPU 약 100%, 5분에 +3°C, 메모리 누수 징후 없음. gfxinfo 대신 frametimeline 사용
+  - 제안서 docs/plans/active/platform-ship-hitbox.md: 배율 키 하나(waves.top.shipScale)를 엔진·렌더가 함께 읽기 + 그림과 엔진 일치 테스트
+- 남은 문제: 60fps 제한 제안(S3), 제안서 결정(S1), 새 빌드 재측정.
+
 ## 2026-10-15 · S5 · 사용자 버그 '적이 일정 간격에서 멈춰 보임' 수정 (review/topdown-approach-fix dcc29f2)
 - 원인: ① 접촉이 반경 28 원(배는 길쭉 — 옆구리 11 떨어져 멈춤) ② 화면 끝 → 몸통 6~9초, 사거리 끝에서 맞고 죽어 정지처럼 보임(프레임 띠로 확인).
 - 수정: 선체 캡슐 접촉(ship_tiers topHalfWidth·topHalfLength), waves.top.mobSpeedScale 2. 몸통 접촉 39 → 129, 접촉 공격 68 → 243. 회귀 테스트·골든 4장.
