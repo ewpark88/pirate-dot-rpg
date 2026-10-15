@@ -61,6 +61,28 @@ void main() {
     expect(quadrants.length, greaterThanOrEqualTo(3));
   });
 
+  test('피격 방향: 탑다운 ShipDamaged에 때린 적 위치(JSON 왕복), 옆모습은 없음', () {
+    List<ShipDamaged> hits(String view) {
+      final e = engineOf(game(view: view))..enqueue(const OpSpawnBoss());
+      final out = <ShipDamaged>[];
+      for (var i = 0; i < ticksFor(30) && out.isEmpty; i++) {
+        e.tick();
+        out.addAll(e.drainEvents().whereType<ShipDamaged>());
+      }
+      return out;
+    }
+
+    final top = hits('top');
+    expect(top, isNotEmpty);
+    final h = top.first;
+    expect(h.fromX, isNotNull);
+    expect(GameEvent.fromJson(h.toJson()).toJson(), h.toJson());
+    final side = hits('side');
+    expect(side, isNotEmpty);
+    expect(side.first.fromX, isNull);
+    expect(side.first.toJson().containsKey('fromX'), isFalse);
+  });
+
   test('결정론: 같은 시드·같은 명령이면 같은 상태', () {
     String run() {
       final e = engineOf(game(seed: 11))..advance(ticksFor(60));
@@ -92,6 +114,10 @@ void main() {
 
     final boss0 = e.state.battle!.enemies.firstWhere((x) => x.boss);
     expect(boss0.y, lessThan(top.shipY));
+    // 출발 = 접근 원(bossSpawnRadius 기본) 바로 밖, 카메라 밖 (빠른 항해 보스 간격 — S2 결정 ①). 첫 틱에 한 걸음 왔을 수 있다.
+    final start = math.sqrt(math.pow(boss0.x - top.shipX, 2) + math.pow(boss0.y - top.shipY, 2));
+    expect(start, closeTo(tables.waves.raw.obj('top').number('bossSpawnRadius') + top.bossRadius, 5));
+    expect(top.shipY - boss0.y, greaterThan(tables.waves.raw.obj('top').number('viewHeight') / 2));
     var reached = false;
     for (var i = 0; i < ticksFor(25) && e.state.battle!.bossActive; i++) {
       e.tick();

@@ -42,6 +42,11 @@ class SpriteBank {
       // 탑다운 적·보스 (T2: gen_topdown_enemies·gen_topdown_bosses, 머리가 위, 2프레임)
       for (final k in t.regions.enemies.keys) (key: 'td_enemy:$k', path: 'enemies/td_$k.png', frames: 2),
       for (final b in fx.bossLook.keys) (key: 'td_boss:$b', path: 'bosses/td_$b.png', frames: 2),
+      // 탑다운 지나가는 풍경 (gen_topdown_landmarks, 바다 분위기)
+      for (final l in {
+        for (final v in fx.raw.obj('atmosphere').obj('landmarks').obj('byRegion').raw.values) ...(v as List),
+      })
+        (key: 'td_land:$l', path: 'fx/td_land_$l.png', frames: 2),
       for (final tier in t.shipTiers.tiers) (key: 'ship:${tier.id}', path: 'ship/${tier.sprite}.png', frames: 1),
       // 배 부품 외형 단계 (tools/art/gen_ship_parts.py): 등급마다 부품 시트, 프레임 = 단계.
       for (final tier in t.shipTiers.tiers)
@@ -75,10 +80,12 @@ class SpriteBank {
   }
 
   /// 목록의 에셋 중 앱 에셋 목록(AssetManifest)에 있는 것만 읽는다. 없거나 읽지 못한 것은 플레이스홀더.
-  static Future<SpriteBank> load(Images images, GameTables tables, {AssetBundle? bundle}) async {
+  /// [only]가 있으면 그 접두사 키만 읽는다(배 미리보기 등 작은 은행).
+  static Future<SpriteBank> load(Images images, GameTables tables, {AssetBundle? bundle, String? only}) async {
     final bank = SpriteBank();
     final present = (await AssetManifest.loadFromAssetBundle(bundle ?? rootBundle)).listAssets().toSet();
     for (final e in manifest(tables)) {
+      if (only != null && !e.key.startsWith(only)) continue;
       if (!present.contains('${images.prefix}${e.path}')) continue;
       try {
         bank.put(e.key, await images.load(e.path), frames: e.frames);

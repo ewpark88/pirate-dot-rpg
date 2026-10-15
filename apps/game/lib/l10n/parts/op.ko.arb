@@ -35,5 +35,9 @@
   "opAdShow": "보상형 광고 보기 (보상 없음)",
   "opAdResult": "광고 결과: {result}",
   "opPrivacyOptions": "개인정보 옵션",
-  "opTestRing": "알림 10초 뒤"
+  "opTestRing": "알림 10초 뒤",
+  "opBattleView": "전장 방식",
+  "opBattleViewSide": "옆모습",
+  "opBattleViewTop": "탑다운",
+  "opBattleViewNotReady": "탑다운은 렌더 준비 중"
 }

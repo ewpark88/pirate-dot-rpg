@@ -6,6 +6,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -25,14 +26,16 @@ class TopBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final (gold, gems) = ref.watch(gameStateProvider.select((s) => (s.wallet.gold, s.wallet.gems)));
+    // 골드는 표시 골드(코인이 닿은 만큼 오른다), 젬은 지갑 그대로.
+    final gold = ref.watch(displayGoldProvider);
+    final gems = ref.watch(gameStateProvider.select((s) => s.wallet.gems));
     final money = Container(
       padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
       decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(18), boxShadow: Skin.shadowSmall),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
+          const CoinPulseIcon(child: PixelSprite(UiSprites.coin, dots: 16, scale: 1)),
           const SizedBox(width: 4),
           // 길게 누르면 전체 자릿수.
           BigNumText(

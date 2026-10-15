@@ -13,8 +13,8 @@ class TreasureRoute extends ConsumerWidget {
     final count = ref.watch(treasureSeaCountProvider);
     if (count == 0) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
-    final sea = ref.watch(rebirthV2Provider.select((s) => s.sea));
-    final control = ref.read(rebirthV2Provider.notifier);
+    final sea = ref.watch(treasureRouteProvider);
+    final control = ref.read(rebirthV2Provider);
     Widget chip(int? value, String label) {
       final on = sea == value;
       return Semantics(
@@ -41,7 +41,7 @@ class TreasureRoute extends ConsumerWidget {
       );
     }
 
-    final info = sea == null ? null : treasureSeas[sea - 1];
+    final info = sea == null ? null : ref.watch(treasureSeasProvider)[sea - 1];
     return Container(
       key: const Key('rebirth.treasure'),
       margin: const EdgeInsets.only(top: 8),

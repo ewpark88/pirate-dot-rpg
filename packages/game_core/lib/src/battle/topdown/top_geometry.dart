@@ -75,17 +75,34 @@ class TopGeometry implements BattleGeometry {
     if (added.isEmpty) return;
     final rng = ctx.rng;
     final groups = top.swarmGroupsMin + rng.nextInt(top.swarmGroupsMax - top.swarmGroupsMin + 1);
-    final heads = [for (var g = 0; g < groups; g++) rng.nextDouble() * _turn];
+    final heads = [for (var g = 0; g < groups; g++) _heading(rng)];
     final spread = top.swarmSpreadDeg * radiansPerDegree;
     for (var i = 0; i < added.length; i++) {
       final angle = heads[i % groups] + (rng.nextDouble() - half) * spread;
       final r = top.radiusOf(added[i]);
       final out = math.max(_toBorder(angle) + top.spawnMargin + r, top.approachRadius);
-      _place(added[i], angle, out + (i ~/ groups) * w.field.spawnSpacing);
+      _place(added[i], angle, out + (i ~/ groups) * top.swarmSpacing);
     }
   }
 
-  /// 보스는 배 위쪽 화면 밖에서 나온다. 촉수는 보스가 설 원 위에 고르게(보스 자리 빼고).
+  /// 묶음 방향 하나: 가중이 있으면 위·오른쪽·아래·왼쪽 사분면(각 90°)을 가중대로 고른 뒤 그 안에서 고르게.
+  double _heading(Rng rng) {
+    final wt = top.spawnWeights;
+    if (wt == null) return rng.nextDouble() * _turn;
+    const quarter = _turn * half * half;
+    final r = rng.nextDouble() * (wt.up + wt.side + wt.down + wt.side);
+    // 사분면 중심: 위 −90°, 오른쪽 0°, 아래 90°, 왼쪽 180°.
+    final center = r < wt.up
+        ? -quarter
+        : r < wt.up + wt.side
+        ? 0.0
+        : r < wt.up + wt.side + wt.down
+        ? quarter
+        : quarter / half;
+    return center + (rng.nextDouble() - half) * quarter;
+  }
+
+  /// 보스는 배 위쪽, 출발 원(bossSpawnRadius) 바로 밖에서 나온다. 촉수는 보스가 설 원 위에 고르게(보스 자리 빼고).
   @override
   void placeBoss(Field f, {double? x, double? y}) {
     final boss = f.foes.where((e) => e.boss).lastOrNull;
@@ -96,7 +113,7 @@ class TopGeometry implements BattleGeometry {
         ..x = x
         ..y = y;
     } else {
-      _place(boss, up, _toBorder(up) + top.spawnMargin + top.bossRadius);
+      _place(boss, up, top.bossSpawnRadius + top.bossRadius);
     }
     final arms = f.foes.where((e) => e.ownerId == boss.id).toList();
     for (var i = 0; i < arms.length; i++) {

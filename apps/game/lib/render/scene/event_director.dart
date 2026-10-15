@@ -62,6 +62,7 @@ class EventDirector implements ReplayListener {
           ..style = style
           ..family = e.family
           ..crewId = e.crewId
+          ..flat = scene.isTop
           ..fromX = tip.dx
           ..fromY = tip.dy
           ..toX = target == null ? e.x : (target.boss ? scene.layout.clampBossX(target.x) : target.x)
