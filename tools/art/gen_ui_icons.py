@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import math
 import struct
 import sys
 import zlib
@@ -42,6 +43,10 @@ PALETTE = {
     "W": (240, 232, 210),  # 돛 (ship_t1)
     "D": (70, 44, 26),  # 돛대
     "u": (47, 98, 196),
+    "v": (110, 190, 90),  # 초록 (팩 piranha)
+    "V": (60, 120, 60),
+    "z": (214, 156, 120),  # 피부 그늘
+    "R": (150, 40, 40),
 }
 
 SHIP = [
@@ -296,6 +301,273 @@ def outlined(rows: list[str]) -> list[str]:
     return ["".join(r) for r in out]
 
 
+# ---- S4 요청 묶음 (2026-10-15): 남색 판 위에서 잘 보이게 흰·금 위주 ----
+QUEST = [
+    "................",
+    ".....gggggg.....",
+    "...bbgwwwwgbb...",
+    "..bbbggggggbbb..",
+    "..bppppppppppb..",
+    "..bpppppppppvb..",
+    "..bppppppppvvb..",
+    "..bpvpppppvvpb..",
+    "..bpvvpppvvppb..",
+    "..bppvvpvvpppb..",
+    "..bpppvvvppppb..",
+    "..bppppvpppppb..",
+    "..bppppppppppb..",
+    "..bbbbbbbbbbbb..",
+    "................",
+    "................",
+]
+TAILWIND = [
+    "................",
+    ".......Drr......",
+    ".......D........",
+    ".......DWWWW....",
+    "CCCC...DWWWWW...",
+    ".......DWWWWWW..",
+    "..CCCCCDWWWWWW..",
+    ".......DWWWWWW..",
+    "CCC....DWWWWW...",
+    ".......DWWWW....",
+    ".......DPPP.....",
+    ".......D........",
+    "..bbbbbbbbbbbb..",
+    "...bbbbbbbbbb...",
+    "................",
+    "................",
+]
+AD = [
+    "................",
+    ".....g...g......",
+    "......g.g.......",
+    "..gggggggggggg..",
+    "..gBBBBBBBBBBg..",
+    "..gBBBwBBBBBBg..",
+    "..gBBBwwBBBBBg..",
+    "..gBBBwwwBBBBg..",
+    "..gBBBwwwwBBBg..",
+    "..gBBBwwwBBBBg..",
+    "..gBBBwwBBBBBg..",
+    "..gBBBwBBBBBBg..",
+    "..gggggggggggg..",
+    "...g........g...",
+    "................",
+    "................",
+]
+LOCK = [
+    "................",
+    ".....gggggg.....",
+    "....gg....gg....",
+    "....gg....gg....",
+    "....gg....gg....",
+    "....gg....gg....",
+    "...YYYYYYYYYY...",
+    "...Yyyyyyyyyy...",
+    "...YyyyDDyyyy...",
+    "...YyyyDDyyyy...",
+    "...YyyyyDyyyy...",
+    "...Yyyyyyyyyy...",
+    "...oooooooooo...",
+    "................",
+    "................",
+    "................",
+]
+HAND = [
+    "................",
+    "......ss........",
+    "......ss........",
+    "......ss........",
+    "......sszsz.....",
+    "......ssssssz...",
+    "...ss.sssssss...",
+    "...ssssssssss...",
+    "....sssssssss...",
+    "....zssssssss...",
+    ".....sssssss....",
+    ".....wwwwwww....",
+    ".....wwwwwww....",
+    "................",
+    "................",
+    "................",
+]
+BUBBLE = [
+    "................",
+    "................",
+    "...wwwwwwwwww...",
+    "..wwwwwwwwwwww..",
+    "..wwwwwwwwwwww..",
+    "..wwwSwwSwwSww..",
+    "..wwwSwwSwwSww..",
+    "..wwwwwwwwwwww..",
+    "...wwwwwwwwww...",
+    "...www..........",
+    "...ww...........",
+    "..w.............",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+CHECK = [
+    "........",
+    ".vvvvvv.",
+    ".vvvvvw.",
+    ".vvvvwv.",
+    ".vwvwvv.",
+    ".vvwvvv.",
+    ".vvvvvv.",
+    "........",
+]
+CHECK_EMPTY = [
+    "........",
+    ".GGGGGG.",
+    ".GSSSSG.",
+    ".GSSSSG.",
+    ".GSSSSG.",
+    ".GSSSSG.",
+    ".GGGGGG.",
+    "........",
+]
+QMARK = [
+    "..wwww..",
+    ".wwwwww.",
+    "ww....ww",
+    "......ww",
+    ".....ww.",
+    "....ww..",
+    "...ww...",
+    "...ww...",
+    "........",
+    "...ww...",
+    "...ww...",
+]
+
+
+def _blank(n: int) -> list[list[str]]:
+    return [["."] * n for _ in range(n)]
+
+
+def _rows(g: list[list[str]]) -> list[str]:
+    return ["".join(r) for r in g]
+
+
+def _polar(n: int):
+    c = n / 2
+    for y in range(n):
+        for x in range(n):
+            dx, dy = x + 0.5 - c, y + 0.5 - c
+            yield x, y, dx, dy, (dx * dx + dy * dy) ** 0.5, math.degrees(math.atan2(dy, dx))
+
+
+def gear16() -> list[str]:
+    """톱니 8개 + 가운데 구멍. 왼쪽 위 밝고 오른쪽 아래 어둡게."""
+    g = _blank(16)
+    for x, y, dx, dy, d, a in _polar(16):
+        tooth = abs((a + 360) % 45 - 22.5) > 12  # 45°마다 이(톱니)
+        if d < 2.0:
+            continue
+        if d <= 4.8 or (d <= 6.8 and tooth):
+            g[y][x] = "w" if dx + dy < -3 else ("G" if dx + dy > 3 else "g")
+    return _rows(g)
+
+
+def moon16() -> list[str]:
+    """초승달: 큰 원에서 오른쪽 위로 비킨 원을 뺀다."""
+    g = _blank(16)
+    for x, y, dx, dy, d, _ in _polar(16):
+        cut = ((dx - 2.6) ** 2 + (dy + 2.2) ** 2) ** 0.5
+        if d <= 6.4 and cut > 5.2:
+            g[y][x] = "Y" if dx + dy < -2 else ("o" if dy > 3.5 else "y")
+    return _rows(g)
+
+
+FARM = [
+    "................",
+    "................",
+    ".....YYYYYY.....",
+    "...YYY....YYY...",
+    "..YY........YY..",
+    "..YY........YY..",
+    "..........YYYYY.",
+    "...y.......YYY..",
+    "..yyy.......Y...",
+    ".yyyyy..........",
+    "..yy........yy..",
+    "..yy........yy..",
+    "...yyy....yyy...",
+    ".....yyyyyy.....",
+    "................",
+    "................",
+]
+
+
+def farm16() -> list[str]:
+    """반복(자동 사냥): 시계 방향 두 갈래 화살표 (위 금빛 → 오른쪽 아래로, 아래 → 왼쪽 위로)."""
+    return FARM
+
+
+def flag16() -> list[str]:
+    """목표 깃발: 체크무늬(흰·남색) 깃발 + 금 공 꼭지 + 막대."""
+    g = _blank(16)
+    g[1][4] = "Y"
+    for y in range(2, 15):
+        g[y][4] = "g"
+    for y in range(2, 9):
+        right = 12 + (1 if y in (4, 5) else 0) - (1 if y in (2, 8) else 0)
+        for x in range(5, right + 1):
+            g[y][x] = "w" if ((y - 2) // 2 + (x - 5) // 2) % 2 == 0 else "S"
+    for x in range(2, 7):
+        g[14][x] = "G"
+    return _rows(g)
+
+
+REBIRTH = [
+    "................",
+    ".......YYYYY....",
+    ".....YYYYYYYY...",
+    "....YY......YY..",
+    "..YYYYYY....YY..",
+    "...YYYY.....YY..",
+    "....YY.....YY...",
+    "..........YY....",
+    ".ppppppppP......",
+    ".pBBpppppP......",
+    ".pBBBpprpr......",
+    ".ppBpppprP......",
+    ".pppppprpr......",
+    ".ppppppppP......",
+    "..pp.ppp.pP.....",
+    "................",
+]
+
+
+def rebirth16() -> list[str]:
+    """환생: 지도 조각(물·X 표시) + 위에서 왼쪽 아래로 도는 되돌이 화살표."""
+    return REBIRTH
+
+
+def card_back32() -> list[str]:
+    """소환 카드 뒷면 32px: 금 테 + 남색 마름모 격자 + 가운데 흰 '?'(2배)."""
+    g = _blank(32)
+    for y in range(2, 30):
+        for x in range(5, 27):
+            if x in (5, 26) and y in (2, 29):
+                continue
+            if x in (5, 6, 25, 26) or y in (2, 3, 28, 29):
+                g[y][x] = "Y" if (x <= 6 or y <= 3) else "o"
+            else:
+                g[y][x] = "B" if ((x + y) % 6 == 0 or (x - y) % 6 == 0) else "N"
+    for qy, row in enumerate(QMARK):
+        for qx, ch in enumerate(row):
+            if ch == "w":
+                for yy in (0, 1):
+                    for xx in (0, 1):
+                        g[5 + qy * 2 + yy][8 + qx * 2 + xx] = "w"
+    return _rows(g)
+
+
 def png(rows: list[str]) -> bytes:
     h = len(rows)
     w = len(rows[0])
@@ -332,6 +604,20 @@ FILES = {
     "ui/part_sail.png": outlined(PART_SAIL),
     "ui/part_crowsnest.png": outlined(PART_CROWSNEST),
     "ui/part_cargo.png": outlined(PART_CARGO),
+    "ui/gear.png": outlined(gear16()),
+    "ui/quest.png": outlined(QUEST),
+    "ui/tailwind.png": outlined(TAILWIND),
+    "ui/flag.png": outlined(flag16()),
+    "ui/ad.png": outlined(AD),
+    "ui/farm.png": outlined(farm16()),
+    "ui/lock.png": outlined(LOCK),
+    "ui/rebirth.png": outlined(rebirth16()),
+    "ui/moon.png": outlined(moon16()),
+    "ui/card_back.png": outlined(card_back32()),
+    "ui/check.png": outlined(CHECK),
+    "ui/check_empty.png": outlined(CHECK_EMPTY),
+    "ui/hand.png": outlined(HAND),
+    "ui/bubble.png": outlined(BUBBLE),
 }
 
 
