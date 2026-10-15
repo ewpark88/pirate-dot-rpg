@@ -8,6 +8,9 @@ import unittest
 from pathlib import Path
 
 sys.dont_write_bytecode = True
+for _s in (sys.stdout, sys.stderr):  # 스크립트가 찍는 안내(—·한글)가 cp949 콘솔에서 깨지지 않게
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(encoding="utf-8")
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import device_shots as ds  # noqa: E402
 
@@ -36,8 +39,15 @@ class Run:
         return type("R", (), {"returncode": 0, "stdout": out if isinstance(out, bytes) else out.encode(), "stderr": b""})()
 
 
-AWAKE = {"shell dumpsys power": "mWakefulness=Awake", "shell dumpsys window": "mShowingLockscreen=false",
-         "shell wm size": "Physical size: 1080x2340", "shell cat": DUMP, "exec-out screencap": b"\x89PNG"}
+WINDOW = (
+    "mShowingLockscreen=false\n  statusBars frame=[0,0][1080,103] visible=true\n"
+    "  navigationBars frame=[0,2205][1080,2340] visible=true\n"
+)
+AWAKE = {"shell dumpsys power": "mWakefulness=Awake", "shell dumpsys window": WINDOW,
+         "shell wm size": "Physical size: 1080x2340", "shell wm density": "Physical density: 480\nOverride density: 450",
+         "shell dumpsys activity activities": "  topResumedActivity=ActivityRecord{1 u0 repo.dot.pirate/.MainActivity t1}\n",
+         "shell cat": DUMP, "exec-out screencap": b"\x89PNG"}
+LAUNCHER = "  topResumedActivity=ActivityRecord{2 u0 com.sec.android.app.launcher/.activities.LauncherActivity t2}\n"
 
 
 class DeviceShotsTest(unittest.TestCase):
@@ -74,9 +84,44 @@ class DeviceShotsTest(unittest.TestCase):
         # 탭 바가 아닌 '배 등급 강화' 같은 글자는 탭으로 잡지 않는다(줄 단위 정확히 일치)
         self.assertEqual(ds.tab_centers('<hierarchy><node text="" content-desc="배 등급 강화" bounds="[0,900][540,960]"/></hierarchy>'), {})
 
-    def test_fallback(self):
-        self.assertEqual(ds.fallback_centers(1080, 2340, None)["crew"], (675, 2129))
-        self.assertEqual(ds.fallback_centers(1080, 2340, 2000)["voyage"], (135, 2000))
+    def test_layout_rule_matches_s24(self):
+        # S24 실측(2026-10-15 캡처): 설정 (1010,170) · 퀘스트 (876,170) · 탭 바 y 2030~2200
+        self.assertEqual(ds.parse_bars(WINDOW, 2340), (103, 2205))
+        self.assertEqual(ds.parse_bars("", 2340), (0, 2340))
+        self.assertEqual(ds.parse_dpr("Physical density: 480\nOverride density: 450"), 2.8125)
+        tabs, buttons = ds.layout_centers(1080, 2.8125, 103, 2205, None)
+        self.assertEqual(tabs["crew"], (675, 2126))
+        self.assertEqual(buttons, {"settings": (1012, 171), "quest": (878, 171)})
+
+    def test_scrim_and_primary_button_from_pixels(self):
+        from PIL import Image
+
+        normal = Image.new("RGB", (1080, 2340), ds.NAVY_DARK)
+        self.assertFalse(ds.has_scrim(normal, 103, 2.8125))
+        dim = Image.new("RGB", (1080, 2340), (6, 7, 13))
+        self.assertTrue(ds.has_scrim(dim, 103, 2.8125))
+        self.assertIsNone(ds.find_primary(dim))
+        dim.paste(ds.ACTION, (700, 1300, 900, 1400))  # 막 위에 밝게 남은 '받기' 버튼
+        x, y = ds.find_primary(dim)
+        self.assertTrue(700 <= x <= 900 and 1300 <= y <= 1400)
+        self.assertFalse(ds.has_scrim(None, 103, 2.8125))
+        # 실기기(S24) 캡처의 '받기' 버튼 색 (67,118,185)도 잡고, 막 아래로 어두워진 버튼은 안 잡는다
+        real = Image.new("RGB", (1080, 2340), (6, 7, 13))
+        real.paste((67, 118, 185), (870, 1242, 981, 1350))
+        real.paste((31, 54, 85), (100, 500, 600, 600))
+        x, y = ds.find_primary(real)
+        self.assertTrue(870 <= x <= 981 and 1242 <= y <= 1350)
+
+    def test_same_screen(self):
+        from PIL import Image
+
+        a = Image.new("RGB", (1080, 2340), (20, 20, 40))
+        b = a.copy()
+        b.paste((200, 50, 50), (0, 0, 1080, 900))  # 전장만 다름 → 같은 화면
+        self.assertTrue(ds.same_screen(a, b, 1053, 2025))
+        b.paste((200, 200, 200), (0, 1200, 1080, 1800))  # 탭 내용이 바뀜
+        self.assertFalse(ds.same_screen(a, b, 1053, 2025))
+        self.assertFalse(ds.same_screen(None, b, 1053, 2025))
 
     def test_capture_taps_tabs_and_saves(self):
         run = Run(AWAKE)
@@ -94,12 +139,40 @@ class DeviceShotsTest(unittest.TestCase):
         keys = [c[3:] for c in run.calls if c[:3] == ["shell", "input", "keyevent"]]
         self.assertEqual(keys, [["4"]])
 
-    def test_missing_top_buttons_are_skipped(self):
-        run = Run({**AWAKE, "shell cat": DUMP.replace("퀘스트·출석", "x").replace('content-desc="설정"', 'content-desc="y"')})
+    def test_failed_dump_uses_layout_rule(self):
+        run = Run({**AWAKE, "shell cat": ""})  # 실기기: uiautomator가 "null root node"로 실패
         with tempfile.TemporaryDirectory() as d:
             shots = ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
-        self.assertEqual(len(shots), 4)
+        self.assertEqual(len(shots), 6)
+        taps = [c[3:] for c in run.calls if c[:3] == ["shell", "input", "tap"]]
+        self.assertEqual(taps[:4], [["135", "2126"], ["405", "2126"], ["675", "2126"], ["945", "2126"]])
+        self.assertIn(["878", "171"], taps)
+        self.assertIn(["1012", "171"], taps)
+
+    def test_never_presses_when_app_not_in_front(self):
+        # 2026-10-15 사고 재현: 앱이 뒤에 있고 런처가 앞 → 아무것도 누르지 않고 멈춘다
+        run = Run({**AWAKE, "shell dumpsys activity activities": LAUNCHER})
+        with tempfile.TemporaryDirectory() as d, self.assertRaisesRegex(ds.DeviceError, "앞에"):
+            ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
+        self.assertFalse([c for c in run.calls if c[:2] == ["shell", "input"]])
+
+    def test_no_back_when_settings_did_not_open(self):
+        # 버튼을 눌러도 화면이 그대로면 BACK을 보내지 않는다(첫 화면에서 BACK = 앱 닫힘)
+        import io
+
+        from PIL import Image
+
+        buf = io.BytesIO()
+        Image.new("RGB", (1080, 2340), (13, 15, 27)).save(buf, format="PNG")
+        run = Run({**AWAKE, "shell cat": "", "exec-out screencap": buf.getvalue()})
+        with tempfile.TemporaryDirectory() as d:
+            ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
         self.assertFalse([c for c in run.calls if c[:3] == ["shell", "input", "keyevent"]])
+
+    def test_in_front(self):
+        self.assertTrue(ds.in_front(AWAKE["shell dumpsys activity activities"]))
+        self.assertFalse(ds.in_front(LAUNCHER))
+        self.assertFalse(ds.in_front(""))
 
     def test_locked_stops_without_input(self):
         run = Run({**AWAKE, "shell dumpsys window": "isKeyguardShowing=true"})
