@@ -27,16 +27,16 @@ class TopBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    // 골드는 표시 골드(코인이 닿은 만큼 오른다), 젬은 지갑 그대로.
-    final gold = ref.watch(displayGoldProvider);
-    final gems = ref.watch(gameStateProvider.select((s) => s.wallet.gems));
+    // 골드·젬은 지갑 값 그대로 실시간 (사용자 지시: 따로 움직이는 연출 없음).
+    final (gold, gems) = ref.watch(gameStateProvider.select((s) => (s.wallet.gold, s.wallet.gems)));
     final money = Container(
       padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
       decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(18), boxShadow: Skin.shadowSmall),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CoinPulseIcon(child: PixelSprite(UiSprites.coin, dots: 16, scale: 1)),
+          // 코인이 날아오는 자리(렌더에 좌표를 준다).
+          KeyedSubtree(key: topGoldIconKey, child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1)),
           const SizedBox(width: 4),
           // 길게 누르면 전체 자릿수.
           BigNumText(
