@@ -1376,6 +1376,7 @@ const Map<String, String> rawTables = {
   "monster": { "hpBase": 8, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 10, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 3,
+  "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "field": {
     "width": 320,
     "shipX": 56,

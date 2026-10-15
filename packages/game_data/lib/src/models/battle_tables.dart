@@ -43,6 +43,9 @@ class WavesTable {
   int get earlyStageMax => _boss.integer('earlyStageMax');
   double get earlyHpMultiplier => _boss.number('earlyHpMultiplier');
   double get travelSec => raw.number('travelSec');
+
+  /// 빠른 항해: 환생 뒤 bestStage × fraction(올림) 이하 스테이지는 파 [RebirthSkip.waves]개만 잡고 보스.
+  RebirthSkip get rebirthSkip => RebirthSkip(raw.obj('rebirthSkip'));
   double get multiKillWindowSec => raw.obj('multiKill').number('windowSec');
   double get multiKillGoldBonusPerKill => raw.obj('multiKill').number('goldBonusPerKill');
 
@@ -69,6 +72,13 @@ class WavesTable {
       expect(e, that: m.number(k) > 1, message: 'waves: monster.$k는 1보다 커야 함');
     }
     expect(e, that: tickMs > 0 && 1000 % tickMs == 0, message: 'waves: tickMs는 1000의 약수');
+    final skip = rebirthSkip;
+    expect(e, that: skip.fraction >= 0 && skip.fraction < 1, message: 'waves: rebirthSkip.fraction은 0 이상 1 미만');
+    expect(
+      e,
+      that: skip.waves >= 0 && skip.waves <= wavesPerStage,
+      message: 'waves: rebirthSkip.waves는 0~wavesPerStage',
+    );
     return e;
   }
 }
@@ -104,4 +114,11 @@ class FieldDef {
   /// 배에 닿은 적은 x가 shipX로 멈춰 각도가 90°가 되므로 이게 없으면 강습이 붙은 적을 못 친다.
   final double coneNearPx;
   final double contactIntervalSec;
+}
+
+class RebirthSkip {
+  RebirthSkip(JsonReader j) : fraction = j.number('fraction'), waves = j.integer('waves');
+
+  final double fraction;
+  final int waves;
 }

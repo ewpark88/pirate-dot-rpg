@@ -224,4 +224,31 @@ void main() {
     expect(a, run());
     expect(a.length, greaterThan(1000));
   });
+
+  group('빠른 항해 (환생 뒤 bestStage × rebirthSkip.fraction 이하, 사용자 결정 2026-10-15)', () {
+    final crews = {crewOf('direct'): const CrewState(level: 40)};
+
+    /// 첫 적이 나타날 때까지 돌리고, 그 적이 보스인지.
+    bool firstIsBoss(Progress p) {
+      final e = engineOf(game(crews: crews).copyWith(progress: p));
+      for (var i = 0; i < 200 && (e.state.battle?.enemies.isEmpty ?? true); i++) {
+        e.tick();
+      }
+      return e.state.battle!.enemies.any((x) => x.boss);
+    }
+
+    test('환생 뒤 낮은 스테이지는 파 없이 바로 보스', () {
+      expect(firstIsBoss(const Progress(stage: 10, bestStage: 50, rebirths: 1)), isTrue);
+    });
+
+    test('첫 회차·경계 위 스테이지는 그대로 파부터', () {
+      final limit = (50 * w.rebirthSkip.fraction).ceil();
+      for (final p in [
+        const Progress(stage: 10, bestStage: 50),
+        Progress(stage: limit + 1, bestStage: 50, rebirths: 1),
+      ]) {
+        expect(firstIsBoss(p), isFalse, reason: '${p.toJson()}');
+      }
+    });
+  });
 }

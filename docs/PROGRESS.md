@@ -122,7 +122,10 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 추가: platform abf2f9f(아이콘 스크립트·testRing·런처 이름), render v2(선원 바·범위 합산 숫자, 골든 5장), ui v2(정사각 초상 카드·실루엣·assets/ui 아이콘, 골든 11장),
   economy fd535ed(notificationsDailyMax) 머지. 계약 I `FleetSlot.rarity`(렌더 요청). main.dart dailyMax = 테이블 값.
 - 실수(레인): ui 커밋에 골든 실패 산출물 `test/ui/failures/*.png`가 들어옴 → 제거, `.gitignore`에 `**/test/**/failures/`·`.kotlin/`.
-- 다음 할 일: S2 환생 2 비교표 → 사용자 결정, S4 Material HUD 걷어내기(신호 줌), S3 앱 아이콘·UI 아이콘·적 스프라이트, S5 profile 빌드·DEVICE_TEST 절.
+- 사용자 결정(환생 3): 반복 보스 카드 = 짝수 스테이지만 1장(c3, economy 구현), 빠른 항해 = 환생 뒤 bestStage×0.3(올림) 이하 스테이지는 파 없이 보스(f0).
+  조사(다른 키우기 게임: TT2 시작 지점 최대 90%, 진행 보상은 최고 기록 갱신 때만)를 보고 결정.
+- 추가: 세이브 v4 `Settings.notifications`(ADR-0009), 빠른 항해 `waves.rebirthSkip`(battle), 앱 아이콘·스플래시, UI 16px 아이콘, 산호초 보스 스프라이트 요청, DEVICE_TEST 3절.
+- 다음 할 일: S2 c3·첫 신화 28일+, S3 적 스프라이트 묶음, S4 HUD 걷어내기·알림 토글·배 탭, S5 음원(사용자: 최대한 신경 써서 — CC0 후보 + 자작 칩튠).
 
 ### 2026-10-14 · S1 · M3 계약·보스, 레인 통합 (오후)
 - 한 일: 해역 보스·무한 항해(edc81e3), 세이브 v3(16dda02, ADR-0008), lastSummon·AckSummonResult, GrantAdReward.choice·lastOfflineGold, ClaimDaily(questId), 튜토리얼 3단계 보스.
