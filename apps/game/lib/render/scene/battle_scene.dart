@@ -45,7 +45,13 @@ class BattleScene {
     projectiles = Pool(juice.maxProjectiles, Projectile.new);
     effects = Pool(juice.maxEffects, Effect.new);
     coins = Pool(juice.maxCoins, Coin.new);
-    numbers = DamageNumbers(juice.damageNumber, juice.maxDamageNumbers);
+    final dn = juice.raw.obj('damageNumber');
+    numbers = DamageNumbers(
+      juice.damageNumber,
+      juice.maxDamageNumbers,
+      mergeMs: dn.number('mergeMs'),
+      stackRows: dn.integer('stackRows'),
+    );
     hits = Pool(_maxHits, HitState.new);
     zones = Pool(fx.zone.integer('max'), Zone.new);
     this.looks = looks ?? EnemyLooks.fromTables(tables);

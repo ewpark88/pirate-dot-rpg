@@ -1,7 +1,7 @@
 {
   "files": {
     "audio/bgm/bgm_abyss.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (bgm/bgm_abyss.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (bgm/bgm_abyss.wav)",
       "license": "OWN"
     },
     "audio/bgm/bgm_coral.ogg": {
@@ -9,7 +9,7 @@
       "license": "CC0-1.0"
     },
     "audio/bgm/bgm_glacier.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (bgm/bgm_glacier.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (bgm/bgm_glacier.wav)",
       "license": "OWN"
     },
     "audio/bgm/bgm_phantom.ogg": {
@@ -21,71 +21,71 @@
       "license": "CC0-1.0"
     },
     "audio/bgm/bgm_volcano.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (bgm/bgm_volcano.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (bgm/bgm_volcano.wav)",
       "license": "OWN"
     },
     "audio/sfx/boss_clear.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/boss_clear_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/boss_clear_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/boss_horn.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/boss_horn_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/boss_horn_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/combo.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/combo_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/combo_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/fail.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/fail_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/fail_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/fanfare.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/fanfare_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/fanfare_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/fanfare_small.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/fanfare_small_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/fanfare_small_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_0.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_1.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_1.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_1.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_2.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_2.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_2.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_crit_0.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_crit_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_crit_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_crit_1.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_crit_1.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_crit_1.wav)",
       "license": "OWN"
     },
     "audio/sfx/hit_crit_2.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/hit_crit_2.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/hit_crit_2.wav)",
       "license": "OWN"
     },
     "audio/sfx/pop.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/pop_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/pop_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/promote.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/promote_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/promote_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/skill.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/skill_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/skill_0.wav)",
       "license": "OWN"
     },
     "audio/sfx/ultimate.ogg": {
-      "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/ultimate_0.wav)",
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/ultimate_0.wav)",
       "license": "OWN"
     },
     "bosses/deep_sub.png": {
