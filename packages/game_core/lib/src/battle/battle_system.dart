@@ -13,6 +13,7 @@ import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/rebirth_shop.dart'
     show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
+import 'package:game_core/src/economy/sea_events.dart' show seaEventStep, startSeaEvent, tapGoldfish;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -37,6 +38,10 @@ class BattleSystem implements GameSystem {
   @override
   GameState? handle(GameState state, Command command, SystemContext ctx) {
     switch (command) {
+      case TapSeaEvent():
+        return _project(tapGoldfish(state, _sync(state, ctx), command, ctx), _field!, ctx.tables);
+      case OpSeaEvent(:final id):
+        return _project(startSeaEvent(state, _sync(state, ctx), ctx, id), _field!, ctx.tables);
       case ChallengeBoss():
         final f = _sync(state, ctx);
         if (f.bossActive) return state;
@@ -87,7 +92,7 @@ class BattleSystem implements GameSystem {
     final next = _round(state, ctx, (r) {
       final f = r.field;
       if (r.t.skills.rageAutoTrigger) r.castUltimate();
-      if (f.living.isEmpty && !f.bossActive) {
+      if (f.waveFoes.isEmpty && !f.bossActive) {
         f.travelLeft -= r.dt;
         if (f.travelLeft <= 0) _nextEncounter(f, state, ctx);
       }
@@ -100,8 +105,7 @@ class BattleSystem implements GameSystem {
         ..tickStatus()
         ..tickCombo();
     });
-    final after = _resolve(next, _field!, ctx);
-    // 보스 처치는 새 Field를 만든다 → _resolve 뒤 다시 읽는다.
+    final after = seaEventStep(_resolve(next, _field!, ctx), _field!, ctx);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     return feverStep(_tailwindSpeed(_project(after, f, ctx.tables), ctx), ctx, kills: _kills, bossKilled: boss);
@@ -170,9 +174,9 @@ class BattleSystem implements GameSystem {
       _restart(f, ctx);
       return s;
     }
-    if (f.foes.isNotEmpty && f.living.isEmpty) {
+    if (f.foes.any((e) => e.eventKind == null) && f.waveFoes.isEmpty) {
       f
-        ..foes.clear()
+        ..foes.removeWhere((e) => e.eventKind == null)
         ..travelLeft = w.travelSec;
       final wave = p.wave < w.wavesPerStage ? p.wave + 1 : p.wave;
       ctx.emit(WaveCleared(ctx.tick, wave: wave));
@@ -222,7 +226,6 @@ class BattleSystem implements GameSystem {
       ..travelLeft = ctx.tables.waves.travelSec;
   }
 
-  /// 공통: 동기화 → 계산 → 지갑·게이지 반영 → 투영.
   GameState _round(GameState state, SystemContext ctx, void Function(Round) body) {
     final f = _sync(state, ctx);
     final r = Round(
@@ -288,7 +291,6 @@ class BattleSystem implements GameSystem {
       ..captainId = captainOf(ids, s, t);
   }
 
-  /// 배 겉모습(외형 단계·등급 그림·스킨·보물 바다)은 ShipDressCache가 채운다.
   GameState _project(GameState s, Field f, GameTables t) => s.copyWith(
     battle: _dress.apply(
       f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),

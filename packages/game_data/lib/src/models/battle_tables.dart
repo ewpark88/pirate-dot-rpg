@@ -47,15 +47,6 @@ class WavesTable {
   int get bossGems => _boss.integer('gems');
   double get bossSpeed => _boss.number('speed');
 
-  /// 보스가 멈추는 거리(뱃머리 shipX에서). 거기서 원거리 공격(BossFired) — 배와 부딪치지 않게 (사용자 신고 2026-10-15).
-  double get bossStandoff => _boss.number('standoff');
-
-  /// 정지 지점 이만큼 앞부터 감속한다.
-  double get bossSlowZone => _boss.number('slowZone');
-
-  /// 감속 최저 비율 (정지 직전에도 속도 × 이 값).
-  double get bossSlowFloor => _boss.number('slowFloor');
-
   /// 튜토리얼 3단계(설계서 4.12 '실패 → 강화' 학습): 이 스테이지의 첫 보스는 HP × [tutorialFailHpMultiplier].
   int get tutorialFailStage => _boss.integer('tutorialFailStage');
   double get tutorialFailHpMultiplier => _boss.number('tutorialFailHpMultiplier');
@@ -125,12 +116,9 @@ class FieldDef {
       shipX = j.number('shipX'),
       shipY = j.number('shipY'),
       spawnX = j.number('spawnX'),
-      visibleRight = j.number('visibleRight'),
       spawnSpacing = j.number('spawnSpacing'),
       laneY = j.numberMap('laneY'),
-      laneJitter = j.number('laneJitter'),
       coneNearPx = j.number('coneNearPx'),
-      contactGap = j.number('contactGap'),
       contactIntervalSec = j.number('contactIntervalSec');
 
   final double width;
@@ -140,22 +128,15 @@ class FieldDef {
   final double shipY;
   final double spawnX;
 
-  /// 보이는 화면 오른쪽 끝(필드 x, 기기 공통 최소). 사거리 상한이자 궁극기 범위 — 그 밖의 적은 맞히지 않는다.
-  final double visibleRight;
-
   /// 한 파 안에서 적 사이 가로 간격.
   final double spawnSpacing;
 
   /// 층(surface·underwater·air)별 기준 y.
   final Map<String, double> laneY;
-  final double laneJitter;
 
   /// 부채꼴(강습) 근접 거리: 배 앞머리에서 이만큼 안의 적은 각도와 상관없이 맞는다.
   /// 배에 닿은 적은 x가 shipX로 멈춰 각도가 90°가 되므로 이게 없으면 강습이 붙은 적을 못 친다.
   final double coneNearPx;
-
-  /// 일반 적이 멈추는 거리(뱃머리에서). 몸통이 배와 겹치지 않게.
-  final double contactGap;
   final double contactIntervalSec;
 }
 

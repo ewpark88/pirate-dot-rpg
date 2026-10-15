@@ -8,6 +8,7 @@ sealed class OperatorCommand extends Command {
   factory OperatorCommand._fromJson(String type, Json j) => switch (type) {
     'op.setCrew' => OpSetCrew(j['crewId'] as String, level: j['level'] as int),
     'op.setFleet' => OpSetFleet((j['crewIds'] as List?)?.cast<String>()),
+    'op.seaEvent' => OpSeaEvent(j['id'] as String),
     'op.grantPieces' => OpGrantPieces(j['count'] as int),
     'op.setRebirths' => OpSetRebirths(j['count'] as int),
     'op.grant' => OpGrant(

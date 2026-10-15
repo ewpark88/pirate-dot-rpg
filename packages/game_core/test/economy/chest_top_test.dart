@@ -11,7 +11,7 @@ void main() {
   final t = EconomyHarness.tables;
   final top = t.waves.raw.obj('top');
 
-  test('top이면 배 중심에서 shipRadius + chestMargin 밖, 보이는 사각형(viewWidth×viewHeight) 안', () {
+  test('배 중심에서 shipRadius + chestMargin 밖, 보이는 사각형(viewWidth×viewHeight) 안', () {
     for (var seed = 1; seed <= 200; seed++) {
       final h = EconomyHarness(seed: seed);
       final s0 = h.newGame();
@@ -27,12 +27,6 @@ void main() {
       expect(dx.abs(), lessThanOrEqualTo(top.number('viewWidth') / 2 - margin + 1e-9), reason: 'seed $seed');
       expect(dy.abs(), lessThanOrEqualTo(top.number('viewHeight') / 2 - margin + 1e-9), reason: 'seed $seed');
     }
-  });
-
-  test('옆모습은 그대로 (필드 폭 비율·수면 높이)', () {
-    final h = EconomyHarness();
-    final c = spawnChest(h.newGame().copyWith(settings: const Settings(battleView: 'side')), h.ctx).battle!.chest!;
-    expect(c.y, t.waves.raw.obj('field').obj('laneY').number('surface'));
   });
 
   test('ShipDamaged.fromX·fromY 선택 키 왕복, 없으면 본문에 없음', () {

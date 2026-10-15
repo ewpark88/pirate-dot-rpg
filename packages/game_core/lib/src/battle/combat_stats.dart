@@ -7,6 +7,7 @@ import 'package:game_core/src/economy/fever.dart';
 import 'package:game_core/src/economy/formation.dart' show fleetSlots;
 import 'package:game_core/src/economy/rebirth.dart' show rebirthBonus;
 import 'package:game_core/src/economy/rebirth_shop.dart';
+import 'package:game_core/src/economy/sea_events.dart' show stormGoldMultiplier;
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
@@ -44,6 +45,7 @@ class CombatStats {
           (1 + rebirth) *
           treasureGoldMultiplier(s, t) *
           feverGoldMultiplier(s, t) *
+          stormGoldMultiplier(s, t) *
           (active(s.buffs.tailwindUntil) ? reward('tailwind').number('goldMultiplier') : 1),
       tierDamage: 1 + tier.damageBonus,
       bonus:

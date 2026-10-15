@@ -14,7 +14,7 @@ const Map<String, String> rawTables = {
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } }
   ],
-  "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120, "xMin": 0.45, "xMax": 0.85 }
+  "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
 ''',
   'crews': r'''
@@ -1659,6 +1659,16 @@ const Map<String, String> rawTables = {
       { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
     ]
   },
+  "seaEvents": {
+    "intervalSec": [60, 120], "minStage": 5,
+    "events": [
+      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 3, "autoCatchRatio": 0.3 },
+      { "id": "merchant", "weight": 20, "durationSec": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
+      { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "rage": 0.3 },
+      { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
+      { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
+    ]
+  },
   "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
@@ -1837,7 +1847,7 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 0.6,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "standoff": 110, "slowZone": 30, "slowFloor": 0.2, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
+  "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 2,
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
@@ -1873,12 +1883,9 @@ const Map<String, String> rawTables = {
     "shipX": 86,
     "shipY": 100,
     "spawnX": 272,
-    "visibleRight": 266,
     "spawnSpacing": 12,
     "laneY": { "surface": 100, "underwater": 124, "air": 44 },
-    "laneJitter": 14,
     "coneNearPx": 16,
-    "contactGap": 8,
     "contactIntervalSec": 1
   },
   "multiKill": {
