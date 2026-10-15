@@ -207,7 +207,7 @@ class FarmingPill extends ConsumerWidget {
     if (!show) return const SizedBox.shrink();
     return IgnorePointer(
       child: Padding(
-        padding: const EdgeInsets.only(top: 4),
+        padding: EdgeInsets.zero,
         child: Container(
           key: const Key('hud.farming'),
           padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
