@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 오프라인 보상 알림: 재부팅 뒤 예약 복구. POST_NOTIFICATIONS는 flutter_local_notifications가 합쳐 넣는다. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- appCategory=game: Android 16(API 36) 큰 화면(sw600dp+)에서도 세로 고정이 유지된다(게임 예외, docs/store/release-checklist.md A4). -->
     <application
+        android:appCategory="game"
         android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -9,6 +11,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

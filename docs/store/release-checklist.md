@@ -9,7 +9,7 @@
 | A1 | **버전 규칙**: `pubspec.yaml` `version: X.Y.Z+N` — N(versionCode)은 **업로드할 때마다 +1, 절대 재사용·감소 금지**(트랙 상관없이 앱 전체에서 하나). X.Y.Z는 사람 눈용: 비공개 테스트 0.9.x, 출시 1.0.0, 고친 빌드는 Z+1 | S1(pubspec은 shared) | 🟡 지금 0.1.0+1 | `android-release.md` 3절 |
 | A2 | 패키지 ID 확정(한 번 올리면 못 바꿈) — 지금 임시 `repo.dot.pirate` | 사람 결정 → S1 | ❓ | ADR-0002 |
 | A3 | targetSdk ≥ 36(2026-08-31부터 신규 앱·업데이트 필수) | — | ✅ Flutter 기본 compile/target 36, min 24 | [Google 문서](https://developer.android.com/google/play/requirements/target-sdk) |
-| A4 | **화면 방향**: 지금 고정이 **없다**(manifest·코드 모두) → 폰을 눕히면 가로로 돈다. 세로 고정(`android:screenOrientation="portrait"`) 필요. 단 API 36에선 600dp 이상 화면(태블릿·폴더블 펼침)이 고정을 무시 → 그 크기 가로 배치도 깨지지 않게 | ❓ 결정 → platform(manifest) + ui·render(큰 화면 배치) | ⬜ | 큰 화면 규칙은 2차 출처 기준, 공식 문서로 재확인 필요 |
+| A4 | **화면 방향**: 세로 고정 `screenOrientation="portrait"` + `android:appCategory="game"`. Android 16(API 36)은 sw600dp 이상 화면에서 방향·크기 제한을 무시하지만 **게임은 예외**("Games (based on the android:appCategory flag)") → 태블릿·폴더블에서도 세로 유지. Flutter 쪽 `SystemChrome.setPreferredOrientations([portraitUp])`는 main.dart(S1) | platform(manifest) · S1(main.dart) | 🟡 manifest 반영(2026-10-15), main.dart 대기 | [Android 16 동작 변경](https://developer.android.com/about/versions/16/behavior-changes-16) · [appCategory](https://developer.android.com/guide/topics/manifest/application-element) |
 | A5 | 업로드 키 생성 → `key.properties` | 사람 | ⬜ | `android-release.md` 1·2절 |
 | A6 | `flutter build appbundle --release --obfuscate --split-debug-info=build/symbols` | S1 | ✅ 키 없이 빌드 성공(54MB) | 기호 파일은 Crashlytics용 보관 |
 | A7 | `dart run tool/release_check.dart` — 배포 aab에 운영자 표식 0회 | S1 | ✅ 2026-10-15 통과 | 업로드 전 매번 |
