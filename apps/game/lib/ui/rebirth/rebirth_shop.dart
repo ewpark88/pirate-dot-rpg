@@ -34,7 +34,7 @@ class _RebirthShopSheetState extends ConsumerState<RebirthShopSheet> {
   var _bumpSeq = 0;
 
   void _buy(ShopItemVm item) {
-    if (!ref.read(rebirthV2Provider.notifier).buy(item.id)) return;
+    if (!ref.read(rebirthV2Provider).buy(item.id)) return;
     final l10n = AppLocalizations.of(context);
     setState(() {
       _bumped = item.id;
@@ -83,7 +83,7 @@ class _RebirthShopSheetState extends ConsumerState<RebirthShopSheet> {
         const SizedBox(height: 10),
         ShopDetail(
           item: picked,
-          lockedLeft: picked == null ? 0 : shop.toUnlock(picked.def.row),
+          lockedLeft: picked == null ? 0 : shop.toUnlock(picked.row),
           onBuy: picked == null ? null : () => _buy(picked),
         ),
       ],
@@ -153,10 +153,10 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final items = shop.items.where((i) => i.def.row == row).toList();
+    final items = shop.items.where((i) => i.row == row).toList();
     final left = shop.toUnlock(row);
     final locked = left > 0;
-    final need = shopRowUnlockAt[row - 1];
+    final need = shop.unlockAt(row);
     return Container(
       key: Key('rebirth.shop.row.$row'),
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),

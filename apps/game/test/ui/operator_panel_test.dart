@@ -182,7 +182,7 @@ void main() {
     await tester.pump();
     expect(tester.widget<ChoiceChip>(find.byKey(const Key('op.battleView.side'))).selected, isTrue);
     expect(tester.widget<ChoiceChip>(find.byKey(const Key('op.battleView.top'))).selected, isFalse);
-    expect(find.byKey(const Key('op.battleView.notReady')), findsOneWidget);
+    expect(find.byKey(const Key('op.battleView.notReady')), findsNothing); // 렌더 연결됨(S3)
     await _tap(tester, 'op.battleView.top');
     await _tap(tester, 'op.battleView.side');
     expect(_json(log), [

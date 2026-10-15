@@ -1,35 +1,43 @@
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 
-// 환생 v2 화면 문구 (id → ARB).
+// 환생 v2 화면 문구 (id → ARB). 이름·설명은 경제 테이블 키(econRebirthShop*·econTitle*·shipSkin*).
 
 String shopName(AppLocalizations l, String id) => switch (id) {
-  'startParts' => l.uiShopStartPartsName,
-  'discount' => l.uiShopDiscountName,
-  'bossTime' => l.uiShopBossTimeName,
-  'offline' => l.uiShopOfflineName,
-  'critChance' => l.uiShopCritChanceName,
-  'critDamage' => l.uiShopCritDamageName,
-  'fleetSlot' => l.uiShopFleetSlotName,
-  'pieceGain' => l.uiShopPieceGainName,
-  _ => l.uiShopFastSailName,
+  'startParts' => l.econRebirthShopStartPartsName,
+  'discount' => l.econRebirthShopDiscountName,
+  'bossTime' => l.econRebirthShopBossTimeName,
+  'offline' => l.econRebirthShopOfflineName,
+  'critChance' => l.econRebirthShopCritChanceName,
+  'critDamage' => l.econRebirthShopCritDamageName,
+  'fleetSlot' => l.econRebirthShopFleetSlotName,
+  'pieceGain' => l.econRebirthShopPieceGainName,
+  _ => l.econRebirthShopFastSailName,
 };
 
-String shopDesc(AppLocalizations l, String id) => switch (id) {
-  'startParts' => l.uiShopStartPartsDesc,
-  'discount' => l.uiShopDiscountDesc,
-  'bossTime' => l.uiShopBossTimeDesc,
-  'offline' => l.uiShopOfflineDesc,
-  'critChance' => l.uiShopCritChanceDesc,
-  'critDamage' => l.uiShopCritDamageDesc,
-  'fleetSlot' => l.uiShopFleetSlotDesc,
-  'pieceGain' => l.uiShopPieceGainDesc,
-  _ => l.uiShopFastSailDesc,
-};
+String _n(double v) => v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
-/// 효과 숫자 → 짧은 글 ('+15레벨', '−20%', '+0.3').
-String shopFx(AppLocalizations l, ShopFx fx, double value) {
-  final n = value == value.roundToDouble() ? value.toStringAsFixed(0) : value.toStringAsFixed(1);
+/// 설명 한 줄 — 다음 레벨 값으로 채운다(최대 레벨이면 지금 값).
+String shopDesc(AppLocalizations l, ShopItemVm it) {
+  final v = it.effectNext ?? it.effectNow;
+  final shown = _n(shopDisplay(it.id, v).$2);
+  return switch (it.id) {
+    'startParts' => l.econRebirthShopStartPartsDesc(_n(it.minorNext ?? it.minorNow ?? 0), shown),
+    'discount' => l.econRebirthShopDiscountDesc(shown),
+    'bossTime' => l.econRebirthShopBossTimeDesc(shown),
+    'offline' => l.econRebirthShopOfflineDesc(shown),
+    'critChance' => l.econRebirthShopCritChanceDesc(shown),
+    'critDamage' => l.econRebirthShopCritDamageDesc(shown),
+    'fleetSlot' => l.econRebirthShopFleetSlotDesc(shown),
+    'pieceGain' => l.econRebirthShopPieceGainDesc(shown),
+    _ => l.econRebirthShopFastSailDesc(shown),
+  };
+}
+
+/// 상점 [id]의 경제 값 → 짧은 글 ('+15레벨', '-20%', '+0.3').
+String shopFx(AppLocalizations l, String id, double value) {
+  final (fx, v) = shopDisplay(id, value);
+  final n = _n(v);
   return switch (fx) {
     ShopFx.levels => l.uiShopFxLevels(n),
     ShopFx.down => l.uiShopFxDown(n),
@@ -43,18 +51,18 @@ String shopFx(AppLocalizations l, ShopFx fx, double value) {
 }
 
 String skinName(AppLocalizations l, String id) => switch (id) {
-  'coral' => l.uiSkinCoral,
-  'storm' => l.uiSkinStorm,
-  'gold' => l.uiSkinGold,
-  _ => l.uiSkinPhantom,
+  'coral' => l.shipSkinCoral,
+  'storm' => l.shipSkinStorm,
+  'gold' => l.shipSkinGold,
+  _ => l.shipSkinPhantom,
 };
 
 String titleName(AppLocalizations l, String id) => switch (id) {
-  'deckhand' => l.uiTitleDeckhand,
-  'navigator' => l.uiTitleNavigator,
-  'captain' => l.uiTitleCaptain,
-  'admiral' => l.uiTitleAdmiral,
-  _ => l.uiTitleSeaKing,
+  'deckhand' => l.econTitleDeckhand,
+  'navigator' => l.econTitleNavigator,
+  'captain' => l.econTitleCaptain,
+  'admiral' => l.econTitleAdmiral,
+  _ => l.econTitleSeaKing,
 };
 
 /// 미리보기 한 줄 (스펙 3-2: 소수 1자리, 1.1 미만은 '×1.1 미만', 60분 넘으면 '1시간+').

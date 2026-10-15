@@ -17,17 +17,6 @@ import 'package:pirate_dot/ui/text/table_text.dart';
 const _firstShow = Duration(seconds: 8);
 const _laterShow = Duration(seconds: 4);
 
-/// 이번 실행에서 보스 실패 안내를 자세히 본 적이 있나.
-// TODO(ui): 세이브 필드(보스 실패 횟수)가 생기면 그것으로 — 지금은 앱을 다시 켜면 한 번 더 자세히 나온다.
-final bossFailSeenProvider = NotifierProvider<_Seen, bool>(_Seen.new);
-
-class _Seen extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void mark() => state = true;
-}
-
 /// 보스 실패 직후 짧은 안내 (사용자 질문 "지는 판단이 뭐냐" → 규칙을 보인다).
 /// 처음: '보스를 놓쳤어요' + 규칙 한 줄 + [추천 부품 바로 강화] [보스 도전]. 이후: 한 줄 + [보스 도전].
 /// 보스에 다시 도전하거나(파밍 끝) 시간이 지나면 사라진다. 전장 위쪽에 얹고 빈 곳은 눌림을 통과시킨다.
@@ -56,8 +45,8 @@ class _BossFailNoticeState extends ConsumerState<BossFailNotice> {
   }
 
   void _show() {
-    final seen = ref.read(bossFailSeenProvider);
-    ref.read(bossFailSeenProvider.notifier).mark();
+    // 처음 실패(경제 progress.bossFails — 이번 실패까지 센 누계가 1 이하)만 자세히. 환생해도 이어진다.
+    final seen = ref.read(gameStateProvider).progress.bossFails > 1;
     _hide?.cancel();
     _hide = Timer(seen ? _laterShow : _firstShow, _close);
     setState(() => _detailed = !seen);
