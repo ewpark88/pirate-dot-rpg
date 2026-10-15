@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | art: `docs/specs/render-art-enemies.md` 묶음 1(산호초 보스) 승인 대기 → 묶음 2 폭풍해 · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
+| 현재 계획 | art: `docs/specs/render-art-enemies.md` 묶음 2(폭풍해) 승인 대기 · 배 등급 스프라이트 t2~t4 없음(제안) · `plans/active/render-perf.md`(실기기 측정 대기) · `plans/active/render-audio.md`(음원 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 묶음 1 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
+| 막힌 것 | 묶음 2·S4 아이콘 승인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) · 실기기 측정(M2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 2: 폭풍해 + giant_hermit 집게
+- gen_bosses.py: raider 코드를 `ship_variant()`로 일반화(raider 바이트 그대로) → storm_pirate(먹구름 돛·노란 줄·번개 문양·바랜 선체).
+  thunder_ray 64×47(다각형 가오리·등뼈 융기·날개 번개·빛나는 눈·꼬리 불꽃). giant_hermit 집게 갈라짐 쐐기 3줄.
+- 새 `tools/art/gen_enemies.py`: flyingfish 17×10×2(손 격자, 날개 위/펼침), stormgull(팩 gull 색 바꿈, 폭풍 하늘 대비로 밝은 잿빛).
+- sprites_test 해역 storm 추가. 비교 `docs/specs/render-art-enemies/compare_storm.png`.
+- 발견: 배 등급 t2~t4(sloop 30·warship 80·ghost 150) 스프라이트 없음 → stage 30부터 배가 플레이스홀더 상자. 적보다 먼저 보이는 구멍 — S1에 제안.
 
 ### 2026-10-15 · S3 · S4 요청 UI 아이콘 14개
 - 묶음 1 승인·main 머지. S4 요청(S1 중계)을 폭풍해 묶음보다 먼저: `gen_ui_icons.py`에 gear·quest·tailwind·flag·ad·farm·lock·rebirth·moon(16) · card_back(32) · check·check_empty(8) · hand·bubble(16).

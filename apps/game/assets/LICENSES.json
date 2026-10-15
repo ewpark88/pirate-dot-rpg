@@ -100,6 +100,14 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/storm_pirate.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/thunder_ray.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
     "coin.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/coin.png",
       "license": "OWN"
@@ -268,6 +276,10 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/crab.png",
       "license": "OWN"
     },
+    "enemies/flyingfish.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/gull.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/gull.png",
       "license": "OWN"
@@ -282,6 +294,10 @@
     },
     "enemies/puffer.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/puffer.png",
+      "license": "OWN"
+    },
+    "enemies/stormgull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
     "enemies/urchin.png": {
