@@ -11,8 +11,7 @@ import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/rebirth_shop.dart'
-    show beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
-import 'package:game_core/src/economy/ship_stats.dart' show partLook;
+    show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -28,8 +27,7 @@ class BattleSystem implements GameSystem {
   Field? _field;
   Object? _crewsSeen;
   Object? _fleetSeen;
-  Object? _shipSeen;
-  Map<String, int> _shipLook = const {};
+  final _dress = ShipDressCache();
   List<String>? _fixedFleet;
   bool _invincible = false;
   bool _zeroCooldown = false;
@@ -285,16 +283,12 @@ class BattleSystem implements GameSystem {
       ..captainId = captainOf(ids, s, t);
   }
 
-  GameState _project(GameState s, Field f, GameTables t) {
-    // 외형 단계는 강화 때만 바뀐다 — 배 상태가 같으면 지난 맵을 그대로 쓴다(매 틱 할당 없음).
-    if (!identical(_shipSeen, s.ship)) {
-      _shipSeen = s.ship;
-      _shipLook = partLook(s, t);
-    }
-    return s.copyWith(
-      battle: f
-          .view(s.battle ?? BattleView.empty)
-          .copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold, shipLook: _shipLook),
-    );
-  }
+  /// 배 겉모습(외형 단계·등급 그림·스킨·보물 바다)은 ShipDressCache가 채운다.
+  GameState _project(GameState s, Field f, GameTables t) => s.copyWith(
+    battle: _dress.apply(
+      f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),
+      s,
+      t,
+    ),
+  );
 }
