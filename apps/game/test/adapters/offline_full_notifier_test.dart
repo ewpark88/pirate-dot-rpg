@@ -132,4 +132,13 @@ void main() {
     await make().onPause();
     expect(sdk.scheduled.length, 1);
   });
+  test('운영자 testRing: 권한 묻고 10초 뒤 별도 id로 1건, 하루 기록·설정과 무관', () async {
+    enabled = false;
+    await make().testRing();
+    expect(sdk.permissionRequests, 1);
+    expect(sdk.scheduled, {OfflineFullNotifier.testId: DateTime.utc(2026, 11, 1, 9, 0, 10)});
+    enabled = true;
+    await make().onPause(); // 하루 1회 칸을 쓰지 않았다
+    expect(sdk.scheduled.length, 2);
+  });
 }

@@ -59,11 +59,17 @@
 
 ## 4. 그림을 받으면 (작업 순서)
 1. 아트가 원본 격자 PNG를 `apps/game/assets/` 밖 작업 폴더(예: `tools/art/icon/`, render 레인)에 둔다 — 앱에 번들하지 않는 원본.
-2. 정수 배율 내보내기: 최근접 확대 스크립트(`tools/art/`에 추가 제안 — render 레인) 또는 Aseprite "Export → Resize ×N".
-3. platform이 위 경로에 넣고 `anydpi-v26`·`colors.xml`·`styles.xml`을 추가 → `flutter build apk --debug` → 실기기에서
+2. 원본 이름을 `foreground.png`(54)·`legacy.png`(24) + 선택 `background.png`(54)·`monochrome.png`(54)·`splash.png`(48)·`store.png`(64)로 맞춘다.
+3. platform이 `apps/game/android/icon/apply_icons.py`로 한 번에 넣는다(최근접 정수 배율 PNG, `anydpi-v26`·`colors.xml`·`launch_background.xml`·`values(-night)-v31/styles.xml`, 스토어 512px는 `build/store/`):
+   ```
+   python -I apps/game/android/icon/apply_icons.py --src <원본 폴더> --bg "#RRGGBB" [--splash-bg "#RRGGBB"] --dry-run   # 검사만
+   python -I apps/game/android/icon/apply_icons.py --src <원본 폴더> --bg "#RRGGBB" [--splash-bg "#RRGGBB"]
+   ```
+   격자 크기가 틀리면·필수 파일이 없으면·단색 아이콘이 2색이면 아무것도 쓰지 않고 실패한다. 안전 원 밖 픽셀은 경고만. 테스트: `python -I -B -m unittest discover -s apps/game/android/icon`.
+   그다음 `flutter build apk --debug` → 실기기에서
    원형·사각 런처, 다크 모드, Android 13 테마 아이콘, 스플래시(12+와 11 이하 각각) 확인.
 4. 라이선스: 직접 그린 그림이면 `assets/LICENSES.json`에 OWN(앱에 번들하는 원본이 있을 때만 — res/ 아래 아이콘은 검사 대상 밖).
 
 ## 5. 앱 이름 (런처 아래 글자)
-지금 `android:label="Pirate Dot"`(AndroidManifest). 게임 이름 확정(ADR-0002) 뒤 platform이 바꾸고, 한국어 이름은
-`res/values-ko/strings.xml`의 `app_name` + manifest `@string/app_name`으로 언어별로 나눈다.
+manifest `android:label="@string/app_name"` — `res/values/strings.xml`(기본 = 영문, 지금 임시 `Pirate Dot`) +
+`res/values-ko/strings.xml`(`해적도트 원정대`, 2026-10-14 확정). 영문 이름이 확정되면 `values/strings.xml`만 바꾼다.
