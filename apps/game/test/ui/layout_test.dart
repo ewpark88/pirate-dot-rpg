@@ -29,8 +29,7 @@ void main() {
   group('한국어 화면 문구', () {
     testWidgets('HUD·배 탭', (tester) async {
       await pumpGame(tester, loadFixture('boss_fight'), locale: const Locale('ko'), tab: shipTab);
-      expect(find.text('보스 20초'), findsOneWidget);
-      expect(find.text('궁극기'), findsOneWidget);
+      expect(find.byTooltip('궁극기'), findsOneWidget);
       expect(find.text('대포'), findsOneWidget);
     });
 
@@ -49,8 +48,7 @@ void main() {
 
     testWidgets('파밍: 보스 도전', (tester) async {
       await pumpGame(tester, _farming(loadFixture('stage37_midgame')), locale: const Locale('ko'));
-      expect(find.text('보스 도전'), findsOneWidget);
-      expect(find.text('파밍 중'), findsOneWidget);
+      expect(find.byTooltip('보스 도전'), findsOneWidget);
     });
   });
 
@@ -62,10 +60,13 @@ void main() {
 
   testWidgets('접근성: 아이콘 버튼에는 설명(tooltip)이 있다', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
-    expect(
-      find.ancestor(of: find.byKey(const Key('hud.settings')), matching: find.byTooltip('Settings')),
-      findsOneWidget,
-    );
+    for (final (key, tip) in [('hud.settings', 'Settings'), ('daily.icon', 'Quests & Attendance')]) {
+      expect(
+        find.descendant(of: find.byKey(Key(key)), matching: find.byTooltip(tip)),
+        findsOneWidget,
+        reason: key,
+      );
+    }
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   });
 }

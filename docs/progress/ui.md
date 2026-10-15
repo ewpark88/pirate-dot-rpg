@@ -4,10 +4,21 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | 창·시트·튜토리얼까지 도트화(운영자 패널만 Material) — 골든 S1 승인 대기 · S24 실기기 피드백 대기 |
+| 상태 | 화면 배치 v2(S24 실기기 피드백) 구현 — S1 승인·실기기 설치 확인 대기 |
 | 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S4 · 화면 배치 v2 (사용자 S24 실기기 피드백, 최우선)
+- 근거: main `docs/specs/layout-v2-brief.md`, 실기기 캡처 `docs/specs/layout-v2/device_*.png`. S3와 직접 좌표 약속 → `render/layout.dart` `battleFrameFor`(94ec694, main b2b0157).
+- 한 일: `hud/top_bar.dart`(48dp: 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원), 퀘스트·설정 그림 버튼 — `PixelIconButton`: 그림 ≈26dp 정수배, 누르기 48dp).
+  전장 = 폭 × 화면 40%, 필드 안 버튼 없음. 궁극기 = ultimateRect 위 투명 버튼(그림·게이지는 렌더), 보스 도전 = bossRect PixelButton(그림만). 보스 초는 캔버스. 상자 탭은 frame.toDp.
+  전장 아래 띠: 상자 광고(ChestAdStrip, 상자+광고 준비 때만), 보스 약점 한 줄. 글자: `pixelFontSize(dpr, 14/16)` — 11px 정수배 중 14dp·16dp 이상(S24 15.6/19.6dp).
+  선원 4열·짧은 이름 한 줄(`text/crew_name.dart` 임시 규칙 — 짧은 이름 키 요청 중)·레벨/카드 배지. 항해·소환 카드 3장, 소환 버튼 64dp, 확률 = 등급 색 막대. 퀘스트 보상 = 젬 그림 + 숫자.
+  요청서 platform-ui-store-shots: 소환 결과 별 줄을 이름 위로, 짧은 이름 한 줄. 테스트 기본 크기 = S24(384×832, dpr 2.8125). `devices_test.dart`: S24·360×640·411×891 × ko/en × 샘플 3 × 탭 4 넘침 없음, 360·411 골든 8장.
+  실기기 비교 `docs/specs/ui-layout-v2/compare_*.png`(전장은 테스트 빈 상자). `check --full` 통과(72.2s).
+- 남은 문제: 짧은 이름은 임시 규칙(경제 레인 crew 파트에 짧은 이름 키 필요). 전장 그림은 실기기에서 확인 필요(S1 설치).
+- 다음 할 일: S1 실기기 확인 → 2단계 디자인 퀄리티
 
 ### 2026-10-15 · S4 · 창·시트·튜토리얼 도트화
 - 한 일: c596c26 승인. `pixel/pixel_dialog.dart`: PixelDialog(도트 프레임 창: 아이콘·제목·내용·버튼 줄), PixelSheet + `showPixelSheet`(투명 바탕 시트 + 도트 프레임), PixelDot(Badge 대신 네모 빨간 점).

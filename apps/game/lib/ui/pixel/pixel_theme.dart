@@ -7,10 +7,17 @@ const pixelFontFamily = 'Galmuri11';
 /// Galmuri11의 설계 크기. 화면 픽셀로 이 값의 정수배일 때만 번지지 않는다.
 const _fontPx = 11.0;
 
-/// 도트 톤 테마 (스펙 ui-quality-v1 규칙 3·6): 남색 바탕, 네모 모서리 + 테두리, 그림자·잉크 물결 없음,
-/// 글자는 Galmuri11을 [unit](도트 한 칸 dp)의 11배(제목은 22배)로 — 실제 화면 픽셀로 11의 정수배.
-/// 도트 프레임으로 아직 바꾸지 않은 Material 위젯도 이 테마로 기준 화면의 톤을 따른다.
-ThemeData pixelTheme({double unit = 1}) {
+/// 본문·제목 최소 크기(dp) — 실기기에서 읽기 편하게 (layout-v2-brief D1: 본문 14sp, 제목 16~18).
+const _bodyMinDp = 14.0;
+const _titleMinDp = 16.0;
+
+/// Galmuri11을 화면 픽셀로 11의 정수배(번지지 않음) 중 [minDp] 이상인 가장 작은 크기로.
+double pixelFontSize(double devicePixelRatio, double minDp) =>
+    (minDp * devicePixelRatio / _fontPx).ceil() * _fontPx / devicePixelRatio;
+
+/// 도트 톤 테마 (스펙 ui-quality-v1 규칙 3·6): 남색 바탕, 네모 모서리 + 테두리, 그림자·잉크 물결 없음.
+/// 글자는 Galmuri11 — 실제 화면 픽셀로 11의 정수배이면서 본문 14dp·제목 16dp 이상.
+ThemeData pixelTheme({double devicePixelRatio = 1}) {
   final scheme = ColorScheme.fromSeed(seedColor: PixelPalette.border, brightness: Brightness.dark).copyWith(
     surface: PixelPalette.navy,
     onSurface: PixelPalette.text,
@@ -31,7 +38,8 @@ ThemeData pixelTheme({double unit = 1}) {
   const squareNoEdge = RoundedRectangleBorder();
   final buttonShape = WidgetStateProperty.all<OutlinedBorder>(squareNoEdge);
 
-  final body = _fontPx * unit;
+  final body = pixelFontSize(devicePixelRatio, _bodyMinDp);
+  final title = pixelFontSize(devicePixelRatio, _titleMinDp);
   final big = body * 2;
   TextStyle style(double size, {FontWeight weight = FontWeight.normal}) => TextStyle(
     fontFamily: pixelFontFamily,
@@ -47,9 +55,9 @@ ThemeData pixelTheme({double unit = 1}) {
     headlineLarge: style(big, weight: FontWeight.bold),
     headlineMedium: style(big, weight: FontWeight.bold),
     headlineSmall: style(big, weight: FontWeight.bold),
-    titleLarge: style(body, weight: FontWeight.bold),
-    titleMedium: style(body, weight: FontWeight.bold),
-    titleSmall: style(body, weight: FontWeight.bold),
+    titleLarge: style(title, weight: FontWeight.bold),
+    titleMedium: style(title, weight: FontWeight.bold),
+    titleSmall: style(title, weight: FontWeight.bold),
     bodyLarge: style(body),
     bodyMedium: style(body),
     bodySmall: style(body),

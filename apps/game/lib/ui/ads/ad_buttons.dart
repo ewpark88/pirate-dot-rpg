@@ -4,6 +4,8 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -22,47 +24,78 @@ class ChestAdButtons extends ConsumerWidget {
     final mult = reward.number('value');
     final rewardOf = ref.watch(chestRewardProvider);
     final base = ref.watch(gameStateProvider.select(rewardOf));
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // 좁으면 다음 줄로 (글자가 커진 실기기 폭에서도 넘치지 않게).
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 4,
+      runSpacing: 4,
       children: [
         AdButton(
           placement: AdPlacement.chest,
           choice: 'gold',
           label: l10n.uiAdChestGold(base?.times(mult).format() ?? '', shortDecimal(mult)),
         ),
-        const SizedBox(width: 4),
         AdButton(placement: AdPlacement.chest, choice: 'gems', label: l10n.uiAdChestGems(reward.integer('altGems'))),
       ],
     );
   }
 }
 
-/// 순풍: ‘30분 ×2’.
+/// 작은 광고 그림 버튼 (상단 바·줄 옆): 광고 그림 + 짧은 이득 숫자([short]), 전체 이득은 [label](낭독·길게 누르기).
+/// 제안할 수 없으면(`adOfferProvider` false) 아무것도 그리지 않는다.
+class AdIconButton extends ConsumerWidget {
+  const AdIconButton({required this.placement, required this.label, required this.short, super.key});
+
+  final AdPlacement placement;
+  final String label;
+  final String short;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(adOfferProvider(placement))) return const SizedBox.shrink();
+    return PixelIconButton(
+      key: Key('ad.${placement.name}'),
+      asset: UiSprites.ad,
+      semanticLabel: label,
+      onPressed: () => watchAd(ref, placement),
+      trailing: Text(short),
+    );
+  }
+}
+
+/// 순풍: 광고 그림 + ‘×2’ (전체: ‘30분 ×2’).
 class TailwindAdButton extends ConsumerWidget {
   const TailwindAdButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final reward = adDef(ref.watch(tablesProvider), AdPlacement.tailwind).reward;
     final minutes = Duration(seconds: reward.integer('durationSec')).inMinutes;
-    return AdButton(
+    final mult = shortDecimal(reward.number('goldMultiplier'));
+    return AdIconButton(
       placement: AdPlacement.tailwind,
-      label: AppLocalizations.of(context).uiAdTailwind(minutes, shortDecimal(reward.number('goldMultiplier'))),
+      label: l10n.uiAdTailwind(minutes, mult),
+      short: l10n.uiEffectMultiplier(mult),
     );
   }
 }
 
-/// 함포 지원 (보스 실패로 파밍 중): ‘피해 +30% · 30초’.
+/// 함포 지원 (보스 실패로 파밍 중일 때만): 광고 그림 + ‘+30%’ (전체: ‘피해 +30% · 30초’).
 class BossSupportAdButton extends ConsumerWidget {
   const BossSupportAdButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final farming = ref.watch(gameStateProvider.select((s) => s.progress.farming && !(s.battle?.bossActive ?? false)));
+    if (!farming) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final reward = adDef(ref.watch(tablesProvider), AdPlacement.bossSupport).reward;
-    return AdButton(
+    final percent = percentText(l10n, reward.number('damageBonus'));
+    return AdIconButton(
       placement: AdPlacement.bossSupport,
-      label: l10n.uiAdBossSupport(percentText(l10n, reward.number('damageBonus')), reward.integer('durationSec')),
+      label: l10n.uiAdBossSupport(percent, reward.integer('durationSec')),
+      short: percent,
     );
   }
 }

@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 
 import 'ui_harness.dart';
 
@@ -128,7 +129,12 @@ void main() {
 
   testWidgets('골든: en_rebirth_dialog', (tester) async {
     await pump(tester, base, extra: [rebirth]);
-    await tester.ensureVisible(find.byKey(const Key('rebirth.open')));
+    // 실기기 글자 크기에서는 환생 카드가 탭 아래쪽(아직 안 지어짐) — 스크롤해서 찾는다.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('rebirth.open')),
+      100,
+      scrollable: find.descendant(of: find.byType(VoyageTab), matching: find.byType(Scrollable)).first,
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();

@@ -11,7 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
@@ -234,20 +234,20 @@ class _FaceState extends ConsumerState<_Face> with SingleTickerProviderStateMixi
                       return CrewPortrait(crew: crew, size: scale * 32 / dpr);
                     },
                   ),
-                  Text(
-                    tableText(l10n, crew.nameKey),
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: small,
-                  ),
-                  // 별 그림 하나 + 개수(등급 색) — 선원 카드와 같은 표시.
+                  // 별 줄을 이름 위로, 이름은 짧은 이름 한 줄 (요청서 platform-ui-store-shots).
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const PixelSprite(UiSprites.star, dots: 16, scale: 1),
                       Text(rarity.stars.toString(), style: small?.copyWith(color: color)),
                     ],
+                  ),
+                  Text(
+                    shortCrewName(l10n, crew),
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: small,
                   ),
                 ],
               ),
