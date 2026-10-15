@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · 환생 v2 렌더 준비: 스킨 색 바꾸기·금빛 물결·배 미리보기 위젯
+- `render/top/ship_skins.dart`: 탑다운 배 층의 정해진 색(테두리·갑판·판자 틈 / 돛 3색 / 깃발)만 바꾼 사본을 스킨마다 한 번(비동기) 만들어 은행에 `<key>@<skin>`으로. TopShipPainter가 있으면 그것으로. 계약 전 값은 fx_map topShip.skinPreview(coral·royal·shadow·phantom, phantom은 돛 은은한 맥박).
+- 보물 바다: TopSeaPainter.gold(=TopScenePainter.goldSea) — 바탕·물결·거품·반짝임을 금빛으로, 반짝임 더 빠르게.
+- `render/top/ship_preview.dart` `ShipPreview(tables, tier, look, skin?, skinPalette?, size, glowPart?, glow)` + `ShipPreview.preload` — S4 배 탭·다음 외형·축하 팝업·스킨 고르기용(전장과 같은 그림). 골든 ship_preview.png.
+- 계약 제안(S2): BattleView.shipLook에 명예 max 반영 + shipTierLook, shipSkin, treasureSea. 오면 연결.
+
 ### 2026-10-15 · S3 · 바다 분위기 탑다운판 (platform-fun-atmosphere)
 - `render/top/top_atmosphere.dart`(fx_map atmosphere): 12분 순환 낮·노을·밤·새벽(전환 20초), 유령해 늘 밤·심연 늘 어둡게. 색조·어둡게는 바다·풍경에만 → 적·발사체·숫자는 밤에도 같은 색(픽셀 테스트).
   날씨(시간대마다 굴림, 해역별): 비(수면 동그라미 + 옅은 빗줄), 안개(흐르는 흰 막), 오로라 반사(밤 빙하), 화산재(화산 늘), 밤 수면 별 반짝임. 절전 = 파티클 ½·풍경 멈춤.

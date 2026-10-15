@@ -80,10 +80,12 @@ class SpriteBank {
   }
 
   /// 목록의 에셋 중 앱 에셋 목록(AssetManifest)에 있는 것만 읽는다. 없거나 읽지 못한 것은 플레이스홀더.
-  static Future<SpriteBank> load(Images images, GameTables tables, {AssetBundle? bundle}) async {
+  /// [only]가 있으면 그 접두사 키만 읽는다(배 미리보기 등 작은 은행).
+  static Future<SpriteBank> load(Images images, GameTables tables, {AssetBundle? bundle, String? only}) async {
     final bank = SpriteBank();
     final present = (await AssetManifest.loadFromAssetBundle(bundle ?? rootBundle)).listAssets().toSet();
     for (final e in manifest(tables)) {
+      if (only != null && !e.key.startsWith(only)) continue;
       if (!present.contains('${images.prefix}${e.path}')) continue;
       try {
         bank.put(e.key, await images.load(e.path), frames: e.frames);

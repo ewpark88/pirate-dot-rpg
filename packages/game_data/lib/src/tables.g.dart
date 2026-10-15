@@ -1289,6 +1289,77 @@ const Map<String, String> rawTables = {
       "cannon": 7,
       "sail": 5,
       "crowsnest": 6
+    },
+    "skinPreview": {
+      "coral": {
+        "hull": [
+          "#B0503C",
+          "#84382A",
+          "#E8B49A",
+          "#F2C8B0",
+          "#C4846C"
+        ],
+        "sail": [
+          "#FFF2E0",
+          "#F0C8A8",
+          "#FFFAF0"
+        ],
+        "flag": [
+          "#FF7A9A"
+        ]
+      },
+      "royal": {
+        "hull": [
+          "#3A3E78",
+          "#262A58",
+          "#C9A45A",
+          "#DDBC78",
+          "#A8843E"
+        ],
+        "sail": [
+          "#2E4FB0",
+          "#203A88",
+          "#5A7AD8"
+        ],
+        "flag": [
+          "#F2C94C"
+        ]
+      },
+      "shadow": {
+        "hull": [
+          "#3A3440",
+          "#26222C",
+          "#5C5464",
+          "#6E6676",
+          "#48424E"
+        ],
+        "sail": [
+          "#2A2A30",
+          "#1A1A20",
+          "#44444C"
+        ],
+        "flag": [
+          "#D63A3A"
+        ]
+      },
+      "phantom": {
+        "hull": [
+          "#4E4466",
+          "#382E4E",
+          "#6A6086",
+          "#7E749A",
+          "#58506E"
+        ],
+        "sail": [
+          "#8EE8D6",
+          "#5AC0B0",
+          "#C8FFF2"
+        ],
+        "flag": [
+          "#78FFC8"
+        ],
+        "glow": true
+      }
     }
   },
   "topSea": {
@@ -1298,7 +1369,10 @@ const Map<String, String> rawTables = {
     "wave": "#9FD8FF",
     "foam": "#F2FBFF",
     "tile": 128,
-    "flowSpeed": 14
+    "flowSpeed": 14,
+    "goldWave": "#FFE27A",
+    "goldFoam": "#FFF6C8",
+    "goldBase": "#2F8ACF"
   },
   "atmosphere": {
     "cycleSec": 720,

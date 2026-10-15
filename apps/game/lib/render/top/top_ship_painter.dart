@@ -36,6 +36,7 @@ class TopShipPainter {
     String? glowPart,
     double glow = 0,
     double recoil = 0,
+    String? skin,
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
@@ -48,7 +49,10 @@ class TopShipPainter {
       _shadow,
     );
     for (final layer in layers) {
-      final key = 'td:$tierId:$layer';
+      final base = 'td:$tierId:$layer';
+      // 환생 스킨: 색 바꾼 사본(<key>@<skin>)이 있으면 그것으로.
+      final skinned = skin == null ? null : '$base@$skin';
+      final key = skinned != null && sprites.sheet(skinned) != null ? skinned : base;
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
       final stage = look[layer] ?? 0;
