@@ -71,7 +71,7 @@ class GoalBar extends ConsumerWidget {
                 const SizedBox(width: 8),
                 SizedBox(
                   width: 80,
-                  child: PixelBar(value: progress, fill: PixelPalette.gold),
+                  child: PixelBar(value: progress, fill: Skin.goldBottom),
                 ),
               ],
             ),

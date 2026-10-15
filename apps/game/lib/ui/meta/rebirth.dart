@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -77,7 +77,7 @@ class RebirthCard extends ConsumerWidget {
             ] else ...[
               Text(l10n.uiRebirthLocked(preview.minStage)),
               const SizedBox(height: 4),
-              PixelBar(value: (stage / preview.minStage).clamp(0.0, 1.0), fill: PixelPalette.gold),
+              PixelBar(value: (stage / preview.minStage).clamp(0.0, 1.0), fill: Skin.goldBottom),
             ],
           ],
         ),
