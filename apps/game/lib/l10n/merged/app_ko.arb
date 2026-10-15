@@ -230,5 +230,6 @@
   "uiTailwindOff": "순풍 없음",
   "uiDailyTooltip": "퀘스트·출석",
   "uiSaveFailedDiskFull": "저장 공간이 부족해 진행을 저장하지 못했어요. 공간을 비우면 자동으로 다시 저장해요.",
-  "uiSaveFailedIo": "진행을 저장하지 못했어요. 잠시 뒤 다시 시도해요."
+  "uiSaveFailedIo": "진행을 저장하지 못했어요. 잠시 뒤 다시 시도해요.",
+  "uiSettingsNotifications": "알림"
 }

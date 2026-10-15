@@ -104,5 +104,6 @@
   "uiTailwindOff": "No tailwind",
   "uiDailyTooltip": "Quests & Attendance",
   "uiSaveFailedDiskFull": "Not enough storage to save. Progress will save again once space is freed.",
-  "uiSaveFailedIo": "Couldn't save progress. Will try again shortly."
+  "uiSaveFailedIo": "Couldn't save progress. Will try again shortly.",
+  "uiSettingsNotifications": "Notifications"
 }
