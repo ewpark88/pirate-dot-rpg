@@ -19,7 +19,8 @@
 - gen_enemies: lavacrab(현무암 + 아래 용암 빛), lavacrab_small(작은 게 격자 재사용), starfish 15×15·starfish_small 11×11(다각형 별, 프레임마다 9° 돌림),
   lavaturtle 20×12(현무암 등딱지 용암 금, 머리 밝게), firebird(gull 달아오른 노랑 — 주황 하늘 위 대비). `from_grid(colors=)` 팔레트 덮어쓰기.
 - gen_bosses: fire_pirate(불꽃 주홍 돛·그을린 끝·불꽃 문양), lava_whale 64×46(현무암·목 주름·용암 금·빛나는 눈·숨구멍 용암 분수).
-- sprites_test 해역 volcano 추가. 비교 `docs/specs/render-art-enemies/compare_volcano.png`. 수중 적(불가사리)은 렌더 수중 색조로 어두워짐(팩 적과 같은 규칙).
+- sprites_test 해역 volcano 추가. 비교 `docs/specs/render-art-enemies/compare_volcano.png`.
+- 골든 `battle_status.png` 갱신: 장면에 있던 lavacrab이 플레이스홀더 → 스프라이트(149px). 전후 `compare_status_golden.png`. (e72c904는 check 실패를 못 보고 커밋 — 이 커밋으로 통과) 수중 적(불가사리)은 렌더 수중 색조로 어두워짐(팩 적과 같은 규칙).
 
 ### 2026-10-15 · S3 · art 묶음 3: 빙하
 - 배 t2~t4 승인·main 머지(고물이 화면 밖으로 나가는 건 그대로).
