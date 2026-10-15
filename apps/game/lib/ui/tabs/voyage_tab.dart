@@ -5,6 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -55,10 +56,11 @@ class _RegionCard extends ConsumerWidget {
     final boss = regions.bossAt(stage + toBoss);
     final next = regions.regionAt(stage + toBoss + 1);
 
-    return Card(
+    return PixelFrame(
       key: const Key('voyage.region'),
+      padding: 6,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

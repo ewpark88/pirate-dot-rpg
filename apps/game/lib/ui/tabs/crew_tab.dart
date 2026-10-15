@@ -6,6 +6,10 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_icons.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -17,10 +21,10 @@ import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 const _columns = 5;
 
 /// 카드 가로:세로.
-const _cardAspect = 0.38;
+const _cardAspect = 0.34;
 
-/// 카드 최소 높이 — 초상·이름·별·레벨·카드 수·출전·승급 버튼이 들어가는 높이.
-const _minCardHeight = 194.0;
+/// 카드 최소 높이 — 초상·이름·별·레벨·카드 수·출전·승급 버튼(48dp)이 들어가는 높이.
+const _minCardHeight = 214.0;
 
 /// 카드 사이 간격.
 const _spacing = 4.0;
@@ -77,8 +81,9 @@ class CrewTab extends ConsumerWidget {
             ),
             TutorialSpot(
               id: 'crew.mergeAll',
-              child: FilledButton(
+              child: PixelButton(
                 key: const Key('crew.mergeAll'),
+                primary: true,
                 onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
                 child: Text(l10n.uiCrewMergeAll),
               ),
@@ -138,12 +143,11 @@ class CrewCard extends ConsumerWidget {
         : rarityOfLevel(tables.rarities, level);
     final small = Theme.of(context).textTheme.labelSmall;
 
-    final card = Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: rarityColor(rarity), width: 2),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      padding: const EdgeInsets.all(2),
+    // 등급색 도트 테두리 (하이라이트 없이 — 등급색이 잘 보이게).
+    final card = PixelFrame(
+      border: rarityColor(rarity),
+      highlight: null,
+      padding: 2,
       child: Column(
         children: [
           CrewPortrait(crew: def),
@@ -153,7 +157,7 @@ class CrewCard extends ConsumerWidget {
             Text(l10n.uiLevel(level), style: small),
             Text(l10n.uiCrewCards(cards), style: small),
           ],
-          if (deployed) Text(l10n.uiCrewDeployed, style: small?.copyWith(color: Colors.green.shade700)),
+          if (deployed) Text(l10n.uiCrewDeployed, style: small?.copyWith(color: PixelPalette.accent)),
           const Spacer(),
           if (_atGate.contains(status)) _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
         ],
@@ -171,7 +175,13 @@ class _Stars extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     mainAxisAlignment: MainAxisAlignment.center,
-    children: [for (var i = 0; i < rarity.stars; i++) Icon(Icons.star, size: 9, color: rarityColor(rarity))],
+    children: [
+      for (var i = 0; i < rarity.stars; i++)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 0.5),
+          child: PixelIcon(PixelIcons.star, color: rarityColor(rarity), scale: 1),
+        ),
+    ],
   );
 }
 
@@ -183,17 +193,15 @@ class _PromoteButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final button = FilledButton(
+    final button = PixelButton(
       key: Key('crew.promote.$crewId'),
-      style: FilledButton.styleFrom(
-        visualDensity: VisualDensity.compact,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        minimumSize: const Size.fromHeight(24),
-      ),
+      primary: true,
       onPressed: ready ? () => ref.read(commandSinkProvider).send(PromoteCrew(crewId)) : null,
       child: FittedBox(child: Text(AppLocalizations.of(context).uiCrewPromote)),
     );
     // 빨간 점은 지금 눌러서 이득일 때만 (설계서 4.9).
-    return ready ? Badge(key: Key('crew.dot.$crewId'), smallSize: 8, child: button) : button;
+    return ready
+        ? Badge(key: Key('crew.dot.$crewId'), smallSize: 8, backgroundColor: PixelPalette.danger, child: button)
+        : button;
   }
 }

@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -121,7 +122,12 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
             child: Text(l10n.uiOk),
           ),
         ] else
-          FilledButton(key: const Key('offline.claim'), onPressed: _claim, child: Text(l10n.uiOfflineClaim)),
+          PixelButton(
+            key: const Key('offline.claim'),
+            primary: true,
+            onPressed: _claim,
+            child: Text(l10n.uiOfflineClaim),
+          ),
       ],
     );
   }

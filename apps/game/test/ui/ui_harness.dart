@@ -27,10 +27,11 @@ Future<CommandLog> pumpGame(
   FixedClock? clock,
   bool keepTutorial = false,
   Size size = const Size(400, 800),
+  double dpr = 1,
 }) async {
   tester.view
-    ..physicalSize = size
-    ..devicePixelRatio = 1;
+    ..physicalSize = size * dpr
+    ..devicePixelRatio = dpr;
   addTearDown(tester.view.reset);
   final log = CommandLog();
   await tester.pumpWidget(
@@ -72,6 +73,13 @@ Future<void> loadGoldenFonts() async {
 
   await load('Roboto', ['roboto-regular.ttf', 'roboto-medium.ttf', 'roboto-bold.ttf']);
   await load('MaterialIcons', ['materialicons-regular.otf']);
+  // 앱의 도트 폰트(한글 포함) — 이제 한국어 골든도 글자로 찍힌다.
+  final assets = Directory('assets/fonts');
+  final galmuri = FontLoader('Galmuri11');
+  for (final f in ['Galmuri11.ttf', 'Galmuri11-Bold.ttf']) {
+    galmuri.addFont(Future.value(ByteData.sublistView(File('${assets.path}/$f').readAsBytesSync())));
+  }
+  await galmuri.load();
 }
 
 /// NavigationBar 선택 표시 애니메이션보다 넉넉히.

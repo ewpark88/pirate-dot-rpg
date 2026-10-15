@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -57,7 +58,7 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
     return Container(
       key: const Key('tailwind'),
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(12)),
+      decoration: const BoxDecoration(color: PixelPalette.outline),
       child: Opacity(
         opacity: active ? 1 : _inactiveOpacity,
         child: Row(
