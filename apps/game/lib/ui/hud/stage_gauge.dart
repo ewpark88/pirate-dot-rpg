@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -155,7 +156,17 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                   ],
                 ),
                 // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다).
-                const Padding(padding: EdgeInsets.only(top: 3), child: GoalBar(compact: true)),
+                const Padding(
+                  padding: EdgeInsets.only(top: 3),
+                  child: Row(
+                    children: [
+                      Expanded(child: GoalBar(compact: true)),
+                      SizedBox(width: 8),
+                      // 피버(10초 전체 강화) — 함성(궁극기 버튼 둘레)과 헷갈리지 않게 게이지 안에 따로.
+                      FeverMeter(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
