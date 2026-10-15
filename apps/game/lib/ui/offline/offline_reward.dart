@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -95,8 +96,8 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
     final l10n = AppLocalizations.of(context);
     final preview = widget.preview;
     final away = Duration(seconds: preview.seconds);
-    return AlertDialog(
-      title: Text(l10n.uiOfflineTitle),
+    return PixelDialog(
+      title: l10n.uiOfflineTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -117,7 +118,7 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
         if (_claimed) ...[
           // 광고 ×2 (설계서 4.6: 복귀당 1회) — 경제가 허락하고 광고가 준비됐을 때만 보인다.
           const OfflineAdButton(),
-          TextButton(
+          PixelButton(
             key: const Key('offline.ok'),
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l10n.uiOk),

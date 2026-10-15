@@ -7,6 +7,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -90,8 +91,8 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> {
     final l10n = AppLocalizations.of(context);
     final rarities = ref.watch(tablesProvider).rarities;
     final allRevealed = _revealed.every((r) => r);
-    return AlertDialog(
-      title: Text(l10n.uiSummonResultTitle),
+    return PixelDialog(
+      title: l10n.uiSummonResultTitle,
       content: SizedBox(
         width: double.maxFinite,
         child: GridView.count(
