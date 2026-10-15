@@ -164,5 +164,6 @@
   "uiSummonCutinMythic": "신화의 해적이 깨어났다!",
   "uiSummonTapContinue": "탭해서 계속",
   "uiFleetSlotLocked": "{tier} 배가 되면 열려요 (스테이지 {stage})",
-  "uiFleetRejectedFamily": "같은 계열은 {max}명까지만 함께 출전할 수 있어요"
+  "uiFleetRejectedFamily": "같은 계열은 {max}명까지만 함께 출전할 수 있어요",
+  "uiFleetSlotStage": "스테이지 {stage}"
 }

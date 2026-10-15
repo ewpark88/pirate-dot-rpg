@@ -18,13 +18,15 @@ void main() {
     }
   });
 
-  testWidgets('기준 1: 궁극기는 선원 줄 오른쪽 끝(battleFrameFor.ultimateRect), 필드 안이 아님', (tester) async {
+  // 사용자 결정(S3 d8d4a68): 궁극기는 오른쪽 끝 칸 바로 위 둥근 버튼 — 선원 칸과 겹치지 않는다.
+  testWidgets('기준 1: 궁극기는 오른쪽 끝 칸 위(battleFrameFor.ultimateRect), 칸과 겹치지 않음', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
     final area = tester.getRect(find.byKey(const Key('battle.area')));
     final f = battleFrameFor(area.size, s24Dpr);
     final ult = tester.getRect(find.byKey(const Key('hud.ultimate')));
     expect(ult.center, offsetMoreOrLessEquals(area.topLeft + f.ultimateRect.center, epsilon: 0.5));
-    expect(ult.top, greaterThanOrEqualTo(area.top + f.gameRect.bottom - 0.5));
+    expect(f.ultimateRect.bottom, lessThanOrEqualTo(f.slotRects.last.top + 0.5));
+    expect(f.ultimateRect.overlaps(f.slotRects.last), isFalse);
     expect(ult.width, greaterThanOrEqualTo(48));
   });
 

@@ -330,5 +330,6 @@
   "uiSummonCutinMythic": "A mythic pirate awakens!",
   "uiSummonTapContinue": "Tap to continue",
   "uiFleetSlotLocked": "Unlocks with the {tier} (stage {stage})",
-  "uiFleetRejectedFamily": "Up to {max} crew of the same type can sail together"
+  "uiFleetRejectedFamily": "Up to {max} crew of the same type can sail together",
+  "uiFleetSlotStage": "Stage {stage}"
 }

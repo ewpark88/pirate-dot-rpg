@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/scene/slot_states.dart';
+import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
-import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -22,8 +25,6 @@ class BattleButtons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 지금 배 등급이 연 칸만 누를 수 있다 (나머지 칸 그림은 렌더가 잠금으로 그린다).
-    final slotCount = ref.watch(fleetSlotsProvider.select((s) => s.length));
     return LayoutBuilder(
       builder: (context, box) {
         final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
@@ -37,16 +38,11 @@ class BattleButtons extends ConsumerWidget {
           clipBehavior: Clip.none,
           children: [
             // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
-            // 잠긴 칸: 누르면 ‘배 등급 N에서 열려요’ 안내 (그림은 렌더).
-            for (var i = slotCount; i < f.slotRects.length; i++)
-              Positioned.fromRect(
-                rect: hit(f.slotRects[i]),
-                child: _LockedSlotButton(slot: i),
-              ),
-            for (final (i, r) in f.slotRects.take(slotCount).indexed)
+            // 선원 칸 3상태 (그림은 렌더 slot_states): 출전 중 = 선원 상세, 열린 빈 칸 = 편성 시트, 잠김 = 열리는 조건 안내.
+            for (final (i, r) in f.slotRects.indexed)
               Positioned.fromRect(
                 rect: hit(r),
-                child: _SlotButton(slot: i),
+                child: _SlotButton(slot: i, rect: r),
               ),
             Positioned.fromRect(rect: hit(f.ultimateRect), child: const _UltimateButton()),
             Positioned.fromRect(rect: hit(f.bossRect), child: const _BossChallengeButton()),
@@ -109,54 +105,65 @@ class _BossChallengeButton extends ConsumerWidget {
   }
 }
 
-/// 선원 줄 한 칸: 투명 버튼(그림은 렌더), 빈 칸이면 가운데 ‘+’.
+/// 선원 줄 한 칸 (렌더 slot_states와 같은 규칙): 출전 선원은 왼쪽부터 채워 그려진다(activeFleet).
+/// 출전 중 → 선원 상세, 열린 빈 칸 → 편성 시트(빈 자리에 앉힘), 잠김 → ‘스테이지 N에서 열림’ 안내 + 칸 아래 작은 ‘스테이지 N’.
 class _SlotButton extends ConsumerWidget {
-  const _SlotButton({required this.slot});
+  const _SlotButton({required this.slot, required this.rect});
 
   final int slot;
+
+  /// 그림 칸 (누르는 영역은 48dp 이상으로 키워져 있을 수 있다).
+  final Rect rect;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final id = ref.watch(fleetSlotsProvider.select((s) => slot < s.length ? s[slot] : null));
     final tables = ref.watch(tablesProvider);
-    final label = id == null ? l10n.uiFleetEmptySlot : tableText(l10n, tables.crews.byId(id).nameKey);
+    final (crewId, open) = ref.watch(
+      gameStateProvider.select((s) {
+        final active = activeFleet(s, tables);
+        return (slot < active.length ? active[slot] : null, slot < fleetSlots(s, tables));
+      }),
+    );
+    final String label;
+    final VoidCallback onTap;
+    Widget? overlay;
+    if (crewId != null) {
+      final def = tables.crews.byId(crewId);
+      label = tableText(l10n, def.nameKey);
+      onTap = () => unawaited(showCrewDetail(context, def));
+    } else if (open) {
+      label = l10n.uiFleetEmptySlot;
+      onTap = () {
+        final empty = ref.read(fleetSlotsProvider).indexOf(null);
+        openFleetPicker(context, empty < 0 ? slot : empty);
+      };
+    } else {
+      final stage = slotUnlockStage(tables, slot);
+      if (stage == null) return const SizedBox.shrink();
+      // 생성된 함수 인자 순서: (stage, tier).
+      label = l10n.uiFleetSlotLocked(stage, tableText(l10n, tables.shipTiers.tierAt(stage).nameKey));
+      onTap = () => showSkinToast(context, label);
+      overlay = Align(
+        alignment: const Alignment(0, 0.72),
+        child: Text(
+          l10n.uiFleetSlotStage(stage),
+          key: Key('fleet.locked.label.$slot'),
+          style: Skin.text(11, color: Colors.white).copyWith(
+            shadows: const [Shadow(color: Color(0xCC000000), blurRadius: 3)],
+          ),
+        ),
+      );
+    }
     return Semantics(
       button: true,
       label: '${l10n.uiFleetSlotTitle(slot + 1)} · $label',
       excludeSemantics: true,
       child: GestureDetector(
-        key: Key('fleet.slot.$slot'),
+        key: Key(crewId != null ? 'fleet.crew.$slot' : (open ? 'fleet.slot.$slot' : 'fleet.locked.$slot')),
         behavior: HitTestBehavior.opaque,
-        onTap: () => openFleetPicker(context, slot),
-        child: id == null ? const Center(child: PixelBitmap(PixelBitmaps.plus, color: PixelPalette.textDim)) : null,
-      ),
-    );
-  }
-}
-
-/// 아직 잠긴 선원 줄 칸: 이 칸이 열리는 배 등급(ship_tiers.json `slots`)과 스테이지를 알려 준다.
-class _LockedSlotButton extends ConsumerWidget {
-  const _LockedSlotButton({required this.slot});
-
-  final int slot;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final tiers = ref.watch(tablesProvider).shipTiers.tiers;
-    final opens = tiers.where((t) => t.slots > slot).firstOrNull;
-    if (opens == null) return const SizedBox.shrink();
-    // 생성된 함수 인자 순서: (stage, tier).
-    final text = l10n.uiFleetSlotLocked(opens.stage, tableText(l10n, opens.nameKey));
-    return Semantics(
-      button: true,
-      label: text,
-      excludeSemantics: true,
-      child: GestureDetector(
-        key: Key('fleet.locked.$slot'),
-        behavior: HitTestBehavior.opaque,
-        onTap: () => showSkinToast(context, text),
+        onTap: onTap,
+        child: overlay,
       ),
     );
   }
