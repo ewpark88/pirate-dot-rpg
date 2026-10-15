@@ -40,10 +40,11 @@ List<RecordedTick> _recording() {
   final enemies = <(int, String, double, double, String)>[];
   var id = 1;
   for (var g = 0; g < 4; g++) {
-    final gx = 150.0 + g * 45;
-    final gy = 110.0 + (g * 7 % 20);
-    for (var k = 0; k < 7; k++) {
-      enemies.add((id++, _kinds[(g + k) % _kinds.length], gx + (k * 9 % 28) - 14, gy + (k * 5 % 22) - 8, 'surface'));
+    // scene3.py: gx = 140 + g·55, 무리 안 ±14·±12 → 겹쳐 쌓인 덩어리. 앞(가까운 y)이 뒤를 가린다(y 순서).
+    final gx = 140.0 + g * 55;
+    final gy = 112.0 + (g * 7 % 18);
+    for (var k = 0; k < 9; k++) {
+      enemies.add((id++, _kinds[(g + k) % _kinds.length], gx + (k * 11 % 26) - 13, gy + (k * 7 % 22) - 11, 'surface'));
     }
   }
   enemies
@@ -99,7 +100,7 @@ void main() {
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     final scene = BattleScene(tables, _recording(), loop: false);
     var t = 0.0;
-    while (t < 4.3 * tickMs) {
+    while (t < 7 * tickMs) {
       scene.update(kFrameMs);
       t += kFrameMs;
     }

@@ -82,7 +82,9 @@ class EventDirector implements ReplayListener {
   void onNow(RecordedTick tick, int index) {
     final f = tick.frame;
     scene.shipHpRatio = f.shipHpMax.isZero ? 0 : (f.shipHp / f.shipHpMax).toDouble().clamp(0.0, 1.0);
-    for (final e in tick.events) {
+    final events = tick.events;
+    for (var i = 0; i < events.length; i++) {
+      final e = events[i];
       _sound(e);
       switch (e) {
         case AttackFired():
@@ -94,7 +96,7 @@ class EventDirector implements ReplayListener {
           _m3.onSkill(e);
           _flashSlot(tick.frame, e.crewId);
         case Damage():
-          _damage(e, tick, index);
+          _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
         case AoeDamageSum():
           scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
           scene.shake.trigger(_juice.shake['aoe']!);
@@ -145,15 +147,28 @@ class EventDirector implements ReplayListener {
     scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: salt);
   }
 
-  void _damage(Damage e, RecordedTick tick, int index) {
+  /// 엔진은 범위 한 발의 Damage(·Kill)들 바로 뒤에 AoeDamageSum을 낸다 → 그 묶음이면 true.
+  static bool _inVolley(List<GameEvent> events, int i) {
+    for (var j = i + 1; j < events.length; j++) {
+      final e = events[j];
+      if (e is AoeDamageSum) return true;
+      if (e is! Damage && e is! Kill) return false;
+    }
+    return false;
+  }
+
+  /// [number]가 false면 숫자 없이 피격 연출만 (범위 피해는 합산 숫자 하나 — 기준 장면 show=False).
+  void _damage(Damage e, RecordedTick tick, int index, {required bool number}) {
     final target = _player.enemyAt(index - 1, e.targetId) ?? _player.enemyAt(index, e.targetId);
     if (target == null) return;
-    scene.numbers.add(
-      e.amount,
-      target.x,
-      target.y - kNumberLiftPx,
-      e.crit ? DamageKind.crit : DamageKind.normal,
-    );
+    if (number) {
+      scene.numbers.add(
+        e.amount,
+        target.x,
+        target.y - kNumberLiftPx,
+        e.crit ? DamageKind.crit : DamageKind.normal,
+      );
+    }
     _fx(e.crit ? 'critHit' : 'damage', target.x, target.y);
     if (e.crit) scene.haptic(HapticLevel.light);
 

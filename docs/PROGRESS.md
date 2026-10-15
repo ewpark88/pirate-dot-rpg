@@ -8,8 +8,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
-| 마지막 갱신 | 2026-10-14 · S1 |
-| 바로 다음 할 일 | **사람: `docs/DEVICE_TEST.md`로 M2 관문(손맛·60fps)** · S1: 레인 머지, 처치 퀘스트 연결(S2 함수 대기), 전설 고유 스킬 |
+| 마지막 갱신 | 2026-10-15 · S1 |
+| 바로 다음 할 일 | **사람: `docs/DEVICE_TEST.md`로 M2 관문(손맛·60fps)** · **사람: 환생 2 규칙 선택(S2 비교표 대기)** · S1: 렌더 v2·UI v2 골든 승인·머지, 캔버스 HUD 전환 신호 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -113,6 +113,13 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ```
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S1 · PC 재시작 후 재개, 레인 4개 재배정
+- 세션 4개 모두 main 폴더에서 열림 → 각자 worktree 절대경로(D:\Projects\pde-<레인>)에서만 작업하도록 지시. c7=economy, 96=render, b7=ui, a1=platform.
+- 머지: lane/economy e25de1d(초반 흐름), lane/render(렌더 품질 v1, 골든 7장 승인), lane/ui(도트 UI v1, 골든 12장 체크포인트 승인). pubspec `assets/ui/` 등록(5548687).
+- main.dart 어댑터 연결(3e1efd6, S5 권장안): startAnalytics(Firebase/Noop)·AudioAdapter·AdMobAds(첫 프레임 뒤 start, 동의 시 Analytics 수집)·OfflineFullNotifier(pause/resume). dailyMax·enabled는 TODO(platform).
+- 판단: UI v1은 기준 gif에 못 미침(Material HUD, 긴 선원 카드, 잘리는 이름) → v2 지시. 캔버스 HUD·선원 바는 render 소유로 확정, 완성 뒤 UI가 위쪽 HUD 걷어냄.
+- 다음 할 일: S2 환생 2 선택지 비교 → 사용자 결정, S3·S4 v2 골든 승인, S5 dailyMax 파싱 후 TODO 교체.
 
 ### 2026-10-14 · S1 · M3 계약·보스, 레인 통합 (오후)
 - 한 일: 해역 보스·무한 항해(edc81e3), 세이브 v3(16dda02, ADR-0008), lastSummon·AckSummonResult, GrantAdReward.choice·lastOfflineGold, ClaimDaily(questId), 튜토리얼 3단계 보스.

@@ -23,6 +23,9 @@ class OfflineFullNotifier {
 
   static const _id = 1;
 
+  /// 운영자 시험 알림 id — 진짜 예약(_id)을 덮거나 취소하지 않게 따로 둔다.
+  static const testId = 2;
+
   final NotifySdk _sdk;
   final Clock _clock;
   final DateTime Function(DateTime) _toLocal;
@@ -73,6 +76,17 @@ class OfflineFullNotifier {
       await _sdk.requestPermission();
     }
     await log.write(dir);
+  });
+
+  /// 운영자 패널 전용(`if (kOperator)` 안에서만 부른다): 권한을 묻고 [after] 뒤 시험 알림 1건.
+  /// 하루 기록·설정과 무관하다(실기기에서 채널·문구·권한만 본다).
+  Future<void> testRing({Duration after = const Duration(seconds: 10)}) => _guard(() async {
+    await _sdk.requestPermission();
+    await _sdk.schedule(
+      id: testId,
+      at: _clock.now().add(after),
+      texts: notifyTextsFor(lang(), hours: fullAfter.inHours),
+    );
   });
 
   /// 설정에서 끄면 남은 예약을 바로 취소한다.
