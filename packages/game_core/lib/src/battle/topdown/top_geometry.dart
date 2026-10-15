@@ -69,7 +69,7 @@ class TopGeometry implements BattleGeometry {
   @override
   void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
     final before = f.foes.length;
-    side.spawnWave(f, stage, ctx, count: count, kind: kind);
+    side.spawnWaveSide(f, stage, ctx, count: count, kind: kind);
     final added = f.foes.sublist(before);
     if (added.isEmpty) return;
     final rng = ctx.rng;
@@ -189,4 +189,14 @@ class TopGeometry implements BattleGeometry {
   /// 배를 향한다(원을 도는 보스도 배 쪽을 본다).
   @override
   double heading(Foe e) => math.atan2(top.shipY - e.y, top.shipX - e.x);
+
+  @override
+  Point get viewShip => ship;
+
+  /// 배 중심에서 조준점 방향으로, 배 둘레(포구)에서 쏜다.
+  @override
+  ({double x, double y, double angle}) muzzle(double tx, double ty) {
+    final a = math.atan2(ty - top.shipY, tx - top.shipX);
+    return (x: top.shipX + math.cos(a) * top.shipRadius, y: top.shipY + math.sin(a) * top.shipRadius, angle: a);
+  }
 }

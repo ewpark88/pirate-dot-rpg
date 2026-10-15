@@ -20,7 +20,8 @@ class TopAim {
   /// 배 둘레에서 [e] 가장자리까지.
   double edge(Foe e) => _centerDist(e) - top.shipRadius - top.radiusOf(e);
 
-  bool onScreen(Foe e) => e.x >= 0 && e.x <= top.width && e.y >= 0 && e.y <= top.height;
+  bool onScreen(Foe e) =>
+      (e.x - top.shipX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;
 
   List<Foe> eligible(AttackDef a, List<Foe> foes, {double reachBonus = 0}) {
     final r = attackReach(a, w.field);

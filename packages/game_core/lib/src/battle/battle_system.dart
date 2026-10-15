@@ -100,7 +100,7 @@ class BattleSystem implements GameSystem {
         ..tickCombo();
     });
     final after = _resolve(next, _field!, ctx);
-    // 보스 처치는 새 스테이지의 Field를 만든다. 그래서 _resolve 뒤의 Field를 다시 읽는다.
+    // 보스 처치는 새 Field를 만든다 → _resolve 뒤 다시 읽는다.
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     return _tailwindSpeed(_project(after, f, ctx.tables), ctx);
   }
@@ -120,8 +120,7 @@ class BattleSystem implements GameSystem {
 
   bool _tailwindBoost = false;
 
-  /// 순풍 중에는 배속을 tailwind.speedMultiplier로 (BattleView.speed — 앱이 주기마다 그만큼 틱을 돈다).
-  /// 운영자가 배속을 바꿨으면(1이 아니면) 건드리지 않는다.
+  /// 순풍 중에는 배속을 tailwind.speedMultiplier로(앱이 주기마다 그만큼 틱을 돈다). 운영자 배속(1 아님)은 그대로.
   GameState _tailwindSpeed(GameState s, SystemContext ctx) {
     final b = s.battle;
     if (b == null) return s;
@@ -243,21 +242,22 @@ class BattleSystem implements GameSystem {
     return _project(s, f, ctx.tables);
   }
 
-  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.
+  /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동, 전장 방식 변경) 새로 만든다.
   Field _sync(GameState s, SystemContext ctx) {
     final view = s.battle ?? BattleView.empty;
     final f = _field;
-    if (f != null && f.tick == view.tick && f.stage == s.progress.stage && f.bossActive == view.bossActive) {
+    if (f != null && f.matches(view, s.progress.stage, s.settings.battleView)) {
       if (!identical(_crewsSeen, s.crews) || !identical(_fleetSeen, s.fleet)) _arm(f, s, ctx);
       return f;
     }
     final stats = CombatStats.of(s, ctx.tables);
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
-      ..tick = view.tick;
+      ..tick = view.tick
+      ..geometry = geometryFor(s.settings.battleView, ctx.tables.waves);
     if (view.bossActive) {
-      final bossView = view.enemies.where((e) => e.boss).firstOrNull;
-      startBoss(nf, s.progress.stage, ctx, emit: false, hpRatio: bossView?.hpRatio ?? 1, x: bossView?.x);
+      final b = view.enemies.where((e) => e.boss).firstOrNull;
+      startBoss(nf, s.progress.stage, ctx, emit: false, hpRatio: b?.hpRatio ?? 1, x: b?.x, y: b?.y);
       nf.bossTicksLeft = view.bossTicksLeft;
     }
     _field = nf;

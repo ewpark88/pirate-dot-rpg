@@ -4,6 +4,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' as side;
 import 'package:game_core/src/battle/targeting.dart' as side;
 import 'package:game_core/src/battle/targeting.dart' show Volley;
+import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -56,9 +57,18 @@ abstract interface class BattleGeometry {
   /// 분열한 작은 적 [n]마리 중 [i]번째 자리.
   Point splitAt(Foe parent, int i, int n);
 
-  /// [e]가 향하는 방향(라디안, 0 = 오른쪽, 시계 방향 +). 렌더가 그림을 돌린다.
-  double heading(Foe e);
+  /// [e]가 향하는 방향(라디안, atan2(dy, dx)) — 렌더가 그림을 돌린다. 옆모습은 null(EnemyView 기본 = 왼쪽).
+  double? heading(Foe e);
+
+  /// BattleView.shipX·shipY로 낼 배 중심. 옆모습은 null(옛 기록과 같게).
+  Point? get viewShip;
+
+  /// 조준점 ([tx],[ty])으로 쏘는 포구와 방향(AttackFired.fromX·fromY·angle). 옆모습은 null.
+  ({double x, double y, double angle})? muzzle(double tx, double ty);
 }
+
+/// Settings.battleView(`side` | `top`)에 맞는 전장 모양.
+BattleGeometry geometryFor(String mode, WavesTable w) => mode == 'top' ? TopGeometry.of(w) : SideGeometry(w);
 
 /// 옆모습: 배는 왼쪽(shipX), 적은 오른쪽에서 줄지어 걸어온다. 지금 동작 그대로.
 class SideGeometry implements BattleGeometry {
@@ -90,15 +100,19 @@ class SideGeometry implements BattleGeometry {
 
   @override
   void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
-      side.spawnWave(f, stage, ctx, count: count, kind: kind);
+      side.spawnWaveSide(f, stage, ctx, count: count, kind: kind);
 
   @override
   void placeBoss(Field f, {double? x, double? y}) {}
 
   @override
   bool advance(Foe e, double speed, double dt) {
-    if (e.x > _f.shipX) {
-      e.x = e.x - speed * dt < _f.shipX ? _f.shipX : e.x - speed * dt;
+    // 일반 적은 몸통이 겹치지 않게 contactGap에서, 보스는 standoff에서 멈춘다(정지 전 slowZone에서 감속).
+    final stop = _f.shipX + (e.boss ? w.bossStandoff : _f.contactGap);
+    if (e.x > stop) {
+      final left = e.x - stop;
+      final v = e.boss && left < w.bossSlowZone ? speed * math.max(left / w.bossSlowZone, w.bossSlowFloor) : speed;
+      e.x = e.x - v * dt < stop ? stop : e.x - v * dt;
       return false;
     }
     return true;
@@ -121,5 +135,11 @@ class SideGeometry implements BattleGeometry {
   Point splitAt(Foe parent, int i, int n) => (x: parent.x + (i - (n - 1) * half) * _f.spawnSpacing, y: parent.y);
 
   @override
-  double heading(Foe e) => math.pi;
+  double? heading(Foe e) => null;
+
+  @override
+  Point? get viewShip => null;
+
+  @override
+  ({double x, double y, double angle})? muzzle(double tx, double ty) => null;
 }

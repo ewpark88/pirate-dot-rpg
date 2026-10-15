@@ -240,13 +240,14 @@ void main() {
 
     test('옆모습 SideGeometry는 지금 규칙 그대로(앞머리에서 멈춤, 오른쪽으로 밀림)', () {
       final s = SideGeometry(w);
-      final e = mob(w.field.shipX + 5, w.field.shipY);
+      final stop = w.field.shipX + w.field.contactGap;
+      final e = mob(stop + 5, w.field.shipY);
       expect(s.advance(e, 20, 0.05), isFalse);
-      expect(e.x, w.field.shipX + 4);
-      e.x = w.field.shipX;
+      expect(e.x, stop + 4);
+      e.x = stop;
       expect(s.advance(e, 20, 0.05), isTrue);
       s.push(e, 10);
-      expect(e.x, w.field.shipX + 10);
+      expect(e.x, stop + 10);
       expect(s.mode, 'side');
       expect(geo.mode, 'top');
     });

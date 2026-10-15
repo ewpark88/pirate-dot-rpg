@@ -1,5 +1,5 @@
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_data/game_data.dart';
+import 'package:game_data/game_data.dart' show WavesTable;
 
 /// 탑다운 전장 수치 (waves.json `top`, 계약 T0 — docs/contracts/requests/platform-topdown-t0.md).
 /// 좌표는 왼쪽 위 (0,0), 배 중심 (shipX, shipY) 고정. 거리는 '배 둘레 → 적 가장자리'로 잰다.
@@ -22,34 +22,39 @@ class TopField {
     required this.bossStandoff,
     required this.bossOrbitDegPerSec,
     required this.reachScale,
-  });
+    double? viewWidth,
+    double? viewHeight,
+  }) : viewWidth = viewWidth ?? width,
+       viewHeight = viewHeight ?? height;
 
-  /// `waves.json`의 `top` 절. 키가 없으면 테이블 오류(TableFormatException).
+  /// `waves.json`의 `top` 절(TopFieldDef, 계약 T0). 아직 표에 없는 값(겹침 풀기·보스 원 속도·카메라 사각형)은 선택 키.
   factory TopField.of(WavesTable w) {
+    final d = w.top;
     final j = w.raw.obj('top');
-    final groups = j.numbers('swarmGroups');
     return TopField(
-      width: j.number('width'),
-      height: j.number('height'),
-      shipX: j.number('shipX'),
-      shipY: j.number('shipY'),
-      shipRadius: j.number('shipRadius'),
-      mobRadius: j.number('mobRadius'),
-      bossRadius: j.number('bossRadius'),
-      spawnMargin: j.number('spawnMargin'),
-      approachRadius: j.number('approachRadius'),
-      approachBoost: j.number('approachBoost'),
-      swarmGroupsMin: groups.first.toInt(),
-      swarmGroupsMax: groups.last.toInt(),
-      swarmSpreadDeg: j.number('swarmSpreadDeg'),
-      separation: j.number('separation'),
-      bossStandoff: j.number('bossStandoff'),
-      bossOrbitDegPerSec: j.number('bossOrbitDegPerSec'),
-      reachScale: j.numberOr('reachScale', 1),
+      width: d.width,
+      height: d.height,
+      shipX: d.shipX,
+      shipY: d.shipY,
+      shipRadius: d.shipRadius,
+      mobRadius: d.mobRadius,
+      bossRadius: d.bossRadius,
+      spawnMargin: d.spawnMargin,
+      approachRadius: d.approachRadius,
+      approachBoost: d.approachBoost,
+      swarmGroupsMin: d.swarmGroupsMin,
+      swarmGroupsMax: d.swarmGroupsMax,
+      swarmSpreadDeg: d.swarmSpreadDeg,
+      separation: j.numberOr('separation', 1),
+      bossStandoff: d.bossStandoff,
+      bossOrbitDegPerSec: j.numberOr('bossOrbitDegPerSec', 0),
+      reachScale: d.reachScale,
+      viewWidth: j.numberOr('viewWidth', d.width),
+      viewHeight: j.numberOr('viewHeight', d.height),
     );
   }
 
-  /// 보이는 전장(세로). 이 밖의 적은 맞히지 않는다.
+  /// 전장(세로). 화면보다 클 수 있다 — 바깥은 스폰 여유.
   final double width;
   final double height;
 
@@ -84,11 +89,10 @@ class TopField {
   /// 사거리 배율 (skills.json reach × 이 값).
   final double reachScale;
 
+  /// 카메라가 보이는 사각형(배 중심 기준 가운데). 이 밖의 적은 맞히지 않는다(옆모습 visibleRight와 같은 뜻).
+  final double viewWidth;
+  final double viewHeight;
+
   /// [e]의 원 반지름.
   double radiusOf(Foe e) => e.boss ? bossRadius : mobRadius;
-}
-
-extension on JsonReader {
-  /// `[min, max]` 숫자 배열.
-  List<num> numbers(String key) => (raw[key] as List).cast<num>();
 }

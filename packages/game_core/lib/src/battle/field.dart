@@ -1,6 +1,9 @@
+import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
+
+export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor;
 
 /// 전장의 적 하나. 시뮬 내부 값(실제 HP·접촉 타이머·기절)을 들고, 화면에는 [EnemyView]로 나간다.
 class Foe {
@@ -77,7 +80,8 @@ class Foe {
   bool get alive => !hp.isZero && !hp.isNegative;
   bool get stunned => stunTimer > 0;
 
-  EnemyView view() => EnemyView(
+  /// [heading]은 탑다운의 향하는 방향(없으면 옆모습 기본).
+  EnemyView view({double? heading}) => EnemyView(
     id: id,
     kind: kind,
     x: x,
@@ -91,6 +95,7 @@ class Foe {
     slowed: slowTimer > 0,
     burning: burnTicks > 0,
     vulnerable: vulnerableTimer > 0,
+    heading: heading ?? EnemyView.sideHeading,
   );
 }
 
@@ -217,9 +222,19 @@ class Field {
   /// 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱.
   int bossTimerTicks = 0;
 
+  /// 전장 모양(옆모습·탑다운). 없으면 옆모습 — [geometryOr].
+  BattleGeometry? geometry;
+
+  /// [geometry], 없으면 옆모습으로 정해 둔다.
+  BattleGeometry geometryOr(WavesTable w) => geometry ??= SideGeometry(w);
+
   int nextId() => _nextId++;
 
   Iterable<Foe> get living => foes.where((f) => f.alive);
+
+  /// 이 Field가 [view]·[stage]·전장 방식 [mode]와 그대로 이어지는가 (아니면 BattleSystem이 새로 만든다).
+  bool matches(BattleView view, int stage, String mode) =>
+      tick == view.tick && this.stage == stage && bossActive == view.bossActive && (geometry?.mode ?? 'side') == mode;
 
   BattleView view(BattleView prev) => BattleView(
     tick: prev.tick,
@@ -227,12 +242,15 @@ class Field {
     shipHpMax: shipHpMax,
     bossActive: bossActive,
     bossTicksLeft: bossTicksLeft,
-    enemies: [for (final f in living) f.view()],
+    enemies: [for (final f in living) f.view(heading: geometry?.heading(f))],
     fleet: [for (final g in guns) g.view()],
     captainId: captainId,
     hitStopTicks: prev.hitStopTicks,
     speed: prev.speed,
     stage: stage,
     chest: prev.chest,
+    mode: geometry?.mode ?? 'side',
+    shipX: geometry?.viewShip?.x,
+    shipY: geometry?.viewShip?.y,
   );
 }

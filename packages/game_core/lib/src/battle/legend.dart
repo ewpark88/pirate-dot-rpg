@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_data/game_data.dart';
@@ -10,11 +11,11 @@ import 'package:game_data/game_data.dart';
 // 전설 고유 능력의 효과 부품 (docs/specs/battle-m3-legend.md).
 
 /// extraChains·noFalloff: 마지막 대상에서 가까운 적으로 더 잇고, 비율을 다시 매긴다.
-Volley extendVolley(Gun g, Volley v, List<Foe> foes, WavesTable w) {
+Volley extendVolley(Gun g, Volley v, List<Foe> foes, WavesTable w, {BattleGeometry? geometry}) {
   final l = g.legend;
   if (l == null || (l.extraChains == 0 && !l.noFalloff) || v.hits.isEmpty) return v;
   final hit = [for (final h in v.hits) h.foe];
-  final pool = eligible(g.attack, foes, w.field).where((e) => !hit.contains(e)).toList();
+  final pool = (geometry ?? SideGeometry(w)).eligible(g.attack, foes).where((e) => !hit.contains(e)).toList();
   for (var i = 0; i < l.extraChains && pool.isNotEmpty; i++) {
     final last = hit.last;
     final next = pool.reduce((m, e) => _d2(e, last) < _d2(m, last) ? e : m);
@@ -52,9 +53,7 @@ void applyOnHit(Round r, Gun g, Iterable<Foe> foes, BigNum amount, {required dou
         ..vulnerableTimer = math.max(e.vulnerableTimer, oh.vulnerableSec);
     }
     if (oh.pull != 0) {
-      final dx = x - e.x;
-      final step = math.min(dx.abs(), oh.pull.abs() * k);
-      e.x += (oh.pull > 0 ? dx.sign : -dx.sign) * step;
+      r.geo.pull(e, x, y, oh.pull * k);
     }
   }
 }
@@ -87,7 +86,7 @@ void critBurst(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
   if (!crit || radius <= 0) return;
   final hitIds = {for (final h in v.hits) h.foe.id};
   final around = [
-    for (final e in eligible(g.attack, r.field.foes, r.w.field))
+    for (final e in r.geo.eligible(g.attack, r.field.foes))
       if (!hitIds.contains(e.id) && (e.x - v.x) * (e.x - v.x) + (e.y - v.y) * (e.y - v.y) <= radius * radius) e,
   ];
   if (around.isEmpty) return;
