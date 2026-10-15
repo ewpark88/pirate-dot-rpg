@@ -58,6 +58,8 @@ lanes:
       - packages/game_data/tables/waves.json
       - packages/game_data/lib/src/models/economy_tables.dart
       - packages/game_data/lib/src/models/crew_tables.dart
+      # 밸런스 리포트(야간 100명×30일 포함, 2026-10-15 S1)
+      - docs/balance/
       - packages/game_cli/lib/src/commands/sim.dart
       - packages/game_cli/lib/src/sim/
       - packages/game_cli/test/sim/
