@@ -1,6 +1,8 @@
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:meta/meta.dart';
 
+export 'package:game_core/src/engine/state_progress.dart';
+
 // 세이브 스키마 v1(docs/GAME_DESIGN.md 5.2)의 조각들. 모두 불변이고 JSON과 1:1.
 
 typedef Json = Map<String, dynamic>;
@@ -25,74 +27,6 @@ class Wallet {
       Wallet(gold: gold ?? this.gold, gems: gems ?? this.gems, mapPieces: mapPieces ?? this.mapPieces);
 
   Json toJson() => {'gold': gold.toJson(), 'gems': gems, 'mapPieces': mapPieces};
-}
-
-@immutable
-class Progress {
-  const Progress({
-    this.stage = 1,
-    this.wave = 0,
-    this.bestStage = 1,
-    this.farming = false,
-    this.rebirths = 0,
-    this.rage = 0,
-  });
-
-  factory Progress.fromJson(Json j) => Progress(
-    stage: j['stage'] as int,
-    wave: j['wave'] as int,
-    bestStage: j['bestStage'] as int,
-    farming: j['farming'] as bool,
-    rebirths: j['rebirths'] as int,
-    rage: (j['rage'] as num).toDouble(),
-  );
-
-  final int stage;
-
-  /// 현재 스테이지에서 처치한 파 수 (0~wavesPerStage).
-  final int wave;
-  final int bestStage;
-
-  /// 보스 실패 후 제자리 항해 중.
-  final bool farming;
-  final int rebirths;
-
-  /// 함성 게이지 0~1.
-  final double rage;
-
-  Progress copyWith({int? stage, int? wave, int? bestStage, bool? farming, int? rebirths, double? rage}) => Progress(
-    stage: stage ?? this.stage,
-    wave: wave ?? this.wave,
-    bestStage: bestStage ?? this.bestStage,
-    farming: farming ?? this.farming,
-    rebirths: rebirths ?? this.rebirths,
-    rage: rage ?? this.rage,
-  );
-
-  Json toJson() => {
-    'stage': stage,
-    'wave': wave,
-    'bestStage': bestStage,
-    'farming': farming,
-    'rebirths': rebirths,
-    'rage': rage,
-  };
-}
-
-@immutable
-class ShipState {
-  const ShipState({this.parts = const {'cannon': 0, 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}});
-
-  factory ShipState.fromJson(Json j) => ShipState(parts: (j['parts'] as Map).cast<String, int>());
-
-  /// 부위 id → 레벨.
-  final Map<String, int> parts;
-
-  int level(String part) => parts[part] ?? 0;
-
-  ShipState withLevel(String part, int level) => ShipState(parts: {...parts, part: level});
-
-  Json toJson() => {'parts': parts};
 }
 
 @immutable
@@ -217,6 +151,7 @@ class Settings {
     this.flash = true,
     this.notifications = true,
     this.battleView = 'side',
+    this.title,
   });
 
   factory Settings.fromJson(Json j) => Settings(
@@ -231,6 +166,7 @@ class Settings {
     flash: j['flash'] as bool,
     notifications: j['notifications'] as bool,
     battleView: j['battleView'] as String? ?? 'side',
+    title: j['title'] as String?,
   );
 
   /// `system` | `ko` | `en`.
@@ -251,6 +187,9 @@ class Settings {
   /// 세이브 선택 키(없으면 side). 전환이 끝나면(T4) 기본값을 top으로 바꾼다.
   final String battleView;
 
+  /// 고른 칭호 id (progress.titles 중, null = 없음 — 세이브 v6).
+  final String? title;
+
   Json toJson() => {
     'lang': lang,
     'autoUpgrade': autoUpgrade,
@@ -264,7 +203,11 @@ class Settings {
     'notifications': notifications,
     // 옆모습(기본)은 쓰지 않는다 — 옛 픽스처·세이브와 같은 본문.
     if (battleView != 'side') 'battleView': battleView,
+    if (title != null) 'title': title,
   };
+
+  /// 칭호만 바꾼다 (SelectTitle, null = 없음).
+  Settings withTitle(String? id) => Settings.fromJson({...toJson(), 'battleView': battleView, 'title': id});
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].
   Settings withValue(String key, Object value) {

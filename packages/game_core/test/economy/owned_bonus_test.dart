@@ -19,7 +19,7 @@ void main() {
 
   test('피해 % 합 = 환생 + 보유 효과 + 도감', () {
     final crews = {for (final c in t.crews.crews.take(5)) c.id: const CrewState(level: 20)};
-    final s = owning(crews).copyWith(wallet: h.newGame().wallet.copyWith(mapPieces: 3));
+    final s = owning(crews).copyWith(progress: const Progress(mapPiecesEarned: 3));
     expect(
       damageBonus(s, t),
       closeTo(rebirthBonus(s, t) + ownedBonus(s, t) + collectionBonus(s, t).attackBonus, 1e-12),

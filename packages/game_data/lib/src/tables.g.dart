@@ -1281,6 +1281,24 @@ const Map<String, String> rawTables = {
     "sinkMs": 1800,
     "sinkDepth": 26,
     "sinkTilt": 0.35
+  },
+  "topShip": {
+    "stages": {
+      "hull": 7,
+      "cargo": 7,
+      "cannon": 7,
+      "sail": 5,
+      "crowsnest": 6
+    }
+  },
+  "topSea": {
+    "base": "#2A7FCC",
+    "deep": "#2270B8",
+    "shallow": "#3690DA",
+    "wave": "#9FD8FF",
+    "foam": "#F2FBFF",
+    "tile": 128,
+    "flowSpeed": 14
   }
 }
 ''',
@@ -1378,7 +1396,50 @@ const Map<String, String> rawTables = {
 ''',
   'meta': r'''
 {
-  "rebirth": { "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300 },
+  "rebirth": {
+    "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300,
+    "shopRows": [0, 30, 150],
+    "shop": [
+      { "id": "startParts", "row": 1, "perLevel": 5, "perLevelMinor": 1, "maxLevel": 10, "costBase": 3, "costGrowth": 1.35, "nameKey": "econRebirthShopStartPartsName", "descKey": "econRebirthShopStartPartsDesc" },
+      { "id": "discount", "row": 1, "perLevel": 0.04, "maxLevel": 10, "costBase": 4, "costGrowth": 1.4, "nameKey": "econRebirthShopDiscountName", "descKey": "econRebirthShopDiscountDesc" },
+      { "id": "bossTime", "row": 1, "perLevel": 3, "maxLevel": 5, "costBase": 6, "costGrowth": 1.5, "nameKey": "econRebirthShopBossTimeName", "descKey": "econRebirthShopBossTimeDesc" },
+      { "id": "offline", "row": 2, "perLevel": 3600, "maxLevel": 4, "costBase": 10, "costGrowth": 1.8, "nameKey": "econRebirthShopOfflineName", "descKey": "econRebirthShopOfflineDesc" },
+      { "id": "critChance", "row": 2, "perLevel": 0.01, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritChanceName", "descKey": "econRebirthShopCritChanceDesc" },
+      { "id": "critDamage", "row": 2, "perLevel": 0.1, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritDamageName", "descKey": "econRebirthShopCritDamageDesc" },
+      { "id": "fleetSlot", "row": 3, "perLevel": 1, "maxLevel": 2, "costBase": 60, "costGrowth": 4, "nameKey": "econRebirthShopFleetSlotName", "descKey": "econRebirthShopFleetSlotDesc" },
+      { "id": "pieceGain", "row": 3, "perLevel": 0.1, "maxLevel": 10, "costBase": 8, "costGrowth": 1.5, "nameKey": "econRebirthShopPieceGainName", "descKey": "econRebirthShopPieceGainDesc" },
+      { "id": "fastSail", "row": 3, "perLevel": 0.05, "maxLevel": 4, "costBase": 12, "costGrowth": 1.6, "nameKey": "econRebirthShopFastSailName", "descKey": "econRebirthShopFastSailDesc" }
+    ],
+    "fleetSlotsMax": 7,
+    "skins": [
+      { "id": "coral", "rebirths": 1, "nameKey": "shipSkinCoral" },
+      { "id": "storm", "rebirths": 3, "nameKey": "shipSkinStorm" },
+      { "id": "gold", "rebirths": 5, "nameKey": "shipSkinGold" },
+      { "id": "phantom", "rebirths": 10, "nameKey": "shipSkinPhantom" }
+    ],
+    "titles": [
+      { "id": "deckhand", "rebirths": 1, "nameKey": "econTitleDeckhand" },
+      { "id": "navigator", "rebirths": 3, "nameKey": "econTitleNavigator" },
+      { "id": "captain", "rebirths": 5, "nameKey": "econTitleCaptain" },
+      { "id": "admiral", "rebirths": 10, "nameKey": "econTitleAdmiral" },
+      { "id": "seaKing", "rebirths": 20, "nameKey": "econTitleSeaKing" }
+    ],
+    "chest": { "gemsBase": 50, "gemsPerRebirth": 10, "gemsMax": 150, "summons": [{ "from": 1, "count": 1 }, { "from": 5, "count": 2 }, { "from": 10, "count": 3 }], "minRarity": "hero" },
+    "unlocks": [
+      { "rebirths": 1, "kind": "shopRow", "value": 1 },
+      { "rebirths": 2, "kind": "crewMaxLevel", "value": 80 },
+      { "rebirths": 3, "kind": "treasureSea", "value": 1 },
+      { "rebirths": 5, "kind": "crewMaxLevel", "value": 85 },
+      { "rebirths": 5, "kind": "treasureSea", "value": 2 },
+      { "rebirths": 8, "kind": "treasureSea", "value": 3 },
+      { "rebirths": 10, "kind": "crewMaxLevel", "value": 90 }
+    ],
+    "treasureSeas": [
+      { "sea": 1, "hpMultiplier": 2.0, "goldMultiplier": 1.5, "piecesMultiplier": 1.5, "firstBossGems": 30, "firstBossPieces": 5 },
+      { "sea": 2, "hpMultiplier": 3.5, "goldMultiplier": 1.5, "piecesMultiplier": 2.0, "firstBossGems": 30, "firstBossPieces": 5 },
+      { "sea": 3, "hpMultiplier": 6.0, "goldMultiplier": 1.5, "piecesMultiplier": 3.0, "firstBossGems": 30, "firstBossPieces": 5 }
+    ]
+  },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
@@ -1520,10 +1581,10 @@ const Map<String, String> rawTables = {
   'ship_tiers': r'''
 {
   "tiers": [
-    { "id": "dinghy", "stage": 1, "slots": 3, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
-    { "id": "sloop", "stage": 30, "slots": 4, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
-    { "id": "warship", "stage": 80, "slots": 5, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
-    { "id": "ghost", "stage": 150, "slots": 6, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
+    { "id": "dinghy", "stage": 1, "slots": 3, "topRadius": 28, "damageBonus": 0, "sprite": "ship_t1", "nameKey": "shipTierDinghy" },
+    { "id": "sloop", "stage": 30, "slots": 4, "topRadius": 29, "damageBonus": 0.2, "sprite": "ship_t2", "nameKey": "shipTierSloop" },
+    { "id": "warship", "stage": 80, "slots": 5, "topRadius": 32, "damageBonus": 0.5, "sprite": "ship_t3", "nameKey": "shipTierWarship" },
+    { "id": "ghost", "stage": 150, "slots": 6, "topRadius": 32, "damageBonus": 1.0, "sprite": "ship_t4", "nameKey": "shipTierGhost" }
   ]
 }
 ''',
@@ -1604,17 +1665,21 @@ const Map<String, String> rawTables = {
     "height": 480,
     "shipX": 135,
     "shipY": 240,
-    "shipRadius": 20,
+    "shipRadius": 28,
     "mobRadius": 6,
     "bossRadius": 24,
-    "bossStandoff": 48,
+    "bossStandoff": 100,
     "spawnMargin": 12,
     "approachRadius": 206,
-    "approachBoost": 3,
+    "approachBoost": 5,
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 3,
     "swarmSpreadDeg": 20,
-    "reachScale": 1
+    "reachScale": 1,
+    "separation": 0.5,
+    "bossOrbitDegPerSec": 12,
+    "viewWidth": 180,
+    "viewHeight": 320
   },
   "field": {
     "width": 320,

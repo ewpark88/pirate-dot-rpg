@@ -6,6 +6,7 @@ import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
 import 'package:game_core/src/economy/rebirth.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
@@ -45,10 +46,21 @@ class EconomySystem implements GameSystem {
     final Rebirth c => onRebirth(state, c, ctx),
     final OpRebirthNow c => opRebirthNow(state, c, ctx),
     final OpReset c => opReset(state, c, ctx),
+    final BuyRebirthUpgrade c => buyRebirthUpgrade(state, c, ctx),
+    final SelectShipSkin c => selectShipSkin(state, c),
+    final SelectTitle c => selectTitle(state, c),
+    final SetTreasureRoute c => setTreasureRoute(state, c, ctx),
+    final OpGrantPieces c => opGrantPieces(state, c),
+    final OpSetRebirths c => opSetRebirths(state, c),
     _ => null,
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) =>
-      tickChest(tutorialTick(rollDay(ensureFleet(state, ctx.tables), ctx.clock.now()), ctx.tables), ctx);
+  GameState update(GameState state, SystemContext ctx) => tickChest(
+    tutorialTick(
+      rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+      ctx.tables,
+    ),
+    ctx,
+  );
 }

@@ -20,7 +20,7 @@ void main() {
   GameState at(int stage, {int pieces = 0}) => h
       .newGame(gold: BigNum.from(1e6), gems: 77)
       .copyWith(
-        progress: Progress(stage: stage, bestStage: stage + 5, wave: 2, farming: true),
+        progress: Progress(stage: stage, bestStage: stage + 5, wave: 2, farming: true, mapPiecesEarned: pieces),
         ship: const ShipState(parts: {'cannon': 30, 'hull': 20, 'sail': 5, 'crowsnest': 3, 'cargo': 9}),
         crews: {'octo': const CrewState(level: 33, cards: 2)},
         collection: {'octo'},

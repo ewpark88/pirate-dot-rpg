@@ -5,6 +5,7 @@ import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -35,6 +36,9 @@ class Round {
   WavesTable get w => t.waves;
   double get dt => w.tickMs * secondsPerMillisecond;
 
+  /// 전장 모양(옆모습·탑다운) — 위치에 관한 것은 여기에 묻는다.
+  BattleGeometry get geo => field.geometryOr(w);
+
   /// 공격 속도 배율 = 돛 + 지원 버프, 상한 `caps.attackSpeedMax` (설계서 4.8).
   double get attackSpeed => math.min(stats.attackSpeed + field.buffValue, t.shipParts.attackSpeedMax);
 
@@ -61,14 +65,8 @@ class Round {
       final speed = e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed;
       e.slowTimer -= dt;
       if (e.slowTimer <= 0) e.slow = 0;
-      // 일반 적은 몸통이 겹치지 않게 contactGap에서, 보스는 standoff에서 멈춘다(정지 전 slowZone에서 감속).
-      final stop = f.shipX + (e.boss ? w.bossStandoff : f.contactGap);
-      if (e.x > stop) {
-        final left = e.x - stop;
-        final v = e.boss && left < w.bossSlowZone ? speed * math.max(left / w.bossSlowZone, w.bossSlowFloor) : speed;
-        e.x = e.x - v * dt < stop ? stop : e.x - v * dt;
-        continue;
-      }
+      // 다가가기(모양마다). 아직 닿지 않았으면 이번 틱은 공격하지 않는다.
+      if (!geo.advance(e, speed, dt)) continue;
       e.contactTimer -= dt;
       if (e.contactTimer > 0) continue;
       e.contactTimer += f.contactIntervalSec;
@@ -79,6 +77,7 @@ class Round {
       field.shipHp = hp.isNegative ? BigNum.zero : hp;
       ctx.emit(ShipDamaged(ctx.tick, amount: e.attack, hpRatio: (field.shipHp / field.shipHpMax).toDouble()));
     }
+    geo.settle(field, dt);
   }
 
   /// 슬롯마다 쿨타임을 돌리고, 준비됐고 맞힐 적이 있으면 쏜다 (규칙 5, 사다리 발사체 수).
@@ -90,7 +89,8 @@ class Round {
       final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
-        for (final v in aimMany(a, shots, field.foes, w, ctx.rng, reachBonus: bonus)) extendVolley(g, v, field.foes, w),
+        for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
+          extendVolley(g, v, field.foes, w, geometry: geo),
       ];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
@@ -101,6 +101,7 @@ class Round {
       if (crit) hitStop('crit');
       final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);
       for (final v in volleys) {
+        final m = geo.muzzle(v.x, v.y);
         ctx.emit(
           AttackFired(
             ctx.tick,
@@ -109,6 +110,9 @@ class Round {
             targetIds: [for (final h in v.hits) h.foe.id],
             x: v.x,
             y: v.y,
+            fromX: m?.x,
+            fromY: m?.y,
+            angle: m?.angle,
           ),
         );
         land(g, a, v, base, crit: crit);
@@ -134,9 +138,8 @@ class Round {
     for (final e in foes) {
       if (!e.alive) continue;
       final k = e.boss ? t.skills.bossControlFactor : 1.0;
-      e
-        ..x = math.min(e.x + knockback * k, w.field.width)
-        ..stunTimer = math.max(e.stunTimer, stunSec * k);
+      geo.push(e, knockback * k);
+      e.stunTimer = math.max(e.stunTimer, stunSec * k);
     }
   }
 
@@ -148,7 +151,7 @@ class Round {
     final ult = gun.family.ultimate;
     final targets = [
       for (final e in field.foes)
-        if (e.alive && e.x <= w.field.visibleRight) e,
+        if (e.alive && geo.onScreen(e)) e,
     ];
     rage = 0;
     ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id));
@@ -156,7 +159,7 @@ class Round {
     if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
     strike(
-      (x: w.field.width * half, y: w.field.shipY, hits: spread(targets, w)),
+      (x: geo.center.x, y: geo.center.y, hits: spread(targets, w)),
       damageOf(gun, t.skills.ultimateMultiplier),
       crewId: captain,
     );
@@ -234,13 +237,14 @@ class Round {
     if (def != null && def.role == 'split' && small != null) {
       final sd = t.regions.enemies[small];
       for (var i = 0; i < def.splitCount; i++) {
+        final at = geo.splitAt(e, i, def.splitCount);
         field.foes.add(
           Foe(
             id: field.nextId(),
             kind: small,
             layer: sd?.layer ?? e.layer,
-            x: e.x + (i - (def.splitCount - 1) * half) * w.field.spawnSpacing,
-            y: e.y,
+            x: at.x,
+            y: at.y,
             maxHp: e.maxHp.times(def.splitHpRatio),
             speed: sd?.speed ?? e.speed,
             attack: e.attack,
