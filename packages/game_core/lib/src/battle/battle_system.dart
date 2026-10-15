@@ -10,7 +10,8 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
-import 'package:game_core/src/economy/rebirth_shop.dart' show beyondHonor, bossExtraSec, fastSailFraction;
+import 'package:game_core/src/economy/rebirth_shop.dart'
+    show beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -20,7 +21,6 @@ import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
 /// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 함성 게이지·궁극기, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
-///
 /// 시뮬 내부 값은 [Field]가 들고 매 틱 GameState.battle로 투영한다. 수치는 SystemContext.tables에서만 읽는다.
 class BattleSystem implements GameSystem {
   BattleSystem();
@@ -190,8 +190,7 @@ class BattleSystem implements GameSystem {
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);
     if (tier.stage == stage && beyondHonor(s, t, tier)) ctx.emit(ShipTierUp(ctx.tick, tierId: tier.id));
-    // 보스 카드: 잡은 스테이지 기준이라 스테이지를 올리기 전에 (경제 레인, docs/contracts/requests/economy-stats.md).
-    final carded = grantBossCards(s, ctx, [for (final g in f.guns) g.crewId]);
+    final carded = grantBossCards(s, ctx, [for (final g in f.guns) g.crewId]); // 잡은 스테이지 기준 — 올리기 전에
     ctx.emit(SaveRequested(ctx.tick, reason: 'bossCleared'));
     // 새 스테이지는 빈 바다·가득 찬 배에서 시작한다(옛 뷰의 보스를 이어받지 않게 뷰도 비운다).
     _field = null;
@@ -254,7 +253,8 @@ class BattleSystem implements GameSystem {
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..geometry = geometryFor(s.settings.battleView, ctx.tables, s.progress.stage);
+      ..geometry = geometryFor(s.settings.battleView, ctx.tables, s.progress.stage)
+      ..enemyHpScale = treasureHpMultiplier(s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;
       startBoss(nf, s.progress.stage, ctx, emit: false, hpRatio: b?.hpRatio ?? 1, x: b?.x, y: b?.y);

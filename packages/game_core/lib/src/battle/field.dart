@@ -208,6 +208,9 @@ class Field {
 
   /// 다음 무리(또는 보스)가 올 때까지 남은 초. 적이 없을 때만 줄어든다.
   double travelLeft = 0;
+
+  /// 적 체력 배율 (보물 바다 회차, 환생 v2 — 무리·보스 모두). battle_system이 Field를 만들 때 넣는다.
+  double enemyHpScale = 1;
   int _nextId = 1;
 
   /// 동시 처치 창: 마지막 처치 후 남은 초, 묶인 마리 수, 묶인 골드.
