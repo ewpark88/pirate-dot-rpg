@@ -3,11 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'ui_harness.dart';
 
-/// 화면 배치 v2 (layout-v2-brief 5): 실기기 S24와 흔한 두 폭에서 넘침 없음 + 골든.
+/// 유동 크기 (AGENTS): 기기 4종(360·S24·411·태블릿 800)에서 넘침 없음 + 골든.
 const List<(String, Size, double)> _devices = [
   ('s24', s24Size, s24Dpr),
   ('360', Size(360, 640), 3.0),
   ('411', Size(411, 891), 2.625),
+  // 태블릿 세로 (AGENTS 유동 크기, 2026-10-15).
+  ('tab', Size(800, 1280), 2.0),
 ];
 
 void main() {

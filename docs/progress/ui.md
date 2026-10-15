@@ -9,6 +9,14 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S4 · 선원 상세 · 수동 편성 · 전장 45% · 태블릿
+- 한 일: a9c732a 선원 상세(`ui/crew/crew_detail.dart`: 큰 초상·이름·등급·레벨/경험치·파워·계열·스킬·전설 능력·승급·출전/내리기, 미보유 실루엣+얻는 방법, 문구 `ui/crew/crew_text.dart`),
+  수동 편성(`ui/crew/fleet_sheet.dart`·`ui/state/fleet_providers.dart`: 선원 줄 칸 → 후보 시트(파워순)·빈 칸 +·칸 비우기·가득이면 바꿀 선원, 선원 탭 자동 편성), 전장 상자 45%(S3 k+1과 맞춤).
+  a6f1082 계약 명령 SetFleetSlot·AutoFleet·GameState.fleet, 합치기 점 = canMergeAny. 그다음 커밋: 칸 수 = fleetSlots, 첫 틱 전 activeFleet, 선원 탭 점에 emptySlotCount,
+  태블릿 800×1280(AGENTS 유동 크기): 글 탭 최대 폭 640, 선원 열 4~8, 창 480·시트 640, devices_test 4기기.
+- 남은 문제: 보유 효과(ownedBonusPerLevel)는 테이블에만 있고 코어가 적용하지 않아 상세에 표시하지 않았다(S1·S2에 알림). FleetRejected(같은 계열 상한) 안내는 아직 없다.
+- 진행 중: 스킨 r1 시안(`docs/specs/ui-skin-r1.md`, 미커밋) — PB 카드 기준, 태블릿 1장 추가 예정. 다음: 배 탭 배 모습 미리보기(S3 함수 협의).
+
 ### 2026-10-15 · S4 · 할 일 빨간 점 · 큰 수 설명 (계획 E5·E11)
 - 한 일: `ui/state/badge_providers.dart` — 배(살 수 있는 강화)·선원(승급 가능 또는 합치기)·소환(1회 젬 충분·첫 10연 무료·무료 광고) 탭 점, 일괄 합치기 버튼 점. 경제 함수 결과를 bool로 select(값이 바뀔 때만 다시 그림). 보는 탭엔 점 없음.
   PixelDot 8칸(실기기에서 4칸은 안 보였다), 테스트용 dotKey. 합치기 판정은 `mergeAvailableProvider`(기본 false) — S2 `canMergeAny` main 머지되면 본문 교체.

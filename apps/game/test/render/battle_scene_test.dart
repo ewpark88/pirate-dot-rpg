@@ -15,23 +15,38 @@ AttackFired _fire(int t, {String family = 'pierce', List<int> targets = const [1
 
 void main() {
   group('수용 기준 2: 발사체가 피격 직전에 날아간다', () {
-    test('틱 4의 발사는 표시 2에 생기고 표시 4에 닿아 사라진다', () {
+    // 사용자 지시 '폭탄이 너무 빠르다': 날아가는 시간 = fx_map projectiles.<계열>.flightMs, 도착은 엔진 피해 틱 그대로.
+    double flightTicks(String family) => tables.fxMap.raw.obj('projectiles').obj(family).number('flightMs') / tickMs;
+
+    test('투척(flightMs)은 도착 틱보다 그만큼 먼저 떠서, 도착 틱에 닿아 사라진다', () {
+      final fly = flightTicks('lob');
+      expect(fly, greaterThanOrEqualTo(12), reason: '눈에 보이게 0.6초 이상');
       final s = _scene(
         marching(
-          8,
+          26,
           events: {
-            4: [_fire(4)],
+            20: [_fire(20, family: 'lob')],
           },
         ),
-      )..update(tickMs * 2 - 1);
-      expect(s.projectiles.active, isEmpty);
+      );
+      void to(double pos) {
+        while (s.player.position < pos) {
+          s.update(1);
+        }
+      }
+
+      to(20 - fly - 0.01);
+      expect(s.projectiles.active.every((p) => p.progress == 0), isTrue, reason: '아직 출발 전');
+      to(20 - fly / 2);
+      expect(s.projectiles.active.single.progress, closeTo(0.5, 0.02));
+      to(20.01);
       s.update(1);
-      expect(s.projectiles.active, hasLength(1));
-      expect(s.projectiles.active.single.progress, 0);
-      s.update(tickMs);
-      expect(s.projectiles.active.single.progress, closeTo(0.5, 1e-9));
-      s.update(tickMs);
-      expect(s.projectiles.active, isEmpty);
+      expect(s.projectiles.active, isEmpty, reason: '엔진 피해 틱(20)에 도착');
+    });
+
+    test('직선 계열은 투척보다 짧게 난다', () {
+      expect(flightTicks('pierce'), lessThan(flightTicks('lob')));
+      expect(flightTicks('direct') * tickMs, inInclusiveRange(250, 400));
     });
   });
 

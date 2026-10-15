@@ -14,19 +14,24 @@ const _gravityHalf = 100.0;
 
 /// 진행률([Projectile.progress])에 맞춰 발사체 위치를 정한다.
 void placeProjectile(Projectile p) {
-  final t = p.progress;
+  final (x, y) = positionAt(p, p.progress);
+  p
+    ..x = x
+    ..y = y;
+}
+
+/// 진행률 [t]일 때 발사체 위치 (꼬리 잔상도 같은 길로 그린다).
+(double, double) positionAt(Projectile p, double t) {
   final s = p.style;
   switch (s.path) {
     case ProjectilePath.drop:
-      p
-        ..x = p.toX
-        ..y = p.toY - s.arcPx * (1 - t);
+      return (p.toX, p.toY - s.arcPx * (1 - t));
     case ProjectilePath.line || ProjectilePath.arc || ProjectilePath.skip:
-      p
-        ..x = p.fromX + (p.toX - p.fromX) * t
-        ..y = p.fromY + (p.toY - p.fromY) * t;
-      if (s.path == ProjectilePath.arc) p.y -= s.arcPx * 4 * t * (1 - t);
-      if (s.path == ProjectilePath.skip) p.y -= s.arcPx * math.sin(t * math.pi * _skipBounces).abs();
+      final x = p.fromX + (p.toX - p.fromX) * t;
+      var y = p.fromY + (p.toY - p.fromY) * t;
+      if (s.path == ProjectilePath.arc) y -= s.arcPx * 4 * t * (1 - t);
+      if (s.path == ProjectilePath.skip) y -= s.arcPx * math.sin(t * math.pi * _skipBounces).abs();
+      return (x, y);
   }
 }
 
@@ -105,6 +110,11 @@ void applyHits(BattleScene s, double dtMs) {
   s.hits.releaseWhere(_hitDone);
   for (var k = 0; k < s.poseCount; k++) {
     final pose = s.poses[k];
+    if (pose.boss) {
+      pose
+        ..x = s.clampBossX(pose.x)
+        ..drawX = pose.x;
+    }
     for (final h in s.hits.active) {
       if (h.id != pose.id) continue;
       pose.flash = s.settings.flash && h.flashMs > 0;
@@ -116,4 +126,25 @@ void applyHits(BattleScene s, double dtMs) {
       }
     }
   }
+}
+
+/// 폭발(PB 단계 연출) 합치기·상한: 같은 자리·같은 순간 폭발이 있으면 그것을 키워 돌려주고, 동시 상한이면 (null, true).
+/// 새로 띄워도 되면 (null, false).
+(Effect?, bool) mergeBlast(BattleScene s, double x, double y, double delayMs, double baseW) {
+  final pb = s.pbFx;
+  var n = 0;
+  for (final e in s.effects.active) {
+    if (e.sheetId != 'explosion_aoe') continue;
+    n++;
+    final young = (e.ageMs - e.delayMs - delayMs).abs() < pb.number('blastMergeMs');
+    final near = (e.x - x).abs() < pb.number('blastMergePx') && (e.y - y).abs() < pb.number('blastMergePx');
+    if (young && near) {
+      final grow = math.min(e.w * 1.2, baseW * pb.number('blastMaxScale'));
+      e
+        ..h = e.h * grow / e.w
+        ..w = grow;
+      return (e, false);
+    }
+  }
+  return (null, n >= pb.integer('blastMax'));
 }

@@ -442,46 +442,56 @@ const Map<String, String> rawTables = {
       "color": "#2B2B2B",
       "size": 4,
       "path": "arc",
-      "arcPx": 28
+      "arcPx": 28,
+      "flightMs": 750,
+      "single": true
     },
     "direct": {
       "color": "#FFE14D",
       "size": 2,
       "path": "line",
       "burst": 3,
-      "burstGapMs": 25
+      "burstGapMs": 25,
+      "flightMs": 300
     },
     "pierce": {
       "color": "#C9CED6",
       "size": 3,
-      "path": "line"
+      "path": "line",
+      "flightMs": 350
     },
     "skip": {
       "color": "#9E8B6B",
       "size": 3,
       "path": "skip",
-      "arcPx": 8
+      "arcPx": 8,
+      "flightMs": 650
     },
     "underwater": {
       "color": "#5DADE2",
       "size": 4,
-      "path": "line"
+      "path": "line",
+      "flightMs": 550,
+      "single": true
     },
     "air": {
       "color": "#F5F5F5",
       "size": 3,
       "path": "drop",
-      "arcPx": 60
+      "arcPx": 60,
+      "flightMs": 450
     },
     "assault": {
       "color": "#E74C3C",
       "size": 5,
-      "path": "line"
+      "path": "line",
+      "flightMs": 300
     },
     "shock": {
       "color": "#A569BD",
       "size": 6,
-      "path": "line"
+      "path": "line",
+      "flightMs": 400
     }
   },
   "projectileAliases": {
@@ -1066,6 +1076,36 @@ const Map<String, String> rawTables = {
       "lob"
     ],
     "fx": "muzzle"
+  },
+  "pbFx": {
+    "weaponScale": 0.2,
+    "spinTurns": 1.5,
+    "trailStep": 0.07,
+    "blastSize": 0.9,
+    "blastMs": 900,
+    "blastMergePx": 18,
+    "blastMergeMs": 90,
+    "blastMaxScale": 1.8,
+    "blastMax": 10,
+    "waterY": 96,
+    "blastParts": [
+      "flash",
+      "burst",
+      "shockwave",
+      "fireball_0_hot",
+      "fireball_1_fire",
+      "fireball_2_cool",
+      "fireball_3_smoke_hot",
+      "fireball_4_smoke",
+      "puff_3",
+      "puff_6",
+      "splash_small",
+      "ember",
+      "debris_0",
+      "debris_1",
+      "debris_2",
+      "debris_plank"
+    ]
   }
 }
 ''',
@@ -1152,7 +1192,7 @@ const Map<String, String> rawTables = {
     "coins": 60
   },
   "replay": {
-    "lookaheadTicks": 2,
+    "lookaheadTicks": 16,
     "liveMaxLagTicks": 6
   },
   "powerSave": {

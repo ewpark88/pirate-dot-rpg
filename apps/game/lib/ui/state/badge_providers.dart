@@ -26,13 +26,16 @@ final shipBadgeProvider = Provider<bool>((ref) {
   );
 });
 
-/// 선원 탭: 승급할 수 있는 선원이 있거나 일괄 합치기로 오를 선원이 있다.
+/// 선원 탭: 승급할 수 있는 선원, 일괄 합치기로 오를 선원, 또는 쉬는 선원으로 채울 빈 출전 칸(`emptySlotCount`)이 있다.
 final crewBadgeProvider = Provider<bool>((ref) {
   final tables = ref.watch(tablesProvider);
   final mergeable = ref.watch(mergeAvailableProvider);
   return ref.watch(
     gameStateProvider.select(
-      (s) => mergeable(s) || s.crews.keys.any((id) => promoteStatus(s, tables, id) == PromoteStatus.ok),
+      (s) =>
+          mergeable(s) ||
+          emptySlotCount(s, tables) > 0 ||
+          s.crews.keys.any((id) => promoteStatus(s, tables, id) == PromoteStatus.ok),
     ),
   );
 });

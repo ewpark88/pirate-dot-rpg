@@ -44,6 +44,9 @@ class SpriteBank {
         if (f.projectile != null) (key: 'projectile:${f.id}', path: 'projectiles/${f.projectile}.png', frames: 1),
       for (final s in fx.sheets) (key: 'fx:${s.id}', path: 'fx/${s.id}.png', frames: s.frames),
       (key: 'coin', path: 'coin.png', frames: fx.sprites.integer('coinFrames')),
+      // Pirate Busters(같은 자체 IP) 무기·폭발 부품 — tools/art/import_pb.py. 없는 선원(강습)은 계열 그림.
+      for (final c in t.crews.crews) (key: 'weapon:${c.id}', path: 'weapons/${c.id}.webp', frames: 1),
+      for (final b in fx.raw.obj('pbFx').strs('blastParts')) (key: 'blast:$b', path: 'fx/pb/$b.webp', frames: 1),
     ];
   }
 
