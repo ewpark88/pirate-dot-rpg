@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -64,7 +65,7 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.sailing, color: Colors.white, size: 16),
+            const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
             if (active) ...[
               const SizedBox(width: 4),
               Text(remainingText(left), style: const TextStyle(color: Colors.white)),

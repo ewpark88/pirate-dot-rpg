@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -132,7 +133,7 @@ class _SettingsButton extends StatelessWidget {
         onPressed: () => unawaited(
           Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen())),
         ),
-        child: const Icon(Icons.settings, size: 16),
+        child: const PixelSprite(UiSprites.gear, dots: 16, scale: 1),
       ),
     );
   }

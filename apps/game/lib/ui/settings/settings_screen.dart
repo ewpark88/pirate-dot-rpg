@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 설정 화면 (설계서 4.12). 바꾸면 SetSetting만 보낸다 — 화면은 엔진이 돌려준 상태로 다시 그린다.
@@ -77,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               key: const Key('settings.privacy'),
               title: Text(l10n.uiSettingsPrivacy),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: const PixelBitmap(PixelBitmaps.chevron),
               onTap: () => unawaited(ads.showPrivacyOptions()),
             ),
         ],

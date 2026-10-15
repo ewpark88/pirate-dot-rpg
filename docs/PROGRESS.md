@@ -52,7 +52,7 @@
 
 ### M4 아트·광고 (일부 선행)
 - [x] 도트 팩 v0.2 적용: 에셋 62개 + LICENSES.json(OWN), SpriteBank(배·적·보스·발사체·fx·코인), 선원 초상
-- [~] 소리: AudioPort 계약·렌더 연결 진행, **CC0 음원 고르기는 사람**
+- [x] 소리: AudioPort·렌더 연결, 음원 등록(효과음 자작, 배경음 CC0+자작 — b8a06f5). 실기기에서 귀로 확인
 - [ ] AdMob 보상형 + UMP, Crashlytics·Analytics, 개인정보처리방침·app-ads.txt (platform 레인 — 세션 필요)
 
 ### M5 AOS 출시 · M6 iOS·랭킹
@@ -77,8 +77,6 @@
 | 무엇 | 왜 | 어디 |
 | --- | --- | --- |
 | **M2 관문 실기기 확인** (손맛 + 60fps) | 손맛은 sim으로 못 잰다. 통과 전엔 M3 이후를 '다듬기'로만 진행 | `docs/DEVICE_TEST.md` |
-| CC0 효과음·배경음 고르기 | 사운드 연출은 됐지만 음원이 없다(무음) | `docs/specs/render-audio.md`, `fx_map.json` sfx id 목록 |
-| 배 등급 그림 ship_t2~t4 | 도트 팩에 ship_t1만 있다(승급은 플레이스홀더) | 아트 팩 |
 | 광고·분석 계정(AdMob·Firebase 프로젝트, google-services.json) | M4 광고·Crashlytics (platform 세션 S5는 열림) | `docs/store/firebase.md`, `docs/store/admob.md` |
 | 업로드 키(릴리스 서명) | M5 Play 업로드 | `docs/store/android-release.md` |
 | **Analytics 보존 기간 (2개월/14개월) — 보류** | 개인정보처리방침·데이터 보안 양식 | 사용자가 나중에 정함 |
@@ -125,7 +123,11 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 사용자 결정(환생 3): 반복 보스 카드 = 짝수 스테이지만 1장(c3, economy 구현), 빠른 항해 = 환생 뒤 bestStage×0.3(올림) 이하 스테이지는 파 없이 보스(f0).
   조사(다른 키우기 게임: TT2 시작 지점 최대 90%, 진행 보상은 최고 기록 갱신 때만)를 보고 결정.
 - 추가: 세이브 v4 `Settings.notifications`(ADR-0009), 빠른 항해 `waves.rebirthSkip`(battle), 앱 아이콘·스플래시, UI 16px 아이콘, 산호초 보스 스프라이트 요청, DEVICE_TEST 3절.
-- 다음 할 일: S2 c3·첫 신화 28일+, S3 적 스프라이트 묶음, S4 HUD 걷어내기·알림 토글·배 탭, S5 음원(사용자: 최대한 신경 써서 — CC0 후보 + 자작 칩튠).
+- 추가2: ui d141e30(Material HUD 제거·전장 오버레이·알림 토글·배 탭 아이콘), render UI 아이콘 14종·산호초 보스, platform 음원 후보표·자작 칩튠 생성기, S2 c3(c6647bc, 미머지).
+- 사용자 위임(음원): 효과음 전부 자작(OWN), 배경음 coral·storm·phantom = CC0(Junkala ×2·Void Estate), glacier·volcano·abyss = 자작. ffmpeg(winget) 설치·ogg 변환·등록 진행 중(S1).
+- 발견: PC 메모리 부족으로 S2 sim 6개가 강제 종료 → 동시 2개 이하로 재실행. 배 등급 스프라이트 t1뿐(stage 30부터 상자) → S3가 t2~t4 먼저.
+- 음원 등록 b8a06f5: 효과음 16(자작 OWN)·배경음 6(CC0-1.0 3 + 자작 3), assets/audio 2.86MB, ffmpeg 9.0.2(winget). render e78b3c1(폭풍해)·ui 700576a(도트 아이콘 교체) 머지.
+- 다음 할 일: S2 첫 신화 28일+ 값, S3 배 t2~t4, S4 도트 아이콘 교체, S5 스토어 스크린샷 자동 생성.
 
 ### 2026-10-14 · S1 · M3 계약·보스, 레인 통합 (오후)
 - 한 일: 해역 보스·무한 항해(edc81e3), 세이브 v3(16dda02, ADR-0008), lastSummon·AckSummonResult, GrantAdReward.choice·lastOfflineGold, ClaimDaily(questId), 튜토리얼 3단계 보스.

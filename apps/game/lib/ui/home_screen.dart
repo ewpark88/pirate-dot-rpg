@@ -67,7 +67,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 builder: (context, screen) => Column(
                   children: [
                     const SaveFailureBanner(),
-                    const GoalBar(),
                     // 전장은 폭에 맞춘 320×180 비율 높이(빈 띠 없이), 가로 화면처럼 낮으면 화면 높이의 절반까지.
                     SizedBox(
                       height: math.min(screen.maxWidth * kLogicalHeight / kLogicalWidth, screen.maxHeight * _battleMax),
@@ -93,6 +92,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
                       ),
                     ),
+                    // 다음 목표 도트 띠 (전장 바로 아래, 설계서 4.5).
+                    const GoalBar(),
                     // 튜토리얼 중에만 자리를 차지한다 — 전장도 탭 패널도 가리지 않는다.
                     const TutorialBubble(),
                     Expanded(

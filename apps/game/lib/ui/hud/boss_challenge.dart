@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -22,10 +24,20 @@ class BossChallenge extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Chip(
-          visualDensity: VisualDensity.compact,
-          avatar: const Icon(Icons.autorenew, size: 16),
-          label: Text(l10n.uiFarming),
+        // 파밍 중 도트 띠.
+        ColoredBox(
+          color: PixelPalette.outline,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const PixelSprite(UiSprites.farm, dots: 16, scale: 1),
+                const SizedBox(width: 4),
+                Text(l10n.uiFarming, style: const TextStyle(color: PixelPalette.text)),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 4),
         TutorialSpot(

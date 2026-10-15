@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -68,7 +69,7 @@ class _RegionCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.sailing),
+                const PixelSprite(UiSprites.tabShip, dots: 16, scale: 1),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -121,12 +122,12 @@ class _StatusLines extends ConsumerWidget {
       children: [
         ListTile(
           dense: true,
-          leading: const Icon(Icons.bedtime_outlined),
+          leading: const PixelSprite(UiSprites.moon, dots: 16, scale: 1),
           title: Text(l10n.uiOfflineRate((perHour ?? BigNum.zero).format(), maxHours)),
         ),
         ListTile(
           dense: true,
-          leading: const Icon(Icons.air),
+          leading: const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
           title: Text(
             left > Duration.zero ? l10n.uiTailwindStatus(shortDecimal(mult), remainingText(left)) : l10n.uiTailwindOff,
           ),
