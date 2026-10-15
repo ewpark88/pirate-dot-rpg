@@ -1,3 +1,4 @@
+import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
@@ -161,7 +162,44 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
     )
     ..writeln('| 강화·소환 횟수 | ${_fmt(m((r) => r.upgrades.toDouble()))} · ${_fmt(m((r) => r.summons.toDouble()))} |');
+  _cardsByRun(b, t, rs);
   return b.toString();
+}
+
+/// 회차별 카드 수입 표 (중앙값, 보스 카드는 기댓값). 앞 [shown]회차는 하나씩, 나머지는 합쳐서.
+void _cardsByRun(StringBuffer b, GameTables t, List<SimResult> rs, {int shown = 6}) {
+  final rates = t.rarities.bossDropRates;
+  final ids = rates.keys.toList();
+  String pct(double v) => '${(v * 100).toStringAsFixed(v < 0.1 ? 1 : 0)}%';
+  b
+    ..writeln()
+    ..writeln(
+      '보스 카드(기댓값) 등급 구성: ${[for (final id in ids) '$id ${pct(rates[id]!)}'].join(' · ')} — '
+      '장수는 스테이지 1~${t.growth.bossCards.earlyStageMax} ${t.growth.bossCards.early}장, '
+      '이후 ${t.growth.bossCards.base} + floor(스테이지/${t.growth.bossCards.stagesPerExtra})',
+    )
+    ..writeln()
+    ..writeln('| 회차 | 새 보스 · 반복 보스 | 새 보스 카드 (${ids.join('/')}) | 반복 보스 카드 (${ids.join('/')}) | 시작 카드 | 소환 |')
+    ..writeln('| --- | --- | --- | --- | --- | --- |');
+  final runs = rs.map((r) => r.cardsByRun.length).fold(0, (a, n) => n > a ? n : a);
+  for (var i = 0; i < runs && i <= shown; i++) {
+    final last = i == shown;
+    // 플레이어마다 이 구간의 회차들을 합친다. 그 회차가 없으면 null(중앙값에서 미도달).
+    List<RunCards>? pick(SimResult r) =>
+        r.cardsByRun.length <= i ? null : (last ? r.cardsByRun.sublist(i) : [r.cardsByRun[i]]);
+    String med(double Function(List<RunCards>) f) =>
+        _fmt(median([for (final r in rs) pick(r) == null ? null : f(pick(r)!)]));
+    double total(List<RunCards> xs, num Function(RunCards) f) => xs.fold(0, (a, x) => a + f(x));
+    String byRarity(Map<String, double> Function(RunCards) f) => [
+      for (final id in ids) med((xs) => total(xs, (x) => f(x)[id] ?? 0)),
+    ].join(' / ');
+    b.writeln(
+      '| ${last ? '${i + 1}회차~' : '${i + 1}회차'} '
+      '| ${med((xs) => total(xs, (x) => x.newBosses))} · ${med((xs) => total(xs, (x) => x.repeatBosses))} '
+      '| ${byRarity((x) => x.newByRarity)} | ${byRarity((x) => x.repeatByRarity)} '
+      '| ${med((xs) => total(xs, (x) => x.starterCards))} | ${med((xs) => total(xs, (x) => x.summons))} |',
+    );
+  }
 }
 
 Map<String, Object?> reportJson(List<SimResult> rs, List<SimCheck> checks) {
@@ -192,6 +230,7 @@ Map<String, Object?> reportJson(List<SimResult> rs, List<SimCheck> checks) {
           'summons': r.summons,
           'gold': r.gold.toJson(),
           'gems': r.gems,
+          'cardsByRun': [for (final c in r.cardsByRun) c.toJson()],
         },
     ],
   };
