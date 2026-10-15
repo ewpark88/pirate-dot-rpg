@@ -160,7 +160,7 @@ class BattleSystem implements GameSystem {
       if (f.bossTicksLeft <= 0 || f.shipHp.isZero) {
         ctx.emit(BossFailed(ctx.tick, stage: p.stage));
         _restart(f, ctx);
-        return s.copyWith(progress: p.copyWith(farming: true));
+        return s.copyWith(progress: p.copyWith(farming: true, bossFails: p.bossFails + 1));
       }
       return s;
     }

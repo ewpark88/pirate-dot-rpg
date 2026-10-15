@@ -1,5 +1,6 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/economy/economy_system.dart';
+import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
@@ -104,5 +105,24 @@ void main() {
       final s0 = at(60, rebirths: 3);
       expect(sys.handle(s0, const SetTreasureRoute(2), h.ctx), same(s0));
     });
+  });
+
+  test('progress.bossFails: 보스 실패마다 +1, 세이브 왕복·환생 뒤 유지 (S4 안내용)', () {
+    final now = EconomyHarness.start;
+    final e = CoreEngine(tables: t, clock: ManualClock(now), initial: at(5))..enqueue(const OpSpawnBoss());
+    var fails = 0;
+    for (var i = 0; i < (t.waves.bossTimeLimitSec + 2) * 1000 ~/ t.waves.tickMs && fails == 0; i++) {
+      e.tick();
+      fails += e.drainEvents().whereType<BossFailed>().length;
+    }
+    expect(fails, 1);
+    expect(e.state.progress.bossFails, 1);
+    expect(SaveCodec.decode(SaveCodec.encode(e.state)).progress.bossFails, 1);
+    final reborn = sys.handle(
+      at(50).copyWith(progress: const Progress(stage: 50, bestStage: 50, bossFails: 3)),
+      const Rebirth(),
+      h.ctx,
+    )!;
+    expect(reborn.progress.bossFails, 3);
   });
 }
