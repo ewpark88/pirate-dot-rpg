@@ -5,6 +5,7 @@
       "num": 1,
       "baseRarity": "common",
       "family": "lob",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/octo.png",
       "nameKey": "crewOctoName"
@@ -14,6 +15,7 @@
       "num": 2,
       "baseRarity": "common",
       "family": "lob",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/starry.png",
       "nameKey": "crewStarryName"
@@ -23,6 +25,7 @@
       "num": 3,
       "baseRarity": "rare",
       "family": "lob",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/crabs.png",
       "nameKey": "crewCrabsName"
@@ -32,6 +35,7 @@
       "num": 4,
       "baseRarity": "hero",
       "family": "lob",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/uni.png",
       "nameKey": "crewUniName"
@@ -41,6 +45,7 @@
       "num": 5,
       "baseRarity": "legend",
       "family": "lob",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/volke.png",
       "nameKey": "crewVolkeName"
@@ -50,6 +55,7 @@
       "num": 6,
       "baseRarity": "common",
       "family": "direct",
+      "reachBonus": -6,
       "fx": "hit_spark",
       "portrait": "crews/pang.png",
       "nameKey": "crewPangName"
@@ -59,6 +65,7 @@
       "num": 7,
       "baseRarity": "common",
       "family": "direct",
+      "reachBonus": -3,
       "fx": "hit_spark",
       "portrait": "crews/hippo.png",
       "nameKey": "crewHippoName"
@@ -68,6 +75,7 @@
       "num": 8,
       "baseRarity": "rare",
       "family": "direct",
+      "reachBonus": 0,
       "fx": "hit_spark",
       "portrait": "crews/bones.png",
       "nameKey": "crewBonesName"
@@ -77,6 +85,7 @@
       "num": 9,
       "baseRarity": "hero",
       "family": "direct",
+      "reachBonus": 3,
       "fx": "hit_spark",
       "portrait": "crews/lion.png",
       "nameKey": "crewLionName"
@@ -86,6 +95,7 @@
       "num": 10,
       "baseRarity": "legend",
       "family": "direct",
+      "reachBonus": 6,
       "fx": "hit_spark",
       "portrait": "crews/volt.png",
       "nameKey": "crewVoltName"
@@ -95,6 +105,7 @@
       "num": 11,
       "baseRarity": "common",
       "family": "pierce",
+      "reachBonus": -6,
       "fx": "slash",
       "portrait": "crews/sword.png",
       "nameKey": "crewSwordName"
@@ -104,6 +115,7 @@
       "num": 12,
       "baseRarity": "rare",
       "family": "pierce",
+      "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/nar.png",
       "nameKey": "crewNarName"
@@ -113,6 +125,7 @@
       "num": 13,
       "baseRarity": "rare",
       "family": "pierce",
+      "reachBonus": 0,
       "fx": "slash",
       "portrait": "crews/walrus.png",
       "nameKey": "crewWalrusName"
@@ -122,6 +135,7 @@
       "num": 14,
       "baseRarity": "hero",
       "family": "pierce",
+      "reachBonus": 3,
       "fx": "slash",
       "portrait": "crews/saw.png",
       "nameKey": "crewSawName"
@@ -131,6 +145,7 @@
       "num": 15,
       "baseRarity": "legend",
       "family": "pierce",
+      "reachBonus": 6,
       "fx": "slash",
       "portrait": "crews/moby.png",
       "nameKey": "crewMobyName"
@@ -140,6 +155,7 @@
       "num": 16,
       "baseRarity": "common",
       "family": "skip",
+      "reachBonus": -6,
       "fx": "hit_spark",
       "portrait": "crews/otter.png",
       "nameKey": "crewOtterName"
@@ -149,6 +165,7 @@
       "num": 17,
       "baseRarity": "rare",
       "family": "skip",
+      "reachBonus": -3,
       "fx": "hit_spark",
       "portrait": "crews/pingu.png",
       "nameKey": "crewPinguName"
@@ -158,6 +175,7 @@
       "num": 18,
       "baseRarity": "rare",
       "family": "skip",
+      "reachBonus": 0,
       "fx": "hit_spark",
       "portrait": "crews/sheldon.png",
       "nameKey": "crewSheldonName"
@@ -167,6 +185,7 @@
       "num": 19,
       "baseRarity": "hero",
       "family": "skip",
+      "reachBonus": 3,
       "fx": "hit_spark",
       "portrait": "crews/dolphy.png",
       "nameKey": "crewDolphyName"
@@ -176,6 +195,7 @@
       "num": 20,
       "baseRarity": "legend",
       "family": "skip",
+      "reachBonus": 6,
       "fx": "hit_spark",
       "portrait": "crews/orca.png",
       "nameKey": "crewOrcaName"
@@ -185,6 +205,7 @@
       "num": 21,
       "baseRarity": "common",
       "family": "underwater",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/puffer.png",
       "nameKey": "crewPufferName"
@@ -194,6 +215,7 @@
       "num": 22,
       "baseRarity": "rare",
       "family": "underwater",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/jelly.png",
       "nameKey": "crewJellyName"
@@ -203,6 +225,7 @@
       "num": 23,
       "baseRarity": "rare",
       "family": "underwater",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/bara.png",
       "nameKey": "crewBaraName"
@@ -212,6 +235,7 @@
       "num": 24,
       "baseRarity": "hero",
       "family": "underwater",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/moray.png",
       "nameKey": "crewMorayName"
@@ -221,6 +245,7 @@
       "num": 25,
       "baseRarity": "legend",
       "family": "underwater",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/kraki.png",
       "nameKey": "crewKrakiName"
@@ -230,6 +255,7 @@
       "num": 26,
       "baseRarity": "common",
       "family": "air",
+      "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/polly.png",
       "nameKey": "crewPollyName"
@@ -239,6 +265,7 @@
       "num": 27,
       "baseRarity": "common",
       "family": "air",
+      "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/gull.png",
       "nameKey": "crewGullName"
@@ -248,6 +275,7 @@
       "num": 28,
       "baseRarity": "rare",
       "family": "air",
+      "reachBonus": 0,
       "fx": "explosion_aoe",
       "portrait": "crews/pelly.png",
       "nameKey": "crewPellyName"
@@ -257,6 +285,7 @@
       "num": 29,
       "baseRarity": "hero",
       "family": "air",
+      "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/alba.png",
       "nameKey": "crewAlbaName"
@@ -266,6 +295,7 @@
       "num": 30,
       "baseRarity": "legend",
       "family": "air",
+      "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/manta.png",
       "nameKey": "crewMantaName"
@@ -275,6 +305,7 @@
       "num": 31,
       "baseRarity": "common",
       "family": "assault",
+      "reachBonus": -6,
       "fx": "slash",
       "portrait": "crews/shark.png",
       "nameKey": "crewSharkName"
@@ -284,6 +315,7 @@
       "num": 32,
       "baseRarity": "rare",
       "family": "assault",
+      "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/crabby.png",
       "nameKey": "crewCrabbyName"
@@ -293,6 +325,7 @@
       "num": 33,
       "baseRarity": "rare",
       "family": "assault",
+      "reachBonus": 0,
       "fx": "slash",
       "portrait": "crews/king.png",
       "nameKey": "crewKingName"
@@ -302,6 +335,7 @@
       "num": 34,
       "baseRarity": "hero",
       "family": "assault",
+      "reachBonus": 3,
       "fx": "slash",
       "portrait": "crews/lobster.png",
       "nameKey": "crewLobsterName"
@@ -311,6 +345,7 @@
       "num": 35,
       "baseRarity": "legend",
       "family": "assault",
+      "reachBonus": 6,
       "fx": "slash",
       "portrait": "crews/davy.png",
       "nameKey": "crewDavyName"
@@ -320,6 +355,7 @@
       "num": 36,
       "baseRarity": "common",
       "family": "shock",
+      "reachBonus": -6,
       "fx": "level_up",
       "portrait": "crews/turtle.png",
       "nameKey": "crewTurtleName"
@@ -329,6 +365,7 @@
       "num": 37,
       "baseRarity": "common",
       "family": "shock",
+      "reachBonus": -3,
       "fx": "level_up",
       "portrait": "crews/pumpum.png",
       "nameKey": "crewPumpumName"
@@ -338,6 +375,7 @@
       "num": 38,
       "baseRarity": "rare",
       "family": "shock",
+      "reachBonus": 0,
       "fx": "level_up",
       "portrait": "crews/cook.png",
       "nameKey": "crewCookName",
@@ -348,6 +386,7 @@
       "num": 39,
       "baseRarity": "hero",
       "family": "shock",
+      "reachBonus": 3,
       "fx": "level_up",
       "portrait": "crews/corey.png",
       "nameKey": "crewCoreyName"
@@ -357,6 +396,7 @@
       "num": 40,
       "baseRarity": "legend",
       "family": "shock",
+      "reachBonus": 6,
       "fx": "level_up",
       "portrait": "crews/lamp.png",
       "nameKey": "crewLampName",

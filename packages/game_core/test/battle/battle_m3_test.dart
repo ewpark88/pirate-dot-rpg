@@ -4,6 +4,7 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/skills.dart';
+import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -63,7 +64,8 @@ void main() {
   });
 
   test('3. 전설 선원의 스킬은 화면 안 적 전부, 대상당 비율 합 ≤ 보통 대상 수', () {
-    final foes = [for (var i = 0; i < 12; i++) foe(80.0 + i * 18, 100)];
+    // 사거리(사용자 지시 2026-10-15) 안쪽에 12마리 — 전설 스킬은 사거리 안 적 전부.
+    final foes = [for (var i = 0; i < 12; i++) foe(80.0 + i * 8, 100)];
     final g = gun(crewOf('pierce'), rarity: 3)..skillCooldown = 0;
     round(field(foes)..guns = [g]).castSkills();
     expect(events.whereType<SkillCast>().every((c) => c.scope == 'screen'), isTrue);
@@ -106,7 +108,7 @@ void main() {
     final lob = tables.skills.byId('lob');
     expect(lob.attackAt(4).projectiles, 3);
     expect(lob.attackAt(0).projectiles, 1);
-    final foes = [foe(100, 100), foe(180, 100), foe(260, 100)];
+    final foes = [foe(100, 100), foe(140, 100), foe(180, 100)];
     final g = gun(crewOf('lob'), rarity: 4)..cooldown = 0;
     round(field(foes)..guns = [g]).fireGuns();
     final dmg = events.whereType<Damage>().toList();
@@ -173,17 +175,22 @@ void main() {
 
   test('10. OpCastSkill은 쿨타임과 상관없이 즉시 시전', () {
     final crew = crewOf('skip');
-    final engine =
-        CoreEngine(
-            tables: tables,
-            clock: ManualClock(start),
-            initial: game(crews: {crew: const CrewState(level: 5)}),
-          )
-          ..advance(30)
-          ..drainEvents()
-          ..enqueue(OpCastSkill(crew))
-          ..enqueue(OpCastSkill(crew))
-          ..tick();
+    final engine = CoreEngine(
+      tables: tables,
+      clock: ManualClock(start),
+      initial: game(crews: {crew: const CrewState(level: 5)}),
+    );
+    // 적이 화면 밖(spawnX)에서 스킬 사거리 안으로 들어올 때까지 (사거리, 사용자 지시 2026-10-15).
+    final f = tables.waves.field;
+    final edge = f.shipX + attackReach(tables.skills.byId('skip').skill.area, f)!;
+    while ((engine.state.battle?.enemies.where((e) => e.x <= edge - 10).length ?? 0) < 6) {
+      engine.tick();
+    }
+    engine
+      ..drainEvents()
+      ..enqueue(OpCastSkill(crew))
+      ..enqueue(OpCastSkill(crew))
+      ..tick();
     expect(engine.drainEvents().whereType<SkillCast>().where((c) => c.crewId == crew), hasLength(2));
   });
 

@@ -11,19 +11,26 @@ typedef Hit = ({Foe foe, double factor});
 /// 공격 한 번의 결과. `x`,`y`는 조준점(렌더가 발사체를 날리는 곳).
 typedef Volley = ({double x, double y, List<Hit> hits});
 
-/// 화면 안에서 [a]가 맞힐 수 있는 적.
-List<Foe> eligible(AttackDef a, List<Foe> foes, FieldDef f) => [
-  for (final e in foes)
-    if (e.alive && e.x <= f.width && !a.excludeLayers.contains(e.layer)) e,
-];
+/// [a]의 사거리(배 뱃머리 `shipX`에서 x 거리, skills.json `reach`). 없으면 null = 보이는 화면 전체.
+double? attackReach(AttackDef a, FieldDef f) => a.raw.has('reach') ? a.raw.number('reach') : null;
+
+/// [a]가 맞힐 수 있는 적: 사거리(+ 선원 보정 [reachBonus]) 안, 보이는 화면(`visibleRight`) 안 (사용자 지시 2026-10-15).
+List<Foe> eligible(AttackDef a, List<Foe> foes, FieldDef f, {double reachBonus = 0}) {
+  final reach = attackReach(a, f);
+  final edge = reach == null ? f.visibleRight : math.min(f.visibleRight, f.shipX + reach + reachBonus);
+  return [
+    for (final e in foes)
+      if (e.alive && e.x <= edge && !a.excludeLayers.contains(e.layer)) e,
+  ];
+}
 
 /// [n]발을 서로 다른 대상(원형은 서로 다른 중심)에 쏜다 (사다리 `projectiles`, 스킬 `count`).
 /// 맞힐 적이 그보다 적으면 있는 만큼만.
-List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, WavesTable w, Rng rng) {
+List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, WavesTable w, Rng rng, {double reachBonus = 0}) {
   final out = <Volley>[];
   final avoid = <Foe>{};
   for (var i = 0; i < n; i++) {
-    final v = aim(a, foes, w, rng, avoid: avoid);
+    final v = aim(a, foes, w, rng, avoid: avoid, reachBonus: reachBonus);
     if (v == null) break;
     out.add(v);
     avoid.addAll(a.shape == 'circle' ? v.hits.map((h) => h.foe) : [v.hits.first.foe]);
@@ -33,9 +40,9 @@ List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, WavesTable w, Rng rng) 
 
 /// 모양 8종 (docs/specs/battle-m1-core.md 규칙 5, battle-m3-skills.md 1). 맞힐 적이 없으면 null.
 /// [avoid]는 조준(중심·첫 대상)으로 고르지 않는다 — 여러 발이 서로 다른 곳에 떨어지게.
-Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid = const {}}) {
+Volley? aim(AttackDef a, List<Foe> foes, WavesTable w, Rng rng, {Set<Foe> avoid = const {}, double reachBonus = 0}) {
   final f = w.field;
-  final targets = eligible(a, foes, f);
+  final targets = eligible(a, foes, f, reachBonus: reachBonus);
   final pickable = targets.where((e) => !avoid.contains(e)).toList();
   if (pickable.isEmpty) return null;
   double fromShip(Foe e) => _dist(e.x, e.y, f.shipX, f.shipY);

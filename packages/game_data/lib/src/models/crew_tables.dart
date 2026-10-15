@@ -21,6 +21,7 @@ class CrewDef {
       num = j.integer('num'),
       baseRarity = j.str('baseRarity'),
       family = j.str('family'),
+      reachBonus = j.numberOr('reachBonus', 0),
       fx = j.str('fx'),
       skill = j.strOrNull('skill'),
       portrait = j.str('portrait'),
@@ -32,6 +33,9 @@ class CrewDef {
   /// Pirate Busters 원작 등급. 소환 풀 구성에만 쓰고, 이 게임의 등급은 레벨 구간이다.
   final String baseRarity;
   final String family;
+
+  /// 계열 사거리(skills.json attack.reach)에 더하는 선원별 보정(±, 필드 px).
+  final double reachBonus;
   final String fx;
 
   /// 계열 스킬 대신 쓰는 스킬 id (skills.json crewSkills). 없으면 계열 스킬.

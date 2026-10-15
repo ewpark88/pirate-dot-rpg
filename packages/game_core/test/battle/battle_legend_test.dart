@@ -48,7 +48,8 @@ void main() {
   });
 
   test('2. extraProjectiles: 서로 다른 대상에 더 쏘고, 한 발 피해는 전체 발수로 나눈다', () {
-    final foes = [foe(100, 100), foe(180, 100), foe(260, 100)];
+    // 투척 사거리(skills reach + crabs 보정) 안쪽에 셋.
+    final foes = [foe(100, 100), foe(140, 100), foe(180, 100)];
     final g = gun('crabs', legend)..cooldown = 0; // 사다리 전설 2발 + 전설 1발 = 3발
     final r = round(field(foes)..guns = [g])..fireGuns();
     expect(events.whereType<AttackFired>(), hasLength(3));
