@@ -103,11 +103,12 @@ void main() {
       }
     }
     expect(touched.length, greaterThan(10), reason: '많은 적이 몸통에 닿는다(옆구리 포함)');
-    // 보이는 거리(제안 platform-ship-hitbox C-3): 10~20초 사이, 몸통에서 가장 가까운 적까지(적 반경 뺀 틈)의 중앙값이
-    // 4단위(S24 약 8dp) 이하 — 사용자가 본 '일정 간격에서 멈춤'이 숫자로 다시 생기지 않게.
+    // 보이는 거리(제안 platform-ship-hitbox C-3): 10~20초 사이 적이 있는 틱의 1/4 이상에서, 가장 가까운 적이 몸통에 닿아 있다
+    // (틈 ≤ 1단위, S24 약 2dp). 틈은 '붙음 0'과 '다음 파가 다가오는 중 80~130' 두 갈래라 중앙값 대신 아래 사분위로 본다.
+    // 사용자가 본 '일정 간격에서 멈춤'이 생기면 아래 사분위가 크게 벌어진다.
     expect(closest.isNotEmpty, isTrue);
     closest.sort();
-    expect(closest[closest.length ~/ 2], lessThanOrEqualTo(4));
+    expect(closest[closest.length ~/ 4], lessThanOrEqualTo(1));
     expect(hits, greaterThan(10));
   });
 
