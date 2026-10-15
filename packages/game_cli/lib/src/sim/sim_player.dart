@@ -10,6 +10,7 @@ class SimResult {
   final int seed;
   Duration played = Duration.zero;
   Duration? firstBossFail;
+  int? firstBossFailStage;
   Duration? firstSummonReady;
   Duration? stage10;
   Duration? stage40;
@@ -17,7 +18,7 @@ class SimResult {
   /// 이미 보유한 선원의 등급이 처음 오른 시점 (승급·높은 등급 카드 점프 모두, 설계서 4.3.3 ‘첫 승급’).
   Duration? firstRarityUp;
 
-  /// 튜토리얼 선원(`bossCards.starterCrew`, 옥토)의 첫 승급 — 운과 상관없는 첫 승급(설계서 4.3.3).
+  /// 튜토리얼 선원(`bossCards.starterCrew`, 옥토)의 첫 등급 상승(승급 또는 카드 점프) — 설계서 4.3.3 ‘운과 상관없이 첫 승급’.
   Duration? starterPromotion;
   Duration? firstLegendOwned;
   Duration? firstLegendPromoted;
@@ -92,6 +93,10 @@ class SimPlayer {
   /// 접속 중 시간만 (벽·환생 회복은 플레이 시간 기준 — 설계서 4.5·7.2).
   Duration _online = Duration.zero;
   Duration? _farmSince;
+  int _upgradesAtFarm = 0;
+
+  /// 설계서 4.12 튜토리얼 3단계 안내 문구의 ‘강화 2번’.
+  static const _tutorialRetryUpgrades = 2;
   Duration? _wallSince;
 
   /// 환생 뒤 회복 측정 중: 환생 시각과 목표 스테이지.
@@ -139,6 +144,8 @@ class SimPlayer {
     final s = engine.state;
     final now = {for (final e in s.crews.entries) e.key: promotionCount(t.rarities, e.value.level)};
     if (now.entries.any((e) => e.value > (_rarityIndex[e.key] ?? e.value))) result.firstRarityUp ??= _elapsed;
+    final starter = t.growth.bossCards.starterCrew;
+    if ((now[starter] ?? 0) > (_rarityIndex[starter] ?? 0)) result.starterPromotion ??= _elapsed;
     _rarityIndex = now;
     if (canSummon(s, t, 1) || canSummon(s, t, t.meta.raw.obj('tutorial').integer('firstTenCount'))) {
       result.firstSummonReady ??= _elapsed;
@@ -173,8 +180,14 @@ class SimPlayer {
       return;
     }
     if (s.progress.farming) {
-      _farmSince ??= _elapsed;
-      if (_elapsed - _farmSince! >= farmRetry) {
+      if (_farmSince == null) {
+        _farmSince = _elapsed;
+        _upgradesAtFarm = result.upgrades;
+      }
+      // 튜토리얼 보스 단계(설계서 4.12 3단계 ‘강화 2번 후 보스 도전’)에서는 실패 뒤 강화 2번이면 바로 재도전.
+      final tutorialBoss = s.tutorialStep == t.meta.raw.obj('tutorial').obj('steps').integer('boss');
+      if ((tutorialBoss && result.upgrades - _upgradesAtFarm >= _tutorialRetryUpgrades) ||
+          _elapsed - _farmSince! >= farmRetry) {
         engine.enqueue(const ChallengeBoss());
         _farmSince = null;
       }
@@ -220,8 +233,9 @@ class SimPlayer {
           final last = _lastWave;
           if (last != null) _waveGaps.add((_elapsed, _elapsed - last));
           _lastWave = _elapsed;
-        case BossFailed():
+        case BossFailed(:final stage):
           result.firstBossFail ??= _elapsed;
+          result.firstBossFailStage ??= stage;
           _wallSince ??= _online;
         case StageAdvanced(:final stage):
           if (stage >= 10) result.stage10 ??= _elapsed;
@@ -235,8 +249,7 @@ class SimPlayer {
             if (worst == null || took > worst) result.rebirthRecoverMax = took;
             _recovering = null;
           }
-        case CrewPromoted(:final crewId, :final rarity):
-          if (crewId == t.growth.bossCards.starterCrew) result.starterPromotion ??= _elapsed;
+        case CrewPromoted(:final rarity):
           if (rarity == 'legend') result.firstLegendPromoted ??= _elapsed;
           if (rarity == 'mythic') result.firstMythic ??= _elapsed;
         default:

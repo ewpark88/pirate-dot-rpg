@@ -46,10 +46,10 @@ void main() {
   });
 
   group('첫 10연 무료', () {
-    test('첫 보스 뒤 summonsTotal 0이면 10연이 무료, 영웅 이상 1장 이상 확정, total += 10', () {
+    test('튜토리얼 보스 뒤 summonsTotal 0이면 10연이 무료, 영웅 이상 1장 이상 확정, total += 10', () {
       for (var seed = 1; seed <= 100; seed++) {
         final hs = EconomyHarness(seed: seed);
-        final s0 = hs.newGame().copyWith(progress: const Progress(stage: 2, bestStage: 2));
+        final s0 = hs.newGame().copyWith(progress: const Progress(stage: 4, bestStage: 4));
         expect(summonCostFor(s0, t, 10), 0);
         expect(canSummon(s0, t, 10), isTrue);
         final s = sys.handle(s0, const Summon(count: 10), hs.ctx)!;
@@ -61,8 +61,10 @@ void main() {
       }
     });
 
-    test('첫 보스를 잡기 전에는 무료가 아니다 (튜토리얼 4단계 순서)', () {
+    test('튜토리얼 보스(스테이지 3)를 잡기 전에는 무료가 아니다 (튜토리얼 4단계 순서)', () {
       expect(summonCostFor(h.newGame(), t, 10), t.meta.summonCostGems * 10);
+      final s3 = h.newGame().copyWith(progress: const Progress(stage: 3, bestStage: 3));
+      expect(summonCostFor(s3, t, 10), t.meta.summonCostGems * 10);
     });
 
     test('1회 소환은 무료가 아니다', () {
