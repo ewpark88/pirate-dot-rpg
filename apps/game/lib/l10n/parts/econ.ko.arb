@@ -2,7 +2,7 @@
   "econRebirthShopStartPartsName": "순풍 출항",
   "econRebirthShopStartPartsDesc": "환생 뒤 대포·선체·화물칸 시작 레벨 +{n}, 돛·망루 +{m}",
   "econRebirthShopDiscountName": "상인 단골",
-  "econRebirthShopDiscountDesc": "배 강화 골드 비용 −{pct}%",
+  "econRebirthShopDiscountDesc": "배 강화 골드 비용 -{pct}%",
   "econRebirthShopBossTimeName": "모래시계",
   "econRebirthShopBossTimeDesc": "보스 제한 시간 +{sec}초",
   "econRebirthShopOfflineName": "긴 정박",

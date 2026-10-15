@@ -9,6 +9,8 @@
   "rebirthSkip": { "fraction": 0.3, "waves": 0 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
+    "swarmSpacing": 3,
+    "bossSpawnRadius": 152,
     "chestMargin": 12,
     "width": 270,
     "height": 480,
@@ -22,7 +24,7 @@
     "approachRadius": 206,
     "approachBoost": 5,
     "swarmGroupsMin": 1,
-    "swarmGroupsMax": 3,
+    "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,
     "reachScale": 1,
     "separation": 0.5,
