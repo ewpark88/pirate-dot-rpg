@@ -26,7 +26,11 @@ Future<void> main(List<String> args) async {
     ('시나리오 리플레이', () => _run('dart', ['run', 'game_cli', 'replay', '--all'])),
     ('밸런스 스모크', _balanceSmoke),
     if (full) ('선원 균형 (balance crews --quick)', _balanceCrews),
-    if (full) ('Flutter 위젯·골든 테스트', () => _run('flutter', ['test', '--reporter=failures-only'], cwd: 'apps/game')),
+    if (full)
+      (
+        'Flutter 위젯·골든 테스트',
+        () => _oneAtATime(() => _run('flutter', ['test', '--reporter=failures-only'], cwd: 'apps/game')),
+      ),
   ];
 
   for (final (name, stage) in stages) {
@@ -47,6 +51,18 @@ Future<void> main(List<String> args) async {
     exit(1);
   }
   stdout.writeln('\n✓ check 통과 (${(sw.elapsedMilliseconds / 1000).toStringAsFixed(1)}s)${full ? ' --full' : ''}');
+}
+
+/// Flutter 테스트는 이 PC에서 한 번에 하나만 (레인 세션 4~5개가 동시에 돌리면 60초가 70분이 된다, 2026-10-15).
+/// 시스템 임시 폴더의 파일 잠금으로 다른 worktree의 check와 줄을 선다.
+Future<_Outcome> _oneAtATime(Future<_Outcome> Function() body) async {
+  final lock = await File('${Directory.systemTemp.path}/pde_flutter_test.lock').open(mode: FileMode.append);
+  try {
+    await lock.lock(FileLock.blockingExclusive);
+    return await body();
+  } finally {
+    await lock.close();
+  }
 }
 
 const _dartDirs = ['packages', 'tool', 'apps/game/lib', 'apps/game/test'];
