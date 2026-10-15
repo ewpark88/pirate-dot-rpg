@@ -10,6 +10,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S2 · 탑다운 T0 계약 + 환생 v2 1·2단계
+- T0(7a2663c): Settings.battleView, BattleView.mode·shipX·shipY·shipHeading, EnemyView.heading, AttackFired.fromX·fromY·angle(모두 선택 키), waves.top(TopFieldDef). S5 검토 채택.
+- 환생 v2 1단계(2946d2c): 조각 분리(누계 보너스), 상점 9칸·shopView, 세이브 v6(+bounty 자리), 스킨·칭호·명예 필드·소급, 명령 6·이벤트 4, ARB econ.*·shipSkin*.
+- 환생 v2 2단계: 상점 효과 — startParts(환생 시작 레벨), discount(강화·미리보기·sim), bossTime(startBoss extraSec), offline(offlineMaxSec), critChance·critDamage(CombatStats), fleetSlot(fleetSlots, 상한 7), pieceGain, fastSail. shopView에 effectNowMinor·effectNextMinor(startParts 돛·망루).
+- 다음: 3단계(상자·스킨 지급·칭호·명예 외형 갱신·해금·최대 레벨·보물 바다), 4단계(rebirthForecast·sim rebirthBeatBestMin). S5 T1 훅 검토.
+
 ### 2026-10-15 · S2 · 보스 거리 두기 (사용자 신고: 보스가 배와 부딪침)
 - waves.boss: speed 25 → 20, standoff 110(정지 x = 뱃머리 + 110), slowZone 30·slowFloor 0.2(감속). field.contactGap 8(일반 적은 몸통 겹치지 않게).
   보스는 정지 지점에서 원거리 공격 — 새 이벤트 BossFired(x, y) + ShipDamaged(피해·간격 그대로). 30초 타이머·배 HP 0 실패 유지.

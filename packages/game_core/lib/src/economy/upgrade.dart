@@ -1,4 +1,8 @@
+import 'dart:math' as math;
+
+import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/daily.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -13,25 +17,31 @@ GameState upgradePart(GameState state, UpgradePart command, SystemContext ctx) {
   final def = defs.first;
 
   final start = state.ship.level(def.id);
-  final can = affordableLevels(def, start, state.wallet.gold);
+  final mult = upgradeCostMultiplier(state, ctx.tables);
+  final can = affordableLevels(def, start, state.wallet.gold / BigNum.from(mult));
   final n = command.max || command.times > can ? can : command.times;
   if (n <= 0) return state;
   // 비용은 공식 합 한 번 (일괄·최대 강화 성능). 이벤트는 레벨마다 (스펙 economy-m1 기준 1).
-  final gold = state.wallet.gold - partCostSum(def, start, n);
+  final gold = state.wallet.gold - partCostSum(def, start, n).times(mult);
   final level = start + n;
   final every = def.milestoneEvery;
   for (var l = start + 1; l <= level; l++) {
     ctx.emit(PartUpgraded(ctx.tick, part: def.id, level: l));
     if (every != null && l % every == 0) ctx.emit(PartMilestone(ctx.tick, part: def.id, level: l));
   }
-  final lookBefore = partLookStage(def, start);
+  // 명예 외형(환생 v2): 이미 본 단계까지는 축하 연출을 반복하지 않는다.
+  final honor = state.ship.honorParts[def.id] ?? 0;
+  final lookBefore = math.max(partLookStage(def, start), honor);
   final look = partLookStage(def, level);
   if (look > lookBefore) ctx.emit(ShipLookChanged(ctx.tick, part: def.id, stage: look));
 
   ctx.emit(SaveRequested(ctx.tick, reason: command.type));
   final s = state.copyWith(
     wallet: state.wallet.copyWith(gold: gold),
-    ship: state.ship.withLevel(def.id, level),
+    ship: state.ship.copyWith(
+      parts: {...state.ship.parts, def.id: level},
+      honorParts: look > honor ? {...state.ship.honorParts, def.id: look} : null,
+    ),
   );
   return addQuestProgress(s, ctx.tables, 'upgrade', level - start);
 }

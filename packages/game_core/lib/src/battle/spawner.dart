@@ -54,6 +54,7 @@ void startBoss(
   double? x,
   double? y,
   double hpScale = 1,
+  double extraSec = 0,
 }) {
   final t = ctx.tables;
   final w = t.waves;
@@ -99,11 +100,12 @@ void startBoss(
   f.geometryOr(w).placeBoss(f, x: x, y: y);
   f
     ..bossActive = true
-    ..bossTicksLeft = bossTimeLimitTicks(ctx)
+    ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)
     ..travelLeft = 0;
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }
 
 /// 보스 제한 시간(초) → 틱.
-int bossTimeLimitTicks(SystemContext ctx) =>
-    (ctx.tables.waves.bossTimeLimitSec / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
+/// [extraSec]는 보물지도 상점 bossTime.
+int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0}) =>
+    ((ctx.tables.waves.bossTimeLimitSec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();

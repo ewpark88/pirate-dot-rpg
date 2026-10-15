@@ -16,6 +16,7 @@ class Progress {
     this.titles = const [],
     this.treasureSea,
     this.treasureRoute,
+    this.bossFails = 0,
   });
 
   factory Progress.fromJson(Json j) => Progress(
@@ -29,6 +30,7 @@ class Progress {
     titles: (j['titles'] as List?)?.cast<String>() ?? const [],
     treasureSea: j['treasureSea'] as int?,
     treasureRoute: j['treasureRoute'] as int?,
+    bossFails: j['bossFails'] as int? ?? 0,
   );
 
   final int stage;
@@ -56,6 +58,9 @@ class Progress {
   /// 다음 환생에 적용할 보물 바다 항로 (SetTreasureRoute, null = 끔).
   final int? treasureRoute;
 
+  /// 보스 실패 누계 (UI ‘처음만 자세히’ 안내용, 세이브 v6 선택 키). 환생해도 유지.
+  final int bossFails;
+
   Progress copyWith({
     int? stage,
     int? wave,
@@ -69,6 +74,7 @@ class Progress {
     bool clearTreasureSea = false,
     int? treasureRoute,
     bool clearTreasureRoute = false,
+    int? bossFails,
   }) => Progress(
     stage: stage ?? this.stage,
     wave: wave ?? this.wave,
@@ -80,6 +86,7 @@ class Progress {
     titles: titles ?? this.titles,
     treasureSea: clearTreasureSea ? null : treasureSea ?? this.treasureSea,
     treasureRoute: clearTreasureRoute ? null : treasureRoute ?? this.treasureRoute,
+    bossFails: bossFails ?? this.bossFails,
   );
 
   Json toJson() => {
@@ -93,6 +100,7 @@ class Progress {
     'titles': titles,
     'treasureSea': treasureSea,
     'treasureRoute': treasureRoute,
+    'bossFails': bossFails,
   };
 }
 
