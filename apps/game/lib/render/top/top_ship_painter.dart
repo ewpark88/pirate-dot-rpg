@@ -10,6 +10,8 @@ class TopShipPainter {
 
   final SpriteDraw sprites;
 
+  static const _recoilSqueeze = 0.07;
+
   /// 겹치는 순서 (스프라이트 키 `td:<tierId>:<layer>`).
   static const layers = ['base', 'hull', 'cargo', 'cannon', 'sail', 'crowsnest'];
 
@@ -24,7 +26,7 @@ class TopShipPainter {
     return s == null ? null : Size(s.frameW, s.frameH);
   }
 
-  /// [look] = 부위 → 단계, [glowPart]가 있으면 그 층을 [glow](0~1) 만큼 흰빛으로 한 번 더.
+  /// [look] = 부위 → 단계, [glowPart]가 있으면 그 층을 [glow](0~1) 만큼 흰빛으로 한 번 더. [recoil] 0~1 = 대포 반동.
   /// 그림이 없으면 false.
   bool paint(
     Canvas c,
@@ -33,6 +35,7 @@ class TopShipPainter {
     bool flash = false,
     String? glowPart,
     double glow = 0,
+    double recoil = 0,
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
@@ -50,7 +53,15 @@ class TopShipPainter {
       if (sheet == null) continue;
       final stage = look[layer] ?? 0;
       final frame = layer == 'base' ? 0 : ((stage < 1 ? 1 : stage) - 1).clamp(0, sheet.frames - 1);
+      // 대포 반동(사용자 '손맛'): 발사 순간 대포 층을 가로로 살짝 좁혀 양옆 포가 선체 쪽으로 밀렸다 돌아온다.
+      final kick = layer == 'cannon' && recoil > 0;
+      if (kick) {
+        c
+          ..save()
+          ..scale(1 - _recoilSqueeze * recoil, 1);
+      }
       sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: flash);
+      if (kick) c.restore();
       if (glowPart == layer && glow > 0) {
         sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: true, alpha: glow);
       }

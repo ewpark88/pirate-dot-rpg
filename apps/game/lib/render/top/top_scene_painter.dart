@@ -71,6 +71,7 @@ class TopScenePainter {
         flash: scene.shipFlashMs > 0 && scene.settings.flash,
         glowPart: m.glowMs > 0 ? m.glowPart : null,
         glow: m.glowMs > 0 ? 0.5 + 0.5 * math.sin(clockMs / 70) : 0,
+        recoil: _recoil(clockMs - m.cannonFiredAtMs),
       );
       if (sinking) c.restore();
       c.restore();
@@ -85,6 +86,11 @@ class TopScenePainter {
       ..restore()
       ..restore();
   }
+
+  late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
+
+  /// 발사 뒤 [since] ms의 반동 0~1 (발사 순간 1 → recoilMs에 0).
+  double _recoil(double since) => since >= 0 && since < _recoilMs ? 1 - since / _recoilMs : 0;
 
   /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
   bool _sink(Canvas c, double left) {

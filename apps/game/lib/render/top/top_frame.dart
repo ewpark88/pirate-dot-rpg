@@ -8,7 +8,7 @@ import 'package:pirate_dot/render/layout.dart';
 /// - 배율 k = floor(물리 폭 / [kTopViewUnits]) — **폭으로만** 정한다. 상자 높이(시트를 끄는 동안 매 프레임 바뀜)는 k를 바꾸지 않는다.
 /// - 단위(unit) = 전장 좌표 1. 1단위 = [dot] dp. 화면 가로 약 180단위.
 /// - 선원 줄·궁극기·보스 도전 자리는 옆모습과 같은 [band](battleFrameFor) — UI는 그대로 slotRects 등을 쓴다.
-/// - 배 중심이 보이는 전장(상자 위 ~ 선원 줄 위)의 가운데에 온다: [shipScreen] (dp).
+/// - 배 중심은 보이는 전장(상자 위 ~ 선원 줄 위)의 가로 가운데·세로 [kShipAt] 지점: [shipScreen] (dp).
 class TopFrame {
   TopFrame._({required this.k, required this.dpr, required this.box, required this.band});
 
@@ -28,8 +28,11 @@ class TopFrame {
   /// 보이는 전장 (dp): 상자 위 ~ 선원 줄 윗변.
   Rect get fieldDp => Rect.fromLTRB(0, 0, box.width, band.slotBand.top);
 
-  /// 배 중심이 그려지는 자리 (dp) — 보이는 전장의 가운데.
-  Offset get shipScreen => fieldDp.center;
+  /// 배 중심 높이 = 보이는 전장 위에서 [kShipAt] (사용자 지시 '가운데보다 아래 — 보스·진행 방향이 넓게 보이게').
+  static const double kShipAt = 0.63;
+
+  /// 배 중심이 그려지는 자리 (dp) — 가로 가운데, 세로는 보이는 전장의 [kShipAt] 지점.
+  Offset get shipScreen => Offset(fieldDp.center.dx, fieldDp.top + fieldDp.height * kShipAt);
 
   /// 화면에 보이는 단위 수 (가로·세로, 상자 전체).
   Size get viewUnits => Size(box.width / dot, box.height / dot);
