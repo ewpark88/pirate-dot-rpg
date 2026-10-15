@@ -14,6 +14,11 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-15 · S3 · S4 요청 UI 아이콘 14개
+- 묶음 1 승인·main 머지. S4 요청(S1 중계)을 폭풍해 묶음보다 먼저: `gen_ui_icons.py`에 gear·quest·tailwind·flag·ad·farm·lock·rebirth·moon(16) · card_back(32) · check·check_empty(8) · hand·bubble(16).
+  칠한 칸 + outlined() 자동 외곽선, 톱니·초승달은 극좌표로. LICENSES OWN. 미리보기 `docs/specs/render-ui-icons-s4.png`(위 같은 배율, 아래 남색 판 ×3).
+- 다음: giant_hermit 집게 갈라짐 보완 + 묶음 2 폭풍해(flyingfish·stormgull·storm_pirate·thunder_ray).
+
 ### 2026-10-15 · S3 · art 묶음 1: 산호초 보스
 - 아이콘 승인·main 828953b 머지, Q1 승인(산호초 보스 먼저).
 - `tools/art/gen_bosses.py`(zlib PNG 읽기·쓰기, `--check`): raider_ship = enemy_ship 칸 바꿈(핏빛 돛·검은 줄·찢긴 돛 끝·해골·어두운 선체·깃발 꼬리) 62×48,
