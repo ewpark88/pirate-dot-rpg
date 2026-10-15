@@ -1,4 +1,4 @@
-"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus / 묶음 4 화산: fire_pirate · lava_whale). 격자 → PNG, LICENSES OWN.
+"""보스 도트 생성 (스펙 render-art-enemies, 묶음 1 산호초: raider_ship · giant_hermit / 묶음 2 폭풍해: storm_pirate · thunder_ray / 묶음 3 빙하: icebreaker · iceberg_walrus / 묶음 4 화산: fire_pirate · lava_whale / 묶음 5 심연: deep_sub · kraken · kraken_tentacle). 격자 → PNG, LICENSES OWN.
 
     python -I tools/art/gen_bosses.py            # apps/game/assets/bosses/ 에 쓴다
     python -I tools/art/gen_bosses.py --check    # 쓰지 않고, 결과가 지금 파일과 다르면 실패
@@ -526,6 +526,121 @@ def lava_whale() -> list[list]:
     return px
 
 
+# ---------- 묶음 5 심연: deep_sub · kraken · kraken_tentacle ----------
+SUB = (212, 172, 13)
+SUB_SHADE = (160, 124, 10)
+SUB_LIGHT = (250, 214, 80)
+STEEL = (140, 150, 170)
+PORT = (150, 230, 250)
+
+
+def _blank(w, h):
+    return [[None] * w for _ in range(h)]
+
+
+def _ellipse(px, cx, cy, rx, ry, color_at):
+    h, w = len(px), len(px[0])
+    for y in range(h):
+        for x in range(w):
+            dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
+            if dx * dx + dy * dy <= 1:
+                c = color_at(x, y, dx, dy)
+                if c is not None:
+                    px[y][x] = c
+
+
+def deep_sub() -> list[list]:
+    """심해 잠수함 62×36 (심연 중간 보스): 노란 선체(위 밝고 아래 어둡게)·조종탑·잠망경·둥근 창 3·리벳·프로펠러. 앞(왼쪽)이 배 쪽."""
+    px = _blank(62, 36)
+    _ellipse(px, 30, 24, 27, 9, lambda x, y, dx, dy: SUB_LIGHT if dy < -0.55 else (SUB_SHADE if dy > 0.4 else SUB))
+    for y in range(11, 18):  # 조종탑
+        for x in range(26, 39):
+            px[y][x] = SUB_LIGHT if y < 13 else SUB
+    for y in range(4, 11):  # 잠망경
+        px[y][34] = STEEL
+    for x in range(30, 35):
+        px[4][x] = STEEL
+    for x0 in (56, 57, 58):  # 프로펠러 축
+        px[24][x0] = STEEL
+    for y in range(18, 31):
+        if abs(y - 24) > 1:
+            px[y][59] = STEEL
+            px[y][60] = STEEL if abs(y - 24) < 6 else None
+    outline(px)
+    for cx in (14, 24, 34):  # 둥근 창: 테두리 외곽선 + 하늘빛 유리 + 반짝임
+        _ellipse(px, cx, 23, 3, 3, lambda x, y, dx, dy: OUTLINE if dx * dx + dy * dy > 0.45 else PORT)
+        px[22][cx - 1] = BONE
+    for x in range(8, 52, 4):  # 리벳 줄
+        if px[28][x] == SUB_SHADE:
+            px[28][x] = SUB_LIGHT
+    return px
+
+
+KRAKEN = (128, 62, 150)
+KRAKEN_SHADE = (92, 40, 112)
+KRAKEN_LIGHT = (168, 98, 190)
+SUCKER = (240, 150, 190)
+EYE = (255, 220, 90)
+
+
+def _tentacle(px, x0, y0, length, dir_x, phase, thick):
+    """빨판 달린 촉수: 사인 곡선을 따라 굵기 thick → 1로 가늘어진다."""
+    import math
+
+    for i in range(length):
+        t = i / length
+        x = x0 + dir_x * i * 0.9
+        y = y0 + i * 0.55 + math.sin(i * 0.35 + phase) * 3 * t
+        r = thick * (1 - t) + 0.6
+        for yy in range(int(y - r), int(y + r) + 1):
+            for xx in range(int(x - r), int(x + r) + 1):
+                if 0 <= yy < len(px) and 0 <= xx < len(px[0]) and (xx + 0.5 - x) ** 2 + (yy + 0.5 - y) ** 2 <= r * r:
+                    px[yy][xx] = KRAKEN_SHADE if yy + 0.5 > y + r * 0.3 else KRAKEN
+    return [(round(x0 + dir_x * i * 0.9), round(y0 + i * 0.55 + math.sin(i * 0.35 + phase) * 3 * i / length + thick * (1 - i / length) * 0.6)) for i in range(2, length - 4, 4)]
+
+
+def kraken() -> list[list]:
+    """크라켄 64×56 (심연 해역 보스): 보라 머리(위 밝게)·노란 큰 눈 둘(세로 동공)·앞으로 뻗은 촉수 6개(빨판)."""
+    px = _blank(64, 56)
+    suckers = []
+    for x0, dx, ph, ln in ((24, -1, 0.0, 26), (30, -1, 1.5, 30), (36, -0.6, 3.0, 26), (40, 0.3, 0.7, 22), (46, 0.7, 2.2, 22), (50, 1, 4.0, 18)):
+        suckers += _tentacle(px, x0, 30, ln, dx, ph, 3.2)
+    _ellipse(px, 38, 18, 17, 16, lambda x, y, dx, dy: KRAKEN_LIGHT if dy < -0.55 and dx < 0.2 else (KRAKEN_SHADE if dy > 0.45 else KRAKEN))
+    outline(px)
+    for x, y in suckers:
+        if 0 <= y < 56 and 0 <= x < 64 and px[y][x] in (KRAKEN, KRAKEN_SHADE):
+            px[y][x] = SUCKER
+    for cx in (30, 42):  # 큰 눈: 외곽선 고리 + 노랑 + 세로 동공 + 반짝임
+        _ellipse(px, cx, 22, 4, 4, lambda x, y, dx, dy: OUTLINE if dx * dx + dy * dy > 0.55 else EYE)
+        for y in range(20, 25):
+            px[y][cx] = OUTLINE
+        px[20][cx - 2] = BONE
+    for x, y in ((36, 8), (44, 10), (32, 11), (48, 15)):  # 머리 점무늬
+        px[y][x] = KRAKEN_SHADE
+    return px
+
+
+def kraken_tentacle() -> list[list]:
+    """크라켄 촉수(보스 장치 '촉수' 칸) 12×28: 아래에서 솟아 끝이 말린다, 빨판."""
+    px = _blank(12, 28)
+    import math
+
+    for i in range(26):
+        y = 27 - i
+        x = 6 + math.sin(i * 0.28) * 2.2 - (i > 20) * (i - 20) * 0.8
+        r = 3.2 * (1 - i / 26) + 0.7
+        for xx in range(12):
+            if abs(xx + 0.5 - x) <= r:
+                px[y][xx] = KRAKEN_SHADE if xx + 0.5 > x + r * 0.3 else KRAKEN
+    outline(px)
+    for i in range(3, 22, 4):
+        y = 27 - i
+        x = round(6 + math.sin(i * 0.28) * 2.2 - 1)
+        if px[y][x] in (KRAKEN, KRAKEN_SHADE):
+            px[y][x] = SUCKER
+    return px
+
+
 FILES = {
     "bosses/raider_ship.png": raider_ship,
     "bosses/giant_hermit.png": giant_hermit,
@@ -535,6 +650,9 @@ FILES = {
     "bosses/iceberg_walrus.png": iceberg_walrus,
     "bosses/fire_pirate.png": fire_pirate,
     "bosses/lava_whale.png": lava_whale,
+    "bosses/deep_sub.png": deep_sub,
+    "bosses/kraken.png": kraken,
+    "bosses/kraken_tentacle.png": kraken_tentacle,
 }
 
 

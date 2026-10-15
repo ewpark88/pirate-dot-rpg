@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 화면 배치 v2 렌더(`docs/specs/render-layout-v2.md`) 승인 대기 → art 묶음 5 심연 · `plans/active/render-perf.md`(실기기 측정 대기) |
+| 현재 계획 | art: 묶음 5 심연 승인 대기 → 묶음 6 유령해(`docs/specs/render-art-enemies.md`) · `plans/active/render-perf.md`(실기기 측정 대기) |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | 배치 v2 골든 승인(S1)·UI 연결(S4) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
+| 막힌 것 | 묶음 5 승인(S1) · UI 상단 바 머지 후 실기기 확인(S1) · 앱 아이콘 적용(S5) · 튜토리얼 보스 HP(S2) |
 
 ## 실기기 측정
 
@@ -13,6 +13,12 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15 · S3 · art 묶음 5: 심연
+- v2.1 승인·머지. gen_enemies: angler 18×12(빛나는 초롱 흔들림, 몸 밝게), squid 17×11(다리 오므림), siphon 17×10(빛나는 청록 구슬 셋 물결), eel 24×10(사인 곡선 굽이침).
+- gen_bosses: deep_sub 62×36(노란 잠수함·조종탑·잠망경·둥근 창·프로펠러), kraken 64×56(보라 머리·노란 눈 세로 동공·촉수 6 빨판), kraken_tentacle 12×28.
+- 렌더: 수중 색조 세기를 해역별로(`backgrounds.<id>.underwaterAlpha`, 기본 0.45, 심연 0.12) — 어두운 심연에서 모든 적이 수중이라 0.45면 묻혔다. 필터는 값이 바뀔 때만 새로 만든다.
+- sprites_test 해역 abyss 추가. 비교 `docs/specs/render-art-enemies/compare_abyss.png`. 기존 골든 변화 없음.
 
 ### 2026-10-15 · S3 · 화면 배치 v2.1 (S1 후속)
 - HUD 글자 ×2·보스 막대 두껍게, 수평선 아래로(하늘 0.7)·깊은 바다 빛줄기·거품, 궁극기 금 테두리 + 번개. 골든 10장 갱신, 비교 `docs/specs/render-layout-v2/`(compare_s24·goldens_3devices·goldens_v2_to_v21).

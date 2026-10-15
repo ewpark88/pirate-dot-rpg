@@ -707,7 +707,8 @@ const Map<String, String> rawTables = {
       "waves": [
         "#3D7FB8",
         "#225A8C"
-      ]
+      ],
+      "underwaterAlpha": 0.12
     },
     "bg_phantom": {
       "sky": [

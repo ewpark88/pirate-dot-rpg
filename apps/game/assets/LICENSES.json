@@ -88,6 +88,10 @@
       "source": "Pirate Busters 자체 IP → docs/store/audio-gen/gen_audio.py 칩튠 합성 (sfx/ultimate_0.wav)",
       "license": "OWN"
     },
+    "bosses/deep_sub.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
     "bosses/enemy_ship.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/enemy_ship.png",
       "license": "OWN"
@@ -105,6 +109,14 @@
       "license": "OWN"
     },
     "bosses/icebreaker.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/kraken.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/kraken_tentacle.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
@@ -288,8 +300,16 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_dot_v0.2_32px.zip:characters/walrus.png",
       "license": "OWN"
     },
+    "enemies/angler.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/crab.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/crab.png",
+      "license": "OWN"
+    },
+    "enemies/eel.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
     "enemies/firebird.png": {
@@ -344,7 +364,15 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },
+    "enemies/siphon.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
     "enemies/snowgull.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "enemies/squid.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_enemies.py 픽셀 격자",
       "license": "OWN"
     },

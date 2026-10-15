@@ -62,6 +62,7 @@ class ScenePainter {
     _stage.paintBackground(canvas);
     _zones(canvas);
     _stage.paintChest(canvas);
+    _sprite.underwaterAlpha = scene.backdrop.underwaterAlpha;
     _enemies(canvas, 'underwater');
     _ship.paint(canvas);
     _enemies(canvas, 'surface');
@@ -146,7 +147,7 @@ class ScenePainter {
       alpha: alpha,
     )) {
       var color = bossShape?.color ?? looks.colorOf(e.kind);
-      if (under) color = Color.lerp(Color(color), _underwaterTint, 0.45)!.toARGB32();
+      if (under) color = Color.lerp(Color(color), _underwaterTint, scene.backdrop.underwaterAlpha)!.toARGB32();
       if (e.slowed) color = _status.tintColor(color);
       color = ((alpha * 0xFF).round() << 24) | (color & 0xFFFFFF);
       _fill(c, l, t, w, h, e.flash ? 0xFFFFFFFF : color);

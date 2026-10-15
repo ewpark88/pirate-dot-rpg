@@ -6,12 +6,17 @@ class BackgroundPalette {
     : sky = [for (final c in j.strs('sky')) parseArgb(c, '${j.path}.sky')],
       cloud = parseArgb(j.str('cloud'), '${j.path}.cloud'),
       sea = [for (final c in j.strs('sea')) parseArgb(c, '${j.path}.sea')],
-      waves = [for (final c in j.strs('waves')) parseArgb(c, '${j.path}.waves')];
+      waves = [for (final c in j.strs('waves')) parseArgb(c, '${j.path}.waves')],
+      underwaterAlpha = j.raw.containsKey('underwaterAlpha') ? j.number('underwaterAlpha') : defaultUnderwaterAlpha;
+
+  /// 수중 적 색조 세기 기본값 (밝은 바다). 어두운 해역(심연)은 낮춰야 적이 묻히지 않는다.
+  static const defaultUnderwaterAlpha = 0.45;
 
   final List<int> sky;
   final int cloud;
   final List<int> sea;
   final List<int> waves;
+  final double underwaterAlpha;
 }
 
 /// 스테이지 → 해역 배경, 해역이 바뀌면 `fx_map.backgroundFadeMs` 동안 색을 섞는다 (render-regions 규칙 1~3).
@@ -62,6 +67,9 @@ class Backdrop {
   int sea(int i) => _mix(_prev.sea[i], _current.sea[i]);
   int wave(int i) => _mix(_prev.waves[i], _current.waves[i]);
   int get cloud => _mix(_prev.cloud, _current.cloud);
+
+  /// 지금 해역의 수중 색조 세기 (fx_map `backgrounds.<id>.underwaterAlpha`, 없으면 0.45).
+  double get underwaterAlpha => _current.underwaterAlpha;
   int get skyBands => _current.sky.length;
   int get seaBands => _current.sea.length;
 
