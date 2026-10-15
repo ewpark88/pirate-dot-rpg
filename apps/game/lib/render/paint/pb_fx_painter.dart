@@ -28,6 +28,7 @@ class PbFxPainter {
   double? unitDp;
   double get _unitDp => unitDp ?? scene.layout.dot;
   static const _topMax = 12.0;
+  static const _topBlastMax = 30.0;
   late final _hooks = HookPainter(sprites);
   late final double _weaponDp = _cfg.number('weaponDp');
   late final double _weaponMinDots = _cfg.number('weaponMinDots');
@@ -95,7 +96,8 @@ class PbFxPainter {
   bool blast(Canvas c, Effect e) {
     if (!blastReady) return false;
     final t = e.ageMs - e.delayMs;
-    final d = e.w * _blastSize;
+    // 탑다운: 범위가 넓은 공격(S2 topRadius 34 등)이어도 폭발 그림은 배 길이의 반 정도까지만(배를 덮지 않게).
+    final d = unitDp == null ? e.w * _blastSize : math.min(e.w * _blastSize, _topBlastMax);
     final seed = ((e.x * 7.0).round() * 31 + (e.y * 3.0).round()) & 0x7fffffff;
     void part(
       String name,
