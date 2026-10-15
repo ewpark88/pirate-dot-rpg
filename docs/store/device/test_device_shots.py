@@ -39,15 +39,19 @@ class Run:
         return type("R", (), {"returncode": 0, "stdout": out if isinstance(out, bytes) else out.encode(), "stderr": b""})()
 
 
-WINDOW = (
+BARS = (
     "mShowingLockscreen=false\n  statusBars frame=[0,0][1080,103] visible=true\n"
     "  navigationBars frame=[0,2205][1080,2340] visible=true\n"
 )
+WINDOW = BARS + "  mCurrentFocus=Window{b6ce7a9 u0 repo.dot.pirate/repo.dot.pirate.MainActivity}\n"
+# Samsung 실측(2026-10-15): 런처가 앞인데 topResumedActivity는 우리 앱 — mCurrentFocus만 믿는다
+LAUNCHER = (
+    BARS + "  mCurrentFocus=Window{2e24385 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities"
+    ".LauncherActivity}\n  topResumedActivity=ActivityRecord{1 u0 repo.dot.pirate/.MainActivity t1}\n"
+)
 AWAKE = {"shell dumpsys power": "mWakefulness=Awake", "shell dumpsys window": WINDOW,
          "shell wm size": "Physical size: 1080x2340", "shell wm density": "Physical density: 480\nOverride density: 450",
-         "shell dumpsys activity activities": "  topResumedActivity=ActivityRecord{1 u0 repo.dot.pirate/.MainActivity t1}\n",
          "shell cat": DUMP, "exec-out screencap": b"\x89PNG"}
-LAUNCHER = "  topResumedActivity=ActivityRecord{2 u0 com.sec.android.app.launcher/.activities.LauncherActivity t2}\n"
 
 
 class DeviceShotsTest(unittest.TestCase):
@@ -151,7 +155,7 @@ class DeviceShotsTest(unittest.TestCase):
 
     def test_never_presses_when_app_not_in_front(self):
         # 2026-10-15 사고 재현: 앱이 뒤에 있고 런처가 앞 → 아무것도 누르지 않고 멈춘다
-        run = Run({**AWAKE, "shell dumpsys activity activities": LAUNCHER})
+        run = Run({**AWAKE, "shell dumpsys window": LAUNCHER})
         with tempfile.TemporaryDirectory() as d, self.assertRaisesRegex(ds.DeviceError, "앞에"):
             ds.capture(ds.Adb("adb", "S", run), Path(d), wait=0, tab_y=None, sleep=lambda _: None)
         self.assertFalse([c for c in run.calls if c[:2] == ["shell", "input"]])
@@ -170,8 +174,9 @@ class DeviceShotsTest(unittest.TestCase):
         self.assertFalse([c for c in run.calls if c[:3] == ["shell", "input", "keyevent"]])
 
     def test_in_front(self):
-        self.assertTrue(ds.in_front(AWAKE["shell dumpsys activity activities"]))
+        self.assertTrue(ds.in_front(WINDOW))
         self.assertFalse(ds.in_front(LAUNCHER))
+        self.assertFalse(ds.in_front(BARS + "  mCurrentFocus=null\n"))
         self.assertFalse(ds.in_front(""))
 
     def test_locked_stops_without_input(self):

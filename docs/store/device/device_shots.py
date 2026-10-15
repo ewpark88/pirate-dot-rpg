@@ -215,9 +215,11 @@ def same_screen(a, b, top: int, bottom: int) -> bool:
     return diff < 2.0
 
 
-def in_front(activities: str) -> bool:
-    """`dumpsys activity activities`의 topResumedActivity가 우리 앱인가."""
-    m = re.search(r"topResumedActivity=[^\n]*", activities)
+def in_front(window: str) -> bool:
+    """`dumpsys window`의 mCurrentFocus(지금 입력을 받는 창)가 우리 앱인가.
+    topResumedActivity는 쓰지 않는다 — Samsung에서 런처가 앞인데도 우리 앱이라고 답했다(2026-10-15).
+    전환 중이라 mCurrentFocus=null이면 '앞 아님'(안전한 쪽)."""
+    m = re.search(r"mCurrentFocus=[^\n]*", window)
     return bool(m) and PACKAGE + "/" in m.group(0)
 
 
@@ -227,7 +229,7 @@ def capture(adb: Adb, out_dir: Path, *, wait: float, tab_y: int | None, sleep=ti
     if state != "awake":
         raise DeviceError("폰 화면이 꺼져 있거나 잠겨 있다 — 사람이 잠금을 풀고 화면을 켠 뒤 다시 실행한다(자동 잠금 해제는 하지 않는다).")
     def front() -> bool:
-        return in_front(adb("shell", "dumpsys", "activity", "activities", check=False))
+        return in_front(adb("shell", "dumpsys", "window", check=False))
 
     def launch() -> None:
         """우리 앱을 앞으로. [wait]+5초 안에 앞에 안 오면 멈춘다."""
