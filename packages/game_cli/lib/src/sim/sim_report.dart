@@ -166,6 +166,7 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 오프라인 추정 ÷ 실제 초당 골드(마지막 10분) | '
       '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
     )
+    ..writeln('| 함포 지원 광고(보스 실패 뒤) | ${_fmt(m((r) => r.bossAds.toDouble()))} |')
     ..writeln('| 강화·소환 횟수 | ${_fmt(m((r) => r.upgrades.toDouble()))} · ${_fmt(m((r) => r.summons.toDouble()))} |');
   _cardsByRun(b, t, rs);
   return b.toString();

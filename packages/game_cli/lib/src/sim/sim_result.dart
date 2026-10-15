@@ -28,6 +28,9 @@ class SimResult {
   double waveSecFirst10Min = 0;
   double waveSecAll = 0;
   int summons = 0;
+
+  /// 함포 지원 광고를 본 횟수 (`sim --boss-ad`).
+  int bossAds = 0;
   int upgrades = 0;
   BigNum gold = BigNum.zero;
   int gems = 0;
