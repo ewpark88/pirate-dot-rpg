@@ -93,12 +93,14 @@ void main() {
       looks: EnemyLooks.fromRegionsJson(tables.fxMap, _regions),
     );
     var t = 0.0;
-    while (t < 3.4 * tickMs) {
+    // 궁극기 화면 번쩍임(200ms)이 끝난 뒤 — 뿌연 프레임은 회귀 검출력이 약하다(S1).
+    while (t < 4.4 * tickMs) {
       scene.update(kFrameMs);
       t += kFrameMs;
     }
     expect(scene.stats.splitPops, 1);
     expect(scene.zones.active, hasLength(1));
+    expect(scene.screenFlashMs, lessThanOrEqualTo(0));
 
     await tester.pumpWidget(
       Center(
