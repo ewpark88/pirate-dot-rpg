@@ -15,7 +15,21 @@ class SpriteDraw {
     ..filterQuality = FilterQuality.none;
 
   static const _flash = ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcATop);
-  static const _underwater = ColorFilter.mode(Color(0x730B2A44), BlendMode.srcATop);
+  static const _underwaterRgb = 0x0B2A44;
+  ColorFilter _underwater = _tint(0.45);
+  double _underwaterAlpha = 0.45;
+
+  static ColorFilter _tint(double a) =>
+      ColorFilter.mode(Color(((a * 0xFF).round() << 24) | _underwaterRgb), BlendMode.srcATop);
+
+  double get underwaterAlpha => _underwaterAlpha;
+
+  /// 수중 적 색조 세기 (해역마다 다름). 바뀔 때만 필터를 새로 만든다.
+  set underwaterAlpha(double a) {
+    if (a == _underwaterAlpha) return;
+    _underwaterAlpha = a;
+    _underwater = _tint(a);
+  }
 
   /// 감속 색조 필터 (StatusPainter가 정한 색).
   ColorFilter? slowed;

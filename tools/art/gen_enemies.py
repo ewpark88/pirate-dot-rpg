@@ -227,6 +227,123 @@ def star_frames(size: int, outer: float, inner: float, rots: tuple[float, ...], 
 
 STAR_COLORS = ((255, 190, 90), (220, 120, 60), (255, 236, 170))
 
+
+# ---- 묶음 5 심연 (모두 수중 → 렌더가 어둡게 칠하니 밝은 몸 + 빛나는 부분) ----
+ABYSS_COLORS = {
+    "a": (150, 136, 192),  # 아귀 몸 (심연 바다 위에서 보이게 밝게)
+    "b": (112, 100, 152),
+    "s": (130, 140, 170),  # 초롱 줄기
+    "L": (255, 240, 140),  # 빛나는 초롱
+    "t": (30, 20, 30),  # 입 안
+    "W": (245, 245, 250),  # 이빨
+    "f": (92, 110, 152),  # 지느러미
+    "p": (235, 120, 155),  # 오징어
+    "P": (175, 70, 115),
+}
+
+# 아귀 (부활): 프레임 18×12, 머리 왼쪽, 초롱이 흔들린다.
+ANGLER = [
+    [
+        "..LL..............",
+        "..LLs.............",
+        "....s.............",
+        ".....saaaaaa......",
+        "...aaaaaaaaaaa..ff",
+        "..aeakaaaaaaaaaff.",
+        ".aaaaaaaaaaaaaff..",
+        ".tWtWtbbbbbbbbff..",
+        "..tWtWbbbbbbbbbff.",
+        "...bbbbbbbbbbb.ff.",
+        ".....bbbbbbb......",
+        "..................",
+    ],
+    [
+        "...LL.............",
+        "...LLs............",
+        ".....s............",
+        ".....saaaaaa......",
+        "...aaaaaaaaaaa.ff.",
+        "..aeakaaaaaaaaaff.",
+        ".aaaaaaaaaaaaaff..",
+        ".tttWtbbbbbbbbff..",
+        "..tWtWbbbbbbbbbff.",
+        "...bbbbbbbbbbb..ff",
+        ".....bbbbbbb......",
+        "..................",
+    ],
+]
+
+# 오징어: 프레임 17×11, 몸통 오른쪽·다리 왼쪽(앞으로 헤엄), 다리를 오므렸다 편다.
+SQUID = [
+    [
+        ".................",
+        "..........ppp....",
+        "........ppppppP..",
+        ".....ppppppppppP.",
+        "...peppppppppppP.",
+        "..pkppppppppppP..",
+        ".ppppppppppppP...",
+        "PPpPPpPP.........",
+        "P.P.P.P..........",
+        ".P..P..P.........",
+        ".................",
+    ],
+    [
+        ".................",
+        "..........ppp....",
+        "........ppppppP..",
+        ".....ppppppppppP.",
+        "...peppppppppppP.",
+        "..pkppppppppppP..",
+        ".ppppppppppppP...",
+        ".PPPPPPP.........",
+        "PP.PP.PP.........",
+        "P..P..P..........",
+        ".................",
+    ],
+]
+
+
+def siphon_frames() -> tuple[list[list[str]], dict]:
+    """관해파리(부활): 빛나는 청록 구슬 셋이 줄기로 이어져 물결친다. 프레임 17×10."""
+    import math
+
+    frames = []
+    for phase in (0, 1):
+        g = [["."] * 17 for _ in range(10)]
+        for x in range(1, 16):
+            y = round(5 + math.sin(x * 0.45 + phase * math.pi) * 1)
+            g[y][x] = "m"
+        for i, cx in enumerate((3.5, 8.5, 13.5)):
+            cy = 5 + math.sin(cx * 0.45 + phase * math.pi) * 1
+            r = 2.6 if i == 0 else 2.2
+            for y in range(10):
+                for x in range(17):
+                    d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+                    if d <= r:
+                        g[y][x] = "h" if (x + 0.5 - cx) + (y + 0.5 - cy) < -1.2 else "o"
+        frames.append(["".join(r) for r in g])
+    return frames, {"o": (120, 230, 220), "h": (220, 255, 250), "m": (60, 150, 160)}
+
+
+def eel_frames() -> tuple[list[list[str]], dict]:
+    """곰치(빠름): 머리 왼쪽, 몸이 사인 곡선으로 굽이친다. 프레임 24×10, 위상 반 바퀴."""
+    import math
+
+    frames = []
+    for phase in (0, math.pi):
+        g = [["."] * 24 for _ in range(10)]
+        for x in range(1, 23):
+            cy = 4.5 + 1.4 * math.sin(x * 0.5 + phase) * min(1, x / 6)
+            half = 2.1 if x < 6 else max(1.0, 2.0 - (x - 6) * 0.06)
+            for y in range(10):
+                if abs(y + 0.5 - cy) <= half:
+                    g[y][x] = "G" if y + 0.5 > cy + half * 0.3 else "g"
+        hy = round(4.5 + 1.4 * math.sin(3 * 0.5 + phase) * 0.5 - 1)
+        g[hy][3] = "e"
+        frames.append(["".join(r) for r in g])
+    return frames, {"g": (90, 190, 150), "G": (55, 130, 105), "e": (255, 240, 140)}
+
 # 팔레트 바꿈 변형: 팩 적 → 색 표 (외곽선 (27,23,38)은 그대로).
 RECOLORS = {
     "icecrab": ("crab", {(220, 70, 60): (205, 232, 250), (150, 40, 40): (95, 150, 205)}),  # 서리 흰빛 + 얼음 파랑 그늘(바다 위 대비)
@@ -267,6 +384,12 @@ def build() -> dict[str, list[list]]:
     files["enemies/starfish.png"] = from_grid(big, pal)
     small, pal = star_frames(11, 5.2, 2.2, (0, 9), *STAR_COLORS, eyes=False)
     files["enemies/starfish_small.png"] = from_grid(small, pal)
+    files["enemies/angler.png"] = from_grid(ANGLER, ABYSS_COLORS)
+    files["enemies/squid.png"] = from_grid(SQUID, ABYSS_COLORS)
+    frames, pal = siphon_frames()
+    files["enemies/siphon.png"] = from_grid(frames, pal)
+    frames, pal = eel_frames()
+    files["enemies/eel.png"] = from_grid(frames, pal)
     for name, (base, table) in RECOLORS.items():
         files[f"enemies/{name}.png"] = recolor(base, table)
     return files
