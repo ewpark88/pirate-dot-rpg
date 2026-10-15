@@ -4,6 +4,7 @@
 이 문서대로 기기에서 두 가지(손맛, 성능)를 보고 결과를 S1에게 알려 준다.
 
 ## 0. 준비 (처음 한 번)
+- **release는 반드시 `python -I -B docs/store/device/release_smoke.py` 통과 후 사람에게 넘긴다**(2026-10-15 release 실행 즉시 종료 사고 — 빌드 검사로는 실행 중 크래시를 못 잡는다).
 - Android 폰(가능하면 저사양 1대), 설정 → 개발자 옵션 → USB 디버깅 켬, PC와 USB 연결
 - PC에서:
 ```bat
