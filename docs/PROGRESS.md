@@ -119,7 +119,10 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 머지: lane/economy e25de1d(초반 흐름), lane/render(렌더 품질 v1, 골든 7장 승인), lane/ui(도트 UI v1, 골든 12장 체크포인트 승인). pubspec `assets/ui/` 등록(5548687).
 - main.dart 어댑터 연결(3e1efd6, S5 권장안): startAnalytics(Firebase/Noop)·AudioAdapter·AdMobAds(첫 프레임 뒤 start, 동의 시 Analytics 수집)·OfflineFullNotifier(pause/resume). dailyMax·enabled는 TODO(platform).
 - 판단: UI v1은 기준 gif에 못 미침(Material HUD, 긴 선원 카드, 잘리는 이름) → v2 지시. 캔버스 HUD·선원 바는 render 소유로 확정, 완성 뒤 UI가 위쪽 HUD 걷어냄.
-- 다음 할 일: S2 환생 2 선택지 비교 → 사용자 결정, S3·S4 v2 골든 승인, S5 dailyMax 파싱 후 TODO 교체.
+- 추가: platform abf2f9f(아이콘 스크립트·testRing·런처 이름), render v2(선원 바·범위 합산 숫자, 골든 5장), ui v2(정사각 초상 카드·실루엣·assets/ui 아이콘, 골든 11장),
+  economy fd535ed(notificationsDailyMax) 머지. 계약 I `FleetSlot.rarity`(렌더 요청). main.dart dailyMax = 테이블 값.
+- 실수(레인): ui 커밋에 골든 실패 산출물 `test/ui/failures/*.png`가 들어옴 → 제거, `.gitignore`에 `**/test/**/failures/`·`.kotlin/`.
+- 다음 할 일: S2 환생 2 비교표 → 사용자 결정, S4 Material HUD 걷어내기(신호 줌), S3 앱 아이콘·UI 아이콘·적 스프라이트, S5 profile 빌드·DEVICE_TEST 절.
 
 ### 2026-10-14 · S1 · M3 계약·보스, 레인 통합 (오후)
 - 한 일: 해역 보스·무한 항해(edc81e3), 세이브 v3(16dda02, ADR-0008), lastSummon·AckSummonResult, GrantAdReward.choice·lastOfflineGold, ClaimDaily(questId), 튜토리얼 3단계 보스.
