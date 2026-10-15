@@ -1,5 +1,17 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 탑다운 T4 리드 시작(S1 지시, 사용자 "옆모습 안 쓴다")
+- **현재 위치**: T4 세부 계획(docs/plans/active/topdown-migration.md, d3f6089).
+  - [x] T4-1 기본 top(review/topdown-t4 bfe4030, check --full) — S2 검토 대기
+  - [ ] T4-B 탑다운 균형(S3·S2): balance crews top 비율 강습 1.22·투척 1.15·수중 0.70·관통 0.42
+  - [ ] T4-2 엔진 옆모습 삭제(S5) → T4-3 렌더(S3) ∥ T4-4 UI(S4) → T4-5 출시 점검(S5)
+- 한 일
+  - Settings.battleView 기본 top, main.dart 임시 줄 제거, sim·시나리오 기본 top
+  - 옆모습 전용 테스트를 side로 고정, balance crews --view(기본 side 유지)
+  - 탑다운 관통 조준 개선, 골든 5장 재굽기
+  - 레인별 할 일을 S2·S3·S4에 직접 보냄
+- 남은 문제: 탑다운 선원 균형 ±10% 밖(관통·수중 약, 강습·투척 강) — 모양 조정이 필요하면 S5가 TopAim 연결.
+
 ## 2026-10-15 · S5 · T1 머지 뒤 마무리 — 일반 빌드 side 고정, 탑다운 sim 비교, 렌더 점검
 - **현재 위치**: T1 머지 완료(main 74567dd까지).
   - [x] main.dart: 일반 빌드에 저장된 battleView=top을 시작 때 side로(6c83947, T4 때 제거)
