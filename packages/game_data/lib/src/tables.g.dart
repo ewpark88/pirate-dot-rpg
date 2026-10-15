@@ -1237,6 +1237,7 @@ const Map<String, String> rawTables = {
   "rebirth": { "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300 },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
+  "fleetPower": { "exponent": 0.5 },
   "dailyQuests": [
     { "id": "kill_500", "type": "kill", "target": 500 },
     { "id": "upgrade_30", "type": "upgrade", "target": 30 },
@@ -1254,7 +1255,7 @@ const Map<String, String> rawTables = {
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 60 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.01, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },

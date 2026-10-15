@@ -1,0 +1,13 @@
+# 수용 기준: 5분(meta.offline.minSec) 미만 부재는 복귀 보상이 없다 — 광고 시청·앱 껐다 켜기로 골드가 생기던 버그 (사용자 신고 2026-10-15).
+# 담당: economy 레인. op.advanceClock은 savedAt을 과거로 돌려 ‘그만큼 떠나 있었던’ 상태를 만든다.
+name: 짧은 부재는 복귀 보상 없음, 5분부터 있음
+seed: 1
+state: fixtures/states/stage37_midgame.json
+steps:
+  - expect: { offlineRewarded: false }
+  - input: { type: op.advanceClock, seconds: 299 }
+  - input: claimOffline
+  - expect: { offlineRewarded: false }
+  - input: { type: op.advanceClock, seconds: 300 }
+  - input: claimOffline
+  - expect: { offlineRewarded: true }

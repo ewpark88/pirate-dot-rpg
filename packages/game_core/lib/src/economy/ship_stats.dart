@@ -20,6 +20,32 @@ BigNum partEffect(ShipPartDef def, int level) {
 /// 부위 [def]를 Lv[level]에서 Lv[level]+1로 올리는 비용.
 BigNum partCost(ShipPartDef def, int level) => BigNum.powOf(def.costGrowth, level).times(def.costBase);
 
+/// Lv[from]에서 [count]번 강화하는 비용 합 (등비수열 공식, 반복 없음): `costBase × g^from × (g^count − 1) / (g − 1)`.
+BigNum partCostSum(ShipPartDef def, int from, int count) {
+  if (count <= 0) return BigNum.zero;
+  if (count == 1) return partCost(def, from); // 한 번은 partCost와 비트까지 같게(경계 판정)
+  final g = def.costGrowth;
+  return (BigNum.powOf(g, from + count) - BigNum.powOf(g, from)).times(def.costBase / (g - 1));
+}
+
+/// Lv[from]에서 [gold]로 살 수 있는 강화 수 (최대 레벨에서 멈춤). 로그 공식으로 구하고 경계만 ±1 확인한다.
+int affordableLevels(ShipPartDef def, int from, BigNum gold) {
+  final room = def.maxLevel == null ? null : def.maxLevel! - from;
+  if ((room != null && room <= 0) || gold < partCost(def, from)) return 0;
+  final g = def.costGrowth;
+  // g^k ≤ 1 + gold × (g − 1) / (costBase × g^from)
+  final x = gold.times((g - 1) / def.costBase) / BigNum.powOf(g, from);
+  var k = ((x + BigNum.one).log10 / (math.log(g) / math.ln10)).floor();
+  if (room != null && k > room) k = room;
+  while (k > 0 && partCostSum(def, from, k) > gold) {
+    k--;
+  }
+  while ((room == null || k < room) && partCostSum(def, from, k + 1) <= gold) {
+    k++;
+  }
+  return k;
+}
+
 /// 부위 [def]의 Lv[level] 외형 단계 = `visualStages` 중 레벨 이하인 것의 수 (Lv0 = 0단계).
 int partLookStage(ShipPartDef def, int level) {
   var n = 0;
