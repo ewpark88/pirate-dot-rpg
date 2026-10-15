@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
@@ -23,6 +25,16 @@ void main() {
   test('젬 광고 = 30젬 = 소환 1회 (사용자 결정 2026-10-14)', () {
     final chest = t.ads.placements.firstWhere((p) => p.id == 'chest').reward;
     expect(chest.integer('altGems'), t.meta.summonCostGems);
+  });
+
+  test('오프라인 가득 알림은 하루 1회, 2회는 검증 실패 (피로 금지 규칙, platform 요청 meta-notify)', () {
+    expect(t.meta.notificationsDailyMax, 1);
+    final m = jsonDecode(rawTables['meta']!) as Map<String, dynamic>;
+    (m['notifications'] as Map)['dailyMax'] = 2;
+    expect(
+      () => GameTables.load({...rawTables, 'meta': jsonEncode(m)}),
+      throwsA(isA<TableValidationException>().having((e) => e.errors.join(), 'errors', contains('dailyMax'))),
+    );
   });
 
   test('오프라인 효율 계수는 0~1', () {

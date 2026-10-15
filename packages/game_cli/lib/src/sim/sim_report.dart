@@ -145,6 +145,11 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '${_fmt(m((r) => _hours(r.firstRebirth)), '시간')}·${_fmt(m((r) => r.firstRebirthStage?.toDouble()))} · '
       '${_fmt(m((r) => r.mapPieces.toDouble()))} |',
     )
+    ..writeln(
+      '| 환생 스테이지(최대) · 회복 ÷ 직전 회차 같은 스테이지 시간(최대) | '
+      '${_fmt(m((r) => r.rebirthStages.isEmpty ? null : r.rebirthStages.reduce((a, b) => a > b ? a : b).toDouble()))} · '
+      '${_fmt(m((r) => r.rebirthRecoverRatioMax))} |',
+    )
     ..writeln('| 첫 보스 실패 스테이지 | ${_fmt(m((r) => r.firstBossFailStage?.toDouble()))} |')
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
