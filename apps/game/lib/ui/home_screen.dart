@@ -16,7 +16,7 @@ import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/summon/summon_result.dart';
+import 'package:pirate_dot/ui/summon/summon_gate.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
 import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 import 'package:pirate_dot/ui/tabs/summon_tab.dart';

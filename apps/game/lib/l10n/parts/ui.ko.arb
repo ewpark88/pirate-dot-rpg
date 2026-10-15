@@ -157,5 +157,10 @@
   "uiFleetClear": "칸 비우기",
   "uiFleetSwapTitle": "누구와 바꿀까요?",
   "uiFleetAuto": "자동 편성",
-  "uiFleetEmptySlot": "빈 칸"
+  "uiFleetEmptySlot": "빈 칸",
+  "uiSummonAgain": "다시 소환",
+  "uiSummonDupe": "+카드",
+  "uiSummonCutinLegend": "전설의 해적이 합류했다!",
+  "uiSummonCutinMythic": "신화의 해적이 깨어났다!",
+  "uiSummonTapContinue": "탭해서 계속"
 }
