@@ -93,6 +93,33 @@ void main() {
     });
   }
 
+  test('배 등급 그림이 모두 있다 (t1~t4)', () {
+    final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
+    for (final tier in tables.shipTiers.tiers) {
+      expect(File('assets/${paths['ship:${tier.id}']}').existsSync(), isTrue, reason: tier.id);
+    }
+  });
+
+  testWidgets('큰 등급 배는 t1 상자의 오른쪽 아래(뱃머리·물 닿는 줄)에 맞춰 그린다', (tester) async {
+    await tester.runAsync(() async {
+      final big = tables.shipTiers.tiers[1];
+      RecordedTick at(int t) => RecordedTick(
+        BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), stage: big.stage),
+        const [],
+      );
+      final bank = SpriteBank()..put('ship:${big.id}', await _solid(80, 60, 0xFF0000FF));
+      final scene = BattleScene(tables, [at(0), at(1)], loop: false)..update(kFrameMs);
+      expect(scene.moments.shipTierId, big.id);
+      final painter = ScenePainter(scene)..sprites = bank;
+      final right = (kShipLeft + kShipWidth).toInt();
+      final bottom = (kShipTop + kShipHeight).toInt();
+      final bob = scene.shipBob.toInt();
+      expect(await _pixel(painter, right - 1, bottom - 1 + bob), 0x0000FF, reason: '뱃머리 아래 끝');
+      expect(await _pixel(painter, right + 1, bottom - 10 + bob), isNot(0x0000FF), reason: '뱃머리 밖');
+      expect(await _pixel(painter, right - 1, bottom - 60 + bob), 0x0000FF, reason: '위로 커진다');
+    });
+  });
+
   test('빈 뱅크는 아무것도 없다', () {
     expect(SpriteBank().isEmpty, isTrue);
     expect(SpriteBank()['enemy:crab'], isNull);

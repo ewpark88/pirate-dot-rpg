@@ -43,7 +43,11 @@ class ShipPainter {
     c
       ..save()
       ..translate(0, bob);
-    if (!sprites.draw(c, 'ship:$tier', kShipCenterX, kShipCenterY, flash: flash)) {
+    // 등급 그림은 t1 상자의 오른쪽 아래(뱃머리·물 닿는 줄)에 맞춘다 → 큰 배는 고물·돛 쪽으로 커지고 포구 화염 자리는 같다.
+    final sheet = sprites.sheet('ship:$tier');
+    final cx = sheet == null ? kShipCenterX : kShipLeft + kShipWidth - sheet.frameW / 2;
+    final cy = sheet == null ? kShipCenterY : kShipTop + kShipHeight - sheet.frameH / 2;
+    if (!sprites.draw(c, 'ship:$tier', cx, cy, flash: flash)) {
       _placeholder(c, tier, flash);
     }
     c.restore();
