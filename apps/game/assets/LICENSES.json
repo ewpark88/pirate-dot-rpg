@@ -4,6 +4,14 @@
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/enemy_ship.png",
       "license": "OWN"
     },
+    "bosses/giant_hermit.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/raider_ship.png": {
+      "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
     "coin.png": {
       "source": "Pirate Busters v0.24 자체 IP → pirate_battle_v0.3.zip:sprites/coin.png",
       "license": "OWN"

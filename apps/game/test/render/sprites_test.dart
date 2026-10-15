@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -75,6 +76,22 @@ void main() {
       expect(await _pixel(painter, 200, 100), tables.fxMap.enemyLook['basic']!.color & 0xFFFFFF);
     });
   });
+
+  // 스펙 render-art-enemies: 해역 묶음마다 하나씩 늘린다 (플레이스홀더 0).
+  for (final regionId in ['coral']) {
+    test('render-art-enemies: $regionId 해역의 적·보스가 모두 스프라이트 파일이 있다', () {
+      final r = tables.regions.regions.firstWhere((r) => r.id == regionId);
+      final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
+      final keys = [
+        for (final e in r.enemies) 'enemy:$e',
+        for (final b in {r.boss, r.midBoss, r.regionBoss}) 'boss:$b',
+      ];
+      for (final k in keys) {
+        expect(paths[k], isNotNull, reason: '$k 경로 없음');
+        expect(File('assets/${paths[k]}').existsSync(), isTrue, reason: '$k → assets/${paths[k]}');
+      }
+    });
+  }
 
   test('빈 뱅크는 아무것도 없다', () {
     expect(SpriteBank().isEmpty, isTrue);
