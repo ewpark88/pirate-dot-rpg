@@ -106,6 +106,13 @@
   "opGroupTutorial": "튜토리얼",
   "opTutorialStep": "{step}단계",
   "opTutorialEnd": "끝",
+  "opGroupPlatform": "플랫폼",
+  "opAdReady": "광고: 준비됨",
+  "opAdNotReady": "광고: 안 불러옴",
+  "opAdShow": "보상형 광고 보기 (보상 없음)",
+  "opAdResult": "광고 결과: {result}",
+  "opPrivacyOptions": "개인정보 옵션",
+  "opTestRing": "알림 10초 뒤",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -221,5 +228,7 @@
   "uiOfflineRate": "오프라인 골드 시간당 ~{amount} · 최대 {hours}시간",
   "uiTailwindStatus": "순풍 {time} ×{mult}",
   "uiTailwindOff": "순풍 없음",
-  "uiDailyTooltip": "퀘스트·출석"
+  "uiDailyTooltip": "퀘스트·출석",
+  "uiSaveFailedDiskFull": "저장 공간이 부족해 진행을 저장하지 못했어요. 공간을 비우면 자동으로 다시 저장해요.",
+  "uiSaveFailedIo": "진행을 저장하지 못했어요. 잠시 뒤 다시 시도해요."
 }

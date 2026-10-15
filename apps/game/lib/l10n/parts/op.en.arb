@@ -28,5 +28,12 @@
   "opGrantTailwind": "Tailwind +{minutes}m",
   "opGroupTutorial": "Tutorial",
   "opTutorialStep": "Step {step}",
-  "opTutorialEnd": "End"
+  "opTutorialEnd": "End",
+  "opGroupPlatform": "Platform",
+  "opAdReady": "Ad: ready",
+  "opAdNotReady": "Ad: not loaded",
+  "opAdShow": "Show Rewarded Ad (no reward)",
+  "opAdResult": "Ad result: {result}",
+  "opPrivacyOptions": "Privacy Options",
+  "opTestRing": "Notification in 10s"
 }
