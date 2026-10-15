@@ -1281,6 +1281,24 @@ const Map<String, String> rawTables = {
     "sinkMs": 1800,
     "sinkDepth": 26,
     "sinkTilt": 0.35
+  },
+  "topShip": {
+    "stages": {
+      "hull": 7,
+      "cargo": 7,
+      "cannon": 7,
+      "sail": 5,
+      "crowsnest": 6
+    }
+  },
+  "topSea": {
+    "base": "#2A7FCC",
+    "deep": "#2270B8",
+    "shallow": "#3690DA",
+    "wave": "#9FD8FF",
+    "foam": "#F2FBFF",
+    "tile": 128,
+    "flowSpeed": 14
   }
 }
 ''',
