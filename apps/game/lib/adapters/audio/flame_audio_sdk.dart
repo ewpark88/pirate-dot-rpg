@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/services.dart';
 import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
@@ -22,7 +24,11 @@ class FlameAudioSdk implements AudioSdk {
   Future<void> playSfx(String path, {required double volume, required double rate}) async {
     final player = await FlameAudio.play(path, volume: volume);
     if (rate != 1) await player.setPlaybackRate(rate);
-    await player.onPlayerComplete.first.timeout(_sfxTimeout, onTimeout: () {});
+    try {
+      await player.onPlayerComplete.first.timeout(_sfxTimeout);
+    } on TimeoutException {
+      // 끝 신호가 안 와도 동시 재생 칸을 돌려준다 (onTimeout 콜백은 AudioEvent를 돌려줘야 해 타입 오류가 났다 — 2026-10-15 실기기 로그).
+    }
   }
 
   @override

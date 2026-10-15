@@ -10,4 +10,14 @@ class MainActivity : FlutterActivity() {
         moveTaskToBack(true)
         return true
     }
+
+    // Android 16(API 36) 예측형 뒤로 가기에서는 위 경로를 거치지 않고 앱이 finish()를 부른다(logcat: wm_finish_activity app-request).
+    // 작업의 맨 아래(첫 화면)에서 끝내려 하면 대신 뒤로 보낸다. 시스템이 메모리 때문에 없애는 경우는 finish()를 거치지 않는다.
+    override fun finish() {
+        if (isTaskRoot) {
+            moveTaskToBack(true)
+        } else {
+            super.finish()
+        }
+    }
 }

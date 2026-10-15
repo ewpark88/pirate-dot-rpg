@@ -109,10 +109,12 @@ Future<void> main() async {
     onPause: () {
       unawaited(host.pause());
       unawaited(notifier.onPause());
+      audio.pauseBgm(); // 뒤로 가면 배경음도 멈춘다(실기기: 홈 화면에서도 계속 울렸다)
     },
     onResume: () {
       host.resume();
       unawaited(notifier.onResume());
+      audio.resumeBgm();
     },
     onDetach: () {
       unawaited(host.pause());

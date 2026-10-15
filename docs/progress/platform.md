@@ -1,5 +1,12 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-15 · S5 · 재실행 멈춤 버그 원인 확정·수정 (S24 실기기, 사용자 자리 확인 후)
+- 원인(logcat 근거): ① 첫 화면 BACK이 액티비티를 **finish**(`wm_finish_activity app-request`) → 다시 열면 같은 프로세스에서 새 Flutter 엔진.
+  ② 템플릿 `taskAffinity=""` 때문에 런처로 열 때마다 **새 작업·새 엔진**. ③ 이전 엔진 정리 `performDestroy`가 **8349ms**(배경음이 백그라운드에서도 재생 중이던 때) — 메인 스레드(Flutter 3.29+ 합쳐진 스레드)가 막혀 새 화면이 스플래시에 머묾. 배경음을 멈춘 뒤엔 103ms.
+- 수정: MainActivity `finish()`가 작업 맨 아래면 `moveTaskToBack`(Android 16 예측형 뒤로 가기는 popSystemNavigator를 안 거침) · manifest `singleTask` + 기본 affinity · onPause/onResume에 배경음 pause/resume · FlameAudioSdk 효과음 timeout 타입 오류(`onTimeout: () {}`) 수정.
+- 확인(실기기): 60초 전투 → 첫 화면 BACK → 홈(같은 pid, finish·destroy 0) → 다시 열기 0.94초, `boot:` 0줄(엔진 재사용). 수정 전 약 10초.
+- 발견: device_shots의 `in_front`(topResumedActivity)가 Samsung에서 런처가 앞인데도 우리 앱이라고 답함 → `dumpsys window` mCurrentFocus로 바꿔야 함(다음 커밋).
+
 ## 2026-10-15 · S5 · 재실행 멈춤 1차 대응 + 매일 콘텐츠 4종 기획서
 - 한 일(버그, S1 위임): MainActivity.popSystemNavigator → moveTaskToBack, SDK 초기화 3초 제한(Firebase·오디오 목록 → Noop·무음), onDetach 정리, `boot:` 단계 로그, EngineHost.pause 두 번 안전.
   원인 확정은 실기기 재현이 필요 — **사용자가 폰 앞에 있다는 S1 확인 전엔 입력 금지**(대기 중).
