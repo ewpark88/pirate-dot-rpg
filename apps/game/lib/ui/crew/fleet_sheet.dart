@@ -10,13 +10,14 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
-/// 선원 줄 [slot] 칸을 눌렀을 때: 보유 선원 후보(파워순, 출전 중 표시) → 누르면 그 칸에 앉힌다. 찬 칸은 ‘칸 비우기’도.
+/// [slot] 칸 후보 시트: 쉬는 선원 먼저(파워순), 출전 중은 뒤(고르면 두 칸이 자리를 바꾼다). 찬 칸은 ‘칸 비우기’도.
 Future<void> showFleetPicker(BuildContext context, int slot) =>
     showPixelSheet<void>(context, builder: (_) => _FleetPicker(slot: slot));
 
@@ -48,13 +49,22 @@ class _FleetPicker extends ConsumerWidget {
     final tables = ref.watch(tablesProvider);
     final slots = ref.watch(fleetSlotsProvider);
     final levels = ref.watch(gameStateProvider.select((s) => {for (final e in s.crews.entries) e.key: e.value.level}));
-    final owned = [
-      for (final c in tables.crews.crews)
-        if (levels.containsKey(c.id)) c,
-    ]..sort((a, b) => crewPowerOf(tables, levels[b.id]!).compareTo(crewPowerOf(tables, levels[a.id]!)));
+    // 쉬는 선원을 먼저(파워순), 출전 중인 선원은 뒤에 (출전 중을 고르면 자리만 바뀐다 — 사용자 버그 2026-10-15).
+    int power(CrewDef c) => (crewPowerOf(tables, levels[c.id]!) * 1000).round();
+    final owned =
+        [
+          for (final c in tables.crews.crews)
+            if (levels.containsKey(c.id)) c,
+        ]..sort((a, b) {
+          final da = slots.contains(a.id) ? 1 : 0;
+          final db = slots.contains(b.id) ? 1 : 0;
+          return da != db ? da - db : power(b) - power(a);
+        });
     void pick(String? id) {
+      final swap = id != null && slots.contains(id) && slots.indexOf(id) != slot;
       ref.read(fleetCommandsProvider).setSlot(slot, id);
       Navigator.of(context).pop();
+      if (swap) showSkinToast(context, l10n.uiFleetSwapped);
     }
 
     return ListView(
@@ -175,3 +185,9 @@ class _CrewRow extends ConsumerWidget {
 
 /// 선원 줄 칸을 눌렀을 때 시트를 연다 (BattleButtons에서).
 void openFleetPicker(BuildContext context, int slot) => unawaited(showFleetPicker(context, slot));
+
+/// 선원 상세의 ‘바꾸기’: 이 선원이 앉은 칸의 후보 시트를 연다.
+Future<void> replaceCrew(BuildContext context, WidgetRef ref, String crewId) async {
+  final slot = ref.read(fleetSlotsProvider).indexOf(crewId);
+  if (slot >= 0) await showFleetPicker(context, slot);
+}
