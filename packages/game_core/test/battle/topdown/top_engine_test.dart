@@ -116,7 +116,10 @@ void main() {
     expect(boss0.y, lessThan(top.shipY));
     // 출발 = 접근 원(bossSpawnRadius 기본) 바로 밖, 카메라 밖 (빠른 항해 보스 간격 — S2 결정 ①). 첫 틱에 한 걸음 왔을 수 있다.
     final start = math.sqrt(math.pow(boss0.x - top.shipX, 2) + math.pow(boss0.y - top.shipY, 2));
-    expect(start, closeTo(top.approachRadius + top.bossRadius, 5));
+    expect(
+      start,
+      closeTo(tables.waves.raw.obj('top').numberOr('bossSpawnRadius', top.approachRadius) + top.bossRadius, 5),
+    );
     expect(top.shipY - boss0.y, greaterThan(tables.waves.raw.obj('top').number('viewHeight') / 2));
     var reached = false;
     for (var i = 0; i < ticksFor(25) && e.state.battle!.bossActive; i++) {
