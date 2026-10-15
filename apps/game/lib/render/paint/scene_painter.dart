@@ -16,6 +16,8 @@ import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_scene_painter.dart';
 
+part 'scene_painter_top.dart';
+
 /// [BattleScene]을 캔버스에 그린다. 스프라이트([sprites])가 있으면 그것으로, 없으면 단색 플레이스홀더.
 /// Flame 컴포넌트와 골든 테스트가 같이 쓴다.
 ///
@@ -62,6 +64,8 @@ class ScenePainter {
   static const _underwaterTint = Color(0xFF0B2A44);
 
   void paint(Canvas canvas) {
+    _numberScale = _fxScale = 1; // 옆모습: 탑다운 배율 되돌림
+    _pb.unitDp = null;
     canvas
       ..save()
       ..translate(scene.shake.offsetX, scene.shake.offsetY);
@@ -90,8 +94,7 @@ class ScenePainter {
 
   /// 탑다운 장면 그리기 (운영자·테스트: top.atmosphere.offsetMs로 시간대 미리보기).
   late final TopScenePainter top = TopScenePainter(scene, _sprite);
-  // 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
-  // ignore: prefer_function_declarations_over_variables
+  // ignore: prefer_function_declarations_over_variables — 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
   late final void Function(Canvas c) _worldFx = (c) {
     _projectiles(c);
     _effects(c);
@@ -99,22 +102,7 @@ class ScenePainter {
     _hud.paintNumbers(c, scale: _numberScale);
   };
   double _numberScale = 1;
-
-  /// 탑다운(T2, BattleView.mode 'top'): 상자 dp 캔버스. 전장은 탑다운 카메라, 덮개·HUD·선원 줄은 옆모습 배치(같은 상자)로.
-  void paintTop(Canvas canvas, TopFrame frame) {
-    _numberScale = scene.layout.dot / frame.dot;
-    top.paint(canvas, frame, _worldFx);
-    final l = scene.layout;
-    canvas
-      ..save()
-      ..scale(l.dot)
-      ..translate(-l.viewDots.left, -l.viewDots.top);
-    _stage.paintOverlays(canvas);
-    _hud
-      ..paintHud(canvas)
-      ..paintSlots(canvas);
-    canvas.restore();
-  }
+  double _fxScale = 1;
 
   void _fill(Canvas c, double l, double t, double w, double h, int argb) {
     _paint.color = Color(argb);
@@ -229,28 +217,42 @@ class ScenePainter {
   void _effects(Canvas c) {
     for (final e in scene.effects.active) {
       if (!e.visible) continue;
-      if (e.sheetId == 'explosion_aoe' && _pb.blast(c, e)) continue;
-      final cy = _bottomAnchored.contains(e.sheetId) ? e.y - e.h / 2 : e.y;
-      if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, cy, frame: e.frame, w: e.w, h: e.h)) continue;
-      final t = e.frame / e.frames;
-      final scale = 0.5 + 0.5 * t;
-      final alpha = ((1 - t) * 0xCC).round() << 24;
-      final w = e.w * scale;
-      final h = e.h * scale;
-      _stroke
-        ..color = Color(alpha | (e.color & 0xFFFFFF))
-        ..strokeWidth = 2;
-      c.drawRect(
-        Rect.fromLTWH(
-          (e.x - w / 2).roundToDouble(),
-          (e.y - h / 2).roundToDouble(),
-          w.roundToDouble(),
-          h.roundToDouble(),
-        ),
-        _stroke,
-      );
-      _stroke.strokeWidth = 1;
+      // 탑다운: 전장 1단위가 옆모습 1도트보다 커서 이펙트를 옆모습과 같은 화면 크기로(숫자와 같은 배율).
+      final scaled = _fxScale != 1;
+      if (scaled) {
+        c
+          ..save()
+          ..translate(e.x, e.y)
+          ..scale(_fxScale)
+          ..translate(-e.x, -e.y);
+      }
+      _effect(c, e);
+      if (scaled) c.restore();
     }
+  }
+
+  void _effect(Canvas c, Effect e) {
+    if (e.sheetId == 'explosion_aoe' && _pb.blast(c, e)) return;
+    final cy = _bottomAnchored.contains(e.sheetId) ? e.y - e.h / 2 : e.y;
+    if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, cy, frame: e.frame, w: e.w, h: e.h)) return;
+    final t = e.frame / e.frames;
+    final scale = 0.5 + 0.5 * t;
+    final alpha = ((1 - t) * 0xCC).round() << 24;
+    final w = e.w * scale;
+    final h = e.h * scale;
+    _stroke
+      ..color = Color(alpha | (e.color & 0xFFFFFF))
+      ..strokeWidth = 2;
+    c.drawRect(
+      Rect.fromLTWH(
+        (e.x - w / 2).roundToDouble(),
+        (e.y - h / 2).roundToDouble(),
+        w.roundToDouble(),
+        h.roundToDouble(),
+      ),
+      _stroke,
+    );
+    _stroke.strokeWidth = 1;
   }
 
   late final JsonReader _coinCfg = scene.fx.raw.obj('coinFx');
@@ -261,7 +263,7 @@ class ScenePainter {
     if (sheet == null) return false;
     final t = (coin.ageMs / coin.flyMs).clamp(0.0, 1.0);
     // 폰은 sizeDp dp, 전장이 아주 큰 태블릿에서는 최소 minDots 필드 도트(전장 대비 너무 작지 않게).
-    final base = math.max(_coinCfg.number('sizeDp') / scene.layout.dot, _coinCfg.number('minDots'));
+    final base = math.max(_coinCfg.number('sizeDp') / (_pb.unitDp ?? scene.layout.dot), _coinCfg.number('minDots'));
     final size = base * (1 - 0.25 * t * t);
     final frame = (coin.ageMs / _coinCfg.number('spinFrameMs')).floor() % sheet.frames;
     return _sprite.drawSmoothFrame(c, 'coin_hd', frame, coin.x, coin.y, size, size * sheet.frameH / sheet.frameW);

@@ -6,14 +6,15 @@ import 'package:pirate_dot/render/layout.dart';
 /// 탑다운 전장 배치 (T2, 사용자 결정 '배는 화면 가운데·크게'). 렌더 카메라와 UI가 같은 계산을 쓴다.
 ///
 /// - 배율 k = floor(물리 폭 / [kTopViewUnits]) — **폭으로만** 정한다. 상자 높이(시트를 끄는 동안 매 프레임 바뀜)는 k를 바꾸지 않는다.
-/// - 단위(unit) = 전장 좌표 1. 1단위 = [dot] dp. 화면 가로 약 180단위.
+/// - 단위(unit) = 전장 좌표 1. 1단위 = [dot] dp. 화면 가로 약 270단위(전장 폭).
 /// - 선원 줄·궁극기·보스 도전 자리는 옆모습과 같은 [band](battleFrameFor) — UI는 그대로 slotRects 등을 쓴다.
 /// - 배 중심은 보이는 전장(상자 위 ~ 선원 줄 위)의 가로 가운데·세로 [kShipAt] 지점: [shipScreen] (dp).
 class TopFrame {
   TopFrame._({required this.k, required this.dpr, required this.box, required this.band});
 
-  /// 화면 가로에 보이는 전장 단위 수 (시험판과 같음, S24 1단위 ≈ 2.13dp).
-  static const double kTopViewUnits = 180;
+  /// 화면 가로에 보이는 전장 단위 수 — 전장 폭(waves.top.width 270)과 같게(사용자 '배가 너무 크다·보스가 안 보인다':
+  /// 배가 폭의 약 18%, 보스 궤도가 늘 보이게). S24 1단위 ≈ 1.42dp.
+  static const double kTopViewUnits = 270;
 
   final int k;
   final double dpr;
