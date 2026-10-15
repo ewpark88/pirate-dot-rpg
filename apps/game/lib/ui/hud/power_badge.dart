@@ -19,7 +19,7 @@ final fleetPowerProvider = Provider<BigNum>((ref) {
   return fleetPower(ref.read(gameStateProvider), tables).power;
 });
 
-/// 전장 왼쪽 위 전투력 (S1 지시): 숫자가 굴러 오르고, 오르면 초록 '+N'이 잠깐 떠오른다(연달아 오르면 합친다).
+/// 상단 바 골드·젬 옆 전투력 (S1 지시 — 전장을 가리지 않게): 숫자가 굴러 오르고, 오르면 초록 '+N'이 아래로 잠깐 뜬다(연달아 오르면 합친다).
 /// 내려갈 때(편성 교체 등)는 굴러 내려가기만 한다.
 class PowerBadge extends ConsumerStatefulWidget {
   const PowerBadge({super.key});
@@ -79,34 +79,36 @@ class _PowerBadgeState extends ConsumerState<PowerBadge> with TickerProviderStat
               Transform.scale(
                 scale: pop,
                 alignment: Alignment.centerLeft,
-                child: Container(
-                  key: const Key('hud.power'),
-                  padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
-                  decoration: BoxDecoration(
-                    color: Skin.ink.withValues(alpha: 0.78),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: flashing ? Skin.mint : Colors.transparent, width: 1.5),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SkinIcon('assets/ui/part_cannon.png'),
-                      const SizedBox(width: 4),
-                      Text(l10n.uiPower, style: Skin.text(12, color: Colors.white70)),
-                      const SizedBox(width: 4),
-                      Text(
-                        _shown.format(),
-                        key: const Key('hud.power.value'),
-                        style: Skin.text(15, color: Colors.white),
-                      ),
-                    ],
+                child: Semantics(
+                  label: '${l10n.uiPower} ${_to.format()}',
+                  excludeSemantics: true,
+                  child: AnimatedContainer(
+                    key: const Key('hud.power'),
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.fromLTRB(2, 1, 6, 1),
+                    decoration: BoxDecoration(
+                      color: flashing ? const Color(0xFFDDF7EA) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SkinIcon('assets/ui/part_cannon.png', size: 16),
+                        const SizedBox(width: 3),
+                        Text(
+                          _shown.format(),
+                          key: const Key('hud.power.value'),
+                          style: Skin.text(15, color: flashing ? Skin.mintInk : Skin.ink),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               if (flashing)
                 Positioned(
-                  left: 40,
-                  top: -16 - 14 * f,
+                  left: 18,
+                  top: 20 + 12 * f,
                   child: Opacity(
                     opacity: (1 - f).clamp(0, 1).toDouble(),
                     child: Text(

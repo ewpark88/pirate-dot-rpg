@@ -7,13 +7,17 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 전장 아래 ‘다음 목표’ 도트 띠 (설계서 4.5, 4.12 목표 막대). 목표가 없으면 아무것도 그리지 않는다.
 class GoalBar extends ConsumerWidget {
-  const GoalBar({super.key});
+  const GoalBar({this.compact = false, super.key});
+
+  /// 진행 게이지 안 얇은 한 줄 (S1 지시 2026-10-15: 전장 위 UI 높이 절반 이하) — 카드 없이 흰 글자.
+  final bool compact;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,6 +44,36 @@ class GoalBar extends ConsumerWidget {
       GoalKind.collection => l10n.uiGoalCollection(remaining),
       GoalKind.rebirth => l10n.uiGoalRebirth(remaining),
     };
+
+    if (compact) {
+      return TutorialSpot(
+        id: 'goal',
+        child: Row(
+          key: const Key('goal'),
+          children: [
+            const SkinIcon(UiSprites.flag, size: 13),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Skin.text(12, color: Colors.white),
+              ),
+            ),
+            const SizedBox(width: 6),
+            SizedBox(
+              width: 44,
+              height: 4,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(value: progress, color: Skin.goldTop, backgroundColor: Colors.white24),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     final u = pixelUnit(context);
     // 전장 바로 아래 크림색 알약 (스킨 r1): 깃발 · 문구 · 진행 막대.

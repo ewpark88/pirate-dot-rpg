@@ -249,3 +249,15 @@ final treasureSeaCountProvider = Provider<int>((ref) {
   final t = ref.watch(tablesProvider);
   return ref.watch(gameStateProvider.select((s) => treasureSeasUnlocked(s, t)));
 });
+
+/// 환생 상자 팝업이 떠 있나 — 상자의 영웅 소환 결과 창은 상자를 닫은 뒤에 연다(상자 → 소환 → 항해 순서).
+final rebirthChestOpenProvider = NotifierProvider<RebirthChestOpen, bool>(RebirthChestOpen.new);
+
+class RebirthChestOpen extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void opened() => state = true;
+
+  void closed() => state = false;
+}
