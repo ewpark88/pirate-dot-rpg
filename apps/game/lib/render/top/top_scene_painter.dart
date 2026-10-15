@@ -45,7 +45,10 @@ class TopScenePainter {
     final dot = frame.dot;
     final view = scene.frame;
     final ship = scene.topShip;
-    final tier = scene.moments.shipTierId;
+    // 환생 v2(S2 d9593dc): 그림 등급 = 명예 등급(shipTierLook), 스킨 = shipSkin(운영자 미리보기 skin이 있으면 그것), 보물 바다 = treasureSea.
+    final tier = view.shipTierLook ?? scene.moments.shipTierId;
+    final skinId = skin ?? view.shipSkin;
+    _sea.gold = goldSea || view.treasureSea != null;
     c
       ..save()
       ..clipRect(Offset.zero & frame.box)
@@ -73,7 +76,7 @@ class TopScenePainter {
         ..rotate(view.shipHeading);
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       final sinking = _sink(c, m.sinkMs);
-      final skinGlow = skin != null && _skinGlow(skin!);
+      final skinGlow = skinId != null && _skinGlow(skinId);
       final celebrate = m.glowMs > 0;
       _ship.paint(
         c,
@@ -84,7 +87,7 @@ class TopScenePainter {
         glowPart: celebrate ? m.glowPart : (skinGlow ? 'sail' : null),
         glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
-        skin: skin != null && skins.ready(skin!) ? skin : null,
+        skin: skinId != null && skins.ready(skinId) ? skinId : null,
       );
       if (sinking) c.restore();
       c.restore();
@@ -105,12 +108,11 @@ class TopScenePainter {
   /// 발사 뒤 [since] ms의 반동 0~1 (발사 순간 1 → recoilMs에 0).
   double _recoil(double since) => since >= 0 && since < _recoilMs ? 1 - since / _recoilMs : 0;
 
-  /// 환생 스킨(운영자 미리보기·계약 오기 전) — 바꾸면 색 사본을 비동기로 만들고, 준비되면 그린다.
+  /// 환생 스킨 운영자 미리보기(없으면 BattleView.shipSkin) — 바뀌면 색 사본을 비동기로 만들고, 준비되면 그린다.
   String? skin;
 
-  /// 보물 바다 금빛 물결(환생 v2 §4).
-  bool get goldSea => _sea.gold;
-  set goldSea(bool v) => _sea.gold = v;
+  /// 보물 바다 금빛 물결 미리보기(운영자) — 실제는 BattleView.treasureSea.
+  bool goldSea = false;
 
   final skins = ShipSkins();
   late final JsonReader _skinCfg = scene.fx.raw.obj('topShip').obj('skinPreview');
