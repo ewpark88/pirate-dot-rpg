@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 포탄·폭발(`docs/specs/render-bombs.md`) 승인 대기 → 배 부품 단계 디자인(사용자 지시, S2 shipLook 계약 대기) → B HD 도트 → C 연출 |
+| 현재 계획 | 흰 번쩍임 축소(완료) → 도감 v2 대보스 6종 도트(바다 악어·괴물 고래·얼음 슬라임·레비아탄·크라켄·포세이돈) + 도감 v2 연출(InkCloud·삼킴·분열·자폭) → 계열 v3 시차 타격(burst·hop·ringSpeed·submerged) → 사운드 점검 → 4기기 골든 눈 확인 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
-| 막힌 것 | pubspec assets/weapons·fx/pb·crew_art·ui/cards 등록(S1) · S4 en_m3_hud 재생성 · BattleView.shipLook(S2) |
+| 막힌 것 | 번쩍임 설정 기본값 '약하게'는 설정 담당(S4/S5) · main UI crew_identity·crew_filter 테스트 4건 실패(내 레인 아님) |
 
 ## 실기기 측정
 
@@ -13,6 +13,11 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 저녁 · S3 · 보스 카메라 → 계열 v3 → 흰 번쩍임 축소
+- 7112bff 보스 카메라(줌·당김, worldToDp). db5aa82·92cda5b·f98df27 계열 v3: 출격 초상 비행(CrewSortie)·레이저 빔(beamTicks)·자탄 폭발(BombletBurst), 새 계열 laser·ring·cluster 발사체 모양. db5aa82는 check 실패 상태로 커밋됨(다음 커밋에서 고침).
+- 46e19e8 흰 번쩍임 축소(사용자 '눈이 아프다'): 전체 화면 번쩍 → 가장자리 빛 띠(서서히), 피버 바다 0.5초 smoothstep, 적 흰 실루엣은 보스만, 폭발 코어·포구 흰색 제거, 배 피격은 빨간 테두리. 회귀 테스트 top_flash_test(이웃 프레임 밝기 변화 ≤20%, 10% 넘는 변화 초당 ≤3) — 최대 9.2%.
+- 다음: 대보스 6종 도트 생성기 → 도감 v2 연출 → 시차 타격. 남은 문제: 레이저·원형·자탄은 실제 기록에 해당 선원이 없어 골든 없음.
 
 ### 2026-10-16 오후 · S3 · 질주 v2 → 보스 포탄 → 해일 → 위협 → 강습 → T4-3 2단계 → 꼬리 v2
 - e9baca2 피버 질주 v2(흐름 ×8·모션 블러·바위/부표·파도 벽 2배·돛·바람 줄·시작 가속, 회색 전환 없앰). 41705ad 보스 포탄(BossFired, TopShots). 865b3c3 탑다운 해일(TopWaveFx)·궁극기 탑다운 좌표·빠른 강화 반짝.
