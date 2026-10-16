@@ -4,6 +4,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
+import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
 
 /// 탑다운 피버·폭풍 덮개 (지루함 해소 3종): 피버 금화 비(전장 좌표)와 상자 dp 위 시작 번쩍·번개(테두리는 UI).
 class TopOverlays {
@@ -15,7 +16,6 @@ class TopOverlays {
 
   late final JsonReader _fever = scene.fx.raw.obj('topEvents').obj('fever');
   late final Color _feverColor = Color(parseArgb(_fever.str('border'), 'topEvents.fever.border'));
-  final _overlay = Paint();
 
   /// 피버 금화 비: 보이는 영역 위에서 결정론적 자리로 떨어지며 회전(절전이면 반).
   void feverCoins(Canvas c, Rect view, double ms) {
@@ -33,19 +33,12 @@ class TopOverlays {
     final flash = scene.settings.flash;
     // 피버 금빛 테두리는 UI(S4 가장자리 불꽃 빛)가 맡는다 — 겹치지 않게 여기서는 안 그린다.
     final f = scene.moments.feverFlashMs;
+    // 피버 시작: 전체 금빛 번쩍 대신 가장자리 금빛 비네트(사용자 '흰 번쩍임 눈 아프다').
     if (f > 0 && flash) {
-      // 피버 시작 금빛 번쩍(사용자 '임펙트가 없다' — 0.35 → 0.6).
-      // 'screen' 섞기: 밝아지며 금빛(덮으면 파랑+금 = 탁한 초록).
-      _overlay
-        ..color = _feverColor.withValues(alpha: 0.75 * f / _fever.number('flashMs'))
-        ..blendMode = BlendMode.screen;
-      c.drawRect(Offset.zero & box, _overlay);
-      _overlay.blendMode = BlendMode.srcOver;
+      edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * vignetteBump(1 - f / _fever.number('flashMs')));
     }
     final l = atmosphere.lightning(ms);
-    if (l > 0 && flash) {
-      _overlay.color = Color.fromRGBO(240, 246, 255, 0.45 * l);
-      c.drawRect(Offset.zero & box, _overlay);
-    }
+    // 폭풍 번개: 전체 흰 번쩍 대신 옅은 하늘색 가장자리.
+    if (l > 0 && flash) edgeVignette(c, Offset.zero & box, const Color(0xFFCFE6FF), 0.22 * l);
   }
 }

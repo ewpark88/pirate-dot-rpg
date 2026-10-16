@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
+import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -74,6 +75,8 @@ class _BossIntroState extends ConsumerState<BossIntro> with SingleTickerProvider
     return AnimatedBuilder(
       animation: _ctl,
       builder: (context, child) {
+        // 해역 보스 첫 등장 컷인(렌더)이 켜진 동안은 이름표 대신 컷인 위 이름만(BossCutInName, S3 합의).
+        if (bossCutInActive(ref)) return const SizedBox.shrink();
         final v = _ctl.value;
         // 0~0.12 왼쪽에서 들어옴, 0.82~1 사라짐.
         final inT = Curves.easeOutBack.transform((v / 0.12).clamp(0, 1).toDouble());
