@@ -46,6 +46,7 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),
     // 현상금 입장권 +1 (하루 1 = dailyLimit, 상한 ticketCap을 넘어도 받는다 — 기획 1절).
+    AdPlacement.autoUpgrade => s, // 자동 강화 10분: S2가 처리(사용자 결정 — 자동 강화는 광고 보상으로만)
     AdPlacement.bountyTicket => _saved(
       s.copyWith(
         bounty: s.bounty!.copyWith(tickets: s.bounty!.tickets + reward.integer('value'), adOn: localDate(now)),
