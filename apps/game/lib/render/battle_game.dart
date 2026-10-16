@@ -18,6 +18,7 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
