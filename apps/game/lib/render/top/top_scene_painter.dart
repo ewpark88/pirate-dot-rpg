@@ -60,7 +60,8 @@ class TopScenePainter {
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
-    final sy = (_shipY! * dpr).roundToDouble() / dpr;
+    // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로 — 앞이 더 보이게).
+    final sy = ((_shipY! + 6 * fever.level) * dpr).roundToDouble() / dpr;
     final dot = frame.dot;
     final view = scene.frame;
     final ship = scene.topShip;
@@ -79,6 +80,7 @@ class TopScenePainter {
     fever.update(clockMs);
     _sea
       ..fever = fever.sea
+      ..boost = fever.level
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
     fever.rays(c, viewRect);
@@ -100,9 +102,10 @@ class TopScenePainter {
       fever.aura(c, size.width * _shipScale / 2);
       c
         ..save()
-        ..translate(_shipShake(clockMs), 0)
+        ..translate(_shipShake(clockMs), _surge(clockMs))
         ..rotate(view.shipHeading)
-        ..scale(_shipScale);
+        // 질주: 앞으로 살짝 기울임(길이 방향 4% 눌림).
+        ..scale(_shipScale, _shipScale * (1 - 0.04 * fever.level));
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       final sinking = _sink(c, m.sinkMs);
       final skinGlow = skinId != null && _skinGlow(skinId);
@@ -135,7 +138,10 @@ class TopScenePainter {
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
     scene.topHits.paint(c, clockMs, flash: scene.settings.flash, powerSave: scene.settings.powerSave);
-    _foes.paint(c, under: false, cull: visibleWorld);
+    _foes
+      ..hotAt = fever.level > 0 ? _hot : null
+      ..paint(c, under: false, cull: visibleWorld);
+    fever.embers(c, scene.topShip);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
       ..bosses(c, _foes.radiusOf);
@@ -158,6 +164,11 @@ class TopScenePainter {
     fever.speedLines(c, frame.box);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
+
+  /// 피버 질주 위아래 흔들림(흔들기 설정 따름).
+  double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
+
+  bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
 
   /// 배 미세 흔들림(맞은 동안 ±0.8단위, 화면 흔들기 설정을 따른다).
   double _shipShake(double clock) =>
