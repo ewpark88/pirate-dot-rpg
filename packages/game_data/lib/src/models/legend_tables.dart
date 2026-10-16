@@ -9,7 +9,10 @@ class LegendDef {
       critBurst = j.numberOr('critBurst', 0),
       powerScale = j.numberOr('powerScale', 1),
       onHit = j.has('onHit') ? OnHitDef.fromJson(j.obj('onHit')) : const OnHitDef(),
-      zone = j.has('zone') ? LegendZoneDef.fromJson(j.obj('zone')) : null;
+      zone = j.has('zone') ? LegendZoneDef.fromJson(j.obj('zone')) : null,
+      extraProjectilesChance = j.numberOr('extraProjectilesChance', 0),
+      extraChainsChance = j.numberOr('extraChainsChance', 0),
+      noFalloffChance = j.numberOr('noFalloffChance', 0);
 
   /// [raw]의 기본 값에 [mythic]이면 `mythic` 키들을 덮어쓴 능력.
   factory LegendDef.of(JsonReader raw, {required bool mythic}) => LegendDef.fromJson(
@@ -17,6 +20,36 @@ class LegendDef {
         ? JsonReader({...raw.raw, ...(raw.raw['mythic'] as Map<String, dynamic>)}, raw.path)
         : raw,
   );
+
+  /// 선원 개성 v2 특징(trait): 전설 미만 등급은 전설 능력을 [scale]배로 — 연속 값은 × 배율, 개수형(발사체·연쇄·감쇠 없음)은
+  /// 정수 몫 + 남은 몫을 '발마다 확률'로, powerScale은 1(전설부터만), mythic 없음.
+  factory LegendDef.scaled(JsonReader raw, double scale) {
+    double n(Map<String, dynamic> m, String k) => (m[k] as num?)?.toDouble() ?? 0;
+    final r = raw.raw;
+    final out = <String, dynamic>{};
+    for (final k in ['extraProjectiles', 'extraChains']) {
+      final v = n(r, k) * scale;
+      if (v <= 0) continue;
+      out[k] = v.floor();
+      out['${k}Chance'] = v - v.floor();
+    }
+    if (r['noFalloff'] == true) out['noFalloffChance'] = scale;
+    if (r.containsKey('critBurst')) out['critBurst'] = n(r, 'critBurst') * scale;
+    if (r['onHit'] is Map) {
+      final o = Map<String, dynamic>.of(r['onHit'] as Map<String, dynamic>);
+      for (final k in ['slow', 'burnRatio', 'stunSec', 'vulnerable', 'pull']) {
+        if (o.containsKey(k)) o[k] = n(o, k) * scale;
+      }
+      out['onHit'] = o;
+    }
+    if (r['zone'] is Map) {
+      final z = Map<String, dynamic>.of(r['zone'] as Map<String, dynamic>);
+      if (z.containsKey('slow')) z['slow'] = n(z, 'slow') * scale;
+      z['stunSec'] = ((z['stunSec'] as num?)?.toDouble() ?? LegendZoneDef.defaultZoneStunSec) * scale;
+      out['zone'] = z;
+    }
+    return LegendDef.fromJson(JsonReader(out, raw.path));
+  }
 
   static const keys = {
     'extraProjectiles',
@@ -40,6 +73,11 @@ class LegendDef {
   final double powerScale;
   final OnHitDef onHit;
   final LegendZoneDef? zone;
+
+  /// 특징(전설 미만): 발마다 이 확률로 발사체 +1 · 연쇄 +1 · 감쇠 없음(엔진이 결정론 난수로 굴린다). 전설부터 0.
+  final double extraProjectilesChance;
+  final double extraChainsChance;
+  final double noFalloffChance;
 }
 
 /// 맞은 적에게 거는 효과.
