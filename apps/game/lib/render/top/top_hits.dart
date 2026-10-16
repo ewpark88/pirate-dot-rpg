@@ -3,10 +3,14 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_shots.dart';
 
 /// 탑다운 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다' — 엔진은 닿는데 눈에 안 보였다, S1):
 /// 때린 적이 배 쪽으로 툭 박고(돌진), 닿은 자리에 물보라·나뭇조각이 튄다. 엔진 무관 — ShipDamaged fromX/fromY.
 class TopHits {
+  /// 적 포탄(보스 BossFired·원거리 적) — 배로 날아와 폭발.
+  final shots = TopShots();
+
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
   final List<_Spot> _spots = [];
@@ -143,6 +147,7 @@ class TopHits {
   final _ring = Paint()..style = PaintingStyle.stroke;
 
   void clear() {
+    shots.clear();
     _muzzles.clear();
     _lastMuzzle.clear();
     _flashAt = -1000000000;
