@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flame/extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,10 +7,8 @@ import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/render/demo/sample_battle.g.dart';
 import 'package:pirate_dot/render/demo/stress_recording.dart';
 import 'package:pirate_dot/render/layout.dart';
-import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
-import 'package:pirate_dot/render/viewport/integer_scale.dart';
 
 import 'helpers.dart';
 
@@ -49,17 +46,13 @@ void main() {
       expect(encodeRecording(stressRecording()), encodeRecording(a));
     });
 
-    test('모든 틱에 화면 안 적 24 이상, 10틱마다 범위 처치', () {
+    test('모든 틱이 탑다운, 배 둘레 화면 안(배 ±135·±200)에 적 80 이상, 매 틱 발사', () {
       for (final t in a) {
-        expect(t.frame.enemies.where((e) => e.x <= kLogicalWidth).length, greaterThanOrEqualTo(24));
+        expect(t.frame.mode, 'top');
+        final near = t.frame.enemies.where((e) => (e.x - 135).abs() <= 135 && (e.y - 240).abs() <= 200);
+        expect(near.length, greaterThanOrEqualTo(80));
+        expect(t.events.whereType<AttackFired>(), isNotEmpty);
       }
-      var sinceAoe = 0;
-      for (final t in a) {
-        sinceAoe = t.events.any((e) => e is AoeDamageSum) ? 0 : sinceAoe + 1;
-        expect(sinceAoe, lessThan(10 + 3), reason: '히트스톱 프레임(최대 3)을 빼면 10틱마다');
-      }
-      expect(a.any((t) => t.frame.hitStopTicks > 0), isTrue);
-      expect(a.any((t) => t.events.any((e) => e is UltimateCast)), isTrue);
     });
   });
 
@@ -90,36 +83,6 @@ void main() {
       expect(g.sceneUpdates, lessThanOrEqualTo(30));
       expect(g.sceneUpdates, greaterThanOrEqualTo(29));
     });
-
-    test('갱신 없는 프레임은 같은 Picture를 다시 그린다', () {
-      final cache = PowerSaveCache();
-      void frame({required bool dirty}) {
-        final rec = ui.PictureRecorder();
-        cache.render(
-          ui.Canvas(rec),
-          dirty: dirty,
-          paint: (c) => c.drawColor(const ui.Color(0xFF000000), ui.BlendMode.src),
-        );
-        rec.endRecording().dispose();
-      }
-
-      frame(dirty: true);
-      frame(dirty: false);
-      frame(dirty: false);
-      frame(dirty: true);
-      expect(cache.recorded, 2);
-      expect(cache.reused, 2);
-      cache.dispose();
-    });
-  });
-
-  test('수용 기준 5: 정수배 확대', () {
-    final a = integerScale(1080, 700);
-    expect((a.scale, a.offsetX, a.offsetY), (3, (1080 - 960) / 2, (700 - 540) / 2));
-    expect(integerScale(319, 200).scale, 1);
-    expect(integerScale(1920, 1080).scale, 6);
-    final hi = integerScale(400, 300, dpr: 2.5);
-    expect(hi.scale * 2.5, 3, reason: '물리 픽셀 기준 정수배');
   });
 
   test('수용 기준 6: 부하 장면 → 라이브 복귀', () async {

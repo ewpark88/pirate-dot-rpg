@@ -12,7 +12,6 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/fun_director.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
-import 'package:pirate_dot/render/scene/ship_geometry.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 
 part 'event_director_top.dart';
@@ -53,7 +52,7 @@ class EventDirector implements ReplayListener {
     final ship = scene.topShip;
     final (tickMs, tip) = (
       _player.tickMs,
-      scene.isTop ? Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy) : ShipGeometry.cannonTip(scene),
+      Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy),
     );
     // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
     final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
