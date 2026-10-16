@@ -37,15 +37,17 @@ class RebirthCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final previewOf = ref.watch(rebirthPreviewProvider);
-    // RebirthPreview에는 ==가 없어서 화면에 쓰는 값만 레코드로 골라 구독한다.
+    // RebirthPreview에는 ==가 없다 — 레코드에 넣으면 틱마다 '바뀜'이 되어 카드가 매 틱 다시 지어지고 무거운 미리보기
+    // (rebirthForecast)를 매 틱 돌린다(사용자 버그 2026-10-16 시트 버벅임). 화면에 쓰는 값(==가 있는 것)만 구독한다.
     final view = ref.watch(
       gameStateProvider.select((s) {
         final p = previewOf(s);
-        return p == null ? null : (p, s.progress.stage, p.locked, p.currentPieces, p.gain, p.nextPieceInStages);
+        return p == null ? null : (s.progress.stage, p.locked, p.currentPieces, p.gain, p.nextPieceInStages, p.earned);
       }),
     );
     if (view == null) return const SizedBox.shrink();
-    final (preview, stage, _, _, _, _) = view;
+    final (stage, _, _, _, _, _) = view;
+    final preview = previewOf(ref.read(gameStateProvider))!;
     final l10n = AppLocalizations.of(context);
     final bonus = percentText(l10n, preview.bonusNow);
     final shopDot = ref.watch(rebirthShopProvider.select((s) => s.anyAffordable));

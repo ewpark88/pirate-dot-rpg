@@ -63,7 +63,9 @@ class _FleetPicker extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
     final slots = ref.watch(fleetSlotsProvider);
-    final levels = ref.watch(gameStateProvider.select((s) => {for (final e in s.crews.entries) e.key: e.value.level}));
+    // 레벨이 바뀔 때만(문자열 ==) — Map은 ==가 없어 틱마다 다시 짓게 된다(사용자 버그 2026-10-16 버벅임).
+    ref.watch(gameStateProvider.select((s) => [for (final e in s.crews.entries) '${e.key}${e.value.level}'].join()));
+    final levels = {for (final e in ref.read(gameStateProvider).crews.entries) e.key: e.value.level};
     // 도감과 같은 정렬·필터(보유만). 기본(번호순)일 땐 파워순. 쉬는 선원 먼저, 출전 중은 뒤(고르면 자리만 바뀐다 — 사용자 버그 2026-10-15).
     final q = ref.watch(crewQueryProvider);
     int power(CrewDef c) => (crewPowerOf(tables, levels[c.id]!) * 1000).round();
@@ -127,7 +129,9 @@ class _SwapPicker extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
     final slots = ref.watch(fleetSlotsProvider);
-    final levels = ref.watch(gameStateProvider.select((s) => {for (final e in s.crews.entries) e.key: e.value.level}));
+    // 레벨이 바뀔 때만(문자열 ==) — Map은 ==가 없어 틱마다 다시 짓게 된다(사용자 버그 2026-10-16 버벅임).
+    ref.watch(gameStateProvider.select((s) => [for (final e in s.crews.entries) '${e.key}${e.value.level}'].join()));
+    final levels = {for (final e in ref.read(gameStateProvider).crews.entries) e.key: e.value.level};
     return ListView(
       key: const Key('fleet.swap'),
       padding: const EdgeInsets.all(8),
@@ -206,7 +210,8 @@ class _CrewRow extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    ref.watch(gameStateProvider.select((s) => fleetDps(s, tables, [def.id]).format())),
+                    // 줄이 다시 지어질 때(레벨이 바뀔 때)만 계산 — 틱마다 40명 계산하지 않는다.
+                    fleetDps(ref.read(gameStateProvider), tables, [def.id]).format(),
                     key: Key('fleet.dps.${def.id}'),
                     style: Skin.text(15, color: Skin.goldInk),
                   ),
