@@ -40,6 +40,13 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     toY: (j['toY'] as num).toDouble(),
     ticks: j['ticks'] as int,
   ),
+  'bombletBurst' => BombletBurst(
+    t,
+    crewId: j['crewId'] as String,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
+    radius: (j['radius'] as num).toDouble(),
+  ),
   'attackMissed' => AttackMissed(
     t,
     crewId: j['crewId'] as String,
@@ -218,4 +225,20 @@ class CrewSortie extends GameEvent {
     'toY': toY,
     'ticks': ticks,
   };
+}
+
+/// 집속탄 자탄 하나가 터졌다(계열 v3 — 0.1초 간격 연쇄). 맞은 적이 있으면 같은 틱 Damage.
+class BombletBurst extends GameEvent {
+  const BombletBurst(super.tick, {required this.crewId, required this.x, required this.y, required this.radius});
+
+  final String crewId;
+  final double x;
+  final double y;
+  final double radius;
+
+  @override
+  String get type => 'bombletBurst';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'x': x, 'y': y, 'radius': radius};
 }

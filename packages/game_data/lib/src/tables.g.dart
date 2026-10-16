@@ -40,28 +40,48 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 20
         },
-        "powerScale": 0.8434
+        "powerScale": 0.8434,
+        "reach": 155,
+        "rare": {
+          "reach": 159
+        },
+        "hero": {
+          "reach": 163
+        },
+        "legend": {
+          "reach": 167
+        },
+        "mythic": {
+          "reach": 171
+        }
       }
     },
     {
       "id": "starry",
       "num": 2,
       "baseRarity": "common",
-      "family": "lob",
+      "family": "cluster",
       "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/starry.png",
       "nameKey": "crewStarryName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 3.1,
-        "topRadius": 15,
-        "projectile": {
-          "speed": 120,
-          "lead": true,
-          "hitRadius": 15
+        "intervalSec": 3.0,
+        "powerScale": 1,
+        "reach": 160,
+        "rare": {
+          "reach": 164
         },
-        "powerScale": 1.0129
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
+        },
+        "mythic": {
+          "reach": 176
+        }
       }
     },
     {
@@ -85,7 +105,18 @@ const Map<String, String> rawTables = {
         "powerScale": 3.0989,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 166
+        },
+        "reach": 150,
+        "rare": {
+          "reach": 154
+        },
+        "hero": {
+          "reach": 158
+        },
+        "legend": {
+          "reach": 162
         }
       }
     },
@@ -101,14 +132,27 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "random",
         "intervalSec": 1.8,
-        "powerScale": 1
+        "powerScale": 1,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
       "id": "volke",
       "num": 5,
       "baseRarity": "legend",
-      "family": "lob",
+      "family": "cluster",
       "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/volke.png",
@@ -116,13 +160,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.6,
-        "topRadius": 28,
-        "projectile": {
-          "speed": 120,
-          "lead": true,
-          "hitRadius": 28
+        "powerScale": 1,
+        "reach": 165,
+        "rare": {
+          "reach": 169
         },
-        "powerScale": 0.7684
+        "hero": {
+          "reach": 173
+        },
+        "legend": {
+          "reach": 177
+        },
+        "mythic": {
+          "reach": 181
+        }
       }
     },
     {
@@ -145,7 +196,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.1686,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -168,7 +230,18 @@ const Map<String, String> rawTables = {
         },
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -192,7 +265,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.8985,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -216,7 +300,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9519,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -237,7 +332,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.4896,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -256,7 +362,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0165,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -272,7 +389,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.4,
-        "powerScale": 0.9729
+        "powerScale": 0.9729,
+        "reach": 170,
+        "rare": {
+          "reach": 174
+        },
+        "hero": {
+          "reach": 178
+        },
+        "legend": {
+          "reach": 182
+        },
+        "mythic": {
+          "reach": 186
+        }
       }
     },
     {
@@ -290,7 +420,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9283,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -309,7 +450,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9988,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -328,7 +480,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.949,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 171
+        },
+        "reach": 155,
+        "rare": {
+          "reach": 159
+        },
+        "hero": {
+          "reach": 163
+        },
+        "legend": {
+          "reach": 167
         }
       }
     },
@@ -353,7 +516,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.4664,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -377,7 +551,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0626,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -401,7 +586,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0516,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -425,7 +621,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0342,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 166
+        },
+        "reach": 150,
+        "rare": {
+          "reach": 154
+        },
+        "hero": {
+          "reach": 158
+        },
+        "legend": {
+          "reach": 162
         }
       }
     },
@@ -450,7 +657,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.7504,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -466,7 +684,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.6,
-        "powerScale": 1
+        "powerScale": 1,
+        "reach": 80,
+        "rare": {
+          "reach": 84
+        },
+        "hero": {
+          "reach": 88
+        },
+        "legend": {
+          "reach": 92
+        },
+        "mythic": {
+          "reach": 96
+        }
       }
     },
     {
@@ -487,7 +718,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 34
         },
-        "powerScale": 1.0102
+        "powerScale": 1.0102,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -511,7 +755,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.9091,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -536,7 +791,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.6395,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -558,7 +824,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 44
         },
-        "powerScale": 0.7638
+        "powerScale": 0.7638,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -582,13 +861,22 @@ const Map<String, String> rawTables = {
         "powerScale": 2.4846,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
         },
         "common": {
           "powerScale": 1.12
         },
         "rare": {
-          "powerScale": 0.8929
+          "powerScale": 0.8929,
+          "reach": 114
+        },
+        "reach": 110,
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -613,7 +901,18 @@ const Map<String, String> rawTables = {
         "powerScale": 3.2217,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -639,6 +938,19 @@ const Map<String, String> rawTables = {
         "powerScale": 0.6406,
         "behavior": {
           "kind": "lightning"
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
         }
       }
     },
@@ -663,7 +975,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.7191,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 176
+        },
+        "reach": 160,
+        "rare": {
+          "reach": 164
+        },
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
         }
       }
     },
@@ -687,7 +1010,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 26
         },
-        "powerScale": 0.6471
+        "powerScale": 0.6471,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -706,7 +1042,18 @@ const Map<String, String> rawTables = {
         "powerScale": 4.0451,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 86
+        },
+        "reach": 70,
+        "rare": {
+          "reach": 74
+        },
+        "hero": {
+          "reach": 78
+        },
+        "legend": {
+          "reach": 82
         }
       }
     },
@@ -722,7 +1069,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 4.2,
-        "powerScale": 0.8811
+        "powerScale": 0.8811,
+        "reach": 74,
+        "rare": {
+          "reach": 78
+        },
+        "hero": {
+          "reach": 82
+        },
+        "legend": {
+          "reach": 86
+        },
+        "mythic": {
+          "reach": 90
+        }
       }
     },
     {
@@ -737,7 +1097,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "strongest",
         "intervalSec": 5.2,
-        "powerScale": 0.8608
+        "powerScale": 0.8608,
+        "reach": 72,
+        "rare": {
+          "reach": 76
+        },
+        "hero": {
+          "reach": 80
+        },
+        "legend": {
+          "reach": 84
+        },
+        "mythic": {
+          "reach": 88
+        }
       }
     },
     {
@@ -752,7 +1125,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "cluster",
         "intervalSec": 3.5,
-        "powerScale": 0.9601
+        "powerScale": 0.9601,
+        "reach": 72,
+        "rare": {
+          "reach": 76
+        },
+        "hero": {
+          "reach": 80
+        },
+        "legend": {
+          "reach": 84
+        },
+        "mythic": {
+          "reach": 88
+        }
       }
     },
     {
@@ -769,7 +1155,20 @@ const Map<String, String> rawTables = {
         "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.7866
+        "powerScale": 0.7866,
+        "reach": 78,
+        "rare": {
+          "reach": 82
+        },
+        "hero": {
+          "reach": 86
+        },
+        "legend": {
+          "reach": 90
+        },
+        "mythic": {
+          "reach": 94
+        }
       }
     },
     {
@@ -783,7 +1182,20 @@ const Map<String, String> rawTables = {
       "nameKey": "crewTurtleName",
       "aim": {
         "intervalSec": 2.5,
-        "powerScale": 0.8805
+        "powerScale": 0.8805,
+        "reach": 76,
+        "rare": {
+          "reach": 80
+        },
+        "hero": {
+          "reach": 84
+        },
+        "legend": {
+          "reach": 88
+        },
+        "mythic": {
+          "reach": 92
+        }
       }
     },
     {
@@ -798,7 +1210,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "intervalSec": 3.6,
         "range": 75,
-        "powerScale": 1.1193
+        "powerScale": 1.1193,
+        "reach": 80,
+        "rare": {
+          "reach": 84
+        },
+        "hero": {
+          "reach": 88
+        },
+        "legend": {
+          "reach": 92
+        },
+        "mythic": {
+          "reach": 96
+        }
       }
     },
     {
@@ -813,7 +1238,20 @@ const Map<String, String> rawTables = {
       "skill": "support_rally",
       "aim": {
         "intervalSec": 3.6,
-        "powerScale": 0.8726
+        "powerScale": 0.8726,
+        "reach": 74,
+        "rare": {
+          "reach": 78
+        },
+        "hero": {
+          "reach": 82
+        },
+        "legend": {
+          "reach": 86
+        },
+        "mythic": {
+          "reach": 90
+        }
       }
     },
     {
@@ -832,7 +1270,18 @@ const Map<String, String> rawTables = {
         "powerScale": 5.31,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 86
+        },
+        "reach": 70,
+        "rare": {
+          "reach": 74
+        },
+        "hero": {
+          "reach": 78
+        },
+        "legend": {
+          "reach": 82
         }
       }
     },
@@ -849,7 +1298,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.7377
+        "powerScale": 0.7377,
+        "reach": 160,
+        "rare": {
+          "reach": 164
+        },
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
+        },
+        "mythic": {
+          "reach": 176
+        }
       }
     }
   ]
@@ -2327,6 +2789,7 @@ const Map<String, String> rawTables = {
   "families": [
     {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.5111,  0.5617,  0.6501,  0.7124,  0.4635]}},
     {"id": "ring", "projectile": "ring", "attack": {"reach": 140, "shape": "ring", "targets": "nearest", "intervalSec": 2.34, "power": 0.7164, "excludeLayers": [], "topWidth": 8}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"ringCount": [8, 10, 12, 16, 24], "power": [3.9189,  4.4374,  4.3926,  3.9663,  2.4852]}},
+    {"id": "cluster", "projectile": "cluster", "attack": {"reach": 160, "shape": "cluster", "targets": "cluster", "intervalSec": 2.86, "power": 0.4378, "excludeLayers": [], "topRadius": 20, "behavior": {"kind": "cluster", "bombletRadius": 12, "bombletDelaySec": 0.1, "scatterRadius": 40, "bombletRatio": 1.0}}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"bomblets": [4, 5, 6, 8, 12], "power": [0.5622, 0.6179, 0.7151, 0.7836, 0.5099]}},
     {"id": "direct", "projectile": "bullet", "attack": {"reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8985,  0.9254,  0.8748,  1.1407,  0.9725]}},
     {"id": "pierce", "projectile": "harpoon", "attack": {"topWidth": 20, "reach": 168, "shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.8154, "excludeLayers": []}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.8721,  0.7794,  0.8067,  0.9257,  0.9181]}},
     {"id": "laser", "projectile": "laser", "attack": {"topWidth": 14, "reach": 180, "shape": "laser", "targets": "nearest", "intervalSec": 2.56, "power": 1.3046, "excludeLayers": [], "behavior": {"kind": "laser", "beamSec": 0.4}}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 1, 1, 1], "laserPierce": [1, 2, 3, 5, 0], "power": [2.761,  1.8918,  1.4098,  1.3516,  1.3199]}},

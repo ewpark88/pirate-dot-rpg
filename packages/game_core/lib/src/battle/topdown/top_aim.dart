@@ -89,7 +89,7 @@ class TopAim {
     double ax;
     double ay;
     switch (a.shape) {
-      case 'circle':
+      case 'circle' || 'cluster': // 집속탄 본탄도 무리 중심에(자탄은 cluster.dart)
         final radius = circleRadius(a);
         int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
         // 무리 중심(계열 기본 cluster) — 선원 개성 v2가 다른 조준(가장 강한·무작위 등)을 주면 그 적을 중심으로.
