@@ -17,8 +17,8 @@ bool funEvent(BattleScene s, GameEvent e) {
     case AttackMissed(:final x, :final y):
       s.topHits.crew.miss(x, y, s.clockMs);
     case FeverStarted():
+      // 화면 흔들기 없음(사용자 '화면이 좌우로 움직이면 조잡하다') — 시작 임팩트는 금빛 번쩍·충격파·'쑥' 가속(세로).
       s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
-      s.shake.trigger(s.juice.shake['aoe']!);
       s.haptic(HapticLevel.medium);
       _sfx(s, 'feverStarted', e);
     case GoldfishCaught(:final targetId, :final gold):

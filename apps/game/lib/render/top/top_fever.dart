@@ -160,13 +160,6 @@ class TopFever {
     return 1 - age / 600;
   }
 
-  /// 피버 동안 아주 약한 진동(dp). 흔들기 끄기·절전이면 0.
-  Offset vibration() {
-    if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return Offset.zero;
-    final ms = _lastMs;
-    return Offset(math.sin(ms / 23) * 0.4, math.cos(ms / 29) * 0.4) * level;
-  }
-
   /// 배 둘레 바람 줄(흰 짧은 곡선이 양옆으로 뒤로 흘러감), 배 중심 원점. 흔들기 끄기면 없음.
   void wind(Canvas c, double shipR) {
     if (level <= 0 || !scene.settings.shake) return;
