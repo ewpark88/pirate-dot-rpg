@@ -140,4 +140,19 @@ void main() {
     await tester.pumpAndSettle();
     expect(log.sent.map((c) => c.toJson()), [const AutoFleet().toJson(), SetFleetSlot(3, benched).toJson()]);
   });
+
+  group('골든', () {
+    setUpAll(loadGoldenFonts);
+
+    for (final (id, lang) in [('octo', 'ko'), ('manta', 'en')]) {
+      testWidgets('선원 상세 $id $lang', (tester) async {
+        await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab, locale: Locale(lang));
+        await precacheImages(tester);
+        await _openDetail(tester, id);
+        await precacheImages(tester);
+        await tester.pumpAndSettle();
+        await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/${lang}_crew_detail_$id.png'));
+      });
+    }
+  });
 }
