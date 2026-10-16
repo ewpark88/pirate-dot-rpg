@@ -30,6 +30,18 @@ void main() {
     expect(w.level.value, IdleLevel.dim);
     w.input();
     expect(w.level.value, IdleLevel.active);
+    // 사용자 설정 '절전 끔'(0): 오래 둬도 idle까지만.
+    w.dimMs = 0;
+    t = 900000;
+    w.tick();
+    expect(w.level.value, IdleLevel.idle);
+    // UI가 원본이 되면 스스로 세지 않는다.
+    w.follow(IdleLevel.active);
+    t = 2000000;
+    w.tick();
+    expect(w.level.value, IdleLevel.active);
+    w.follow(IdleLevel.dim);
+    expect(w.level.value, IdleLevel.dim);
   });
 
   testWidgets('방치 단계마다 절전·어두운 화면, 그리기 수가 준다', (tester) async {

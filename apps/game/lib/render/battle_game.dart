@@ -117,6 +117,10 @@ class BattleGame extends FlameGame with _UiLinks {
   JuiceSettings get _effective =>
       idle.level.value == IdleLevel.active ? _settings : _settings.copyWith(shake: false, powerSave: true);
 
+  /// 절전 화면까지 초(사용자 설정 sleepAfterSec 0/60/180/300, 0 = 끔 — S4가 넣는다). 기본은 fx_map frameCap.dimSec.
+  double get sleepAfterSec => idle.dimMs / 1000;
+  set sleepAfterSec(double sec) => idle.dimMs = sec * 1000;
+
   void _applyIdle() {
     scene.settings = _effective;
     scene.sound.budgetScale = switch (idle.level.value) {
