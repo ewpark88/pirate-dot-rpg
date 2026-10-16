@@ -39,7 +39,10 @@ void main() {
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       const box = Size(384, 832 - 48 - 24 - 76);
       final rec = topRecording(tables, ticks: 400, levels: {crew: 52});
-      final at = rec.indexWhere((t) => t.events.any((e) => e is AoeDamageSum));
+      // 그 선원의 범위 피해(같은 틱에 그 선원 Damage가 있는 AoeDamageSum) — 궁극기·오라 같은 다른 범위는 고르지 않는다.
+      final at = rec.indexWhere(
+        (t) => t.events.any((e) => e is AoeDamageSum) && t.events.any((e) => e is Damage && e.crewId == crew),
+      );
       expect(at, greaterThan(0), reason: '$crew($family) 범위 피해');
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
       final painter = ScenePainter(scene)..sprites = bank;
