@@ -173,13 +173,7 @@ class TopScenePainter {
       ..hotAt = fever.level > 0 ? _hot : null
       ..paint(c, under: false, cull: visibleWorld);
     fever.embers(c, scene.topShip);
-    scene.topHits.impact.paint(c, clockMs, flash: scene.settings.flash, lite: scene.settings.powerSave);
-    scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
-    scene.topHits.fast.paintWorld(c, clockMs, ship);
-    scene.topHits.boss.paint(c, clockMs, scene.topShip, _bossAt, flash: scene.settings.flash);
-    scene.topHits.crew
-      ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: clockMs)
-      ..paint(c, clockMs, ship, _shipR, view.shipShield, scene.poses, scene.poseCount, flash: scene.settings.flash);
+    scene.topHits.paintOver(c, scene, clockMs, _shipR, _bossAt);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
       ..bosses(c, _foes.radiusOf);
@@ -203,6 +197,7 @@ class TopScenePainter {
       ..rushers(c, frame.box)
       ..speedLines(c, frame.box);
     scene.topHits.fast.paintScreen(c, frame.box, clockMs, flash: scene.settings.flash);
+    scene.topHits.bounty.paintScreen(c, frame.box, clockMs, sprites);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
 

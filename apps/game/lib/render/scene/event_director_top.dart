@@ -23,7 +23,7 @@ extension _TopEvents on EventDirector {
     final colors = scene.tables.rarities.rarities;
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final delayMs = math.max<double>(0, (start - _player.position) * _player.tickMs / math.max(1, frame.speed));
-    scene.topHits.muzzle(
+    scene.topHits.muzzles.muzzle(
       tip.dx,
       tip.dy,
       math.atan2(e.y - tip.dy, e.x - tip.dx),
