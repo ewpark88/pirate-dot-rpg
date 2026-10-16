@@ -176,6 +176,19 @@
   "opAdResult": "Ad result: {result}",
   "opPrivacyOptions": "Privacy Options",
   "opTestRing": "Notification in 10s",
+  "opRestoreMySave": "Back to my save",
+  "opLabTapHint": "Pick a rarity, tap a crew: own + fleet slot 1",
+  "opLabCollectAll": "Get every crew (keep save)",
+  "opLabSwarm": "Swarm of {count}",
+  "@opLabSwarm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opLabWave": "Normal wave (with vanguard)",
+  "opGroupLab": "Crew lab",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
