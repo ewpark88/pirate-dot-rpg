@@ -22,7 +22,7 @@ void main() {
       lines.add(crewTraitLine(ko, id));
     }
     expect(lines, hasLength(40), reason: '한 줄은 선원마다 다르다');
-    // 기획 2절 표의 굵은 '범위' = 17명 (본문 '16명'과 1명 다름 — S5에 확인 요청).
+    // 기획 2절: 범위 17명 (S5 확인 2026-10-16, corey는 단일).
     expect(crewIdentities.values.where((v) => v.area), hasLength(17));
   });
 

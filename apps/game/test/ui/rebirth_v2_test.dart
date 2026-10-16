@@ -247,7 +247,11 @@ void main() {
 
   testWidgets('명예 외형: 환생 전 단계가 지금 레벨 단계보다 높으면 부위 칸에 표시', (tester) async {
     final s = _state();
-    final honored = s.copyWith(ship: s.ship.copyWith(honorParts: {'cannon': 6}));
+    // 명예 단계 = 지금 레벨의 외형 단계 + 1 (표 visualStages에서 계산).
+    final cannon = GameTables.load().shipParts.byId('cannon');
+    final honored = s.copyWith(
+      ship: s.ship.copyWith(honorParts: {'cannon': partLookStage(cannon, s.ship.level('cannon')) + 1}),
+    );
     await pumpGame(tester, honored, tab: shipTab);
     expect(find.byKey(const Key('ship.honor.cannon')), findsOneWidget);
     expect(find.byKey(const Key('ship.honor.hull')), findsNothing);
