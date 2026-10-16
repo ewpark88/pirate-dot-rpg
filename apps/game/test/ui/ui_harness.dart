@@ -22,6 +22,19 @@ GameState loadFixture(String name) {
   return GameState.fromJson(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
 }
 
+/// 화물칸(골드 금고, S2 economy-cargo-capacity) 여유를 준 상태: 용량 ≥ 지금 골드 + [extra]가 될 때까지 화물칸 레벨을 올린다.
+/// 샘플은 골드가 화물칸 용량보다 많아(가득) '가득' 알림·잘림이 끼므로, 그와 무관한 테스트가 쓴다.
+GameState withCargoRoom(GameState s, {BigNum? extra}) {
+  final t = GameTables.load();
+  final need = s.wallet.gold + (extra ?? BigNum.zero);
+  var lv = s.ship.level('cargo');
+  final cargo = t.shipParts.byId('cargo');
+  while (partEffect(cargo, lv) < need) {
+    lv++;
+  }
+  return s.copyWith(ship: s.ship.copyWith(parts: {...s.ship.parts, 'cargo': lv}));
+}
+
 /// 세로 폰 화면(기본: 사용자 실기기 Galaxy S24 = 384×832dp, dpr 2.8125)에 앱을 그리고, 버튼이 보낸 명령을 모으는 로그를 돌려준다.
 /// 사용자 실기기 Galaxy S24 (1080×2340px ÷ 2.8125).
 const s24Size = Size(384, 832);

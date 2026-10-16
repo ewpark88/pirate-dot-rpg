@@ -24,6 +24,8 @@ String partEffectText(AppLocalizations l10n, ShipPartDef def, BigNum effect) => 
     effect.toDouble() < _bigMultiplier ? shortDecimal(effect.toDouble()) : effect.format(),
   ),
   'critChance' => percentText(l10n, effect.toDouble()),
+  // 화물칸 = 골드 금고 용량 (S2 economy-cargo-capacity).
+  'capacity' => l10n.uiCargoMax(effect.format()),
   _ => effect.format(),
 };
 

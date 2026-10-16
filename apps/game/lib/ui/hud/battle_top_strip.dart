@@ -4,6 +4,7 @@ import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
@@ -47,14 +48,22 @@ class _Pills extends ConsumerWidget {
         (s) => ((s.battle?.feverTicksLeft ?? 0) > 0, s.battle?.challenge != null, s.battle?.seaEvent != null),
       ),
     );
-    // 우선순위: 현상금 > 도전 > 돌발 이벤트 > 환생 가능. 피버 동안은(오른쪽에 원형 시간) 알약 하나만.
-    final pills = switch ((bounty, fever, challenge, sea)) {
-      (true, _, _, _) => const [BountyStrip()],
-      (false, true, true, _) => const [ChallengeStrip()],
-      (false, true, false, true) => const [SeaEventStrip()],
-      (false, true, false, false) => const [RebirthReadyPill()],
-      _ => const [SeaEventStrip(), ChallengeStrip(), RebirthReadyPill()],
-    };
+    final cargoFull = ref.watch(cargoLevelProvider) == 2;
+    final rebirth = ref.watch(rebirthReadyProvider);
+    // 우선순위: 현상금 > 도전 > 돌발 이벤트(잠깐) > 화물칸 가득 > 환생 가능(계속). 한 줄에 들어가게 최대 2개,
+    // 피버 동안은(오른쪽에 원형 시간) 1개. 도전이 끝난 '성공' 알약은 도전 자리에 잠깐.
+    final List<Widget> pills;
+    if (bounty) {
+      pills = const [BountyStrip()];
+    } else {
+      final ranked = <Widget>[
+        if (challenge) const ChallengeStrip(),
+        if (sea) const SeaEventStrip(),
+        if (cargoFull) const CargoFullPill(),
+        if (rebirth) const RebirthReadyPill(),
+      ];
+      pills = [...ranked.take(fever ? 1 : 2), if (!challenge) const ChallengeStrip()];
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
