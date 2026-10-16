@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
+import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/game_engine.dart';
@@ -99,7 +100,11 @@ void shapeField(Field f, GameState s, GameTables t) {
       ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
   }
   final g = f.geometry;
-  if (g is TopGeometry) g.speedScale = seaEventSpeed(s, t);
+  if (g is TopGeometry) {
+    g
+      ..speedScale = seaEventSpeed(s, t)
+      ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw);
+  }
 }
 
 /// 지금 돌발 이벤트의 적 이동 배율(meta.seaEvents 그 이벤트의 enemySpeed, 없으면 1).

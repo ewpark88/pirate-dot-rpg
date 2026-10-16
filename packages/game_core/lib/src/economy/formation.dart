@@ -55,6 +55,11 @@ GameState setFleetSlot(GameState state, SetFleetSlot c, SystemContext ctx) {
   while (fleet.length <= c.slot) {
     fleet.add(null);
   }
+  // 마지막 출전 선원은 내릴 수 없다(S4 요청 — 오래된 클라이언트·운영자 경로로도 0명이 되지 않게).
+  if (id == null && c.slot < fleet.length && fleet[c.slot] != null && activeFleet(s, t).length <= 1) {
+    ctx.emit(FleetRejected(ctx.tick, slot: c.slot, crewId: fleet[c.slot]!, reason: 'last'));
+    return state;
+  }
   final from = id == null ? -1 : fleet.indexOf(id);
   if (id != null && from < 0 && _overFamilyCap(s, t, fleet, c.slot, id)) {
     ctx.emit(FleetRejected(ctx.tick, slot: c.slot, crewId: id, reason: 'family'));

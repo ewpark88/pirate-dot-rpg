@@ -1,5 +1,6 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_fun.dart';
+import 'package:game_cli/src/sim/sim_gold.dart';
 import 'package:game_cli/src/sim/sim_result.dart';
 import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
@@ -9,8 +10,7 @@ import 'package:game_data/game_data.dart';
 
 export 'package:game_cli/src/sim/sim_result.dart';
 
-/// 설계서 7.2의 가상 플레이어: 가장 싼 강화 구매, 젬이 모이면 소환, 합치기·승급,
-/// 보스 실패 시 `meta.sim.farmRetrySec` 파밍 후 재도전. 실제 엔진(CoreEngine)을 돌린다.
+/// 설계서 7.2의 가상 플레이어: 가장 싼 강화·소환·합치기·승급, 보스 실패 시 farmRetrySec 파밍 후 재도전. 실제 엔진을 돌린다.
 class SimPlayer {
   SimPlayer(this.t, {required this.seed, this.bossAd = false, String view = 'top'}) : clock = ManualClock(_start) {
     final fresh = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
@@ -37,7 +37,6 @@ class SimPlayer {
 
   Duration _elapsed = Duration.zero;
 
-  /// 접속 중 시간만 (벽·환생 회복은 플레이 시간 기준 — 설계서 4.5·7.2).
   Duration _online = Duration.zero;
   Duration? _farmSince;
   int _upgradesAtFarm = 0;
@@ -45,16 +44,13 @@ class SimPlayer {
   static const _tutorialRetryUpgrades = 2;
   Duration? _wallSince;
 
-  /// 환생 뒤 회복 측정 중: 환생 시각과 목표 스테이지.
   ({Duration at, int stage})? _recovering;
 
   /// 이번 회차 시작(접속 시간)과 스테이지별 첫 도달 시각, 직전 회차의 같은 기록. 상대 회복 지표용.
   Duration _runStart = Duration.zero;
 
-  /// 역대 최고 스테이지 (보스 카드가 새 보스인지 반복 보스인지 가르는 기준, 엔진 bestStage와 같게 센다).
   int _best = 1;
 
-  /// 첫 환생 시각(접속 시간)과 그때 스테이지 — 넘으면 rebirthBeatBest.
   ({Duration at, int stage})? _beatTarget;
   Object? _crewsSeen;
   Duration? _lastBoss;
@@ -66,6 +62,7 @@ class SimPlayer {
   final _killGold = <(Duration at, BigNum gold)>[];
   late final _fun = SimFun(t);
   late final _threat = SimThreat(t);
+  final _gold = SimGold();
 
   SimResult run(Duration total, SimSchedule first) {
     var schedule = first;
@@ -123,7 +120,7 @@ class SimPlayer {
         break;
       }
     }
-    result.upgrades += buyCheapest(engine, t, s);
+    result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress.stage);
     buyRebirthShop(engine, t, s);
     // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
     if (!identical(s.crews, _crewsSeen)) {
@@ -277,6 +274,9 @@ class SimPlayer {
       ..mapPieces = s.wallet.mapPieces
       ..eventGoldPct = _fun.eventGoldPct
       ..challengeWinPct = _fun.challengeWinPct
+      ..feverIntervalMin = _fun.fevers == 0 ? null : _online.inSeconds / Duration.secondsPerMinute / _fun.fevers
+      ..feverGoldPct = _fun.feverGoldPct
+      ..goldSupply = _gold
       ..wallSinkSec = SimThreat.median(_threat.sinkSec)
       ..farmWaveDamagePct = _threat.farmWaveDamagePct
       ..waveSecFirst10Min = avg([
