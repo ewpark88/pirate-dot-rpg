@@ -81,3 +81,25 @@ List<RecordedTick> withBossFire(List<RecordedTick> rec, {int at = 120}) {
           : rec[i],
   ];
 }
+
+/// 위협 연출 주입 (S5 EnemyFired·EnemyEmerging): [at] 틱에 배에서 먼 적 둘이 불씨·물 탄을 쏘고(1초 비행),
+/// 배 오른쪽 앞에서 한 마리가 솟아오르기 예고(0.6초).
+List<RecordedTick> withThreat(List<RecordedTick> rec, {int at = 120}) {
+  final f = rec[at].frame;
+  final sx = f.shipX ?? 135;
+  final sy = f.shipY ?? 240;
+  final far = [...f.enemies]
+    ..sort((a, b) => ((b.x - sx).abs() + (b.y - sy).abs()).compareTo((a.x - sx).abs() + (a.y - sy).abs()));
+  if (far.length < 2) throw StateError('틱 $at에 적이 둘 이상 있어야 한다');
+  return [
+    for (var i = 0; i < rec.length; i++)
+      i == at
+          ? RecordedTick(f, [
+              ...rec[i].events,
+              EnemyFired(f.tick, enemyId: far[0].id, fromX: far[0].x, fromY: far[0].y, flightTicks: 20, kind: 'ember'),
+              EnemyFired(f.tick, enemyId: far[1].id, fromX: far[1].x, fromY: far[1].y, flightTicks: 20, kind: 'water'),
+              EnemyEmerging(f.tick, enemyId: -1, x: sx + 34, y: sy - 26, warnTicks: 12),
+            ])
+          : rec[i],
+  ];
+}

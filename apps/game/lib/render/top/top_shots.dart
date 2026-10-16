@@ -37,7 +37,7 @@ class TopShots {
       final col = Color(s.color);
       final r = s.big ? 7.5 : 3.0;
       // 빛 테 색: 보스 색이 어두우면(유령선 등) 위협적인 빨강 쪽으로.
-      final rim = Color.lerp(col, const Color(0xFFFF3A2A), 0.45)!;
+      final rim = s.big ? Color.lerp(col, const Color(0xFFFF3A2A), 0.45)! : col;
       if (age < s.flightMs) {
         final t = age / s.flightMs;
         final x = s.fromX + (s.toX - s.fromX) * t;
@@ -55,7 +55,9 @@ class TopShots {
           final tk = math.max(0, t - k * 0.035);
           final kx = s.fromX + (s.toX - s.fromX) * tk;
           final ky = s.fromY + (s.toY - s.fromY) * tk - (s.big ? 22 : 10) * 4 * tk * (1 - tk) * 0.5;
-          _paint.color = Color.lerp(rim, const Color(0xFFFF8A2A), k / 5)!.withValues(alpha: 0.75 - k * 0.12);
+          _paint.color = (s.big ? Color.lerp(rim, const Color(0xFFFF8A2A), k / 5)! : col).withValues(
+            alpha: 0.75 - k * 0.12,
+          );
           c.drawCircle(Offset(kx, ky), r * (1 - k * 0.13), _paint);
         }
         // 위협 빛무리(보스 포탄만)
@@ -68,7 +70,7 @@ class TopShots {
           ..strokeWidth = s.big ? 2.5 : 1
           ..color = rim;
         c.drawCircle(Offset(x, y), r + 1, _ring);
-        _paint.color = const Color(0xFF1E1A26);
+        _paint.color = s.big ? const Color(0xFF1E1A26) : col;
         c.drawCircle(Offset(x, y), r, _paint);
         _paint.color = const Color(0xFFFFFFFF).withValues(alpha: 0.8);
         c.drawCircle(Offset(x - r * 0.35, y - r * 0.35), r * 0.3, _paint);

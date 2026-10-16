@@ -75,4 +75,38 @@ extension _TopEvents on EventDirector {
     }
     scene.topHits.upgradeAt = scene.clockMs;
   }
+
+  /// 원거리 적 탄(EnemyFired, S5 위협): 쏜 자리 → 선체 가장자리, flightTicks 뒤 ShipDamaged와 같은 시각에 닿는다. 작은 탄, 색은 종류별.
+  void _enemyShot(EnemyFired e, BattleView frame) {
+    final speed = math.max(1, frame.speed);
+    final ship = scene.topShip;
+    final dx = e.fromX - ship.dx;
+    final dy = e.fromY - ship.dy;
+    final len = math.max(1e-6, math.sqrt(dx * dx + dy * dy));
+    final color = _enemyShotColors[e.kind] ?? 0xFFFFFFFF;
+    scene.topHits.shots.fire(
+      e.fromX,
+      e.fromY,
+      ship.dx + dx / len * 10,
+      ship.dy + dy / len * 10,
+      scene.clockMs,
+      e.flightTicks * _player.tickMs / speed,
+      color,
+      big: false,
+    );
+  }
+
+  /// 솟아오르기 예고(EnemyEmerging): warnTicks 동안 물보라, 끝나면 터짐(몸은 EnemyPose.emerging 동안 숨김).
+  void _emerging(EnemyEmerging e, BattleView frame) {
+    scene.topHits.emerge(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
+  }
 }
+
+/// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.
+const _enemyShotColors = {
+  'feather': 0xFFF4F1E8,
+  'spike': 0xFFB36BFF,
+  'water': 0xFF5DC8F0,
+  'snow': 0xFFE6F6FF,
+  'ember': 0xFFFF7A2F,
+};

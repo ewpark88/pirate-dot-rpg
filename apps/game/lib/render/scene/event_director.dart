@@ -150,6 +150,10 @@ class EventDirector implements ReplayListener {
         case ShipLookChanged():
           scene.moments.onPartUp(e.part);
           funEvent(scene, e);
+        case EnemyFired() when scene.isTop:
+          _enemyShot(e, tick.frame);
+        case EnemyEmerging() when scene.isTop:
+          _emerging(e, tick.frame);
         case PartUpgraded(:final part) when scene.isTop:
           _partUp(part);
         case BossFailed():
