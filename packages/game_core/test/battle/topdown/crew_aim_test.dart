@@ -10,6 +10,8 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import '../family_tables.dart';
+
 /// 선원 개성 v2 (docs/specs/platform-crew-identity-v2.md 수용 기준 2~4): 조준 8종, 탄 비행·빗나감, 연사 간격.
 void main() {
   final start = DateTime.utc(2026, 11);
@@ -18,7 +20,9 @@ void main() {
   GameTables withAim(Map<String, Map<String, Object?>> aims) {
     final raw = Map<String, String>.of(rawTables);
     final crews = jsonDecode(raw['crews']!) as Map<String, dynamic>;
+    // 실제 표의 aim은 지우고(계열 기본에서 시작) 이 테스트가 주는 aim만 넣는다.
     for (final c in (crews['crews'] as List).cast<Map<String, dynamic>>()) {
+      c.remove('aim');
       final a = aims[c['id']];
       if (a != null) c['aim'] = a;
     }
@@ -26,7 +30,7 @@ void main() {
     return GameTables.load(raw);
   }
 
-  final plain = GameTables.load(rawTables);
+  final plain = familyTables(); // 계열 기본(aim·traitScale 없음)
   final s = GameState.newGame(playerId: 'a', seed: 1, now: start).copyWith(
     progress: const Progress(stage: stage, bestStage: stage),
   );
