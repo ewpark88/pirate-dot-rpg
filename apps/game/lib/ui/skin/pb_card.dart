@@ -22,8 +22,7 @@ const _charTop = 13.9;
 const _charW = 177.5;
 const _charH = 240.0;
 
-/// 별 리본 기준선 · 이름 자리 (몸 좌표).
-const _ribbonBaseline = 258.0;
+/// 이름 자리 (몸 좌표).
 const _nameY = 292.0;
 
 /// cards.json `glow` — 등급별 바깥 빛 (전설·신화는 연출에서 키운다).
@@ -126,25 +125,7 @@ class PbCardFront extends StatelessWidget {
           ),
         ),
         Positioned.fill(child: _image(pbCardFront(rarity.id))),
-        // 별 리본 (기준선 258).
-        Positioned(
-          left: 0,
-          right: 0,
-          top: _bodyY + _ribbonBaseline - 14,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (var i = 0; i < rarity.stars; i++)
-                Image.asset(
-                  'assets/ui/star.png',
-                  width: 18,
-                  height: 18,
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.none,
-                ),
-            ],
-          ),
-        ),
+        // 등급 별은 카드 앞면 그림(리본 왼쪽)에 이미 그려져 있다 — 코드로 또 그리지 않는다(사용자 지적 2026-10-16 별 중복).
         // 이름 (몸 120,292 가운데, 어두운 획).
         Positioned(
           left: 14,

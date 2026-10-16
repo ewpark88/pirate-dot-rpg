@@ -155,5 +155,41 @@ void main() {
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/${lang}_crew_detail_$id.png'));
       });
     }
+
+    // 사용자 지적 2026-10-16: 노란 별 + 작은 별 중복 → 등급 별은 카드 리본(그림)에만. 4기기.
+    for (final (name, size, dpr) in [
+      ('360', const Size(360, 640), 3.0),
+      ('s24', s24Size, s24Dpr),
+      ('411', const Size(411, 891), 2.625),
+      ('tablet', const Size(800, 1280), 2.0),
+    ]) {
+      testWidgets('별 한 자리 $name', (tester) async {
+        await pumpGame(
+          tester,
+          loadFixture('stage37_midgame'),
+          tab: crewTab,
+          size: size,
+          dpr: dpr,
+          locale: const Locale('ko'),
+        );
+        await precacheImages(tester);
+        await _openDetail(tester, 'octo');
+        await precacheImages(tester);
+        await tester.pumpAndSettle();
+        await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_crew_stars_$name.png'));
+      });
+    }
+  });
+
+  testWidgets('별은 한 자리: 카드에 코드로 그린 별 없음 · 상세 등급 알약에 별 없음', (tester) async {
+    await _pump(tester);
+    await _openDetail(tester, 'octo');
+    final starImages = find.byWidgetPredicate(
+      (w) => w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/ui/star.png',
+    );
+    expect(starImages, findsNothing);
+    expect(find.text('Common'), findsOneWidget);
+    // 상단 바 알림 배지 '1'은 별개 — 상세 안에서만 본다.
+    expect(find.descendant(of: find.byKey(const Key('crew.detail.octo')), matching: find.text('1')), findsNothing);
   });
 }

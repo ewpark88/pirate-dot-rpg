@@ -48,6 +48,7 @@ class EventDirector implements ReplayListener {
   }
 
   void _launch(AttackFired e, int index, BattleView frame) {
+    if (scene.isTop && e.family == _assault) return _topMelee(e, index, frame);
     final style = scene.fx.projectileFor(e.family);
     final ship = scene.topShip;
     final (tickMs, tip) = (
@@ -88,7 +89,6 @@ class EventDirector implements ReplayListener {
   }
 
   late final _rules = ProjectileRules(scene.fx, fallbackMs: _juice.lookaheadTicks * _player.tickMs);
-
   void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {
       if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = _slotFlashMs;
