@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 새벽 · S5 · 계열 행동 v3 엔진 5단계 완료, 도감 v2 엔진
+- **현재 위치**: 계열 v3 엔진(출격·레이저·원형·집속·시차 타격) main 8195a8c. 도감 v2 엔진 review/bestiary 9100d02 S1 머지 대기 — 보스·잡몹 데이터는 S3 그림이 나오는 대로 S2와.
+- 한 일: 출격 CrewSortie · 레이저 빔 유지(배 따라감) · 원형 탄막(빈 방향 탄) · 집속 자탄 BombletBurst · 기관포 연발·물수제비 튕김·파동 링 시차 타격 · 보스 순환·대보스·먹물·삼키기·분열(둘 다 잡아야 격파)·자폭·떼 · 등급별 aim 전 등급 · Gun export · 보스 firstRestSec·enemy_ship blast·돌격대 attackMul · 운영자 선원 시험·세이브 백업 · 현상금 테스트 실제 경제 · release_check 통과 · 기획 계열 v3·도감 v2 · 아침 확인 목록 v2.
+- 배운 것: **커밋하지 않은 변경이 있으면 `git merge main`이 조용히 거절된다** — 출력에서 CONFLICT만 거르면 놓친다. 머지 뒤 `git merge-base --is-ancestor main HEAD`로 확인한다(골든 실패를 내 탓으로 잘못 볼 뻔).
+- 남은 일: 스토어 스크린샷 최종 굽기, 야간 sim 점검, release_smoke(폰 허락 뒤).
+
 ## 2026-10-16 밤 · S5 · 빠른 항해 돌파·지그재그·돌격대·등급 보정·운영자 선원 시험·계열 v3·도감 v2
 - **현재 위치**: 계열 행동 v3 사용자 승인(추천대로) → 엔진 출격(강습·공중)부터. 도감 v2 기획 초안 S1 확인 대기.
 - 한 일(모두 main 또는 S1 머지 대기): 빠른 항해 돌파(가속 리듬 build→rush→finale, 건너뛰기, 실은·넘친 골드) · 피버 좌우 → 지그재그(느린 값, 배 기울기) · 돌격대(넉백·기절·끌기 면역) · 전설 이상 rarityTempo·aim.legend/mythic·맞은 자리 폭발 · 보스 firstRestSec·enemy_ship blast · 운영자 선원 시험·세이브 백업(review/operator-crews, S4 검토) · 현상금 테스트 실제 경제로 · release_check 통과(배포 aab 운영자 표식 0) · 아침 확인 목록 v2(15분) · 기획 계열 v3·도감 v2.
