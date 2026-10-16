@@ -95,11 +95,11 @@ class Round {
       g.cooldown -= dt * attackSpeed;
       if (g.cooldown > 0 && !zeroCooldown) continue;
       final a = g.attack;
-      final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
+      final shots = a.projectiles + extraShots(g, ctx.rng);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
         for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
-          extendVolley(g, v, field.foes, w, geometry: geo),
+          extendVolley(g, v, field.foes, w, geometry: geo, rng: ctx.rng),
       ];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;

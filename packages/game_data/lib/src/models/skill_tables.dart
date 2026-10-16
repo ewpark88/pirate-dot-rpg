@@ -171,7 +171,10 @@ class SkillsTable {
       critBurstDamage = j.number('critBurstDamage'),
       legends = {
         for (final e in (j.raw['legends'] as Map<String, dynamic>).entries) e.key: j.obj('legends').obj(e.key),
-      };
+      },
+      traitScale = j.has('traitScale')
+          ? [for (final v in j.raw['traitScale'] as List) (v as num).toDouble()]
+          : const [];
 
   final List<FamilyDef> families;
 
@@ -194,13 +197,20 @@ class SkillsTable {
   /// 전설 치명타 폭발 피해 비율.
   final double critBurstDamage;
 
+  /// 선원 개성 v2 특징 배율(등급 순번 0~전설 전): 전설 미만도 전설 능력을 이 배율로(일반 0.4…). 비면 전설부터만.
+  final List<double> traitScale;
+
   /// 선원 id → 전설 능력 원문 (등급에 따라 [legendFor]).
   final Map<String, JsonReader> legends;
 
   /// [rarity] 등급(3 = 전설, 4 = 신화)의 [crewId] 전설 능력. 전설 미만이거나 데이터가 없으면 null.
   LegendDef? legendFor(String crewId, int rarity, int legendRarity) {
     final raw = legends[crewId];
-    if (raw == null || rarity < legendRarity) return null;
+    if (raw == null) return null;
+    if (rarity < legendRarity) {
+      final k = rarity < traitScale.length ? traitScale[rarity] : 0.0;
+      return k > 0 ? LegendDef.scaled(raw, k) : null; // 특징(trait, 개성 v2) — 배율 0이면 없음
+    }
     return LegendDef.of(raw, mythic: rarity > legendRarity);
   }
 
