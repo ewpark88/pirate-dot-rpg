@@ -10,7 +10,8 @@ import 'package:game_data/game_data.dart';
 
 export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus;
 export 'package:game_core/src/economy/bounty.dart';
-export 'package:game_core/src/economy/fever.dart' show feverDamageBonus, feverGoldMultiplier, feverOn, feverStep;
+export 'package:game_core/src/economy/fever.dart'
+    show addFever, feverDamageBonus, feverGoldMultiplier, feverKillsAt, feverOn, feverStep;
 export 'package:game_core/src/economy/formation.dart' show activeFleet, autoFleet, emptySlotCount, fleetSlots;
 export 'package:game_core/src/economy/power.dart' show FleetPower, UpgradePreview, fleetPower, previewUpgrade;
 export 'package:game_core/src/economy/rebirth_forecast.dart' show RebirthForecast, rebirthForecast;

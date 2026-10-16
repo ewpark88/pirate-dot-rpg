@@ -1696,7 +1696,11 @@ const Map<String, String> rawTables = {
       { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
-  "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
+  "fever": {
+    "killsBase": 500, "killsMax": 1000, "bossKill": 0.25, "challengeWin": 0.5, "seaEventWin": 0.25,
+    "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
+    "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1 }
+  },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
@@ -1751,6 +1755,10 @@ const Map<String, String> rawTables = {
       "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" },
       "eventGoldPct": { "min": 10, "max": 20 },
       "challengeWinPct": { "min": 60, "max": 70 },
+      "feverIntervalMin": { "min": 4, "max": 6 },
+      "affordablePct": { "min": 30, "max": 50 },
+      "upgradeGapStage10Sec": { "min": 15, "max": 30 },
+      "upgradeGapStage40Sec": { "min": 60, "max": 120 },
       "wallSinkSec": { "min": 25, "max": 40 },
       "farmWaveDamagePct": { "min": 10, "max": 30 }
     }

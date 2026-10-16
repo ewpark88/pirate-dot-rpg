@@ -1,4 +1,5 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
+import 'package:game_cli/src/sim/sim_gold.dart';
 import 'package:game_core/game_core.dart';
 
 /// 가상 플레이어 한 명의 결과. 시간은 모두 게임 시작부터의 경과(오프라인 포함).
@@ -61,6 +62,13 @@ class SimResult {
 
   /// 위협(SimThreat): 벽에서 선원 0명 침몰 초(중앙값), 파밍 파당 배 체력 피해(%, 중앙값).
   double? wallSinkSec;
+
+  /// 피버 평균 간격(접속 분), 피버 중 처치 골드 비중(%).
+  double? feverIntervalMin;
+  double? feverGoldPct;
+
+  /// 골드 수급(SimGold): 살 수 있던 순간 비율, 강화 간격.
+  SimGold? goldSupply;
   double? farmWaveDamagePct;
 
   /// 환생 뒤 회복 시간 ÷ 직전 회차가 같은 스테이지까지 걸린 시간(접속 시간)의 최댓값. 상대 기준 회복 지표.

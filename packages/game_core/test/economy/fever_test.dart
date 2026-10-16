@@ -18,17 +18,25 @@ void main() {
     battle: BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one, fever: gauge, feverTicksLeft: ticksLeft),
   );
 
-  test('기준 2: 4마리 동시 처치 → 게이지 += 4 × perKill × multiKillBonus, 1마리는 배수 없음', () {
-    final s = feverStep(withFever(0), h.ctx, kills: 4, bossKilled: false);
-    expect(s.progress.fever, closeTo(4 * f.number('perKill') * f.number('multiKillBonus'), 1e-12));
-    expect(
-      feverStep(withFever(0), h.ctx, kills: 1, bossKilled: false).progress.fever,
-      closeTo(f.number('perKill'), 1e-12),
-    );
+  test('게이지 = 처치 수(시간 충전 없음): 1마리 = 1 ÷ feverKillsAt, 동시 처치 배수 없음, 보스 + bossKill', () {
+    final need = feverKillsAt(t, 1);
+    expect(need, inInclusiveRange(f.integer('killsBase'), f.integer('killsMax')));
+    expect(feverStep(withFever(0), h.ctx, kills: 4, bossKilled: false).progress.fever, closeTo(4 / need, 1e-12));
+    expect(feverStep(withFever(0), h.ctx, kills: 0, bossKilled: false).progress.fever, 0);
     expect(
       feverStep(withFever(0), h.ctx, kills: 0, bossKilled: true).progress.fever,
       closeTo(f.number('bossKill'), 1e-12),
     );
+  });
+
+  test('필요 처치 수는 무리가 커지면 늘고 killsMax에서 멈춘다', () {
+    expect(feverKillsAt(t, 100), greaterThan(feverKillsAt(t, 1)));
+    expect(feverKillsAt(t, 100000), f.integer('killsMax'));
+  });
+
+  test('특정 조건: addFever는 게이지에 더하고, 피버 중엔 무시', () {
+    expect(addFever(withFever(0.2), f.number('challengeWin')).progress.fever, closeTo(0.7, 1e-12));
+    expect(addFever(withFever(0, ticksLeft: 5), 0.5).progress.fever, 0);
   });
 
   test('기준 1: 게이지가 차면 FeverStarted, durationSec 동안 피버, 끝나면 FeverEnded·게이지 0', () {

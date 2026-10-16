@@ -96,6 +96,10 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
     c('eventGoldPct', '돌발 이벤트 골드 ÷ 처치 골드', (r) => r.eventGoldPct, '%', within: Duration.zero),
     c('challengeWinPct', '즉석 도전 성공률', (r) => r.challengeWinPct, '%', within: Duration.zero),
+    c('feverIntervalMin', '피버 평균 간격(접속 시간)', (r) => r.feverIntervalMin, '분', within: Duration.zero),
+    c('affordablePct', '강화를 살 수 있던 순간', (r) => r.goldSupply?.affordablePct, '%', within: Duration.zero),
+    c('upgradeGapStage10Sec', '강화 간격(스테이지 8~12)', (r) => r.goldSupply?.gapMedian(8, 12), '초', within: Duration.zero),
+    c('upgradeGapStage40Sec', '강화 간격(스테이지 35~45)', (r) => r.goldSupply?.gapMedian(35, 45), '초', within: Duration.zero),
     c('wallSinkSec', '벽에서 선원 0명 침몰(무리 전부 붙음)', (r) => r.wallSinkSec, '초', within: Duration.zero),
     c('farmWaveDamagePct', '파밍 파당 배 체력 피해', (r) => r.farmWaveDamagePct, '%', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
@@ -189,6 +193,7 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 부위 최고 레벨(첫날 / 첫 주) | '
       '${[for (final p in t.shipParts.parts) '${p.id} ${_fmt(m((r) => (r.levelDay1[p.id] ?? 0).toDouble()))}/${_fmt(m((r) => (r.levelWeek1[p.id] ?? 0).toDouble()))}'].join(' · ')} |',
     )
+    ..writeln('| 피버 중 처치 골드 비중 | ${_fmt(m((r) => r.feverGoldPct), '%')} |')
     ..writeln('| 함포 지원 광고(보스 실패 뒤) | ${_fmt(m((r) => r.bossAds.toDouble()))} |')
     ..writeln('| 강화·소환 횟수 | ${_fmt(m((r) => r.upgrades.toDouble()))} · ${_fmt(m((r) => r.summons.toDouble()))} |');
   _cardsByRun(b, t, rs);
