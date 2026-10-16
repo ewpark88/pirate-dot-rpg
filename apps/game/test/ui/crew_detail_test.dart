@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
+import 'package:pirate_dot/ui/crew/crew_text.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 
 import 'ui_harness.dart';
@@ -47,6 +49,18 @@ GameState _withGap() {
 String _gapBenched() => loadFixture('stage37_midgame').battle!.fleet.last.crewId;
 
 void main() {
+  test('특징·전설 문구: 보호막(turtle)·낙뢰(pelly)·피버(pumpum), 일반 등급은 확률 줄', () async {
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final t = GameTables.load();
+    final legend = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
+    List<String> at(String id, int r) => legendLines(l10n, t.skills.legendFor(id, r, legend)!);
+    expect(at('turtle', legend).single, startsWith('Ship shield every 8s'));
+    expect(at('pelly', legend), contains('Lightning arcs to 3 nearby'));
+    expect(at('pumpum', legend).single, startsWith('While deployed: fever charge +50%'));
+    // 일반(배율 0.4): 발사체 1 × 0.4 → 40% 확률.
+    expect(at('crabs', 0), contains('40% chance of +1 projectile'));
+  });
+
   testWidgets('A: 보유 선원 카드 → 상세(이름·레벨·파워·계열·스킬, 출전 중이면 내리기)', (tester) async {
     final fleet = await _pump(tester);
     await _openDetail(tester, 'octo');
@@ -57,7 +71,11 @@ void main() {
     expect(find.byKey(const Key('crew.detail.power')), findsOneWidget);
     expect(inDetail('Lob'), findsOneWidget); // 계열
     expect(inDetail('Cannon Rain'), findsOneWidget); // 계열 스킬
-    expect(inDetail('Unlocks when promoted to Legend'), findsOneWidget); // 일반 → 전설 능력 미리보기
+    // 일반 → 특징(전설 능력 × 등급 배율, 표 traitScale에서 계산 — 개성 v2).
+    final t = GameTables.load();
+    final pct = (t.skills.traitScale[0] * 100).round();
+    expect(inDetail('Trait (now $pct%)'), findsOneWidget);
+    expect(find.byKey(const Key('crew.detail.traitFull')), findsOneWidget);
     // 옥토는 샘플에서 출전 중 → 내리기
     final slot = loadFixture('stage37_midgame').battle!.fleet.indexWhere((f) => f.crewId == 'octo');
     await tester.tap(find.byKey(const Key('crew.detail.undeploy.octo')));
