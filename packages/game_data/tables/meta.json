@@ -78,9 +78,9 @@
     ]
   },
   "fever": {
-    "killsBase": 500, "killsMax": 1000, "bossKill": 0.25, "challengeWin": 0.5, "seaEventWin": 0.25,
+    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.05, "challengeWin": 0.3, "seaEventWin": 0.15,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
-    "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1 }
+    "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
   "startingCrews": ["octo", "turtle"],
   "summonCostGems": 30,

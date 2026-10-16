@@ -29,13 +29,16 @@ void main() {
     );
   });
 
-  test('필요 처치 수는 무리가 커지면 늘고 killsMax에서 멈춘다', () {
-    expect(feverKillsAt(t, 100), greaterThan(feverKillsAt(t, 1)));
+  test('필요 처치 수는 무리가 커지면 줄지 않고 killsMax에서 멈춘다', () {
+    expect(feverKillsAt(t, 100), greaterThanOrEqualTo(feverKillsAt(t, 1)));
     expect(feverKillsAt(t, 100000), f.integer('killsMax'));
   });
 
   test('특정 조건: addFever는 게이지에 더하고, 피버 중엔 무시', () {
-    expect(addFever(withFever(0.2), f.number('challengeWin')).progress.fever, closeTo(0.7, 1e-12));
+    expect(
+      addFever(withFever(0.2), f.number('challengeWin')).progress.fever,
+      closeTo(0.2 + f.number('challengeWin'), 1e-12),
+    );
     expect(addFever(withFever(0, ticksLeft: 5), 0.5).progress.fever, 0);
   });
 
