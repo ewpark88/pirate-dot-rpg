@@ -43,6 +43,8 @@ class HomeDock extends ConsumerWidget {
               selected: open == i,
               // 지금 열린 패널에는 점을 띄우지 않는다.
               badge: badge && open != i,
+              // 숫자 뱃지는 선원만 (스킨 r2 결정 ③).
+              count: i == 2 ? ref.watch(crewBadgeCountProvider) : null,
               dotKey: Key('tab.dot.$i'),
               spot: spot,
               onTap: () => onTap(i),
@@ -66,6 +68,7 @@ class _DockIcon extends StatelessWidget {
     required this.dotKey,
     required this.spot,
     required this.onTap,
+    this.count,
     super.key,
   });
 
@@ -74,6 +77,7 @@ class _DockIcon extends StatelessWidget {
   final bool selected;
   final bool badge;
   final Key dotKey;
+  final int? count;
   final String? spot;
   final VoidCallback onTap;
 
@@ -98,6 +102,7 @@ class _DockIcon extends StatelessWidget {
               PixelDot(
                 show: badge,
                 dotKey: dotKey,
+                count: count,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOutBack,

@@ -29,7 +29,12 @@ class TopField {
     double? viewHeight,
     double? hullHalfWidth,
     double? hullHalfLength,
+    this.hullOffset = 0,
     this.mobSpeedScale = 1,
+    this.spawnPatterns,
+    this.scatterGapMin = 0,
+    this.scatterGapMax = 0,
+    this.arcSpreadDeg = 0,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
        bossSpawnRadius = bossSpawnRadius ?? approachRadius,
@@ -70,6 +75,12 @@ class TopField {
       viewWidth: j.numberOr('viewWidth', d.width),
       viewHeight: j.numberOr('viewHeight', d.height),
       mobSpeedScale: j.numberOr('mobSpeedScale', 1),
+      spawnPatterns: j.has('spawnPatterns')
+          ? j.obj('spawnPatterns').raw.map((k, v) => MapEntry(k, (v as num).toDouble()))
+          : null,
+      scatterGapMin: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).first as num).toDouble() : 0,
+      scatterGapMax: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).last as num).toDouble() : 0,
+      arcSpreadDeg: j.numberOr('arcSpreadDeg', 0),
     );
   }
 
@@ -84,6 +95,19 @@ class TopField {
   /// 선체 캡슐(배 중심, 위아래 축): 반폭·반길이. 적은 이 몸통에 닿을 때까지 오고, 사거리도 몸통에서 잰다. 없으면 반경 [shipRadius]의 원.
   final double hullHalfWidth;
   final double hullHalfLength;
+
+  /// 선체 캡슐 중심이 배 중심에서 배꼬리 쪽(+y)으로 떨어진 거리 — 선체 그림이 프레임 가운데보다 뒤로 치우쳐 있다.
+  final double hullOffset;
+
+  /// 스폰 패턴 가중(swarm·scatter·arc, waves.top.spawnPatterns). null이면 늘 swarm.
+  final Map<String, double>? spawnPatterns;
+
+  /// scatter 패턴: 1~2마리씩 나오는 간격(초) 범위.
+  final double scatterGapMin;
+  final double scatterGapMax;
+
+  /// arc 패턴: 반원 대열의 퍼짐(도).
+  final double arcSpreadDeg;
 
   /// 잡몹 이동 속도 배율(탑다운 화면에서 배까지 몇 초 안에 닿게, 사용자 신고 2026-10-15 '멈춰 있는 것 같다'). 보스는 그대로.
   final double mobSpeedScale;
@@ -129,7 +153,7 @@ class TopField {
   final double viewHeight;
 
   /// 배 반경·선체 캡슐을 바꾼 사본(null이면 그대로).
-  TopField withShipRadius(double? r, {double? halfWidth, double? halfLength}) => r == null
+  TopField withShipRadius(double? r, {double? halfWidth, double? halfLength, double offset = 0}) => r == null
       ? this
       : TopField(
           width: width,
@@ -156,7 +180,12 @@ class TopField {
           viewHeight: viewHeight,
           hullHalfWidth: halfWidth ?? r,
           hullHalfLength: halfLength ?? r,
+          hullOffset: offset,
           mobSpeedScale: mobSpeedScale,
+          spawnPatterns: spawnPatterns,
+          scatterGapMin: scatterGapMin,
+          scatterGapMax: scatterGapMax,
+          arcSpreadDeg: arcSpreadDeg,
         );
 
   /// [e]의 원 반지름.

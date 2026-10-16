@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
-import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
@@ -15,7 +15,7 @@ import 'ui_harness.dart';
 GameState _withChest({int ticksLeft = 400}) {
   final s = loadFixture('stage37_midgame');
   return s.copyWith(
-    battle: s.battle!.copyWith(chest: ChestView(x: 160, y: 90, ticksLeft: ticksLeft)),
+    battle: s.battle!.copyWith(chest: ChestView(x: 150, y: 200, ticksLeft: ticksLeft), shipX: 135, shipY: 240),
   );
 }
 
@@ -32,10 +32,11 @@ void main() {
     expect(find.byKey(const Key('chest')), findsNothing);
   });
 
-  testWidgets('상자는 게임 좌표 (160, 90) → 렌더와 같은 battleFrameFor.toDp 자리', (tester) async {
-    await pumpGame(tester, _withChest());
+  testWidgets('상자는 탑다운 전장 좌표 (150, 200) → 렌더와 같은 topFrameFor.worldToDp 자리(배 중심 기준)', (tester) async {
+    await pumpGame(tester, _withChest(), openTab: false);
     final battle = tester.getRect(find.byKey(const Key('battle.area')));
-    final at = battle.topLeft + battleFrameFor(battle.size, s24Dpr).toDp(const Offset(160, 90));
+    final at =
+        battle.topLeft + topFrameFor(battle.size, s24Dpr).worldToDp(const Offset(150, 200), const Offset(135, 240));
     expect(tester.getCenter(find.byKey(const Key('chest'))), offsetMoreOrLessEquals(at, epsilon: 0.5));
   });
 

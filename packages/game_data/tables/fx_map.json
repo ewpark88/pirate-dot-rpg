@@ -948,8 +948,7 @@
         ],
         "glow": true
       }
-    },
-    "scale": 0.74
+    }
   },
   "topSea": {
     "base": "#2A7FCC",
@@ -1088,5 +1087,8 @@
       "flashMs": 120,
       "dim": 0.25
     }
+  },
+  "frameCap": {
+    "battleFps": 60
   }
 }

@@ -24,6 +24,8 @@
     "approachRadius": 206,
     "approachBoost": 5,
     "mobSpeedScale": 2,
+    "shipScale": 0.74,
+    "hullGrow": { "width": 0.03, "bow": 0.083, "stern": 0.025 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

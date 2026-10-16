@@ -11,6 +11,7 @@ import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
+import 'package:pirate_dot/render/top/top_overlays.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
 
@@ -25,14 +26,19 @@ class TopScenePainter {
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
+  late final TopOverlays _overlays = TopOverlays(scene, sprites, atmosphere);
 
-  /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). fx_map topShip.scale.
-  late final double _shipScale = scene.fx.raw.obj('topShip').number('scale');
+  /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). waves.top.shipScale — 엔진 선체 캡슐과 같은 키(platform-ship-hitbox).
+  late final double _shipScale = scene.tables.waves.raw.obj('top').number('shipScale');
   late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
   double _lastMs = 0;
   static const _followMs = 220.0;
+  static const _cullMargin = 24.0;
+
+  /// 지금 프레임에 보이는 전장(전장 좌표, 여유 포함). ScenePainter가 발사체·이펙트·코인·숫자 컬링에 쓴다.
+  Rect visibleWorld = Rect.largest;
   static const _underwaterAlpha = 0.55;
 
   void paint(Canvas c, TopFrame frame, void Function(Canvas c) fx) {
@@ -58,6 +64,8 @@ class TopScenePainter {
       ..translate(sx + scene.shake.offsetX * dot, sy + scene.shake.offsetY * dot)
       ..scale(dot);
     final viewRect = Rect.fromLTWH(-sx / dot, -sy / dot, frame.box.width / dot, frame.box.height / dot);
+    // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
+    visibleWorld = viewRect.shift(scene.topShip).inflate(_cullMargin);
     _sea
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
@@ -120,9 +128,9 @@ class TopScenePainter {
     fx(c);
     c.restore();
     atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
-    if (view.feverTicksLeft > 0) _feverCoins(c, viewRect, clockMs);
+    if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
     c.restore();
-    _overlays(c, frame.box, clockMs);
+    _overlays.paint(c, frame.box, clockMs);
   }
 
   late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
@@ -155,53 +163,6 @@ class TopScenePainter {
     return cfg.raw['glow'] == true && skins.ready(id);
   }
 
-  late final JsonReader _fever = scene.fx.raw.obj('topEvents').obj('fever');
-  late final Color _feverColor = Color(parseArgb(_fever.str('border'), 'topEvents.fever.border'));
-  final _border = Paint()..style = PaintingStyle.stroke;
-  final _overlay = Paint();
-
-  /// 피버 금화 비: 보이는 영역 위에서 결정론적 자리로 떨어지며 회전(절전이면 반).
-  void _feverCoins(Canvas c, Rect view, double ms) {
-    final n = (_fever.integer('coins') * (scene.settings.powerSave ? 0.5 : 1)).round();
-    const size = 9.0;
-    for (var i = 0; i < n; i++) {
-      final x = view.left + (i * 53 + 17) % view.width.toInt();
-      final y = view.top + ((ms / (14 + i % 5)) + i * 41) % (view.height + 20) - 10;
-      sprites.drawSmoothFrame(c, 'coin_hd', ((ms / 70).floor() + i) % 4, x, y, size, size);
-    }
-  }
-
-  /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).
-  void _overlays(Canvas c, Size box, double ms) {
-    final view = scene.frame;
-    final flash = scene.settings.flash;
-    if (view.feverTicksLeft > 0) {
-      final pulse = 0.55 + 0.45 * math.sin(ms / _fever.number('pulseMs') * math.pi);
-      final w = _fever.number('borderDp');
-      // 안쪽으로 번지는 금빛(넓고 흐림) + 가장자리 금 테(선명)
-      _border
-        ..strokeWidth = w * 3
-        ..color = _feverColor.withValues(alpha: 0.35 * pulse)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, w);
-      c.drawRect((Offset.zero & box).deflate(w * 1.5), _border);
-      _border
-        ..strokeWidth = w
-        ..color = _feverColor.withValues(alpha: 0.6 + 0.4 * pulse)
-        ..maskFilter = null;
-      c.drawRect((Offset.zero & box).deflate(w / 2), _border);
-    }
-    final f = scene.moments.feverFlashMs;
-    if (f > 0 && flash) {
-      _overlay.color = _feverColor.withValues(alpha: 0.35 * f / _fever.number('flashMs'));
-      c.drawRect(Offset.zero & box, _overlay);
-    }
-    final l = atmosphere.lightning(ms);
-    if (l > 0 && flash) {
-      _overlay.color = Color.fromRGBO(240, 246, 255, 0.45 * l);
-      c.drawRect(Offset.zero & box, _overlay);
-    }
-  }
-
   /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
   bool _sink(Canvas c, double left) {
     if (left <= 0) return false;
@@ -229,8 +190,13 @@ class TopScenePainter {
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       b.clear();
     }
-    for (final e in scene.poses) {
+    final cull = visibleWorld;
+    final clock = scene.clockMs;
+    // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
+    for (var k = 0; k < scene.poseCount; k++) {
+      final e = scene.poses[k];
       if ((e.layer == 'underwater') != under) continue;
+      if (!cull.contains(Offset(e.drawX, e.drawY))) continue;
       final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
@@ -238,12 +204,13 @@ class TopScenePainter {
       (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
         ..xf.add(
           RSTransform.fromComponents(
-            rotation: e.heading + math.pi / 2,
+            // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
+            rotation: e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08,
             scale: 1,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
-            translateX: e.drawX.roundToDouble(),
-            translateY: e.drawY.roundToDouble(),
+            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7).roundToDouble(),
+            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7).roundToDouble(),
           ),
         )
         ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));

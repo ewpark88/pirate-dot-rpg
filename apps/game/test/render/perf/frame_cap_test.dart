@@ -17,4 +17,20 @@ void main() {
     expect(game.paused, isFalse);
     expect(cap.active, isFalse);
   });
+
+  test('fps를 바꾸면 다시 건다(평소 60 → 절전 30), 백그라운드에서 바꾼 값은 돌아올 때 쓴다', () {
+    final game = FlameGame();
+    final cap = FrameCap(game)..start(60);
+    expect(cap.active, isTrue);
+    cap.start(30);
+    expect(cap.active, isTrue);
+    expect(game.paused, isTrue);
+    cap
+      ..suspend()
+      ..start(60)
+      ..resume(30);
+    expect(cap.active, isTrue);
+    cap.stop();
+    expect(game.paused, isFalse);
+  });
 }

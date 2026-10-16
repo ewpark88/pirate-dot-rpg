@@ -4,7 +4,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | 선원 줄 가림 버그 수정·배 미리보기·코인 도착·전장 위 정리·r2 시안 커밋 — 다음: 축하 문구(부위별)·지루함 해소 3종 UI(S2 c5193fa)·스킨 r2 적용·T4-4 옆모습 정리(S5) |
+| 상태 | 스킨 r2 적용(패널 깊이감·뱃지 통일·버튼 광택/빛 줄기/톡·전환·보상 반짝임) check 중 — 다음: 남은 화면 다듬기(설정·출석·선원 상세·소환 탭 r2 확인), ShipPreview 골든 빈칸 해결 |
 | 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
@@ -18,6 +18,8 @@
 - 7f43adb 환생 v2 화면(상점·카드 미리보기·확인 창 보물 바다·상자 팝업·배 스킨·칭호) — rebirthV2Provider 가짜, S2 shopView 머지 뒤 교체. 임시 키 uiShop*/uiSkin*/uiTitle*는 econ* 키로 바꾸며 지운다.
 - 9a7fff1 보스 실패 안내(처음 자세히 = progress.bossFails ≤ 1)·파밍 띠. 8ce1865 전투력(fleetPower 굴러 오름·+N)·진행 게이지(파 칸·해골·보스 시간). 94239a5 일괄 강화 알약·운영자 battleView 토글. d8212f8 환생 v2 실제 연결(shopView 등), 상자 = RebirthDone, ContentUnlocked 토스트, 명예 외형.
 - b0acf04 코인 도착(goldTargetDp·표시 골드). 49a0d88 스킨 r2 시안. 6004765 전장 위 한 줄(게이지+목표, 전투력은 상단 바). d802329 선원 줄 가림 버그(도크 위 상자 광고 줄 → 위로, 시트 넘침 자름, 4기기 매 프레임 테스트)·ShipPreview 배 탭·축하 팝업·rebirthForecast.
+- a6fbdd5 상단 골드·전투력 연출 제거(사용자). ceb19b5 지루함 해소 3종 UI. 832d8c3 T4-4 옆모습 UI 정리(토글 삭제·상자 탑다운 좌표). 스킨 r2: SkinDepth 판·PixelDot 숫자/NEW 알약(선원·퀘스트 수)·SkinButton 광택+금색 5초 빛 줄기+주 버튼 톡(pop ×1.6)·SkinPopIn 창/시트·도크 패널 16dp 밀림·RewardSparkle, canMergeAny 연결(전엔 항상 false였음).
+- 주의: 병합 충돌은 레인 밖 파일이면 main 쪽(theirs)으로 — 한 번 'ours'로 풀어 렌더 골든을 옛것으로 남긴 적 있음.
 - 남은 문제: 골든에서 ShipPreview 그림 빈칸(미리 읽기가 테스트 시계에서 안 끝남), 렌더 절전 캐시 확인(S3), 상자 팝업과 소환 결과 창 동시 열림 순서, econ 문구 U+2212 글꼴 없음(S2 요청).
 - 주의: 시트 애니메이션은 탭 다음 첫 프레임에 시작 — 테스트는 pump() 뒤 pump(600ms). 하네스는 기본으로 고른 탭의 시트를 연다(openTab).
 
