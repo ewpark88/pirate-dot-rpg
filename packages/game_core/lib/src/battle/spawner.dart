@@ -1,4 +1,5 @@
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -88,6 +89,9 @@ void startBoss(
     tier: t.regions.tierAt(stage),
   );
   boss.hp = boss.maxHp.times(hpRatio);
+  if (def.patterns.isNotEmpty) {
+    boss.plan = BossPlan(def.patterns, (def.restSec / (w.tickMs * secondsPerMillisecond)).round()); // 보스 행동 v2
+  }
   f.foes.add(boss);
   final m = def.mechanic;
   if (m != null) {

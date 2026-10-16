@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/shield.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
@@ -24,6 +25,7 @@ extension TopdownStep on Round {
   void topdownStep(GameState s) {
     tickFlights();
     tickShield();
+    tickBossPatterns();
     feverAura(s);
     _emerge();
     _enemyFire();

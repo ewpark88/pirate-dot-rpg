@@ -134,7 +134,7 @@ class TopGeometry implements BattleGeometry {
     final dx = e.x - top.shipX;
     final dy = e.y - top.shipY;
     final d = math.sqrt(dx * dx + dy * dy);
-    if (e.boss ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
+    if (e.standsOff ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
     final ahead = forwardBoost > 0 && dy < 0 ? 1 + forwardBoost * (-dy / d) : 1.0; // 피버 전진
     final step =
         speed *
@@ -142,10 +142,10 @@ class TopGeometry implements BattleGeometry {
         speedScale *
         ahead *
         (d > top.approachRadius ? top.approachBoost : 1) *
-        (e.boss ? 1 : top.mobSpeedScale);
+        (e.standsOff ? 1 : top.mobSpeedScale);
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
     final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
-    final nd = e.boss
+    final nd = e.standsOff
         ? math.max(top.bossStandoff, d - step)
         : (d - step > near ? d - step : math.max(_touchDist(dx / d, dy / d), d - step));
     e
@@ -186,7 +186,7 @@ class TopGeometry implements BattleGeometry {
   void settle(Field f, double dt) {
     final mobs = [
       for (final e in f.foes)
-        if (e.alive && !e.boss && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
+        if (e.alive && !e.standsOff && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
     ];
     final min = top.mobRadius / half;
     for (var i = 0; i < mobs.length; i++) {
@@ -214,7 +214,8 @@ class TopGeometry implements BattleGeometry {
       }
     }
     for (final b in f.foes) {
-      if (!b.boss || !b.alive || b.stunned || _dist(b) > top.bossStandoff + 1) continue;
+      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false);
+      if (!orbiting || _dist(b) > top.bossStandoff + 1) continue;
       _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, top.bossStandoff);
     }
   }
