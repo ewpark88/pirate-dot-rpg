@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
+import 'package:game_core/src/battle/sortie.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
@@ -35,6 +36,8 @@ class Flight {
 extension Flights on Round {
   /// [v]를 쏜다: 탄이 있는 공격이면 비행을 띄우고 비행 틱을 돌려준다(도착 때 판정). 즉시형이면 null(호출자가 바로 맞힌다).
   ({Volley volley, int ticks})? launch(Gun g, AttackDef a, Volley v, BigNum base, {required bool crit}) {
+    final sortie = launchSortie(g, a, v, base, crit: crit); // 강습·공중: 선원 본인이 출격(sortie.dart)
+    if (sortie != null) return sortie;
     final p = a.projectile;
     final geo = this.geo;
     if (p == null || (p.speed <= 0 && p.delaySec <= 0) || geo is! TopGeometry) return null;
