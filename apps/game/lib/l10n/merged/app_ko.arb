@@ -236,7 +236,6 @@
   "uiSettingsFlash": "번쩍임",
   "uiSettingsPowerSave": "절전 모드",
   "uiSettingsAutoBoss": "자동 보스 도전",
-  "uiSettingsAutoUpgrade": "자동 강화",
   "uiSummonFree": "무료",
   "uiGoalShipTier": "{tier} 승급까지 스테이지 {count}",
   "uiGoalPartMilestone": "{part} 도약까지 {count}레벨",
@@ -597,5 +596,16 @@
   "uiLegendShield": "{every}초마다 배에 보호막 (HP {ratio}, {sec}초)",
   "uiLegendArc": "번개가 주변 {count}마리에 연쇄",
   "uiLegendArcChance": "{percent} 확률로 번개 1마리 더",
-  "uiLegendFever": "출전 중 피버 충전 +{percent}, 피버 +{sec}초"
+  "uiLegendFever": "출전 중 피버 충전 +{percent}, 피버 +{sec}초",
+  "uiCargoFull": "화물칸 가득·강화!",
+  "uiCargoFullLong": "화물칸이 가득 찼어요 · 화물칸을 강화하면 더 담을 수 있어요",
+  "uiCargoMax": "최대 {gold}",
+  "uiCargoMaxNext": "최대 {from} → {to}",
+  "uiCargoBar": "골드 {gold} / 최대 {cap}",
+  "uiCargoUpgrade": "화물칸 강화",
+  "uiOfflineCut": "화물칸이 가득 차 잘린 골드 {gold}",
+  "uiAutoUpgradeAd": "자동 강화 {min}분",
+  "uiAutoUpgradeShort": "자동",
+  "uiAutoUpgradeLeft": "자동 강화 남은 시간 {time}",
+  "uiAutoUpgradeNext": "다음 강화: {part}"
 }

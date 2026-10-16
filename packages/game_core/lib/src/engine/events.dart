@@ -3,6 +3,7 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:meta/meta.dart';
 
 part 'events_bounty.dart';
+part 'events_fast.dart';
 part 'events_fun.dart';
 part 'events_meta.dart';
 part 'events_rebirth.dart';
