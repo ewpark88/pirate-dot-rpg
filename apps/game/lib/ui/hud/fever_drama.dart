@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/hud/fever_slot.dart' show FeverSlot;
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -20,6 +21,18 @@ const feverNavy = Color(0xFF1B2A4A);
 /// 'FEVER!' 글자가 쾅 → 자리 잡고 → 위로 빠지는 시간, 끝 알림이 떠 있는 시간.
 const _slam = Duration(milliseconds: 1300);
 const _endShow = Duration(milliseconds: 1600);
+
+/// 피버 끝 알림 글 ('+골드') — 위쪽 알약 줄 오른쪽 칸([FeverSlot])이 잠깐 보인다.
+final feverEndTextProvider = NotifierProvider<FeverEndText, String?>(FeverEndText.new);
+
+class FeverEndText extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  // 다른 Notifier와 같은 모양(set 메서드)으로 맞춘다.
+  // ignore: use_setters_to_change_properties
+  void set(String? text) => state = text;
+}
 
 /// 전장 위에 얹는 피버 연출 (누름 통과). 전장 가운데는 시작 순간의 큰 글자 말고는 가리지 않는다.
 class FeverDrama extends ConsumerStatefulWidget {
@@ -36,8 +49,6 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
 
   /// 피버 시작 때 지갑 골드 (끝에 '+골드' 계산), 시작 때 남은 틱(게이지 기준).
   BigNum? _goldAtStart;
-  int _total = 1;
-  String? _endText;
 
   @override
   void initState() {
@@ -53,9 +64,8 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
   void _start() {
     if (!mounted) return;
     _goldAtStart = ref.read(gameStateProvider).wallet.gold;
-    _total = math.max(1, ref.read(gameStateProvider).battle?.feverTicksLeft ?? 1);
     _endTimer?.cancel();
-    setState(() => _endText = null);
+    ref.read(feverEndTextProvider.notifier).set(null);
     _slamCtl.forward(from: 0).ignore();
   }
 
@@ -64,10 +74,10 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
     final start = _goldAtStart;
     final now = ref.read(gameStateProvider).wallet.gold;
     final gain = start == null || now < start ? BigNum.zero : now - start;
-    setState(() => _endText = AppLocalizations.of(context).uiFeverEnd(gain.format()));
+    ref.read(feverEndTextProvider.notifier).set(AppLocalizations.of(context).uiFeverEnd(gain.format()));
     _endTimer?.cancel();
     _endTimer = Timer(_endShow, () {
-      if (mounted) setState(() => _endText = null);
+      if (mounted) ref.read(feverEndTextProvider.notifier).set(null);
     });
   }
 
@@ -84,7 +94,6 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
     final (left, tick, flashOn) = ref.watch(
       gameStateProvider.select((s) => (s.battle?.feverTicksLeft ?? 0, s.battle?.tick ?? 0, s.settings.flash)),
     );
-    if (left > _total) _total = left;
     final calm = MediaQuery.disableAnimationsOf(context);
     final l10n = AppLocalizations.of(context);
     return IgnorePointer(
@@ -93,16 +102,6 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
         children: [
           // 가장자리 불꽃 빛 (피버 동안, 가장자리만). 맥박은 전장 틱으로(끝없는 애니메이션 없음). 번쩍임 끄기면 멈춘 옅은 빛.
           if (left > 0) _EdgeGlow(pulse: flashOn && !calm ? 0.5 + 0.5 * math.sin(tick / 3) : 0.3),
-          // 큰 원형 남은 시간 (위 가운데, 게이지 아래).
-          if (left > 0)
-            Align(
-              alignment: const Alignment(0, -0.62),
-              child: _FeverRing(
-                key: const Key('fun.fever.on'),
-                value: left / _total,
-                seconds: (left * ref.read(tablesProvider).waves.tickMs / Duration.millisecondsPerSecond).ceil(),
-              ),
-            ),
           // 'FEVER!' 쾅.
           AnimatedBuilder(
             animation: _slamCtl,
@@ -124,21 +123,6 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
               );
             },
           ),
-          // 끝 알림 (짧게).
-          if (_endText != null)
-            Align(
-              alignment: const Alignment(0, -0.62),
-              child: Container(
-                key: const Key('fun.fever.end'),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: feverNavy.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: feverGold, width: 2),
-                ),
-                child: Text(_endText!, style: Skin.text(16, color: feverGold)),
-              ),
-            ),
         ],
       ),
     );
@@ -212,67 +196,4 @@ class _EdgeGlow extends StatelessWidget {
       ],
     );
   }
-}
-
-/// 큰 원형 남은 시간: 금 고리 + 가운데 남은 초 + 'FEVER'.
-class _FeverRing extends StatelessWidget {
-  const _FeverRing({required this.value, required this.seconds, super.key});
-
-  final double value;
-  final int seconds;
-
-  @override
-  Widget build(BuildContext context) => SizedBox.square(
-    dimension: 72,
-    child: CustomPaint(
-      painter: _RingPainter(value.clamp(0, 1).toDouble()),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(seconds.toString(), style: Skin.text(24, color: feverGold)),
-            Text(AppLocalizations.of(context).uiFever, style: Skin.text(10, color: Colors.white)),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _RingPainter extends CustomPainter {
-  _RingPainter(this.value);
-
-  final double value;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final c = size.center(Offset.zero);
-    final r = size.shortestSide / 2 - 5;
-    canvas
-      ..drawCircle(c, r + 4, Paint()..color = feverNavy.withValues(alpha: 0.85))
-      ..drawCircle(
-        c,
-        r,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 7
-          ..color = Colors.white24,
-      )
-      ..drawArc(
-        Rect.fromCircle(center: c, radius: r),
-        -math.pi / 2,
-        2 * math.pi * value,
-        false,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 7
-          ..strokeCap = StrokeCap.round
-          ..shader = const SweepGradient(colors: [feverGold, feverOrange, feverGold]).createShader(
-            Rect.fromCircle(center: c, radius: r),
-          ),
-      );
-  }
-
-  @override
-  bool shouldRepaint(_RingPainter old) => old.value != value;
 }
