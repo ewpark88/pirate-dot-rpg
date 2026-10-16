@@ -74,12 +74,11 @@ extension TopdownStep on Round {
       if (shot.ticksLeft > 0) continue;
       field.enemyShots.remove(shot);
       if (invincible) continue;
-      final hp = field.shipHp - shot.amount;
-      field.shipHp = hp.isNegative ? BigNum.zero : hp;
+      final amount = field.hurtShip(shot.amount, w.raw.number('shipHitCap'));
       ctx.emit(
         ShipDamaged(
           ctx.tick,
-          amount: shot.amount,
+          amount: amount,
           hpRatio: (field.shipHp / field.shipHpMax).toDouble(),
           fromX: shot.fromX,
           fromY: shot.fromY,

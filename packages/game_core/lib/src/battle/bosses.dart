@@ -1,7 +1,6 @@
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart';
-import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 
 /// 보스 패턴 주기(초) → 틱.
@@ -50,9 +49,7 @@ extension BossRound on Round {
         boss.shielded = true;
       case 'lava':
         if (invincible) return;
-        final amount = boss.attack.times(m.shipDamageMultiplier);
-        final hp = field.shipHp - amount;
-        field.shipHp = hp.isNegative ? BigNum.zero : hp;
+        final amount = field.hurtShip(boss.attack.times(m.shipDamageMultiplier), w.raw.number('shipHitCap'));
         ctx.emit(ShipDamaged(ctx.tick, amount: amount, hpRatio: (field.shipHp / field.shipHpMax).toDouble()));
       case 'summoner':
         spawnWave(field, field.stage, ctx, count: m.count);

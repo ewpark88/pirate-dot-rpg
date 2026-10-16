@@ -225,11 +225,9 @@ class Field {
   bool bossActive = false;
   int bossTicksLeft = 0;
 
-  /// 다음 무리(또는 보스)가 올 때까지 남은 초. 적이 없을 때만 줄어든다.
-  double travelLeft = 0;
+  double travelLeft = 0; // 다음 무리(또는 보스)가 올 때까지 남은 초. 적이 없을 때만 줄어든다
 
-  /// 적 체력 배율 (보물 바다 회차, 환생 v2 — 무리·보스 모두). battle_system이 Field를 만들 때 넣는다.
-  double enemyHpScale = 1;
+  double enemyHpScale = 1; // 적 체력 배율(보물 바다 회차, 환생 v2 — 무리·보스). Field를 만들 때 넣는다
   int _nextId = 1;
 
   /// 동시 처치 창: 마지막 처치 후 남은 초, 묶인 마리 수, 묶인 골드.
@@ -241,22 +239,17 @@ class Field {
   double buffValue = 0;
   double buffLeft = 0;
 
-  /// 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱.
-  int bossTimerTicks = 0;
+  int bossTimerTicks = 0; // 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱
 
-  /// 전장 모양(탑다운). 없으면 waves.top 기본 배 반경으로 — [geometryOr].
-  BattleGeometry? geometry;
+  BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
 
-  /// 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해.
-  final List<EnemyShot> enemyShots = [];
+  final List<EnemyShot> enemyShots = []; // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
-  /// 진행 중인 현상금 전투(탑다운 B1, top_bounty.dart). 타이머는 [bossTicksLeft]를 같이 쓴다.
-  ({String bossId, int tier})? bounty;
+  ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 
-  /// [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다).
-  Object? shipSeen;
+  Object? shipSeen; // [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다)
 
-  /// [geometry], 없으면 waves.top 기본으로 정해 둔다(테스트·측정 장면).
+  /// [geometry], 없으면 waves.top 기본(테스트·측정 장면).
   BattleGeometry geometryOr(WavesTable w) => geometry ??= TopGeometry.of(w);
 
   int nextId() => _nextId++;

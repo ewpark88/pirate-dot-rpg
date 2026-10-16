@@ -40,7 +40,7 @@ void main() {
     }, 'test'),
   );
 
-  Foe spitter(double gapFromHull, {int id = 1}) => Foe(
+  Foe spitter(double gapFromHull, {int id = 1, double attack = 100}) => Foe(
     id: id,
     kind: 'spitter',
     layer: 'surface',
@@ -48,7 +48,7 @@ void main() {
     y: top.shipY + top.hullOffset,
     maxHp: BigNum.from(1000),
     speed: 0,
-    attack: BigNum.from(100),
+    attack: BigNum.from(attack),
     gold: BigNum.one,
     def: ranged,
   );
@@ -81,6 +81,13 @@ void main() {
     expect(hits.first.amount.toDouble(), closeTo(35, 1e-6));
     expect(hits.first.tick - fired.first.tick, fired.first.flightTicks - 1);
     expect(f.shipHp.toDouble(), closeTo(930, 1e-6));
+  });
+
+  test('(a) 적 탄도 한 대 상한(waves.shipHitCap)을 넘지 않는다', () {
+    final big = spitter(60, attack: 1000000000);
+    final f = field()..foes.add(big);
+    final hit = run(f, 1).whereType<ShipDamaged>().first;
+    expect(hit.amount.toDouble(), closeTo(1000 * t.waves.raw.number('shipHitCap'), 1e-6));
   });
 
   test('(b) 가까이 등장: 파의 15%가 배 몸통 40~80 자리에서 0.6초 예고 뒤 솟아오름, 예고 중엔 조준 안 됨', () {
