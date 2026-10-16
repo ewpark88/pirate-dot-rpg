@@ -131,11 +131,16 @@ class _SlotButton extends ConsumerWidget {
       onTap = () => showSkinToast(context, label);
       overlay = Align(
         alignment: const Alignment(0, 0.72),
-        child: Text(
-          l10n.uiFleetSlotStage(stage),
-          key: Key('fleet.locked.label.$slot'),
-          style: Skin.text(11, color: Colors.white).copyWith(
-            shadows: const [Shadow(color: Color(0xCC000000), blurRadius: 3)],
+        // 좁은 칸(360dp)에서도 한 줄 — 줄바꿈 대신 줄여 맞춘다.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            l10n.uiFleetSlotStage(stage),
+            key: Key('fleet.locked.label.$slot'),
+            maxLines: 1,
+            style: Skin.text(11, color: Colors.white).copyWith(
+              shadows: const [Shadow(color: Color(0xCC000000), blurRadius: 3)],
+            ),
           ),
         ),
       );

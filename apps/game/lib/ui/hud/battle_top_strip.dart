@@ -4,8 +4,10 @@ import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 전장 위쪽 (선원 줄·시트를 가리지 않게, 전장 가운데 60%를 덮지 않게): 진행 게이지(+목표·파밍·피버) · 왼쪽 위 작은 알약들 · 보스 실패 안내 · 튜토리얼 말풍선.
@@ -37,13 +39,26 @@ class _Pills extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Wrap(
-        spacing: 6,
-        runSpacing: 4,
-        children: bounty ? const [BountyStrip()] : const [SeaEventStrip(), ChallengeStrip()],
-      ),
+    final (fever, challenge) = ref.watch(
+      gameStateProvider.select((s) => ((s.battle?.feverTicksLeft ?? 0) > 0, s.battle?.challenge != null)),
+    );
+    // 우선순위: 현상금 > 도전 > 돌발 이벤트. 피버 동안은(오른쪽에 원형 시간) 알약 하나만.
+    final pills = switch ((bounty, fever, challenge)) {
+      (true, _, _) => const [BountyStrip()],
+      (false, true, true) => const [ChallengeStrip()],
+      _ => const [SeaEventStrip(), ChallengeStrip()],
+    };
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(spacing: 6, runSpacing: 4, children: pills),
+          ),
+        ),
+        const FeverSlot(),
+      ],
     );
   }
 }
