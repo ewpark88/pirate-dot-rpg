@@ -53,6 +53,7 @@ sealed class Command {
       'startBounty' => StartBounty(j['bossId'] as String, j['tier'] as int),
       'sweepBounty' => SweepBounty(j['bossId'] as String, j['count'] as int),
       'retreatBounty' => const RetreatBounty(),
+      'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };

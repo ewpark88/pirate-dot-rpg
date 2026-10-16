@@ -4,6 +4,6 @@ seed: 1
 state: fixtures/states/stage37_midgame.json
 steps:
   - expect: { stage: 37, bestStage: 41, gems: 140, crews: 4, operator: false }
-  - advance: 1s
+  - advance: 1t  # 규칙과 무관하게: 픽스처는 wave 2라 파 수(waves.wavesPerStage)에 따라 곧 보스가 나온다
   - input: { type: op.speed, speed: 1 }
   - expect: { operator: true, stage: 37 }

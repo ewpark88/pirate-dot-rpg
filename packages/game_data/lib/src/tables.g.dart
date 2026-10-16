@@ -1972,7 +1972,7 @@ const Map<String, String> rawTables = {
   'meta': r'''
 {
   "rebirth": {
-    "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.05, "recoverTargetRatio": 0.3, "recoverTargetSec": 300,
+    "minStage": 40, "offset": 35, "exponent": 1.4, "bonusPerPiece": 0.02, "recoverTargetRatio": 0.3, "recoverTargetSec": 300,
     "shopRows": [0, 30, 150],
     "shop": [
       { "id": "startParts", "row": 1, "perLevel": 5, "perLevelMinor": 1, "maxLevel": 10, "costBase": 3, "costGrowth": 1.35, "nameKey": "econRebirthShopStartPartsName", "descKey": "econRebirthShopStartPartsDesc" },
@@ -2075,7 +2075,7 @@ const Map<String, String> rawTables = {
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.6, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -2097,9 +2097,9 @@ const Map<String, String> rawTables = {
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
-      "stage10Min": { "min": 6, "max": 12 },
+      "stage10Min": { "min": 7, "max": 9 },
       "stage40DayHours": { "min": 0, "max": 8.67, "schedule": "daily" },
-      "stage40OnlineMin": { "min": 20, "max": 100000, "schedule": "continuous" },
+      "stage40OnlineMin": { "min": 45, "max": 55, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
       "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
@@ -2108,13 +2108,13 @@ const Map<String, String> rawTables = {
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
       "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
       "rebirthRecoverSec": { "min": 0, "max": 300 },
-      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" },
+      "rebirthBeatBestMin": { "min": 30, "max": 60, "schedule": "continuous" },
       "eventGoldPct": { "min": 10, "max": 20 },
       "challengeWinPct": { "min": 60, "max": 70 },
       "feverIntervalMin": { "min": 4, "max": 6 },
       "bossFirstWinPct": { "min": 70, "max": 85 },
       "wallFirstWinPct": { "min": 30, "max": 50 },
-      "rebirthWallRatio": { "min": 0.5, "max": 0.65 },
+      "rebirthWallRatio": { "min": 0.75, "max": 0.85 },
       "cargoFullPct": { "min": 10, "max": 25 },
       "overflowPct": { "min": 0, "max": 10 },
       "affordablePct": { "min": 30, "max": 50 },
@@ -2203,10 +2203,10 @@ const Map<String, String> rawTables = {
 {
   "parts": [
     {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartCannon"},
-    {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
+    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
     {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail"},
     {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 300, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -2246,14 +2246,14 @@ const Map<String, String> rawTables = {
   'waves': r'''
 {
   "tickMs": 50,
-  "wavesPerStage": 3,
+  "wavesPerStage": 2,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
-  "waveHpPoolFactor": 1.8,
+  "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
-  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
+  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2.8, "goldGrowth": 1.13 },
+  "boss": { "hpMultiplier": 28, "wallEvery": 10, "wallHpMultiplier": 2.0, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.08 },
   "travelSec": 1.5,
-  "rebirthSkip": { "fraction": 0.55, "waves": 0 },
+  "rebirthSkip": { "fraction": 0.45, "waves": 0 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
     "swarmSpacing": 3,

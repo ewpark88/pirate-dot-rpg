@@ -5,10 +5,20 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 화물칸 금고(미커밋, 테스트 통과) + 난이도(공격 감속·보스 성공률·진행 시간·환생 뒤 첫 벽) sim → 한 커밋 / crews aim 40명(S5 d92f4ff 머지 뒤) / 위협 수치 / 현상금 B2 |
+| 바로 다음 할 일 | 난이도 sim(보스 패턴 v2 포함): 보스 첫 도전 성공 보통 70~85%·10단위 30~50%, 화물칸 가득 10~25%, 환생 첫 벽 0.5~0.65, 스테이지 10 7~9분·40 35~45분 → 커밋 / 보스 패턴 수치(S5) / 위협 수치 / 현상금 B2 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 · S2 · aim 40명 커밋
+- 012fcf1: crews aim 40명(평균 1.58초), traitScale, turtle 보호막·pelly 낙뢰·pumpum 피버 서포트. 계열 ladder·전설·aim powerScale 동시 적합 → balance crews 5레벨 0.90~1.09.
+- d50ca90: main 98d8862 머지 — main의 투척 45 1.21 실패가 이 상태에서 통과(S1에 머지 요청).
+
+### 2026-10-16 · S2 · 화물칸 금고 커밋·aim 40명
+- 3ba4dcd: 화물칸 금고·젬(처음 깬 보스만)·자동 강화 광고(10분, 엔진이 버프 중 구매)·sim 지표·시나리오 2개 갱신. 빠른 check·단위 통과.
+- aim 40명(평균 발사 1.58초), traitScale, legends turtle 보호막·pelly 낙뢰·pumpum 피버 서포트 — 미커밋.
+  균형: 켠 직후 0.33~2.2 → aim powerScale 4회 0.70~1.38. 레벨마다 다른 편차(공중 계열 L15 높음, 전설 L60·75) → 계열·전설·aim 동시 맞춤 진행 중.
+- 남은 문제: balance crews가 메모리 압박으로 두 번 강제 종료 — 회차마다 표를 저장해 이어서.
 
 ### 2026-10-16 · S2 · 화물칸 금고·젬·난이도 지표
 - 화물칸 = 골드 금고(사용자 결정 ①버림+경고 ②오프라인 용량까지 ③비용 60% ④환생 때 처음으로): gold_cap.dart addGold·grantGold·goldCapacity·goldRoom·goldNearFull, GoldOverflow, 모든 골드 경로 상한, 골드 배율 1. 미커밋.

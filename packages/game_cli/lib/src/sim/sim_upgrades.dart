@@ -66,3 +66,12 @@ void buyRebirthShop(CoreEngine engine, GameTables t, GameState s) {
   final items = shopView(s, t).items.where((i) => i.affordable).toList()..sort((a, b) => a.cost!.compareTo(b.cost!));
   if (items.isNotEmpty) engine.enqueue(BuyRebirthUpgrade(items.first.id));
 }
+
+/// 사고 싶은 강화(화물칸 말고 가장 싼 것)가 화물칸 용량보다 비싸 막혔나 — 지표 '용량에 막힌 시간'(S1 결정 2026-10-16).
+bool cargoBlocked(GameTables t, GameState s) {
+  final weights = {
+    for (final e in t.meta.raw.obj('sim').obj('buyCostWeight').raw.entries) e.key: (e.value as num).toDouble(),
+  };
+  final other = cheapestUpgrade(t, s.ship.parts, weights: {...weights, 'cargo': double.infinity});
+  return other != null && other.cost.times(upgradeCostMultiplier(s, t)) > goldCapacity(s, t);
+}
