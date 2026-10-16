@@ -47,7 +47,8 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),
     // 현상금 입장권 +1 (하루 1 = dailyLimit, 상한 ticketCap을 넘어도 받는다 — 기획 1절).
-    AdPlacement.autoUpgrade => s, // 자동 강화 10분: S2가 처리(사용자 결정 — 자동 강화는 광고 보상으로만)
+    // 자동 강화 10분(사용자 결정 — 평소엔 수동, 자동은 광고 보상으로만). 겹쳐 보면 maxStackSec까지 늘어난다.
+    AdPlacement.autoUpgrade => _saved(addAutoUpgrade(s, t, now), ctx),
     AdPlacement.bountyTicket => _saved(
       s.copyWith(
         bounty: s.bounty!.copyWith(tickets: s.bounty!.tickets + reward.integer('value'), adOn: localDate(now)),
@@ -86,3 +87,17 @@ GameState addTailwind(GameState state, GameTables t, DateTime now, Duration d) {
 
 GameState opGrantTailwind(GameState state, OpGrantTailwind c, SystemContext ctx) =>
     addTailwind(state, ctx.tables, ctx.clock.now(), c.duration);
+
+/// 자동 강화 버프 남은 시간 (없거나 끝났으면 0).
+Duration autoUpgradeRemaining(GameState s, DateTime now) {
+  final until = s.buffs.autoUpgradeUntil;
+  return until == null || !until.isAfter(now) ? Duration.zero : until.difference(now);
+}
+
+GameState addAutoUpgrade(GameState state, GameTables t, DateTime now) {
+  final r = _def(t, AdPlacement.autoUpgrade).reward;
+  var left = autoUpgradeRemaining(state, now) + Duration(seconds: r.integer('durationSec'));
+  final max = Duration(seconds: r.integer('maxStackSec'));
+  if (left > max) left = max;
+  return state.copyWith(buffs: state.buffs.copyWith(autoUpgradeUntil: now.add(left).toUtc()));
+}

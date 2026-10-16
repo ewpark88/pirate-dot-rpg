@@ -52,10 +52,13 @@ class CrewState {
 
 @immutable
 class Buffs {
-  const Buffs({this.tailwindUntil, this.bossSupportUntil});
+  const Buffs({this.tailwindUntil, this.bossSupportUntil, this.autoUpgradeUntil});
 
-  factory Buffs.fromJson(Json j) =>
-      Buffs(tailwindUntil: parseTime(j['tailwindUntil']), bossSupportUntil: parseTime(j['bossSupportUntil']));
+  factory Buffs.fromJson(Json j) => Buffs(
+    tailwindUntil: parseTime(j['tailwindUntil']),
+    bossSupportUntil: parseTime(j['bossSupportUntil']),
+    autoUpgradeUntil: parseTime(j['autoUpgradeUntil']),
+  );
 
   /// 순풍 버프 종료 시각(UTC): 골드·전투 속도 (ads.json tailwind).
   final DateTime? tailwindUntil;
@@ -63,14 +66,19 @@ class Buffs {
   /// 함포 지원 종료 시각(UTC): 보스 재도전 피해 + (ads.json bossSupport). 세이브에 없어도 된다(선택 키).
   final DateTime? bossSupportUntil;
 
-  Buffs copyWith({DateTime? tailwindUntil, DateTime? bossSupportUntil}) => Buffs(
+  /// 자동 강화 종료 시각(UTC): 보상형 광고로만 켜진다(사용자 결정 2026-10-16 — 평소엔 수동 강화만). 선택 키.
+  final DateTime? autoUpgradeUntil;
+
+  Buffs copyWith({DateTime? tailwindUntil, DateTime? bossSupportUntil, DateTime? autoUpgradeUntil}) => Buffs(
     tailwindUntil: tailwindUntil ?? this.tailwindUntil,
     bossSupportUntil: bossSupportUntil ?? this.bossSupportUntil,
+    autoUpgradeUntil: autoUpgradeUntil ?? this.autoUpgradeUntil,
   );
 
   Json toJson() => {
     'tailwindUntil': tailwindUntil?.toUtc().toIso8601String(),
     if (bossSupportUntil != null) 'bossSupportUntil': bossSupportUntil!.toUtc().toIso8601String(),
+    if (autoUpgradeUntil != null) 'autoUpgradeUntil': autoUpgradeUntil!.toUtc().toIso8601String(),
   };
 }
 

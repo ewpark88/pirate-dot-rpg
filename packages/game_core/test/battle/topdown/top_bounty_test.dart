@@ -2,8 +2,9 @@ import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/battle_system.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:game_core/testing.dart';
-import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
+
+import '../family_tables.dart';
 
 /// 현상금 전투(탑다운 B1, 계획 platform-bounty-topdown.md). 경제 몫(StartBounty → 티켓 −1·active)은 B2 전이라
 /// 그 역할만 하는 가짜 시스템을 앞에 둔다(엔진은 경제 → 전투 순서로 명령을 넘긴다).
@@ -26,7 +27,7 @@ class _FakeBountyEconomy implements GameSystem {
 }
 
 void main() {
-  final t = GameTables.load();
+  final t = familyTables(); // 계열 기본(선원 aim·특징 없음) — 침몰 규칙을 재려고
   final start = DateTime.utc(2026, 11);
   final boss = bountyBosses(t).first;
   int ticksFor(double sec) => (sec * 1000 / t.waves.tickMs).round();
