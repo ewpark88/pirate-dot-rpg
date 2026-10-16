@@ -1,5 +1,6 @@
 import 'package:game_core/src/economy/ads.dart';
 import 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradeStep;
+import 'package:game_core/src/economy/bounty_flow.dart';
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/formation.dart';
@@ -56,15 +57,24 @@ class EconomySystem implements GameSystem {
     final OpSetRebirths c => opSetRebirths(state, c),
     final PickBottle c => pickBottle(state, c, ctx),
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
+    MarkHint(:final id) =>
+      state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),
+    final StartBounty c => startBounty(state, c, ctx),
+    final SweepBounty c => sweepBounty(state, c, ctx),
+    final OpSetBountyTickets c => opSetBountyTickets(state, c),
+    final OpSetWeekday c => opSetWeekday(state, c),
     _ => null,
   };
 
   @override
   GameState update(GameState state, SystemContext ctx) => autoUpgradeStep(
     tickChest(
-      tutorialTick(
-        rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
-        ctx.tables,
+      bountyTick(
+        tutorialTick(
+          rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+          ctx.tables,
+        ),
+        ctx,
       ),
       ctx,
     ),

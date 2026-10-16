@@ -15,6 +15,10 @@ class SimThreat {
   final farmWaveDamage = <double>[];
   double _minRatio = 1;
 
+  /// 보스전 한 번에 깎인 배 체력(보스 행동 v2 목표 25~45%, S5).
+  final bossFightDamage = <double>[];
+  double _bossMin = 1;
+
   /// 환생 뒤 첫 벽: 첫 보스 실패 스테이지 ÷ 환생 전 최고 (사용자 신고 '환생 뒤 강화 없이 너무 멀리 감' — 목표 0.5~0.6).
   final rebirthWallRatio = <double>[];
   int? _bestBeforeRebirth;
@@ -46,15 +50,20 @@ class SimThreat {
     switch (e) {
       case ShipDamaged(:final hpRatio):
         if (hpRatio < _minRatio) _minRatio = hpRatio;
+        if (s.battle?.bossActive == true && hpRatio < _bossMin) _bossMin = hpRatio;
       case WaveCleared():
         if (s.progress.farming) farmWaveDamage.add(1 - _minRatio);
         _minRatio = 1;
       case BossCleared(:final stage):
         _firstTry(s, stage, won: true);
+        bossFightDamage.add(1 - _bossMin);
+        _bossMin = 1;
       case RebirthDone():
         _bestBeforeRebirth = s.progress.bestStage;
       case BossFailed(:final stage):
         _firstTry(s, stage, won: false);
+        bossFightDamage.add(1 - _bossMin);
+        _bossMin = 1;
         final before = _bestBeforeRebirth;
         if (before != null) {
           rebirthWallRatio.add(stage / before);

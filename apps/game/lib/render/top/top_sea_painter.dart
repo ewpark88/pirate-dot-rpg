@@ -137,9 +137,12 @@ class TopSeaPainter {
 
   /// 바다 전체: [view] = 보이는 영역(단위, 왼쪽 위 기준), [clockMs] = 깜빡임용.
   void paint(Canvas c, Rect view, double clockMs) {
-    if (_builtFor != view.size) {
-      _build(view.size);
-      _builtFor = view.size;
+    // 시트를 여닫는 동안 보이는 높이가 매 프레임 바뀐다 — 길(Path)은 커질 때만 다시 만든다(64단위로 올림, 사용자 '시트 열면 버벅').
+    final built = _builtFor;
+    if (built == null || view.width > built.width + 0.5 || view.height > built.height) {
+      final size = Size(view.width, (view.height / 64).ceil() * 64.0);
+      _build(size);
+      _builtFor = size;
     }
     _paint.color = _mix(_base, _goldBase, _feverBase);
     c.drawRect(view.inflate(1), _paint);

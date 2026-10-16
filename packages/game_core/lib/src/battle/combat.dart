@@ -128,6 +128,7 @@ class Round {
             angle: m?.angle,
             flightTicks: flying?.ticks,
             kind: a.raw.strOrNull('kind'),
+            splashRadius: a.raw.has('splashRadius') ? a.raw.number('splashRadius') : null,
           ),
         );
         if (flying != null) continue;

@@ -74,6 +74,10 @@ class AttackDef {
     return AttackDef.fromJson(JsonReader({...raw.raw, ...o, 'power': power}, over.path));
   }
 
+  /// 연사 간격만 × [k](power는 그대로 — 전설 이상 '공속 + 공격력 둘 다', skills.json rarityTempo, S2).
+  AttackDef tempo(double k) =>
+      k == 1 ? this : AttackDef.fromJson(JsonReader({...raw.raw, 'intervalSec': intervalSec * k}, raw.path));
+
   /// 날아가는 탄(선원 개성 v2 `projectile`): 탄속(단위/초)·예측 사격·도착 지점 맞는 반경. 없으면 즉시 맞는다.
   /// delaySec가 있으면 거리와 상관없이 그 시간 뒤 조준점에 떨어진다(낙뢰 예고, 개성 v2 7.2).
   ({double speed, bool lead, double hitRadius, double delaySec})? get projectile {
@@ -190,6 +194,9 @@ class SkillsTable {
       },
       traitScale = j.has('traitScale')
           ? [for (final v in j.raw['traitScale'] as List) (v as num).toDouble()]
+          : const [],
+      rarityTempo = j.has('rarityTempo')
+          ? [for (final v in j.raw['rarityTempo'] as List) (v as num).toDouble()]
           : const [];
 
   final List<FamilyDef> families;
@@ -215,6 +222,9 @@ class SkillsTable {
 
   /// 선원 개성 v2 특징 배율(등급 순번 0~전설 전): 전설 미만도 전설 능력을 이 배율로(일반 0.4…). 비면 전설부터만.
   final List<double> traitScale;
+
+  /// 등급 순번별 연사 간격 배율(전설 이상 빠르게, power 그대로 — S2). 비거나 짧으면 1.
+  final List<double> rarityTempo;
 
   /// 선원 id → 전설 능력 원문 (등급에 따라 [legendFor]).
   final Map<String, JsonReader> legends;

@@ -75,7 +75,12 @@ class Foe {
   /// 보호막 중(보스 패턴) · 다음 접촉 피해까지 남은 초(0 = 닿자마자) · 남은 기절 초(기절 중 이동·접촉 공격 없음).
   bool shielded = false;
   double contactTimer = 0;
-  double stunTimer = 0;
+  double _stun = 0;
+  double get stunTimer => _stun;
+  set stunTimer(double v) => _stun = vanguard && v > _stun ? _stun : v; // 돌격대는 기절이 늘지 않는다
+
+  /// 돌격대(waves.top.vanguard, S1·S2): 넉백·기절·끌기 면역, 무리 사이를 뚫고 배로 곧장 — EnemyView.vanguard.
+  bool vanguard = false;
 
   /// 등장 대기(초, 스폰 패턴 scatter·가까이 등장): 0보다 크면 기다린다 — 움직이지도·조준되지도·겹침을 풀지도 않는다.
   double holdSec = 0;
@@ -123,6 +128,7 @@ class Foe {
     vulnerable: vulnerableTimer > 0,
     heading: heading ?? EnemyView.sideHeading,
     emerging: emerging,
+    vanguard: vanguard,
     eventKind: eventKind,
   );
 }

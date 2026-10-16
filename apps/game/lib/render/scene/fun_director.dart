@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/fx/transients.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
@@ -18,14 +20,22 @@ bool funEvent(BattleScene s, GameEvent e) {
       s.topHits.fast.started(from, to, s.clockMs);
       _sfx(s, 'fastSailStarted', e);
     case FastSailEnded(:final from, :final to):
-      s.topHits.fast.ended(from, to, s.clockMs);
-      _sfx(s, 'fastSailEnded', e);
+      s.topHits.fast.ended(from, to, s.clockMs); // 팡파르는 UI 끝 요약 창(S4)
     case BreakthroughStrike(:final x, :final y, :final combo, :final phase, :final speed):
       s.topHits.fast.strike(x, y, combo, phase, speed, s.clockMs);
       _sfx(s, 'breakthroughStrike', e);
       s.topHits.impact.add(x, y, phase == 'finale' ? 90 : 50, 0xFFFFD84A, s.clockMs + (phase == 'finale' ? 600 : 160));
       if (phase == 'finale') s.slowMoMs = 600;
       s.shake.trigger(s.juice.shake[phase == 'finale' ? 'ultimate' : 'aoe']!);
+    case BountyStarted(:final bossId, :final tier):
+      s.topHits.bounty.started(bossId, tier, s.clockMs);
+      _sfx(s, 'bossSpawned', e);
+    case BountyCleared(:final reward):
+      s.topHits.bounty.cleared(reward.type, reward.amount, _bossAt(s), s.clockMs);
+      _sfx(s, 'bossCleared', e);
+    case BountyFailed():
+      s.topHits.bounty.failed(_bossAt(s), s.clockMs);
+      _sfx(s, 'bossFailed', e);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
@@ -71,3 +81,12 @@ bool funEvent(BattleScene s, GameEvent e) {
 }
 
 void _sfx(BattleScene s, String key, GameEvent e) => s.sound.sfx(key, clockMs: s.clockMs, tick: e.tick);
+
+/// 지금 보스 자리(없으면 배 앞 90) — 현상금 끝 연출 자리.
+Offset _bossAt(BattleScene s) {
+  for (var k = 0; k < s.poseCount; k++) {
+    final e = s.poses[k];
+    if (e.boss) return Offset(e.drawX, e.drawY);
+  }
+  return s.topShip - const Offset(0, 90);
+}

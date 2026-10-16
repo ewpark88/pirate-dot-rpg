@@ -59,4 +59,12 @@ void main() {
     expect(autoUpgradeRemaining(off, EconomyHarness.start), Duration.zero);
     expect(Command.fromJson(const CancelAutoUpgrade().toJson()).toJson(), const CancelAutoUpgrade().toJson());
   });
+
+  test('MarkHint: 안내 id를 세이브에 남기고, 이미 있으면 그대로', () {
+    final s1 = sys.handle(rich(), const MarkHint('ult.bubble'), h.ctx)!;
+    expect(s1.settings.hints, {'ult.bubble'});
+    expect(sys.handle(s1, const MarkHint('ult.bubble'), h.ctx), isNull);
+    expect(SaveCodec.decode(SaveCodec.encode(s1)).settings.hints, {'ult.bubble'});
+    expect(Command.fromJson(const MarkHint('x').toJson()).toJson(), const MarkHint('x').toJson());
+  });
 }
