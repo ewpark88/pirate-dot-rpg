@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 흰 번쩍임 축소(완료) → 도감 v2 대보스 6종 도트(바다 악어·괴물 고래·얼음 슬라임·레비아탄·크라켄·포세이돈) + 도감 v2 연출(InkCloud·삼킴·분열·자폭) → 계열 v3 시차 타격(burst·hop·ringSpeed·submerged) → 사운드 점검 → 4기기 골든 눈 확인 |
+| 현재 계획 | 발열 대책(완료, 30fe9e9) → 도감 v2 대보스 6종 도트(바다 악어·괴물 고래·얼음 슬라임·레비아탄·크라켄·포세이돈) + 도감 v2 연출(InkCloud·삼킴·분열·자폭) → 계열 v3 시차 타격(burst·hop·ringSpeed·submerged) → 사운드 점검 → 4기기 골든 눈 확인 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
 | 막힌 것 | 번쩍임 설정 기본값 '약하게'는 설정 담당(S4/S5) · main UI crew_identity·crew_filter 테스트 4건 실패(내 레인 아님) |
 
@@ -13,6 +13,11 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 밤 · S3 · 발열 대책 (사용자 퇴근으로 멈춤)
+- 67b9cda 방치 절전(60초 → 30fps·가벼운 연출, 3분 → 어두운 점 화면 12fps)·효과음 초당 예산 14. 6d94b66 절전 문턱 BattleGame.sleepAfterSec. 30fe9e9 방치 원본을 UI로: game.idle.follow(IdleLevel) — 받으면 렌더는 스스로 세지 않는다.
+- 남은 할 일(순서): ① S4 IdleGate 연결 확인(sleep → IdleLevel.dim) ② 대보스 6종 도트(boss_sea_croc·boss_monster_whale·boss_ice_slime·boss_leviathan·boss_kraken·boss_poseidon, 탑다운 64~96px + 컷인) ③ 도감 v2 연출(InkCloud·ink/swallow 예고·BossSwallowed·BossSplit·BomberBlast·떼 작게) ④ S5 피버 첫 일격(UltimateCast 피버 직후 — ultimates 연출 다듬기)·BossBroken(쓰러짐·물보라·피해 숫자 크게)·ShipResupplied 보급 축하(부위별 PartUpgraded 재사용 + '보급!' 띠, 문구는 TopTexts/S4) ⑤ 계열 v3 시차 타격(burst·hop·ringSpeed·submerged) ⑥ 사운드 점검 ⑦ 4기기 골든 눈 확인 ⑧ main 머지 뒤 integer_scale.dart·빈 ScenePainter.paint 삭제.
+- 남은 문제: check 실패 4건은 main에서도 깨지는 UI crew_identity·crew_filter(S4). 실기기 프레임 수 미측정(폰 화면 꺼짐).
 
 ### 2026-10-16 저녁 · S3 · 보스 카메라 → 계열 v3 → 흰 번쩍임 축소
 - 7112bff 보스 카메라(줌·당김, worldToDp). db5aa82·92cda5b·f98df27 계열 v3: 출격 초상 비행(CrewSortie)·레이저 빔(beamTicks)·자탄 폭발(BombletBurst), 새 계열 laser·ring·cluster 발사체 모양. db5aa82는 check 실패 상태로 커밋됨(다음 커밋에서 고침).
