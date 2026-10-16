@@ -59,6 +59,31 @@ class TopGeometry implements BattleGeometry {
   List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, Rng rng, {double reachBonus = 0}) =>
       _aim.aimMany(a, n, foes, rng, reachBonus: reachBonus);
 
+  /// 배 위협 (b) 가까이 등장: 한 파의 ratio만큼을 배 몸통에서 distanceMin~Max 자리에 솟아오르게(예고 warnSec).
+  /// 절반은 파 시작, 절반은 파 도중(0~midDelayMaxSec 뒤). 그때까지는 스폰 자리(화면 밖)에서 기다린다.
+  void _nearSpawn(List<Foe> added, Rng rng) {
+    final ns = top.nearSpawn;
+    if (ns == null) return;
+    final pool = [
+      for (final e in added)
+        if (!e.boss && e.ownerId == null) e,
+    ];
+    final n = (pool.length * ns.ratio).round();
+    for (var i = 0; i < n && pool.isNotEmpty; i++) {
+      final e = pool.removeAt(rng.nextInt(pool.length));
+      final angle = _spawn.heading(rng);
+      final ux = math.cos(angle);
+      final uy = math.sin(angle);
+      final d = _touchDist(ux, uy, gap: ns.distanceMin + rng.nextDouble() * (ns.distanceMax - ns.distanceMin));
+      final delay = i.isOdd ? rng.nextDouble() * ns.midDelayMaxSec : 0.0;
+      e
+        ..nearX = top.shipX + ux * d
+        ..nearY = top.shipY + uy * d
+        ..holdSec = delay + ns.warnSec
+        ..warned = false;
+    }
+  }
+
   /// 배 둘레 → [e] 가장자리.
   double edge(Foe e) => _aim.edge(e);
 
@@ -67,7 +92,9 @@ class TopGeometry implements BattleGeometry {
   void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
     final before = f.foes.length;
     spawnWaveFoes(f, stage, ctx, count: count, kind: kind);
-    _spawn.arrange(f.foes.sublist(before), ctx.rng);
+    final added = f.foes.sublist(before);
+    _spawn.arrange(added, ctx.rng);
+    _nearSpawn(added, ctx.rng);
   }
 
   /// 보스는 배 위쪽, 출발 원(bossSpawnRadius) 바로 밖에서 나온다. 촉수는 보스가 설 원 위에 고르게(보스 자리 빼고).
@@ -139,13 +166,13 @@ class TopGeometry implements BattleGeometry {
 
   bool _touching(double x, double y) => hullGap(x, y) <= top.mobRadius;
 
-  /// 배 중심에서 방향 ([ux],[uy])으로 갈 때 잡몹이 몸통에 닿는 거리(이분 탐색).
-  double _touchDist(double ux, double uy) {
+  /// 배 중심에서 방향 ([ux],[uy])으로 갈 때 잡몹이 몸통에 닿는(가장자리 사이 [gap]) 거리(이분 탐색).
+  double _touchDist(double ux, double uy, {double gap = 0}) {
     var lo = 0.0;
-    var hi = top.hullHalfLength + top.hullOffset.abs() + top.hullHalfWidth + top.mobRadius;
+    var hi = top.hullHalfLength + top.hullOffset.abs() + top.hullHalfWidth + top.mobRadius + gap;
     for (var i = 0; i < top.mobRadius.ceil() * top.mobRadius.ceil(); i++) {
       final mid = (lo + hi) * half;
-      if (_touching(top.shipX + ux * mid, top.shipY + uy * mid)) {
+      if (hullGap(top.shipX + ux * mid, top.shipY + uy * mid) <= top.mobRadius + gap) {
         lo = mid;
       } else {
         hi = mid;
