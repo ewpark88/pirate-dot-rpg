@@ -89,6 +89,8 @@ class PbFxPainter {
       _shadow,
     );
     final grow = (1 + 0.45 * lift) * (1 + 0.35 * fever);
+    // 등급 꼬리(영웅·전설·신화) 먼저, 피버면 불 꼬리를 더한다(S1).
+    _trails.paint(c, p, size);
     if (fever > 0) _fireTail(c, p, size, height);
     final turn = p.progress * _spinTurns * 2 * math.pi;
     final angle = p.style.path == ProjectilePath.line ? math.atan2(p.toY - p.fromY, p.toX - p.fromX) : turn;

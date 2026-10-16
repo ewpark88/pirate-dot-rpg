@@ -35,17 +35,21 @@ class TrailPainter {
     return 0;
   }
 
-  /// 발사체 [p] 뒤에 꼬리를 그린다 ([size] = 폭탄 크기, 도트). 그릴 게 없으면 아무것도 안 한다.
-  void paint(Canvas c, Projectile p, double size) {
+  /// 발사체 [p] 뒤에 꼬리를 그린다 ([bombSize] = 폭탄 크기, 도트). 그릴 게 없으면 아무것도 안 한다.
+  void paint(Canvas c, Projectile p, double bombSize) {
+    // 탑다운: 비행이 짧고 폭탄이 작아 꼬리가 안 보였다 — 더 길고 굵게(S1 '등급 색 꼬리').
+    final size = p.flat ? bombSize * 1.5 : bombSize;
     final r = rarityOf(p.crewId);
     if (r < 2 || p.progress <= 0) return;
     final n = scene.projectiles.active.length > _crowd ? _samples ~/ 2 : _samples;
-    final step = _step * _samples / n;
+    final step = _step * _samples / n * (p.flat ? 1.8 : 1);
     final clock = scene.clockMs;
     for (var i = n; i >= 1; i--) {
       final t = p.progress - i * step;
       if (t <= 0) continue;
-      final (x, y) = positionAt(p, t);
+      final (x, gy) = positionAt(p, t);
+      // 탑다운(flat): 무기 그림처럼 높이만큼 위로.
+      final y = p.flat ? gy - heightAt(p, t) * 0.35 : gy;
       final k = 1 - i / (n + 1); // 0(꼬리 끝) → 1(폭탄 쪽)
       switch (r) {
         case 2:
@@ -82,7 +86,11 @@ class TrailPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = size * 0.07
         ..color = _ring.withValues(alpha: 0.55 + 0.4 * pulse);
-      c.drawCircle(Offset(p.x, p.y), size * (0.55 + 0.12 * pulse), _paint);
+      c.drawCircle(
+        Offset(p.x, p.flat ? p.y - heightAt(p, p.progress) * 0.35 : p.y),
+        size * (0.55 + 0.12 * pulse),
+        _paint,
+      );
       _paint.style = PaintingStyle.fill;
     }
   }
