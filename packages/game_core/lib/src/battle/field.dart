@@ -1,3 +1,4 @@
+import 'package:game_core/src/battle/beam.dart' show Beam;
 import 'package:game_core/src/battle/fast_sail.dart' show FastSailRun;
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/gun.dart';
@@ -201,6 +202,7 @@ class Field {
 
   final List<EnemyShot> enemyShots = [];
   final List<Flight> flights = [];
+  final List<Beam> beams = []; // 유지되는 레이저 빔(beam.dart)
   ShipShield? shield; // 배 흡수막(shield.dart)
   FastSailRun?
   fastSail; // 빠른 항해 돌파 구간(fast_sail.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해

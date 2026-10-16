@@ -30,6 +30,16 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     count: j['count'] as int,
     radius: (j['radius'] as num).toDouble(),
   ),
+  'crewSortie' => CrewSortie(
+    t,
+    crewId: j['crewId'] as String,
+    phase: j['phase'] as String,
+    fromX: (j['fromX'] as num).toDouble(),
+    fromY: (j['fromY'] as num).toDouble(),
+    toX: (j['toX'] as num).toDouble(),
+    toY: (j['toY'] as num).toDouble(),
+    ticks: j['ticks'] as int,
+  ),
   'attackMissed' => AttackMissed(
     t,
     crewId: j['crewId'] as String,
@@ -170,5 +180,42 @@ class BossPatternShown extends GameEvent {
     'angle': angle,
     'count': count,
     'radius': radius,
+  };
+}
+
+/// 선원 본인 출격 (계열 행동 v3 — 강습·공중). [phase]: out(배 → 적) · strike(꽂혀 휘두름, 피해는 이 시작에) · back(적 → 배).
+/// ([fromX],[fromY]) → ([toX],[toY])를 [ticks] 동안. 렌더가 선원 초상을 이 길로 날린다.
+class CrewSortie extends GameEvent {
+  const CrewSortie(
+    super.tick, {
+    required this.crewId,
+    required this.phase,
+    required this.fromX,
+    required this.fromY,
+    required this.toX,
+    required this.toY,
+    required this.ticks,
+  });
+
+  final String crewId;
+  final String phase;
+  final double fromX;
+  final double fromY;
+  final double toX;
+  final double toY;
+  final int ticks;
+
+  @override
+  String get type => 'crewSortie';
+
+  @override
+  Json _fields() => {
+    'crewId': crewId,
+    'phase': phase,
+    'fromX': fromX,
+    'fromY': fromY,
+    'toX': toX,
+    'toY': toY,
+    'ticks': ticks,
   };
 }
