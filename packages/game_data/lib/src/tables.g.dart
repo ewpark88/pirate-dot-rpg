@@ -1251,6 +1251,10 @@ const Map<String, String> rawTables = {
     "samples": 10,
     "step": 0.022,
     "crowd": 20,
+    "segments": 10,
+    "widthRatio": 0.3,
+    "lengthMul": [2, 4, 6, 9, 12],
+    "commonAlpha": 0.45,
     "hero": [
       "#B455FF",
       "#FF7BE6"
