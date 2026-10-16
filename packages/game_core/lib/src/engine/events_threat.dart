@@ -1,6 +1,6 @@
 part of 'events.dart';
 
-// 배 위협 이벤트 (docs/specs/platform-ship-threat.md — 원거리 적·가까이 등장).
+// 배 위협 이벤트 (docs/specs/platform-ship-threat.md — 원거리 적·가까이 등장) + 선원 탄 빗나감(개성 v2).
 
 GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
   'enemyFired' => EnemyFired(
@@ -10,6 +10,12 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     fromY: (j['fromY'] as num).toDouble(),
     flightTicks: j['flightTicks'] as int,
     kind: j['kind'] as String,
+  ),
+  'attackMissed' => AttackMissed(
+    t,
+    crewId: j['crewId'] as String,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
   ),
   _ => EnemyEmerging(
     t,
@@ -58,4 +64,19 @@ class EnemyEmerging extends GameEvent {
 
   @override
   Json _fields() => {'enemyId': enemyId, 'x': x, 'y': y, 'warnTicks': warnTicks};
+}
+
+/// 선원 탄이 도착했는데 맞을 적이 없다(선원 개성 v2 — 렌더 'MISS'). [x]·[y] = 떨어진 자리.
+class AttackMissed extends GameEvent {
+  const AttackMissed(super.tick, {required this.crewId, required this.x, required this.y});
+
+  final String crewId;
+  final double x;
+  final double y;
+
+  @override
+  String get type => 'attackMissed';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'x': x, 'y': y};
 }

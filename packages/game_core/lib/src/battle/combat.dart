@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
@@ -108,7 +109,9 @@ class Round {
       final crit = ctx.rng.nextDouble() < stats.critChance;
       if (crit) hitStop('crit');
       final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);
-      for (final v in volleys) {
+      for (final shot in volleys) {
+        final flying = launch(g, a, shot, base, crit: crit); // 탄이 있으면 날려 보내고 도착 때 판정(flight.dart)
+        final v = flying?.volley ?? shot;
         final m = geo.muzzle(v.x, v.y);
         ctx.emit(
           AttackFired(
@@ -121,8 +124,10 @@ class Round {
             fromX: m?.x,
             fromY: m?.y,
             angle: m?.angle,
+            flightTicks: flying?.ticks,
           ),
         );
+        if (flying != null) continue;
         land(g, a, v, base, crit: crit);
         legendAfterHit(this, g, v, base, crit: crit);
       }

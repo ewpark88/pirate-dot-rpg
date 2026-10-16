@@ -44,7 +44,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'bountyFailed' ||
     'bountySwept' ||
     'bountyTicketsRefilled' => _bountyEventFromJson(t, j),
-    'enemyFired' || 'enemyEmerging' => _threatEventFromJson(t, j),
+    'enemyFired' || 'enemyEmerging' || 'attackMissed' => _threatEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };
