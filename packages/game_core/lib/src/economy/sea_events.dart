@@ -175,7 +175,7 @@ GameState _tickActive(GameState s, Field f, SystemContext ctx, SeaEventView ev) 
       );
     }
     f.foes.removeWhere((x) => x.eventKind == ev.id);
-    return _end(next, ctx, ev.id, 'done');
+    return _end(addFever(next, t.meta.raw.obj('fever').number('seaEventWin')), ctx, ev.id, 'done');
   }
   if (ev.id == 'goldfish' && mine.isEmpty) return _end(s, ctx, ev.id, 'done');
   if (ev.ticksLeft > 1) {

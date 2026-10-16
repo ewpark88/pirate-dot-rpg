@@ -12,11 +12,18 @@ class SimFun {
   int challenges = 0;
   int challengeWins = 0;
 
+  /// 피버: 발동 수, 피버 중 처치 골드.
+  int fevers = 0;
+  BigNum feverGold = BigNum.zero;
+
   /// 이번 틱 사건을 보고, 필요하면 탭 명령을 넣는다.
   void observe(GameEvent e, CoreEngine engine) {
     switch (e) {
       case Kill(:final gold):
         killGold = killGold + gold;
+        if (feverOn(engine.state)) feverGold = feverGold + gold;
+      case FeverStarted():
+        fevers++;
       case GoldfishCaught(:final gold):
         eventGold = eventGold + gold;
       case BottlePicked(:final reward) when reward.startsWith('gold:'):
@@ -37,6 +44,9 @@ class SimFun {
 
   /// 돌발 이벤트 골드 ÷ 처치 골드 (%).
   double? get eventGoldPct => killGold.isZero ? null : (eventGold / killGold).toDouble() * 100;
+
+  /// 피버 중 처치 골드 ÷ 처치 골드 (%).
+  double? get feverGoldPct => killGold.isZero ? null : (feverGold / killGold).toDouble() * 100;
 
   /// 끝난 도전 중 성공 (%).
   double? get challengeWinPct => challenges == 0 ? null : challengeWins / challenges * 100;

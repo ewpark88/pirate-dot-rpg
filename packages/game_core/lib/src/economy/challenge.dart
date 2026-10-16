@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/bignum/big_num.dart';
-import 'package:game_core/src/economy/fever.dart' show feverOn;
+import 'package:game_core/src/economy/fever.dart' show addFever, feverOn;
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/sea_events.dart' show seaEventStep;
 import 'package:game_core/src/engine/battle_view.dart';
@@ -138,7 +138,7 @@ class ChallengeTracker {
       }
     }
     ctx.emit(ChallengeEnded(ctx.tick, id: c.id, success: success, reward: reward));
-    return next;
+    return success ? addFever(next, t.meta.raw.obj('fever').number('challengeWin')) : next;
   }
 }
 
