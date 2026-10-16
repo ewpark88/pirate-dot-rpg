@@ -102,7 +102,7 @@ class TopFever {
       ..strokeWidth = 1.5
       ..color = _gold.withValues(alpha: (0.45 + 0.35 * pulse) * level);
     c.drawCircle(Offset.zero, r, _ring);
-    final n = scene.settings.powerSave ? 10 : 20;
+    final n = scene.topHits.lite ? 10 : 20;
     for (var i = 0; i < n; i++) {
       final a = i / n * 2 * math.pi + ms / 2400;
       final flick = 0.5 + 0.5 * math.sin(ms / 70 + i * 2.3);
@@ -128,7 +128,7 @@ class TopFever {
 
   /// 오라에 닿은 적 위 불씨·연기(전장 좌표). 적 그리기 뒤.
   void embers(Canvas c, Offset ship) {
-    if (level <= 0 || scene.settings.powerSave) return;
+    if (level <= 0 || scene.topHits.lite) return;
     final ms = _lastMs;
     var drawn = 0;
     for (var k = 0; k < scene.poseCount && drawn < 40; k++) {
@@ -184,7 +184,7 @@ class TopFever {
 
   /// 양옆으로 휙휙 스치는 물보라 줄·바위·부표(화면 dp). 절전이면 없음.
   void rushers(Canvas c, Size box) {
-    if (level <= 0.2 || scene.settings.powerSave) return;
+    if (level <= 0.2 || scene.topHits.lite) return;
     final ms = _lastMs;
     for (var i = 0; i < 6; i++) {
       final left = i.isEven;
@@ -223,7 +223,7 @@ class TopFever {
 
   /// 피버 S자 항적: 지난 배 x를 흐름 속도로 뒤로 흘려 흰 거품 줄로(전장 좌표 — 카메라 원점 캔버스).
   void weaveTrail(Canvas c, Offset ship, double ms, double flowSpeed) {
-    if (_trail.isEmpty || ms - _trail.last.$2 >= 40) _trail.add((ship.dx, ms));
+    if (_trail.isEmpty || ms - _trail.last.$2 >= 60) _trail.add((ship.dx, ms));
     _trail.removeWhere((p) => ms - p.$2 > 1600);
     if (level <= 0 || _trail.length < 2) return;
     for (var i = 0; i < _trail.length; i++) {
@@ -232,10 +232,8 @@ class TopFever {
       final y = ship.dy + 22 + age * flowSpeed;
       final a = (1 - age / 1.6).clamp(0.0, 1.0) * level;
       _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.75 * a);
-      c
-        ..drawRect(Rect.fromLTWH(x - 5, y, 2, 2), _paint)
-        ..drawRect(Rect.fromLTWH(x + 3, y, 2, 2), _paint);
-      if (i.isEven) c.drawRect(Rect.fromLTWH(x - 1, y + 1, 2, 2), _paint);
+      // 한 점(좌우 번갈아) — 입자 예산
+      c.drawRect(Rect.fromLTWH(i.isEven ? x - 5 : x + 3, y, 2, 2), _paint);
     }
   }
 
