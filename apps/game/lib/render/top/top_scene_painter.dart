@@ -153,6 +153,7 @@ class TopScenePainter {
       ..hotAt = fever.level > 0 ? _hot : null
       ..paint(c, under: false, cull: visibleWorld);
     fever.embers(c, scene.topShip);
+    scene.topHits.impact.paint(c, clockMs, flash: scene.settings.flash, lite: scene.settings.powerSave);
     scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
     scene.topHits.boss.paint(c, clockMs, scene.topShip, _bossAt, flash: scene.settings.flash);
     _marks

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
@@ -33,6 +34,8 @@ class TopMarks {
   late final int _heal = parseArgb(scene.fx.shipSkill.str('healColor'), 'shipSkill.healColor');
   late final int _buff = parseArgb(scene.fx.shipSkill.str('buffColor'), 'shipSkill.buffColor');
 
+  final _swirl = Path();
+
   /// 정예 테두리 바깥에 보호막이 오도록 띄우는 간격(단위).
   static const _shieldGap = 2.0;
 
@@ -47,6 +50,24 @@ class TopMarks {
       _fill.color = Color(_zoneColor);
       c.drawCircle(at, r * 0.6, _fill);
       _circle(c, at, r, 1, 0x99CFEFFF);
+      // 소용돌이 팔 3개(천천히 돎) + 가장자리 빛 맥박 (임팩트 v2)
+      final spin = scene.clockMs / 600;
+      for (var k = 0; k < 3; k++) {
+        final a0 = spin + k * 2 * math.pi / 3;
+        _swirl.reset();
+        for (var s = 0; s <= 8; s++) {
+          final f = s / 8;
+          final a = a0 + f * 2.2;
+          final p = at + Offset(math.cos(a), math.sin(a)) * (r * (0.15 + 0.75 * f));
+          s == 0 ? _swirl.moveTo(p.dx, p.dy) : _swirl.lineTo(p.dx, p.dy);
+        }
+        _ring
+          ..strokeWidth = 1.5
+          ..color = const Color(0x88E6F6FF);
+        c.drawPath(_swirl, _ring);
+      }
+      final glow = 0.5 + 0.5 * math.sin(scene.clockMs / 180);
+      _circle(c, at, r + 1, 2, (((0x40 + 0x60 * glow).round()) << 24) | 0x7FD8FF);
     }
   }
 

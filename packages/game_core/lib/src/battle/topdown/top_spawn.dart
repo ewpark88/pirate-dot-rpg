@@ -13,7 +13,7 @@ const double turn = math.pi / half;
 class TopSpawn {
   TopSpawn(this.top, this.spawnSpacing);
 
-  final TopField top;
+  TopField top; // 지금 배 자리(TopGeometry.weave)
 
   /// 옆모습 무리 간격(waves.field.spawnSpacing) — swarmSpacing이 없을 때.
   final double spawnSpacing;

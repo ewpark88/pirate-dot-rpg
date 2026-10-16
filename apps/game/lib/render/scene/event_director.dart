@@ -117,8 +117,7 @@ class EventDirector implements ReplayListener {
         case Damage():
           _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
         case AoeDamageSum():
-          scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
-          scene.shake.trigger(_juice.shake['aoe']!);
+          _aoe(e, tick, index);
         case Kill():
           _kill(e, index);
         case UltimateCast():
