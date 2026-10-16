@@ -162,6 +162,41 @@ extension _TopEvents on EventDirector {
     final water = crew != null && _crewFamily[crew] == 'underwater';
     scene.topHits.impact.add(e.x, e.y, math.min(r, 64), color, scene.clockMs, water: water);
   }
+
+  /// 발사체 비행 구간(틱): 엔진이 flightTicks(개성 v2 조준탄)를 주면 쏜 틱부터 그만큼 날아 닿는다(빗나가면 AttackMissed),
+  /// 없으면 옛 방식 — fx_map 비행 시간만큼 앞서 띄워 엔진 피해 시각(index)에 닿는다.
+  (double, double) _flightWindow(AttackFired e, int index, double tickMs) {
+    final f = e.flightTicks;
+    if (f != null) return (index.toDouble(), (index + f).toDouble());
+    final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
+    return (index - flightTicks, index.toDouble());
+  }
+
+  /// 낙뢰(개성 v2 pelly, AttackFired.kind 'lightning'): 쏜 틱부터 flightTicks 동안 예고, 그 뒤 내리꽂힘(TopCrewFx).
+  void _lightning(AttackFired e, int index, BattleView frame) {
+    final speed = math.max(1, frame.speed);
+    final delayMs = math.max<double>(0, (index - _player.position) * _player.tickMs / speed);
+    final warnMs = (e.flightTicks ?? 8) * _player.tickMs / speed;
+    scene.topHits.crew.lightning(e.x, e.y, scene.clockMs + delayMs, warnMs);
+    _flashSlot(frame, e.crewId);
+  }
+
+  /// 배 피격: 번쩍(탑다운은 300ms마다 한 번)·체력·숫자(막이 다 받아 0이면 숫자 대신 막 물결)·돌진·물보라·침몰.
+  void _shipHit(ShipDamaged e, RecordedTick tick) {
+    if (!scene.isTop) {
+      scene.shipFlashMs = _juice.flashFrames * kFrameMs;
+    } else if (scene.topHits.takeFlash(scene.clockMs)) {
+      scene.shipFlashMs = _kTopHitFlashMs;
+    }
+    scene.shipHpRatio = e.hpRatio;
+    if (e.amount.isZero) {
+      scene.topHits.crew.rippleAt = scene.clockMs;
+    } else {
+      scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
+    }
+    if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
+    if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
+  }
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

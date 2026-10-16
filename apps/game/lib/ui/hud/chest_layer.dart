@@ -31,20 +31,19 @@ class ChestLayer extends ConsumerWidget {
       gameStateProvider.select((s) {
         final b = s.battle;
         final c = b?.chest;
-        return c == null
-            ? null
-            : (c.x, c.y, c.ticksLeft, rewardOf(s), b!.shipX ?? _shipHome.dx, b.shipY ?? _shipHome.dy);
+        return c == null ? null : (c.x, c.y, c.ticksLeft, rewardOf(s), b!.shipY ?? _shipHome.dy);
       }),
     );
     if (chest == null) return const SizedBox.shrink();
-    final (x, y, ticksLeft, reward, shipX, shipY) = chest;
+    final (x, y, ticksLeft, reward, shipY) = chest;
     final floatTicks = tables.ads.chest.number('floatSec') * Duration.millisecondsPerSecond / tables.waves.tickMs;
 
     return LayoutBuilder(
       builder: (context, box) {
         // 탑다운 전장 좌표 → 전장 상자 dp (렌더와 같은 topFrameFor: 배 중심이 화면의 정해진 자리).
         final f = topFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
-        final at = f.worldToDp(Offset(x, y), Offset(shipX, shipY));
+        // 카메라 기준 = 바다 가운데(waves.top.shipX) · 배 높이 — 피버 중 배가 좌우로 움직여도 렌더(BattleGame.worldToDp)와 같은 자리.
+        final at = f.worldToDp(Offset(x, y), Offset(tables.waves.top.shipX, shipY));
         // 카메라 밖(상자 밖)의 보물상자는 보이지 않는다 — 누를 곳은 없고 가장자리 알약만.
         final onScreen = (Offset.zero & box.biggest).contains(at);
         // 광고 제안은 상자 위 말풍선 대신 왼쪽 가장자리 작은 알약(ChestEdgePill) — 상자를 누르면 같은 선택 시트(사용자 지시 2026-10-16).
