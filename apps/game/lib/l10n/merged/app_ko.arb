@@ -651,5 +651,12 @@
   "uiBossTagMid": "중간 보스",
   "uiBossIncoming": "보스 등장!",
   "uiIdSplash": "맞은 자리 작은 폭발",
-  "uiAutoUpgradeOff": "끄기"
+  "uiAutoUpgradeOff": "끄기",
+  "uiIdRange": "사거리",
+  "uiRangeShort": "짧음",
+  "uiRangeMid": "보통",
+  "uiRangeLong": "김",
+  "uiFamilyLaser": "레이저",
+  "uiFamilyRing": "원형 탄막",
+  "uiFamilyCluster": "집속탄"
 }

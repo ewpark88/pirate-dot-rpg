@@ -449,5 +449,12 @@
   "uiBossTagMid": "MID-BOSS",
   "uiBossIncoming": "Boss incoming!",
   "uiIdSplash": "Small blast where it hits",
-  "uiAutoUpgradeOff": "Turn off"
+  "uiAutoUpgradeOff": "Turn off",
+  "uiIdRange": "Range",
+  "uiRangeShort": "Short",
+  "uiRangeMid": "Mid",
+  "uiRangeLong": "Long",
+  "uiFamilyLaser": "Laser",
+  "uiFamilyRing": "Ring barrage",
+  "uiFamilyCluster": "Cluster bomb"
 }

@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/upgrade_multiplier.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
@@ -103,6 +104,7 @@ class _PartRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('partRow');
     final l10n = AppLocalizations.of(context);
     final mult = ref.watch(upgradeMultiplierProvider);
     // 골드는 틱마다 바뀌므로 (레벨, 살 레벨 수, 비용)만 구독한다.
