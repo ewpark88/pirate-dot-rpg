@@ -29,6 +29,9 @@ int rangeLevel(double reach) => reach <= 90 ? 0 : (reach <= 140 ? 1 : 2);
 /// - 조준: aim.targets(없으면 계열 targets — 'front'는 배 둘레).
 /// - 범위: 모양(aim.shape ?? 계열 shape)이 원·부채꼴·밀어내기이거나 topRadius가 있으면.
 /// - 명중: 발사체가 없으면 즉시(근접·광선), 예측(lead)이거나 속도 없는 지연 공격이면 예측, 아니면 빗나갈 수 있음.
+/// 범위 공격으로 보는 모양: 원 · 부채꼴 · 밀어내기 · 원형 탄막(ring) · 집속탄(cluster) — 계열 v3(S5). 레이저는 줄 관통이라 아님.
+const areaShapes = {'circle', 'cone', 'push', 'ring', 'cluster'};
+
 /// [rarity] = 등급 번호(0 일반 … 4 신화) — 연사는 경제 crewAttack(등급 템포·등급별 aim 반영, S2).
 CrewIdentity? crewIdentity(GameTables t, String crewId, {int rarity = 0}) {
   final def = t.crews.crews.where((c) => c.id == crewId).firstOrNull;
@@ -37,7 +40,7 @@ CrewIdentity? crewIdentity(GameTables t, String crewId, {int rarity = 0}) {
   final aim = def.aim;
   final targets = aim?.strOrNull('targets') ?? attack.targets;
   final shape = aim?.strOrNull('shape') ?? attack.shape;
-  final area = const {'circle', 'cone', 'push'}.contains(shape) || (aim?.has('topRadius') ?? false);
+  final area = areaShapes.contains(shape) || (aim?.has('topRadius') ?? false);
   final projectile = aim != null && aim.has('projectile') ? aim.obj('projectile') : null;
   final HitKind hit;
   if (projectile == null) {
