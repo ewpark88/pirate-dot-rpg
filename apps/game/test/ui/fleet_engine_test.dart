@@ -83,7 +83,9 @@ void main() {
     await tester.tap(find.byKey(const Key('tab.$crewTab')));
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
-    await tester.ensureVisible(find.byKey(const Key('crew.card.starry')));
+    // 정렬·필터 줄이 생겨 카드가 아래로 — 화면 위쪽으로 끌어와 누른다.
+    await Scrollable.ensureVisible(tester.element(find.byKey(const Key('crew.card.starry'))), alignment: 0.3);
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('crew.card.starry')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('crew.detail.deploy.starry')));

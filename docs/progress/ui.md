@@ -4,7 +4,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | a52121b 배 탭 큰 배율 줄여 쓰기(화물칸 넘침)·9318127 위쪽 알림 겹침·우선순위(FeverSlot, 피버 중 알약 하나) — S1 머지 대기. 다음: ② 선원 탭 r2 + 정렬/필터(등급·계열·조준), ③ 소환 연출 v3 |
+| 상태 | 110b992 특징 표기·134d3a5 개성 아이콘 crews.json·f5acac4 상자 카메라 기준·2a582f8 화물칸 UI+자동 강화 광고·4ac117d 빠른 항해 돌파 UI·628a9a1 게이지 테스트 — S1 머지 대기. 다음: 도감 합치기 표시·필터/정렬, CancelAutoUpgrade(main 오면), FastSailEnded.lost(main 오면), 선원 탭 r2, 소환 연출 v3 |
 | 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
@@ -25,6 +25,8 @@
 - 046eddf: 상자 광고 = 상자 옆 반투명 말풍선, 파밍 = 게이지 꼬리표, 알약 160dp 나란히(현상금 중엔 현상금만), 4기기 '가운데 60% 덮는 띠 0' 테스트. 피버: 큰 FEVER!·가장자리 빛(S3는 자기 테두리를 끔)·원형 게이지·끝 +골드. 출전 선원: 엔진 테스트로 합치기·승급이 fleet를 안 바꿈 확인, 마지막 선원 내리기 금지·4초 되돌리기(엔진 규칙은 S2에 요청). 상단 숫자 = fleetPower.dps.
 - dbcee14 현상금 = GameState.bounty·BattleView.bounty·meta.bounty·StartBounty/SweepBounty/RetreatBounty·결과 이벤트(광고 버튼은 ads.json에 장치가 있을 때만). cd92641 궁극기 꼬리표·원형 게이지·탭!·발동 띠, 보스 도전 = 보스 초상 + '보스 도전!'(새로고침 화살표 삭제), 빠른 강화 비용·부족·'+부품 Lv' 떠오름. ea08f74 선원 개성 아이콘 4개·한 줄(crewIdentities 표 — aim 계약 오면 교체). 9a65cbf 테스트 기대값을 표·경제 함수에서.
 - 대기(S5 review/crew-identity d2e626b 머지 뒤): legendFor가 전설 미만에도 값(traitScale) → crew_detail 제목 '특징(지금 n%)', LegendDef.extraProjectilesChance·extraChainsChance·noFalloffChance는 'n% 확률로 …'.
+- 남은 문제: 시트를 거의 전체로 열면 궁극기 원이 상단 바 위에 겹침(ko_cargo_ship_360).
+- 남은 문제: 환생 '처음 1회' 안내는 실행마다 초기화(UI 저장 키 없음 — S2에 Settings hints 요청 필요).
 - 남은 문제: 렌더 골든 3장(main, S3 머지 대기)으로 check --full의 Flutter 단계가 빨강.
 - 남은 문제(해결됨): 골든에서 ShipPreview 그림 빈칸(미리 읽기가 테스트 시계에서 안 끝남), 렌더 절전 캐시 확인(S3), 상자 팝업과 소환 결과 창 동시 열림 순서, econ 문구 U+2212 글꼴 없음(S2 요청).
 - 주의: 시트 애니메이션은 탭 다음 첫 프레임에 시작 — 테스트는 pump() 뒤 pump(600ms). 하네스는 기본으로 고른 탭의 시트를 연다(openTab).

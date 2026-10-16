@@ -18,6 +18,18 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     ticks: j['ticks'] as int,
   ),
   'shieldBroken' => ShieldBroken(t, crewId: j['crewId'] as String, reason: j['reason'] as String),
+  'bossPattern' => BossPatternShown(
+    t,
+    enemyId: j['enemyId'] as int,
+    kind: j['kind'] as String,
+    phase: j['phase'] as String,
+    warnTicks: j['warnTicks'] as int,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
+    angle: (j['angle'] as num).toDouble(),
+    count: j['count'] as int,
+    radius: (j['radius'] as num).toDouble(),
+  ),
   'attackMissed' => AttackMissed(
     t,
     crewId: j['crewId'] as String,
@@ -115,4 +127,48 @@ class ShieldBroken extends GameEvent {
 
   @override
   Json _fields() => {'crewId': crewId, 'reason': reason};
+}
+
+/// 보스 행동 v2 패턴 (docs/specs/platform-boss-patterns.md). [kind]: volley | charge | summon | blast,
+/// [phase]: warn(예고 [warnTicks] 동안 — 부채꼴 예고선·돌진 빨간 선·소환 물보라·배 둘레 원 [radius]) | act(동작) | cancel(예고 중 기절).
+/// [angle] = 보스 → 배 방향(라디안), [count] = 탄막 발 수·소환 수.
+class BossPatternShown extends GameEvent {
+  const BossPatternShown(
+    super.tick, {
+    required this.enemyId,
+    required this.kind,
+    required this.phase,
+    required this.warnTicks,
+    required this.x,
+    required this.y,
+    required this.angle,
+    required this.count,
+    required this.radius,
+  });
+
+  final int enemyId;
+  final String kind;
+  final String phase;
+  final int warnTicks;
+  final double x;
+  final double y;
+  final double angle;
+  final int count;
+  final double radius;
+
+  @override
+  String get type => 'bossPattern';
+
+  @override
+  Json _fields() => {
+    'enemyId': enemyId,
+    'kind': kind,
+    'phase': phase,
+    'warnTicks': warnTicks,
+    'x': x,
+    'y': y,
+    'angle': angle,
+    'count': count,
+    'radius': radius,
+  };
 }

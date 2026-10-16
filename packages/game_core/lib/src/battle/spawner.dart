@@ -1,17 +1,22 @@
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
+import 'package:game_core/src/battle/topdown/top_vanguard.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
-import 'package:game_data/game_data.dart' show BossDef;
+import 'package:game_data/game_data.dart' show BossDef, WavesTable;
 
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
 
 /// 무리 한 파 — 전장 모양([Field.geometry], 탑다운)이 자리를 정한다.
-void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
-    f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
+void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
+  final before = f.foes.length;
+  f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
+  if (count == null) addVanguard(f, stage, ctx, f.foes.sublist(before)); // 보통 무리 파만(소환·운영자 제외)
+}
 
 /// 무리 한 파의 적들(수치만, 자리는 (0,0) — 전장 모양이 놓는다). 마리 수 = `topMobCountAt`(무리 습격, 2026-10-15),
 /// 마리당 HP·공격·골드 = 단일 곡선 × 몫(`mobPoolAt / 마리 수`) — 한 파 총량은 pool 기준 그대로(진행·경제 불변).
@@ -79,7 +84,7 @@ void startBoss(
           w.hpBase,
           w.hpGrowth,
           stage,
-        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale),
+        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale * wallBossScale(w, stage)),
     speed: w.bossSpeed,
     attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
     gold: gold ? stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier) : BigNum.zero,
@@ -88,6 +93,11 @@ void startBoss(
     tier: t.regions.tierAt(stage),
   );
   boss.hp = boss.maxHp.times(hpRatio);
+  if (def.patterns.isNotEmpty) {
+    int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
+    final first = def.firstRestSec;
+    boss.plan = BossPlan(def.patterns, ticks(def.restSec), firstTicks: first == null ? null : ticks(first)); // 보스 행동 v2
+  }
   f.foes.add(boss);
   final m = def.mechanic;
   if (m != null) {
@@ -132,4 +142,14 @@ double tutorialBossScale(GameState s, SystemContext ctx) {
       ? w.tutorialFailHpMultiplier
       : 1.0;
   return early * fail;
+}
+
+/// 벽 보스 (사용자 '너무 쉽다', 2026-10-16): waves.boss.wallEvery 스테이지마다(해역 보스 자리) 체력 × wallHpMultiplier,
+/// midWallEvery마다 × midWallHpMultiplier. 키가 없으면 1.
+double wallBossScale(WavesTable w, int stage) {
+  final b = w.raw.obj('boss');
+  if (b.has('wallEvery') && stage % b.integer('wallEvery') == 0) return b.number('wallHpMultiplier');
+  // 중간 벽(선택): midWallEvery 스테이지마다 조금 단단하게 — 보통 스테이지 첫 도전이 늘 성공하지 않게.
+  if (b.has('midWallEvery') && stage % b.integer('midWallEvery') == 0) return b.number('midWallHpMultiplier');
+  return 1;
 }

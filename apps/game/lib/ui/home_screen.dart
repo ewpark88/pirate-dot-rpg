@@ -8,12 +8,14 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/dock/dock_panels.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
 import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
 import 'package:pirate_dot/ui/hud/bottle_choices.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
+import 'package:pirate_dot/ui/hud/fast_sail.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
@@ -62,6 +64,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     // 이탈 분석(설계서 4.9): 마지막으로 본 화면·스테이지.
     ref.listenManual(gameStateProvider.select((s) => s.progress.stage), (_, _) => _reportLastSeen());
     _reportLastSeen();
+    // 알약·안내의 바로가기(환생 가능 → 항해 탭 등): 그 탭 시트를 연다.
+    ref.listenManual(dockTabRequestProvider, (_, tab) {
+      if (tab == null) return;
+      setState(() => _tab = tab);
+      if (!_open) _snapTo(_snapHalf);
+      ref.read(dockTabRequestProvider.notifier).done();
+      _reportLastSeen();
+    });
     // 배 미리보기 그림을 미리 읽어 둔다(배 탭 첫 그림 깜빡임 없음 — 렌더 S3 권장). 실패해도 위젯이 스스로 읽는다.
     final tables = ref.read(tablesProvider);
     unawaited(
@@ -125,32 +135,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       child: SummonResultGate(
         child: RebirthDoneGate(
           child: BountyResultGate(
-            child: ShipLookCelebrationGate(
-              child: FleetRejectedToast(
-                child: PopScope(
-                  // 뒤로 가기 = 시트 닫기 (열려 있을 때).
-                  canPop: false,
-                  onPopInvokedWithResult: (didPop, _) {
-                    if (!didPop && _open) _close();
-                  },
-                  child: Scaffold(
-                    body: SafeArea(
-                      child: Column(
-                        children: [
-                          const SaveFailureBanner(),
-                          const TopBar(),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, body) {
-                                _bodyHeight = body.maxHeight;
-                                return AnimatedBuilder(
-                                  animation: _sheet,
-                                  builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                                );
-                              },
+            // 빠른 항해 돌파 끝 요약 창.
+            child: FastSailEndGate(
+              child: ShipLookCelebrationGate(
+                child: FleetRejectedToast(
+                  child: PopScope(
+                    // 뒤로 가기 = 시트 닫기 (열려 있을 때).
+                    canPop: false,
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (!didPop && _open) _close();
+                    },
+                    child: Scaffold(
+                      body: SafeArea(
+                        child: Column(
+                          children: [
+                            const SaveFailureBanner(),
+                            const TopBar(),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, body) {
+                                  _bodyHeight = body.maxHeight;
+                                  return AnimatedBuilder(
+                                    animation: _sheet,
+                                    builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -184,7 +197,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               key: const Key('battle.area'),
               fit: StackFit.expand,
               children: [
-                ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: ref.watch(battleGameProvider)),
+                ref.watch(battleViewBuilderProvider)?.call(context) ??
+                    GameWidget(game: withTopTexts(ref.watch(battleGameProvider), context)),
                 const ChestLayer(),
                 const BattleButtons(),
                 // 피버 연출 (큰 글자·가장자리 빛·큰 원형 게이지 — 누름 통과).

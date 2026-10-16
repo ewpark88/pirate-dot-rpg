@@ -23,7 +23,7 @@ extension _TopEvents on EventDirector {
     final colors = scene.tables.rarities.rarities;
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final delayMs = math.max<double>(0, (start - _player.position) * _player.tickMs / math.max(1, frame.speed));
-    scene.topHits.muzzle(
+    scene.topHits.muzzles.muzzle(
       tip.dx,
       tip.dy,
       math.atan2(e.y - tip.dy, e.x - tip.dx),
@@ -120,6 +120,82 @@ extension _TopEvents on EventDirector {
       scene.topHits.slash.swing(ship.dx, ship.dy, t?.x ?? e.x, t?.y ?? e.y, scene.clockMs + delayMs, color);
     }
     _flashSlot(frame, e.crewId);
+  }
+
+  /// 보스 행동 v2(BossPatternShown): warn → 예고 그림, act → 동작(돌진 자국·장판 폭발 + 큰 흔들림), cancel → 지움.
+  void _bossPattern(BossPatternShown e, BattleView frame) {
+    final b = scene.topHits.boss;
+    final now = scene.clockMs;
+    switch (e.phase) {
+      case 'warn':
+        final warnMs = e.warnTicks * _player.tickMs / math.max(1, frame.speed);
+        b.warn(e.enemyId, e.kind, e.x, e.y, e.angle, e.count, e.radius, now, warnMs);
+      case 'act':
+        b.act(e.enemyId, now);
+        if (e.kind == 'blast' || e.kind == 'charge') scene.shake.trigger(_juice.shake['ultimate']!);
+      case 'cancel':
+        b.cancel(e.enemyId);
+    }
+  }
+
+  /// 범위 피해 합: 합계 숫자 + 흔들림, 탑다운은 임팩트 v2(반경 = 이번 틱 같은 선원이 맞힌 적 중 가장 먼 거리 + 6).
+  void _aoe(AoeDamageSum e, RecordedTick tick, int index) {
+    scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
+    scene.shake.trigger(_juice.shake['aoe']!);
+    if (!scene.isTop) return;
+    String? crew;
+    var r = 12.0;
+    for (final d in tick.events.whereType<Damage>()) {
+      final en = _player.enemyAt(index, d.targetId) ?? _player.enemyAt(index - 1, d.targetId);
+      if (en == null) continue;
+      final dist = math.sqrt((en.x - e.x) * (en.x - e.x) + (en.y - e.y) * (en.y - e.y));
+      if (dist > 70 || (crew != null && d.crewId != crew)) continue;
+      crew ??= d.crewId;
+      r = math.max(r, dist + 6);
+    }
+    var rarity = 0;
+    for (final s in tick.frame.fleet) {
+      if (s.crewId == crew) rarity = s.rarity;
+    }
+    final colors = scene.tables.rarities.rarities;
+    final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
+    final water = crew != null && _crewFamily[crew] == 'underwater';
+    scene.topHits.impact.add(e.x, e.y, math.min(r, 64), color, scene.clockMs, water: water);
+  }
+
+  /// 발사체 비행 구간(틱): 엔진이 flightTicks(개성 v2 조준탄)를 주면 쏜 틱부터 그만큼 날아 닿는다(빗나가면 AttackMissed),
+  /// 없으면 옛 방식 — fx_map 비행 시간만큼 앞서 띄워 엔진 피해 시각(index)에 닿는다.
+  (double, double) _flightWindow(AttackFired e, int index, double tickMs) {
+    final f = e.flightTicks;
+    if (f != null) return (index.toDouble(), (index + f).toDouble());
+    final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
+    return (index - flightTicks, index.toDouble());
+  }
+
+  /// 낙뢰(개성 v2 pelly, AttackFired.kind 'lightning'): 쏜 틱부터 flightTicks 동안 예고, 그 뒤 내리꽂힘(TopCrewFx).
+  void _lightning(AttackFired e, int index, BattleView frame) {
+    final speed = math.max(1, frame.speed);
+    final delayMs = math.max<double>(0, (index - _player.position) * _player.tickMs / speed);
+    final warnMs = (e.flightTicks ?? 8) * _player.tickMs / speed;
+    scene.topHits.crew.lightning(e.x, e.y, scene.clockMs + delayMs, warnMs);
+    _flashSlot(frame, e.crewId);
+  }
+
+  /// 배 피격: 번쩍(탑다운은 300ms마다 한 번)·체력·숫자(막이 다 받아 0이면 숫자 대신 막 물결)·돌진·물보라·침몰.
+  void _shipHit(ShipDamaged e, RecordedTick tick) {
+    if (!scene.isTop) {
+      scene.shipFlashMs = _juice.flashFrames * kFrameMs;
+    } else if (scene.topHits.takeFlash(scene.clockMs)) {
+      scene.shipFlashMs = _kTopHitFlashMs;
+    }
+    scene.shipHpRatio = e.hpRatio;
+    if (e.amount.isZero) {
+      scene.topHits.crew.rippleAt = scene.clockMs;
+    } else {
+      scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
+    }
+    if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
+    if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
@@ -103,3 +105,130 @@ List<RecordedTick> withThreat(List<RecordedTick> rec, {int at = 120}) {
           : rec[i],
   ];
 }
+
+/// 보스 행동 v2 예고·동작 주입 (S5 BossPatternShown): [at] 틱에 배에서 먼 적 하나를 보스 자리로 [kind] 예고(12틱), [at]+12에 동작.
+List<RecordedTick> withBossPattern(List<RecordedTick> rec, String kind, {int at = 120}) {
+  final f = rec[at].frame;
+  final sx = f.shipX ?? 135;
+  final sy = f.shipY ?? 240;
+  final far = [...f.enemies]
+    ..sort((a, b) => ((b.x - sx).abs() + (b.y - sy).abs()).compareTo((a.x - sx).abs() + (a.y - sy).abs()));
+  final e = far.first;
+  // 화면 안에 보이게 배 앞 90단위 쪽으로 당긴 자리.
+  final bx = sx + (e.x - sx).clamp(-80.0, 80.0);
+  final by = sy - 90.0;
+  final angle = math.atan2(sy - by, sx - bx);
+  BossPatternShown ev(int tick, String phase) => BossPatternShown(
+    tick,
+    enemyId: e.id,
+    kind: kind,
+    phase: phase,
+    warnTicks: 12,
+    x: bx,
+    y: by,
+    angle: angle,
+    count: kind == 'summon' ? 4 : 5,
+    radius: 56,
+  );
+  return [
+    for (var i = 0; i < rec.length; i++)
+      i == at || i == at + 12
+          ? RecordedTick(rec[i].frame, [...rec[i].events, ev(rec[i].frame.tick, i == at ? 'warn' : 'act')])
+          : rec[i],
+  ];
+}
+
+/// 화물칸 가득 주입 (S2 GoldOverflow — 0.5초마다): [at]·[at]+10 틱.
+List<RecordedTick> withGoldOverflow(List<RecordedTick> rec, {int at = 120}) => [
+  for (var i = 0; i < rec.length; i++)
+    i == at || i == at + 10
+        ? RecordedTick(rec[i].frame, [...rec[i].events, GoldOverflow(rec[i].frame.tick, lost: BigNum.from(1000))])
+        : rec[i],
+];
+
+/// 빠른 항해 돌파 주입 (S5 fast-sail): [at] 틱에 시작(31 → 43), build 5번(간격 40·30·22·17·13틱) → rush 6번(5틱) → finale(12틱 뒤) → 끝.
+/// 그 사이 프레임에 BattleView.fastSail을 넣는다. 보스 자리 = 배 앞 90.
+List<RecordedTick> withFastSail(List<RecordedTick> rec, {int at = 60}) {
+  final strikes = <int, (String, double)>{};
+  var t = at + 20;
+  for (final gap in const [40, 30, 22, 17, 13]) {
+    t += gap;
+    strikes[t] = ('build', 40 / gap);
+  }
+  for (var k = 0; k < 6; k++) {
+    t += 5;
+    strikes[t] = ('rush', 8);
+  }
+  t += 12;
+  strikes[t] = ('finale', 8);
+  final end = t + 10;
+  var combo = 0;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      () {
+        final f = rec[i].frame;
+        final sx = f.shipX ?? 135;
+        final sy = f.shipY ?? 240;
+        final s = strikes[i];
+        if (s != null) combo++;
+        final events = [
+          ...rec[i].events,
+          if (i == at) FastSailStarted(f.tick, from: 31, to: 43),
+          if (s != null)
+            BreakthroughStrike(
+              f.tick,
+              stage: 31 + combo,
+              bossId: 'enemy_ship',
+              x: sx,
+              y: sy - 90,
+              combo: combo,
+              phase: s.$1,
+              speed: s.$2,
+            ),
+          if (i == end)
+            FastSailEnded(
+              f.tick,
+              from: 31,
+              to: 43,
+              stages: 12,
+              gold: BigNum.from(1000),
+              lost: BigNum.zero,
+              gems: 5,
+              skipped: false,
+            ),
+        ];
+        final inSail = i >= at && i < end;
+        final frame = inSail
+            ? BattleView.fromJson({
+                ...f.toJson(),
+                'fastSail': {'from': 31, 'to': 43, 'combo': combo, 'phase': s?.$1 ?? 'build', 'speed': s?.$2 ?? 1},
+              })
+            : f;
+        return RecordedTick(frame, events);
+      }(),
+  ];
+}
+
+/// 현상금 주입 (S2·S5 bounty): [at]에 BountyStarted, 그 뒤 프레임에 BattleView.bounty, [clearAt]에 BountyCleared(젬 30).
+List<RecordedTick> withBounty(List<RecordedTick> rec, {int at = 60, int clearAt = 240}) => [
+  for (var i = 0; i < rec.length; i++)
+    RecordedTick(
+      i >= at && i < clearAt
+          ? BattleView.fromJson({
+              ...rec[i].frame.toJson(),
+              'bounty': {'bossId': 'enemy_ship', 'tier': 3, 'ticksLeft': clearAt - i},
+            })
+          : rec[i].frame,
+      [
+        ...rec[i].events,
+        if (i == at) BountyStarted(rec[i].frame.tick, bossId: 'enemy_ship', tier: 3, timeLimitTicks: clearAt - at),
+        if (i == clearAt)
+          BountyCleared(
+            rec[i].frame.tick,
+            bossId: 'enemy_ship',
+            tier: 3,
+            reward: const BountyReward(type: 'gems', amount: 30),
+          ),
+      ],
+    ),
+];

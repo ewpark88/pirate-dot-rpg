@@ -1,6 +1,8 @@
+import 'package:game_core/src/battle/fast_sail.dart' show FastSailRun;
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/gun.dart';
 import 'package:game_core/src/battle/shield.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/battle/topdown/top_threat.dart';
@@ -73,7 +75,12 @@ class Foe {
   /// 보호막 중(보스 패턴) · 다음 접촉 피해까지 남은 초(0 = 닿자마자) · 남은 기절 초(기절 중 이동·접촉 공격 없음).
   bool shielded = false;
   double contactTimer = 0;
-  double stunTimer = 0;
+  double _stun = 0;
+  double get stunTimer => _stun;
+  set stunTimer(double v) => _stun = vanguard && v > _stun ? _stun : v; // 돌격대는 기절이 늘지 않는다
+
+  /// 돌격대(waves.top.vanguard, S1·S2): 넉백·기절·끌기 면역, 무리 사이를 뚫고 배로 곧장 — EnemyView.vanguard.
+  bool vanguard = false;
 
   /// 등장 대기(초, 스폰 패턴 scatter·가까이 등장): 0보다 크면 기다린다 — 움직이지도·조준되지도·겹침을 풀지도 않는다.
   double holdSec = 0;
@@ -83,6 +90,8 @@ class Foe {
   double? nearY;
   bool warned = false;
   double fireTimer = 0;
+  BossPlan? plan; // 보스 행동 v2 패턴 상태(boss_patterns.dart) — 패턴이 있는 보스·바다 괴물
+  bool get standsOff => boss || plan != null; // standoff 원에 서서 돈다(보스·패턴 있는 이벤트 적)
   bool get emerging => warned && holdSec > 0;
 
   bool revived = false; // 부활을 이미 썼다
@@ -119,6 +128,7 @@ class Foe {
     vulnerable: vulnerableTimer > 0,
     heading: heading ?? EnemyView.sideHeading,
     emerging: emerging,
+    vanguard: vanguard,
     eventKind: eventKind,
   );
 }
@@ -191,7 +201,9 @@ class Field {
 
   final List<EnemyShot> enemyShots = [];
   final List<Flight> flights = [];
-  ShipShield? shield; // 배 흡수막(shield.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
+  ShipShield? shield; // 배 흡수막(shield.dart)
+  FastSailRun?
+  fastSail; // 빠른 항해 돌파 구간(fast_sail.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 
@@ -250,6 +262,11 @@ class Field {
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
+    shipHeading: switch (geometry) {
+      final TopGeometry g => g.shipHeading,
+      _ => 0,
+    },
     shipShield: shield?.ratio ?? 0,
+    fastSail: fastSail?.view(),
   );
 }

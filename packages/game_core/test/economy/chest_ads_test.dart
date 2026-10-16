@@ -66,7 +66,9 @@ void main() {
       final reward = chestReward(s0, t);
       expect(reward > BigNum.zero, isTrue);
       final s = sys.handle(s0, const TapChest(), h.ctx)!;
-      expect(s.wallet.gold.closeTo(BigNum.from(7) + reward), isTrue);
+      final cap = goldCapacity(s0, t); // 화물칸 용량까지
+      final want = BigNum.from(7) + reward;
+      expect(s.wallet.gold.closeTo(want < cap ? want : cap), isTrue);
       expect(h.of<ChestOpened>().single.gold, reward);
       expect(s.battle!.chest, isNull);
       expect(sys.handle(s, const TapChest(), h.ctx)!.wallet.gold, s.wallet.gold);
@@ -79,7 +81,9 @@ void main() {
     test('상자 광고: 골드 ×5 또는 젬 30 (결정 ①), 횟수·퀘스트 집계', () {
       final s0 = sys.handle(playing(), const OpSpawnChest(), h.ctx)!;
       final gold = sys.handle(s0, const GrantAdReward(AdPlacement.chest, choice: 'gold'), h.ctx)!;
-      expect(gold.wallet.gold.closeTo(chestReward(s0, t).times(chestAd.reward.number('value'))), isTrue);
+      final want = chestReward(s0, t).times(chestAd.reward.number('value'));
+      final cap = goldCapacity(s0, t); // 화물칸 용량까지
+      expect(gold.wallet.gold.closeTo(want < cap ? want : cap), isTrue);
       expect(gold.battle!.chest, isNull);
       expect(gold.daily.ads['chest'], 1);
       final gems = sys.handle(s0, const GrantAdReward(AdPlacement.chest, choice: 'gems'), h.ctx)!;
@@ -112,7 +116,9 @@ void main() {
       final claimed = sys.handle(away, const ClaimOffline(), h.ctx)!;
       expect(claimed.lastOfflineGold, isNotNull);
       final doubled = sys.handle(claimed, const GrantAdReward(AdPlacement.offline), h.ctx)!;
-      expect(doubled.wallet.gold.closeTo(claimed.wallet.gold + claimed.lastOfflineGold!), isTrue);
+      final want = claimed.wallet.gold + claimed.lastOfflineGold!;
+      final cap = goldCapacity(claimed, t); // 광고 ×2도 화물칸 용량까지
+      expect(doubled.wallet.gold.closeTo(want < cap ? want : cap), isTrue);
       expect(doubled.lastOfflineGold, isNull);
       expect(sys.handle(doubled, const GrantAdReward(AdPlacement.offline), h.ctx)!.wallet.gold, doubled.wallet.gold);
     });

@@ -12,13 +12,11 @@ import 'package:pirate_dot/render/scene/damage_numbers.dart';
 import 'package:pirate_dot/render/scene/fun_director.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
-import 'package:pirate_dot/render/scene/ship_geometry.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 
 part 'event_director_top.dart';
 
-/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
-/// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
+/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, juice·fx_map): onAhead = 발사체·슬롯 번쩍, onNow = 피격·숫자·이펙트·흔들림·코인.
 class EventDirector implements ReplayListener {
   EventDirector(this.scene)
     : _crewFamily = _familyByCrew(scene.tables),
@@ -49,19 +47,21 @@ class EventDirector implements ReplayListener {
 
   void _launch(AttackFired e, int index, BattleView frame) {
     if (scene.isTop && e.family == _assault) return _topMelee(e, index, frame);
+    if (scene.isTop && e.kind == 'lightning') return _lightning(e, index, frame);
     final style = scene.fx.projectileFor(e.family);
     final ship = scene.topShip;
     final (tickMs, tip) = (
       _player.tickMs,
-      scene.isTop ? Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy) : ShipGeometry.cannonTip(scene),
+      Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy),
     );
     // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
-    final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
-    final start = index - flightTicks;
+    final (start, impact) = _flightWindow(e, index, tickMs);
     // 범위 계열(투척·수중, fx_map single)은 조준점에 한 발 — 대상마다 따로 날리면 같은 자리에 포탄이 겹친다.
     final targets = e.targetIds.isEmpty || _rules.single(e.family) ? const [-1] : e.targetIds;
     for (final id in targets) {
-      final target = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
+      final target = id < 0 || e.flightTicks != null
+          ? null
+          : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
       for (var b = 0; b < style.burst; b++) {
         scene.projectiles.obtain()
           ..style = style
@@ -73,7 +73,7 @@ class EventDirector implements ReplayListener {
           ..toX = target == null ? e.x : (target.boss ? scene.layout.clampBossX(target.x) : target.x)
           ..toY = target?.y ?? e.y
           ..startIndex = start + b * style.burstGapMs / tickMs
-          ..impactIndex = index.toDouble()
+          ..impactIndex = impact
           ..progress = 0
           ..x = tip.dx
           ..y = tip.dy;
@@ -119,8 +119,7 @@ class EventDirector implements ReplayListener {
         case Damage():
           _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
         case AoeDamageSum():
-          scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
-          scene.shake.trigger(_juice.shake['aoe']!);
+          _aoe(e, tick, index);
         case Kill():
           _kill(e, index);
         case UltimateCast():
@@ -128,17 +127,7 @@ class EventDirector implements ReplayListener {
           scene.shake.trigger(_juice.shake['ultimate']!);
           scene.haptic(HapticLevel.medium);
         case ShipDamaged():
-          // 탑다운은 번쩍을 길게(부딪힘이 보이게, S1), 단 연달아 맞으면 300ms마다 한 번 — 옆모습은 그대로.
-          if (!scene.isTop) {
-            scene.shipFlashMs = _juice.flashFrames * kFrameMs;
-          } else if (scene.topHits.takeFlash(scene.clockMs)) {
-            scene.shipFlashMs = _kTopHitFlashMs;
-          }
-          scene
-            ..shipHpRatio = e.hpRatio
-            ..numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
-          if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
-          if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
+          _shipHit(e, tick);
         case BossCleared():
           _bossKill();
         case BossSpawned():
@@ -154,6 +143,8 @@ class EventDirector implements ReplayListener {
           _enemyShot(e, tick.frame);
         case EnemyEmerging() when scene.isTop:
           _emerging(e, tick.frame);
+        case BossPatternShown() when scene.isTop:
+          _bossPattern(e, tick.frame);
         case PartUpgraded(:final part) when scene.isTop:
           _partUp(part);
         case BossFailed():
@@ -252,6 +243,8 @@ class EventDirector implements ReplayListener {
     // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
     final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
     if (fever) _fx('kill', e.x + 3, e.y - 3);
+    // 화물칸 가득(S2 GoldOverflow): 코인 대신 회색 '+0'.
+    if (scene.isTop && scene.topHits.crew.full(scene.clockMs)) return scene.topHits.crew.zero(e.x, e.y, scene.clockMs);
     final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;

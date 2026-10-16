@@ -27,7 +27,6 @@ class SimPlayer {
   final GameTables t;
   final int seed;
 
-  /// 보스 실패 팝업에서 함포 지원 광고(ads.json bossSupport)를 보고 바로 재도전한다 (하루 한도까지).
   final bool bossAd;
   final ManualClock clock;
   late final CoreEngine engine;
@@ -46,7 +45,6 @@ class SimPlayer {
 
   ({Duration at, int stage})? _recovering;
 
-  /// 이번 회차 시작(접속 시간)과 스테이지별 첫 도달 시각, 직전 회차의 같은 기록. 상대 회복 지표용.
   Duration _runStart = Duration.zero;
 
   int _best = 1;
@@ -120,7 +118,7 @@ class SimPlayer {
         break;
       }
     }
-    result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress);
+    result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress, isFull: cargoBlocked(t, s));
     buyRebirthShop(engine, t, s);
     // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
     if (!identical(s.crews, _crewsSeen)) {
@@ -175,7 +173,6 @@ class SimPlayer {
     }
   }
 
-  /// 해금 스테이지 이상에서 한 벽이 `meta.sim.rebirthWallSec`를 넘으면 환생.
   bool _shouldRebirth(GameState s) {
     final since = _wallSince;
     return since != null &&
@@ -276,6 +273,8 @@ class SimPlayer {
       ..challengeWinPct = _fun.challengeWinPct
       ..feverIntervalMin = _fun.fevers == 0 ? null : _online.inSeconds / Duration.secondsPerMinute / _fun.fevers
       ..feverGoldPct = _fun.feverGoldPct
+      ..overflowPct = _fun.overflowPct
+      ..threat = _threat
       ..goldSupply = _gold
       ..wallSinkSec = SimThreat.median(_threat.sinkSec)
       ..farmWaveDamagePct = _threat.farmWaveDamagePct

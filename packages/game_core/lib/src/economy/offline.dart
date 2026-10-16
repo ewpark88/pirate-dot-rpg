@@ -85,11 +85,10 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
   if (p == null) return state;
 
   final fleet = offlineFleet(state, t);
-  var s = state.copyWith(
-    savedAt: now,
-    wallet: state.wallet.copyWith(gold: state.wallet.gold + p.gold),
-    lastOfflineGold: p.gold,
-  );
+  // 오프라인 골드는 화물칸 용량까지(사용자 결정 ②). lastOfflineGold = 실제로 실은 몫(광고 ×2의 기준).
+  final paid = addGold(state.copyWith(savedAt: now), t, p.gold);
+  if (!paid.lost.isZero) ctx.emit(GoldOverflow(ctx.tick, lost: paid.lost));
+  var s = paid.state.copyWith(lastOfflineGold: paid.added);
   for (var i = 0; i < p.cards; i++) {
     s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));
   }

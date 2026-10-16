@@ -33,10 +33,11 @@ class CrewCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final (level, cards, status) = ref.watch(
+    final (level, cards, status, canUp) = ref.watch(
       gameStateProvider.select((s) {
         final crew = s.crews[def.id];
-        return (crew?.level, crew?.cards, promoteStatus(s, tables, def.id));
+        final up = crew != null && canLevelUp(crew, tables, maxLevel: crewMaxLevel(s, tables));
+        return (crew?.level, crew?.cards, promoteStatus(s, tables, def.id), up);
       }),
     );
     final deployed = ref.watch(fleetSlotsProvider.select((slots) => slots.contains(def.id)));
@@ -68,6 +69,27 @@ class CrewCard extends ConsumerWidget {
                         ink: Skin.goldInk,
                       ),
               ),
+              // 합치기로 레벨이 오르면 초록 ↑ (사용자 지시 2026-10-16 — 도감에서 합칠 수 있는 선원이 보이게).
+              if (canUp)
+                Positioned(
+                  left: -3,
+                  bottom: -3,
+                  child: Semantics(
+                    label: l10n.uiCrewUpBadge,
+                    child: Container(
+                      key: Key('crew.up.${def.id}'),
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Skin.mint,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                        boxShadow: Skin.shadowSmall,
+                      ),
+                      child: const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
               if (_atGate.contains(status))
                 Positioned(
                   right: -4,

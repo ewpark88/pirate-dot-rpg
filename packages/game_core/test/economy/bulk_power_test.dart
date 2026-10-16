@@ -112,7 +112,7 @@ void main() {
       expect(p.power.closeTo((p.dps * shipMaxHp(t.shipParts, 10)).pow(0.5)), isTrue);
     });
 
-    test('강화하면 전투력이 오른다 — 대포·선체·돛·망루, 화물칸은 골드 배율', () {
+    test('강화하면 전투력이 오른다 — 대포·선체·돛·망루, 화물칸은 금고 용량(전투력 그대로)', () {
       final s = armed(const {'cannon': 10, 'hull': 10, 'sail': 5, 'crowsnest': 5, 'cargo': 5});
       for (final id in ['cannon', 'hull', 'sail', 'crowsnest']) {
         final p = previewUpgrade(s.copyWith(wallet: s.wallet.copyWith(gold: BigNum.parse('1e30'))), t, id, times: 5);
@@ -124,7 +124,8 @@ void main() {
         'cargo',
         times: 5,
       );
-      expect(cargo.goldMultiplierAfter, greaterThan(cargo.goldMultiplierBefore));
+      final cap = t.shipParts.byId('cargo');
+      expect(partEffect(cap, 10) > partEffect(cap, 5), isTrue, reason: '용량이 커진다');
       expect(cargo.powerAfter.closeTo(cargo.powerBefore), isTrue);
     });
 

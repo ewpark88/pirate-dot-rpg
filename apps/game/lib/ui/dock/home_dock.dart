@@ -5,9 +5,11 @@ import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 도크 높이(dp) — 전장 상자는 이 위에서 끝난다(시트가 닫혔을 때).
@@ -29,15 +31,22 @@ class HomeDock extends ConsumerWidget {
       (
         UiSprites.tabMap,
         l10n.uiTabVoyage,
-        null,
+        'tab.voyage',
         // 상점에서 살 수 있는 칸, 또는 현상금 티켓이 상한(9)일 때만 (넘치기 직전 = 지금 쓰면 이득).
-        ref.watch(rebirthShopProvider.select((s) => s.anyAffordable)) ||
+        // 환생할 수 있게 되면 점(사용자 지시 2026-10-16).
+        ref.watch(rebirthReadyProvider) ||
+            ref.watch(rebirthShopProvider.select((s) => s.anyAffordable)) ||
             ref.watch(bountyProvider.select((v) => v.tickets)) >= ref.watch(bountyLimitsProvider).ticketCap,
       ),
       (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
       (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
       (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(summonBadgeProvider)),
     ];
+    final guide = ref.watch(rebirthGuideProvider);
+    // 맥박: 전장 틱 기준 0.5초마다 밝게/옅게 (끝없는 애니메이션 없음).
+    final glow = ref.watch(rebirthReadyProvider)
+        ? ref.watch(gameStateProvider.select((s) => ((s.battle?.tick ?? 0) ~/ 10).isEven))
+        : null;
     return SizedBox(
       height: kDockHeight,
       child: Row(
@@ -55,6 +64,9 @@ class HomeDock extends ConsumerWidget {
               count: i == 2 ? ref.watch(crewBadgeCountProvider) : null,
               dotKey: Key('tab.dot.$i'),
               spot: spot,
+              // 항해: 환생 가능하면 금빛 맥박, 첫 환생 전이면 손가락(이미 열려 있으면 카드 쪽 손가락만).
+              glow: i == 0 ? glow : null,
+              guide: i == 0 && guide && open != 0,
               onTap: () => onTap(i),
             ),
             const SizedBox(width: 6),
@@ -77,6 +89,8 @@ class _DockIcon extends StatelessWidget {
     required this.spot,
     required this.onTap,
     this.count,
+    this.glow,
+    this.guide = false,
     super.key,
   });
 
@@ -89,10 +103,16 @@ class _DockIcon extends StatelessWidget {
   final String? spot;
   final VoidCallback onTap;
 
+  /// 금빛 맥박 (null = 없음, true = 밝게, false = 옅게).
+  final bool? glow;
+
+  /// 단계와 상관없이 손가락.
+  final bool guide;
+
   @override
   Widget build(BuildContext context) {
     Widget icon = PixelSprite(asset, dots: 16);
-    if (spot case final id?) icon = TutorialSpot(id: id, child: icon);
+    if (spot case final id?) icon = TutorialSpot(id: id, force: guide, child: icon);
     return Semantics(
       button: true,
       selected: selected,
@@ -119,8 +139,19 @@ class _DockIcon extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: selected ? Skin.skyDeep : Skin.card,
                     shape: BoxShape.circle,
-                    border: Border.all(color: selected ? Skin.primaryBottom : Colors.white, width: 2.5),
-                    boxShadow: Skin.shadow,
+                    border: Border.all(
+                      color: glow != null ? Skin.goldBottom : (selected ? Skin.primaryBottom : Colors.white),
+                      width: glow != null ? 3 : 2.5,
+                    ),
+                    boxShadow: switch (glow) {
+                      null => Skin.shadow,
+                      final bright => [
+                        BoxShadow(
+                          color: Skin.goldBottom.withValues(alpha: bright ? 0.9 : 0.4),
+                          blurRadius: bright ? 14 : 6,
+                        ),
+                      ],
+                    },
                   ),
                   alignment: Alignment.center,
                   child: icon,

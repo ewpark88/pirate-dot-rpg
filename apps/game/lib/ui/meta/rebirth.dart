@@ -11,15 +11,18 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_chest.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_shop.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_why.dart';
 import 'package:pirate_dot/ui/rebirth/treasure_route.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 상태 → 환생 미리보기 (경제 `rebirthPreview`, 사용자 결정 ①: 이번 회차 스테이지 기준). null이면 카드를 숨긴다(테스트용).
 final rebirthPreviewProvider = Provider<RebirthPreview? Function(GameState state)>((ref) {
@@ -34,15 +37,17 @@ class RebirthCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final previewOf = ref.watch(rebirthPreviewProvider);
-    // RebirthPreview에는 ==가 없어서 화면에 쓰는 값만 레코드로 골라 구독한다.
+    // RebirthPreview에는 ==가 없다 — 레코드에 넣으면 틱마다 '바뀜'이 되어 카드가 매 틱 다시 지어지고 무거운 미리보기
+    // (rebirthForecast)를 매 틱 돌린다(사용자 버그 2026-10-16 시트 버벅임). 화면에 쓰는 값(==가 있는 것)만 구독한다.
     final view = ref.watch(
       gameStateProvider.select((s) {
         final p = previewOf(s);
-        return p == null ? null : (p, s.progress.stage, p.locked, p.currentPieces, p.gain, p.nextPieceInStages);
+        return p == null ? null : (s.progress.stage, p.locked, p.currentPieces, p.gain, p.nextPieceInStages, p.earned);
       }),
     );
     if (view == null) return const SizedBox.shrink();
-    final (preview, stage, _, _, _, _) = view;
+    final (stage, _, _, _, _, _) = view;
+    final preview = previewOf(ref.read(gameStateProvider))!;
     final l10n = AppLocalizations.of(context);
     final bonus = percentText(l10n, preview.bonusNow);
     final shopDot = ref.watch(rebirthShopProvider.select((s) => s.anyAffordable));
@@ -84,21 +89,35 @@ class RebirthCard extends ConsumerWidget {
                 runSpacing: 8,
                 children: [
                   _ShopButton(dot: shopDot),
-                  PixelButton(
-                    key: const Key('rebirth.open'),
-                    primary: true,
-                    child: Text(l10n.uiRebirthButton),
-                    onPressed: () => unawaited(
-                      showDialog<void>(
-                        context: context,
-                        builder: (_) => RebirthDialog(preview: preview),
-                      ),
+                  // 첫 환생 전이면 손가락으로 길 안내(사용자 지시 2026-10-16).
+                  TutorialSpot(
+                    id: 'rebirth.open',
+                    force: ref.watch(rebirthGuideProvider),
+                    child: PixelButton(
+                      key: const Key('rebirth.open'),
+                      primary: true,
+                      child: Text(l10n.uiRebirthButton),
+                      onPressed: () {
+                        markRebirthSeen(ref);
+                        unawaited(
+                          showDialog<void>(
+                            context: context,
+                            builder: (_) => RebirthDialog(preview: preview),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
             ] else ...[
               Text(l10n.uiRebirthLocked(preview.minStage)),
+              // 해금 전에도 환생이 뭔지 한 줄로.
+              Text(
+                l10n.uiRebirthLockedWhy,
+                key: const Key('rebirth.lockedWhy'),
+                style: Skin.text(14, color: Skin.sub),
+              ),
               const SizedBox(height: 4),
               PixelBar(value: (stage / preview.minStage).clamp(0.0, 1.0), fill: Skin.goldBottom),
               // 환생 전에도 조각이 있으면 상점을 볼 수 있다.
@@ -145,25 +164,22 @@ class RebirthDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final from = percentText(l10n, preview.bonusNow);
-    final to = percentText(l10n, preview.bonusAfter);
     final next = ref.watch(gameStateProvider.select((s) => s.progress.rebirths)) + 1;
     final chest = chestFor(next);
     return PixelDialog(
       title: l10n.uiRebirthTitle,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Line(icon: UiSprites.rebirth, text: l10n.uiRebirthLose),
-          _Line(icon: UiSprites.lock, text: l10n.uiRebirthKeepLook),
-          _Line(
-            icon: UiSprites.tabMap,
-            text: l10n.uiRebirthGainLine(preview.gain, '+$from', '+$to'),
-          ),
-          _Line(icon: UiSprites.gem, text: l10n.uiRebirthChestLine(chest.gems, chest.summons)),
-          const TreasureRoute(),
-        ],
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 얻는 것 / 잃는 것 / 그대로 / 지금 vs 더 가고 (사용자 지시 2026-10-16).
+            RebirthWhy(preview: preview),
+            const SizedBox(height: 4),
+            _Line(icon: UiSprites.gem, text: l10n.uiRebirthChestLine(chest.gems, chest.summons)),
+            const TreasureRoute(),
+          ],
+        ),
       ),
       actions: [
         PixelButton(

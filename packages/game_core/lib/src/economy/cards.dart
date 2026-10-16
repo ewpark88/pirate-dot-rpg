@@ -8,11 +8,15 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
+export 'package:game_core/src/economy/ads.dart' show addAutoUpgrade, autoUpgradeRemaining;
+export 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradePick;
 export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus;
 export 'package:game_core/src/economy/bounty.dart';
+export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
 export 'package:game_core/src/economy/fever.dart'
     show addFever, feverDamageBonus, feverGoldMultiplier, feverKillsAt, feverOn, feverStep;
 export 'package:game_core/src/economy/formation.dart' show activeFleet, autoFleet, emptySlotCount, fleetSlots;
+export 'package:game_core/src/economy/gold_cap.dart';
 export 'package:game_core/src/economy/power.dart' show FleetPower, UpgradePreview, fleetPower, previewUpgrade;
 export 'package:game_core/src/economy/rebirth_forecast.dart' show RebirthForecast, rebirthForecast;
 export 'package:game_core/src/economy/rebirth_shop.dart'

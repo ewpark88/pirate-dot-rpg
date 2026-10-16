@@ -7,11 +7,12 @@ import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/testing.dart';
-import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'family_tables.dart';
+
 void main() {
-  final tables = GameTables.load();
+  final tables = familyTables(); // 계열 기본 규칙(선원 aim·traitScale 없음)
   final w = tables.waves;
   final start = DateTime.utc(2026, 11);
   late List<GameEvent> events;

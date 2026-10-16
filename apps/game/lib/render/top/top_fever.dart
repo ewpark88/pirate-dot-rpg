@@ -39,7 +39,8 @@ class TopFever {
   void update(double ms) {
     final dt = (ms - _lastMs).clamp(0.0, 100.0);
     _lastMs = ms;
-    final on = scene.frame.feverTicksLeft > 0;
+    // 빠른 항해 돌파 동안도 황금 질주(바다·속도선·질주) — S5 fastSail.
+    final on = scene.frame.feverTicksLeft > 0 || scene.frame.fastSail != null;
     if (on && !_was) _startMs = ms;
     _was = on;
     level = on ? math.min(1, level + dt / _fadeInMs) : math.max(0, level - dt / _fadeOutMs);
@@ -47,7 +48,7 @@ class TopFever {
 
   /// 바다 물들임 세기 0~1 (TopSeaPainter.fever로 — 바다 색 자체를 금·주황으로 섞는다).
   /// 켜질 때는 시작 금빛 번쩍 아래에서 바로 금(파랑+금이 섞이면 탁한 회색·올리브 — S1), 꺼질 때만 서서히.
-  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 ? 1 : level);
+  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 || scene.frame.fastSail != null ? 1 : level);
 
   /// 빛 줄기: 비스듬한 밝은 띠 3개가 천천히 흘러간다(빛나는 황금 바다, S1). 배 중심 원점 화면 단위 [view], 적보다 먼저.
   void rays(Canvas c, Rect view) {
@@ -101,7 +102,7 @@ class TopFever {
       ..strokeWidth = 1.5
       ..color = _gold.withValues(alpha: (0.45 + 0.35 * pulse) * level);
     c.drawCircle(Offset.zero, r, _ring);
-    final n = scene.settings.powerSave ? 10 : 20;
+    final n = scene.topHits.lite ? 10 : 20;
     for (var i = 0; i < n; i++) {
       final a = i / n * 2 * math.pi + ms / 2400;
       final flick = 0.5 + 0.5 * math.sin(ms / 70 + i * 2.3);
@@ -127,7 +128,7 @@ class TopFever {
 
   /// 오라에 닿은 적 위 불씨·연기(전장 좌표). 적 그리기 뒤.
   void embers(Canvas c, Offset ship) {
-    if (level <= 0 || scene.settings.powerSave) return;
+    if (level <= 0 || scene.topHits.lite) return;
     final ms = _lastMs;
     var drawn = 0;
     for (var k = 0; k < scene.poseCount && drawn < 40; k++) {
@@ -153,11 +154,11 @@ class TopFever {
     return math.sin(math.pi * age / 400);
   }
 
-  /// 피버 동안 아주 약한 진동(dp). 흔들기 끄기·절전이면 0.
-  Offset vibration() {
-    if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return Offset.zero;
-    final ms = _lastMs;
-    return Offset(math.sin(ms / 23) * 0.4, math.cos(ms / 29) * 0.4) * level;
+  /// 시작 0.6초 폭발 세기 1 → 0 (금빛 잔상·속도선 폭발). 흔들기(동작) 끄기면 0.
+  double burst() {
+    final age = _lastMs - _startMs;
+    if (age < 0 || age >= 600 || !scene.settings.shake) return 0;
+    return 1 - age / 600;
   }
 
   /// 배 둘레 바람 줄(흰 짧은 곡선이 양옆으로 뒤로 흘러감), 배 중심 원점. 흔들기 끄기면 없음.
@@ -183,7 +184,7 @@ class TopFever {
 
   /// 양옆으로 휙휙 스치는 물보라 줄·바위·부표(화면 dp). 절전이면 없음.
   void rushers(Canvas c, Size box) {
-    if (level <= 0.2 || scene.settings.powerSave) return;
+    if (level <= 0.2 || scene.topHits.lite) return;
     final ms = _lastMs;
     for (var i = 0; i < 6; i++) {
       final left = i.isEven;
@@ -218,6 +219,24 @@ class TopFever {
     }
   }
 
+  final List<(double, double)> _trail = []; // (배 x, 장면 ms)
+
+  /// 피버 S자 항적: 지난 배 x를 흐름 속도로 뒤로 흘려 흰 거품 줄로(전장 좌표 — 카메라 원점 캔버스).
+  void weaveTrail(Canvas c, Offset ship, double ms, double flowSpeed) {
+    if (_trail.isEmpty || ms - _trail.last.$2 >= 60) _trail.add((ship.dx, ms));
+    _trail.removeWhere((p) => ms - p.$2 > 1600);
+    if (level <= 0 || _trail.length < 2) return;
+    for (var i = 0; i < _trail.length; i++) {
+      final (x, at) = _trail[i];
+      final age = (ms - at) / 1000;
+      final y = ship.dy + 22 + age * flowSpeed;
+      final a = (1 - age / 1.6).clamp(0.0, 1.0) * level;
+      _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.75 * a);
+      // 한 점(좌우 번갈아) — 입자 예산
+      c.drawRect(Rect.fromLTWH(i.isEven ? x - 5 : x + 3, y, 2, 2), _paint);
+    }
+  }
+
   /// 가장자리 속도선(화면 dp 상자 [box]): 양옆에서 아래로 흐르는 금빛 줄. 흔들기(동작) 끄기·절전이면 없음.
   void speedLines(Canvas c, Size box) {
     if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return;
@@ -225,7 +244,8 @@ class TopFever {
     // 시작 0.6초는 속도선 폭발(더 많고 진하게).
     final age = ms - _startMs;
     final burst = age >= 0 && age < 600 ? 1 - age / 600 : 0.0;
-    final n = 22 + (18 * burst).round();
+    final rush = (scene.frame.fastSail?.speed ?? 1) / 8;
+    final n = 22 + (18 * burst).round() + (20 * rush).round();
     for (var i = 0; i < n; i++) {
       final left = i.isEven;
       final edge = box.width * (0.04 + (i * 37 % 9) / 100);

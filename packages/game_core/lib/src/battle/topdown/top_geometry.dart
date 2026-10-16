@@ -14,7 +14,7 @@ import 'package:game_data/game_data.dart';
 
 /// 탑다운: 배 중심 고정, 적은 사방에서 무리로 다가오고, 보스는 배 둘레 원을 돈다 (탑다운 전환 T1).
 class TopGeometry implements BattleGeometry {
-  TopGeometry(this.w, this.top) : _aim = TopAim(top, w), _spawn = TopSpawn(top, w.field.spawnSpacing);
+  TopGeometry(this.w, this.top) : base = top, _aim = TopAim(top, w), _spawn = TopSpawn(top, w.field.spawnSpacing);
 
   /// `waves.json`의 `top` 절로. [shipRadius]가 있으면 배 반경만 그것으로(배 등급별 크기).
   factory TopGeometry.of(
@@ -29,7 +29,33 @@ class TopGeometry implements BattleGeometry {
   );
 
   final WavesTable w;
-  final TopField top;
+
+  /// 지금 배 자리의 전장 값. 피버 좌우 이동이면 [base]에서 shipX만 옮긴 사본([weave]).
+  TopField top;
+
+  /// 배가 고정일 때의 전장 값(바다 가운데).
+  final TopField base;
+
+  /// 피버 좌우 이동 진행 틱(shapeField가 센다 — 피버가 아니면 0).
+  int weaveTick = 0;
+
+  /// 배가 향하는 방향(라디안, 0 위·시계 방향 — BattleView.shipHeading). 피버 지그재그면 이동 방향으로 기운다.
+  double shipHeading = 0;
+
+  /// 피버 자세(feverPose) 그대로.
+  void pose(({double x, double y, double heading}) p) => weave(p.x, dy: p.y, heading: p.heading);
+
+  /// 배 중심을 바다 가운데에서 ([dx], [dy])만큼 옮기고 [heading]으로 기울인다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
+  void weave(double dx, {double dy = 0, double heading = 0}) {
+    shipHeading = heading;
+    final x = base.shipX + dx;
+    final y = base.shipY + dy;
+    if (x == top.shipX && y == top.shipY) return;
+    top = base.withShipAt(x, y);
+    _aim.top = top;
+    _spawn.top = top;
+  }
+
   final TopAim _aim;
   final TopSpawn _spawn;
 
@@ -134,7 +160,7 @@ class TopGeometry implements BattleGeometry {
     final dx = e.x - top.shipX;
     final dy = e.y - top.shipY;
     final d = math.sqrt(dx * dx + dy * dy);
-    if (e.boss ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
+    if (e.standsOff ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
     final ahead = forwardBoost > 0 && dy < 0 ? 1 + forwardBoost * (-dy / d) : 1.0; // 피버 전진
     final step =
         speed *
@@ -142,10 +168,10 @@ class TopGeometry implements BattleGeometry {
         speedScale *
         ahead *
         (d > top.approachRadius ? top.approachBoost : 1) *
-        (e.boss ? 1 : top.mobSpeedScale);
+        (e.standsOff ? 1 : top.mobSpeedScale);
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
     final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
-    final nd = e.boss
+    final nd = e.standsOff
         ? math.max(top.bossStandoff, d - step)
         : (d - step > near ? d - step : math.max(_touchDist(dx / d, dy / d), d - step));
     e
@@ -186,7 +212,7 @@ class TopGeometry implements BattleGeometry {
   void settle(Field f, double dt) {
     final mobs = [
       for (final e in f.foes)
-        if (e.alive && !e.boss && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
+        if (e.alive && !e.standsOff && !e.vanguard && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
     ];
     final min = top.mobRadius / half;
     for (var i = 0; i < mobs.length; i++) {
@@ -214,7 +240,8 @@ class TopGeometry implements BattleGeometry {
       }
     }
     for (final b in f.foes) {
-      if (!b.boss || !b.alive || b.stunned || _dist(b) > top.bossStandoff + 1) continue;
+      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false);
+      if (!orbiting || _dist(b) > top.bossStandoff + 1) continue;
       _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, top.bossStandoff);
     }
   }
@@ -226,7 +253,7 @@ class TopGeometry implements BattleGeometry {
   /// 배에서 바깥쪽으로. approachRadius 밖으로는 밀지 않는다.
   @override
   void push(Foe e, double distance) {
-    if (e.passX != null) return; // 지나가는 배는 경로를 지킨다
+    if (e.passX != null || e.vanguard) return; // 지나가는 배는 경로를, 돌격대는 돌진을 지킨다
     final d = _dist(e);
     if (d == 0) return;
     _spawn.place(e, _angle(e), math.min(d + distance, math.max(d, top.approachRadius)));
@@ -234,7 +261,7 @@ class TopGeometry implements BattleGeometry {
 
   @override
   void pull(Foe e, double x, double y, double amount) {
-    if (e.passX != null) return;
+    if (e.passX != null || e.vanguard) return;
     final dx = x - e.x;
     final dy = y - e.y;
     final d = math.sqrt(dx * dx + dy * dy);

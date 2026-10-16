@@ -17,7 +17,6 @@ const _switches = [
   'flash',
   'powerSave',
   'autoBoss',
-  'autoUpgrade',
   'notifications',
 ];
 
@@ -29,7 +28,7 @@ Future<CommandLog> _openSettings(WidgetTester tester, GameState state) async {
 }
 
 void main() {
-  testWidgets('기준 7: 톱니 → 설정 9항목, 흔들림 끄기 → SetSetting(shake, false)', (tester) async {
+  testWidgets('기준 7: 톱니 → 설정 8항목(자동 강화 토글 없음), 흔들림 끄기 → SetSetting(shake, false)', (tester) async {
     final log = await _openSettings(tester, loadFixture('stage37_midgame'));
     expect(find.text('Settings'), findsOneWidget);
     expect(find.byKey(const Key('settings.lang')), findsOneWidget);

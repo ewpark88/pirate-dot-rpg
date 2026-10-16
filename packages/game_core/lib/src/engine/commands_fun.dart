@@ -40,3 +40,24 @@ class OpSeaEvent extends OperatorCommand {
   @override
   Json _fields() => {'id': id};
 }
+
+/// 자동 강화 버프 끄기 — 남은 시간은 버린다(S4 요청, 사용자 '수동으로만').
+class CancelAutoUpgrade extends Command {
+  const CancelAutoUpgrade();
+
+  @override
+  String get type => 'cancelAutoUpgrade';
+}
+
+/// 안내(말풍선) [id]를 본 것으로 저장 — 이미 있으면 그대로(S4 '처음 1회 안내').
+class MarkHint extends Command {
+  const MarkHint(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'markHint';
+
+  @override
+  Json _fields() => {'id': id};
+}

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
+import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/ads.dart' show addTailwind;
 import 'package:game_core/src/economy/cards.dart';
@@ -134,7 +135,15 @@ GameState startSeaEvent(GameState s, Field f, SystemContext ctx, String id) {
       final gold = stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier * e.number('goldBossRatio'));
       final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier);
       final at = ring(top.number('approachRadius'), ctx.rng.nextDouble() * fullTurn);
-      f.foes.add(foe('sea_serpent', 'ambush', at, boss, gold, mobSpeed, attack));
+      final serpent = foe('sea_serpent', 'ambush', at, boss, gold, mobSpeed, attack);
+      if (e.has('patterns')) {
+        // 사용자 결정(2026-10-16): 바다 괴물 = 돌진 패턴 보스 — standoff에서 돌진·복귀(boss_patterns.dart)
+        serpent.plan = BossPlan(
+          e.objs('patterns').map(BossPatternDef.fromJson).toList(),
+          _ticks(ctx.tables, e.number('restSec')),
+        );
+      }
+      f.foes.add(serpent);
     case 'bottle':
       choices = [for (final c in e.objs('choices')) c.str('type')];
       ctx.emit(BottleOpened(ctx.tick, choices: choices));
@@ -213,7 +222,7 @@ GameState _end(GameState s, SystemContext ctx, String id, String result) {
 GameState _catch(GameState s, SystemContext ctx, Foe fish, {bool auto = false}) {
   final gold = fish.gold.times(_goldMul(s, ctx.tables));
   ctx.emit(GoldfishCaught(ctx.tick, targetId: fish.id, gold: gold, auto: auto));
-  return s.copyWith(wallet: s.wallet.copyWith(gold: s.wallet.gold + gold));
+  return grantGold(s, ctx, gold);
 }
 
 double _goldMul(GameState s, GameTables t) =>
@@ -246,7 +255,7 @@ GameState pickBottleAt(GameState s, SystemContext ctx, int index, {bool auto = f
         t,
         offlineFleet(s, t),
       ).times(c.number('minutesOfKills') * Duration.secondsPerMinute);
-      next = next.copyWith(wallet: next.wallet.copyWith(gold: next.wallet.gold + gold));
+      next = grantGold(next, ctx, gold);
       reward = 'gold:$gold';
     case 'tailwind':
       next = addTailwind(next, t, ctx.clock.now(), Duration(seconds: c.integer('sec')));

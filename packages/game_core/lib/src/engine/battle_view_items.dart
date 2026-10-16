@@ -19,6 +19,7 @@ class EnemyView {
     this.burning = false,
     this.vulnerable = false,
     this.emerging = false,
+    this.vanguard = false,
     this.heading = sideHeading,
     this.eventKind,
   });
@@ -38,6 +39,7 @@ class EnemyView {
     burning: j['burning'] as bool? ?? false,
     vulnerable: j['vulnerable'] as bool? ?? false,
     emerging: j['emerging'] as bool? ?? false,
+    vanguard: j['vanguard'] as bool? ?? false,
     heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
     eventKind: j['eventKind'] as String?,
   );
@@ -75,6 +77,9 @@ class EnemyView {
   /// 배 가까이 솟아오르는 중(물보라 예고) — 맞지도 때리지도 않는다(배 위협 (b)). 선택 키.
   final bool emerging;
 
+  /// 돌격대(넉백·기절 면역, 배로 곧장) — 렌더가 붉은 테·물보라 꼬리로 구분. 선택 키.
+  final bool vanguard;
+
   /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
   final double heading;
 
@@ -96,6 +101,7 @@ class EnemyView {
     'burning': burning,
     'vulnerable': vulnerable,
     if (emerging) 'emerging': true,
+    if (vanguard) 'vanguard': true,
     if (heading != sideHeading) 'heading': heading,
     if (eventKind != null) 'eventKind': eventKind,
   };
@@ -183,6 +189,36 @@ class ChallengeView {
   final int ticksLeft;
 
   Json toJson() => {'id': id, 'target': target, 'value': value, 'ticksLeft': ticksLeft};
+}
+
+/// 빠른 항해 돌파 중 (docs/specs/platform-fast-sail-breakthrough.md): 구간 from~to 스테이지, 연속 격파 수.
+@immutable
+class FastSailView {
+  const FastSailView({
+    required this.from,
+    required this.to,
+    required this.combo,
+    this.phase = 'build',
+    this.speed = 1,
+  });
+
+  factory FastSailView.fromJson(Json j) => FastSailView(
+    from: j['from'] as int,
+    to: j['to'] as int,
+    combo: j['combo'] as int,
+    phase: j['phase'] as String? ?? 'build',
+    speed: (j['speed'] as num?)?.toDouble() ?? 1,
+  );
+
+  final int from;
+  final int to;
+  final int combo;
+
+  /// 지금 리듬: build | rush | finale, 배율(BreakthroughStrike와 같음).
+  final String phase;
+  final double speed;
+
+  Json toJson() => {'from': from, 'to': to, 'combo': combo, 'phase': phase, 'speed': speed};
 }
 
 /// 현상금 전투 표시 (현상금 B0): 보스·단계·남은 틱.

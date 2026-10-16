@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,7 @@ import 'package:pirate_dot/adapters/notify/local_notifications_sdk.dart';
 import 'package:pirate_dot/adapters/notify/offline_full_notifier.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
+import 'package:pirate_dot/operator/crew_lab_group.dart' show operatorBackupProvider;
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/proto/proto_screen.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
@@ -133,6 +135,9 @@ Future<void> main() async {
       analyticsPortProvider.overrideWithValue(analytics),
       notifierProvider.overrideWithValue(notifier),
       saveFailureProvider.overrideWithValue(store.failure),
+      // 운영자 빌드만: 샘플 불러오기 전 내 세이브 백업(지원 폴더/operator_backup) — 배포 빌드에선 상수로 빠진다
+      if (kOperator)
+        operatorBackupProvider.overrideWithValue(FileSaveStore(Directory('${supportDir.path}/operator_backup'))),
     ],
   );
   final controller = container.read(gameStateProvider.notifier);

@@ -30,7 +30,8 @@ void main() {
     final gold = partCostSum(cannon, st.ship.level('cannon'), 5).times(2);
     final log = await pumpGame(
       tester,
-      st.copyWith(wallet: st.wallet.copyWith(gold: gold)),
+      // 화물칸 여유(가득이면 화물칸 줄이 맨 위로 온다).
+      withCargoRoom(st.copyWith(wallet: st.wallet.copyWith(gold: gold))),
       tab: shipTab,
     );
     expect(find.byKey(const Key('ship.upgrade.levels.cannon')), findsNothing);

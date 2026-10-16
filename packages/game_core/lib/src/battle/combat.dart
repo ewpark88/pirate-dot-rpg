@@ -66,8 +66,9 @@ class Round {
       final speed = e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed;
       e.slowTimer -= dt;
       if (e.slowTimer <= 0) e.slow = 0;
-      // 다가가기(모양마다). 아직 닿지 않았으면 이번 틱은 공격하지 않는다.
-      if (!geo.advance(e, speed, dt)) continue;
+      if (e.plan?.steering ?? false) continue; // 보스 돌진·복귀 중(boss_patterns.dart)
+      // 다가가기(모양마다). 아직 닿지 않았으면 이번 틱은 공격하지 않는다. 보스 패턴 중엔 기본 공격을 쉰다.
+      if (!geo.advance(e, speed, dt) || (e.plan?.busy ?? false)) continue;
       e.contactTimer -= dt;
       if (e.contactTimer > 0) continue;
       e.contactTimer += f.contactIntervalSec;
@@ -127,6 +128,7 @@ class Round {
             angle: m?.angle,
             flightTicks: flying?.ticks,
             kind: a.raw.strOrNull('kind'),
+            splashRadius: a.raw.has('splashRadius') ? a.raw.number('splashRadius') : null,
           ),
         );
         if (flying != null) continue;

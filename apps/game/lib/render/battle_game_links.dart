@@ -33,8 +33,17 @@ mixin _UiLinks on FlameGame {
   }
 
   /// 탑다운: 전장 좌표 ↔ 상자 dp (UI 탭 판정용 — 황금 물고기·보물상자, 시트를 끄는 중에도 지금 배치 기준).
-  Offset worldToDp(Offset world) => _topFrame.worldToDp(world, scene.topShip);
-  Offset dpToWorld(Offset dp) => _topFrame.dpToWorld(dp, scene.topShip);
+  // 카메라 = 바다 가운데(피버 좌우 이동 때도 고정) — 그리기와 같은 기준.
+  /// 탑다운 화면 문구(빠른 항해 돌파 컷인·스탬프) — UI가 AppLocalizations로 채운다.
+  set topTexts(TopTexts v) {
+    scene.topHits.fast.texts = v;
+    scene.topHits.bounty
+      ..wanted = v.wanted
+      ..fled = v.fled;
+  }
+
+  Offset worldToDp(Offset world) => _topFrame.worldToDp(world, scene.topCamera);
+  Offset dpToWorld(Offset dp) => _topFrame.dpToWorld(dp, scene.topCamera);
 
   /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
   CutInState get cutIn => scene.moments.cutIn;

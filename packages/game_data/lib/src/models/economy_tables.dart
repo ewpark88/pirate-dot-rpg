@@ -16,6 +16,7 @@ class ShipPartDef {
       milestoneMultiplier = j.number('milestoneMultiplier'),
       accelLevels = (j.raw['accelLevels'] as num?)?.toDouble(),
       accelFrom = j.intOrNull('accelFrom') ?? 0,
+      costRatio = (j.raw['costRatio'] as num?)?.toDouble(),
       visualStages = [for (final v in j.raw['visualStages'] as List) (v as num).toInt()],
       nameKey = j.str('nameKey');
 
@@ -38,6 +39,9 @@ class ShipPartDef {
 
   /// 가속이 시작되는 레벨(그 아래는 Lv 그대로 — 초반 벽·튜토리얼 보스를 지키려고). 없으면 0.
   final int accelFrom;
+
+  /// 있으면 비용 = 그 레벨 효과 × costRatio (화물칸: 용량의 60% — 꽉 찬 금고로 다음 화물칸을 산다). costBase·costGrowth 대신.
+  final double? costRatio;
 
   /// 배 외형이 바뀌는 레벨 (오름차순, 1부터). 지금 단계 = 이 목록에서 레벨 이하인 것의 수 (사용자 지시 2026-10-15).
   final List<int> visualStages;
@@ -68,7 +72,11 @@ class ShipPartsTable {
       message: 'ship_parts: 부위는 ${shipPartIds.join(',')}',
     );
     for (final p in parts) {
-      expect(e, that: p.costGrowth > 1, message: 'ship_parts: ${p.id} costGrowth는 1보다 커야 함');
+      expect(
+        e,
+        that: p.costRatio != null ? p.costRatio! > 0 && p.growth > 1 : p.costGrowth > 1,
+        message: 'ship_parts: ${p.id} costGrowth(또는 costRatio가 있으면 growth)는 1보다 커야 함',
+      );
       expect(e, that: p.formula == 'exp' || p.formula == 'linear', message: 'ship_parts: ${p.id} formula 오류');
       final v = p.visualStages;
       var ascending = v.isNotEmpty && v.first == 1;

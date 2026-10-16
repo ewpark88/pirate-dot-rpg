@@ -28,15 +28,18 @@ final tutorialStepProvider = Provider<int?>((ref) => ref.watch(gameStateProvider
 
 /// 튜토리얼이 가리키는 위젯에 테두리와 손가락을 겹친다. 가리키지 않으면 [child] 그대로.
 class TutorialSpot extends ConsumerWidget {
-  const TutorialSpot({required this.id, required this.child, super.key});
+  const TutorialSpot({required this.id, required this.child, this.force = false, super.key});
 
   final String id;
   final Widget child;
 
+  /// 단계와 상관없이 가리킨다 (UI 길 안내 — 예: 첫 환생 손가락).
+  final bool force;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(tutorialStepProvider);
-    if (!(tutorialSpots[step]?.contains(id) ?? false)) return child;
+    if (!force && !(tutorialSpots[step]?.contains(id) ?? false)) return child;
     return Stack(
       clipBehavior: Clip.none,
       children: [

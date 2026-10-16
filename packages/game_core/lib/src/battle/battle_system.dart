@@ -1,11 +1,13 @@
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
+import 'package:game_core/src/battle/fast_sail.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
+import 'package:game_core/src/battle/tailwind_speed.dart';
 import 'package:game_core/src/battle/topdown/top_bounty.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
@@ -13,6 +15,7 @@ import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
+import 'package:game_core/src/economy/gold_cap.dart' show addGold;
 import 'package:game_core/src/economy/rebirth_shop.dart'
     show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
 import 'package:game_core/src/economy/sea_events.dart' show startSeaEvent, tapGoldfish;
@@ -24,7 +27,6 @@ import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
 /// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 함성 게이지·궁극기, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
-/// 시뮬 내부 값은 [Field]가 들고 매 틱 GameState.battle로 투영한다. 수치는 SystemContext.tables에서만 읽는다.
 class BattleSystem implements GameSystem {
   BattleSystem();
 
@@ -32,6 +34,7 @@ class BattleSystem implements GameSystem {
   Object? _crewsSeen;
   Object? _fleetSeen;
   final _dress = ShipDressCache();
+  final _tailwind = TailwindSpeed();
   int _kills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
@@ -51,6 +54,16 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case SkipFastSail():
+        final run = _sync(state, ctx).fastSail;
+        if (run == null) return state;
+        var s = state; // 남은 스테이지마다: 보스 처치 골드 + 보스 격파 보상(젬·카드·배 등급·스테이지)
+        while (s.progress.stage <= run.to) {
+          s = skipFastSailGold(s, run, ctx.tables);
+          s = _bossCleared(s, _field!, ctx);
+        }
+        closeFastSail(s, _field!, ctx, skipped: true);
+        return _project(s, _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case TriggerUltimate():
@@ -112,15 +125,20 @@ class BattleSystem implements GameSystem {
         ..tickZones()
         ..topdownStep(state)
         ..tickStatus()
-        ..tickCombo();
+        ..tickCombo()
+        ..breakthrough(state); // 빠른 항해 돌파(fast_sail.dart)
     });
     if (_field!.bounty != null) {
       return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
-    final after = _fun.step(_resolve(next, _field!, ctx), _field!, ctx, kills: _kills);
+    final resolved = _resolve(next, _field!, ctx);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
+    final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
+    final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
-    return feverStep(_tailwindSpeed(_project(after, f, ctx.tables), ctx), ctx, kills: _kills, bossKilled: boss);
+    closeFastSail(after, f, ctx);
+    final shown = _tailwind.apply(_project(after, f, ctx.tables), ctx);
+    return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
@@ -135,27 +153,6 @@ class BattleSystem implements GameSystem {
     }
   }
 
-  bool _tailwindBoost = false;
-
-  /// 순풍 중에는 배속을 tailwind.speedMultiplier로(앱이 주기마다 그만큼 틱을 돈다). 운영자 배속(1 아님)은 그대로.
-  GameState _tailwindSpeed(GameState s, SystemContext ctx) {
-    final b = s.battle;
-    if (b == null) return s;
-    final until = s.buffs.tailwindUntil;
-    final on = until != null && until.isAfter(ctx.clock.now());
-    final boost = ctx.tables.ads.placements.firstWhere((p) => p.id == 'tailwind').reward.integer('speedMultiplier');
-    if (on && !_tailwindBoost && b.speed == 1) {
-      _tailwindBoost = true;
-      return s.copyWith(battle: b.copyWith(speed: boost));
-    }
-    if (!on && _tailwindBoost) {
-      _tailwindBoost = false;
-      return b.speed == boost ? s.copyWith(battle: b.copyWith(speed: 1)) : s;
-    }
-    return s;
-  }
-
-  /// 이번 틱 결과로 진행 상태를 바꾼다: 파 정리, 보스 처치·시간 초과, 배 침몰.
   GameState _resolve(GameState s, Field f, SystemContext ctx) {
     final w = ctx.tables.waves;
     final p = s.progress;
@@ -189,19 +186,19 @@ class BattleSystem implements GameSystem {
     final t = ctx.tables;
     final p = s.progress;
     final stage = p.stage + 1;
+    final gems = stage > p.bestStage ? t.waves.bossGems : 0; // 처음 깬 보스만(사용자 신고 '젬 과다', 환생 뒤 반복은 없음)
     ctx
-      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: t.waves.bossGems))
+      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: gems))
       ..emit(StageAdvanced(ctx.tick, stage: stage));
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);
     if (tier.stage == stage && beyondHonor(s, t, tier)) ctx.emit(ShipTierUp(ctx.tick, tierId: tier.id));
     final carded = grantBossCards(s, ctx, [for (final g in f.guns) g.crewId]); // 잡은 스테이지 기준 — 올리기 전에
     ctx.emit(SaveRequested(ctx.tick, reason: 'bossCleared'));
-    // 새 스테이지는 빈 바다·가득 찬 배에서 시작한다(옛 뷰의 보스를 이어받지 않게 뷰도 비운다).
     _field = null;
     final old = s.battle ?? BattleView.empty;
     final next = carded.copyWith(
-      wallet: carded.wallet.copyWith(gems: carded.wallet.gems + t.waves.bossGems),
+      wallet: carded.wallet.copyWith(gems: carded.wallet.gems + gems),
       progress: p.copyWith(stage: stage, wave: 0, farming: false, bestStage: stage > p.bestStage ? stage : null),
       battle: BattleView(
         tick: old.tick,
@@ -212,7 +209,9 @@ class BattleSystem implements GameSystem {
         chest: old.chest,
       ),
     );
-    final nf = _sync(next, ctx)..travelLeft = t.waves.travelSec;
+    final nf = _sync(next, ctx)
+      ..travelLeft = t.waves.travelSec
+      ..fastSail = f.fastSail; // 돌파 구간은 새 전장으로 이어간다
     return _project(next, nf, ctx.tables);
   }
 
@@ -238,8 +237,9 @@ class BattleSystem implements GameSystem {
     body(r);
     _kills = r.kills;
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
-    final s = counted.copyWith(
-      wallet: r.gold.isZero ? null : state.wallet.copyWith(gold: state.wallet.gold + r.gold),
+    final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
+    _fun.overflow(paid.lost, ctx);
+    final s = paid.state.copyWith(
       progress: r.rage == state.progress.rage ? null : state.progress.copyWith(rage: r.rage),
     );
     return _project(s, f, ctx.tables);

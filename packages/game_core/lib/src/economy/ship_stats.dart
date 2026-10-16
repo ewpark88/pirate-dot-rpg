@@ -26,14 +26,16 @@ BigNum partEffect(ShipPartDef def, int level) {
 }
 
 /// 부위 [def]를 Lv[level]에서 Lv[level]+1로 올리는 비용.
-BigNum partCost(ShipPartDef def, int level) => BigNum.powOf(def.costGrowth, partStep(def, level)).times(def.costBase);
+BigNum partCost(ShipPartDef def, int level) => def.costRatio != null
+    ? partEffect(def, level).times(def.costRatio!)
+    : BigNum.powOf(def.costGrowth, partStep(def, level)).times(def.costBase);
 
 /// Lv[from]에서 [count]번 강화하는 비용 합. 가속이 없으면 등비수열 공식(반복 없음): `costBase × g^from × (g^count − 1) / (g − 1)`,
 /// 가속이 있으면 한 레벨씩 더한다(가속 곡선은 금방 커져 횟수가 작다).
 BigNum partCostSum(ShipPartDef def, int from, int count) {
   if (count <= 0) return BigNum.zero;
   if (count == 1) return partCost(def, from); // 한 번은 partCost와 비트까지 같게(경계 판정)
-  if (def.accelLevels != null) {
+  if (def.accelLevels != null || def.costRatio != null) {
     var sum = BigNum.zero;
     for (var lv = from; lv < from + count; lv++) {
       sum = sum + partCost(def, lv);
@@ -48,7 +50,7 @@ BigNum partCostSum(ShipPartDef def, int from, int count) {
 int affordableLevels(ShipPartDef def, int from, BigNum gold) {
   final room = def.maxLevel == null ? null : def.maxLevel! - from;
   if ((room != null && room <= 0) || gold < partCost(def, from)) return 0;
-  if (def.accelLevels != null) {
+  if (def.accelLevels != null || def.costRatio != null) {
     // partCostSum과 같은 순서로 더해 비교한다(경계에서 반올림이 어긋나지 않게).
     var k = 0;
     var sum = BigNum.zero;
@@ -103,8 +105,8 @@ double attackSpeedMultiplier(ShipPartsTable t, int level) =>
 double critChance(ShipPartsTable t, int level) =>
     math.min(partEffect(t.byId('crowsnest'), level).toDouble(), t.critChanceMax);
 
-/// 화물칸: 골드 획득 배율.
-double goldMultiplier(ShipPartsTable t, int level) => partEffect(t.byId('cargo'), level).toDouble();
+/// 화물칸 골드 배율 — 화물칸이 골드 금고 용량이 된 뒤(economy-cargo-capacity) 늘 1. 용량은 goldCapacity.
+double goldMultiplier(ShipPartsTable t, int level) => 1;
 
 BigNum _milestone(ShipPartDef def, int level) {
   final every = def.milestoneEvery;

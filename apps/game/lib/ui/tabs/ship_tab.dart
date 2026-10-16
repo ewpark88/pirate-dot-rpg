@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
@@ -28,9 +29,16 @@ class ShipTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tables = ref.watch(tablesProvider);
+    // 금고가 가득 차면 화물칸 줄을 맨 위로 — '화물칸 가득' 알약 바로가기로 오면 바로 보인다(사용자 지시 2026-10-16).
+    final cargoFirst = ref.watch(cargoLevelProvider) == 2;
+    final parts = [
+      ...tables.shipParts.parts.where((p) => cargoFirst && p.id == 'cargo'),
+      ...tables.shipParts.parts.where((p) => !(cargoFirst && p.id == 'cargo')),
+    ];
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
+        if (cargoFirst) ...[for (final def in parts.take(1)) _PartRow(def: def)],
         // 지금 배 (크게) · 등급 이름 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
         const _ShipHeader(),
         // 일괄 강화 배수.
@@ -38,7 +46,7 @@ class ShipTab extends ConsumerWidget {
           padding: EdgeInsets.only(bottom: 6),
           child: FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: UpgradeMultiplierPills()),
         ),
-        for (final def in tables.shipParts.parts) _PartRow(def: def),
+        for (final def in cargoFirst ? parts.skip(1) : parts) _PartRow(def: def),
       ],
     );
   }
@@ -135,6 +143,13 @@ class _PartRow extends ConsumerWidget {
                     children: [
                       Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
                       Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                      // 화물칸 = 골드 금고: '최대 a → b'(다음 레벨 용량).
+                      if (def.stat == 'capacity')
+                        Text(
+                          l10n.uiCargoMaxNext(partEffect(def, level).format(), partEffect(def, level + 1).format()),
+                          key: Key('ship.effect.${def.id}'),
+                          style: Skin.text(14, color: PixelPalette.accent),
+                        ),
                       if (honor)
                         Text(
                           l10n.uiRebirthHonorLook,
@@ -144,16 +159,21 @@ class _PartRow extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Text(
-                  partEffectText(l10n, def, partEffect(def, level)),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
-                ),
+                // 화물칸 효과는 이름 아래 줄('최대 a → b') — 오른쪽은 비운다.
+                if (def.stat != 'capacity')
+                  Text(
+                    partEffectText(l10n, def, partEffect(def, level)),
+                    key: Key('ship.effect.${def.id}'),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+                  ),
                 const SizedBox(width: 8),
                 // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).
                 ConstrainedBox(
                   constraints: const BoxConstraints(minWidth: _buttonMinWidth),
                   child: TutorialSpot(
                     id: 'ship.upgrade.${def.id}',
+                    // 금고가 가득 차면 화물칸 강화 버튼을 가리킨다(사용자 지시 2026-10-16).
+                    force: def.id == 'cargo' && ref.watch(cargoLevelProvider) == 2,
                     child: PixelButton(
                       key: Key('ship.upgrade.${def.id}'),
                       primary: true,

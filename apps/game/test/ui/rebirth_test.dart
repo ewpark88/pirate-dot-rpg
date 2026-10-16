@@ -98,9 +98,10 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
-    expect(find.text('Reset: stage, gold, ship upgrades'), findsOneWidget);
-    expect(find.text('Kept: crew, collection, gems, ship look'), findsOneWidget);
-    expect(find.text('Gain: +7 pieces, bonus +0% to +35%'), findsOneWidget);
+    // 설명 판(rebirth.why): 얻는 것 / 잃는 것 / 그대로 (사용자 지시 2026-10-16).
+    expect(find.text('Stage · ship part levels · gold'), findsOneWidget);
+    expect(find.text('Crew · collection · gems · ship look'), findsOneWidget);
+    expect(find.text('Map pieces +7'), findsOneWidget);
     await tester.tap(find.byKey(const Key('rebirth.confirm')));
     await tester.pumpAndSettle();
     expect(log.sent, [isA<Rebirth>()]);
@@ -119,10 +120,11 @@ void main() {
 
   testWidgets('기본값은 경제 rebirthPreview — 샘플(스테이지 37)은 잠김, 최고 스테이지 표시', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'), size: _tall);
+    // 최고 스테이지는 맨 위 해역 카드 — 아래 카드로 스크롤하기 전에 본다.
+    expect(find.text('Best stage 41'), findsOneWidget);
     await _scrollToCard(tester);
     expect(find.byKey(const Key('rebirth.card')), findsOneWidget);
     expect(find.text('Rebirth unlocks at stage 40'), findsOneWidget);
-    expect(find.text('Best stage 41'), findsOneWidget);
   });
 
   testWidgets('환생 결과 팝업: 환생 횟수가 늘면 그 사이 늘어난 조각 +7', (tester) async {

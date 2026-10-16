@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -29,19 +30,21 @@ class VoyageTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 카드 3장 (layout-v2-brief): 해역 · 오프라인/순풍 · 보물지도.
+    // 환생할 수 있으면 보물지도 카드를 맨 위로 — 알약·말풍선 바로가기로 오면 바로 보인다(사용자 지시 2026-10-16).
+    final ready = ref.watch(rebirthReadyProvider);
     return ListView(
       padding: const EdgeInsets.all(8),
-      children: const [
+      children: [
         // 칭호 띠 (환생 v2 — 칭호가 생기면 보인다, 누르면 목록).
-        Align(alignment: Alignment.centerLeft, child: TitleChip()),
-        _RegionCard(),
-        SizedBox(height: 8),
-        PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
-        SizedBox(height: 8),
+        const Align(alignment: Alignment.centerLeft, child: TitleChip()),
+        if (ready) ...const [RebirthCard(), SizedBox(height: 8)],
+        const _RegionCard(),
+        const SizedBox(height: 8),
+        const PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
+        const SizedBox(height: 8),
         // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
-        BountyCard(),
-        SizedBox(height: 8),
-        RebirthCard(),
+        const BountyCard(),
+        if (!ready) ...const [SizedBox(height: 8), RebirthCard()],
       ],
     );
   }

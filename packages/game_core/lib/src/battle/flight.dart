@@ -133,14 +133,14 @@ extension Flights on Round {
   /// [e]가 [sec]초 뒤 있을 자리(배를 향해 곧게 — 몸통·standoff 앞에서 멈춤, 스쳐 가는 적은 그 방향으로).
   ({double x, double y}) _predict(TopGeometry geo, Foe e, double sec) {
     if (e.holdSec > 0 || e.stunned) return (x: e.x, y: e.y);
-    final speed = e.speed * geo.speedScale * (e.boss ? 1 : geo.top.mobSpeedScale);
+    final speed = e.speed * geo.speedScale * (e.standsOff ? 1 : geo.top.mobSpeedScale);
     final px = e.passX;
     if (px != null) return (x: e.x + px * speed * sec, y: e.y + (e.passY ?? 0) * speed * sec);
     final dx = geo.top.shipX - e.x;
     final dy = geo.top.shipY - e.y;
     final d = math.sqrt(dx * dx + dy * dy);
     if (d <= 0) return (x: e.x, y: e.y);
-    final room = e.boss
+    final room = e.standsOff
         ? math.max(0, d - geo.top.bossStandoff)
         : math.max(0, geo.hullGap(e.x, e.y) - geo.top.radiusOf(e));
     final step = math.min(speed * sec, room.toDouble());

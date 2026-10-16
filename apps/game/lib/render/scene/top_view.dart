@@ -10,6 +10,9 @@ extension TopView on BattleScene {
 
   Offset get topShip => Offset(frame.shipX ?? tables.waves.top.shipX, frame.shipY ?? tables.waves.top.shipY);
 
+  /// 탑다운 카메라 중심(전장 좌표): 바다 가운데 고정(waves.top.shipX·shipY). 피버 지그재그(S5)·빠른 항해 때 배만 화면에서 움직인다.
+  Offset get topCamera => Offset(tables.waves.top.shipX, tables.waves.top.shipY);
+
   /// 내 배 가운데 (지금 방식의 좌표) — 피격 숫자·코인 목표.
   Offset get shipCenter => isTop ? topShip : const Offset(kShipCenterX, kShipCenterY);
 

@@ -25,7 +25,7 @@ Future<CommandLog> _pump(WidgetTester tester, Duration away, {bool fake = true})
     ..physicalSize = const Size(400, 800)
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final state = loadFixture('stage37_midgame');
+  final state = _roomy();
   final log = CommandLog();
   await tester.pumpWidget(
     ProviderScope(
@@ -42,6 +42,9 @@ Future<CommandLog> _pump(WidgetTester tester, Duration away, {bool fake = true})
   await tester.pumpAndSettle();
   return log;
 }
+
+/// 화물칸에 넉넉한 여유(복귀 골드가 잘리지 않게 — 잘림은 cargo_test).
+GameState _roomy() => withCargoRoom(loadFixture('stage37_midgame'), extra: BigNum.parse('1e40'));
 
 void main() {
   testWidgets('기준 3: 2시간 뒤 시작 → 팝업 1개, 받기 → ClaimOffline, 닫힘', (tester) async {
@@ -96,7 +99,7 @@ void main() {
 
   testWidgets('실제 경제 함수: 2시간 뒤 미리보기 골드를 그대로 보인다', (tester) async {
     await _pump(tester, const Duration(hours: 2), fake: false);
-    final state = loadFixture('stage37_midgame');
+    final state = _roomy();
     final expected = offlinePreview(state, GameTables.load(), state.savedAt.add(const Duration(hours: 2)))!;
     expect(find.byType(OfflineRewardDialog), findsOneWidget);
     expect(find.text(expected.gold.format()), findsOneWidget);
