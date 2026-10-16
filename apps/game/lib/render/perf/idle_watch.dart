@@ -12,7 +12,9 @@ class IdleWatch {
   IdleWatch({required this.idleMs, required this.dimMs, required this.now});
 
   final double idleMs;
-  final double dimMs;
+
+  /// 어두운 절전 화면까지(ms). 0 이하면 끔 — 사용자 설정 sleepAfterSec(S2)을 BattleGame.sleepAfterSec이 넣는다.
+  double dimMs;
 
   /// 지금 시각(ms) — 앱은 Stopwatch, 테스트는 가짜 시계.
   final double Function() now;
@@ -48,6 +50,6 @@ class IdleWatch {
   /// 프레임마다: 지난 시간으로 단계를 갱신한다.
   void tick() {
     final quiet = now() - _lastInput;
-    level.value = quiet >= dimMs ? IdleLevel.dim : (quiet >= idleMs ? IdleLevel.idle : IdleLevel.active);
+    level.value = dimMs > 0 && quiet >= dimMs ? IdleLevel.dim : (quiet >= idleMs ? IdleLevel.idle : IdleLevel.active);
   }
 }
