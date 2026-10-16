@@ -5,10 +5,18 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 야간 30일 리포트(100명, 실행 중) → docs/balance/nightly-30d.md 커밋, 벗어남 있으면 원인·조정안 |
-| 막힌 것 | 없음 (스테이지 40 하루 일정 8.4시간은 S1 waves 조정 대기) |
+| 바로 다음 할 일 | 스폰 패턴(산발·무리·대열) 값 넣고 스테이지 10(6~12분)·오프라인 8시간·이벤트 골드 10~20% 맞춤 → 야간 30일 리포트 탑다운 재측정 |
+| 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-15~16 · S2 · T4-B 균형 결정·T4-2b·돌발 이벤트·즉석 도전
+- 계열 안 편차 결정: 전설·신화 powerScale을 선원별로 계열 평균에 맞춤(새 손잡이 없음, reachBonus는 원인 아님). main 기준(배 캡슐 13% 축소 뒤) 재적합 f000a95 — 5레벨 0.945~1.063, 투척 45 1.19 → 1.0.
+- T4-2b(5611ec2): 옆모습 전용 표 값·상자 분기 삭제. laneY(shared 검증)·spawnX(테스트)·battleView 'side' 키는 유지.
+- 돌발 이벤트 5종(7524efa): meta.seaEvents, sea_events.dart, Foe.eventKind·Field.waveFoes, OpSeaEvent. 물고기 조준 제외·폭풍 속도는 S5.
+- 즉석 도전(2cb66b0): meta.challenges, ChallengeTracker, sim SimFun(이벤트 골드 10~11%, 도전 성공 61~68%).
+  첫 도전 간격은 난수 없이 — 난수 한 번이 balance crews 투척을 0.85로 바꿨음(투척 측정이 난수 순서에 민감).
+- 검토: S5 ship-hitbox 5653a01·spawn-patterns 6cb6d4b 승인.
 
 ### 2026-10-15 · S2 · 환생 v2 완료 + 탑다운 T1 균형 일부 + 렌더 계약
 - 환생 v2: 3단계 보상·해금(a38c5d3), 보물 바다 골드·체력(5f999c2·11135d6, Field.enemyHpScale), 명예 등급 ShipTierUp, bossFails(f9a3f58), 4단계 rebirthForecast + sim rebirthBeatBestMin 22.2분·미리보기 ÷ 실제 0.87(75d3a2e).
