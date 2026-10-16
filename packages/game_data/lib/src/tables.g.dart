@@ -1476,6 +1476,12 @@ const Map<String, String> rawTables = {
       "size": 5,
       "path": "line",
       "flightMs": 700
+    },
+    "cluster": {
+      "color": "#E67E22",
+      "size": 7,
+      "path": "arc",
+      "flightMs": 1100
     }
   },
   "projectileAliases": {
