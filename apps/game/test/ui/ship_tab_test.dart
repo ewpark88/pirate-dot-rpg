@@ -24,7 +24,13 @@ void main() {
     final st = loadFixture('stage37_midgame');
     final cannon = tables.shipParts.byId('cannon');
     final rich = st.copyWith(wallet: st.wallet.copyWith(gold: partCost(cannon, st.ship.level('cannon')).times(2)));
-    final log = await pumpGame(tester, rich, tab: shipTab, size: _tall, fullSheet: true);
+    final log = await pumpGame(
+      tester,
+      withCargoRoom(rich, extra: rich.wallet.gold.times(1e6)),
+      tab: shipTab,
+      size: _tall,
+      fullSheet: true,
+    );
     for (final name in ['Cannon', 'Hull', 'Sail', "Crow's Nest", 'Cargo Hold']) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
@@ -33,7 +39,8 @@ void main() {
     expect(find.text(partEffect(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
     // 효과 글은 표(ship_parts)에서 계산 — 경제가 숫자를 다시 맞춰도 깨지지 않게.
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    for (final id in ['crowsnest', 'sail', 'cargo']) {
+    // 화물칸은 '최대 a → b'(cargo_test).
+    for (final id in ['crowsnest', 'sail']) {
       final def = tables.shipParts.byId(id);
       expect(find.text(partEffectText(l10n, def, partEffect(def, st.ship.level(id)))), findsWidgets, reason: id);
     }

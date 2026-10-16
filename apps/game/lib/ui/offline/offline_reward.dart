@@ -6,10 +6,13 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
@@ -84,8 +87,12 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
   /// 받기를 눌렀나. 광고 ×2는 받은 뒤(`lastOfflineGold`)에만 있으므로, 광고가 준비됐으면 창을 열어 둔다.
   var _claimed = false;
 
+  /// 받은 뒤 실제로 실린 양 (경제 lastOfflineGold).
+  BigNum? _received;
+
   void _claim() {
     ref.read(commandSinkProvider).send(const ClaimOffline());
+    _received = ref.read(gameStateProvider).lastOfflineGold;
     if (ref.read(adsPortProvider).isReady(AdPlacement.offline)) {
       setState(() => _claimed = true);
     } else {
@@ -98,6 +105,10 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
     final l10n = AppLocalizations.of(context);
     final preview = widget.preview;
     final away = Duration(seconds: preview.seconds);
+    // 화물칸 용량까지만 실린다: 받을 몫 = min(계산값, 남은 칸), 잘린 몫 = 나머지 (S2 economy-cargo-capacity).
+    final room = goldRoom(ref.read(gameStateProvider), ref.read(tablesProvider));
+    final got = _received ?? (preview.gold > room ? room : preview.gold);
+    final cut = preview.gold > got ? preview.gold - got : BigNum.zero;
     return PixelDialog(
       title: l10n.uiOfflineTitle,
       content: Column(
@@ -110,9 +121,30 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
             children: [
               const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
               const SizedBox(width: 6),
-              RewardSparkle(child: BigNumText(preview.gold, style: Theme.of(context).textTheme.headlineSmall)),
+              RewardSparkle(child: BigNumText(got, style: Theme.of(context).textTheme.headlineSmall)),
             ],
           ),
+          if (!cut.isZero) ...[
+            const SizedBox(height: 6),
+            Text(
+              l10n.uiOfflineCut(cut.format()),
+              key: const Key('offline.cut'),
+              textAlign: TextAlign.center,
+              style: Skin.text(14, color: Skin.danger),
+            ),
+            const SizedBox(height: 6),
+            SkinButton(
+              key: const Key('offline.cargo'),
+              tone: SkinTone.gold,
+              height: 44,
+              onPressed: () {
+                if (!_claimed) ref.read(commandSinkProvider).send(const ClaimOffline());
+                Navigator.of(context).pop();
+                ref.read(dockTabRequestProvider.notifier).open(shipTabIndex);
+              },
+              child: Text(l10n.uiCargoUpgrade),
+            ),
+          ],
           if (preview.cards > 0) Text(l10n.uiCrewCards(preview.cards)),
         ],
       ),

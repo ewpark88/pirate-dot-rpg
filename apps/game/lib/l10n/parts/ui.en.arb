@@ -40,7 +40,6 @@
   "uiSettingsFlash": "Flash",
   "uiSettingsPowerSave": "Power Saving",
   "uiSettingsAutoBoss": "Auto Boss",
-  "uiSettingsAutoUpgrade": "Auto Upgrade",
   "uiSummonFree": "Free",
   "uiGoalShipTier": "{tier} in {count} stages",
   "uiGoalPartMilestone": "{part} boost in {count} levels",
@@ -401,5 +400,16 @@
   "uiLegendShield": "Ship shield every {every}s (HP {ratio}, {sec}s)",
   "uiLegendArc": "Lightning arcs to {count} nearby",
   "uiLegendArcChance": "{percent} chance to arc 1 more",
-  "uiLegendFever": "While deployed: fever charge +{percent}, fever +{sec}s"
+  "uiLegendFever": "While deployed: fever charge +{percent}, fever +{sec}s",
+  "uiCargoFull": "Cargo full · upgrade!",
+  "uiCargoFullLong": "Cargo hold is full · upgrade it to carry more gold",
+  "uiCargoMax": "Max {gold}",
+  "uiCargoMaxNext": "Max {from} → {to}",
+  "uiCargoBar": "Gold {gold} / max {cap}",
+  "uiCargoUpgrade": "Upgrade cargo",
+  "uiOfflineCut": "Lost to a full cargo hold: {gold}",
+  "uiAutoUpgradeAd": "Auto-upgrade {min}m",
+  "uiAutoUpgradeShort": "Auto",
+  "uiAutoUpgradeLeft": "Auto-upgrade left {time}",
+  "uiAutoUpgradeNext": "Next: {part}"
 }

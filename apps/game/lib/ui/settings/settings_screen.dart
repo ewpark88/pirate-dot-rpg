@@ -22,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     // Settings에는 ==가 없어서 값 9개를 레코드로 골라 구독한다.
-    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, autoUpgrade, notifications) = ref.watch(
+    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, notifications) = ref.watch(
       gameStateProvider.select((s) {
         final v = s.settings;
         return (
@@ -34,7 +34,6 @@ class SettingsScreen extends ConsumerWidget {
           v.flash,
           v.powerSave,
           v.autoBoss,
-          v.autoUpgrade,
           v.notifications,
         );
       }),
@@ -50,7 +49,7 @@ class SettingsScreen extends ConsumerWidget {
       ('flash', l10n.uiSettingsFlash, flash),
       ('powerSave', l10n.uiSettingsPowerSave, powerSave),
       ('autoBoss', l10n.uiSettingsAutoBoss, autoBoss),
-      ('autoUpgrade', l10n.uiSettingsAutoUpgrade, autoUpgrade),
+      // 자동 강화 토글 없음 — 보상형 광고 10분으로만(사용자 지시 2026-10-16, 상단 바 '자동').
       // 오프라인 보상 가득 알림 (세이브 v4, ADR-0009).
       ('notifications', l10n.uiSettingsNotifications, notifications),
     ];
@@ -99,7 +98,7 @@ class SettingsScreen extends ConsumerWidget {
                   for (final (title, keys) in [
                     (l10n.uiSettingsSound, const ['bgm', 'sfx', 'vibration']),
                     (l10n.uiSettingsDisplay, const ['shake', 'flash', 'powerSave']),
-                    (l10n.uiSettingsPlay, const ['autoBoss', 'autoUpgrade', 'notifications']),
+                    (l10n.uiSettingsPlay, const ['autoBoss', 'notifications']),
                   ])
                     _Group(
                       title: title,

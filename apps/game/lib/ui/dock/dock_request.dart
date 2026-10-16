@@ -17,3 +17,6 @@ class DockTabRequest extends Notifier<int?> {
 
 /// 항해 탭 번호 (환생 카드가 있는 곳).
 const voyageTab = 0;
+
+/// 배 탭 번호 (화물칸 강화 줄이 있는 곳).
+const shipTabIndex = 1;
