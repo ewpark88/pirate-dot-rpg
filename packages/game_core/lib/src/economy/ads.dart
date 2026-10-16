@@ -1,5 +1,6 @@
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
+import 'package:game_core/src/economy/gold_cap.dart';
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -41,7 +42,7 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
           : openChest(s, ctx, gold: chestReward(s, t).times(reward.number('value'))),
     AdPlacement.tailwind => _saved(addTailwind(s, t, now, Duration(seconds: reward.integer('durationSec'))), ctx),
     AdPlacement.offline => _saved(
-      s.copyWith(wallet: s.wallet.copyWith(gold: s.wallet.gold + s.lastOfflineGold!), clearLastOfflineGold: true),
+      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!), // 광고 ×2도 화물칸 용량까지
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),

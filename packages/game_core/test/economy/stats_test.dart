@@ -59,18 +59,16 @@ void main() {
       expect(critChance(parts, 99), closeTo(0.5, 1e-12));
     });
 
-    test('화물칸 골드 배율 = base + growth × Lv, milestoneEvery마다 × milestoneMultiplier', () {
-      final m = cargo.milestoneEvery!;
-      expect(goldMultiplier(parts, 0), cargo.base);
-      expect(goldMultiplier(parts, m - 1), closeTo(cargo.base + cargo.growth * partStep(cargo, m - 1), 1e-9));
-      expect(
-        goldMultiplier(parts, m),
-        closeTo((cargo.base + cargo.growth * partStep(cargo, m)) * cargo.milestoneMultiplier, 1e-9),
-      );
+    test('화물칸 = 금고 용량 base × growth^x, 비용 = 용량 × costRatio, 골드 배율은 늘 1', () {
+      expect(cargo.stat, 'capacity');
+      expect(near(partEffect(cargo, 0), cargo.base), isTrue);
+      expect(near(partEffect(cargo, 9), cargo.base * math.pow(cargo.growth, partStep(cargo, 9))), isTrue);
+      expect(partCost(cargo, 9).closeTo(partEffect(cargo, 9).times(cargo.costRatio!)), isTrue);
+      expect(goldMultiplier(parts, 30), 1);
     });
 
     test('강화 비용 = costBase × costGrowth^Lv', () {
-      for (final p in parts.parts) {
+      for (final p in parts.parts.where((p) => p.costRatio == null)) {
         expect(near(partCost(p, 0), p.costBase), isTrue);
         expect(near(partCost(p, 3), p.costBase * math.pow(p.costGrowth, partStep(p, 3))), isTrue);
       }
@@ -85,7 +83,7 @@ void main() {
       expect(s.attackSpeed, closeTo(1.5, 1e-12));
       expect(s.critChance, closeTo(0.25, 1e-12));
       expect(s.critMultiplier, 2);
-      expect(s.goldMultiplier, closeTo(cargo.base + cargo.growth * partStep(cargo, 2), 1e-9));
+      expect(s.goldMultiplier, 1);
     });
   });
 

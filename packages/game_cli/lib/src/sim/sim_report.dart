@@ -1,5 +1,6 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
+import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
@@ -97,6 +98,17 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('eventGoldPct', '돌발 이벤트 골드 ÷ 처치 골드', (r) => r.eventGoldPct, '%', within: Duration.zero),
     c('challengeWinPct', '즉석 도전 성공률', (r) => r.challengeWinPct, '%', within: Duration.zero),
     c('feverIntervalMin', '피버 평균 간격(접속 시간)', (r) => r.feverIntervalMin, '분', within: Duration.zero),
+    c('bossFirstWinPct', '보스 첫 도전 성공(보통 스테이지)', (r) => r.threat?.bossFirstWinPct, '%', within: Duration.zero),
+    c('wallFirstWinPct', '보스 첫 도전 성공(10단위 해역 보스)', (r) => r.threat?.wallFirstWinPct, '%', within: Duration.zero),
+    c(
+      'rebirthWallRatio',
+      '환생 뒤 첫 벽 ÷ 이전 최고',
+      (r) => SimThreat.median(r.threat?.rebirthWallRatio ?? const []),
+      '',
+      within: Duration.zero,
+    ),
+    c('cargoFullPct', '화물칸 가득 찬 시간', (r) => r.goldSupply?.fullPct, '%', within: Duration.zero),
+    c('overflowPct', '넘친 골드 ÷ 처치 골드', (r) => r.overflowPct, '%', within: Duration.zero),
     c('affordablePct', '강화를 살 수 있던 순간', (r) => r.goldSupply?.affordablePct, '%', within: Duration.zero),
     c('upgradeGapStage10Sec', '강화 간격(스테이지 8~12)', (r) => r.goldSupply?.gapMedian(8, 12), '초', within: Duration.zero),
     c('upgradeGapStage40Sec', '강화 간격(스테이지 35~45)', (r) => r.goldSupply?.gapMedian(35, 45), '초', within: Duration.zero),

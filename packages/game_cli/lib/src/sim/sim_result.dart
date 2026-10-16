@@ -1,5 +1,6 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_gold.dart';
+import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_core/game_core.dart';
 
 /// 가상 플레이어 한 명의 결과. 시간은 모두 게임 시작부터의 경과(오프라인 포함).
@@ -66,6 +67,12 @@ class SimResult {
   /// 피버 평균 간격(접속 분), 피버 중 처치 골드 비중(%).
   double? feverIntervalMin;
   double? feverGoldPct;
+
+  /// 화물칸 넘친 골드 ÷ 처치 골드(%).
+  double? overflowPct;
+
+  /// 위협·난이도 계측(SimThreat): 환생 뒤 첫 벽 비율, 보스 첫 도전 성공률.
+  SimThreat? threat;
 
   /// 골드 수급(SimGold): 살 수 있던 순간 비율, 강화 간격.
   SimGold? goldSupply;

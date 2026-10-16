@@ -213,7 +213,7 @@ GameState _end(GameState s, SystemContext ctx, String id, String result) {
 GameState _catch(GameState s, SystemContext ctx, Foe fish, {bool auto = false}) {
   final gold = fish.gold.times(_goldMul(s, ctx.tables));
   ctx.emit(GoldfishCaught(ctx.tick, targetId: fish.id, gold: gold, auto: auto));
-  return s.copyWith(wallet: s.wallet.copyWith(gold: s.wallet.gold + gold));
+  return grantGold(s, ctx, gold);
 }
 
 double _goldMul(GameState s, GameTables t) =>
@@ -246,7 +246,7 @@ GameState pickBottleAt(GameState s, SystemContext ctx, int index, {bool auto = f
         t,
         offlineFleet(s, t),
       ).times(c.number('minutesOfKills') * Duration.secondsPerMinute);
-      next = next.copyWith(wallet: next.wallet.copyWith(gold: next.wallet.gold + gold));
+      next = grantGold(next, ctx, gold);
       reward = 'gold:$gold';
     case 'tailwind':
       next = addTailwind(next, t, ctx.clock.now(), Duration(seconds: c.integer('sec')));

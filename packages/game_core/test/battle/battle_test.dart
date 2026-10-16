@@ -56,7 +56,8 @@ void main() {
     bool offCamera(EnemyView x) =>
         (x.x - top.number('shipX')).abs() > top.number('viewWidth') / 2 ||
         (x.y - top.number('shipY')).abs() > top.number('viewHeight') / 2;
-    expect(enemies.every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
+    // 가까이 등장(nearSpawn) 몫은 배 근처에서 예고 중 — 그 밖은 모두 화면 밖.
+    expect(enemies.where((x) => !x.emerging).every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
 
     final f = fieldWith([]);
     spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1

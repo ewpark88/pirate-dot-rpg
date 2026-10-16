@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/gold_cap.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -62,10 +63,11 @@ GameState openChest(GameState state, SystemContext ctx, {BigNum gold = BigNum.ze
   ctx
     ..emit(ChestOpened(ctx.tick, gold: gold))
     ..emit(SaveRequested(ctx.tick, reason: 'chest'));
-  return state.copyWith(
-    wallet: state.wallet.copyWith(gold: state.wallet.gold + gold, gems: state.wallet.gems + gems),
+  final opened = state.copyWith(
+    wallet: state.wallet.copyWith(gems: state.wallet.gems + gems),
     battle: b!.copyWith(clearChest: true),
   );
+  return grantGold(opened, ctx, gold); // 화물칸 용량까지
 }
 
 /// 탭: 기본 보상.

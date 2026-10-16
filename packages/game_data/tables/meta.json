@@ -77,6 +77,7 @@
       { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
+  "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
   "fever": {
     "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
@@ -118,6 +119,8 @@
     "farmRetrySec": 60,
     "rebirthWallSec": 600,
     "fishTapRatio": 0.6,
+    "wallEvery": 10,
+    "cargoBuyFull": 0.9,
     "buyCostWeight": { "cannon": 1, "hull": 1, "sail": 1, "crowsnest": 1, "cargo": 1 },
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
@@ -137,6 +140,11 @@
       "eventGoldPct": { "min": 10, "max": 20 },
       "challengeWinPct": { "min": 60, "max": 70 },
       "feverIntervalMin": { "min": 4, "max": 6 },
+      "bossFirstWinPct": { "min": 70, "max": 85 },
+      "wallFirstWinPct": { "min": 30, "max": 50 },
+      "rebirthWallRatio": { "min": 0.5, "max": 0.65 },
+      "cargoFullPct": { "min": 10, "max": 25 },
+      "overflowPct": { "min": 0, "max": 10 },
       "affordablePct": { "min": 30, "max": 50 },
       "upgradeGapStage10Sec": { "min": 15, "max": 30 },
       "upgradeGapStage40Sec": { "min": 60, "max": 120 },

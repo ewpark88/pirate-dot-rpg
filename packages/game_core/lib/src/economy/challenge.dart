@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/fever.dart' show addFever, feverOn;
+import 'package:game_core/src/economy/gold_cap.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/sea_events.dart' show seaEventStep;
 import 'package:game_core/src/engine/battle_view.dart';
@@ -21,6 +22,20 @@ JsonReader _kind(GameTables t, String id) => _cfg(t).objs('kinds').firstWhere((k
 /// BattleSystem이 하나 들고 매 틱 부른다: 처치율(최근 rateWindowSec 평균)과 피격을 보고, 돌발 이벤트·도전을 한 번에 진행한다.
 class ChallengeTracker {
   double _killRate = 0;
+  BigNum _lost = BigNum.zero;
+  int _lostTicks = 0;
+
+  /// 전투 골드가 화물칸에서 넘친 몫을 모아 overflowSec마다 GoldOverflow 한 번(렌더 '화물칸 가득!').
+  void overflow(BigNum lost, SystemContext ctx) {
+    if (!lost.isZero) _lost = _lost + lost;
+    final every =
+        ctx.tables.meta.raw.obj('cargo').number('overflowSec') / (ctx.tables.waves.tickMs * secondsPerMillisecond);
+    if (_lost.isZero || ++_lostTicks < every.round()) return;
+    ctx.emit(GoldOverflow(ctx.tick, lost: _lost));
+    _lost = BigNum.zero;
+    _lostTicks = 0;
+  }
+
   BigNum? _lastHp;
 
   /// 처치율 추정(초당). 목표치 계산·테스트용.
@@ -127,7 +142,7 @@ class ChallengeTracker {
             t,
             offlineFleet(s, t),
           ).times(r.number('value') * Duration.secondsPerMinute);
-          next = next.copyWith(wallet: next.wallet.copyWith(gold: next.wallet.gold + gold));
+          next = grantGold(next, ctx, gold);
           reward = 'gold:$gold';
         case 'fever':
           next = next.copyWith(progress: next.progress.copyWith(fever: next.progress.fever + r.number('value')));
