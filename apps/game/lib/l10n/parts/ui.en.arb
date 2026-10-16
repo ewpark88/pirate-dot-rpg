@@ -491,5 +491,7 @@
   "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft",
   "uiSleepTouch": "Touch the screen to return",
   "uiSleepStage": "Stage {stage} · sailing",
-  "uiSleepTitle": "Power saving"
+  "uiSleepTitle": "Power saving",
+  "uiResupplyTitle": "Resupplied — your ship got stronger!",
+  "uiResupplyPart": "{part} Lv {from} → {to}"
 }

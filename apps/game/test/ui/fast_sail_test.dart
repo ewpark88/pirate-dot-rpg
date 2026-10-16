@@ -72,9 +72,18 @@ void main() {
             skipped: false,
           ),
         ]),
+      )
+      // 바로 다음 보급(S5 ShipResupplied): 창에 '배가 강해졌다!' + 오른 부위만.
+      ..add(
+        RecordedTick(_ended(s), const [
+          ShipResupplied(4, stage: 41, before: {'cannon': 0, 'sail': 5}, after: {'cannon': 25, 'sail': 5}),
+        ]),
       );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('fastSail.end')), findsOneWidget);
+    expect(find.byKey(const Key('fastSail.resupply')), findsOneWidget);
+    expect(find.text('Cannon Lv 0 → 25'), findsOneWidget);
+    expect(find.textContaining('Sail Lv'), findsNothing);
     expect(find.text('Stages 10 → 40 cleared!'), findsOneWidget);
     expect(find.text('30 bosses defeated'), findsOneWidget);
     expect(find.text('Gold +120K'), findsOneWidget);

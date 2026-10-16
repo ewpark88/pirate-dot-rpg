@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/table_text.dart';
 
 // 빠른 항해 돌파 UI (기획 platform-fast-sail-breakthrough 'UI (S4)', 사용자 결정 2026-10-16):
 // 큰 스테이지 카운터(차르르) + 연속 격파 수 · 2회차부터 건너뛰기 · 끝 요약 창(돌파 스테이지·골드·젬·'더 강해진 당신').
@@ -25,6 +26,18 @@ final fastSailProvider = Provider<({int from, int to, int combo})?>((ref) {
     }),
   );
 });
+
+/// 마지막 보급 (빠른 항해 끝 바로 다음 ShipResupplied — 요약 창이 이것을 보고 '배가 강해졌다!'를 더한다).
+final resupplyProvider = NotifierProvider<ResupplyNotifier, ShipResupplied?>(ResupplyNotifier.new);
+
+class ResupplyNotifier extends Notifier<ShipResupplied?> {
+  @override
+  ShipResupplied? build() => null;
+
+  // 이벤트를 받아 둔다(동작 이름).
+  // ignore: use_setters_to_change_properties
+  void set(ShipResupplied? e) => state = e;
+}
 
 /// 위쪽 알약 줄 자리를 대신하는 돌파 띠: 제목 · 큰 스테이지 숫자(올라가는 애니메이션) · 구간 진행 막대 · ×연속 격파 · 건너뛰기.
 class FastSailBanner extends ConsumerWidget {
@@ -128,7 +141,7 @@ class FastSailBanner extends ConsumerWidget {
   }
 }
 
-/// 구간 끝(FastSailEnded) → 요약 창 한 번. 구간 동안 넘친 골드(GoldOverflow)도 모아 보인다.
+/// 구간 끝(FastSailEnded) → 요약 창 한 번(넘친 골드 = e.lost). 바로 뒤 보급(ShipResupplied)은 창에 더한다.
 class FastSailEndGate extends ConsumerStatefulWidget {
   const FastSailEndGate({required this.child, super.key});
 
@@ -140,24 +153,25 @@ class FastSailEndGate extends ConsumerStatefulWidget {
 
 class _FastSailEndGateState extends ConsumerState<FastSailEndGate> {
   StreamSubscription<RecordedTick>? _sub;
-  BigNum _lost = BigNum.zero;
 
   @override
   void initState() {
     super.initState();
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       for (final e in tick.events) {
-        if (e is FastSailStarted) _lost = BigNum.zero;
-        if (e is GoldOverflow && tick.frame.fastSail != null) _lost = _lost + e.lost;
-        if (e is FastSailEnded) _show(e);
+        if (e is FastSailEnded) {
+          ref.read(resupplyProvider.notifier).set(null);
+          _show(e);
+        }
+        if (e is ShipResupplied) ref.read(resupplyProvider.notifier).set(e);
       }
     });
   }
 
   void _show(FastSailEnded e) {
     if (!mounted) return;
-    final lost = _lost;
-    _lost = BigNum.zero;
+    // 넘친 골드는 경제가 요약에 실어 준다(FastSailEnded.lost, S5·S2).
+    final lost = e.lost;
     ref.read(audioPortProvider)?.playSfx('fanfare');
     unawaited(
       showDialog<void>(
@@ -234,6 +248,28 @@ class FastSailEndDialog extends ConsumerWidget {
               ),
             ),
           ],
+          // 보급: 부위마다 Lv 전 → 후 (오른 부위만).
+          if (ref.watch(resupplyProvider) case final r?)
+            if (r.after.entries.any((p) => p.value > (r.before[p.key] ?? 0))) ...[
+              const SizedBox(height: 8),
+              Text(
+                l10n.uiResupplyTitle,
+                key: const Key('fastSail.resupply'),
+                style: Skin.text(16, color: Skin.primaryEdge),
+              ),
+              for (final p in r.after.entries)
+                if (p.value > (r.before[p.key] ?? 0))
+                  line(
+                    Icons.upgrade_rounded,
+                    l10n.uiResupplyPart(
+                      // 생성 함수 인자는 이름 abc순: (from, part, to).
+                      r.before[p.key] ?? 0,
+                      tableText(l10n, ref.read(tablesProvider).shipParts.byId(p.key).nameKey),
+                      p.value,
+                    ),
+                    color: Skin.primaryEdge,
+                  ),
+            ],
           const SizedBox(height: 8),
           Text(l10n.uiFastSailEndCheer, style: Skin.text(16, color: Skin.mintInk)),
         ],
