@@ -233,7 +233,7 @@ class TopCrewFx {
       }
       final t = (age - s.warnMs) / 450;
       if (flash && t < 0.2) {
-        _fill.color = const Color(0xFFFFFFFF).withValues(alpha: 0.6 * (1 - t / 0.2));
+        _fill.color = const Color(0xFFFFE27A).withValues(alpha: 0.35 * (1 - t / 0.2));
         c.drawCircle(at, 16, _fill);
       }
       // 굵은 번개: 하늘(위 90)에서 지그재그로

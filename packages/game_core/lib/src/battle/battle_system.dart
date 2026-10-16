@@ -13,6 +13,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
+import 'package:game_core/src/economy/fast_sail_supply.dart' show fastSailSupplyLevels;
 import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
@@ -35,6 +36,7 @@ class BattleSystem implements GameSystem {
   Object? _fleetSeen;
   final _dress = ShipDressCache();
   final _tailwind = TailwindSpeed();
+  static const Map<String, int> Function(GameState, GameTables, int) _supply = fastSailSupplyLevels; // 빠른 항해 보급(S2)
   int _kills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
@@ -62,8 +64,7 @@ class BattleSystem implements GameSystem {
           s = skipFastSailGold(s, run, ctx.tables);
           s = _bossCleared(s, _field!, ctx);
         }
-        closeFastSail(s, _field!, ctx, skipped: true);
-        return _project(s, _field!, ctx.tables);
+        return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case TriggerUltimate():
@@ -136,8 +137,7 @@ class BattleSystem implements GameSystem {
     final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
-    closeFastSail(after, f, ctx);
-    final shown = _tailwind.apply(_project(after, f, ctx.tables), ctx);
+    final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
     return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
   }
 
@@ -157,8 +157,8 @@ class BattleSystem implements GameSystem {
     final w = ctx.tables.waves;
     final p = s.progress;
     if (f.bossActive) {
-      final boss = f.foes.where((e) => e.boss).firstOrNull;
-      if (boss != null && !boss.alive) return _bossCleared(s, f, ctx);
+      final bosses = f.foes.where((e) => e.boss); // 분열하면 여럿 — 모두 쓰러져야 격파(도감 v2)
+      if (bosses.isNotEmpty && bosses.every((e) => !e.alive)) return _bossCleared(s, f, ctx);
       f.bossTicksLeft -= 1;
       if (f.bossTicksLeft <= 0 || f.shipHp.isZero) {
         ctx.emit(BossFailed(ctx.tick, stage: p.stage));

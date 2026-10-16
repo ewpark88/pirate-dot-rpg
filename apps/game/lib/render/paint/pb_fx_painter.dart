@@ -202,7 +202,7 @@ class PbFxPainter {
       (u) => u < 0.6 ? 1 : (1 - u) / 0.4,
       angle: (seed % 7) * 0.12,
     );
-    part('flash', 0, 90, (u) => d * (0.5 + 0.7 * u), (u) => 1 - u);
+    // 흰 번쩍 층(flash)은 뺐다 — 사용자 '흰 번쩍임이 너무 많아 눈이 아프다'.
     for (var i = 0; i < (lite ? 0 : 4); i++) {
       final a = -math.pi * (0.15 + 0.7 * ((seed >> (i * 3)) % 8) / 7);
       final v = d * (1.1 + 0.4 * ((seed >> (i * 2)) % 4) / 3);

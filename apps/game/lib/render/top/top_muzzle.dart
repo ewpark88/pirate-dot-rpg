@@ -44,7 +44,7 @@ class TopMuzzle {
           ..strokeWidth = 1.5
           ..color = Color(m.color);
         c.drawCircle(at, 4.5, _ring);
-        _paint.color = const Color(0xFFFFFFFF);
+        _paint.color = Color.lerp(Color(m.color), const Color(0xFFFFFFFF), 0.35)!; // 흰 대신 등급 색
         c.drawCircle(at, 3, _paint);
       }
     }

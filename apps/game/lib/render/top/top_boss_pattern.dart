@@ -118,7 +118,7 @@ class TopBossPattern {
           } else {
             final k = ((now - p.actMs!) / _actMs).clamp(0.0, 1.0);
             if (flash && k < 0.15) {
-              _fill.color = const Color(0xFFFFFFFF).withValues(alpha: 0.8 * (1 - k / 0.15));
+              _fill.color = const Color(0xFFFFB33A).withValues(alpha: 0.45 * (1 - k / 0.15));
               c.drawCircle(ship, p.radius, _fill);
             }
             _fill.color = Color.lerp(const Color(0xFFFFB33A), _red, k)!.withValues(alpha: 0.6 * (1 - k));

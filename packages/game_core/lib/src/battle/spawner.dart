@@ -33,21 +33,24 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   for (var i = 0; i < n; i++) {
     final id = kind ?? region.enemies[ctx.rng.nextInt(region.enemies.length)];
     final def = t.regions.enemies[id] ?? t.regions.enemies.values.first;
-    f.foes.add(
-      Foe(
+    final k = def.swarmCount > 0 ? def.swarmCount : 1; // 떼(도감 v2): 한 자리에 k마리, 몫 ÷ k
+    for (var j = 0; j < k; j++) {
+      final e = Foe(
         id: f.nextId(),
         kind: def.id,
         layer: def.layer,
         x: 0,
         y: 0,
-        maxHp: hp.times(def.hpScale * f.enemyHpScale),
+        maxHp: hp.times(def.hpScale * f.enemyHpScale / k),
         speed: def.speed,
-        attack: attack,
-        gold: gold,
+        attack: attack.times(1 / k),
+        gold: gold.times(1 / k),
         def: def,
         tier: t.regions.tierAt(stage),
-      ),
-    );
+      );
+      if (def.bomber != null) e.contactTimer = double.infinity; // 자폭: 접촉 공격 대신 박아 터진다(bestiary.dart)
+      f.foes.add(e);
+    }
   }
 }
 

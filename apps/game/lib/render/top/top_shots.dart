@@ -81,7 +81,7 @@ class TopShots {
       final at = Offset(s.toX, s.toY);
       final size = s.big ? 1.0 : 0.6;
       if (flash && t < 0.2) {
-        _paint.color = const Color(0xFFFFFFFF).withValues(alpha: 1 - t / 0.2);
+        _paint.color = const Color(0xFFFFD24A).withValues(alpha: 0.7 * (1 - t / 0.2));
         c.drawCircle(at, 9 * size, _paint);
       }
       _paint.color = Color.lerp(const Color(0xFFFFD84A), const Color(0xFFFF5A2A), t)!.withValues(alpha: 0.9 * (1 - t));

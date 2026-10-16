@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/painting.dart';
+import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
 
 /// 빠른 항해 돌파 연출 (S5 fast-sail, docs/specs/platform-fast-sail-breakthrough.md, 사용자 '꿈과 희망을 심어 주는 웅대한
 /// 애니메이션 — 점점 빨라지다 순식간에, 피날레'):
@@ -74,14 +75,8 @@ class TopFastSail {
       final s = _strikes.last;
       final age = now - s.ms;
       if (s.phase == 'rush' && flash && age < 220) {
-        // 흰 섬광 터널: 가장자리부터 하얘진다
-        final a = 0.5 * (1 - age / 220) * math.min(1, s.speed / 6);
-        _fill.shader = RadialGradient(
-          colors: [const Color(0x00FFFFFF), Color.fromRGBO(255, 255, 255, a)],
-          stops: const [0.45, 1],
-        ).createShader(Offset.zero & box);
-        c.drawRect(Offset.zero & box, _fill);
-        _fill.shader = null;
+        // 흰 섬광 터널 대신 금빛 가장자리(약하게).
+        edgeVignette(c, Offset.zero & box, _gold, 0.25 * vignetteBump(age / 220) * math.min(1, s.speed / 6));
       }
       final finale = s.phase == 'finale';
       final life = finale ? 1400.0 : 700.0; // 피날레 스탬프는 오래(슬로모션 뒤에도 보이게)
