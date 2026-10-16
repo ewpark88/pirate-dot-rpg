@@ -105,6 +105,21 @@ void main() {
     expect(e.state.battle!.enemies.where((x) => x.eventKind == 'merchant'), isEmpty);
   });
 
+  test('보물 상선은 화면 옆 밖에서 시작해 배 둘레 + passMargin 밖 가로선으로 지나간다 (배 위를 지나지 않음)', () {
+    final top = t.waves.raw.obj('top');
+    final m = cfg.objs('events').firstWhere((x) => x.str('id') == 'merchant');
+    for (var seed = 0; seed < 8; seed++) {
+      final e = engine(start().copyWith(rngSeed: seed))..enqueue(const OpSeaEvent('merchant'));
+      run(e, tickSec);
+      final ship = e.state.battle!.enemies.singleWhere((x) => x.eventKind == 'merchant');
+      expect(
+        (ship.y - top.number('shipY')).abs(),
+        greaterThanOrEqualTo(top.number('shipRadius') + m.number('passMargin') - 1),
+      );
+      expect((ship.x - top.number('shipX')).abs(), greaterThan(top.number('viewWidth') / 2));
+    }
+  });
+
   test('보물 상선을 잡으면 젬 + 보유 선원 카드', () {
     final e = engine(
       start(
