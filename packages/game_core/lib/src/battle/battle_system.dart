@@ -10,10 +10,9 @@ import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/tailwind_speed.dart';
 import 'package:game_core/src/battle/topdown/top_bounty.dart';
 import 'package:game_core/src/bignum/big_num.dart';
-import 'package:game_core/src/economy/cards.dart' show grantBossCards;
+import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
-import 'package:game_core/src/economy/fast_sail_supply.dart' show fastSailSupplyLevels;
 import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
@@ -240,9 +239,10 @@ class BattleSystem implements GameSystem {
     final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
     _fun.overflow(paid.lost, ctx);
     final s = paid.state.copyWith(
-      progress: r.rage == state.progress.rage ? null : state.progress.copyWith(rage: r.rage),
+      progress: r.rage == state.progress.rage ? null : paid.state.progress.copyWith(rage: r.rage),
     );
-    return _project(s, f, ctx.tables);
+    final d = f.fastSail != null ? s : recordDex(s, ctx, present: f.foes.map((e) => e.kind), killed: r.killedKinds);
+    return _project(d, f, ctx.tables);
   }
 
   /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.

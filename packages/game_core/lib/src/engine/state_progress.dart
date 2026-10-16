@@ -21,6 +21,7 @@ class Progress {
     this.seaEventInSec,
     this.seaEventLast,
     this.challengeInSec,
+    this.dex = const DexState(),
   });
 
   factory Progress.fromJson(Json j) => Progress(
@@ -41,6 +42,7 @@ class Progress {
         : ((j['seaEvents'] as Json)['inSec'] as num).toDouble(),
     seaEventLast: (j['seaEvents'] as Json?)?['last'] as String?,
     challengeInSec: (j['challengeInSec'] as num?)?.toDouble(),
+    dex: j['dex'] == null ? const DexState() : DexState.fromJson(j['dex'] as Json),
   );
 
   final int stage;
@@ -82,6 +84,9 @@ class Progress {
   /// 다음 즉석 도전까지 남은 초 (선택 키).
   final double? challengeInSec;
 
+  /// 바다 괴물 도감: 만난 것·처치 수 (선택 키 dex, 환생해도 유지).
+  final DexState dex;
+
   Progress copyWith({
     int? stage,
     int? wave,
@@ -100,6 +105,7 @@ class Progress {
     double? seaEventInSec,
     String? seaEventLast,
     double? challengeInSec,
+    DexState? dex,
   }) => Progress(
     stage: stage ?? this.stage,
     wave: wave ?? this.wave,
@@ -116,6 +122,7 @@ class Progress {
     seaEventInSec: seaEventInSec ?? this.seaEventInSec,
     seaEventLast: seaEventLast ?? this.seaEventLast,
     challengeInSec: challengeInSec ?? this.challengeInSec,
+    dex: dex ?? this.dex,
   );
 
   Json toJson() => {
@@ -133,7 +140,30 @@ class Progress {
     if (fever != 0) 'fever': fever,
     if (seaEventInSec != null || seaEventLast != null) 'seaEvents': {'inSec': seaEventInSec, 'last': seaEventLast},
     if (challengeInSec != null) 'challengeInSec': challengeInSec,
+    if (!dex.isEmpty) 'dex': dex.toJson(),
   };
+}
+
+/// 바다 괴물 도감 (S1 2026-10-16 경제 계약, UI S4 apps/game/lib/ui/dex). id = 잡몹 kind 또는 보스 id.
+@immutable
+class DexState {
+  const DexState({this.seen = const {}, this.kills = const {}});
+
+  factory DexState.fromJson(Json j) => DexState(
+    seen: {...(j['seen'] as List).cast<String>()},
+    kills: (j['kills'] as Map).cast<String, int>(),
+  );
+
+  /// 만난 것(전장에 나타남) — 그림자로 보인다.
+  final Set<String> seen;
+
+  /// 처치 수 — 1 이상이면 모습 공개. 첫 처치(0 → 1)에 보상(meta.dex).
+  final Map<String, int> kills;
+
+  bool get isEmpty => seen.isEmpty && kills.isEmpty;
+  int killsOf(String id) => kills[id] ?? 0;
+
+  Json toJson() => {'seen': seen.toList()..sort(), 'kills': kills};
 }
 
 @immutable

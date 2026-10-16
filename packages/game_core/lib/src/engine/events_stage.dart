@@ -87,3 +87,32 @@ class GoldOverflow extends GameEvent {
   @override
   Json _fields() => {'lost': lost.toJson()};
 }
+
+/// 도감: 처음 만남(전장에 나타남) — 칸이 그림자로 열린다.
+class DexSeen extends GameEvent {
+  const DexSeen(super.tick, {required this.id, required this.boss});
+
+  final String id;
+  final bool boss;
+
+  @override
+  String get type => 'dexSeen';
+
+  @override
+  Json _fields() => {'id': id, 'boss': boss};
+}
+
+/// 도감: 첫 처치 — 모습 공개 + 보상 젬(meta.dex, 이미 지갑에 들어감).
+class DexFirstKill extends GameEvent {
+  const DexFirstKill(super.tick, {required this.id, required this.boss, required this.gems});
+
+  final String id;
+  final bool boss;
+  final int gems;
+
+  @override
+  String get type => 'dexFirstKill';
+
+  @override
+  Json _fields() => {'id': id, 'boss': boss, 'gems': gems};
+}

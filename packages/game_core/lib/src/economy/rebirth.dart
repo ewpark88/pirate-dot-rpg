@@ -102,6 +102,7 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
       titles: [...s.progress.titles, ...newTitles],
       treasureRoute: route,
       bossFails: s.progress.bossFails,
+      dex: s.progress.dex,
       treasureSea:
           route != null && route <= treasureSeasUnlocked(s.copyWith(progress: s.progress.copyWith(rebirths: n)), t)
           ? route

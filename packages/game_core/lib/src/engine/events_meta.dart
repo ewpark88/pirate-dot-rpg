@@ -53,6 +53,8 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'crewSortie' ||
     'bombletBurst' => _threatEventFromJson(t, j),
     'goldOverflow' => GoldOverflow(t, lost: big('lost')),
+    'dexSeen' => DexSeen(t, id: j['id'] as String, boss: j['boss'] as bool),
+    'dexFirstKill' => DexFirstKill(t, id: j['id'] as String, boss: j['boss'] as bool, gems: j['gems'] as int),
     'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' || 'shipResupplied' => _fastEventFromJson(t, j),
     'inkCloud' || 'bossSwallowed' || 'bossSplit' || 'bomberBlast' => _bestiaryEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),

@@ -14,6 +14,7 @@ export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus
 export 'package:game_core/src/economy/bounty.dart';
 export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
 export 'package:game_core/src/economy/crew_attack.dart';
+export 'package:game_core/src/economy/dex.dart';
 export 'package:game_core/src/economy/fast_sail_supply.dart';
 export 'package:game_core/src/economy/fever.dart'
     show addFever, feverDamageBonus, feverGoldMultiplier, feverKillsAt, feverOn, feverStep;
