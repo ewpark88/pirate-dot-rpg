@@ -39,7 +39,7 @@ class Beam {
 }
 
 /// 레이저 계열인가(attack.behavior.kind 'laser').
-bool isBeam(AttackDef a) => a.raw.has('behavior') && a.raw.obj('behavior').str('kind') == 'laser';
+bool isBeam(AttackDef a) => a.raw.has('behavior') && a.raw.obj('behavior').strOrNull('kind') == 'laser';
 
 extension Beams on Round {
   /// 레이저면 빔을 세우고 빔 틱을 돌려준다(AttackFired.beamTicks). 아니면 null.
