@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-16 오후 · S5 · 피버 오라·배 위협 엔진, 보호막·번개 선원, 보스 패턴 기획
+- **현재 위치**: review/fever-aura 0b782d5 → review/ship-threat 002cda9(위에 쌓음, check --full 통과) S1 머지 대기. 표 키는 S2(오라 91e9833), regions `ranged`는 S2 요청으로 내가 ship-threat에 넣는다.
+- 한 일: 피버 오라(배 둘레 녹이기 + 앞쪽 적 빨리) · 배 위협 (a) 원거리 적 EnemyFired·탄 비행 (b) 가까이 등장 EnemyEmerging · 선원 개성 v2에 보호막(turtle)·낙뢰(pelly) 7절 · 보스 패턴 기획 docs/specs/platform-boss-patterns.md.
+- 진단: '보스가 박치기만' = 돌발 ambush sea_serpent(일반 적 취급) + 렌더가 BossFired를 그리지 않음(본 보스 엔진은 정상).
+- 남은 일: S2 hurtShip 커밋 뒤 lava·적 탄을 hurtShip으로 · 개성 v2 엔진 → 보호막·번개 → 보스 패턴.
+
 ## 2026-10-16 · S5 · 스토어 스크린샷 재굽기(main 537387f), 현상금 사냥 탑다운 계획·요청서
 - **현재 위치**: 현상금 사냥 B0 계약(S2)을 기다리는 중 → 받으면 review/bounty에서 B1 엔진.
   - [x] 스토어 스크린샷 48장(폰·태블릿7·10 × ko·en) — 배 미표시는 렌더 시계 문제(S3 c039bbd)였고 고강화와 무관(내 오진, S1에 정정)
