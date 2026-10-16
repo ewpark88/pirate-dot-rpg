@@ -38,7 +38,7 @@ void main() {
       const dpr = 2.8125;
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       const box = Size(384, 832 - 48 - 24 - 76);
-      final rec = topRecording(tables, ticks: 700, bossAt: 5);
+      final rec = topRecording(tables, ticks: 700, stage: 60, bossAt: 5);
       final at = rec.indexWhere((t) => t.events.any((e) => e is BossFired));
       expect(at, greaterThan(0), reason: '기록에 보스 발사가 있어야 한다');
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
