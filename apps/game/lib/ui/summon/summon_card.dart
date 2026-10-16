@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_fx.dart';
+import 'package:pirate_dot/ui/summon/summon_pillar.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
@@ -102,7 +103,12 @@ class SummonRevealCard extends ConsumerWidget {
               builder: (_, _) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  FlipCard(t: (flip.value / 0.6).clamp(0, 1).toDouble(), back: back, front: front),
+                  // 등급별 빛기둥(신화는 빛살)이 뒤집히는 순간 뒤에서 솟는다 (소환 연출 v3).
+                  SummonPillar(
+                    tier: tier,
+                    t: flip.value,
+                    child: FlipCard(t: (flip.value / 0.6).clamp(0, 1).toDouble(), back: back, front: front),
+                  ),
                   // 앞면이 보이면 특색 아이콘 + 한 줄 (선원 개성 v2).
                   SizedBox(
                     height: summonCaptionHeight,
