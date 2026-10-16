@@ -25,7 +25,8 @@ class CrewDef {
       fx = j.str('fx'),
       skill = j.strOrNull('skill'),
       portrait = j.str('portrait'),
-      nameKey = j.str('nameKey');
+      nameKey = j.str('nameKey'),
+      aim = j.has('aim') ? j.obj('aim') : null;
 
   final String id;
   final int num;
@@ -42,6 +43,10 @@ class CrewDef {
   final String? skill;
   final String portrait;
   final String nameKey;
+
+  /// 선원 개성 v2(docs/specs/platform-crew-identity-v2.md, 선택): 계열 공격 위에 덮어쓸 키 —
+  /// targets·intervalSec·power·모양 키·`projectile`{speed, lead, hitRadius}·`trait`. 없으면 계열 공격 그대로.
+  final JsonReader? aim;
 }
 
 class CrewTable {

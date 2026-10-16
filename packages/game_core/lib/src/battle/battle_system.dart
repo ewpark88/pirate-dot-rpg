@@ -110,7 +110,7 @@ class BattleSystem implements GameSystem {
         ..fireGuns()
         ..castSkills()
         ..tickZones()
-        ..feverAura(state)
+        ..topdownStep(state)
         ..tickStatus()
         ..tickCombo();
     });

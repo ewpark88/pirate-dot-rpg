@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 import 'ui_harness.dart';
 
@@ -18,15 +20,23 @@ void main() {
   final tables = GameTables.load();
 
   testWidgets('기준 4: 부위 5줄, 레벨·효과·비용, 누르면 UpgradePart', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab, size: _tall, fullSheet: true);
+    // 골드는 대포 1번을 살 만큼(표에서 계산 — 경제가 비용을 바꿔도 깨지지 않게).
+    final st = loadFixture('stage37_midgame');
+    final cannon = tables.shipParts.byId('cannon');
+    final rich = st.copyWith(wallet: st.wallet.copyWith(gold: partCost(cannon, st.ship.level('cannon')).times(2)));
+    final log = await pumpGame(tester, rich, tab: shipTab, size: _tall, fullSheet: true);
     for (final name in ['Cannon', 'Hull', 'Sail', "Crow's Nest", 'Cargo Hold']) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
     expect(find.text('Lv 52'), findsOneWidget);
     expect(find.text('Lv 18/30'), findsOneWidget); // 돛은 최대 레벨이 있다
     expect(find.text(partEffect(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
-    expect(find.text('17%'), findsOneWidget); // 망루 Lv12: 5% + 1% × 12
-    expect(find.text('×1.9'), findsNWidgets(2)); // 돛 Lv18, 화물칸 Lv9
+    // 효과 글은 표(ship_parts)에서 계산 — 경제가 숫자를 다시 맞춰도 깨지지 않게.
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    for (final id in ['crowsnest', 'sail', 'cargo']) {
+      final def = tables.shipParts.byId(id);
+      expect(find.text(partEffectText(l10n, def, partEffect(def, st.ship.level(id)))), findsWidgets, reason: id);
+    }
     expect(find.text(partCost(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('ship.upgrade.cannon')));
@@ -43,6 +53,8 @@ void main() {
     expect(find.text('MAX'), findsNWidgets(3));
     // 최대 레벨이 없는 부위는 MAX 대신 비용을 보인다 (Lv400 비용이 골드보다 커서 비활성).
     expect(find.text(partCost(tables.shipParts.byId('cannon'), 400).format()), findsOneWidget);
+    // 큰 배율(화물칸 후반)은 줄여 쓴다 — 줄 넘침 없음(골드 재조정 1f52fc3 뒤 발견).
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('기준 5: 골드가 모자라면 비활성', (tester) async {

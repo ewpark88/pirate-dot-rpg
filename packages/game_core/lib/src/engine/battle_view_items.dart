@@ -18,6 +18,7 @@ class EnemyView {
     this.slowed = false,
     this.burning = false,
     this.vulnerable = false,
+    this.emerging = false,
     this.heading = sideHeading,
     this.eventKind,
   });
@@ -36,6 +37,7 @@ class EnemyView {
     slowed: j['slowed'] as bool? ?? false,
     burning: j['burning'] as bool? ?? false,
     vulnerable: j['vulnerable'] as bool? ?? false,
+    emerging: j['emerging'] as bool? ?? false,
     heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
     eventKind: j['eventKind'] as String?,
   );
@@ -70,6 +72,9 @@ class EnemyView {
   final bool burning;
   final bool vulnerable;
 
+  /// 배 가까이 솟아오르는 중(물보라 예고) — 맞지도 때리지도 않는다(배 위협 (b)). 선택 키.
+  final bool emerging;
+
   /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
   final double heading;
 
@@ -90,6 +95,7 @@ class EnemyView {
     'slowed': slowed,
     'burning': burning,
     'vulnerable': vulnerable,
+    if (emerging) 'emerging': true,
     if (heading != sideHeading) 'heading': heading,
     if (eventKind != null) 'eventKind': eventKind,
   };

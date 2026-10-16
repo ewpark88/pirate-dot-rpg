@@ -46,7 +46,8 @@ class TopFever {
   }
 
   /// 바다 물들임 세기 0~1 (TopSeaPainter.fever로 — 바다 색 자체를 금·주황으로 섞는다).
-  double get sea => _seaAlpha * level;
+  /// 켜질 때는 시작 금빛 번쩍 아래에서 바로 금(파랑+금이 섞이면 탁한 회색·올리브 — S1), 꺼질 때만 서서히.
+  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 ? 1 : level);
 
   /// 빛 줄기: 비스듬한 밝은 띠 3개가 천천히 흘러간다(빛나는 황금 바다, S1). 배 중심 원점 화면 단위 [view], 적보다 먼저.
   void rays(Canvas c, Rect view) {
@@ -145,18 +146,94 @@ class TopFever {
     }
   }
 
+  /// 시작 가속 0~1 (0.4초 동안 앞으로 '쑥' 갔다 돌아옴). 흔들기(동작) 끄기면 0.
+  double lunge() {
+    final age = _lastMs - _startMs;
+    if (age < 0 || age >= 400 || !scene.settings.shake) return 0;
+    return math.sin(math.pi * age / 400);
+  }
+
+  /// 피버 동안 아주 약한 진동(dp). 흔들기 끄기·절전이면 0.
+  Offset vibration() {
+    if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return Offset.zero;
+    final ms = _lastMs;
+    return Offset(math.sin(ms / 23) * 0.4, math.cos(ms / 29) * 0.4) * level;
+  }
+
+  /// 배 둘레 바람 줄(흰 짧은 곡선이 양옆으로 뒤로 흘러감), 배 중심 원점. 흔들기 끄기면 없음.
+  void wind(Canvas c, double shipR) {
+    if (level <= 0 || !scene.settings.shake) return;
+    final ms = _lastMs;
+    _ring
+      ..strokeWidth = 1
+      ..color = const Color(0xFFFFFFFF).withValues(alpha: 0.65 * level);
+    for (var j = 0; j < 6; j++) {
+      final side = j.isEven ? 1.0 : -1.0;
+      final y = ((ms / 2.2 + j * 37) % 90) - 45;
+      final x = side * (shipR + 6 + (j % 3) * 5);
+      _wind
+        ..reset()
+        ..moveTo(x, y)
+        ..quadraticBezierTo(x + side * 3, y + 6, x, y + 12);
+      c.drawPath(_wind, _ring);
+    }
+  }
+
+  final _wind = Path();
+
+  /// 양옆으로 휙휙 스치는 물보라 줄·바위·부표(화면 dp). 절전이면 없음.
+  void rushers(Canvas c, Size box) {
+    if (level <= 0.2 || scene.settings.powerSave) return;
+    final ms = _lastMs;
+    for (var i = 0; i < 6; i++) {
+      final left = i.isEven;
+      final x = left ? box.width * (0.06 + i * 0.012) : box.width * (0.94 - i * 0.012);
+      final y = (ms * (1.4 + (i % 3) * 0.3) + i * 377) % (box.height + 120) - 60;
+      final a = level;
+      if (i % 3 == 0) {
+        // 바위: 짙은 회색 덩이 + 흰 물보라 테
+        _paint.color = const Color(0xFF5E5A60).withValues(alpha: a);
+        c.drawOval(Rect.fromCenter(center: Offset(x, y), width: 14, height: 10), _paint);
+        _ring
+          ..strokeWidth = 2
+          ..color = const Color(0xFFFFFFFF).withValues(alpha: 0.8 * a);
+        c.drawOval(Rect.fromCenter(center: Offset(x, y + 2), width: 20, height: 14), _ring);
+      } else if (i % 3 == 1) {
+        // 부표: 빨강·흰 원 + 물결 고리
+        _paint.color = const Color(0xFFE8443A).withValues(alpha: a);
+        c.drawCircle(Offset(x, y), 4, _paint);
+        _paint.color = const Color(0xFFFFFFFF).withValues(alpha: a);
+        c.drawCircle(Offset(x, y), 1.6, _paint);
+        _ring
+          ..strokeWidth = 1
+          ..color = const Color(0xFFFFFFFF).withValues(alpha: 0.6 * a);
+        c.drawCircle(Offset(x, y + 1), 7, _ring);
+      } else {
+        // 물보라 줄
+        _paint.color = const Color(0xFFFFFFFF).withValues(alpha: 0.7 * a);
+        c
+          ..drawRect(Rect.fromLTWH(x, y, 3, 34), _paint)
+          ..drawRect(Rect.fromLTWH(x + 5, y + 10, 2, 22), _paint);
+      }
+    }
+  }
+
   /// 가장자리 속도선(화면 dp 상자 [box]): 양옆에서 아래로 흐르는 금빛 줄. 흔들기(동작) 끄기·절전이면 없음.
   void speedLines(Canvas c, Size box) {
     if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return;
     final ms = _lastMs;
-    const n = 22;
+    // 시작 0.6초는 속도선 폭발(더 많고 진하게).
+    final age = ms - _startMs;
+    final burst = age >= 0 && age < 600 ? 1 - age / 600 : 0.0;
+    final n = 22 + (18 * burst).round();
     for (var i = 0; i < n; i++) {
       final left = i.isEven;
       final edge = box.width * (0.04 + (i * 37 % 9) / 100);
       final x = left ? edge : box.width - edge;
       final len = 60.0 + (i * 53 % 70);
       final y = (ms * (1.6 + (i % 4) * 0.35) + i * 211) % (box.height + len) - len;
-      _paint.color = (i % 3 == 0 ? _orange : _gold).withValues(alpha: 0.75 * level);
+      final col = i % 3 == 0 ? _orange : (i % 3 == 1 ? _gold : const Color(0xFFFFFFFF));
+      _paint.color = col.withValues(alpha: math.min(1, (0.75 + 0.25 * burst) * level));
       c.drawRect(Rect.fromLTWH(x, y, 3, len), _paint);
     }
   }

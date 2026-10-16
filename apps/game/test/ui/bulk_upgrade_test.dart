@@ -25,7 +25,14 @@ void main() {
   });
 
   testWidgets('알약을 고르면 버튼이 그 배수로 강화하고 오를 레벨 수를 보인다', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: shipTab);
+    // 골드는 대포 ×5를 살 만큼(표에서 계산 — 경제가 비용을 바꿔도 깨지지 않게).
+    final st = loadFixture('stage37_midgame');
+    final gold = partCostSum(cannon, st.ship.level('cannon'), 5).times(2);
+    final log = await pumpGame(
+      tester,
+      st.copyWith(wallet: st.wallet.copyWith(gold: gold)),
+      tab: shipTab,
+    );
     expect(find.byKey(const Key('ship.upgrade.levels.cannon')), findsNothing);
     await tester.tap(find.byKey(const Key('ship.mult.5')));
     await tester.pump();

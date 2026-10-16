@@ -30,6 +30,9 @@ class EnemyPose {
   /// 이동 방향 atan2(dy, dx) (탑다운 도트를 돌릴 때).
   double heading = 0;
 
+  /// 솟아오르기 예고 중(EnemyView.emerging) — 몸은 숨기고 물보라만.
+  bool emerging = false;
+
   void _set(EnemyView v, double nx, double ny) {
     id = v.id;
     kind = v.kind;
@@ -43,6 +46,7 @@ class EnemyPose {
     burning = v.burning;
     vulnerable = v.vulnerable;
     heading = v.heading;
+    emerging = v.emerging;
     x = nx;
     y = ny;
     drawX = nx;
