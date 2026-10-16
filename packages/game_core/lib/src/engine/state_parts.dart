@@ -167,7 +167,9 @@ class Settings {
     this.battleView = 'top',
     this.title,
     this.hints = const {},
-  });
+    String? flashLevel,
+    this.sleepAfterSec = defaultSleepAfterSec,
+  }) : flashLevel = flashLevel ?? (flash ? 'soft' : 'off');
 
   factory Settings.fromJson(Json j) => Settings(
     lang: j['lang'] as String,
@@ -183,7 +185,12 @@ class Settings {
     battleView: j['battleView'] as String? ?? 'top',
     title: j['title'] as String?,
     hints: {...?(j['hints'] as List?)?.cast<String>()},
+    flashLevel: j['flashLevel'] as String?,
+    sleepAfterSec: j['sleepAfterSec'] as int? ?? defaultSleepAfterSec,
   );
+
+  /// 자동 절전 화면 기본(초) — S4 '발열·배터리·OLED'.
+  static const defaultSleepAfterSec = 180;
 
   /// `system` | `ko` | `en`.
   final String lang;
@@ -206,6 +213,13 @@ class Settings {
   /// 고른 칭호 id (progress.titles 중, null = 없음 — 세이브 v6).
   final String? title;
 
+  /// 번쩍임 세기 `off` | `soft` | `full` (사용자 '번쩍임 눈 아프다'). 선택 키, 없으면 [flash]에서(켬 → soft, 끔 → off).
+  /// [flash]는 옛 세이브·화면용으로 남고 `flashLevel != 'off'`와 같다.
+  final String flashLevel;
+
+  /// 입력이 없을 때 절전 화면까지 초(0 = 끔, 60·180·300). 선택 키, 없으면 [defaultSleepAfterSec]. 감지·덮개는 UI.
+  final int sleepAfterSec;
+
   /// 한 번 본 안내(말풍선) id — 다시 띄우지 않는다(S4 '처음 1회 안내'). 선택 키, 없으면 빈 집합.
   final Set<String> hints;
 
@@ -224,23 +238,34 @@ class Settings {
     if (battleView != 'top') 'battleView': battleView,
     if (title != null) 'title': title,
     if (hints.isNotEmpty) 'hints': (hints.toList()..sort()),
+    if (flashLevel != (flash ? 'soft' : 'off')) 'flashLevel': flashLevel,
+    if (sleepAfterSec != defaultSleepAfterSec) 'sleepAfterSec': sleepAfterSec,
   };
+
+  /// [withValue]용: 생략된 선택 키까지 모두 채운 본문.
+  Json _full() => {...toJson(), 'battleView': battleView, 'flashLevel': flashLevel, 'sleepAfterSec': sleepAfterSec};
 
   /// 칭호만 바꾼다 (SelectTitle, null = 없음).
   Settings withHint(String id) => Settings.fromJson({
-    ...toJson(),
-    'battleView': battleView,
+    ..._full(),
     'hints': [...hints, id],
   });
 
-  Settings withTitle(String? id) => Settings.fromJson({...toJson(), 'battleView': battleView, 'title': id});
+  Settings withTitle(String? id) => Settings.fromJson({..._full(), 'title': id});
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].
   Settings withValue(String key, Object value) {
-    final j = {...toJson(), 'battleView': battleView};
+    final j = _full();
     if (!j.containsKey(key) || j[key].runtimeType != value.runtimeType) {
       throw ArgumentError('설정 키/타입 오류: $key=$value');
     }
+    if (key == 'flashLevel' && !const {'off', 'soft', 'full'}.contains(value)) {
+      throw ArgumentError('설정 값 오류: $key=$value');
+    }
+    if (key == 'sleepAfterSec' && (value as int) < 0) throw ArgumentError('설정 값 오류: $key=$value');
+    // 번쩍임 둘은 함께 움직인다: 끔/켬 → 세기(켬은 soft), 세기 → 끔/켬.
+    if (key == 'flash') return Settings.fromJson({...j, 'flash': value, 'flashLevel': value == true ? 'soft' : 'off'});
+    if (key == 'flashLevel') return Settings.fromJson({...j, 'flashLevel': value, 'flash': value != 'off'});
     return Settings.fromJson({...j, key: value});
   }
 }
