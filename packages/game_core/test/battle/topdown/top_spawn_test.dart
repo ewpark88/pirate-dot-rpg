@@ -144,4 +144,31 @@ void main() {
       ..advance(windy, 20, 0.05);
     expect(windy.y - (base.shipY - 100), closeTo((calm.y - (base.shipY - 100)) * storm, 1e-9));
   });
+
+  test('보물 상선(passX): 배로 오지 않고 정해진 방향으로 곧게, 밀리지 않고 겹침 풀기에서 빠지고 방향 = 지나가는 쪽', () {
+    final g = TopGeometry(w, base)..speedScale = 1.3; // 폭풍이어도 배율 없음
+    final ship = Foe(
+      id: 1,
+      kind: 'merchant',
+      layer: 'surface',
+      x: base.shipX - 120,
+      y: base.shipY + base.shipRadius + 50,
+      maxHp: BigNum.from(1e9),
+      speed: 10,
+      attack: BigNum.one,
+      gold: BigNum.one,
+      eventKind: 'merchant',
+      passX: 1,
+      passY: 0,
+    );
+    final (x0, y0) = (ship.x, ship.y);
+    expect(g.advance(ship, 10, 0.5), isFalse, reason: '접촉 공격 없음');
+    expect(ship.x, closeTo(x0 + 5, 1e-9));
+    expect(ship.y, y0);
+    g
+      ..push(ship, 30)
+      ..pull(ship, base.shipX, base.shipY, 30);
+    expect((ship.x, ship.y), (x0 + 5, y0), reason: '밀기·끌기 무시');
+    expect(g.heading(ship), 0, reason: '오른쪽으로 지나감');
+  });
 }
