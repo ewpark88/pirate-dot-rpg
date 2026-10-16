@@ -110,11 +110,11 @@ class BattleSystem implements GameSystem {
         ..fireGuns()
         ..castSkills()
         ..tickZones()
+        ..feverAura(state)
         ..tickStatus()
         ..tickCombo();
     });
     if (_field!.bounty != null) {
-      // 현상금 중: 본 전투 판정·돌발 이벤트·피버 없이 현상금 판정만 (S1 결정: 피버 멈춤).
       return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
     final after = _fun.step(_resolve(next, _field!, ctx), _field!, ctx, kills: _kills);

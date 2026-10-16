@@ -30,7 +30,7 @@ abstract final class TopBounty {
     return s; // 이번 틱은 보스를 띄우고 화면에 반영만 — 전장이 화면과 어긋나 새로 만들어지지 않게
   }
 
-  /// 현상금 전투 한 틱이 끝난 뒤: 처치·시간 초과·침몰 판정.
+  /// 현상금 전투 한 틱이 끝난 뒤: 처치·시간 초과·침몰 판정. 이 틱은 본 판정·돌발 이벤트·피버를 건너뛴다(S1: 피버 멈춤).
   static GameState resolve(GameState s, Field f, SystemContext ctx) {
     final run = f.bounty;
     final active = s.bounty?.active;
