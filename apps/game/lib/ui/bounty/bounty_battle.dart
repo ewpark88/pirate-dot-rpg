@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart' show RecordedTick;
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -65,7 +67,7 @@ class BountyRetreatButton extends ConsumerWidget {
       child: SkinButton(
         key: const Key('bounty.retreat'),
         tone: SkinTone.plain,
-        onPressed: ref.read(bountyProvider.notifier).retreat,
+        onPressed: ref.read(bountyCommandsProvider).retreat,
         child: Text(AppLocalizations.of(context).uiBountyRetreat),
       ),
     );
@@ -83,18 +85,30 @@ class BountyResultGate extends ConsumerStatefulWidget {
 }
 
 class _BountyResultGateState extends ConsumerState<BountyResultGate> {
+  StreamSubscription<RecordedTick>? _sub;
+
   @override
   void initState() {
     super.initState();
-    ref.listenManual(bountyProvider.select((v) => v.result), (_, result) {
+    // 결과 이벤트(BountyCleared·BountyFailed·BountySwept) → 결과 → 작은 창 한 번.
+    _sub = ref.read(battleFeedProvider)?.listen((tick) {
+      tick.events.forEach(ref.read(bountyResultProvider.notifier).onEvent);
+    });
+    ref.listenManual(bountyResultProvider, (_, result) {
       if (result == null || !mounted) return;
       unawaited(
         showDialog<void>(
           context: context,
           builder: (_) => _ResultDialog(result: result),
-        ).whenComplete(() => ref.read(bountyProvider.notifier).ackResult()),
+        ).whenComplete(() => ref.read(bountyResultProvider.notifier).ack()),
       );
     });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_sub?.cancel());
+    super.dispose();
   }
 
   @override

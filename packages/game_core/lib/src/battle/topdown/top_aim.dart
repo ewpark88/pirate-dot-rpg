@@ -40,8 +40,11 @@ class TopAim {
     return _dist(e.x, e.y, top.shipX, hy + cy) - top.hullHalfWidth - top.radiusOf(e);
   }
 
+  /// 카메라 안이고 등장 대기 중이 아닌가(대기·가까이 등장 예고 중엔 조준·궁극기 대상이 아니다).
   bool onScreen(Foe e) =>
-      (e.x - top.shipX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;
+      e.holdSec <= 0 &&
+      (e.x - top.shipX).abs() <= top.viewWidth * half &&
+      (e.y - top.shipY).abs() <= top.viewHeight * half;
 
   List<Foe> eligible(AttackDef a, List<Foe> foes, {double reachBonus = 0}) {
     final r = attackReach(a, w.field);

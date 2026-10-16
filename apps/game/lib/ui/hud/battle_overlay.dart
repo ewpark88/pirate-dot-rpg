@@ -9,14 +9,14 @@ import 'package:pirate_dot/render/scene/slot_states.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
+import 'package:pirate_dot/ui/hud/battle_hud_buttons.dart';
+import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
-import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 선원 줄 오른쪽 끝 버튼 (layout-v2-brief 3, S3 좌표 약속 `battleFrameFor`):
 /// 궁극기 = 렌더가 그린 자리(초상·함성 게이지) 위 투명 버튼, 보스 도전 = 파밍 중일 때만 그 왼쪽 도트 버튼.
@@ -45,8 +45,16 @@ class BattleButtons extends ConsumerWidget {
                 rect: hit(r),
                 child: _SlotButton(slot: i, rect: r),
               ),
+            // 궁극기 표시(꼬리표·함성 원형 게이지·%·탭!·발동 띠) — 누름 통과, 그 위에 투명 버튼.
+            Positioned.fill(child: UltimateHud(rect: f.ultimateRect)),
             Positioned.fromRect(rect: hit(f.ultimateRect), child: const _UltimateButton()),
-            Positioned.fromRect(rect: hit(f.bossRect), child: const _BossChallengeButton()),
+            // 보스 도전: 보스 초상 + '보스 도전!' (글이 들어가게 칸 왼쪽으로 넓힘, 오른쪽 끝은 칸에 맞춤).
+            Positioned(
+              right: box.maxWidth - f.bossRect.right,
+              top: f.bossRect.center.dy - 22,
+              height: 44,
+              child: const BossChallengeButton(),
+            ),
             // 현상금 전투 중에는 같은 자리에 후퇴 버튼 (보스 도전은 파밍 중에만이라 겹치지 않는다).
             Positioned.fromRect(rect: hit(f.bossRect), child: const BountyRetreatButton()),
           ],
@@ -76,32 +84,6 @@ class _UltimateButton extends ConsumerWidget {
           behavior: HitTestBehavior.opaque,
           onTap: full ? () => ref.read(commandSinkProvider).send(const TriggerUltimate()) : null,
           child: const SizedBox.expand(),
-        ),
-      ),
-    );
-  }
-}
-
-/// 파밍 중(보스를 못 잡아 제자리 항해)이면 보스 도전 (설계서 4.1-4). 파밍 그림 버튼.
-class _BossChallengeButton extends ConsumerWidget {
-  const _BossChallengeButton();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final show = ref.watch(gameStateProvider.select((s) => s.progress.farming && !(s.battle?.bossActive ?? false)));
-    if (!show) return const SizedBox.shrink();
-    final l10n = AppLocalizations.of(context);
-    return TutorialSpot(
-      id: 'boss.challenge',
-      child: Tooltip(
-        message: l10n.uiBossChallenge,
-        child: PixelButton(
-          key: const Key('boss.challenge'),
-          primary: true,
-          semanticLabel: l10n.uiBossChallenge,
-          onPressed: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
-          // 칸이 50dp 안팎이라 그림만 (글자는 낭독·길게 누르기 설명으로).
-          child: const PixelSprite(UiSprites.farm, dots: 16),
         ),
       ),
     );

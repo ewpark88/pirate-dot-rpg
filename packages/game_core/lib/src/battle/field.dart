@@ -1,11 +1,12 @@
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
+import 'package:game_core/src/battle/topdown/top_threat.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
 
 export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor, shapeField;
-export 'package:game_core/src/battle/topdown/top_fever.dart' show FeverAura;
+export 'package:game_core/src/battle/topdown/top_threat.dart' show EnemyShot, TopdownStep;
 
 /// 전장의 적 하나. 시뮬 내부 값(실제 HP·접촉 타이머·기절)을 들고, 화면에는 [EnemyView]로 나간다.
 class Foe {
@@ -64,20 +65,22 @@ class Foe {
   /// 무한 항해 등급 테두리 (0 없음).
   final int tier;
 
-  /// 보호막 중 (보스 패턴).
+  /// 보호막 중(보스 패턴) · 다음 접촉 피해까지 남은 초(0 = 닿자마자) · 남은 기절 초(기절 중 이동·접촉 공격 없음).
   bool shielded = false;
-
-  /// 다음 접촉 피해까지 남은 초. 0이면 닿자마자 때린다.
   double contactTimer = 0;
-
-  /// 남은 기절(초). 기절 중에는 이동·접촉 공격을 하지 않는다.
   double stunTimer = 0;
 
-  /// 등장 대기(초, 스폰 패턴 scatter): 0보다 크면 화면 밖에서 기다린다 — 움직이지도 겹침을 풀지도 않는다.
+  /// 등장 대기(초, 스폰 패턴 scatter·가까이 등장): 0보다 크면 기다린다 — 움직이지도·조준되지도·겹침을 풀지도 않는다.
   double holdSec = 0;
 
-  /// 부활을 이미 썼다.
-  bool revived = false;
+  /// 배 위협(top_threat.dart): (b) 솟아오를 자리 nearX·Y·예고를 냈나 warned, (a) 원거리 다음 발사까지 fireTimer초.
+  double? nearX;
+  double? nearY;
+  bool warned = false;
+  double fireTimer = 0;
+  bool get emerging => warned && holdSec > 0;
+
+  bool revived = false; // 부활을 이미 썼다
 
   /// 감속(이동 × (1 − slow))과 남은 초.
   double slow = 0;
@@ -110,6 +113,7 @@ class Foe {
     burning: burnTicks > 0,
     vulnerable: vulnerableTimer > 0,
     heading: heading ?? EnemyView.sideHeading,
+    emerging: emerging,
     eventKind: eventKind,
   );
 }
@@ -221,11 +225,9 @@ class Field {
   bool bossActive = false;
   int bossTicksLeft = 0;
 
-  /// 다음 무리(또는 보스)가 올 때까지 남은 초. 적이 없을 때만 줄어든다.
-  double travelLeft = 0;
+  double travelLeft = 0; // 다음 무리(또는 보스)가 올 때까지 남은 초. 적이 없을 때만 줄어든다
 
-  /// 적 체력 배율 (보물 바다 회차, 환생 v2 — 무리·보스 모두). battle_system이 Field를 만들 때 넣는다.
-  double enemyHpScale = 1;
+  double enemyHpScale = 1; // 적 체력 배율(보물 바다 회차, 환생 v2 — 무리·보스). Field를 만들 때 넣는다
   int _nextId = 1;
 
   /// 동시 처치 창: 마지막 처치 후 남은 초, 묶인 마리 수, 묶인 골드.
@@ -237,19 +239,17 @@ class Field {
   double buffValue = 0;
   double buffLeft = 0;
 
-  /// 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱.
-  int bossTimerTicks = 0;
+  int bossTimerTicks = 0; // 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱
 
-  /// 전장 모양(탑다운). 없으면 waves.top 기본 배 반경으로 — [geometryOr].
-  BattleGeometry? geometry;
+  BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
 
-  /// 진행 중인 현상금 전투(탑다운 B1, top_bounty.dart). 타이머는 [bossTicksLeft]를 같이 쓴다.
-  ({String bossId, int tier})? bounty;
+  final List<EnemyShot> enemyShots = []; // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
-  /// [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다).
-  Object? shipSeen;
+  ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 
-  /// [geometry], 없으면 waves.top 기본으로 정해 둔다(테스트·측정 장면).
+  Object? shipSeen; // [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다)
+
+  /// [geometry], 없으면 waves.top 기본(테스트·측정 장면).
   BattleGeometry geometryOr(WavesTable w) => geometry ??= TopGeometry.of(w);
 
   int nextId() => _nextId++;

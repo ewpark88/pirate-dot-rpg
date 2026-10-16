@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart' show AdPlacement;
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/bounty/bounty_sheet.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -31,18 +33,18 @@ String weekName(AppLocalizations l, int weekday) => switch (weekday) {
   _ => l.uiWeek7,
 };
 
-String rewardText(AppLocalizations l, BountyReward r, int n) => switch (r) {
-  BountyReward.gems => l.uiBountyRewardGems(n),
-  BountyReward.cards => l.uiBountyRewardCards(n),
-  BountyReward.gifts => l.uiBountyRewardGifts(n),
-  BountyReward.mapPieces => l.uiBountyRewardMap(n),
+String rewardText(AppLocalizations l, BountyRewardKind r, int n) => switch (r) {
+  BountyRewardKind.gems => l.uiBountyRewardGems(n),
+  BountyRewardKind.cards => l.uiBountyRewardCards(n),
+  BountyRewardKind.gifts => l.uiBountyRewardGifts(n),
+  BountyRewardKind.mapPieces => l.uiBountyRewardMap(n),
 };
 
-String rewardIcon(BountyReward r) => switch (r) {
-  BountyReward.gems => UiSprites.gem,
-  BountyReward.cards => UiSprites.tabCrew,
-  BountyReward.gifts => UiSprites.star,
-  BountyReward.mapPieces => UiSprites.tabMap,
+String rewardIcon(BountyRewardKind r) => switch (r) {
+  BountyRewardKind.gems => UiSprites.gem,
+  BountyRewardKind.cards => UiSprites.tabCrew,
+  BountyRewardKind.gifts => UiSprites.star,
+  BountyRewardKind.mapPieces => UiSprites.tabMap,
 };
 
 /// 보스 초상 (해역 보스 옆모습 그림 재사용 — 새 그림 없음). [dim]이면 흐리게(오늘 아닌 요일).
@@ -70,8 +72,8 @@ class BossPortrait extends StatelessWidget {
 
 /// 오늘 보여 줄 보스: 월~토 = 그 요일 보스. 일요일은 특정 보스를 고르지 않는다(S1 결정 — 추천 표시 없음),
 /// 그림·시트 첫 선택만 표 순서 첫 보스(중립).
-BountyDay todayBounty(int weekday) =>
-    bountyDays.firstWhere((d) => d.weekday == weekday, orElse: () => bountyDays.first);
+BountyDay todayBounty(List<BountyDay> days, int weekday) =>
+    days.firstWhere((d) => d.weekday == weekday, orElse: () => days.first);
 
 /// 항해 탭 카드 '현상금 사냥' (보물지도 카드 위): 오늘 보스·보상·티켓 n/9·[도전] [소탕 ×N]·티켓 0이면 [광고로 1장].
 class BountyCard extends ConsumerWidget {
@@ -82,10 +84,10 @@ class BountyCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final vm = ref.watch(bountyProvider);
     final weekday = ref.watch(bountyWeekdayProvider);
-    final day = todayBounty(weekday);
+    final day = todayBounty(ref.watch(bountyDaysProvider), weekday);
     final sunday = weekday == DateTime.sunday;
     final best = vm.clearedOf(day.bossId);
-    final control = ref.read(bountyProvider.notifier);
+    final control = ref.read(bountyCommandsProvider);
     void openSheet() => unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const BountySheet()));
     return Center(
       child: ConstrainedBox(
@@ -132,7 +134,7 @@ class BountyCard extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    BountyTicketPill(tickets: vm.tickets),
+                    BountyTicketPill(tickets: vm.tickets, cap: ref.watch(bountyLimitsProvider).ticketCap),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -142,12 +144,14 @@ class BountyCard extends ConsumerWidget {
                       Expanded(
                         child: Text(l10n.uiBountyNoTicket, style: Skin.text(13, color: Skin.sub)),
                       ),
-                      if (!vm.adUsedToday)
-                        SkinButton(
+                      // 광고로 티켓 1장 (경제가 하루 1번을 지킨다 — 제안할 수 없으면 버튼이 안 보인다).
+                      // 광고 장치가 표(ads.json)에 있을 때만 — 없으면 경제 canWatchAd가 실패한다.
+                      if (!vm.adUsedToday &&
+                          ref.watch(tablesProvider).ads.placements.any((d) => d.id == AdPlacement.bountyTicket.name))
+                        AdButton(
                           key: const Key('bounty.ad'),
-                          tone: SkinTone.gold,
-                          onPressed: control.adTicket,
-                          child: Text(l10n.uiBountyAdTicket),
+                          placement: AdPlacement.bountyTicket,
+                          label: l10n.uiBountyAdTicket,
                         ),
                     ],
                   )
@@ -185,13 +189,14 @@ class BountyCard extends ConsumerWidget {
 }
 
 class BountyTicketPill extends StatelessWidget {
-  const BountyTicketPill({required this.tickets, super.key});
+  const BountyTicketPill({required this.tickets, required this.cap, super.key});
 
   final int tickets;
+  final int cap;
 
   @override
   Widget build(BuildContext context) {
-    final full = tickets >= bountyTicketCap;
+    final full = tickets >= cap;
     return Container(
       key: const Key('bounty.tickets'),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -201,7 +206,7 @@ class BountyTicketPill extends StatelessWidget {
         border: Border.all(color: full ? Skin.danger : Skin.goldBottom, width: 1.5),
       ),
       child: Text(
-        AppLocalizations.of(context).uiBountyTickets(bountyTicketCap, tickets),
+        AppLocalizations.of(context).uiBountyTickets(cap, tickets),
         style: Skin.text(13, color: full ? const Color(0xFFB0102A) : Skin.goldInk),
       ),
     );

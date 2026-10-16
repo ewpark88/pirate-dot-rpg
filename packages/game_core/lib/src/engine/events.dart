@@ -7,6 +7,7 @@ part 'events_fun.dart';
 part 'events_meta.dart';
 part 'events_rebirth.dart';
 part 'events_stage.dart';
+part 'events_threat.dart';
 
 /// 코어가 내보내는 일. 효과음·데미지 숫자·파티클은 렌더가 이벤트를 보고 만든다.
 ///
