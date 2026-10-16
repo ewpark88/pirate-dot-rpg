@@ -3,6 +3,12 @@ part of 'event_director.dart';
 /// 탑다운 배 피격 번쩍 길이(부딪힘이 보이게, S1).
 const _kTopHitFlashMs = 110.0;
 
+/// 보스 포탄 비행 시간(ms) — 미리보기 틱(lookahead) 안에서.
+const _bossFlightMs = 650.0;
+
+/// 빠른 강화 부위 흰빛(ms).
+const _partUpGlowMs = 300.0;
+
 /// 탑다운 전용 연출 도우미 (event_director 300줄 한도로 나눔).
 extension _TopEvents on EventDirector {
   /// 탑다운 발사 임팩트: 포구 섬광(쏜 선원의 등급 색)·고리·연기 — 발사체가 실제로 떠나는 시각에.
@@ -30,5 +36,43 @@ extension _TopEvents on EventDirector {
     if (!scene.isTop || e.fromX == null || e.fromY == null) return Offset(c.dx, c.dy - kShipHeight / 2 - kNumberLiftPx);
     final side = (e.fromX! - c.dx).clamp(-10.0, 10.0);
     return Offset(c.dx + side, c.dy - 22);
+  }
+
+  /// 보스 포탄(BossFired): 엔진 피해 시각(index)에 배에 닿도록 비행 시간만큼 앞서 띄운다. 색은 보스 모양 색(fx bossLook).
+  void _bossShot(BossFired e, int index, BattleView frame) {
+    final tickMs = _player.tickMs;
+    final flightTicks = math.min(_bossFlightMs / tickMs, _juice.lookaheadTicks.toDouble());
+    final speed = math.max(1, frame.speed);
+    final delayMs = math.max<double>(0, (index - flightTicks - _player.position) * tickMs / speed);
+    var color = 0xFFFF5030;
+    for (final v in frame.enemies) {
+      if (v.boss) color = scene.looks.bossOf(v.kind, boss: true)?.color ?? color;
+    }
+    final ship = scene.topShip;
+    final dx = e.x - ship.dx;
+    final dy = e.y - ship.dy;
+    final len = math.max(1e-6, math.sqrt(dx * dx + dy * dy));
+    // 선체 가장자리(배 중심에서 보스 쪽으로 10단위)에 떨어진다.
+    scene.topHits.shots.fire(
+      e.x,
+      e.y,
+      ship.dx + dx / len * 10,
+      ship.dy + dy / len * 10,
+      scene.clockMs + delayMs,
+      flightTicks * tickMs / speed,
+      color,
+    );
+  }
+
+  /// 빠른 강화 한 번(PartUpgraded — UI가 '+대포 Lv 53'을 띄움, S4·S1): 그 부위 흰빛 0.3초 + 배로 올라오는 금빛 줄기.
+  /// 단계가 바뀌는 큰 축하(ShipLookChanged)가 진행 중이면 그것을 끊지 않는다.
+  void _partUp(String part) {
+    final m = scene.moments;
+    if (m.glowMs <= 0 || m.glowPart == part) {
+      m
+        ..glowPart = part
+        ..glowMs = math.max(m.glowMs, _partUpGlowMs);
+    }
+    scene.topHits.upgradeAt = scene.clockMs;
   }
 }

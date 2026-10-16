@@ -27,3 +27,16 @@ List<RecordedTick> topRecording(
   }
   return out;
 }
+
+/// 피버를 [at] 틱부터 [ticks] 틱 동안 강제로 켠 기록 (엔진의 피버 게이지·처치 수가 바뀌어도 장면이 안 흔들리게, S1).
+/// [at] 틱에 FeverStarted를 넣고, 그 뒤 프레임의 feverTicksLeft를 줄여 간다.
+List<RecordedTick> withFever(List<RecordedTick> rec, {int at = 60, int ticks = 200}) => [
+  for (var i = 0; i < rec.length; i++)
+    if (i < at || i >= at + ticks)
+      rec[i]
+    else
+      RecordedTick(rec[i].frame.copyWith(feverTicksLeft: at + ticks - i), [
+        ...rec[i].events,
+        if (i == at) FeverStarted(rec[i].frame.tick, untilTick: rec[i].frame.tick + ticks),
+      ]),
+];

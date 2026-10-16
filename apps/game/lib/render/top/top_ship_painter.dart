@@ -37,6 +37,7 @@ class TopShipPainter {
     double glow = 0,
     double recoil = 0,
     String? skin,
+    double billow = 0,
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
@@ -62,13 +63,20 @@ class TopShipPainter {
       final frame = layer == 'base' ? 0 : ((stage < 1 ? 1 : stage) - 1).clamp(0, sheet.frames - 1);
       // 대포 반동(사용자 '손맛'): 발사 순간 대포 층을 가로로 살짝 좁혀 양옆 포가 선체 쪽으로 밀렸다 돌아온다.
       final kick = layer == 'cannon' && recoil > 0;
+      // 피버 질주: 돛이 바람에 부풀며 펄럭(가로로 부풀고 앞으로 살짝).
+      final puff = layer == 'sail' && billow > 0;
       if (kick) {
         c
           ..save()
           ..scale(1 - _recoilSqueeze * recoil, 1);
+      } else if (puff) {
+        c
+          ..save()
+          ..translate(0, -2 * billow)
+          ..scale(1 + 0.12 * billow, 1 + 0.05 * billow);
       }
       sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: flash);
-      if (kick) c.restore();
+      if (kick || puff) c.restore();
       if (glowPart == layer && glow > 0) {
         // 축하(사용자 '바뀐 부위가 커졌다 돌아오며 빛나게'): 그 층을 조금 크게 한 번 더 흰빛으로.
         final grow = 1 + 0.12 * glow;
