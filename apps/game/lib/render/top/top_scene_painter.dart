@@ -36,6 +36,9 @@ class TopScenePainter {
   late final TopAtmosphere atmosphere = TopAtmosphere(scene.fx.raw.obj('atmosphere'), sprites);
 
   double? _shipY;
+
+  /// 지금 그린 배 중심 높이(상자 dp) — 테스트용.
+  double? get drawnShipY => _shipY;
   double _lastMs = 0;
   static const _followMs = 220.0;
   static const _cullMargin = 24.0;
@@ -50,7 +53,8 @@ class TopScenePainter {
     _lastMs = clockMs;
     final target = frame.shipScreen.dy;
     final y = _shipY ?? target;
-    _shipY = y + (target - y) * math.min(1, dt / _followMs * 3);
+    // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
+    _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
     final sy = (_shipY! * dpr).roundToDouble() / dpr;
