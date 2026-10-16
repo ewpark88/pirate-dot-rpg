@@ -20,6 +20,7 @@ import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
@@ -59,6 +60,10 @@ class CrewDetailDialog extends ConsumerWidget {
     // 지금 등급의 전설 능력. 아직 전설 전이면 전설 때 것을 흐리게 미리 보인다.
     final legendNow = tables.skills.legendFor(def.id, rarityIndex, legendIndex);
     final legend = legendNow ?? tables.skills.legendFor(def.id, legendIndex, legendIndex);
+    // 전설 미만인데 값이 있으면 특징(전설 능력 × 등급 배율, 개성 v2).
+    final traitScale = rarityIndex < legendIndex && legendNow != null && rarityIndex < tables.skills.traitScale.length
+        ? tables.skills.traitScale[rarityIndex]
+        : null;
     final color = rarityColor(rarity);
     const dim = TextStyle(color: PixelPalette.textDim);
     final title = Theme.of(context).textTheme.titleSmall;
@@ -163,8 +168,10 @@ class CrewDetailDialog extends ConsumerWidget {
             ]),
             if (legend != null)
               section(
-                l10n.uiCrewLegend,
-                icon: legendNow == null ? UiSprites.lock : Icons.workspace_premium_rounded,
+                traitScale != null ? l10n.uiCrewTrait(percentText(l10n, traitScale)) : l10n.uiCrewLegend,
+                icon: legendNow == null
+                    ? UiSprites.lock
+                    : (traitScale != null ? Icons.auto_awesome_rounded : Icons.workspace_premium_rounded),
                 // 열린 전설 능력은 금빛 판, 아직이면 흐린 판.
                 fill: legendNow == null ? Skin.track : const Color(0xFFFFF4CF),
                 border: legendNow == null ? Skin.plainEdge : Skin.goldBottom,
@@ -172,6 +179,8 @@ class CrewDetailDialog extends ConsumerWidget {
                   if (legendNow == null) Text(l10n.uiCrewLegendLocked, style: dim),
                   for (final line in legendLines(l10n, legend))
                     Text(line, style: legendNow == null ? dim : Skin.text(15, color: Skin.goldInk)),
+                  if (traitScale != null)
+                    Text(l10n.uiCrewTraitFull, key: const Key('crew.detail.traitFull'), style: dim),
                 ],
               ),
           ],

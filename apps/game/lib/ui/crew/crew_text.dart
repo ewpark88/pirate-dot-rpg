@@ -49,8 +49,12 @@ List<String> legendLines(AppLocalizations l10n, LegendDef d) {
   final zone = d.zone;
   return [
     if (d.extraProjectiles > 0) l10n.uiLegendExtraProjectiles(d.extraProjectiles),
+    // 특징(전설 미만, 개성 v2): 개수형 남은 몫은 발마다 확률.
+    if (d.extraProjectilesChance > 0) l10n.uiLegendProjectileChance(percentText(l10n, d.extraProjectilesChance)),
     if (d.extraChains > 0) l10n.uiLegendExtraChains(d.extraChains),
+    if (d.extraChainsChance > 0) l10n.uiLegendChainChance(percentText(l10n, d.extraChainsChance)),
     if (d.noFalloff) l10n.uiLegendNoFalloff,
+    if (d.noFalloffChance > 0) l10n.uiLegendNoFalloffChance(percentText(l10n, d.noFalloffChance)),
     if (d.critBurst > 0) l10n.uiLegendCritBurst,
     if (hit.burnSec > 0) l10n.uiLegendBurn(percentText(l10n, hit.burnRatio), shortDecimal(hit.burnSec)),
     if (hit.vulnerable > 0) l10n.uiLegendVulnerable(percentText(l10n, hit.vulnerable), shortDecimal(hit.vulnerableSec)),
@@ -61,5 +65,11 @@ List<String> legendLines(AppLocalizations l10n, LegendDef d) {
     if (zone != null && zone.slow > 0) l10n.uiLegendZoneSlow(percentText(l10n, zone.slow), shortDecimal(zone.sec)),
     if (zone != null && zone.stunEverySec > 0)
       l10n.uiLegendZoneStun(shortDecimal(zone.stunEverySec), shortDecimal(zone.sec)),
+    // 개성 v2 3단계: 보호막(turtle) · 낙뢰 연쇄(pelly) · 피버 서포트(pumpum).
+    if (d.shield case final sh?)
+      l10n.uiLegendShield(shortDecimal(sh.everySec), percentText(l10n, sh.hpRatio), shortDecimal(sh.durationSec)),
+    if (d.arc case final a? when a.count > 0) l10n.uiLegendArc(a.count),
+    if (d.arc case final a? when a.chance > 0) l10n.uiLegendArcChance(percentText(l10n, a.chance)),
+    if (d.fever case final f?) l10n.uiLegendFever(percentText(l10n, f.chargeBonus), shortDecimal(f.extraSec)),
   ];
 }

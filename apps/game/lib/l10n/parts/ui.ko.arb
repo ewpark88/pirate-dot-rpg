@@ -392,5 +392,14 @@
   "uiRebirthLockedWhy": "환생하면 보물지도 조각으로 영구히 강해져요",
   "uiChestTitle": "보물상자",
   "uiChestTake": "그냥 받기 · {amount}",
-  "uiChestPill": "보물상자 보상 고르기"
+  "uiChestPill": "보물상자 보상 고르기",
+  "uiCrewTrait": "특징 (지금 {percent})",
+  "uiCrewTraitFull": "전설이 되면 100%로 — 전설 능력",
+  "uiLegendProjectileChance": "{percent} 확률로 발사체 +1",
+  "uiLegendChainChance": "{percent} 확률로 연쇄 +1",
+  "uiLegendNoFalloffChance": "{percent} 확률로 거리 감쇠 없음",
+  "uiLegendShield": "{every}초마다 배에 보호막 (HP {ratio}, {sec}초)",
+  "uiLegendArc": "번개가 주변 {count}마리에 연쇄",
+  "uiLegendArcChance": "{percent} 확률로 번개 1마리 더",
+  "uiLegendFever": "출전 중 피버 충전 +{percent}, 피버 +{sec}초"
 }

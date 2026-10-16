@@ -588,5 +588,14 @@
   "uiRebirthLockedWhy": "Rebirth makes you permanently stronger with map pieces",
   "uiChestTitle": "Treasure chest",
   "uiChestTake": "Just take · {amount}",
-  "uiChestPill": "Choose chest reward"
+  "uiChestPill": "Choose chest reward",
+  "uiCrewTrait": "Trait (now {percent})",
+  "uiCrewTraitFull": "At Legend: full 100% — Legend ability",
+  "uiLegendProjectileChance": "{percent} chance of +1 projectile",
+  "uiLegendChainChance": "{percent} chance of +1 chain",
+  "uiLegendNoFalloffChance": "{percent} chance of no falloff",
+  "uiLegendShield": "Ship shield every {every}s (HP {ratio}, {sec}s)",
+  "uiLegendArc": "Lightning arcs to {count} nearby",
+  "uiLegendArcChance": "{percent} chance to arc 1 more",
+  "uiLegendFever": "While deployed: fever charge +{percent}, fever +{sec}s"
 }
