@@ -1646,7 +1646,6 @@ const Map<String, String> rawTables = {
     "blastMax": 10,
     "waterY": 96,
     "blastParts": [
-      "flash",
       "burst",
       "shockwave",
       "fireball_0_hot",

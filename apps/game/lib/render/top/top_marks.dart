@@ -152,6 +152,11 @@ class TopMarks {
 
   /// 배 회복(초록 덮개)·강화(테) 빛 — 배 상자 [box](배 중심 원점).
   void shipAura(Canvas c, Rect box) {
+    if (scene.shipFlashMs > 0) {
+      _fill.color = const Color(0x33FF3A2A);
+      c.drawOval(box.inflate(2), _fill);
+      _circle(c, box.center, 0, 2, 0xCCFF3A2A, oval: box.inflate(2));
+    }
     if (scene.shipHealMs > 0 && scene.settings.flash) {
       _fill.color = Color((0x55 << 24) | (_heal & 0xFFFFFF));
       c.drawOval(box.inflate(2), _fill);
@@ -162,8 +167,8 @@ class TopMarks {
   /// 화면 번쩍(궁극기·보스 처치 등) — 화면 좌표 [box] 전체.
   void screenFlash(Canvas c, Rect box) {
     if (scene.screenFlashMs <= 0 || !scene.settings.flash) return;
-    _fill.color = const Color(0x99FFFFFF);
-    c.drawRect(box, _fill);
+    // 전체 화면 흰 번쩍 대신 금빛 가장자리 비네트(밝기 +15% 이하).
+    edgeVignette(c, box, const Color(0xFFFFA41C), 0.3 * vignetteBump(1 - (scene.screenFlashMs / 200).clamp(0.0, 1.0)));
   }
 
   void _circle(Canvas c, Offset at, double r, double px, int color, {Rect? oval}) {
@@ -177,3 +182,25 @@ class TopMarks {
     }
   }
 }
+
+/// 가장자리 빛 띠(눈부심 줄이기, 사용자 '흰 번쩍임이 너무 많아 눈이 아프다'): 네 변에서 안쪽으로 [color] → 투명.
+/// 둥근 그라데이션은 세로로 긴 화면에서 위아래를 통째로 덮어(탁한 올리브) 변마다 직선 띠로 그린다.
+void edgeVignette(Canvas c, Rect box, Color color, double alpha) {
+  // 한 프레임에 켜지지 않게 부르는 쪽이 vignetteBump(u)로 서서히 올렸다 내린다.
+  if (alpha <= 0) return;
+  final a = alpha.clamp(0.0, 1.0);
+  final t = box.shortestSide * 0.16;
+  final on = color.withValues(alpha: a);
+  final off = color.withValues(alpha: 0);
+  for (final (r, from, to) in [
+    (Rect.fromLTWH(box.left, box.top, box.width, t), box.topCenter, box.topCenter + Offset(0, t)),
+    (Rect.fromLTWH(box.left, box.bottom - t, box.width, t), box.bottomCenter, box.bottomCenter - Offset(0, t)),
+    (Rect.fromLTWH(box.left, box.top, t, box.height), box.centerLeft, box.centerLeft + Offset(t, 0)),
+    (Rect.fromLTWH(box.right - t, box.top, t, box.height), box.centerRight, box.centerRight - Offset(t, 0)),
+  ]) {
+    c.drawRect(r, Paint()..shader = Gradient.linear(from, to, [on, off]));
+  }
+}
+
+/// 0 → 1 → 0 산 모양(진행률 [u] 0~1) — 비네트가 한 프레임에 켜지고 꺼지지 않게.
+double vignetteBump(double u) => u <= 0 || u >= 1 ? 0 : math.sin(math.pi * u);

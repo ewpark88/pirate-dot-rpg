@@ -40,7 +40,7 @@ class TopImpact {
       c.drawCircle(at, r * 0.85, _ring);
       // 타격감 v3 밝기 대비: 첫 2프레임 꽉 찬 흰 원 → 주황 불덩이 → 검은 연기(수중은 연기 대신 물기둥).
       if (t < 0.06) {
-        _fill.color = flash ? const Color(0xFFFFFFFF) : const Color(0xFFFFE08A);
+        _fill.color = const Color(0xFFFFD24A); // 흰 0% — 노랑 코어(사용자 '흰 번쩍임 눈 아프다')
         c.drawCircle(at, r * 0.6, _fill);
       } else if (t < 0.32) {
         final k = (t - 0.06) / 0.26;
@@ -68,7 +68,7 @@ class TopImpact {
           ..color =
               (h.rainbow
                       ? HSVColor.fromAHSV(1, (k * 360 + delay * 900) % 360, 0.7, 1).toColor()
-                      : Color.lerp(const Color(0xFFFFFFFF), col, k)!)
+                      : Color.lerp(const Color(0xFFFFE27A), col, k)!)
                   .withValues(alpha: 1 - k);
         c.drawCircle(at, r * (0.25 + 0.9 * _ease(k)), _ring);
       }
