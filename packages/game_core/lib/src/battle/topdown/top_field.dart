@@ -169,11 +169,12 @@ class TopField {
   /// 배 반경·선체 캡슐을 바꾼 사본(null이면 그대로).
   TopField withShipRadius(double? r, {double? halfWidth, double? halfLength, double offset = 0}) => r == null
       ? this
-      : _copy(shipX: shipX, r: r, halfWidth: halfWidth ?? r, halfLength: halfLength ?? r, offset: offset);
+      : _copy(shipX: shipX, shipY: shipY, r: r, halfWidth: halfWidth ?? r, halfLength: halfLength ?? r, offset: offset);
 
-  /// 배 중심 x만 옮긴 사본(피버 좌우 이동 — meta.fever.weave).
-  TopField withShipX(double x) => _copy(
+  /// 배 중심만 옮긴 사본(피버 좌우·앞뒤 이동 — meta.fever.weave).
+  TopField withShipAt(double x, double y) => _copy(
     shipX: x,
+    shipY: y,
     r: shipRadius,
     halfWidth: hullHalfWidth,
     halfLength: hullHalfLength,
@@ -182,6 +183,7 @@ class TopField {
 
   TopField _copy({
     required double shipX,
+    required double shipY,
     required double r,
     required double halfWidth,
     required double halfLength,

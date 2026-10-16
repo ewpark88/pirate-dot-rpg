@@ -256,6 +256,10 @@ class Field {
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
+    shipHeading: switch (geometry) {
+      final TopGeometry g => g.shipHeading,
+      _ => 0,
+    },
     shipShield: shield?.ratio ?? 0,
     fastSail: fastSail?.view(),
   );

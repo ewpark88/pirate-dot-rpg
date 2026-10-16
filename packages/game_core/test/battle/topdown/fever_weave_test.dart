@@ -112,4 +112,76 @@ void main() {
     expect(xs(t), a);
     expect(xs(withWeave(on: false)).every((x) => x == center), isTrue, reason: '키 없으면 고정');
   });
+
+  group("지그재그(사용자 지시 '지그재그로 대각선'·'조금 더 느리게')", () {
+    const leg = 2.0;
+    const turn = 0.45;
+    const surge = 8.0;
+    const tilt = 25.0;
+    final zt = () {
+      final raw = Map<String, String>.of(rawTables);
+      final meta = jsonDecode(raw['meta']!) as Map<String, dynamic>;
+      (meta['fever'] as Map<String, dynamic>)['weave'] = {
+        'mode': 'zigzag',
+        'amp': 70,
+        'legSec': leg,
+        'turnSec': turn,
+        'surge': surge,
+        'tiltDeg': tilt,
+      };
+      raw['meta'] = jsonEncode(meta);
+      return GameTables.load(raw);
+    }();
+    final long = state(100000);
+    final poses = [for (var i = 0; i < (20 / dt).round(); i++) feverPose(long, zt, i)];
+
+    test('꼭짓점 ±70, 다리 동안 일정 속도(곧은 선), 꺾을 때만 속도가 바뀐다', () {
+      expect(poses.map((p) => p.x).reduce(math.max), closeTo(70, 0.5));
+      expect(poses.map((p) => p.x).reduce(math.min), closeTo(-70, 0.5));
+      // ease가 끝난 뒤 한 다리 안: 틱마다 x 변화가 같다
+      final from = (4 / dt).round();
+      final steps = [for (var i = from; i < from + 60; i++) poses[i + 1].x - poses[i].x];
+      final straight = steps.where((d) => (d - steps.first).abs() < 1e-9).length;
+      expect(straight, greaterThan(20), reason: '곧은 구간이 길다');
+    });
+
+    test('앞뒤로 surge만큼(앞 = y 음수), 기울기는 ±25°(이동 방향), 꺾는 꼭짓점에선 0', () {
+      final ys = poses.map((p) => p.y);
+      expect(ys.reduce(math.min), closeTo(-surge, 0.2));
+      expect(ys.reduce(math.max), lessThanOrEqualTo(1e-9));
+      final hs = poses.map((p) => p.heading);
+      expect(hs.reduce(math.max), closeTo(tilt * math.pi / 180, 1e-6));
+      expect(hs.reduce(math.min), closeTo(-tilt * math.pi / 180, 1e-6));
+      final peak = poses.indexWhere((p) => p.x > 69.5);
+      expect(poses[peak].heading.abs(), lessThan(0.1), reason: '꼭짓점에서 꺾는 중');
+    });
+
+    test('왕복이 사인 2.5초보다 느긋하다(왕복 = 2 × (2.0 + 0.45)초), 처음은 가운데에서 부드럽게', () {
+      expect(poses.first.x, 0);
+      expect(poses[1].x.abs(), lessThan(0.5));
+      final ups = <int>[];
+      for (var i = 1; i < poses.length; i++) {
+        if (poses[i - 1].x < 69.5 && poses[i].x >= 69.5) ups.add(i);
+      }
+      expect((ups[1] - ups[0]) * dt, closeTo(2 * (leg + turn), dt * 2));
+    });
+
+    test('엔진: 피버 중 BattleView.shipHeading이 기울고 shipY가 앞뒤로, 끝나면 0', () {
+      final e = CoreEngine(
+        tables: zt,
+        clock: ManualClock(start),
+        initial: state((6 / dt).round()).copyWith(crews: const {'octo': CrewState()}),
+      );
+      final hs = <double>[];
+      final ys = <double>{};
+      for (var i = 0; i < (8 / dt).round(); i++) {
+        e.tick();
+        hs.add(e.state.battle!.shipHeading);
+        ys.add(e.state.battle!.shipY!);
+      }
+      expect(hs.map((h) => h.abs()).reduce(math.max), greaterThan(0.3));
+      expect(ys.length, greaterThan(3));
+      expect(hs.last, 0);
+    });
+  });
 }
