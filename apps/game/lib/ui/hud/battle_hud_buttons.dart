@@ -6,9 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/hud/hud_bubble.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
+
+export 'package:pirate_dot/ui/hud/hud_bubble.dart';
 
 // 선원 줄 오른쪽 버튼이 무엇인지 한눈에 (사용자 질문 2026-10-16 "동그라미로 떠 있는 슬롯은 뭐냐", "새로고침 버튼 같은 건 뭐냐").
 // 궁극기: 그림(선장 초상)은 렌더, UI는 '궁극기' 꼬리표·함성 원형 게이지 + %·가득 차면 금빛 맥박·'탭!'·발동 띠·처음 말풍선.
@@ -279,23 +282,4 @@ class _RagePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RagePainter old) => old.value != value || old.pulse != pulse;
-}
-
-class HudBubble extends StatelessWidget {
-  const HudBubble({required this.text, super.key});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(maxWidth: 220),
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: Skin.shadow,
-      border: Border.all(color: Skin.goldBottom, width: 2),
-    ),
-    child: Text(text, style: Skin.text(13)),
-  );
 }
