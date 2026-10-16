@@ -7,11 +7,12 @@ import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
 /// 효과음·배경음 (스펙 platform-m4 d). 파일 규칙 `sfx/<id>.ogg`·`sfx/<id>_<n>.ogg`·`bgm/<id>.ogg`.
 /// 없는 파일은 무음 — 음원을 사람이 고르기 전에도 그대로 돈다.
 class AudioAdapter implements AudioPort {
-  AudioAdapter._(this._sdk, this._files);
+  AudioAdapter._(this._sdk, this._files, this._nowMs);
 
   /// 목록을 못 읽으면 빈 목록(전부 무음).
   /// [timeout]: 목록 읽기가 이보다 오래 걸리면 무음으로 시작한다(첫 프레임을 막지 않게).
-  static Future<AudioAdapter> load(AudioSdk sdk, {Duration? timeout}) async {
+  /// [nowMs]: 같은 소리 간격을 잴 시계(테스트가 넣는다, 기본 앱 시작부터 ms).
+  static Future<AudioAdapter> load(AudioSdk sdk, {Duration? timeout, int Function()? nowMs}) async {
     var files = <String>{};
     try {
       final listing = sdk.listAssets();
@@ -19,21 +20,34 @@ class AudioAdapter implements AudioPort {
     } on Object catch (e) {
       debugPrint('audio: asset list failed — silent ($e)');
     }
-    return AudioAdapter._(sdk, files);
+    final clock = Stopwatch()..start();
+    return AudioAdapter._(sdk, files, nowMs ?? () => clock.elapsedMilliseconds);
   }
 
   /// 같은 효과음 동시 재생 상한 (많은 처치가 겹칠 때 소리 뭉침 방지).
   static const maxSameSfx = 4;
 
+  /// 모든 효과음 동시 재생 상한 · 같은 효과음 다시 낼 최소 간격(ms) — 발열 대책(실기기 오디오 CPU 56%, 2026-10-17).
+  static const maxTotalSfx = 6;
+  static const sameSfxGapMs = 60;
+
   final AudioSdk _sdk;
   final Set<String> _files;
   final _active = <String, int>{};
+  final _lastAt = <String, int>{};
+  final int Function() _nowMs;
+  int _total = 0;
+  bool _quiet = false;
   double _sfx = 1;
   double _bgm = 1;
   String? _bgmId;
   bool _bgmPlaying = false;
 
   bool hasSfx(String id) => _files.contains(_sfxPath(id));
+
+  /// 방치·절전 화면·발열 심함이면 효과음을 끈다(배경음만, power_channel sfxQuiet).
+  // ignore: avoid_setters_without_getters
+  set quiet(bool on) => _quiet = on;
 
   bool _suspended = false;
 
@@ -54,14 +68,22 @@ class AudioAdapter implements AudioPort {
 
   @override
   void playSfx(String id, {int variant = 0, double pitch = 1}) {
-    if (_sfx <= 0 || _suspended) return;
+    if (_sfx <= 0 || _suspended || _quiet || _total >= maxTotalSfx) return;
     final varied = _sfxPath('${id}_$variant');
     final path = _files.contains(varied) ? varied : _sfxPath(id);
     if (!_files.contains(path)) return;
     final n = _active[id] ?? 0;
-    if (n >= maxSameSfx) return;
+    final now = _nowMs();
+    if (n >= maxSameSfx || now - (_lastAt[path] ?? -sameSfxGapMs) < sameSfxGapMs) return; // 같은 파일 간격
     _active[id] = n + 1;
-    _fire(_sdk.playSfx(path, volume: _sfx, rate: pitch).whenComplete(() => _active[id] = (_active[id] ?? 1) - 1));
+    _lastAt[path] = now;
+    _total += 1;
+    _fire(
+      _sdk.playSfx(path, volume: _sfx, rate: pitch).whenComplete(() {
+        _active[id] = (_active[id] ?? 1) - 1;
+        _total -= 1;
+      }),
+    );
   }
 
   @override
