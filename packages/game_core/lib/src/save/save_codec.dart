@@ -6,7 +6,7 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
 
 /// 현재 세이브 스키마 버전. 올리면 [migrations]에 함수 + test/fixtures/saves/에 픽스처 필수.
-const currentSchemaVersion = 6;
+const currentSchemaVersion = 7;
 
 /// `migrations[i]`는 v(i+1) → v(i+2). 순수 함수만 둔다.
 /// 예: `Json migrateV1ToV2(Json j) => {...j, 'schemaVersion': 2, 'newField': 0};`
@@ -16,6 +16,7 @@ const List<Json Function(Json)> migrations = [
   migrateV3ToV4,
   migrateV4ToV5,
   migrateV5ToV6,
+  migrateV6ToV7,
 ];
 
 /// v1 → v2: `summon.total`(누적 소환 횟수) 추가. 출시 전이라 실제 플레이어 세이브가 없어 0으로 둔다
@@ -129,5 +130,25 @@ Json migrateV5ToV6(Json j) {
     },
     'rebirthShop': <String, int>{},
     'bounty': {'tickets': 3, 'refilledOn': null, 'cleared': <String, int>{}, 'progress': <String, double>{}},
+  };
+}
+
+/// v6 → v7: 골드 재조정(2026-10-16, 강화 드물고 크게 — 대포·선체·화물칸 강화 1번 = 예전 3레벨)으로 그 세 부위 레벨을 3으로 나눈다(올림).
+/// 옛 레벨을 새 공식에 그대로 넣으면 값이 터무니없이 커진다(화물칸 ×1e13). 돛·망루(레벨당 효과 그대로)·명예 외형(단계)은 그대로.
+/// docs/decisions/0011-save-v7-part-rescale.md
+const v7RescaledParts = ['cannon', 'hull', 'cargo'];
+const v7LevelsPerUpgrade = 3;
+
+Json migrateV6ToV7(Json j) {
+  final ship = j['ship'] as Json;
+  final parts = {...((ship['parts'] as Json?) ?? const <String, dynamic>{})};
+  for (final id in v7RescaledParts) {
+    final lv = parts[id] as int?;
+    if (lv != null) parts[id] = (lv + v7LevelsPerUpgrade - 1) ~/ v7LevelsPerUpgrade;
+  }
+  return {
+    ...j,
+    'schemaVersion': 7,
+    'ship': {...ship, 'parts': parts},
   };
 }

@@ -40,7 +40,7 @@ void main() {
         if (dump == null || shots[name] == true) return;
         shots[name] = true;
         final rec = ui.PictureRecorder();
-        painter.paint(ui.Canvas(rec));
+        paintTopStd(painter, ui.Canvas(rec));
         final img = await rec.endRecording().toImage(kLogicalWidth.toInt(), kLogicalHeight.toInt());
         final png = await img.toByteData(format: ui.ImageByteFormat.png);
         File('$dump/$name.png').writeAsBytesSync(png!.buffer.asUint8List());
@@ -58,7 +58,7 @@ void main() {
         scene.update(kFrameMs);
         // 매 프레임 그린다 — 예외가 나면 테스트 실패.
         final rec = ui.PictureRecorder();
-        painter.paint(ui.Canvas(rec));
+        paintTopStd(painter, ui.Canvas(rec));
         rec.endRecording().dispose();
         if (scene.numbers.active.length > maxNumbers) maxNumbers = scene.numbers.active.length;
         if (scene.effects.active.length > maxEffects) maxEffects = scene.effects.active.length;

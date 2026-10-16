@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/crew/crew_pill.dart';
 import 'package:pirate_dot/ui/crew/crew_text.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -62,7 +64,8 @@ class CrewDetailDialog extends ConsumerWidget {
     final title = Theme.of(context).textTheme.titleSmall;
 
     // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본.
-    Widget section(String head, List<Widget> body, {Color? fill, Color? border, String? icon}) => Padding(
+    // 아이콘: 그림 경로(String) 또는 머티리얼 아이콘(IconData). 별은 등급만 뜻하므로 여기 쓰지 않는다.
+    Widget section(String head, List<Widget> body, {Color? fill, Color? border, Object? icon}) => Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Container(
         width: double.infinity,
@@ -77,7 +80,8 @@ class CrewDetailDialog extends ConsumerWidget {
           children: [
             Row(
               children: [
-                if (icon != null) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                if (icon is String) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                if (icon is IconData) ...[Icon(icon, size: 18, color: Skin.goldInk), const SizedBox(width: 4)],
                 Flexible(child: Text(head, style: title)),
               ],
             ),
@@ -111,21 +115,19 @@ class CrewDetailDialog extends ConsumerWidget {
                         spacing: 6,
                         runSpacing: 4,
                         children: [
-                          _Pill(
+                          CrewPill(
                             fill: color.withValues(alpha: 0.18),
                             border: color,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // 등급 별은 카드 리본에만(한 의미 한 자리) — 알약은 등급 이름만.
                                 Text(tableText(l10n, rarity.nameKey), style: Skin.text(13)),
-                                const SizedBox(width: 4),
-                                const SkinIcon(UiSprites.star, size: 14),
-                                Text(rarity.stars.toString(), style: Skin.text(13)),
                               ],
                             ),
                           ),
                           if (deployed)
-                            _Pill(
+                            CrewPill(
                               fill: const Color(0xFFDDF7EA),
                               border: Skin.mint,
                               child: Text(l10n.uiCrewDeployed, style: Skin.text(13, color: Skin.mintInk)),
@@ -137,6 +139,8 @@ class CrewDetailDialog extends ConsumerWidget {
                 ),
               ],
             ),
+            // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
+            CrewIdentityPanel(crewId: def.id),
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
@@ -152,7 +156,7 @@ class CrewDetailDialog extends ConsumerWidget {
               Text(tableText(l10n, family.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, family.attack.shape), style: dim),
             ]),
-            section(icon: UiSprites.star, l10n.uiCrewSkill, [
+            section(icon: Icons.bolt_rounded, l10n.uiCrewSkill, [
               Text(skillName(l10n, skill.id), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, skill.area.shape), style: dim),
               Text(skillDesc(l10n, skill), style: dim),
@@ -160,7 +164,7 @@ class CrewDetailDialog extends ConsumerWidget {
             if (legend != null)
               section(
                 l10n.uiCrewLegend,
-                icon: legendNow == null ? UiSprites.lock : UiSprites.star,
+                icon: legendNow == null ? UiSprites.lock : Icons.workspace_premium_rounded,
                 // 열린 전설 능력은 금빛 판, 아직이면 흐린 판.
                 fill: legendNow == null ? Skin.track : const Color(0xFFFFF4CF),
                 border: legendNow == null ? Skin.plainEdge : Skin.goldBottom,
@@ -276,25 +280,5 @@ class _BigPortrait extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: _cardWidth,
     child: PbCardFront(crew: def, rarity: rarity, name: name, silhouette: !owned),
-  );
-}
-
-/// 작은 알약 (등급·출전 표시).
-class _Pill extends StatelessWidget {
-  const _Pill({required this.child, required this.fill, required this.border});
-
-  final Widget child;
-  final Color fill;
-  final Color border;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-    decoration: BoxDecoration(
-      color: fill,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: border, width: 1.5),
-    ),
-    child: child,
   );
 }

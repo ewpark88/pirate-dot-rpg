@@ -15,7 +15,7 @@ import 'helpers.dart';
 import 'top_recording.dart';
 
 /// 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다', S1): 때린 적이 배 쪽으로 툭 박고(돌진 120ms),
-/// 닿은 자리에 물보라·나뭇조각, 배 번쩍·미세 흔들림, 배 위 작은 빨간 피해 숫자. 실제 엔진 기록(stage 31)에서 때린 적이 살아 있는 첫 배 피격 60ms 뒤(S24).
+/// 닿은 자리에 물보라·나뭇조각, 배 번쩍·미세 흔들림, 배 위 작은 빨간 피해 숫자. 실제 엔진 기록에 배 피격을 주입(withShipHit — 엔진 균형이 바뀌어도 장면이 같다)해 때린 적이 살아 있는 첫 배 피격 60ms 뒤(S24).
 class _Painter extends CustomPainter {
   _Painter(this.painter, this.frame, this.dpr);
   final ScenePainter painter;
@@ -42,7 +42,7 @@ void main() {
     const dpr = 2.8125;
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     const box = Size(384, 832 - 48 - 24 - 76);
-    final rec = topRecording(tables, ticks: 400);
+    final rec = withShipHit(topRecording(tables, ticks: 400));
     // 엔진 변화(위협 재조정 등)에 견디게: 때린 적이 그 틱에 살아 있는 첫 피격(마지막 적이 같은 틱에 죽으면 돌진할 적이 없다).
     final at = rec.indexWhere(
       (t) => t.events.any(

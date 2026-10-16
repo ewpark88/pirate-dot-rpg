@@ -25,19 +25,17 @@ class _BountySheetState extends ConsumerState<BountySheet> {
     final l10n = AppLocalizations.of(context);
     final vm = ref.watch(bountyProvider);
     final weekday = ref.watch(bountyWeekdayProvider);
-    final day = bountyDays.firstWhere(
-      (d) => d.bossId == _boss,
-      orElse: () => todayBounty(weekday),
-    );
+    final days = ref.watch(bountyDaysProvider);
+    final day = days.firstWhere((d) => d.bossId == _boss, orElse: () => todayBounty(days, weekday));
     final open = bountyOpenOn(weekday, day);
     final best = vm.clearedOf(day.bossId);
     final tier = (_tier ?? vm.openTierOf(day.bossId)).clamp(1, vm.openTierOf(day.bossId));
     // 태블릿(UI 배율 뒤 논리 폭 ≥ 540, app.dart 넓은 화면 기준) = 7칸 한 줄.
     final wide = MediaQuery.sizeOf(context).width >= 540;
-    final control = ref.read(bountyProvider.notifier);
+    final control = ref.read(bountyCommandsProvider);
 
     Widget cell(int wd) {
-      final d = wd == DateTime.sunday ? null : bountyDays[wd - 1];
+      final d = days.where((x) => x.weekday == wd).firstOrNull;
       final selected = d != null && d.bossId == day.bossId;
       final today = wd == weekday;
       return Expanded(
@@ -81,7 +79,7 @@ class _BountySheetState extends ConsumerState<BountySheet> {
       );
     }
 
-    final days = [for (var wd = 1; wd <= 7; wd++) wd];
+    final weekdays = [for (var wd = 1; wd <= 7; wd++) wd];
     // 작은 폰·가로 공간이 부족하면 시트 안에서 스크롤.
     return SingleChildScrollView(
       child: Column(
@@ -92,7 +90,7 @@ class _BountySheetState extends ConsumerState<BountySheet> {
           Row(
             children: [
               Expanded(child: Text(l10n.uiBountyTitle, style: Skin.text(22))),
-              BountyTicketPill(tickets: vm.tickets),
+              BountyTicketPill(tickets: vm.tickets, cap: ref.watch(bountyLimitsProvider).ticketCap),
             ],
           ),
           if (weekday == DateTime.sunday)
@@ -103,12 +101,12 @@ class _BountySheetState extends ConsumerState<BountySheet> {
           const SizedBox(height: 8),
           // 태블릿 = 7칸 한 줄, 폰 = 4 + 3 두 줄.
           if (wide)
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final wd in days) cell(wd)])
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final wd in weekdays) cell(wd)])
           else ...[
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final wd in days.take(4)) cell(wd)]),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final wd in weekdays.take(4)) cell(wd)]),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [for (final wd in days.skip(4)) cell(wd), const Spacer()],
+              children: [for (final wd in weekdays.skip(4)) cell(wd), const Spacer()],
             ),
           ],
           const SizedBox(height: 10),

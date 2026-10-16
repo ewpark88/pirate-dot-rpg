@@ -12,7 +12,8 @@ const Map<String, String> rawTables = {
     { "id": "tailwind", "dailyLimit": 8, "reward": { "type": "buff", "durationSec": 1800, "goldMultiplier": 2, "speedMultiplier": 2, "maxStackSec": 14400 } },
     { "id": "offline", "dailyLimit": null, "perReturn": 1, "reward": { "type": "goldMultiplier", "value": 2 } },
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
-    { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } }
+    { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
+    { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -1674,7 +1675,7 @@ const Map<String, String> rawTables = {
   "seaEvents": {
     "intervalSec": [60, 120], "minStage": 5,
     "events": [
-      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 3, "autoCatchRatio": 0.3 },
+      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 2, "autoCatchRatio": 0.3 },
       { "id": "merchant", "weight": 20, "durationSec": 20, "passMargin": 40, "passSpread": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
       { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "rage": 0.3 },
       { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
@@ -1696,14 +1697,14 @@ const Map<String, String> rawTables = {
   "challenges": {
     "intervalSec": [180, 300], "minStage": 5, "rateWindowSec": 30,
     "kinds": [
-      { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 1.15, "reward": { "type": "goldMinutes", "value": 1 } },
+      { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 0.85, "reward": { "type": "goldMinutes", "value": 1 } },
       { "id": "combo", "weight": 25, "sec": 45, "multiKill": 5, "times": 2, "reward": { "type": "fever", "value": 0.3 } },
       { "id": "noHit", "weight": 20, "sec": 20, "reward": { "type": "goldMinutes", "value": 1 } },
       { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
   "fever": {
-    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.05, "challengeWin": 0.3, "seaEventWin": 0.15,
+    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
@@ -1727,7 +1728,7 @@ const Map<String, String> rawTables = {
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.08, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.6, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -1735,7 +1736,7 @@ const Map<String, String> rawTables = {
     "firstTenSummonFree": true,
     "firstTenCount": 10,
     "firstTenGuarantee": "hero",
-    "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 3 }, "boss": 3, "merge": 5, "last": 6 }
+    "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 1 }, "boss": 3, "merge": 5, "last": 6 }
   },
   "notifications": { "dailyMax": 1 },
   "sim": {
@@ -1817,22 +1818,22 @@ const Map<String, String> rawTables = {
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},
     {"id": "piranha", "layer": "underwater", "hpScale": 0.6, "speed": 22, "role": "fast"},
     {"id": "jelly", "layer": "underwater", "hpScale": 0.8, "speed": 10, "role": "basic"},
-    {"id": "gull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
-    {"id": "urchin", "layer": "underwater", "hpScale": 2.0, "speed": 8, "role": "tough"},
-    {"id": "flyingfish", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast"},
-    {"id": "stormgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
-    {"id": "puffer", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
+    {"id": "gull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "feather"}},
+    {"id": "urchin", "layer": "underwater", "hpScale": 2.0, "speed": 8, "role": "tough", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "spike"}},
+    {"id": "flyingfish", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "water"}},
+    {"id": "stormgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "feather"}},
+    {"id": "puffer", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "spike"}},
     {"id": "icecrab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "split", "splitInto": "icecrab_small", "splitCount": 2, "splitHpRatio": 0.35},
     {"id": "icecrab_small", "layer": "surface", "hpScale": 0.35, "speed": 18, "role": "basic"},
-    {"id": "penguin", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast"},
+    {"id": "penguin", "layer": "surface", "hpScale": 0.6, "speed": 22, "role": "fast", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "snow"}},
     {"id": "seal", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
-    {"id": "snowgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "snowgull", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "feather"}},
     {"id": "lavacrab", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "split", "splitInto": "lavacrab_small", "splitCount": 2, "splitHpRatio": 0.35},
     {"id": "lavacrab_small", "layer": "surface", "hpScale": 0.7, "speed": 12, "role": "basic"},
-    {"id": "starfish", "layer": "underwater", "hpScale": 1.0, "speed": 12, "role": "split", "splitInto": "starfish_small", "splitCount": 2, "splitHpRatio": 0.35},
+    {"id": "starfish", "layer": "underwater", "hpScale": 1.0, "speed": 12, "role": "split", "splitInto": "starfish_small", "splitCount": 2, "splitHpRatio": 0.35, "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "spike"}},
     {"id": "starfish_small", "layer": "underwater", "hpScale": 0.35, "speed": 16, "role": "basic"},
     {"id": "lavaturtle", "layer": "surface", "hpScale": 2.0, "speed": 8, "role": "tough"},
-    {"id": "firebird", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air"},
+    {"id": "firebird", "layer": "air", "hpScale": 0.6, "speed": 20, "role": "air", "ranged": {"range": 90, "intervalSec": 2.5, "damageRatio": 0.35, "projectileSpeed": 120, "kind": "ember"}},
     {"id": "angler", "layer": "underwater", "hpScale": 1.0, "speed": 12, "role": "revive", "reviveHpRatio": 0.5},
     {"id": "squid", "layer": "underwater", "hpScale": 1.0, "speed": 14, "role": "basic"},
     {"id": "siphon", "layer": "underwater", "hpScale": 0.8, "speed": 10, "role": "revive", "reviveHpRatio": 0.5},
@@ -1847,13 +1848,13 @@ const Map<String, String> rawTables = {
   'ship_parts': r'''
 {
   "parts": [
-    { "id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.11, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartCannon" },
-    { "id": "hull", "stat": "hp", "formula": "exp", "base": 1300, "growth": 1.12, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartHull" },
-    { "id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 1.28, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail" },
-    { "id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 1.28, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest" },
-    { "id": "cargo", "stat": "gold", "formula": "linear", "base": 1, "growth": 0.1, "costBase": 40, "costGrowth": 1.2, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 10, 20, 35, 60, 100, 160], "nameKey": "shipPartCargo" }
+    {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartCannon"},
+    {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
+    {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail"},
+    {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest"},
+    {"id": "cargo", "stat": "gold", "formula": "linear", "base": 1, "growth": 0.3, "costBase": 40, "costGrowth": 1.728, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo"}
   ],
-  "caps": { "critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5 }
+  "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
 ''',
   'ship_tiers': r'''
@@ -1893,10 +1894,11 @@ const Map<String, String> rawTables = {
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 1.8,
+  "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1.5,
-  "rebirthSkip": { "fraction": 0.5, "waves": 0 },
+  "rebirthSkip": { "fraction": 0.55, "waves": 0 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
     "swarmSpacing": 3,

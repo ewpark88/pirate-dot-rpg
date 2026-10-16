@@ -12,16 +12,16 @@ import 'package:pirate_dot/render/paint/stage_painter.dart';
 import 'package:pirate_dot/render/paint/status_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_scene_painter.dart';
+import 'package:pirate_dot/render/top/top_wave_fx.dart';
 
 part 'scene_painter_top.dart';
 
-/// [BattleScene]을 캔버스에 그린다. 스프라이트([sprites])가 있으면 그것으로, 없으면 단색 플레이스홀더.
-/// Flame 컴포넌트와 골든 테스트가 같이 쓴다.
-///
-/// 그리는 순서: 배경 → 물속 적 → 배 → 물위 적 → 공중 적 → 발사체 → 이펙트 → 코인 → 숫자 → (흔들림 밖) 슬롯·플래시.
+/// [BattleScene]을 캔버스에 그린다(스프라이트 없으면 단색 플레이스홀더). Flame 컴포넌트와 골든 테스트가 같이 쓴다.
+/// 순서: 배경 → 물속 적 → 배 → 물위 적 → 공중 적 → 발사체 → 이펙트 → 코인 → 숫자 → (흔들림 밖) 슬롯·플래시.
 class ScenePainter {
   ScenePainter(this.scene) : _status = StatusPainter(scene) {
     _hud = HudPainter(scene, _sprite);
@@ -38,12 +38,11 @@ class ScenePainter {
   late final HudPainter _hud;
   late final ShipPainter _ship;
   late final PbFxPainter _pb;
+  final _topWave = TopWaveFx();
 
-  /// 아트 팩 이미지. null이거나 키가 없으면 플레이스홀더.
+  /// 아트 팩 이미지(null이거나 키가 없으면 플레이스홀더). useSprites = 운영자 "스프라이트 끄기".
   SpriteBank? get sprites => _sprite.bank;
   set sprites(SpriteBank? v) => _sprite.bank = v;
-
-  /// 운영자 "스프라이트 끄기".
   bool get useSprites => _sprite.enabled;
   set useSprites(bool v) => _sprite.enabled = v;
 
@@ -244,6 +243,7 @@ class ScenePainter {
 
   void _effect(Canvas c, Effect e) {
     if (e.sheetId == 'explosion_aoe' && _pb.blast(c, e)) return;
+    if (e.sheetId == 'tidal_wave' && scene.isTop) return _topWave.paint(c, e); // 탑다운 해일(TopWaveFx)
     final cy = _bottomAnchored.contains(e.sheetId) ? e.y - e.h / 2 : e.y;
     if (_sprite.draw(c, 'fx:${e.sheetId}', e.x, cy, frame: e.frame, w: e.w, h: e.h)) return;
     final t = e.frame / e.frames;

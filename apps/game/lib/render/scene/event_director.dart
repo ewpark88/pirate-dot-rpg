@@ -43,10 +43,12 @@ class EventDirector implements ReplayListener {
   void onAhead(RecordedTick tick, int index) {
     for (final e in tick.events) {
       if (e is AttackFired) _launch(e, index, tick.frame);
+      if (e is BossFired && scene.isTop) _bossShot(e, index, tick.frame);
     }
   }
 
   void _launch(AttackFired e, int index, BattleView frame) {
+    if (scene.isTop && e.family == _assault) return _topMelee(e, index, frame);
     final style = scene.fx.projectileFor(e.family);
     final ship = scene.topShip;
     final (tickMs, tip) = (
@@ -87,7 +89,6 @@ class EventDirector implements ReplayListener {
   }
 
   late final _rules = ProjectileRules(scene.fx, fallbackMs: _juice.lookaheadTicks * _player.tickMs);
-
   void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {
       if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = _slotFlashMs;
@@ -149,6 +150,12 @@ class EventDirector implements ReplayListener {
         case ShipLookChanged():
           scene.moments.onPartUp(e.part);
           funEvent(scene, e);
+        case EnemyFired() when scene.isTop:
+          _enemyShot(e, tick.frame);
+        case EnemyEmerging() when scene.isTop:
+          _emerging(e, tick.frame);
+        case PartUpgraded(:final part) when scene.isTop:
+          _partUp(part);
         case BossFailed():
           scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:

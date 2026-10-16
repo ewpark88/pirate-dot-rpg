@@ -67,12 +67,29 @@ void main() {
   test('3. extraChains는 연쇄 대상을 늘리고, noFalloff면 감쇠가 없다', () {
     final foes = [for (var i = 0; i < 6; i++) foe(100.0 + i * 15, 100)];
     final volt = gun('volt', legend);
-    final v = extendVolley(volt, (x: 100, y: 100, hits: spread([foes.first], w)), foes, w, geometry: TopGeometry.of(w));
+    final v = extendVolley(
+      volt,
+      (x: 100, y: 100, hits: spread([foes.first], w)),
+      foes,
+      w,
+      geometry: TopGeometry.of(w),
+      rng: XorShiftRng(1),
+    );
     expect(v.hits, hasLength(1 + volt.legend!.extraChains));
     expect(v.hits[1].factor, lessThan(1));
     final nar = gun('nar', legend);
     final pierced = (x: 100.0, y: 100.0, hits: spread(foes.take(4).toList(), w, falloff: true));
-    expect(extendVolley(nar, pierced, foes, w, geometry: TopGeometry.of(w)).hits.every((h) => h.factor == 1), isTrue);
+    expect(
+      extendVolley(
+        nar,
+        pierced,
+        foes,
+        w,
+        geometry: TopGeometry.of(w),
+        rng: XorShiftRng(1),
+      ).hits.every((h) => h.factor == 1),
+      isTrue,
+    );
   });
 
   test('4. 장판 감속: 안의 적은 (1 − slow)배로 움직이고, 보스는 절반만', () {

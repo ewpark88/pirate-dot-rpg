@@ -37,7 +37,8 @@ void main() {
 
     test('affordableLevels = 골드로 살 수 있는 최대 수, 최대 레벨에서 멈춘다', () {
       final cannon = t.shipParts.byId('cannon');
-      for (final (from, n) in [(0, 1), (0, 3), (12, 40), (400, 123)]) {
+      // 가속 곡선(accelLevels)이면 레벨이 높을수록 금방 커지므로 작은 범위로 본다.
+      for (final (from, n) in [(0, 1), (0, 3), (5, 4), (10, 6)]) {
         final exact = partCostSum(cannon, from, n); // 판정 기준은 공식 합 (반복 합과는 1e-9 안에서 같다)
         expect(affordableLevels(cannon, from, exact), n, reason: '정확히 $n개 값');
         expect(
@@ -54,13 +55,14 @@ void main() {
   });
 
   group('UpgradePart 일괄', () {
-    test('times 50: 50레벨, 골드는 공식 합만큼, 마일스톤(25·50) 이벤트', () {
+    test('times 50: 50레벨, 골드는 공식 합만큼, 마일스톤(milestoneEvery 배수) 이벤트', () {
       final cannon = t.shipParts.byId('cannon');
       final s0 = h.newGame(gold: partCostSum(cannon, 0, 50).times(1.5));
       final s = sys.handle(s0, const UpgradePart('cannon', times: 50), h.ctx)!;
       expect(s.ship.level('cannon'), 50);
       expect((s0.wallet.gold - s.wallet.gold).closeTo(partCostSum(cannon, 0, 50)), isTrue);
-      expect(h.of<PartMilestone>().map((e) => e.level), [25, 50]);
+      final m = cannon.milestoneEvery!;
+      expect(h.of<PartMilestone>().map((e) => e.level), [for (var lv = m; lv <= 50; lv += m) lv]);
       expect(h.of<PartUpgraded>().last.level, 50);
     });
 

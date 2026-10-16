@@ -3,10 +3,18 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_shots.dart';
+import 'package:pirate_dot/render/top/top_slash.dart';
 
 /// 탑다운 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다' — 엔진은 닿는데 눈에 안 보였다, S1):
 /// 때린 적이 배 쪽으로 툭 박고(돌진), 닿은 자리에 물보라·나뭇조각이 튄다. 엔진 무관 — ShipDamaged fromX/fromY.
 class TopHits {
+  /// 적 포탄(보스 BossFired·원거리 적) — 배로 날아와 폭발.
+  final shots = TopShots();
+
+  /// 강습 근접 휘두르기·베기 자국.
+  final slash = TopSlash();
+
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
   final List<_Spot> _spots = [];
@@ -61,8 +69,11 @@ class TopHits {
   static const _chip = [0xFF8A5A30, 0xFFB57B44, 0xFF6B4423];
 
   /// 물보라(흰·하늘 점이 둥글게 퍼짐)·나뭇조각(배 바깥쪽으로 튐)·작은 번쩍. 전장 좌표.
-  void paint(Canvas c, double now, {required bool flash, bool powerSave = false}) {
+  void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
     _paintMuzzles(c, now, flash: flash, powerSave: powerSave);
+    _paintUpgrade(c, ship, now);
+    _paintEmerges(c, now);
+    slash.paint(c, now);
     _spots.removeWhere((p) => now - p.ms >= spotMs);
     for (final p in _spots) {
       final t = ((now - p.ms) / spotMs).clamp(0.0, 1.0);
@@ -142,7 +153,83 @@ class TopHits {
 
   final _ring = Paint()..style = PaintingStyle.stroke;
 
+  static const _upMs = 320.0;
+
+  /// 빠른 강화 빛 줄기 시작(장면 ms).
+  double upgradeAt = -1000000000;
+
+  /// 아래(강화 버튼 쪽)에서 배로 올라오는 금빛 줄기 + 배 둘레 반짝 고리. 배 중심 [ship], 전장 좌표.
+  void _paintUpgrade(Canvas c, Offset ship, double now) {
+    final age = now - upgradeAt;
+    if (age < 0 || age >= _upMs) return;
+    final t = age / _upMs;
+    final head = ship.dy + 90 * (1 - math.min(1, t * 2.5));
+    final fade = 1 - t;
+    _paint.color = Color.fromRGBO(255, 216, 74, 0.35 * fade);
+    c.drawRect(Rect.fromLTRB(ship.dx - 4, head, ship.dx + 4, ship.dy + 90), _paint);
+    _paint.color = Color.fromRGBO(255, 246, 200, 0.8 * fade);
+    c.drawRect(Rect.fromLTRB(ship.dx - 1, head, ship.dx + 1, ship.dy + 90), _paint);
+    if (t > 0.35) {
+      final k = (t - 0.35) / 0.65;
+      _ring
+        ..strokeWidth = 1.5
+        ..color = Color.fromRGBO(255, 216, 74, 1 - k);
+      c.drawCircle(ship, 10 + 16 * k, _ring);
+    }
+  }
+
+  final List<_Emerge> _emerges = [];
+
+  /// 솟아오르기 예고(EnemyEmerging): ([x],[y])에 [warnMs] 동안 그림자·끓는 물보라, 끝나면 물보라 터짐.
+  void emerge(double x, double y, double startMs, double warnMs) {
+    if (_emerges.length >= 16) _emerges.removeAt(0);
+    _emerges.add(_Emerge(x, y, startMs, warnMs));
+  }
+
+  void _paintEmerges(Canvas c, double now) {
+    _emerges.removeWhere((m) => now - m.ms > m.warnMs + 350);
+    for (final m in _emerges) {
+      final age = now - m.ms;
+      if (age < 0) continue;
+      final at = Offset(m.x, m.y);
+      if (age < m.warnMs) {
+        final t = age / m.warnMs;
+        // 물 밑 그림자(점점 진해짐) + 끓는 거품 고리(맥박) + 올라오는 거품
+        _paint.color = Color.fromRGBO(10, 30, 60, 0.15 + 0.3 * t);
+        c.drawOval(Rect.fromCenter(center: at, width: 10 + 6 * t, height: 7 + 4 * t), _paint);
+        final pulse = 0.5 + 0.5 * math.sin(age / 60);
+        _ring
+          ..strokeWidth = 1.5
+          ..color = Color.fromRGBO(240, 250, 255, 0.5 + 0.4 * pulse);
+        c.drawCircle(at, 6 + 4 * t + pulse, _ring);
+        for (var k = 0; k < 6; k++) {
+          final a = k * math.pi / 3 + age / 300;
+          final r = 3 + ((age / 90 + k) % 5);
+          _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.8);
+          c.drawRect(Rect.fromLTWH(at.dx + math.cos(a) * r, at.dy + math.sin(a) * r, 1.5, 1.5), _paint);
+        }
+        continue;
+      }
+      // 터짐: 흰 물방울이 둥글게 튀고 고리가 퍼진다
+      final t = (age - m.warnMs) / 350;
+      _ring
+        ..strokeWidth = 2
+        ..color = Color.fromRGBO(255, 255, 255, 1 - t);
+      c.drawCircle(at, 6 + 14 * t, _ring);
+      for (var k = 0; k < 10; k++) {
+        final a = k * math.pi / 5 + 0.3;
+        final d = 4 + 16 * t;
+        _paint.color = Color.fromRGBO(220, 240, 255, 1 - t);
+        c.drawRect(Rect.fromLTWH(at.dx + math.cos(a) * d, at.dy + math.sin(a) * d - 6 * t * (1 - t) * 4, 2, 2), _paint);
+      }
+    }
+  }
+
   void clear() {
+    slash.clear();
+    _emerges.clear();
+    upgradeAt = -1000000000;
+    shots.clear();
     _muzzles.clear();
     _lastMuzzle.clear();
     _flashAt = -1000000000;
@@ -166,4 +253,12 @@ class _Muzzle {
   final double ms;
   final double angle;
   final int color;
+}
+
+class _Emerge {
+  _Emerge(this.x, this.y, this.ms, this.warnMs);
+  final double x;
+  final double y;
+  final double ms;
+  final double warnMs;
 }

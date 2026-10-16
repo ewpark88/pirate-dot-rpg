@@ -37,10 +37,11 @@ void main() {
     expect(g.progress, closeTo((27 - 1) / (30 - 1), 1e-9));
   });
 
-  test('부위 도약이 더 가까우면 그것 (대포 Lv24 → 25까지 1)', () {
+  test('부위 도약이 더 가까우면 그것 (대포 milestoneEvery − 1 → 도약까지 1)', () {
+    final m = t.shipParts.byId('cannon').milestoneEvery!;
     final s = owning(1).copyWith(
       progress: const Progress(stage: 2, bestStage: 2),
-      ship: const ShipState(parts: {'cannon': 24, 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}),
+      ship: ShipState(parts: {'cannon': m - 1, 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}),
     );
     final g = nextGoal(s, t)!;
     expect(g.kind, GoalKind.partMilestone);

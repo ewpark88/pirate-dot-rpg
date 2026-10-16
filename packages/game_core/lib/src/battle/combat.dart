@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
@@ -73,13 +74,12 @@ class Round {
       if (invincible) continue;
       // 보스는 정지 지점에서 원거리 공격 (렌더가 발사체를 그린다). 피해·간격은 접촉 공격과 같다.
       if (e.boss) ctx.emit(BossFired(ctx.tick, x: e.x, y: e.y));
-      final hp = field.shipHp - e.attack;
-      field.shipHp = hp.isNegative ? BigNum.zero : hp;
+      final amount = field.hurtShip(e.attack, w.raw.number('shipHitCap'));
       final top = geo.viewShip != null; // 탑다운이면 피격 방향(때린 적 위치)을 싣는다
       ctx.emit(
         ShipDamaged(
           ctx.tick,
-          amount: e.attack,
+          amount: amount,
           hpRatio: (field.shipHp / field.shipHpMax).toDouble(),
           fromX: top ? e.x : null,
           fromY: top ? e.y : null,
@@ -95,21 +95,24 @@ class Round {
       g.cooldown -= dt * attackSpeed;
       if (g.cooldown > 0 && !zeroCooldown) continue;
       final a = g.attack;
-      final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
+      final shots = a.projectiles + extraShots(g, ctx.rng);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
         for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
-          extendVolley(g, v, field.foes, w, geometry: geo),
+          extendVolley(g, v, field.foes, w, geometry: geo, rng: ctx.rng),
       ];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
       }
-      g.cooldown = a.intervalSec;
+      // 남은 몫을 넘긴다 — 간격이 틱 단위로 올림되지 않게(S2 승인). 운영자 쿨다운 0에선 쌓이지 않게 새로.
+      g.cooldown = zeroCooldown ? a.intervalSec : g.cooldown + a.intervalSec;
       final crit = ctx.rng.nextDouble() < stats.critChance;
       if (crit) hitStop('crit');
       final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);
-      for (final v in volleys) {
+      for (final shot in volleys) {
+        final flying = launch(g, a, shot, base, crit: crit); // 탄이 있으면 날려 보내고 도착 때 판정(flight.dart)
+        final v = flying?.volley ?? shot;
         final m = geo.muzzle(v.x, v.y);
         ctx.emit(
           AttackFired(
@@ -122,8 +125,11 @@ class Round {
             fromX: m?.x,
             fromY: m?.y,
             angle: m?.angle,
+            flightTicks: flying?.ticks,
+            kind: a.raw.strOrNull('kind'),
           ),
         );
+        if (flying != null) continue;
         land(g, a, v, base, crit: crit);
         legendAfterHit(this, g, v, base, crit: crit);
       }

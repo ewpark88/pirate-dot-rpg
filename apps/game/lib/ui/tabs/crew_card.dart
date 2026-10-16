@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
+import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -76,6 +77,13 @@ class CrewCard extends ConsumerWidget {
                   child: _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
                 ),
             ],
+          ),
+          // 특색 아이콘 4개 (조준·연사·범위·명중 — 선원 개성 v2).
+          Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: Center(
+              child: FittedBox(child: CrewIdentityIcons(crewId: def.id, size: 13)),
+            ),
           ),
           if (deployed)
             Padding(

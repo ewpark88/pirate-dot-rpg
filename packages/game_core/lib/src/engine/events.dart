@@ -7,6 +7,7 @@ part 'events_fun.dart';
 part 'events_meta.dart';
 part 'events_rebirth.dart';
 part 'events_stage.dart';
+part 'events_threat.dart';
 
 /// 코어가 내보내는 일. 효과음·데미지 숫자·파티클은 렌더가 이벤트를 보고 만든다.
 ///
@@ -30,6 +31,8 @@ sealed class GameEvent {
         fromX: (j['fromX'] as num?)?.toDouble(),
         fromY: (j['fromY'] as num?)?.toDouble(),
         angle: (j['angle'] as num?)?.toDouble(),
+        flightTicks: j['flightTicks'] as int?,
+        kind: j['kind'] as String?,
       ),
       'damage' => Damage(
         t,
@@ -99,6 +102,8 @@ class AttackFired extends GameEvent {
     this.fromX,
     this.fromY,
     this.angle,
+    this.flightTicks,
+    this.kind,
   });
 
   final String crewId;
@@ -114,6 +119,12 @@ class AttackFired extends GameEvent {
   final double? fromY;
   final double? angle;
 
+  /// 선원 개성 v2 선택 필드: 탄이 조준점에 닿기까지 틱(없으면 즉시). 닿을 때 Damage 또는 AttackMissed.
+  final int? flightTicks;
+
+  /// 연출 종류(선택, crews.json aim `kind` — 예 'lightning' 낙뢰). 없으면 계열 기본.
+  final String? kind;
+
   @override
   String get type => 'attackFired';
 
@@ -127,6 +138,8 @@ class AttackFired extends GameEvent {
     if (fromX != null) 'fromX': fromX,
     if (fromY != null) 'fromY': fromY,
     if (angle != null) 'angle': angle,
+    if (flightTicks != null) 'flightTicks': flightTicks,
+    if (kind != null) 'kind': kind,
   };
 }
 
