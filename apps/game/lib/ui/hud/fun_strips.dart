@@ -199,8 +199,8 @@ class _ChallengeStripState extends ConsumerState<ChallengeStrip> {
       return _Strip(
         key: const Key('fun.challenge.done'),
         icon: UiSprites.star,
-        text: l10n.uiChallengeDone,
-        trailing: _success!.isEmpty ? null : _success,
+        // 작은 알약 폭(160) 안에 — 보상이 있으면 보상만(금색 띠 = 성공), 없으면 '도전 성공!'.
+        text: _success!.isEmpty ? l10n.uiChallengeDone : _success!,
         left: null,
         gold: true,
       );

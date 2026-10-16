@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 import 'ui_harness.dart';
 
@@ -25,8 +27,13 @@ void main() {
     expect(find.text('Lv 52'), findsOneWidget);
     expect(find.text('Lv 18/30'), findsOneWidget); // 돛은 최대 레벨이 있다
     expect(find.text(partEffect(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
-    expect(find.text('17%'), findsOneWidget); // 망루 Lv12: 5% + 1% × 12
-    expect(find.text('×1.9'), findsNWidgets(2)); // 돛 Lv18, 화물칸 Lv9
+    // 효과 글은 표(ship_parts)에서 계산 — 경제가 숫자를 다시 맞춰도 깨지지 않게.
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final st = loadFixture('stage37_midgame');
+    for (final id in ['crowsnest', 'sail', 'cargo']) {
+      final def = tables.shipParts.byId(id);
+      expect(find.text(partEffectText(l10n, def, partEffect(def, st.ship.level(id)))), findsWidgets, reason: id);
+    }
     expect(find.text(partCost(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('ship.upgrade.cannon')));

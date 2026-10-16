@@ -233,7 +233,8 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
       double widthFor(int cols) {
         final rows = (_n / cols).ceil();
         final maxW = (box.maxWidth - 32 - gap * (cols - 1)) / cols;
-        final maxH = (box.maxHeight - 24 - gap * (rows - 1)) / rows;
+        // 카드 아래 특색 줄 높이를 뺀다.
+        final maxH = (box.maxHeight - 24 - gap * (rows - 1)) / rows - summonCaptionHeight;
         return math.min(maxW, maxH * pbCardAspect);
       }
 

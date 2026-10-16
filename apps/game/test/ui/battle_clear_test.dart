@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
-import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -74,7 +73,14 @@ void main() {
       expect(find.byKey(const Key('chest.adBubble')), findsOneWidget);
       // 현상금 전투 중 (현상금 알약만).
       final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
-      c.read(bountyProvider.notifier).load(const BountyVm(active: (bossId: 'kraken', tier: 2, ticksLeft: 300)));
+      final busy = _busy();
+      c
+          .read(gameStateProvider.notifier)
+          .replace(
+            busy.copyWith(
+              battle: busy.battle!.copyWith(bounty: const BountyView(bossId: 'kraken', tier: 2, ticksLeft: 300)),
+            ),
+          );
       await tester.pump();
       final strip = tester.getRect(find.byKey(const Key('bounty.strip')));
       expect(strip.overlaps(center), isFalse, reason: 'bounty.strip $strip / $center');
