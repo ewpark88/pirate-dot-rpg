@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/gold_cap.dart' show addGold;
 import 'package:game_core/src/economy/rebirth_shop.dart' show fastSailFraction;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -25,6 +26,9 @@ class FastSailRun {
 
   /// 이번 구간 연속 격파 수.
   int combo = 0;
+
+  /// 구간 동안 번 골드(화물칸에 싣기 전) — 끝에 실은 양과 넘친 양으로 나눈다(S2).
+  BigNum gross = BigNum.zero;
 
   /// 지금 보스가 나온 뒤 지난 틱(돌파 사격 시각).
   int bossTicks = 0;
@@ -74,7 +78,7 @@ extension FastSailRound on Round {
     if (field.travelLeft > travel) field.travelLeft = travel;
     if (finale) sec = rs.finaleSec;
     final boss = field.foes.where((e) => e.boss).firstOrNull;
-    if (boss == null || !field.bossActive) return;
+    if (boss == null || !field.bossActive) return _countGold();
     final g = geo;
     if (!identical(boss, run.boss)) {
       run
@@ -112,7 +116,21 @@ extension FastSailRound on Round {
         ),
       );
     }
+    _countGold();
   }
+
+  /// 이번 틱 처치 골드(화물칸 전)를 구간 합에 — breakthrough 맨 끝에서 부른다.
+  void _countGold() {
+    final run = field.fastSail;
+    if (run != null) run.gross = run.gross + gold;
+  }
+}
+
+/// 건너뛰기 한 스테이지: 그 보스 처치 골드를 구간 합에 더하고 화물칸에 싣는다(넘치면 버림 — 끝 요약의 lost).
+GameState skipFastSailGold(GameState s, FastSailRun run, GameTables t) {
+  final g = fastSailBossGold(s, t, s.progress.stage);
+  run.gross = run.gross + g;
+  return addGold(s, t, g).state;
 }
 
 /// 건너뛸 때 [stage] 보스 한 마리 처치 골드(보스 골드 곡선 × 선박 골드 배율 — 보통 처치와 같은 식).
@@ -125,14 +143,17 @@ BigNum fastSailBossGold(GameState s, GameTables t, int stage) {
 void closeFastSail(GameState after, Field f, SystemContext ctx, {bool skipped = false}) {
   final run = f.fastSail;
   if (run == null || (after.progress.stage <= run.to && !skipped)) return;
-  final gold = after.wallet.gold - run.startGold;
+  final kept = after.wallet.gold - run.startGold;
+  final gold = kept.isNegative ? BigNum.zero : kept;
+  final lost = run.gross - gold;
   ctx.emit(
     FastSailEnded(
       ctx.tick,
       from: run.from,
       to: run.to,
       stages: after.progress.stage - run.from,
-      gold: gold.isNegative ? BigNum.zero : gold,
+      gold: gold,
+      lost: lost.isNegative ? BigNum.zero : lost,
       gems: after.wallet.gems - run.startGems,
       skipped: skipped,
     ),

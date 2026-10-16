@@ -72,6 +72,8 @@ void main() {
     final r = run(withBreak(), 60);
     final ended = r.events.whereType<FastSailEnded>().single;
     expect(ended.gold.toDouble(), greaterThan(0));
+    // 환생 직후 화물칸이 작아 대부분 넘친다(S2) — 실은 양 + 넘친 양 = 번 골드, 넘친 양을 따로 싣는다.
+    expect(ended.lost.toDouble(), greaterThan(0), reason: '화물칸 Lv0이면 넘친다');
     expect(ended.gems, r.events.whereType<BossCleared>().fold<int>(0, (a, e) => a + e.gems));
     expect(r.events.whereType<FeverStarted>(), isEmpty);
     expect(r.state.progress.fever, 0, reason: '돌파 동안 게이지가 오르지 않는다');
@@ -112,6 +114,12 @@ void main() {
     final skipGold = e.state.wallet.gold.toDouble();
     expect(skipGold, closeTo(full.state.wallet.gold.toDouble(), full.state.wallet.gold.toDouble() * 0.01));
     expect(e.state.battle!.fastSail, isNull);
+    final total = full.events.whereType<FastSailEnded>().single;
+    expect(
+      ended.gold.toDouble() + ended.lost.toDouble(),
+      closeTo(total.gold.toDouble() + total.lost.toDouble(), (total.gold.toDouble() + total.lost.toDouble()) * 0.01),
+      reason: '번 골드(실은 + 넘친)도 같다',
+    );
     expect(before.gold.toDouble(), lessThan(skipGold));
   });
 
