@@ -1,9 +1,12 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_frame.dart';
 
 /// 전투 M3 연출: 스킬·화면 스킬·계열별 궁극기·분열·부활·수중 장판 (docs/specs/render-m3-fx.md).
 ///
@@ -36,7 +39,7 @@ class M3Director {
     final skill = _skills[e.skillId];
     if (skill?.shape == 'ship') {
       scene
-        ..spawnEffect(skill!.fx, kShipCenterX, kShipTop + kShipHeight)
+        ..spawnEffect(skill!.fx, _shipFx.dx, _shipFx.dy)
         ..shipHealMs = _fx.shipSkill.number('healFlashMs')
         ..shipBuffMs = skill.raw.numberOr('buffSec', 0) * Duration.millisecondsPerSecond;
       return;
@@ -57,11 +60,24 @@ class M3Director {
     var n = 0;
     for (var k = 0; k < scene.poseCount && n < scene.juice.maxEffects; k++) {
       final p = scene.poses[k];
-      if (p.x > kLogicalWidth) continue;
+      if (!_onScreen(p.x)) continue;
       scene.spawnEffect(sheet, p.x, p.y);
       n++;
     }
   }
+
+  /// 탑다운 보이는 폭의 반(전장 단위)과 휩쓸기 바깥 여유.
+  static const double _halfView = TopFrame.kTopViewUnits / 2;
+  static const _sweepPad = 60.0;
+
+  /// 배 스킬 연출 자리: 탑다운은 배 중심, 옆모습은 배 밑.
+  Offset get _shipFx => scene.isTop ? scene.topShip : const Offset(kShipCenterX, kShipTop + kShipHeight);
+
+  /// 궁극기 기본 연출 자리: 탑다운은 배 앞.
+  Offset get _ultimateAt => scene.isTop ? scene.topShip - const Offset(0, 60) : const Offset(kUltimateX, kUltimateY);
+
+  /// 화면 안 적인가(가로만): 탑다운은 배 중심 ± 보이는 폭 반, 옆모습은 보이는 오른쪽 끝까지.
+  bool _onScreen(double x) => scene.isTop ? (x - scene.topShip.dx).abs() <= _halfView : x <= kLogicalWidth;
 
   /// 궁극기 순간 화면 흰 번쩍임 (기준 장면 15fps 3프레임).
   static const _ultimateFlashMs = 200.0;
@@ -71,42 +87,57 @@ class M3Director {
     final pattern = _fx.ultimates[e.ultimateId];
     if (pattern == null) {
       final id = _fx.fxFor('ultimateCast');
-      if (id != null) scene.spawnEffect(id, kUltimateX, kUltimateY);
+      if (id != null) scene.spawnEffect(id, _ultimateAt.dx, _ultimateAt.dy);
       return;
     }
     final d = pattern.durationMs;
     final gap = d / pattern.count;
     switch (pattern.kind) {
       case UltimatePatternKind.sweep:
-        final from = pattern.raw.numberOr('fromX', 0);
-        final to = pattern.raw.numberOr('toX', kLogicalWidth);
+        // 탑다운: 보이는 폭 밖에서 밖으로(그림 테두리가 화면 안에서 잘려 보이지 않게), 배 앞 60단위.
+        final top = scene.isTop;
+        final ship = scene.topShip;
+        final from = top ? ship.dx - _halfView - _sweepPad : pattern.raw.numberOr('fromX', 0);
+        final to = top ? ship.dx + _halfView + _sweepPad : pattern.raw.numberOr('toX', kLogicalWidth);
         scene.spawnEffect(
           pattern.fx,
           from,
-          pattern.raw.numberOr('y', kUltimateY),
+          top ? ship.dy - 60 : pattern.raw.numberOr('y', kUltimateY),
           durationMs: d,
           vx: (to - from) / d,
           scale: pattern.raw.numberOr('scale', 1),
         );
       case UltimatePatternKind.rain:
         for (var i = 0; i < pattern.count; i++) {
-          final span = math.min(_rainSpanX, (scene.layout.visibleRight - _rainLeft - 24).floor());
-          final x = _rainLeft + (i * _rainPrimeX + index * _rainTickX) % span;
-          final y = _rainTop + (i * _rainPrimeY + index * _rainTickY) % _rainSpanY;
+          final top = scene.isTop;
+          final ship = scene.topShip;
+          // 탑다운: 배 둘레·앞쪽(가로 ±110, 세로 앞 200~뒤 40)에 흩뿌림.
+          final span = top ? 220 : math.min(_rainSpanX, (scene.layout.visibleRight - _rainLeft - 24).floor());
+          final x = (top ? ship.dx - 110 : _rainLeft) + (i * _rainPrimeX + index * _rainTickX) % span;
+          final y =
+              (top ? ship.dy - 200 : _rainTop) + (i * _rainPrimeY + index * _rainTickY) % (top ? 240 : _rainSpanY);
           scene.spawnEffect(pattern.fx, x, y, delayMs: i * gap);
         }
       case UltimatePatternKind.strikes:
         var n = 0;
         for (var k = 0; k < scene.poseCount && n < pattern.count; k++) {
           final p = scene.poses[k];
-          if (p.x > scene.layout.visibleRight) continue;
+          if (!_onScreen(p.x)) continue;
           scene.spawnEffect(pattern.fx, p.x, p.y, delayMs: n * gap);
           n++;
         }
       case UltimatePatternKind.volley:
-        final step = (kLogicalWidth - kShipNoseX) / (pattern.count + 1);
-        for (var i = 0; i < pattern.count; i++) {
-          scene.spawnEffect(pattern.fx, kShipNoseX + step * (i + 1), kShipNoseY, delayMs: i * gap);
+        if (scene.isTop) {
+          // 탑다운: 뱃머리 앞으로 일렬(배 위쪽).
+          final ship = scene.topShip;
+          for (var i = 0; i < pattern.count; i++) {
+            scene.spawnEffect(pattern.fx, ship.dx, ship.dy - 30 - 34.0 * (i + 1), delayMs: i * gap);
+          }
+        } else {
+          final step = (kLogicalWidth - kShipNoseX) / (pattern.count + 1);
+          for (var i = 0; i < pattern.count; i++) {
+            scene.spawnEffect(pattern.fx, kShipNoseX + step * (i + 1), kShipNoseY, delayMs: i * gap);
+          }
         }
     }
   }

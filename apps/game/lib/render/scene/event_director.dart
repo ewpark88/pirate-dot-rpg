@@ -43,6 +43,7 @@ class EventDirector implements ReplayListener {
   void onAhead(RecordedTick tick, int index) {
     for (final e in tick.events) {
       if (e is AttackFired) _launch(e, index, tick.frame);
+      if (e is BossFired && scene.isTop) _bossShot(e, index, tick.frame);
     }
   }
 
@@ -149,6 +150,8 @@ class EventDirector implements ReplayListener {
         case ShipLookChanged():
           scene.moments.onPartUp(e.part);
           funEvent(scene, e);
+        case PartUpgraded(:final part) when scene.isTop:
+          _partUp(part);
         case BossFailed():
           scene.bossFailMs = scene.fx.bossFailed.number('ms');
         default:

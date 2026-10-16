@@ -59,16 +59,17 @@ void main() {
 
   group('명예 외형 (기준 8)', () {
     test('환생해도 외형 단계는 명예로 남는다, 다시 오를 때는 명예를 넘을 때만 ShipLookChanged', () {
-      final s0 = at(85, ship: const ShipState(parts: {'cannon': 60, 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}));
+      final vs = t.shipParts.byId('cannon').visualStages; // 외형 단계 문턱(레벨)
+      final s0 = at(85, ship: ShipState(parts: {'cannon': vs[3], 'hull': 0, 'sail': 0, 'crowsnest': 0, 'cargo': 0}));
       final s1 = sys.handle(s0, const Rebirth(), h.ctx)!;
       expect(s1.ship.level('cannon'), 0);
       expect(partLook(s1, t)['cannon'], 4);
       expect(s1.ship.honorTier, t.shipTiers.tiers.indexOf(t.shipTiers.tierAt(85)));
       h.events.clear();
-      final rich = s1.copyWith(wallet: Wallet(gold: BigNum.parse('1e40')));
-      final s2 = sys.handle(rich, const UpgradePart('cannon', times: 35), h.ctx)!;
+      final rich = s1.copyWith(wallet: Wallet(gold: BigNum.parse('1e300')));
+      final s2 = sys.handle(rich, UpgradePart('cannon', times: vs[3] - 1), h.ctx)!;
       expect(h.of<ShipLookChanged>(), isEmpty);
-      sys.handle(s2, const UpgradePart('cannon', times: 55), h.ctx);
+      sys.handle(s2, UpgradePart('cannon', times: vs[4] - (vs[3] - 1)), h.ctx);
       expect(h.of<ShipLookChanged>().single.stage, 5);
     });
   });

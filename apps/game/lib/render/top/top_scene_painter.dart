@@ -61,7 +61,9 @@ class TopScenePainter {
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로 — 앞이 더 보이게).
-    final sy = ((_shipY! + 6 * fever.level) * dpr).roundToDouble() / dpr;
+    // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 12dp 위로 '쑥').
+    final sy = ((_shipY! + 6 * fever.level - 12 * fever.lunge()) * dpr).roundToDouble() / dpr;
+    final vib = fever.vibration();
     final dot = frame.dot;
     final view = scene.frame;
     final ship = scene.topShip;
@@ -72,7 +74,7 @@ class TopScenePainter {
     c
       ..save()
       ..clipRect(Offset.zero & frame.box)
-      ..translate(sx + scene.shake.offsetX * dot, sy + scene.shake.offsetY * dot)
+      ..translate(sx + scene.shake.offsetX * dot + vib.dx, sy + scene.shake.offsetY * dot + vib.dy)
       ..scale(dot);
     final viewRect = Rect.fromLTWH(-sx / dot, -sy / dot, frame.box.width / dot, frame.box.height / dot);
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
@@ -99,7 +101,9 @@ class TopScenePainter {
     final size = _ship.sizeOf(tier);
     if (size != null) {
       final m = scene.moments;
-      fever.aura(c, size.width * _shipScale / 2);
+      fever
+        ..aura(c, size.width * _shipScale / 2)
+        ..wind(c, size.width * _shipScale / 2);
       c
         ..save()
         ..translate(_shipShake(clockMs), _surge(clockMs))
@@ -120,6 +124,7 @@ class TopScenePainter {
         glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
         skin: skinId != null && skins.ready(skinId) ? skinId : null,
+        billow: fever.level * (0.7 + 0.3 * math.sin(clockMs / 90)),
       );
       if (sinking) c.restore();
       c.restore();
@@ -137,11 +142,18 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
-    scene.topHits.paint(c, clockMs, flash: scene.settings.flash, powerSave: scene.settings.powerSave);
+    scene.topHits.paint(
+      c,
+      clockMs,
+      flash: scene.settings.flash,
+      powerSave: scene.settings.powerSave,
+      ship: scene.topShip,
+    );
     _foes
       ..hotAt = fever.level > 0 ? _hot : null
       ..paint(c, under: false, cull: visibleWorld);
     fever.embers(c, scene.topShip);
+    scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
       ..bosses(c, _foes.radiusOf);
@@ -161,7 +173,9 @@ class TopScenePainter {
     if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
     c.restore();
     _overlays.paint(c, frame.box, clockMs);
-    fever.speedLines(c, frame.box);
+    fever
+      ..rushers(c, frame.box)
+      ..speedLines(c, frame.box);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
 
