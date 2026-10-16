@@ -32,10 +32,22 @@ Future<void> deployCrew(BuildContext context, WidgetRef ref, String crewId) asyn
   await showPixelSheet<void>(context, builder: (_) => _SwapPicker(crewId: crewId));
 }
 
-/// 선원 상세의 ‘내리기’.
-void undeployCrew(WidgetRef ref, String crewId) {
+/// 지금 출전 중인 선원 수.
+int deployedCount(WidgetRef ref) => ref.read(fleetSlotsProvider).whereType<String>().length;
+
+/// 선원 상세의 ‘내리기’ (사용자 버그 2026-10-16 '출전 선원이 3 → 1 → 0'): 마지막 한 명은 못 빼고,
+/// 내리면 4초 동안 '되돌리기'가 붙은 안내를 띄운다(바꾸기·닫기 옆이라 잘못 누르기 쉽다).
+void undeployCrew(BuildContext context, WidgetRef ref, String crewId) {
+  final l10n = AppLocalizations.of(context);
   final slot = ref.read(fleetSlotsProvider).indexOf(crewId);
-  if (slot >= 0) ref.read(fleetCommandsProvider).setSlot(slot, null);
+  if (slot < 0) return;
+  if (deployedCount(ref) <= 1) {
+    showSkinToast(context, l10n.uiFleetKeepOne);
+    return;
+  }
+  final fleet = ref.read(fleetCommandsProvider)..setSlot(slot, null);
+  final name = shortCrewName(l10n, ref.read(tablesProvider).crews.byId(crewId));
+  showSkinToast(context, l10n.uiFleetRemoved(name), action: l10n.uiUndo, onAction: () => fleet.setSlot(slot, crewId));
 }
 
 class _FleetPicker extends ConsumerWidget {
@@ -74,7 +86,8 @@ class _FleetPicker extends ConsumerWidget {
         Row(
           children: [
             Expanded(child: Text(l10n.uiFleetSlotTitle(slot + 1), style: Theme.of(context).textTheme.titleMedium)),
-            if (slot < slots.length && slots[slot] != null)
+            // 마지막 출전 선원은 비울 수 없다.
+            if (slot < slots.length && slots[slot] != null && slots.whereType<String>().length > 1)
               PixelButton(key: const Key('fleet.clear'), onPressed: () => pick(null), child: Text(l10n.uiFleetClear)),
           ],
         ),

@@ -155,4 +155,53 @@ void main() {
       expect(_attackers(ticks), isNot(contains(first)));
     });
   }
+
+  testWidgets('사용자 버그 2026-10-16: 합치기·승급·강화·자동 강화 몇 분 — 출전 선원이 빠지지 않는다 (실제 엔진)', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final (host, _) = await _pumpReal(tester, base);
+    await _run(tester, host, 3);
+    final before = [...host.state.fleet];
+    expect(before.whereType<String>(), isNotEmpty);
+    host
+      ..send(const MergeAllCards())
+      ..send(PromoteCrew(before.whereType<String>().first))
+      ..send(const UpgradePart('cannon', times: 5))
+      ..send(const Summon(count: 10));
+    await _run(tester, host, 20);
+    await _run(tester, host, 2400); // 약 2분 (자동 강화·보스·카드 드롭 포함)
+    expect(host.state.fleet.whereType<String>().toList(), before.whereType<String>().toList());
+  });
+
+  testWidgets('내리면 4초 동안 되돌리기', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final ids = base.battle!.fleet.map((f) => f.crewId).toList();
+    final (host, _) = await _pumpReal(tester, base.copyWith(fleet: [ids.first, ids[1], null, null], fleetInit: true));
+    await _run(tester, host, 2);
+    await tester.tap(find.byKey(const Key('fleet.crew.1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(Key('crew.detail.undeploy.${ids[1]}')));
+    await tester.pump();
+    await _run(tester, host, 2);
+    expect(host.state.fleet.whereType<String>().toList(), [ids.first]);
+    await tester.tap(find.byKey(const Key('skin.toast.action')));
+    await tester.pump();
+    await _run(tester, host, 2);
+    expect(host.state.fleet.whereType<String>().toList(), [ids.first, ids[1]]);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  testWidgets('마지막 출전 선원은 내릴 수 없다', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final id = base.battle!.fleet.first.crewId;
+    final (host, _) = await _pumpReal(tester, base.copyWith(fleet: [id, null, null, null], fleetInit: true));
+    await _run(tester, host, 2);
+    await tester.tap(find.byKey(const Key('fleet.crew.0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(Key('crew.detail.undeploy.$id')));
+    await tester.pump();
+    await _run(tester, host, 2);
+    expect(host.state.fleet.whereType<String>().toList(), [id]);
+    expect(find.text('Keep at least one crew deployed'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+  });
 }

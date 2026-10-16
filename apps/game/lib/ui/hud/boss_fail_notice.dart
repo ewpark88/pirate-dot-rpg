@@ -102,62 +102,80 @@ class _Card extends ConsumerWidget {
     );
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 0),
-      child: Container(
-        key: Key(detailed ? 'bossFail.detailed' : 'bossFail.short'),
-        padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
-        decoration: BoxDecoration(
-          color: Skin.card,
-          borderRadius: BorderRadius.circular(Skin.radiusCard),
-          border: Border.all(color: Skin.danger, width: 2),
-          boxShadow: Skin.shadow,
-        ),
-        child: detailed
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
+      child: Align(
+        alignment: Alignment.centerLeft,
+        // 전폭으로 펴지 않는다(전장 가리기 금지, 사용자 지시 2026-10-16) — 왼쪽 위 작은 판.
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: Container(
+            key: Key(detailed ? 'bossFail.detailed' : 'bossFail.short'),
+            padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+            decoration: BoxDecoration(
+              color: Skin.card,
+              borderRadius: BorderRadius.circular(Skin.radiusCard),
+              border: Border.all(color: Skin.danger, width: 2),
+              boxShadow: Skin.shadow,
+            ),
+            child: detailed
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SkinIcon(UiSprites.flag, size: 22),
-                      const SizedBox(width: 6),
-                      Expanded(child: Text(l10n.uiBossFailTitle, style: Skin.text(18))),
-                      _CloseX(onTap: onClose),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(l10n.uiBossFailRule, style: Skin.text(14, color: Skin.sub)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      if (part != null) ...[
-                        Expanded(
-                          child: SkinButton(
-                            key: const Key('bossFail.upgrade'),
-                            tone: SkinTone.gold,
-                            height: 44,
-                            onPressed: () => ref.read(commandSinkProvider).send(UpgradePart(part)),
-                            child: Text(
-                              l10n.uiBossFailUpgrade(tableText(l10n, tables.shipParts.byId(part).nameKey)),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          const SkinIcon(UiSprites.flag, size: 22),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(l10n.uiBossFailTitle, style: Skin.text(18))),
+                          _CloseX(onTap: onClose),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(l10n.uiBossFailRule, style: Skin.text(14, color: Skin.sub)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          if (part != null) ...[
+                            Expanded(
+                              child: SkinButton(
+                                key: const Key('bossFail.upgrade'),
+                                tone: SkinTone.gold,
+                                height: 44,
+                                onPressed: () => ref.read(commandSinkProvider).send(UpgradePart(part)),
+                                child: Text(
+                                  l10n.uiBossFailUpgrade(tableText(l10n, tables.shipParts.byId(part).nameKey)),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ),
+                            const SizedBox(width: 8),
+                          ],
+                          Expanded(child: challenge),
+                        ],
+                      ),
+                    ],
+                  )
+                : Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SkinIcon(UiSprites.flag, size: 20),
+                          const SizedBox(width: 6),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 160),
+                            child: Text(l10n.uiBossFailShort, style: Skin.text(14)),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                      Expanded(child: challenge),
+                        ],
+                      ),
+                      challenge,
                     ],
                   ),
-                ],
-              )
-            : Row(
-                children: [
-                  const SkinIcon(UiSprites.flag, size: 20),
-                  const SizedBox(width: 6),
-                  Expanded(child: Text(l10n.uiBossFailShort, style: Skin.text(15))),
-                  challenge,
-                ],
-              ),
+          ),
+        ),
       ),
     );
   }
@@ -183,44 +201,4 @@ class _CloseX extends StatelessWidget {
       ),
     ),
   );
-}
-
-/// 파밍 중 표시 (전장 위쪽 작은 띠): '파밍 중 · 보스 재도전 가능'. 보스가 나와 있으면 숨긴다.
-// TODO(ui): 진행 게이지(웨이브·보스 해골)가 생기면 그 안으로 옮긴다.
-class FarmingPill extends ConsumerWidget {
-  const FarmingPill({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final show = ref.watch(gameStateProvider.select((s) => s.progress.farming && !(s.battle?.bossActive ?? false)));
-    if (!show) return const SizedBox.shrink();
-    return IgnorePointer(
-      child: Padding(
-        padding: EdgeInsets.zero,
-        child: Container(
-          key: const Key('hud.farming'),
-          padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
-          decoration: BoxDecoration(
-            color: Skin.ink.withValues(alpha: 0.78),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SkinIcon(UiSprites.farm),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  AppLocalizations.of(context).uiFarmingRetry,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: Skin.text(13, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

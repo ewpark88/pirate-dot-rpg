@@ -70,11 +70,12 @@ void main() {
     expect(find.byKey(const Key('fun.challenge.done')), findsNothing);
   });
 
-  testWidgets('피버: 평소엔 작은 막대, 발동 중엔 "Fever! n초"', (tester) async {
+  testWidgets('피버: 평소엔 작은 막대, 발동 중엔 큰 원형 게이지(남은 초)', (tester) async {
     await pumpGame(tester, _with(fever: 0.5), openTab: false);
     expect(find.byKey(const Key('fun.fever')), findsOneWidget);
     await pumpGame(tester, _with(feverLeft: 140), openTab: false);
-    expect(find.text('Fever! 7s'), findsOneWidget);
+    expect(find.byKey(const Key('fun.fever.on')), findsOneWidget); // 큰 원형 게이지
+    expect(find.descendant(of: find.byKey(const Key('fun.fever.on')), matching: find.text('7')), findsOneWidget);
   });
 
   test('보상 요약 → 글', () async {

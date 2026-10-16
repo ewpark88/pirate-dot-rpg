@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/dock/dock_panels.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
@@ -13,6 +14,7 @@ import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
 import 'package:pirate_dot/ui/hud/bottle_choices.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
+import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
@@ -122,32 +124,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     return OfflineRewardGate(
       child: SummonResultGate(
         child: RebirthDoneGate(
-          child: ShipLookCelebrationGate(
-            child: FleetRejectedToast(
-              child: PopScope(
-                // 뒤로 가기 = 시트 닫기 (열려 있을 때).
-                canPop: false,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (!didPop && _open) _close();
-                },
-                child: Scaffold(
-                  body: SafeArea(
-                    child: Column(
-                      children: [
-                        const SaveFailureBanner(),
-                        const TopBar(),
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, body) {
-                              _bodyHeight = body.maxHeight;
-                              return AnimatedBuilder(
-                                animation: _sheet,
-                                builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                              );
-                            },
+          child: BountyResultGate(
+            child: ShipLookCelebrationGate(
+              child: FleetRejectedToast(
+                child: PopScope(
+                  // 뒤로 가기 = 시트 닫기 (열려 있을 때).
+                  canPop: false,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (!didPop && _open) _close();
+                  },
+                  child: Scaffold(
+                    body: SafeArea(
+                      child: Column(
+                        children: [
+                          const SaveFailureBanner(),
+                          const TopBar(),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, body) {
+                                _bodyHeight = body.maxHeight;
+                                return AnimatedBuilder(
+                                  animation: _sheet,
+                                  builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -183,6 +187,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                 ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: ref.watch(battleGameProvider)),
                 const ChestLayer(),
                 const BattleButtons(),
+                // 피버 연출 (큰 글자·가장자리 빛·큰 원형 게이지 — 누름 통과).
+                const FeverDrama(),
                 // 유리병 쪽지 3장 (전장 안 말풍선).
                 const BottleChoices(),
                 // 코인 도착: 골드 아이콘 자리를 렌더에 알린다(그림·누름 없음).

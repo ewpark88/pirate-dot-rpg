@@ -1,0 +1,138 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
+
+import 'ui_harness.dart';
+
+// 사용자 지시 2026-10-16 (실기기): 전장 한가운데를 덮는 전폭 흰 띠(상자 광고 줄) 금지, 피버는 극적으로.
+
+const List<(String, Size, double)> _devices = [
+  ('360', Size(360, 640), 3.0),
+  ('S24', s24Size, s24Dpr),
+  ('411', Size(411, 891), 2.625),
+  ('tablet', Size(800, 1280), 2.0),
+];
+
+/// 늘 떠 있을 수 있는 전장 위 UI (띠·알약·말풍선). 처음 한 번 뜨는 안내 카드·튜토리얼은 뺀다.
+const _overlays = [
+  'chest.adBubble',
+  'hud.farming',
+  'fun.sea.goldfish',
+  'fun.challenge.kills',
+  'bounty.strip',
+  'bossFail.short',
+];
+
+GameState _busy() {
+  final s = loadFixture('stage37_midgame');
+  return s.copyWith(
+    progress: s.progress.copyWith(farming: true),
+    battle: s.battle!.copyWith(
+      chest: const ChestView(x: 150, y: 200, ticksLeft: 400),
+      shipX: 135,
+      shipY: 240,
+      seaEvent: const SeaEventView(id: 'goldfish', ticksLeft: 100),
+      challenge: const ChallengeView(id: 'kills', target: 50, value: 10, ticksLeft: 300),
+    ),
+  );
+}
+
+void main() {
+  for (final (name, size, dpr) in _devices) {
+    testWidgets('$name: 전장 가운데 60%를 덮는 띠·알약이 없고, 전폭 불투명 띠가 없다', (tester) async {
+      await pumpGame(
+        tester,
+        _busy(),
+        size: size,
+        dpr: dpr,
+        openTab: false,
+        overrides: [adOfferProvider.overrideWith((ref, _) => true)],
+      );
+      final area = tester.getRect(find.byKey(const Key('battle.area')));
+      final center = Rect.fromLTRB(
+        area.left + area.width * 0.2,
+        area.top + area.height * 0.2,
+        area.right - area.width * 0.2,
+        area.bottom - area.height * 0.2,
+      );
+      for (final key in _overlays) {
+        final f = find.byKey(Key(key));
+        if (f.evaluate().isEmpty) continue;
+        final r = tester.getRect(f);
+        expect(r.width, lessThan(area.width * 0.9), reason: '$key 전폭');
+        if (key == 'chest.adBubble') continue; // 상자를 따라다니는 작은 말풍선(반투명)
+        expect(r.overlaps(center), isFalse, reason: '$key가 전장 가운데를 덮는다 $r / $center');
+      }
+      expect(find.byKey(const Key('chest.adBubble')), findsOneWidget);
+      // 현상금 전투 중 (현상금 알약만).
+      final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+      c.read(bountyProvider.notifier).load(const BountyVm(active: (bossId: 'kraken', tier: 2, ticksLeft: 300)));
+      await tester.pump();
+      final strip = tester.getRect(find.byKey(const Key('bounty.strip')));
+      expect(strip.overlaps(center), isFalse, reason: 'bounty.strip $strip / $center');
+      expect(find.byKey(const Key('fun.sea.goldfish')), findsNothing);
+    });
+  }
+
+  testWidgets('피버: 시작 때 큰 FEVER! → 0.8초 뒤 빠짐, 동안 가장자리 빛·큰 원형 게이지, 끝나면 +골드', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = loadFixture('stage37_midgame');
+    await pumpGame(tester, s, openTab: false, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    final on = s.copyWith(battle: s.battle!.copyWith(fever: 0, feverTicksLeft: 200));
+    c.read(gameStateProvider.notifier).replace(on);
+    feed.add(RecordedTick(on.battle!, const [FeverStarted(1, untilTick: 201)]));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(find.byKey(const Key('fun.fever.big')), findsOneWidget);
+    expect(find.byKey(const Key('fun.fever.glow')), findsOneWidget);
+    expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 1300));
+    expect(find.byKey(const Key('fun.fever.big')), findsNothing);
+
+    final off = s.copyWith(
+      wallet: s.wallet.copyWith(gold: s.wallet.gold + BigNum.from(5000)),
+      battle: s.battle!.copyWith(feverTicksLeft: 0),
+    );
+    c.read(gameStateProvider.notifier).replace(off);
+    feed.add(RecordedTick(off.battle!, const [FeverEnded(300)]));
+    await tester.pump();
+    expect(find.byKey(const Key('fun.fever.end')), findsOneWidget);
+    expect(find.textContaining('+${BigNum.from(5000).format()}'), findsOneWidget);
+    expect(find.byKey(const Key('fun.fever.glow')), findsNothing);
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byKey(const Key('fun.fever.end')), findsNothing);
+  });
+
+  testWidgets('골든: 피버 시작 순간 ko', (tester) async {
+    await loadGoldenFonts();
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = loadFixture('stage37_midgame');
+    await pumpGame(
+      tester,
+      s,
+      locale: const Locale('ko'),
+      openTab: false,
+      overrides: [battleFeedProvider.overrideWithValue(feed.stream)],
+    );
+    await precacheImages(tester);
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    final on = s.copyWith(battle: s.battle!.copyWith(feverTicksLeft: 200));
+    c.read(gameStateProvider.notifier).replace(on);
+    feed.add(RecordedTick(on.battle!, const [FeverStarted(1, untilTick: 201)]));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 450));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_fever_start.png'));
+    await tester.pump(const Duration(seconds: 2));
+  });
+}
