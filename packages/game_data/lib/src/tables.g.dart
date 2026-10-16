@@ -1284,13 +1284,15 @@ const Map<String, String> rawTables = {
   },
   "shipHp": {
     "w": 44,
-    "h": 3,
-    "lift": 6,
+    "h": 6,
+    "lift": 4,
+    "midBelow": 0.4,
+    "lowBelow": 0.15,
     "full": "#5BD75B",
     "mid": "#FFD84A",
     "low": "#FF4A4A",
-    "back": "#3A0D0D",
-    "edge": "#1B1726",
+    "back": "#3A2238",
+    "edge": "#1B2A4A",
     "lag": "#FFFFFF",
     "lagMs": 450,
     "healMs": 600,
@@ -1497,7 +1499,8 @@ const Map<String, String> rawTables = {
       "goldfish",
       "sea_serpent",
       "merchant_ship",
-      "bottle"
+      "bottle",
+      "chest"
     ],
     "fever": {
       "border": "#FFD84A",

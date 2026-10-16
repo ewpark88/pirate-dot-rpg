@@ -260,5 +260,8 @@
   "uiRewardFever": "피버 +{percent}%",
   "uiRewardTailwind": "순풍 {min}분",
   "uiFever": "피버",
-  "uiFeverOn": "피버! {sec}초"
+  "uiFeverOn": "피버! {sec}초",
+  "uiSettingsSound": "소리",
+  "uiSettingsDisplay": "화면",
+  "uiSettingsPlay": "플레이"
 }
