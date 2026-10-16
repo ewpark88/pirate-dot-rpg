@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
@@ -19,6 +20,8 @@ class BattleTopStrip extends StatelessWidget {
       // 진행 게이지 + 다음 목표 한 줄 (전투력은 상단 바 골드 옆).
       const StageGauge(),
       const BossWeakness(),
+      // 현상금 전투 띠.
+      const Padding(padding: EdgeInsets.only(top: 4), child: BountyStrip()),
       const Padding(padding: EdgeInsets.only(top: 4), child: FarmingPill()),
       // 돌발 이벤트·즉석 도전 띠 (왼쪽 위, 누름 통과).
       const Padding(

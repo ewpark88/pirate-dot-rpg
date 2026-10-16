@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/dock/dock_panels.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart';
 import 'package:pirate_dot/ui/hud/battle_overlay.dart';
@@ -122,32 +123,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     return OfflineRewardGate(
       child: SummonResultGate(
         child: RebirthDoneGate(
-          child: ShipLookCelebrationGate(
-            child: FleetRejectedToast(
-              child: PopScope(
-                // 뒤로 가기 = 시트 닫기 (열려 있을 때).
-                canPop: false,
-                onPopInvokedWithResult: (didPop, _) {
-                  if (!didPop && _open) _close();
-                },
-                child: Scaffold(
-                  body: SafeArea(
-                    child: Column(
-                      children: [
-                        const SaveFailureBanner(),
-                        const TopBar(),
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, body) {
-                              _bodyHeight = body.maxHeight;
-                              return AnimatedBuilder(
-                                animation: _sheet,
-                                builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                              );
-                            },
+          child: BountyResultGate(
+            child: ShipLookCelebrationGate(
+              child: FleetRejectedToast(
+                child: PopScope(
+                  // 뒤로 가기 = 시트 닫기 (열려 있을 때).
+                  canPop: false,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (!didPop && _open) _close();
+                  },
+                  child: Scaffold(
+                    body: SafeArea(
+                      child: Column(
+                        children: [
+                          const SaveFailureBanner(),
+                          const TopBar(),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, body) {
+                                _bodyHeight = body.maxHeight;
+                                return AnimatedBuilder(
+                                  animation: _sheet,
+                                  builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

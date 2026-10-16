@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/slot_states.dart';
+import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -46,6 +47,8 @@ class BattleButtons extends ConsumerWidget {
               ),
             Positioned.fromRect(rect: hit(f.ultimateRect), child: const _UltimateButton()),
             Positioned.fromRect(rect: hit(f.bossRect), child: const _BossChallengeButton()),
+            // 현상금 전투 중에는 같은 자리에 후퇴 버튼 (보스 도전은 파밍 중에만이라 겹치지 않는다).
+            Positioned.fromRect(rect: hit(f.bossRect), child: const BountyRetreatButton()),
           ],
         );
       },

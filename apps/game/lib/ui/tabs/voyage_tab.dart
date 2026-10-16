@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -36,6 +37,9 @@ class VoyageTab extends ConsumerWidget {
         _RegionCard(),
         SizedBox(height: 8),
         PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
+        SizedBox(height: 8),
+        // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
+        BountyCard(),
         SizedBox(height: 8),
         RebirthCard(),
       ],

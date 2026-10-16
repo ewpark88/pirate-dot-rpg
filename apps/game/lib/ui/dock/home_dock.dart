@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -25,7 +26,14 @@ class HomeDock extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final items = [
       // 항해: 보물지도 상점에서 살 수 있는 칸이 있으면 점 1개 (환생 v2).
-      (UiSprites.tabMap, l10n.uiTabVoyage, null, ref.watch(rebirthShopProvider.select((s) => s.anyAffordable))),
+      (
+        UiSprites.tabMap,
+        l10n.uiTabVoyage,
+        null,
+        // 상점에서 살 수 있는 칸, 또는 현상금 티켓이 상한(9)일 때만 (넘치기 직전 = 지금 쓰면 이득).
+        ref.watch(rebirthShopProvider.select((s) => s.anyAffordable)) ||
+            ref.watch(bountyProvider.select((v) => v.tickets >= bountyTicketCap)),
+      ),
       (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
       (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
       (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(summonBadgeProvider)),
