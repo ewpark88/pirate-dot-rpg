@@ -15,6 +15,8 @@ import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/ship_geometry.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 
+part 'event_director_top.dart';
+
 /// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
 /// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
 class EventDirector implements ReplayListener {
@@ -75,6 +77,7 @@ class EventDirector implements ReplayListener {
           ..y = tip.dy;
       }
     }
+    if (scene.isTop) _topMuzzle(e, frame, tip, start);
     if (_muzzleFamilies.contains(e.family)) {
       final delayMs = math.max<double>(0, (start - _player.position) * tickMs / math.max(1, frame.speed));
       scene.spawnEffect(scene.fx.muzzle.str('fx'), tip.dx + 4, tip.dy + scene.shipBob, delayMs: delayMs);
@@ -128,7 +131,7 @@ class EventDirector implements ReplayListener {
           if (!scene.isTop) {
             scene.shipFlashMs = _juice.flashFrames * kFrameMs;
           } else if (scene.topHits.takeFlash(scene.clockMs)) {
-            scene.shipFlashMs = _topHitFlashMs;
+            scene.shipFlashMs = _kTopHitFlashMs;
           }
           scene
             ..shipHpRatio = e.hpRatio
@@ -239,7 +242,10 @@ class EventDirector implements ReplayListener {
   void _kill(Kill e, int index) {
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
-    final n = _juice.coinCount;
+    // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
+    final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
+    if (fever) _fx('kill', e.x + 3, e.y - 3);
+    final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;
     for (var c = 0; c < n; c++) {
@@ -283,15 +289,5 @@ class EventDirector implements ReplayListener {
   void _fx(String event, double x, double y) {
     final id = scene.fx.fxFor(event);
     if (id != null) scene.spawnEffect(id, x, y);
-  }
-
-  static const _topHitFlashMs = 110.0;
-
-  /// 배 피해 숫자 자리: 탑다운은 맞은 쪽 선체 위(작게, 빨강), 옆모습은 배 위.
-  Offset _shipNumberAt(ShipDamaged e) {
-    final c = scene.shipCenter;
-    if (!scene.isTop || e.fromX == null || e.fromY == null) return Offset(c.dx, c.dy - kShipHeight / 2 - kNumberLiftPx);
-    final side = (e.fromX! - c.dx).clamp(-10.0, 10.0);
-    return Offset(c.dx + side, c.dy - 22);
   }
 }

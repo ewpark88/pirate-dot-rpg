@@ -36,6 +36,9 @@ class TopGeometry implements BattleGeometry {
   /// 적 이동 배율(돌발 이벤트 '폭풍' enemySpeed 등 — shapeField가 매 틱 정한다). 보스 포함.
   double speedScale = 1;
 
+  /// 피버 전진(feverForwardBoost): 배 앞쪽(위)에서 오는 적의 접근 배율 1 + 이 값 × (위쪽 성분). shapeField가 매 틱 정한다.
+  double forwardBoost = 0;
+
   @override
   String get mode => 'top';
 
@@ -89,6 +92,14 @@ class TopGeometry implements BattleGeometry {
   /// 배(보스는 standoff 원)까지 다가간다. approachRadius 밖에서는 해류로 빠르게.
   @override
   bool advance(Foe e, double speed, double dt) {
+    final px = e.passX;
+    if (px != null) {
+      // 스쳐 지나가는 배(보물 상선): 배로 오지 않고 정해진 방향으로 곧게 — 배율 없음(S2가 화면을 건너는 시간으로 속도를 정함).
+      e
+        ..x += px * e.speed * dt
+        ..y += (e.passY ?? 0) * e.speed * dt;
+      return false;
+    }
     if (e.holdSec > 0) {
       e.holdSec -= dt; // 스폰 패턴 scatter: 아직 나오지 않음
       return false;
@@ -97,8 +108,14 @@ class TopGeometry implements BattleGeometry {
     final dy = e.y - top.shipY;
     final d = math.sqrt(dx * dx + dy * dy);
     if (e.boss ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
+    final ahead = forwardBoost > 0 && dy < 0 ? 1 + forwardBoost * (-dy / d) : 1.0; // 피버 전진
     final step =
-        speed * dt * speedScale * (d > top.approachRadius ? top.approachBoost : 1) * (e.boss ? 1 : top.mobSpeedScale);
+        speed *
+        dt *
+        speedScale *
+        ahead *
+        (d > top.approachRadius ? top.approachBoost : 1) *
+        (e.boss ? 1 : top.mobSpeedScale);
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
     final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
     final nd = e.boss
@@ -142,7 +159,7 @@ class TopGeometry implements BattleGeometry {
   void settle(Field f, double dt) {
     final mobs = [
       for (final e in f.foes)
-        if (e.alive && !e.boss && e.ownerId == null && e.holdSec <= 0) e,
+        if (e.alive && !e.boss && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
     ];
     final min = top.mobRadius / half;
     for (var i = 0; i < mobs.length; i++) {
@@ -182,6 +199,7 @@ class TopGeometry implements BattleGeometry {
   /// 배에서 바깥쪽으로. approachRadius 밖으로는 밀지 않는다.
   @override
   void push(Foe e, double distance) {
+    if (e.passX != null) return; // 지나가는 배는 경로를 지킨다
     final d = _dist(e);
     if (d == 0) return;
     _spawn.place(e, _angle(e), math.min(d + distance, math.max(d, top.approachRadius)));
@@ -189,6 +207,7 @@ class TopGeometry implements BattleGeometry {
 
   @override
   void pull(Foe e, double x, double y, double amount) {
+    if (e.passX != null) return;
     final dx = x - e.x;
     final dy = y - e.y;
     final d = math.sqrt(dx * dx + dy * dy);
@@ -208,9 +227,12 @@ class TopGeometry implements BattleGeometry {
     return (x: parent.x + math.cos(a) * top.mobRadius, y: parent.y + math.sin(a) * top.mobRadius);
   }
 
-  /// 배를 향한다(원을 도는 보스도 배 쪽을 본다).
+  /// 배를 향한다(원을 도는 보스도 배 쪽을 본다). 스쳐 지나가는 배는 지나가는 방향.
   @override
-  double heading(Foe e) => math.atan2(top.shipY - e.y, top.shipX - e.x);
+  double heading(Foe e) {
+    final px = e.passX;
+    return px != null ? math.atan2(e.passY ?? 0, px) : math.atan2(top.shipY - e.y, top.shipX - e.x);
+  }
 
   @override
   Point get viewShip => ship;

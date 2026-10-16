@@ -24,6 +24,18 @@ class TopSeaPainter {
 
   /// 보물 바다(환생 v2 §4): 물결·거품·반짝임을 금빛으로, 반짝임 더 자주.
   bool gold = false;
+
+  /// 피버 물들임 0~1 (TopFever.level × fever seaAlpha): 바다 색을 금빛 바다 쪽으로 섞는다(덮개 섞기는 기기마다 달라 색 자체를 바꾼다).
+  double fever = 0;
+
+  /// 피버 질주 0~1: 바다 흐름 ×4, 항적 2배 길게, 뱃머리 V자 물보라 크게(사용자 '배가 빠르게 나아가는 연출').
+  double boost = 0;
+  late final Color _feverBase = Color(_c('feverBase'));
+  late final Color _feverDeep = Color(_c('feverDeep'));
+  late final Color _feverShallow = Color(_c('feverShallow'));
+
+  /// 파랑 → (금빛 바다 gold면) 금빛 → (피버면) 호박색.
+  Color _mix(Color blue, Color gold, Color fever) => Color.lerp(this.gold ? gold : blue, fever, this.fever)!;
   late final double _tile = cfg.number('tile');
   late final double _speed = cfg.number('flowSpeed');
   final _paint = Paint()..isAntiAlias = false;
@@ -47,7 +59,7 @@ class TopSeaPainter {
   void advance(double clockMs, double heading) {
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0) / 1000;
     _lastMs = clockMs;
-    flow += Offset(-math.sin(heading), math.cos(heading)) * (_speed * dt);
+    flow += Offset(-math.sin(heading), math.cos(heading)) * (_speed * (1 + 3 * boost) * dt);
   }
 
   static int _hash(int a, int b) {
@@ -117,7 +129,7 @@ class TopSeaPainter {
       _build(view.size);
       _builtFor = view.size;
     }
-    _paint.color = gold ? _goldBase : _base;
+    _paint.color = _mix(_base, _goldBase, _feverBase);
     c.drawRect(view.inflate(1), _paint);
     void layer(Path p, Color color, double parallax) {
       final o = flow * parallax;
@@ -131,12 +143,12 @@ class TopSeaPainter {
         ..restore();
     }
 
-    layer(_deepPath, _deep, 0.6);
-    layer(_shallowPath, _shallow, 0.6);
-    layer(_wavePath, gold ? _goldWave : _wave, 1);
+    layer(_deepPath, _mix(_deep, _deep, _feverDeep.withValues(alpha: _deep.a)), 0.6);
+    layer(_shallowPath, _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a)), 0.6);
+    layer(_wavePath, _mix(_wave, _goldWave, _goldWave), 1);
     // 거품: 천천히 숨 쉬듯 나타났다 사라짐
     final foamA = 0.35 + 0.35 * math.sin(clockMs / 900);
-    layer(_foamPath, (gold ? _goldFoam : _foam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
+    layer(_foamPath, _mix(_foam, _goldFoam, _goldFoam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
     // 햇빛 반짝임: 세 무리로 나눠 깜빡임(무리마다 알파 하나 → drawRawPoints 3번)
     final o = flow;
     final dx = (o.dx % _tile) - _tile + view.left;
@@ -145,11 +157,12 @@ class TopSeaPainter {
       ..save()
       ..translate(dx.roundToDouble(), dy.roundToDouble());
     for (var g = 0; g < 3; g++) {
-      final a = math.max<double>(0, math.sin(clockMs / (gold ? 160 : 260) + g * 2.1)) * (gold ? 1.0 : 1);
+      final a = math.max<double>(0, math.sin(clockMs / (gold || fever > 0.5 ? 160 : 260) + g * 2.1));
       if (a < 0.05) continue;
       _points
-        ..strokeWidth = 1
-        ..color = (gold ? _goldWave : _foam).withValues(alpha: a);
+        ..strokeWidth = fever > 0.5 ? 2 : 1
+        // 피버: 반짝임을 거의 흰 금빛으로(빛나는 황금 바다, S1).
+        ..color = Color.lerp(gold ? _goldWave : _foam, const Color(0xFFFFFBE0), fever)!.withValues(alpha: a);
       c.drawRawPoints(PointMode.points, _groupOf(g), _points);
     }
     c.restore();
@@ -170,7 +183,7 @@ class TopSeaPainter {
   /// 배 기준 좌표(뱃머리 위, 고물 = +[stern], 뱃머리 = −[bow])로 그린다.
   void wake(Canvas c, double stern, double bow, double halfWidth, double clockMs) {
     // 점들을 알파 4단계 묶음으로 모아 drawRawPoints 몇 번(S1 배터리 — 전에는 점마다 drawRect 약 90번).
-    const length = 60;
+    final length = (60 + 60 * boost).round();
     for (final b in _wakeBuckets) {
       b.n = 0;
     }
@@ -194,9 +207,10 @@ class TopSeaPainter {
     }
     // 뱃머리 물보라: 양옆 짧은 흰 줄
     final spray = 0.5 + 0.5 * math.sin(clockMs / 120);
-    for (var k = 0; k < 5; k++) {
-      final y = -bow + 10 + k * 2;
-      final x = halfWidth * 0.55 + k * 1.2 + spray;
+    final sprays = 5 + (8 * boost).round();
+    for (var k = 0; k < sprays; k++) {
+      final y = -bow + 10 + k * (2 + 1.5 * boost);
+      final x = halfWidth * 0.55 + k * (1.2 + 2.2 * boost) + spray;
       _wakeBuckets[3]
         ..add(-x - 1, y)
         ..add(x + 1, y);
@@ -210,7 +224,7 @@ class TopSeaPainter {
     }
   }
 
-  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(160));
+  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(320));
 }
 
 /// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.

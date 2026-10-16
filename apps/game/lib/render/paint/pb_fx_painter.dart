@@ -41,6 +41,9 @@ class PbFxPainter {
   /// 가벼운 폭발(절전이거나 폭발이 많을 때): 연기·파편·불씨를 빼고 번쩍·불덩이·충격파만(S1 배터리). ScenePainter가 프레임마다 넣는다.
   bool lite = false;
 
+  /// 피버 세기 0~1 (탑다운): 발사체를 굵게 + 불 꼬리. ScenePainter가 프레임마다 넣는다.
+  double fever = 0;
+
   bool get blastReady => sprites.sheet('blast:fireball_0_hot') != null;
 
   /// 발사체 한 개. 무기 그림이 없으면 false.
@@ -85,11 +88,34 @@ class PbFxPainter {
       Rect.fromCenter(center: Offset(p.x, p.y), width: size * (0.7 - 0.25 * lift), height: size * (0.35 - 0.12 * lift)),
       _shadow,
     );
-    final grow = 1 + 0.45 * lift;
+    final grow = (1 + 0.45 * lift) * (1 + 0.35 * fever);
+    // 등급 꼬리(영웅·전설·신화) 먼저, 피버면 불 꼬리를 더한다(S1).
+    _trails.paint(c, p, size);
+    if (fever > 0) _fireTail(c, p, size, height);
     final turn = p.progress * _spinTurns * 2 * math.pi;
     final angle = p.style.path == ProjectilePath.line ? math.atan2(p.toY - p.fromY, p.toX - p.fromX) : turn;
     sprites.drawSmooth(c, key, p.x, p.y - height * 0.35, w * grow, h * grow, angle: angle);
     return true;
+  }
+
+  final _fire = Paint()..isAntiAlias = false;
+
+  /// 피버 불 꼬리: 날아온 쪽으로 주황·노랑 불덩이 4개가 작아지며 흐려진다.
+  void _fireTail(Canvas c, Projectile p, double size, double height) {
+    final dx = p.toX - p.fromX;
+    final dy = p.toY - p.fromY;
+    final len = math.sqrt(dx * dx + dy * dy);
+    if (len < 1e-6) return;
+    final ux = dx / len;
+    final uy = dy / len;
+    for (var i = 4; i >= 1; i--) {
+      final back = i * size * 0.45;
+      final r = size * (0.55 - i * 0.09);
+      _fire.color = (i.isEven ? const Color(0xFFFF8A2A) : const Color(0xFFFFD84A)).withValues(
+        alpha: fever * (0.9 - i * 0.17),
+      );
+      c.drawCircle(Offset(p.x - ux * back, p.y - uy * back - height * 0.35), r, _fire);
+    }
   }
 
   /// 폭발 한 개(이펙트 나이로 단계). 부품 그림이 없으면 false.

@@ -20,6 +20,10 @@ const _rewardOffset = -18.0;
 /// 배 자리를 아직 안 보낸 프레임의 기본 배 중심 (탑다운 전장 270×480의 가운데).
 const _shipHome = Offset(135, 240);
 
+/// 상자 광고 말풍선 크기(dp).
+const _bubbleWidth = 190.0;
+const _bubbleHeight = 44.0;
+
 class ChestLayer extends ConsumerWidget {
   const ChestLayer({super.key});
 
@@ -47,8 +51,19 @@ class ChestLayer extends ConsumerWidget {
         final at = f.worldToDp(Offset(x, y), Offset(shipX, shipY));
         // 카메라 밖(상자 밖)의 보물상자는 보이지 않는다 — 누를 곳도 없다.
         if (!(Offset.zero & box.biggest).contains(at)) return const SizedBox.shrink();
+        // 광고 제안은 상자 옆 작은 말풍선(반투명, 상자를 따라감) — 전장 위 전폭 띠 금지(사용자 지시 2026-10-16).
+        final bubbleLeft = (at.dx - _bubbleWidth / 2).clamp(4.0, box.maxWidth - _bubbleWidth - 4);
+        final above = at.dy - _size / 2 - _bubbleHeight - 6;
+        final bubbleTop = above >= 0 ? above : at.dy + _size / 2 + 6;
         return Stack(
           children: [
+            Positioned(
+              left: bubbleLeft,
+              top: bubbleTop,
+              width: _bubbleWidth,
+              height: _bubbleHeight,
+              child: const ChestAdBubble(),
+            ),
             Positioned(
               left: at.dx - _size / 2,
               top: at.dy - _size / 2,
@@ -83,22 +98,22 @@ class ChestLayer extends ConsumerWidget {
   }
 }
 
-/// 상자 광고 줄 (전장 바로 아래, 상자가 떠 있고 광고가 준비됐을 때만): 상자 그림 + 골드 ×5 · 젬.
-/// 전장 안에는 버튼을 두지 않는다 (layout-v2-brief 2).
-class ChestAdStrip extends ConsumerWidget {
-  const ChestAdStrip({super.key});
+/// 상자 광고 말풍선: 반투명 흰 판 안에 [골드 ×5] [젬] 작은 버튼 (광고가 준비됐을 때만).
+class ChestAdBubble extends ConsumerWidget {
+  const ChestAdBubble({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasChest = ref.watch(gameStateProvider.select((s) => s.battle?.chest != null));
-    if (!hasChest || !ref.watch(adOfferProvider(AdPlacement.chest))) return const SizedBox.shrink();
-    return const ColoredBox(
-      key: Key('chest.adStrip'),
-      color: PixelPalette.outline,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: Center(child: ChestAdButtons()),
+    if (!ref.watch(adOfferProvider(AdPlacement.chest))) return const SizedBox.shrink();
+    return Container(
+      key: const Key('chest.adBubble'),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.white, width: 1.5),
       ),
+      child: const FittedBox(child: ChestAdButtons()),
     );
   }
 }

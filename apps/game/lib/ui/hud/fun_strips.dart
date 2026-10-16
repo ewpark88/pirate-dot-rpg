@@ -41,7 +41,7 @@ class _Strip extends StatelessWidget {
     child: IntrinsicWidth(
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        constraints: const BoxConstraints(maxWidth: 320),
+        constraints: const BoxConstraints(maxWidth: 160),
         padding: const EdgeInsets.fromLTRB(6, 3, 10, 3),
         decoration: BoxDecoration(
           color: gold ? Skin.goldBottom : Skin.ink.withValues(alpha: 0.88),
@@ -229,18 +229,12 @@ class FeverMeter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (fever, left) = ref.watch(
+    var (fever, left) = ref.watch(
       gameStateProvider.select((s) => ((((s.battle?.fever ?? 0) * 20).round()) / 20, s.battle?.feverTicksLeft ?? 0)),
     );
     final l10n = AppLocalizations.of(context);
-    if (left > 0) {
-      return Container(
-        key: const Key('fun.fever.on'),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-        decoration: BoxDecoration(color: Skin.goldBottom, borderRadius: BorderRadius.circular(8)),
-        child: Text(l10n.uiFeverOn(_seconds(ref, left)), style: Skin.text(11, color: Skin.goldInk)),
-      );
-    }
+    // 발동 중에는 큰 원형 게이지(FeverDrama)가 보이므로 게이지 안 작은 막대는 꽉 찬 금색으로만.
+    if (left > 0) fever = 1;
     return Semantics(
       label: '${l10n.uiFever} ${(fever * 100).round()}%',
       excludeSemantics: true,

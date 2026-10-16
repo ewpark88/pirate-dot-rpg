@@ -1390,7 +1390,10 @@ const Map<String, String> rawTables = {
     "flowSpeed": 14,
     "goldWave": "#FFE27A",
     "goldFoam": "#FFF6C8",
-    "goldBase": "#2F8ACF"
+    "goldBase": "#2F8ACF",
+    "feverBase": "#F2B634",
+    "feverDeep": "#F59A2C",
+    "feverShallow": "#FFD66A"
   },
   "atmosphere": {
     "cycleSec": 720,
@@ -1504,6 +1507,9 @@ const Map<String, String> rawTables = {
     ],
     "fever": {
       "border": "#FFD84A",
+      "orange": "#FF8A2A",
+      "seaAlpha": 1,
+      "meltRadius": 42,
       "borderDp": 6,
       "pulseMs": 420,
       "coinsPerSec": 10,

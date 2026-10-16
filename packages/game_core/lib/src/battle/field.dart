@@ -5,6 +5,7 @@ import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
 
 export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor, shapeField;
+export 'package:game_core/src/battle/topdown/top_fever.dart' show FeverAura;
 
 /// 전장의 적 하나. 시뮬 내부 값(실제 HP·접촉 타이머·기절)을 들고, 화면에는 [EnemyView]로 나간다.
 class Foe {
@@ -243,6 +244,9 @@ class Field {
   /// 전장 모양(탑다운). 없으면 waves.top 기본 배 반경으로 — [geometryOr].
   BattleGeometry? geometry;
 
+  /// 진행 중인 현상금 전투(탑다운 B1, top_bounty.dart). 타이머는 [bossTicksLeft]를 같이 쓴다.
+  ({String bossId, int tier})? bounty;
+
   /// [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다).
   Object? shipSeen;
 
@@ -280,8 +284,8 @@ class Field {
     feverTicksLeft: prev.feverTicksLeft,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,
-    bounty: prev.bounty,
     mode: 'top',
+    bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
   );
