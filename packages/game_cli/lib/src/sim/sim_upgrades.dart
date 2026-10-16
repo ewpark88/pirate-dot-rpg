@@ -3,15 +3,17 @@ import 'package:game_data/game_data.dart';
 
 // 가상 플레이어의 ‘가장 싼 강화’ 계산.
 
-/// 지금 레벨에서 가장 싼 강화 (최대 레벨 부위 제외).
-({String part, BigNum cost})? cheapestUpgrade(GameTables t, Map<String, int> levels) {
+/// 지금 레벨에서 가장 싼 강화 (최대 레벨 부위 제외). [weights]: 부위별 '체감 비용' 배수(구매 정책 — meta.sim.buyCostWeight).
+({String part, BigNum cost})? cheapestUpgrade(GameTables t, Map<String, int> levels, {Map<String, double>? weights}) {
+  BigNum? bestSeen;
   ({String part, BigNum cost})? best;
   for (final p in t.shipParts.parts) {
     final lv = levels[p.id] ?? 0;
     final max = p.maxLevel;
     if (max != null && lv >= max) continue;
     final cost = partCost(p, lv);
-    if (best == null || cost < best.cost) best = (part: p.id, cost: cost);
+    final seen = cost.times(weights?[p.id] ?? 1);
+    if (bestSeen == null || seen < bestSeen) (best, bestSeen) = ((part: p.id, cost: cost), seen);
   }
   return best;
 }
@@ -35,9 +37,12 @@ int buyCheapest(CoreEngine engine, GameTables t, GameState s) {
   var gold = s.wallet.gold;
   final levels = {...s.ship.parts};
   final mult = upgradeCostMultiplier(s, t);
+  final weights = {
+    for (final e in t.meta.raw.obj('sim').obj('buyCostWeight').raw.entries) e.key: (e.value as num).toDouble(),
+  };
   var bought = 0;
   while (true) {
-    final next = cheapestUpgrade(t, levels);
+    final next = cheapestUpgrade(t, levels, weights: weights);
     if (next == null) return bought;
     final cost = next.cost.times(mult);
     if (gold < cost) return bought;

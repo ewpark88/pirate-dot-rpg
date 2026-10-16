@@ -1733,6 +1733,7 @@ const Map<String, String> rawTables = {
     "farmRetrySec": 60,
     "rebirthWallSec": 600,
     "fishTapRatio": 0.6,
+    "buyCostWeight": { "cannon": 1, "hull": 1, "sail": 1, "crowsnest": 1, "cargo": 1 },
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
@@ -1749,7 +1750,9 @@ const Map<String, String> rawTables = {
       "rebirthRecoverSec": { "min": 0, "max": 300 },
       "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" },
       "eventGoldPct": { "min": 10, "max": 20 },
-      "challengeWinPct": { "min": 60, "max": 70 }
+      "challengeWinPct": { "min": 60, "max": 70 },
+      "wallSinkSec": { "min": 25, "max": 40 },
+      "farmWaveDamagePct": { "min": 10, "max": 30 }
     }
   }
 }
@@ -1831,7 +1834,7 @@ const Map<String, String> rawTables = {
 {
   "parts": [
     { "id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.11, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartCannon" },
-    { "id": "hull", "stat": "hp", "formula": "exp", "base": 60, "growth": 1.12, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartHull" },
+    { "id": "hull", "stat": "hp", "formula": "exp", "base": 1300, "growth": 1.12, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartHull" },
     { "id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 1.28, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail" },
     { "id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 1.28, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest" },
     { "id": "cargo", "stat": "gold", "formula": "linear", "base": 1, "growth": 0.1, "costBase": 40, "costGrowth": 1.2, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 10, 20, 35, 60, 100, 160], "nameKey": "shipPartCargo" }
@@ -1875,8 +1878,8 @@ const Map<String, String> rawTables = {
   "tickMs": 50,
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
-  "waveHpPoolFactor": 0.6,
-  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 2, "attackGrowth": 1.1, "goldBase": 2, "goldGrowth": 1.13 },
+  "waveHpPoolFactor": 1.8,
+  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.5, "waves": 0 },
