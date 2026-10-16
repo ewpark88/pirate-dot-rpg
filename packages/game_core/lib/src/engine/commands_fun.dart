@@ -48,3 +48,16 @@ class CancelAutoUpgrade extends Command {
   @override
   String get type => 'cancelAutoUpgrade';
 }
+
+/// 안내(말풍선) [id]를 본 것으로 저장 — 이미 있으면 그대로(S4 '처음 1회 안내').
+class MarkHint extends Command {
+  const MarkHint(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'markHint';
+
+  @override
+  Json _fields() => {'id': id};
+}

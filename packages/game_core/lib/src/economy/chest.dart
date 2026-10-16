@@ -37,7 +37,10 @@ GameState tickChest(GameState state, SystemContext ctx) {
   }
   final t = ctx.tables;
   final since = ctx.tick - _ticks(t, t.ads.firstOfferAfterSec);
-  if (state.tutorialStep != null || since < 0 || since % _ticks(t, t.ads.chest.number('intervalSec')) != 0) {
+  if (state.tutorialStep != null ||
+      state.bounty?.active != null ||
+      since < 0 ||
+      since % _ticks(t, t.ads.chest.number('intervalSec')) != 0) {
     return state;
   }
   return spawnChest(state, ctx);

@@ -166,6 +166,7 @@ class Settings {
     this.notifications = true,
     this.battleView = 'top',
     this.title,
+    this.hints = const {},
   });
 
   factory Settings.fromJson(Json j) => Settings(
@@ -181,6 +182,7 @@ class Settings {
     notifications: j['notifications'] as bool,
     battleView: j['battleView'] as String? ?? 'top',
     title: j['title'] as String?,
+    hints: {...?(j['hints'] as List?)?.cast<String>()},
   );
 
   /// `system` | `ko` | `en`.
@@ -204,6 +206,9 @@ class Settings {
   /// 고른 칭호 id (progress.titles 중, null = 없음 — 세이브 v6).
   final String? title;
 
+  /// 한 번 본 안내(말풍선) id — 다시 띄우지 않는다(S4 '처음 1회 안내'). 선택 키, 없으면 빈 집합.
+  final Set<String> hints;
+
   Json toJson() => {
     'lang': lang,
     'autoUpgrade': autoUpgrade,
@@ -218,9 +223,16 @@ class Settings {
     // 옆모습(기본)은 쓰지 않는다 — 옛 픽스처·세이브와 같은 본문.
     if (battleView != 'top') 'battleView': battleView,
     if (title != null) 'title': title,
+    if (hints.isNotEmpty) 'hints': (hints.toList()..sort()),
   };
 
   /// 칭호만 바꾼다 (SelectTitle, null = 없음).
+  Settings withHint(String id) => Settings.fromJson({
+    ...toJson(),
+    'battleView': battleView,
+    'hints': [...hints, id],
+  });
+
   Settings withTitle(String? id) => Settings.fromJson({...toJson(), 'battleView': battleView, 'title': id});
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].

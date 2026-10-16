@@ -54,6 +54,7 @@ sealed class Command {
       'sweepBounty' => SweepBounty(j['bossId'] as String, j['count'] as int),
       'retreatBounty' => const RetreatBounty(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
+      'markHint' => MarkHint(j['id'] as String),
       'skipFastSail' => const SkipFastSail(),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),

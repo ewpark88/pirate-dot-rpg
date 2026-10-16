@@ -12,6 +12,7 @@ export 'package:game_core/src/economy/ads.dart' show addAutoUpgrade, autoUpgrade
 export 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradePick;
 export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus;
 export 'package:game_core/src/economy/bounty.dart';
+export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
 export 'package:game_core/src/economy/fever.dart'
     show addFever, feverDamageBonus, feverGoldMultiplier, feverKillsAt, feverOn, feverStep;
 export 'package:game_core/src/economy/formation.dart' show activeFleet, autoFleet, emptySlotCount, fleetSlots;
