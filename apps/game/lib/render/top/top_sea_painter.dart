@@ -27,6 +27,9 @@ class TopSeaPainter {
 
   /// 피버 물들임 0~1 (TopFever.level × fever seaAlpha): 바다 색을 금빛 바다 쪽으로 섞는다(덮개 섞기는 기기마다 달라 색 자체를 바꾼다).
   double fever = 0;
+
+  /// 피버 질주 0~1: 바다 흐름 ×4, 항적 2배 길게, 뱃머리 V자 물보라 크게(사용자 '배가 빠르게 나아가는 연출').
+  double boost = 0;
   late final Color _feverBase = Color(_c('feverBase'));
   late final Color _feverDeep = Color(_c('feverDeep'));
   late final Color _feverShallow = Color(_c('feverShallow'));
@@ -56,7 +59,7 @@ class TopSeaPainter {
   void advance(double clockMs, double heading) {
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0) / 1000;
     _lastMs = clockMs;
-    flow += Offset(-math.sin(heading), math.cos(heading)) * (_speed * dt);
+    flow += Offset(-math.sin(heading), math.cos(heading)) * (_speed * (1 + 3 * boost) * dt);
   }
 
   static int _hash(int a, int b) {
@@ -180,7 +183,7 @@ class TopSeaPainter {
   /// 배 기준 좌표(뱃머리 위, 고물 = +[stern], 뱃머리 = −[bow])로 그린다.
   void wake(Canvas c, double stern, double bow, double halfWidth, double clockMs) {
     // 점들을 알파 4단계 묶음으로 모아 drawRawPoints 몇 번(S1 배터리 — 전에는 점마다 drawRect 약 90번).
-    const length = 60;
+    final length = (60 + 60 * boost).round();
     for (final b in _wakeBuckets) {
       b.n = 0;
     }
@@ -204,9 +207,10 @@ class TopSeaPainter {
     }
     // 뱃머리 물보라: 양옆 짧은 흰 줄
     final spray = 0.5 + 0.5 * math.sin(clockMs / 120);
-    for (var k = 0; k < 5; k++) {
-      final y = -bow + 10 + k * 2;
-      final x = halfWidth * 0.55 + k * 1.2 + spray;
+    final sprays = 5 + (8 * boost).round();
+    for (var k = 0; k < sprays; k++) {
+      final y = -bow + 10 + k * (2 + 1.5 * boost);
+      final x = halfWidth * 0.55 + k * (1.2 + 2.2 * boost) + spray;
       _wakeBuckets[3]
         ..add(-x - 1, y)
         ..add(x + 1, y);
@@ -220,7 +224,7 @@ class TopSeaPainter {
     }
   }
 
-  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(160));
+  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(320));
 }
 
 /// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.
