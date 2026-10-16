@@ -37,10 +37,16 @@ extension Flights on Round {
   ({Volley volley, int ticks})? launch(Gun g, AttackDef a, Volley v, BigNum base, {required bool crit}) {
     final p = a.projectile;
     final geo = this.geo;
-    if (p == null || p.speed <= 0 || geo is! TopGeometry) return null;
+    if (p == null || (p.speed <= 0 && p.delaySec <= 0) || geo is! TopGeometry) return null;
     final from = geo.muzzle(v.x, v.y);
     int ticksTo(double x, double y) => math.max(1, (_len(x - from.x, y - from.y) / p.speed / dt).round());
     var aimed = v;
+    if (p.delaySec > 0) {
+      // 낙뢰: 예고 delaySec 뒤 쏠 때의 자리에 떨어진다(대상이 움직이면 빗나갈 수 있다).
+      final ticks = math.max(1, (p.delaySec / dt).round());
+      field.flights.add(Flight(gun: g, attack: a, volley: v, base: base, crit: crit, arriveTick: ctx.tick + ticks));
+      return (volley: v, ticks: ticks);
+    }
     var ticks = ticksTo(v.x, v.y);
     final target = v.hits.isEmpty ? null : v.hits.first.foe;
     if (p.lead && target != null && a.shape != 'push') {

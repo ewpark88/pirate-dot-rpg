@@ -51,6 +51,9 @@ class Gun {
   /// 다음 스킬까지 남은 초 (공격 속도 배율 적용 전 기준).
   double skillCooldown = 0;
 
+  /// 다음 보호막까지 남은 초(legend.shield, 개성 v2 7.1). 0이면 첫 틱에 세운다.
+  double shieldTimer = 0;
+
   FleetSlot view() {
     double ratio(double left, double full) => full <= 0 ? 0.0 : (left / full).clamp(0.0, 1.0);
     return FleetSlot(

@@ -142,6 +142,24 @@ void main() {
     expect(shots(0.3) / shots(3), greaterThan(8), reason: '연사형은 한 방형의 8배 넘게 쏜다');
   });
 
+  test('연사만 바꾸면 power가 간격에 비례(같은 DPS) — 0.3 : 3.0 = 1 : 10, 등급 사다리 유지, powerScale 곱', () {
+    final t = withAim({
+      'crabs': {'intervalSec': 0.3},
+      'volke': {'intervalSec': 3.0},
+      'octo': {'intervalSec': 1.3, 'powerScale': 1.1},
+    });
+    for (final r in [0, 3]) {
+      final fast = Gun.of(t, 'crabs', power: 1, rarity: r).attack;
+      final slow = Gun.of(t, 'volke', power: 1, rarity: r).attack;
+      expect(fast.power / slow.power, closeTo(0.1, 1e-9), reason: '등급 $r');
+      final ladder = Gun.of(plain, 'crabs', power: 1, rarity: r).attack;
+      expect(fast.power / fast.intervalSec, closeTo(ladder.power / ladder.intervalSec, 1e-9), reason: '같은 DPS');
+    }
+    final octo = Gun.of(t, 'octo', power: 1).attack;
+    final base = Gun.of(plain, 'octo', power: 1).attack;
+    expect(octo.power, closeTo(base.power * 1.3 / base.intervalSec * 1.1, 1e-9));
+  });
+
   test('aim 없는 선원은 계열 공격 그대로, 있으면 키만 덮어씀', () {
     final t = withAim({
       'pang': {'intervalSec': 0.3, 'targets': 'weakest'},
