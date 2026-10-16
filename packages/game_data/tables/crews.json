@@ -71,21 +71,15 @@
       "id": "uni",
       "num": 4,
       "baseRarity": "hero",
-      "family": "lob",
+      "family": "ring",
       "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/uni.png",
       "nameKey": "crewUniName",
       "aim": {
         "targets": "random",
-        "intervalSec": 1.3,
-        "topRadius": 15,
-        "projectile": {
-          "speed": 200,
-          "lead": false,
-          "hitRadius": 15
-        },
-        "powerScale": 1.4362
+        "intervalSec": 1.8,
+        "powerScale": 1
       }
     },
     {
@@ -442,21 +436,15 @@
       "id": "puffer",
       "num": 21,
       "baseRarity": "common",
-      "family": "underwater",
+      "family": "ring",
       "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/puffer.png",
       "nameKey": "crewPufferName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 2.2,
-        "topRadius": 24,
-        "projectile": {
-          "speed": 120,
-          "lead": false,
-          "hitRadius": 24
-        },
-        "powerScale": 1.5588
+        "intervalSec": 2.6,
+        "powerScale": 1
       }
     },
     {
@@ -573,6 +561,12 @@
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5
+        },
+        "common": {
+          "powerScale": 1.12
+        },
+        "rare": {
+          "powerScale": 0.8929
         }
       }
     },
