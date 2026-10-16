@@ -78,18 +78,18 @@ void main() {
 
   test('3. 자동 편성: 슬롯 수만큼, 같은 계열 최대 2명, 선장 = 최고 등급', () {
     final crews = {
-      crewOf('lob'): const CrewState(level: 20),
-      crewOf('lob', 1): const CrewState(level: 19),
-      crewOf('lob', 2): const CrewState(level: 18),
+      crewOf('skip'): const CrewState(level: 20), // 3명 이상인 계열(계열 v3 뒤 투척은 2명)
+      crewOf('skip', 1): const CrewState(level: 19),
+      crewOf('skip', 2): const CrewState(level: 18),
       crewOf('direct'): const CrewState(level: 5),
       crewOf('pierce'): const CrewState(level: 32), // hero
-      crewOf('skip'): const CrewState(level: 2),
+      crewOf('lob'): const CrewState(level: 2),
       crewOf('air'): const CrewState(level: 3),
     };
     final s = game(crews: crews);
     final fleet = autoFleet(s, tables, tables.shipTiers.tierAt(1).slots);
     expect(fleet, hasLength(3));
-    expect(fleet.where((id) => tables.crews.byId(id).family == 'lob').length, lessThanOrEqualTo(2));
+    expect(fleet.where((id) => tables.crews.byId(id).family == 'skip').length, lessThanOrEqualTo(2));
     expect(fleet.first, crewOf('pierce'));
     expect(captainOf(fleet, s, tables), crewOf('pierce'));
   });

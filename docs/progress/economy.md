@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 계열 v3 1·2단계(출격·레이저) 균형 재적합(진행 중) → 커밋 / 3단계 원형·4단계 집속(S5) / 보스 HP·돌격대 attackMul(S5 f8fc657 머지 뒤) / 야간 리포트 |
+| 바로 다음 할 일 | 계열 v3 4·5단계(집속·사거리 차등·시차) 균형 확인 → check → 커밋 / 보스 HP '처치 10~20초'·돌격대 attackMul sim / 야간 100명 리포트 / 도감 v2 수치(S5) |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 · S2 · 계열 v3 표 완료
+- 6d44d33 계열 v3 1~3단계(출격·레이저·원형) 균형 0.912~1.100. review/tables-test-family c2662a1(없는 계열 예시 laser → no_such_family).
+- 미커밋: 집속 계열(volke·starry), aim.reach 사거리 차등(짧음 10·보통 21·김 9, 등급마다 +4, 사용자 지시), 5단계 behavior(직사 burst·물수제비 hop·충격 링 속도·수중), 새 계열 이름 키 uiFamily*(S4).
+- 교훈: 등급별 aim 덮어쓰기의 powerScale은 곱(상대값) — 절대값을 넣어 polly가 6배가 된 적 있음. 명령 줄이 check 실패 뒤에도 커밋까지 간 적 있음 → check 결과를 먼저 보고 커밋.
 
 ### 2026-10-16 · S2 · 등급 템포 커밋·계열 v3
 - fa788e8 rarityTempo·신화 splash 23명·돌격대 표·crewAttack(S4)·신화 색 빨강.

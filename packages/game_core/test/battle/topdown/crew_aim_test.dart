@@ -27,6 +27,11 @@ void main() {
       if (a != null) c['aim'] = a;
     }
     raw['crews'] = jsonEncode(crews);
+    final skills = jsonDecode(raw['skills']!) as Map<String, dynamic>;
+    for (final fam in (skills['families'] as List).cast<Map<String, dynamic>>()) {
+      (fam['attack'] as Map<String, dynamic>).remove('behavior'); // 계열 v3 연출 타이밍(연사 묶음·튕김 지연 등) 없이
+    }
+    raw['skills'] = jsonEncode(skills);
     return GameTables.load(raw);
   }
 
@@ -148,15 +153,15 @@ void main() {
 
   test('연사만 바꾸면 power가 간격에 비례(같은 DPS) — 0.3 : 3.0 = 1 : 10, 등급 사다리 유지, powerScale 곱', () {
     final t = withAim({
-      'crabs': {'intervalSec': 0.3},
-      'volke': {'intervalSec': 3.0},
+      'otter': {'intervalSec': 0.3}, // 같은 계열(물수제비) 둘 — 계열 v3로 투척이 2명이 됐다
+      'orca': {'intervalSec': 3.0},
       'octo': {'intervalSec': 1.3, 'powerScale': 1.1},
     });
     for (final r in [0, 3]) {
-      final fast = Gun.of(t, 'crabs', power: 1, rarity: r).attack;
-      final slow = Gun.of(t, 'volke', power: 1, rarity: r).attack;
+      final fast = Gun.of(t, 'otter', power: 1, rarity: r).attack;
+      final slow = Gun.of(t, 'orca', power: 1, rarity: r).attack;
       expect(fast.power / slow.power, closeTo(0.1, 1e-9), reason: '등급 $r');
-      final ladder = Gun.of(plain, 'crabs', power: 1, rarity: r).attack;
+      final ladder = Gun.of(plain, 'otter', power: 1, rarity: r).attack;
       expect(fast.power / fast.intervalSec, closeTo(ladder.power / ladder.intervalSec, 1e-9), reason: '같은 DPS');
     }
     final octo = Gun.of(t, 'octo', power: 1).attack;
