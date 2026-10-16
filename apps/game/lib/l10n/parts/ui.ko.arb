@@ -389,5 +389,8 @@
   "uiRebirthCompareNow": "지금 환생",
   "uiRebirthCompareLater": "스테이지 {stage}에서",
   "uiRebirthCompareValue": "조각 +{count} · {mult}",
-  "uiRebirthLockedWhy": "환생하면 보물지도 조각으로 영구히 강해져요"
+  "uiRebirthLockedWhy": "환생하면 보물지도 조각으로 영구히 강해져요",
+  "uiChestTitle": "보물상자",
+  "uiChestTake": "그냥 받기 · {amount}",
+  "uiChestPill": "보물상자 보상 고르기"
 }

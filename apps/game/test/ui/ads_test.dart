@@ -80,6 +80,12 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
 
 Finder _ad() => find.byWidgetPredicate((w) => '${w.key}'.contains("'ad."));
 
+/// 상자 광고는 왼쪽 가장자리 알약 → 선택 시트 안(사용자 지시 2026-10-16).
+Future<void> _openChestSheet(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('chest.pill')));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('기준 1: 기본(NoAds)이면 광고 버튼 0개', (tester) async {
     final farming = _withChest(_base());
@@ -95,6 +101,7 @@ void main() {
   testWidgets('기준 2: 상자 ×5 · 젬 — rewarded면 GrantAdReward(chest, gold)', (tester) async {
     final ads = _FakeAds();
     final log = await _pump(tester, _withChest(_base()), ads);
+    await _openChestSheet(tester);
     expect(find.byKey(const Key('ad.chest.gold')), findsOneWidget);
     expect(find.byKey(const Key('ad.chest.gems')), findsOneWidget);
     expect(find.text('Gems 30'), findsOneWidget);
@@ -106,6 +113,7 @@ void main() {
 
   testWidgets('기준 2: 광고를 닫으면(dismissed) 명령 없음', (tester) async {
     final log = await _pump(tester, _withChest(_base()), _FakeAds(AdResult.dismissed));
+    await _openChestSheet(tester);
     await tester.tap(find.byKey(const Key('ad.chest.gems')));
     await tester.pump();
     expect(log.sent, isEmpty);

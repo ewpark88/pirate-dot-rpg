@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/ads/ad_providers.dart';
 
 import 'ui_harness.dart';
 
@@ -18,6 +19,9 @@ GameState _busy() {
       challenge: const ChallengeView(id: 'kills', target: 50, value: 37, ticksLeft: 200),
       fever: 1,
       feverTicksLeft: 80,
+      chest: const ChestView(x: 150, y: 200, ticksLeft: 400),
+      shipX: 135,
+      shipY: 240,
     ),
   );
 }
@@ -33,6 +37,9 @@ const _top = [
   'bossFail.close',
   'hud.ult.ring',
   'boss.challenge',
+  'chest.pill',
+  'fleet.crew.0',
+  'fleet.crew.1',
 ];
 
 const List<(String, Size, double)> _devices = [
@@ -53,7 +60,10 @@ Future<StreamController<RecordedTick>> _pumpBusy(WidgetTester tester, Size size,
     dpr: dpr,
     locale: locale ?? const Locale('en'),
     openTab: false,
-    overrides: [battleFeedProvider.overrideWithValue(feed.stream)],
+    overrides: [
+      battleFeedProvider.overrideWithValue(feed.stream),
+      adOfferProvider.overrideWith((ref, _) => true),
+    ],
   );
   feed.add(RecordedTick(s.battle!, const [BossFailed(1, stage: 37)]));
   await tester.pump();
@@ -88,6 +98,7 @@ void main() {
       expect(find.byKey(const Key('fun.challenge.kills')), findsOneWidget);
       expect(find.byKey(const Key('fun.sea.goldfish')), findsNothing);
       expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
+      expect(find.byKey(const Key('chest.pill')), findsOneWidget);
       _expectNoOverlap(tester, name);
       await tester.pump(const Duration(seconds: 10));
     });
