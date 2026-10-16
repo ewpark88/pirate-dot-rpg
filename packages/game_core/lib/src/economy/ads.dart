@@ -44,6 +44,7 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),
+    AdPlacement.bountyTicket => s, // 현상금 입장권: S2 B2에서 처리(티켓 +1, 하루 1)
     // 함포 지원: 경제가 종료 시각을 채우고, 피해 보너스는 전투가 Buffs.bossSupportUntil을 읽어 적용한다.
     AdPlacement.bossSupport => _saved(
       s.copyWith(
