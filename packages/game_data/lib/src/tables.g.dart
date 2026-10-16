@@ -13,7 +13,8 @@ const Map<String, String> rawTables = {
     { "id": "offline", "dailyLimit": null, "perReturn": 1, "reward": { "type": "goldMultiplier", "value": 2 } },
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
-    { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } }
+    { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
+    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -1703,6 +1704,7 @@ const Map<String, String> rawTables = {
       { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
+  "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
   "fever": {
     "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
@@ -1744,6 +1746,8 @@ const Map<String, String> rawTables = {
     "farmRetrySec": 60,
     "rebirthWallSec": 600,
     "fishTapRatio": 0.6,
+    "wallEvery": 10,
+    "cargoBuyFull": 0.9,
     "buyCostWeight": { "cannon": 1, "hull": 1, "sail": 1, "crowsnest": 1, "cargo": 1 },
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
@@ -1763,6 +1767,11 @@ const Map<String, String> rawTables = {
       "eventGoldPct": { "min": 10, "max": 20 },
       "challengeWinPct": { "min": 60, "max": 70 },
       "feverIntervalMin": { "min": 4, "max": 6 },
+      "bossFirstWinPct": { "min": 70, "max": 85 },
+      "wallFirstWinPct": { "min": 30, "max": 50 },
+      "rebirthWallRatio": { "min": 0.5, "max": 0.65 },
+      "cargoFullPct": { "min": 10, "max": 25 },
+      "overflowPct": { "min": 0, "max": 10 },
       "affordablePct": { "min": 30, "max": 50 },
       "upgradeGapStage10Sec": { "min": 15, "max": 30 },
       "upgradeGapStage40Sec": { "min": 60, "max": 120 },
@@ -1852,7 +1861,7 @@ const Map<String, String> rawTables = {
     {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
     {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail"},
     {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "gold", "formula": "linear", "base": 1, "growth": 0.3, "costBase": 40, "costGrowth": 1.728, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo"}
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 300, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -1921,6 +1930,7 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
+    "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

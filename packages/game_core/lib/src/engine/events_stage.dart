@@ -74,3 +74,16 @@ class BossFailed extends GameEvent {
   @override
   Json _fields() => {'stage': stage};
 }
+
+/// 화물칸(골드 금고)이 가득 차 [lost]만큼 버렸다 — 렌더 '화물칸 가득!'·UI 경고 (economy-cargo-capacity). 전투 골드는 0.5초마다 묶는다.
+class GoldOverflow extends GameEvent {
+  const GoldOverflow(super.tick, {required this.lost});
+
+  final BigNum lost;
+
+  @override
+  String get type => 'goldOverflow';
+
+  @override
+  Json _fields() => {'lost': lost.toJson()};
+}
