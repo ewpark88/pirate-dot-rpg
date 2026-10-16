@@ -25,6 +25,7 @@ import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart' show operatorBackupProvider;
 import 'package:pirate_dot/operator/flags.dart';
+import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/proto/proto_screen.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';

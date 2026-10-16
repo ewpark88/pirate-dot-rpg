@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pirate_dot/adapters/power/power_channel.dart';
+import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/ui/state/idle.dart';
 
 /// 발열 대책 정책(실기기 S24 2026-10-17 — 120Hz·45℃·SEVERE).
