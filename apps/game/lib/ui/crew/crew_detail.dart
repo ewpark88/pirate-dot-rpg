@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
@@ -61,15 +62,30 @@ class CrewDetailDialog extends ConsumerWidget {
     const dim = TextStyle(color: PixelPalette.textDim);
     final title = Theme.of(context).textTheme.titleSmall;
 
-    Widget section(String head, List<Widget> body) => Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(head, style: title),
-          const SizedBox(height: 2),
-          ...body,
-        ],
+    // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본.
+    Widget section(String head, List<Widget> body, {Color? fill, Color? border, String? icon}) => Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        decoration: BoxDecoration(
+          color: fill ?? const Color(0xFFF1F7FF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border ?? Skin.cardEdge, width: 1.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (icon != null) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                Flexible(child: Text(head, style: title)),
+              ],
+            ),
+            const SizedBox(height: 2),
+            ...body,
+          ],
+        ),
       ),
     );
 
@@ -91,16 +107,32 @@ class CrewDetailDialog extends ConsumerWidget {
                       Text(shortCrewName(l10n, def), style: Theme.of(context).textTheme.titleMedium),
                       Text(tableText(l10n, def.nameKey), style: dim),
                       const SizedBox(height: 4),
+                      // 등급 알약(등급 색 테두리·옅은 바탕·진한 글 — 일반의 회색도 읽힌다) · 출전 알약.
                       Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 4,
                         children: [
-                          Text(tableText(l10n, rarity.nameKey), style: TextStyle(color: color)),
-                          const SizedBox(width: 6),
-                          const PixelSprite(UiSprites.star, dots: 16, scale: 1),
-                          Text(rarity.stars.toString(), style: TextStyle(color: color)),
+                          _Pill(
+                            fill: color.withValues(alpha: 0.18),
+                            border: color,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(tableText(l10n, rarity.nameKey), style: Skin.text(13)),
+                                const SizedBox(width: 4),
+                                const SkinIcon(UiSprites.star, size: 14),
+                                Text(rarity.stars.toString(), style: Skin.text(13)),
+                              ],
+                            ),
+                          ),
+                          if (deployed)
+                            _Pill(
+                              fill: const Color(0xFFDDF7EA),
+                              border: Skin.mint,
+                              child: Text(l10n.uiCrewDeployed, style: Skin.text(13, color: Skin.mintInk)),
+                            ),
                         ],
                       ),
-                      if (deployed) Text(l10n.uiCrewDeployed, style: const TextStyle(color: PixelPalette.accent)),
                     ],
                   ),
                 ),
@@ -110,21 +142,28 @@ class CrewDetailDialog extends ConsumerWidget {
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
               _Growth(crew: crew, rarity: rarity, tables: tables, atGate: _atGate.contains(status)),
-            section(l10n.uiCrewType, [
+            section(icon: UiSprites.flag, l10n.uiCrewType, [
               Text(tableText(l10n, family.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, family.attack.shape), style: dim),
             ]),
-            section(l10n.uiCrewSkill, [
+            section(icon: UiSprites.star, l10n.uiCrewSkill, [
               Text(skillName(l10n, skill.id), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, skill.area.shape), style: dim),
               Text(skillDesc(l10n, skill), style: dim),
             ]),
             if (legend != null)
-              section(l10n.uiCrewLegend, [
-                if (legendNow == null) Text(l10n.uiCrewLegendLocked, style: dim),
-                for (final line in legendLines(l10n, legend))
-                  Text(line, style: legendNow == null ? dim : const TextStyle(color: PixelPalette.accent)),
-              ]),
+              section(
+                l10n.uiCrewLegend,
+                icon: legendNow == null ? UiSprites.lock : UiSprites.star,
+                // 열린 전설 능력은 금빛 판, 아직이면 흐린 판.
+                fill: legendNow == null ? Skin.track : const Color(0xFFFFF4CF),
+                border: legendNow == null ? Skin.plainEdge : Skin.goldBottom,
+                [
+                  if (legendNow == null) Text(l10n.uiCrewLegendLocked, style: dim),
+                  for (final line in legendLines(l10n, legend))
+                    Text(line, style: legendNow == null ? dim : Skin.text(15, color: Skin.goldInk)),
+                ],
+              ),
           ],
         ),
       ),
@@ -225,5 +264,25 @@ class _BigPortrait extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: _cardWidth,
     child: PbCardFront(crew: def, rarity: rarity, name: name, silhouette: !owned),
+  );
+}
+
+/// 작은 알약 (등급·출전 표시).
+class _Pill extends StatelessWidget {
+  const _Pill({required this.child, required this.fill, required this.border});
+
+  final Widget child;
+  final Color fill;
+  final Color border;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(
+      color: fill,
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: border, width: 1.5),
+    ),
+    child: child,
   );
 }
