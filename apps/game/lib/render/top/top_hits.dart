@@ -65,8 +65,9 @@ class TopHits {
   static const _chip = [0xFF8A5A30, 0xFFB57B44, 0xFF6B4423];
 
   /// 물보라(흰·하늘 점이 둥글게 퍼짐)·나뭇조각(배 바깥쪽으로 튐)·작은 번쩍. 전장 좌표.
-  void paint(Canvas c, double now, {required bool flash, bool powerSave = false}) {
+  void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
     _paintMuzzles(c, now, flash: flash, powerSave: powerSave);
+    _paintUpgrade(c, ship, now);
     _spots.removeWhere((p) => now - p.ms >= spotMs);
     for (final p in _spots) {
       final t = ((now - p.ms) / spotMs).clamp(0.0, 1.0);
@@ -146,7 +147,33 @@ class TopHits {
 
   final _ring = Paint()..style = PaintingStyle.stroke;
 
+  static const _upMs = 320.0;
+
+  /// 빠른 강화 빛 줄기 시작(장면 ms).
+  double upgradeAt = -1000000000;
+
+  /// 아래(강화 버튼 쪽)에서 배로 올라오는 금빛 줄기 + 배 둘레 반짝 고리. 배 중심 [ship], 전장 좌표.
+  void _paintUpgrade(Canvas c, Offset ship, double now) {
+    final age = now - upgradeAt;
+    if (age < 0 || age >= _upMs) return;
+    final t = age / _upMs;
+    final head = ship.dy + 90 * (1 - math.min(1, t * 2.5));
+    final fade = 1 - t;
+    _paint.color = Color.fromRGBO(255, 216, 74, 0.35 * fade);
+    c.drawRect(Rect.fromLTRB(ship.dx - 4, head, ship.dx + 4, ship.dy + 90), _paint);
+    _paint.color = Color.fromRGBO(255, 246, 200, 0.8 * fade);
+    c.drawRect(Rect.fromLTRB(ship.dx - 1, head, ship.dx + 1, ship.dy + 90), _paint);
+    if (t > 0.35) {
+      final k = (t - 0.35) / 0.65;
+      _ring
+        ..strokeWidth = 1.5
+        ..color = Color.fromRGBO(255, 216, 74, 1 - k);
+      c.drawCircle(ship, 10 + 16 * k, _ring);
+    }
+  }
+
   void clear() {
+    upgradeAt = -1000000000;
     shots.clear();
     _muzzles.clear();
     _lastMuzzle.clear();

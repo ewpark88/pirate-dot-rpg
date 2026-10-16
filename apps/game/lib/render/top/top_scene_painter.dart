@@ -142,7 +142,13 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
-    scene.topHits.paint(c, clockMs, flash: scene.settings.flash, powerSave: scene.settings.powerSave);
+    scene.topHits.paint(
+      c,
+      clockMs,
+      flash: scene.settings.flash,
+      powerSave: scene.settings.powerSave,
+      ship: scene.topShip,
+    );
     _foes
       ..hotAt = fever.level > 0 ? _hot : null
       ..paint(c, under: false, cull: visibleWorld);
