@@ -9,9 +9,10 @@ import 'package:pirate_dot/ui/meta/daily_providers.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
-import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -34,14 +35,15 @@ class DailyIcon extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final (quests, attendance) = _daily(ref);
     if (quests == null && attendance == null) return const SizedBox.shrink();
-    final claimable = (quests?.any(_claimable) ?? false) || (attendance != null && !attendance.claimedToday);
+    // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
+    final count = (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
     final icon = PixelIconButton(
       key: const Key('daily.icon'),
       asset: UiSprites.quest,
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
       onPressed: () => unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet())),
     );
-    return claimable ? PixelDot(key: const Key('daily.dot'), child: icon) : icon;
+    return count > 0 ? PixelDot(key: const Key('daily.dot'), count: count, child: icon) : icon;
   }
 }
 
@@ -140,18 +142,22 @@ class _Attendance extends ConsumerWidget {
       children: [
         Text(l10n.uiAttendanceTitle, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
-        // 7일차 문구가 길어도 칸 높이를 맞춘다.
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var i = 0; i < view.rewards.length; i++)
-                Expanded(
-                  child: _DayCell(day: i + 1, reward: view.rewards[i], view: view),
-                ),
-            ],
+        // 두 줄 (스킨 r2 다듬기): 1~4일 · 5~6일 + 7일(두 칸 폭, 큰 보상). 좁은 폰에서도 글이 한 줄에 들어간다.
+        for (final row in _rows(view.rewards.length)) ...[
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final day in row)
+                  Expanded(
+                    flex: day == view.rewards.length && row.length < 4 ? 2 : 1,
+                    child: _DayCell(day: day, reward: view.rewards[day - 1], view: view),
+                  ),
+              ],
+            ),
           ),
-        ),
+          const SizedBox(height: 4),
+        ],
         if (!view.claimedToday)
           Align(
             alignment: Alignment.centerRight,
@@ -166,6 +172,16 @@ class _Attendance extends ConsumerWidget {
     );
   }
 }
+
+/// 칸 줄 나누기: 앞 4일, 나머지(마지막 날은 두 칸 폭).
+List<List<int>> _rows(int n) => n <= 4
+    ? [
+        [for (var d = 1; d <= n; d++) d],
+      ]
+    : [
+        [for (var d = 1; d <= 4; d++) d],
+        [for (var d = 5; d <= n; d++) d],
+      ];
 
 class _DayCell extends StatelessWidget {
   const _DayCell({required this.day, required this.reward, required this.view});
@@ -183,32 +199,36 @@ class _DayCell extends StatelessWidget {
     final ticket = !reward.has('gems');
     // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
     final checked = day < view.day || (today && view.claimedToday);
-    // 도트 칸: 오늘은 금색 2칸 테두리(아직 안 받았으면 파란 바탕), 나머지는 1칸 테두리.
+    // 오늘(안 받음) = 금색 판·진한 글, 받은 날 = 흐린 판·초록 체크, 나머지 = 흰 판. 7일(소환권)은 금 테두리.
+    final fill = today && !checked ? Skin.goldTop : (checked ? Skin.track : Skin.card);
+    final ink = today && !checked ? Skin.goldInk : (checked ? Skin.sub : Skin.ink);
     return Padding(
       key: Key('attendance.day.$day.${checked ? 'checked' : (today ? 'today' : 'later')}'),
       padding: const EdgeInsets.all(2),
-      child: PixelFrame(
-        fill: today && !checked ? PixelPalette.actionDark : PixelPalette.navy,
-        border: today ? PixelPalette.gold : PixelPalette.border,
-        borderDots: today ? 2 : 1,
-        highlight: null,
+      child: SkinDepth(
+        fill: fill,
+        border: today ? Skin.goldEdge : (ticket ? Skin.goldBottom : null),
+        borderWidth: today ? 2.5 : 1.5,
+        radius: 12,
+        shadow: Skin.shadowSmall,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
         child: Column(
           children: [
-            Text(l10n.uiAttendanceDay(day), style: Theme.of(context).textTheme.labelSmall),
+            Text(l10n.uiAttendanceDay(day), maxLines: 1, style: Skin.text(12, color: ink)),
+            const SizedBox(height: 3),
             if (checked)
-              const PixelSprite(UiSprites.check, dots: 8)
-            else if (ticket)
-              const PixelSprite(UiSprites.tabSummon, dots: 16, scale: 1)
+              const SkinIcon(UiSprites.check, size: 22)
             else
-              const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
-            if (ticket)
-              Text(
-                l10n.uiAttendanceTicket,
-                style: Theme.of(context).textTheme.labelSmall,
-                textAlign: TextAlign.center,
-              )
-            else
-              Text(reward.integer('gems').toString(), style: Theme.of(context).textTheme.labelSmall),
+              SkinIcon(ticket ? UiSprites.tabSummon : UiSprites.gem, size: 22),
+            const SizedBox(height: 3),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                ticket ? l10n.uiAttendanceTicket : '${reward.integer('gems')}',
+                maxLines: 1,
+                style: Skin.text(13, color: ink),
+              ),
+            ),
           ],
         ),
       ),

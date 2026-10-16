@@ -167,12 +167,14 @@ class Round {
     hitStop('ultimate');
     if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
+    final before = kills;
     strike(
       (x: geo.center.x, y: geo.center.y, hits: spread(targets, w)),
       damageOf(gun, t.skills.ultimateMultiplier),
       crewId: captain,
     );
     control(targets, knockback: ult.knockback, stunSec: ult.stunSec);
+    field.ultimateKills += kills - before;
     return true;
   }
 
@@ -191,6 +193,7 @@ class Round {
     if (n >= w.multiKillMinKills) {
       gold = gold + field.comboGold.times(w.multiKillGoldBonusPerKill * n);
       ctx.emit(MultiKill(ctx.tick, count: n));
+      field.multiKill = n;
       if (n >= w.multiKillHitStopMinKills) hitStop('multiKill4');
     }
     field

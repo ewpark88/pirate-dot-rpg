@@ -1497,7 +1497,8 @@ const Map<String, String> rawTables = {
       "goldfish",
       "sea_serpent",
       "merchant_ship",
-      "bottle"
+      "bottle",
+      "chest"
     ],
     "fever": {
       "border": "#FFD84A",
@@ -1515,6 +1516,9 @@ const Map<String, String> rawTables = {
       "flashMs": 120,
       "dim": 0.25
     }
+  },
+  "frameCap": {
+    "battleFps": 60
   }
 }
 ''',
@@ -1662,11 +1666,20 @@ const Map<String, String> rawTables = {
   "seaEvents": {
     "intervalSec": [60, 120], "minStage": 5,
     "events": [
-      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 3, "autoCatchRatio": 0.3 },
+      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 4, "autoCatchRatio": 0.3 },
       { "id": "merchant", "weight": 20, "durationSec": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
       { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "rage": 0.3 },
       { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
+    ]
+  },
+  "challenges": {
+    "intervalSec": [180, 300], "minStage": 5, "rateWindowSec": 30,
+    "kinds": [
+      { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 1.3, "reward": { "type": "goldMinutes", "value": 1 } },
+      { "id": "combo", "weight": 25, "sec": 45, "multiKill": 5, "times": 2, "reward": { "type": "fever", "value": 0.3 } },
+      { "id": "noHit", "weight": 20, "sec": 20, "reward": { "type": "goldMinutes", "value": 1 } },
+      { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
   "fever": { "perKill": 0.00833, "multiKillBonus": 1.5, "bossKill": 0.25, "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5 },
@@ -1705,6 +1718,7 @@ const Map<String, String> rawTables = {
     "decisionSec": 1,
     "farmRetrySec": 60,
     "rebirthWallSec": 600,
+    "fishTapRatio": 0.6,
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
@@ -1719,7 +1733,9 @@ const Map<String, String> rawTables = {
       "firstLegendPromotedDays": { "min": 4, "max": 8, "schedule": "daily" },
       "firstMythicDays": { "min": 28, "max": 56, "schedule": "daily" },
       "rebirthRecoverSec": { "min": 0, "max": 300 },
-      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" }
+      "rebirthBeatBestMin": { "min": 8, "max": 30, "schedule": "continuous" },
+      "eventGoldPct": { "min": 10, "max": 20 },
+      "challengeWinPct": { "min": 60, "max": 70 }
     }
   }
 }

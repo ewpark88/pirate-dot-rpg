@@ -1069,7 +1069,8 @@
       "goldfish",
       "sea_serpent",
       "merchant_ship",
-      "bottle"
+      "bottle",
+      "chest"
     ],
     "fever": {
       "border": "#FFD84A",
@@ -1087,5 +1088,8 @@
       "flashMs": 120,
       "dim": 0.25
     }
+  },
+  "frameCap": {
+    "battleFps": 60
   }
 }

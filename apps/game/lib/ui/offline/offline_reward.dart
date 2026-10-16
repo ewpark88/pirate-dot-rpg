@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
@@ -109,7 +110,7 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
             children: [
               const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
               const SizedBox(width: 6),
-              BigNumText(preview.gold, style: Theme.of(context).textTheme.headlineSmall),
+              RewardSparkle(child: BigNumText(preview.gold, style: Theme.of(context).textTheme.headlineSmall)),
             ],
           ),
           if (preview.cards > 0) Text(l10n.uiCrewCards(preview.cards)),

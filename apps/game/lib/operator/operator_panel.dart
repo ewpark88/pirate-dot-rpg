@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/operator/battle_view_toggle.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
 import 'package:pirate_dot/operator/platform_group.dart';
 import 'package:pirate_dot/operator/render_group.dart';
@@ -118,7 +117,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
             },
           ),
         ]),
-        _Group(l10n.opGroupRender, const [RenderGroup(), SizedBox(height: 8), BattleViewToggle()]),
+        _Group(l10n.opGroupRender, const [RenderGroup()]),
         _Group(l10n.opGroupTutorial, const [TutorialTestGroup()]),
         _Group(l10n.opGroupEconomy, [
           const ChestTailwindGroup(),

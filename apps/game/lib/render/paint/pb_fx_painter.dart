@@ -28,6 +28,7 @@ class PbFxPainter {
   double? unitDp;
   double get _unitDp => unitDp ?? scene.layout.dot;
   static const _topMax = 12.0;
+  static const _topBlastMax = 30.0;
   late final _hooks = HookPainter(sprites);
   late final double _weaponDp = _cfg.number('weaponDp');
   late final double _weaponMinDots = _cfg.number('weaponMinDots');
@@ -36,6 +37,9 @@ class PbFxPainter {
   late final double _trail = _cfg.number('trailStep');
   late final double _blastSize = _cfg.number('blastSize');
   late final double _waterY = _cfg.number('waterY');
+
+  /// 가벼운 폭발(절전이거나 폭발이 많을 때): 연기·파편·불씨를 빼고 번쩍·불덩이·충격파만(S1 배터리). ScenePainter가 프레임마다 넣는다.
+  bool lite = false;
 
   bool get blastReady => sprites.sheet('blast:fireball_0_hot') != null;
 
@@ -92,7 +96,8 @@ class PbFxPainter {
   bool blast(Canvas c, Effect e) {
     if (!blastReady) return false;
     final t = e.ageMs - e.delayMs;
-    final d = e.w * _blastSize;
+    // 탑다운: 범위가 넓은 공격(S2 topRadius 34 등)이어도 폭발 그림은 배 길이의 반 정도까지만(배를 덮지 않게).
+    final d = unitDp == null ? e.w * _blastSize : math.min(e.w * _blastSize, _topBlastMax);
     final seed = ((e.x * 7.0).round() * 31 + (e.y * 3.0).round()) & 0x7fffffff;
     void part(
       String name,
@@ -132,7 +137,7 @@ class PbFxPainter {
         aspect: 72 / 104,
       );
     }
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < (lite ? 0 : 3); i++) {
       final a = (seed % 360 + i * 120) * math.pi / 180;
       final from = 180.0 + i * 50;
       part(
@@ -167,7 +172,7 @@ class PbFxPainter {
       angle: (seed % 7) * 0.12,
     );
     part('flash', 0, 90, (u) => d * (0.5 + 0.7 * u), (u) => 1 - u);
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < (lite ? 0 : 4); i++) {
       final a = -math.pi * (0.15 + 0.7 * ((seed >> (i * 3)) % 8) / 7);
       final v = d * (1.1 + 0.4 * ((seed >> (i * 2)) % 4) / 3);
       final g = d * 3.2;
@@ -184,7 +189,7 @@ class PbFxPainter {
         alpha: t > 550 ? (700 - t) / 150 : 1,
       );
     }
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < (lite ? 0 : 6); i++) {
       final a = -math.pi * (0.1 + 0.8 * i / 5);
       final v = d * 1.6;
       final sec = t / 1000;

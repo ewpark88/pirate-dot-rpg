@@ -94,6 +94,8 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('stage40OnlineMin', '스테이지 40 (계속 접속, 20분 이상)', (r) => _min(r.stage40), '분', within: Duration.zero),
     c('wallMaxMin', '가장 긴 벽(파밍, 접속 시간)', (r) => _min(r.wallMax), '분', within: Duration.zero),
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
+    c('eventGoldPct', '돌발 이벤트 골드 ÷ 처치 골드', (r) => r.eventGoldPct, '%', within: Duration.zero),
+    c('challengeWinPct', '즉석 도전 성공률', (r) => r.challengeWinPct, '%', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
     c('starterPromotionMin', '옥토 첫 등급 상승(승급·점프)', (r) => _min(r.starterPromotion), '분'),
     c('firstLegendOwnedDays', '첫 전설 보유', (r) => _days(r.firstLegendOwned), '일'),

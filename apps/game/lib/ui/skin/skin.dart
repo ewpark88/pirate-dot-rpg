@@ -52,6 +52,21 @@ abstract final class Skin {
   static const List<BoxShadow> shadow = [BoxShadow(color: shadowColor, blurRadius: 10, offset: Offset(0, 3))];
   static const List<BoxShadow> shadowSmall = [BoxShadow(color: shadowColor, blurRadius: 6, offset: Offset(0, 2))];
 
+  // ── 스킨 r2 깊이감 (docs/specs/ui-skin-r2.md ①) ──
+  /// 판 위→아래 그라데이션 아래쪽 색(흰 판), 판 아래 진한 테두리, 안쪽 위 하이라이트.
+  static const cardBottom = Color(0xFFF3F8FF);
+  static const cardEdge = Color(0xFFD3E1F3);
+  static const cardHighlight = Color(0xCCFFFFFF);
+
+  /// 판 아래 테두리 두께(떠 있는 판).
+  static const cardEdgeWidth = 3.0;
+
+  /// 두 겹 그림자: 넓게 흐린 것 + 바로 아래 진한 것.
+  static const List<BoxShadow> shadowDepth = [
+    BoxShadow(color: Color(0x241E3C78), blurRadius: 18, offset: Offset(0, 6)),
+    BoxShadow(color: Color(0x141E3C78), blurRadius: 3, offset: Offset(0, 1)),
+  ];
+
   // ── 글꼴 ── Jua(OFL) + Jua에 없는 기호(· × → … 등)는 Gowun Dodum 서브셋(OFL).
   static const font = 'Jua';
   static const fontFallback = ['GowunDodumSymbols'];
@@ -67,7 +82,7 @@ abstract final class Skin {
   );
 }
 
-/// 흰/크림 판 카드.
+/// 흰/크림 판 카드 (스킨 r2 깊이감 — [SkinDepth]).
 class SkinCard extends StatelessWidget {
   const SkinCard({required this.child, this.color = Skin.card, this.padding = const EdgeInsets.all(14), super.key});
 
@@ -76,14 +91,51 @@ class SkinCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(Skin.radiusCard),
-      boxShadow: Skin.shadow,
-    ),
-    child: Padding(padding: padding, child: child),
-  );
+  Widget build(BuildContext context) => SkinDepth(fill: color, padding: padding, child: child);
+}
+
+/// 떠 있는 판 (스킨 r2 ①): 아래 진한 테두리 + 위→아래 그라데이션 + 안쪽 위 하이라이트 + 두 겹 그림자.
+/// [fill]이 흰 판이면 연하늘로 내려가는 그라데이션, 다른 색이면 그 색에서 살짝 어둡게. [border]를 주면 그 색 테두리.
+class SkinDepth extends StatelessWidget {
+  const SkinDepth({
+    required this.child,
+    this.fill = Skin.card,
+    this.border,
+    this.borderWidth = 1.5,
+    this.padding = const EdgeInsets.all(14),
+    this.radius = Skin.radiusCard,
+    this.shadow = Skin.shadowDepth,
+    super.key,
+  });
+
+  final Widget child;
+  final Color fill;
+  final Color? border;
+  final double borderWidth;
+  final EdgeInsetsGeometry padding;
+  final double radius;
+  final List<BoxShadow> shadow;
+
+  @override
+  Widget build(BuildContext context) {
+    final white = fill == Skin.card;
+    final bottom = white ? Skin.cardBottom : Color.lerp(fill, Skin.ink, 0.04)!;
+    final edge = border ?? (white ? Skin.cardEdge : Color.lerp(fill, Skin.ink, 0.14)!);
+    return DecoratedBox(
+      decoration: BoxDecoration(color: edge, borderRadius: BorderRadius.circular(radius), boxShadow: shadow),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: Skin.cardEdgeWidth),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [fill, bottom]),
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(color: border ?? Skin.cardHighlight, width: border == null ? 1.5 : borderWidth),
+          ),
+          child: Padding(padding: padding, child: child),
+        ),
+      ),
+    );
+  }
 }
 
 /// 둥근 알약 진행 막대 (채움은 같은 색 밝기 그라데이션).
