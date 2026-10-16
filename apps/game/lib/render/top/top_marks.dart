@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/paint/hp_pill.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/paint/status_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
@@ -18,6 +19,11 @@ class TopMarks {
   final _ring = Paint()
     ..isAntiAlias = false
     ..style = PaintingStyle.stroke;
+
+  late final HpPill _pill = HpPill(scene.fx.raw.obj('shipHp'));
+  late final double _lagMs = scene.fx.raw.obj('shipHp').number('lagMs');
+  final Map<int, double> _bossLag = {};
+  double _lastMs = 0;
 
   late final int _zoneColor =
       ((scene.fx.zone.number('alpha') * 0xFF).round() << 24) |
@@ -57,6 +63,38 @@ class TopMarks {
       if (e.shielded) _circle(c, at, r + 1 + _shieldGap, _shieldPx, _shieldColor);
       _status.paint(c, e, e.drawY - r, e.drawY + r);
     }
+  }
+
+  /// 보스 체력 막대: 보스 위 알약형(해골 아이콘), 배 막대와 같은 3단계 색·흰 지연 조각.
+  void bosses(Canvas c, double Function(EnemyPose e) radiusOf) {
+    final dt = (scene.clockMs - _lastMs).clamp(0.0, 100.0);
+    _lastMs = scene.clockMs;
+    for (var k = 0; k < scene.poseCount; k++) {
+      final e = scene.poses[k];
+      if (!e.boss) continue;
+      final r = radiusOf(e);
+      final ratio = e.hpRatio.clamp(0.0, 1.0);
+      final prev = _bossLag[e.id] ?? ratio;
+      final lag = prev < ratio ? ratio : (prev - dt / _lagMs).clamp(ratio, 1.0);
+      _bossLag[e.id] = lag;
+      final w = (r * 1.6).clamp(30.0, 60.0).roundToDouble() + 6;
+      var fill = _pill.colorFor(ratio);
+      if (_pill.isLow(ratio) && (scene.clockMs / 250).floor().isEven) {
+        fill = Color.lerp(Color(fill), const Color(0xFFFFFFFF), 0.35)!.toARGB32();
+      }
+      _pill.paint(
+        c,
+        left: (e.drawX - w / 2).roundToDouble(),
+        top: (e.drawY - r - 10).roundToDouble(),
+        w: w,
+        h: 6,
+        ratio: ratio,
+        lag: lag,
+        fill: fill,
+        skull: true,
+      );
+    }
+    if (_bossLag.length > 8) _bossLag.clear();
   }
 
   /// 떠내려온 보물상자(전장 좌표). 가라앉을수록 흐려진다 — 누를 곳·남은 시간 링·금액은 UI(ChestLayer).
