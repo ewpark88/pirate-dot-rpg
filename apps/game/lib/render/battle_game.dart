@@ -16,7 +16,6 @@ import 'package:pirate_dot/render/perf/frame_cap.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
-import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
@@ -94,6 +93,7 @@ class BattleGame extends FlameGame with _UiLinks {
   @override
   bool _sceneReady = false;
 
+  @override
   late ScenePainter painter;
   late BattleMode mode;
   StreamSubscription<RecordedTick>? _sub;
@@ -104,7 +104,6 @@ class BattleGame extends FlameGame with _UiLinks {
 
   /// 장면을 진행한 횟수 (절전 확인용).
   int sceneUpdates = 0;
-  @override
   TopFrame _topFrame = topFrameFor(const Size(320, 180), 1);
   double _powerSaveAccum = 0;
   double _summaryAccum = 0;
