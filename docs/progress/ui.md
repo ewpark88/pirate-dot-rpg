@@ -4,7 +4,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | S1 목록 1~6 끝(ea1bdb5까지) — S1 머지 대기. 대기 중 계약: S2 lane/economy(Settings.hints·MarkHint·CancelAutoUpgrade·crewAttack·rarities mythic 빨강), S5 계열 v3·FastSailEnded.lost. main에 오면 붙인다 |
+| 상태 | 266ef34까지(보스 이름표·S2 계약·사거리·sheet_perf build 횟수·계열 11·넓은 화면 점검·바다 괴물 도감 골격·컷인 이름) — S1 머지 대기. 계약 대기: S5 도감 v2 상태·fever-break(BattleView bossBreak 등)·ShipResupplied, FastSailEnded.lost |
 | 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
 
 ## 세션 로그 (최신이 위)
