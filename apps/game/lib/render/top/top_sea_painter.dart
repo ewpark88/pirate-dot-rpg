@@ -24,6 +24,15 @@ class TopSeaPainter {
 
   /// 보물 바다(환생 v2 §4): 물결·거품·반짝임을 금빛으로, 반짝임 더 자주.
   bool gold = false;
+
+  /// 피버 물들임 0~1 (TopFever.level × fever seaAlpha): 바다 색을 금빛 바다 쪽으로 섞는다(덮개 섞기는 기기마다 달라 색 자체를 바꾼다).
+  double fever = 0;
+  late final Color _feverBase = Color(_c('feverBase'));
+  late final Color _feverDeep = Color(_c('feverDeep'));
+  late final Color _feverShallow = Color(_c('feverShallow'));
+
+  /// 파랑 → (금빛 바다 gold면) 금빛 → (피버면) 호박색.
+  Color _mix(Color blue, Color gold, Color fever) => Color.lerp(this.gold ? gold : blue, fever, this.fever)!;
   late final double _tile = cfg.number('tile');
   late final double _speed = cfg.number('flowSpeed');
   final _paint = Paint()..isAntiAlias = false;
@@ -117,7 +126,7 @@ class TopSeaPainter {
       _build(view.size);
       _builtFor = view.size;
     }
-    _paint.color = gold ? _goldBase : _base;
+    _paint.color = _mix(_base, _goldBase, _feverBase);
     c.drawRect(view.inflate(1), _paint);
     void layer(Path p, Color color, double parallax) {
       final o = flow * parallax;
@@ -131,12 +140,12 @@ class TopSeaPainter {
         ..restore();
     }
 
-    layer(_deepPath, _deep, 0.6);
-    layer(_shallowPath, _shallow, 0.6);
-    layer(_wavePath, gold ? _goldWave : _wave, 1);
+    layer(_deepPath, _mix(_deep, _deep, _feverDeep.withValues(alpha: _deep.a)), 0.6);
+    layer(_shallowPath, _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a)), 0.6);
+    layer(_wavePath, _mix(_wave, _goldWave, _goldWave), 1);
     // 거품: 천천히 숨 쉬듯 나타났다 사라짐
     final foamA = 0.35 + 0.35 * math.sin(clockMs / 900);
-    layer(_foamPath, (gold ? _goldFoam : _foam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
+    layer(_foamPath, _mix(_foam, _goldFoam, _goldFoam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);
     // 햇빛 반짝임: 세 무리로 나눠 깜빡임(무리마다 알파 하나 → drawRawPoints 3번)
     final o = flow;
     final dx = (o.dx % _tile) - _tile + view.left;
