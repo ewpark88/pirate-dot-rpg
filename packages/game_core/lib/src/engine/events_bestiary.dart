@@ -24,6 +24,13 @@ GameEvent _bestiaryEventFromJson(int t, Json j) => switch (j['type'] as String) 
     x: (j['x'] as num).toDouble(),
     y: (j['y'] as num).toDouble(),
   ),
+  'bossBroken' => BossBroken(
+    t,
+    enemyId: j['enemyId'] as int,
+    ticks: j['ticks'] as int,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
+  ),
   _ => BomberBlast(
     t,
     enemyId: j['enemyId'] as int,
@@ -111,4 +118,20 @@ class BomberBlast extends GameEvent {
 
   @override
   Json _fields() => {'enemyId': enemyId, 'x': x, 'y': y, 'radius': radius, 'onShip': onShip};
+}
+
+/// 보스 브레이크(사용자 결정 2026-10-17): 게이지가 가득 차 보스가 [ticks] 동안 쓰러졌다 — 그동안 받는 피해 × damageMul.
+class BossBroken extends GameEvent {
+  const BossBroken(super.tick, {required this.enemyId, required this.ticks, required this.x, required this.y});
+
+  final int enemyId;
+  final int ticks;
+  final double x;
+  final double y;
+
+  @override
+  String get type => 'bossBroken';
+
+  @override
+  Json _fields() => {'enemyId': enemyId, 'ticks': ticks, 'x': x, 'y': y};
 }

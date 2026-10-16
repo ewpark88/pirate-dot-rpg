@@ -137,21 +137,29 @@ void main() {
     expect(r.gold > goldBefore, isTrue); // 동시 처치 골드 보너스
   });
 
-  test('7. 함성 게이지가 가득이면 다음 틱에 궁극기, 게이지 0', () {
-    final e = engineOf(game(crews: {crewOf('skip'): const CrewState(level: 3)}, rage: tables.skills.rageMax))..tick();
-    final ult = e.drainEvents().whereType<UltimateCast>().single;
-    expect(ult.crewId, crewOf('skip'));
-    expect(ult.ultimateId, family('skip').ultimateId);
-    // 게이지는 0으로 돌아간다(같은 틱 스킬 처치로 조금 다시 찰 수는 있다).
-    expect(e.state.progress.rage, lessThan(tables.skills.rageMax * 0.1));
+  test('7. 궁극기 제거(사용자 결정 2026-10-17): 분노는 쌓이지 않고 버튼도 무시, 피버가 켜지는 틱에 선장 궁극기 효과 한 번', () {
+    final s = game(crews: {crewOf('skip'): const CrewState(level: 30)}).copyWith(
+      progress: const Progress(fever: 0.999),
+    );
+    final e = engineOf(s)..enqueue(const TriggerUltimate());
+    final events = <GameEvent>[];
+    for (var i = 0; i < 2000 && events.whereType<FeverEnded>().isEmpty; i++) {
+      e.tick();
+      events.addAll(e.drainEvents());
+    }
+    final started = events.whereType<FeverStarted>().first;
+    final ults = events.whereType<UltimateCast>().toList();
+    expect(ults, hasLength(1), reason: '피버 하나에 첫 일격 하나');
+    expect(ults.single.tick, started.tick + 1, reason: '피버가 켜진 다음 틱(전투가 피버 상태를 보는 첫 틱)');
+    expect(ults.single.ultimateId, family('skip').ultimateId);
+    expect(e.state.progress.rage, 0, reason: '분노는 쌓이지 않는다');
   });
 
-  test('처치하면 골드가 지갑에 들어가고 게이지가 찬다', () {
+  test('처치하면 골드가 지갑에 들어간다', () {
     final e = engineOf(game(crews: {crewOf('direct'): const CrewState(level: 30)}))..advance(40 * 1000 ~/ w.tickMs);
     final kills = e.drainEvents().whereType<Kill>().toList();
     expect(kills, isNotEmpty);
     expect(e.state.wallet.gold.isZero, isFalse);
-    expect(e.state.progress.rage, greaterThan(0));
     // 일일 퀘스트 '처치' 진행 (경제 addQuestProgress를 전투가 부른다).
     final killQuest = tables.meta.dailyQuests.firstWhere((q) => q.str('type') == 'kill');
     expect(e.state.daily.quests[killQuest.str('id')], kills.length.clamp(0, killQuest.integer('target')));

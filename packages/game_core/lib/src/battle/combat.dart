@@ -162,10 +162,11 @@ class Round {
     }
   }
 
-  /// 함성 게이지가 가득이면 선장의 궁극기: 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과 (규칙 7, battle-m3 2).
+  /// 피버 첫 일격(사용자 결정 2026-10-17 — 궁극기·분노 게이지 제거, fever_strike.dart가 피버 시작 틱에 부른다):
+  /// 선장 계열 궁극기 효과로 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과.
   bool castUltimate() {
     final captain = field.captainId;
-    if (rage < t.skills.rageMax || captain == null) return false;
+    if (captain == null) return false;
     final gun = field.guns.firstWhere((g) => g.crewId == captain);
     final ult = gun.family.ultimate;
     final targets = [
@@ -284,7 +285,6 @@ class Round {
     gold = gold + g;
     kills += 1;
     ctx.emit(Kill(ctx.tick, targetId: e.id, gold: g, x: e.x, y: e.y));
-    rage = rage + t.skills.ragePerKill > t.skills.rageMax ? t.skills.rageMax : rage + t.skills.ragePerKill;
     field
       ..comboKills += 1
       ..comboGold = field.comboGold + g

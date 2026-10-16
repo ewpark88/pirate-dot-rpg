@@ -179,7 +179,8 @@ class FamilyDef {
 
 class SkillsTable {
   SkillsTable.fromJson(JsonReader j)
-    : families = j.objs('families').map(FamilyDef.fromJson).toList(),
+    : raw = j,
+      families = j.objs('families').map(FamilyDef.fromJson).toList(),
       crewSkills = j.objs('crewSkills').map(SkillDef.fromJson).toList(),
       maxSameFamilyInFleet = j.integer('maxSameFamilyInFleet'),
       legendSkillScope = j.str('legendSkillScope'),
@@ -198,6 +199,9 @@ class SkillsTable {
       rarityTempo = j.has('rarityTempo')
           ? [for (final v in j.raw['rarityTempo'] as List) (v as num).toDouble()]
           : const [];
+
+  /// 원문(선택 키 — 예 bossBreak, 도감·브레이크 v2).
+  final JsonReader raw;
 
   final List<FamilyDef> families;
 

@@ -252,6 +252,7 @@ class TopGeometry implements BattleGeometry {
   @override
   void push(Foe e, double distance) {
     if (e.passX != null || e.vanguard) return; // 지나가는 배는 경로를, 돌격대는 돌진을 지킨다
+    if (e.boss) e.breakPull += distance.abs(); // 보스 브레이크(boss_break.dart)
     final d = _dist(e);
     if (d == 0) return;
     _spawn.place(e, _angle(e), math.min(d + distance, math.max(d, top.approachRadius)));
@@ -260,6 +261,7 @@ class TopGeometry implements BattleGeometry {
   @override
   void pull(Foe e, double x, double y, double amount) {
     if (e.passX != null || e.vanguard) return;
+    if (e.boss) e.breakPull += amount.abs();
     final dx = x - e.x;
     final dy = y - e.y;
     final d = math.sqrt(dx * dx + dy * dy);

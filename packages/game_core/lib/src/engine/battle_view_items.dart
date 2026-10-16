@@ -20,6 +20,8 @@ class EnemyView {
     this.vulnerable = false,
     this.emerging = false,
     this.vanguard = false,
+    this.breakRatio = 0,
+    this.broken = false,
     this.heading = sideHeading,
     this.eventKind,
   });
@@ -40,6 +42,8 @@ class EnemyView {
     vulnerable: j['vulnerable'] as bool? ?? false,
     emerging: j['emerging'] as bool? ?? false,
     vanguard: j['vanguard'] as bool? ?? false,
+    breakRatio: (j['breakRatio'] as num?)?.toDouble() ?? 0,
+    broken: j['broken'] as bool? ?? false,
     heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
     eventKind: j['eventKind'] as String?,
   );
@@ -80,6 +84,10 @@ class EnemyView {
   /// 돌격대(넉백·기절 면역, 배로 곧장) — 렌더가 붉은 테·물보라 꼬리로 구분. 선택 키.
   final bool vanguard;
 
+  /// 보스 브레이크 게이지 0~1(사용자 결정 2026-10-17 — 기절·끌기·취약·둔화가 쌓임), [broken] = 쓰러져 피해 × n 받는 중. 선택 키.
+  final double breakRatio;
+  final bool broken;
+
   /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
   final double heading;
 
@@ -102,6 +110,8 @@ class EnemyView {
     'vulnerable': vulnerable,
     if (emerging) 'emerging': true,
     if (vanguard) 'vanguard': true,
+    if (breakRatio > 0) 'breakRatio': breakRatio,
+    if (broken) 'broken': true,
     if (heading != sideHeading) 'heading': heading,
     if (eventKind != null) 'eventKind': eventKind,
   };
