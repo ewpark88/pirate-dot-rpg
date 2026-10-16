@@ -88,12 +88,17 @@ class PbFxPainter {
       Rect.fromCenter(center: Offset(p.x, p.y), width: size * (0.7 - 0.25 * lift), height: size * (0.35 - 0.12 * lift)),
       _shadow,
     );
-    final grow = (1 + 0.45 * lift) * (1 + 0.35 * fever);
+    // 타격감 v3: 폭탄 15% 크게 + 착탄 직전(마지막 15%) 원근으로 15% 더 커짐.
+    final near = p.progress > 0.85 ? (p.progress - 0.85) / 0.15 : 0.0;
+    final grow = (1 + 0.45 * lift) * (1 + 0.35 * fever) * 1.15 * (1 + 0.15 * near);
     // 등급 꼬리(영웅·전설·신화) 먼저, 피버면 불 꼬리를 더한다(S1).
     _trails.paint(c, p, size);
     if (fever > 0) _fireTail(c, p, size, height);
     final turn = p.progress * _spinTurns * 2 * math.pi;
     final angle = p.style.path == ProjectilePath.line ? math.atan2(p.toY - p.fromY, p.toX - p.fromX) : turn;
+    // 굵은 윤곽: 폭탄 뒤 진한 그림자 원(바다·폭발 위에서도 형태가 읽히게).
+    _fire.color = const Color(0x881E1A26);
+    c.drawCircle(Offset(p.x, p.y - height * 0.35), size * grow * 0.5, _fire);
     sprites.drawSmooth(c, key, p.x, p.y - height * 0.35, w * grow, h * grow, angle: angle);
     return true;
   }

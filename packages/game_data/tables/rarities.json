@@ -4,7 +4,7 @@
     { "id": "rare", "stars": 2, "summonRate": 0.27, "levelMin": 16, "levelMax": 30, "color": "#4FA3FF", "nameKey": "crewRarityRare" },
     { "id": "hero", "stars": 3, "summonRate": 0.07, "levelMin": 31, "levelMax": 45, "color": "#B36BFF", "nameKey": "crewRarityHero" },
     { "id": "legend", "stars": 4, "summonRate": 0.01, "levelMin": 46, "levelMax": 60, "color": "#FFC53D", "nameKey": "crewRarityLegend" },
-    { "id": "mythic", "stars": 5, "summonRate": 0.0, "levelMin": 61, "levelMax": 75, "color": "#FF6FD8", "nameKey": "crewRarityMythic" }
+    { "id": "mythic", "stars": 5, "summonRate": 0.0, "levelMin": 61, "levelMax": 75, "color": "#D7263D", "nameKey": "crewRarityMythic" }
   ],
   "pity": { "count": 50, "minRarity": "hero" },
   "bossDropRates": { "common": 0.8, "rare": 0.17, "hero": 0.028, "legend": 0.002 }

@@ -101,7 +101,7 @@ class TopAim {
         (ax, ay) = (center.x, center.y);
         hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= radius).toList()
           ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
-      case 'line':
+      case 'line' || 'laser': // 레이저(계열 v3)도 같은 광선 — 관통 수는 laserPierce(0 = 화면 끝까지), 감쇠 없음
         // 배 → 대상 방향 광선(폭 안, 배 앞쪽만, 가까운 순 pierce마리). 대상은 그 광선에 가장 많이 걸리는 적
         // (같으면 가까운 쪽) — 옆모습에서 한 줄(레인)로 오는 무리를 꿰뚫던 것과 같은 몫.
         List<Foe> along(Foe t) {
@@ -112,7 +112,7 @@ class TopAim {
           double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
           return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
                 ..sort((p, q) => proj(p).compareTo(proj(q))))
-              .take(a.pierce)
+              .take(pierceOf(a, targets.length))
               .toList();
         }
         var best = first();
@@ -126,7 +126,7 @@ class TopAim {
         }
         (ax, ay) = (best.x, best.y);
         hit = bestHit;
-        falloff = true;
+        falloff = a.shape == 'line';
       case 'chain':
         final start = first();
         (ax, ay) = (start.x, start.y);
@@ -172,6 +172,24 @@ class TopAim {
         hit = [t];
     }
     return (x: ax, y: ay, hits: spread(hit, w, falloff: falloff));
+  }
+
+  /// 광선이 꿰는 수: 레이저는 laserPierce(0 = 전부 — [all]), 그 밖은 pierce.
+  int pierceOf(AttackDef a, int all) {
+    if (a.shape != 'laser') return a.pierce;
+    final n = a.raw.numberOr('laserPierce', 1).round();
+    return n <= 0 ? all : n;
+  }
+
+  /// 지금 배에서 (ux, uy) 방향 광선 위 적(가까운 순, 관통 수만큼) — 레이저 빔이 매 틱 다시 잰다.
+  List<Foe> beamHits(AttackDef a, double ux, double uy, List<Foe> foes) {
+    final targets = eligible(a, foes);
+    double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
+    double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
+    return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
+          ..sort((p, q) => proj(p).compareTo(proj(q))))
+        .take(pierceOf(a, targets.length))
+        .toList();
   }
 
   /// 첫 대상(선원 개성 v2 조준 8종, docs/specs/platform-crew-identity-v2.md 1절). 계열 기본값 nearest·front는 가까운 적.

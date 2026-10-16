@@ -188,6 +188,7 @@ class EventDirector implements ReplayListener {
 
   /// [number]가 false면 숫자 없이 피격 연출만 (범위 피해는 합산 숫자 하나 — 기준 장면 show=False).
   void _damage(Damage e, RecordedTick tick, int index, {required bool number}) {
+    if (scene.isTop) _juiceHit(e, index);
     final target = _player.enemyAt(index - 1, e.targetId) ?? _player.enemyAt(index, e.targetId);
     if (target == null) return;
     final tx = target.boss ? scene.layout.clampBossX(target.x) : target.x;
@@ -238,6 +239,7 @@ class EventDirector implements ReplayListener {
   }
 
   void _kill(Kill e, int index) {
+    if (scene.isTop) _juiceKill(e);
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
     // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').

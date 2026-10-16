@@ -9,4 +9,4 @@ steps:
   - advance: 1t
   - expect: { mode: top, stage: 10, wave: 0, quadrants: 4 }
   - advance: 40s
-  - expect: { mode: top, stage: 11 }
+  - expect: { mode: top, stage: 12 }  # 등급 템포·신화 범위·돌격대 뒤 40초에 두 스테이지(시드 기준)

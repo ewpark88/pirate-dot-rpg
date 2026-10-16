@@ -161,6 +161,18 @@ extension _TopEvents on EventDirector {
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final water = crew != null && _crewFamily[crew] == 'underwater';
     scene.topHits.impact.add(e.x, e.y, math.min(r, 64), color, scene.clockMs, water: water);
+    // 타격감 v3: 범위 = 중 단계(히트스톱·방향 흔들림), 맞은 적은 폭심에서 바깥으로 튕김.
+    scene.topHits.juice.hit(
+      scene.clockMs,
+      Offset(e.x, e.y) - scene.topShip,
+      strong: false,
+      shake: scene.settings.shake,
+    );
+    for (final d in tick.events.whereType<Damage>()) {
+      final en = _player.enemyAt(index, d.targetId);
+      if (en != null) scene.topHits.juice.knock(d.targetId, Offset(en.x, en.y), Offset(e.x, e.y), scene.clockMs);
+    }
+    scene.sound.thud(scene.clockMs, big: false);
   }
 
   /// 발사체 비행 구간(틱): 엔진이 flightTicks(개성 v2 조준탄)를 주면 쏜 틱부터 그만큼 날아 닿는다(빗나가면 AttackMissed),
@@ -197,6 +209,23 @@ extension _TopEvents on EventDirector {
     if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
     if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
   }
+
+  /// 타격감 v3 명중: 약 = 흰 번쩍(기존) · 중(치명) = 히트스톱 40ms·흔들림 2dp·넉백 · 강(보스) = 60ms·4dp + 낮은 '쿵'.
+  void _juiceHit(Damage e, int index) {
+    final en = _player.enemyAt(index, e.targetId);
+    if (en == null) return;
+    final strong = en.boss;
+    if (!strong && !e.crit) return;
+    final ship = scene.topShip;
+    final at = Offset(en.x, en.y);
+    scene.topHits.juice
+      ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake)
+      ..knock(e.targetId, at, ship, scene.clockMs, units: strong ? 3 : 5);
+    scene.sound.thud(scene.clockMs, big: strong);
+  }
+
+  /// 타격감 v3 처치: 잉크·조각이 튐(적 크기 8).
+  void _juiceKill(Kill e) => scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

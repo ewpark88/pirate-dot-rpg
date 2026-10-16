@@ -9,7 +9,7 @@ import 'package:game_data/game_data.dart';
 
 /// 보스 행동 v2 (docs/specs/platform-boss-patterns.md): 쉼 → 예고 → 동작을 패턴 순서대로 돈다.
 class BossPlan {
-  BossPlan(this.patterns, this.restTicks) : ticksLeft = restTicks;
+  BossPlan(this.patterns, this.restTicks, {int? firstTicks}) : ticksLeft = firstTicks ?? restTicks;
 
   final List<BossPatternDef> patterns;
   final int restTicks;
