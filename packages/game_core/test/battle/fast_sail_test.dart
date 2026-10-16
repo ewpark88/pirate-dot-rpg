@@ -60,7 +60,7 @@ void main() {
     expect(r.state.progress.stage, to + 1);
     // 리듬 가속(사용자 지시): 2.0초 × 0.75ⁿ, 최소 0.25초 + 이동(같은 비율), 마지막 0.6초 — 13스테이지 합 ≈ 2+1.5+1.13+0.84+0.63+0.47+0.36+0.27+0.25×4+0.6 + 이동
     final secs = r.ticks * t.waves.tickMs / 1000;
-    expect(secs, lessThan(12), reason: '점점 빨라져 순식간에');
+    expect(secs / ended.stages, lessThan(0.8), reason: '점점 빨라져 순식간에(스테이지당 평균)');
     final gaps = [for (var i = 1; i < strikes.length; i++) strikes[i].tick - strikes[i - 1].tick];
     expect(gaps.first, greaterThan(gaps[gaps.length - 2] * 3), reason: '처음보다 훨씬 빠르게');
     expect(strikes.map((e) => e.phase).toSet(), {'build', 'rush', 'finale'});
