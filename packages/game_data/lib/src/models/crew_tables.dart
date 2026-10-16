@@ -61,9 +61,10 @@ class CrewTable {
     final ids = crews.map((c) => c.id).toSet();
     expect(e, that: ids.length == crews.length, message: 'crews: id 중복');
     expect(e, that: crews.length == 40, message: 'crews: 40명이어야 함 (${crews.length})');
+    // 계열 v3(사용자 승인 2026-10-16)부터 계열 인원은 5·4·2로 다르다 — 원래 8계열에 한 명 이상이면 된다(새 계열 ring·cluster·laser는 skills 표).
     for (final f in crewFamilies) {
       final n = crews.where((c) => c.family == f).length;
-      expect(e, that: n == 5, message: 'crews: 계열 $f가 5명이 아님 ($n)');
+      expect(e, that: n >= 1, message: 'crews: 계열 $f에 선원이 없음');
     }
     const expected = {'common': 12, 'rare': 12, 'hero': 8, 'legend': 8};
     for (final r in expected.entries) {

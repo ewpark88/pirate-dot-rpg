@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 등급 템포·신화 범위 균형(진행 중) → 커밋 / S5 boss-tune f8fc657 머지 뒤 보스 HP '처치 10~20초'·돌격대 attackMul / 야간 100명 리포트 |
+| 바로 다음 할 일 | 계열 v3 1·2단계(출격·레이저) 균형 재적합(진행 중) → 커밋 / 3단계 원형·4단계 집속(S5) / 보스 HP·돌격대 attackMul(S5 f8fc657 머지 뒤) / 야간 리포트 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 · S2 · 등급 템포 커밋·계열 v3
+- fa788e8 rarityTempo·신화 splash 23명·돌격대 표·crewAttack(S4)·신화 색 빨강.
+- 계열 v3(미커밋): 강습·공중 behavior sortie + 간격 ×2.5·×1.8, pelly는 낙뢰라 출격 제외(aim behavior lightning), laser 계열 신설(pierce 바탕 ×1.6, 빔 0.4초, laserPierce [1,2,3,5,0]) · lamp·nar 재배정, crews 검증 '계열당 5명' → '원래 8계열에 1명 이상'.
+- 남은 문제: S4에 battleFamilyLaser 이름 키 요청 필요(지금 pierce 이름을 빌림).
 
 ### 2026-10-16 · S2 · 공속·현상금 B2·안내 키·돌격대
 - ce9cdb3 공속 ×1.4(평균 2.16초) 균형 0.907~1.099 / dd9931b 현상금 B2(티켓 충전·시작·소탕·요일 고정·현상금 중 상자 멈춤) / fa0e753 Settings.hints + MarkHint.

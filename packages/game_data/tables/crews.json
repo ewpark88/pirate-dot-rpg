@@ -248,7 +248,7 @@
       "id": "nar",
       "num": 12,
       "baseRarity": "rare",
-      "family": "pierce",
+      "family": "laser",
       "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/nar.png",
@@ -256,11 +256,7 @@
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.4,
-        "powerScale": 0.9259,
-        "mythic": {
-          "splashRadius": 14,
-          "splashRatio": 0.5
-        }
+        "powerScale": 0.9729
       }
     },
     {
@@ -828,15 +824,16 @@
       "id": "lamp",
       "num": 40,
       "baseRarity": "legend",
-      "family": "shock",
+      "family": "laser",
       "reachBonus": 6,
       "fx": "level_up",
       "portrait": "crews/lamp.png",
       "nameKey": "crewLampName",
       "skill": "support_rally",
       "aim": {
+        "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.773
+        "powerScale": 0.7377
       }
     }
   ]
