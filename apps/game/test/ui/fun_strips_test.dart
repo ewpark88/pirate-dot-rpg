@@ -70,6 +70,30 @@ void main() {
     expect(find.byKey(const Key('fun.challenge.done')), findsNothing);
   });
 
+  testWidgets('도전 성공 띠: 큰 골드 보상도 작은 알약 폭(160) 안에 (S5 발견 넘침)', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = _with(challenge: const ChallengeView(id: 'kills', target: 50, value: 49, ticksLeft: 100));
+    await pumpGame(
+      tester,
+      s,
+      size: const Size(360, 640),
+      dpr: 3,
+      openTab: false,
+      overrides: [battleFeedProvider.overrideWithValue(feed.stream)],
+    );
+    feed.add(
+      RecordedTick(s.battle!, [
+        ChallengeEnded(1, id: 'kills', success: true, reward: 'gold:${BigNum.parse('1.234e15')}'),
+      ]),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('fun.challenge.done')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byKey(const Key('fun.challenge.done'))).width, lessThanOrEqualTo(160));
+    await tester.pump(const Duration(seconds: 2));
+  });
+
   testWidgets('피버: 평소엔 작은 막대, 발동 중엔 큰 원형 게이지(남은 초)', (tester) async {
     await pumpGame(tester, _with(fever: 0.5), openTab: false);
     expect(find.byKey(const Key('fun.fever')), findsOneWidget);

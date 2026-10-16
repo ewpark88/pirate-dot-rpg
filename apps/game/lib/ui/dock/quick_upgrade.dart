@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -46,6 +47,40 @@ final quickUpgradeProvider = Provider<String?>((ref) {
   return best ?? cheapest;
 });
 
+/// 버튼에 보일 다음 강화: 부품·비용·모자란 골드(살 수 있으면 null). 살 게 없으면 가장 싼 부품을 흐리게 보인다.
+typedef QuickTarget = ({String part, BigNum cost, BigNum? short});
+
+final quickTargetProvider = Provider<QuickTarget?>((ref) {
+  final tables = ref.watch(tablesProvider);
+  final best = ref.watch(quickUpgradeProvider);
+  final key = ref.watch(
+    gameStateProvider.select(
+      (s) => '${s.wallet.gold.format()}|${[for (final p in tables.shipParts.parts) s.ship.level(p.id)].join(',')}',
+    ),
+  );
+  if (key.isEmpty) return null;
+  final s = ref.read(gameStateProvider);
+  var part = best;
+  BigNum? cost;
+  if (part == null) {
+    // 살 수 있는 게 없음 → 최대 레벨이 아닌 부품 중 가장 싼 것.
+    for (final p in tables.shipParts.parts) {
+      final lv = s.ship.level(p.id);
+      if (p.maxLevel != null && lv >= p.maxLevel!) continue;
+      final c = partCost(p, lv);
+      if (cost == null || c < cost) {
+        cost = c;
+        part = p.id;
+      }
+    }
+  } else {
+    cost = partCost(tables.shipParts.byId(part), s.ship.level(part));
+  }
+  if (part == null || cost == null) return null;
+  final short = s.wallet.gold >= cost ? null : cost - s.wallet.gold;
+  return (part: part, cost: cost, short: short);
+});
+
 /// 도크 옆 ‘빠른 강화’ (사용자 결정): 지금 가장 효율 좋은 부품 1회, 길게 누르면 연속. 살 게 없으면 회색.
 class QuickUpgradeButton extends ConsumerStatefulWidget {
   const QuickUpgradeButton({super.key});
@@ -54,8 +89,31 @@ class QuickUpgradeButton extends ConsumerStatefulWidget {
   ConsumerState<QuickUpgradeButton> createState() => _QuickUpgradeButtonState();
 }
 
-class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> {
+class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with SingleTickerProviderStateMixin {
   Timer? _repeat;
+  StreamSubscription<RecordedTick>? _sub;
+
+  /// 누를 때마다 버튼 위로 떠오르는 '+대포 Lv 53' (사용자 지시: 업그레이드됐는지 보이게).
+  late final AnimationController _float = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+  String? _floatText;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = ref.read(battleFeedProvider)?.listen((tick) {
+      for (final e in tick.events) {
+        if (e is PartUpgraded && mounted) {
+          final l10n = AppLocalizations.of(context);
+          final name = tableText(l10n, ref.read(tablesProvider).shipParts.byId(e.part).nameKey);
+          setState(() => _floatText = l10n.uiQuickUpgradeDone(e.level, name));
+          _float.forward(from: 0).ignore();
+        }
+      }
+    });
+  }
 
   void _fire() {
     final part = ref.read(quickUpgradeProvider);
@@ -70,6 +128,8 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> {
   @override
   void dispose() {
     _stop();
+    unawaited(_sub?.cancel());
+    _float.dispose();
     super.dispose();
   }
 
@@ -77,6 +137,7 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final part = ref.watch(quickUpgradeProvider);
+    final target = ref.watch(quickTargetProvider);
     final tables = ref.watch(tablesProvider);
     final label = part == null
         ? l10n.uiQuickUpgradeNone
@@ -98,33 +159,87 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> {
             onLongPressStart: enabled ? (_) => _repeat ??= Timer.periodic(_repeatEvery, (_) => _fire()) : null,
             onLongPressEnd: (_) => _stop(),
             onLongPressCancel: _stop,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: enabled ? const [Skin.goldTop, Skin.goldBottom] : const [Skin.disabled, Skin.disabled],
-                ),
-                border: Border.all(color: Colors.white, width: 3),
-                boxShadow: Skin.shadow,
-              ),
+            child: Stack(
+              clipBehavior: Clip.none,
               alignment: Alignment.center,
-              padding: const EdgeInsets.all(8),
-              child: FittedBox(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (part != null)
-                      PixelSprite(UiSprites.part(part), dots: 16)
-                    else
-                      const PixelSprite(UiSprites.lock, dots: 16),
-                    const PixelBitmap(PixelBitmaps.up, color: Skin.goldInk, scale: 1),
-                  ],
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: enabled ? const [Skin.goldTop, Skin.goldBottom] : const [Skin.disabled, Skin.disabled],
+                    ),
+                    border: Border.all(color: Colors.white, width: 3),
+                    boxShadow: Skin.shadow,
+                  ),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(8),
+                  child: FittedBox(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (target != null)
+                          Opacity(
+                            opacity: part == null ? 0.5 : 1,
+                            child: PixelSprite(UiSprites.part(target.part), dots: 16),
+                          )
+                        else
+                          const PixelSprite(UiSprites.lock, dots: 16),
+                        const PixelBitmap(PixelBitmaps.up, color: Skin.goldInk, scale: 1),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                // 비용(또는 모자란 골드) 알약 — 버튼 아래.
+                if (target != null)
+                  Positioned(
+                    bottom: -8,
+                    child: Container(
+                      key: const Key('quick.upgrade.cost'),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: target.short == null ? Skin.ink : const Color(0xFF8A8F99),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      child: Text(
+                        target.short == null ? target.cost.format() : l10n.uiQuickUpgradeShort(target.short!.format()),
+                        style: Skin.text(10, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                // '+대포 Lv 53' 떠오름.
+                Positioned(
+                  bottom: 64,
+                  child: IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: _float,
+                      builder: (context, _) {
+                        if (!_float.isAnimating || _floatText == null) return const SizedBox.shrink();
+                        final t = _float.value;
+                        return Transform.translate(
+                          offset: Offset(0, -26 * t),
+                          child: Opacity(
+                            opacity: (1 - t * t).clamp(0, 1).toDouble(),
+                            child: Text(
+                              _floatText!,
+                              key: const Key('quick.upgrade.float'),
+                              softWrap: false,
+                              style: Skin.text(15, color: const Color(0xFF146A43)).copyWith(
+                                shadows: const [Shadow(color: Colors.white, blurRadius: 4)],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
