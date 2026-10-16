@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
+import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
@@ -94,21 +95,24 @@ class Round {
       g.cooldown -= dt * attackSpeed;
       if (g.cooldown > 0 && !zeroCooldown) continue;
       final a = g.attack;
-      final shots = a.projectiles + (g.legend?.extraProjectiles ?? 0);
+      final shots = a.projectiles + extraShots(g, ctx.rng);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
         for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
-          extendVolley(g, v, field.foes, w, geometry: geo),
+          extendVolley(g, v, field.foes, w, geometry: geo, rng: ctx.rng),
       ];
       if (volleys.isEmpty) {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
       }
-      g.cooldown = a.intervalSec;
+      // 남은 몫을 넘긴다 — 간격이 틱 단위로 올림되지 않게(S2 승인). 운영자 쿨다운 0에선 쌓이지 않게 새로.
+      g.cooldown = zeroCooldown ? a.intervalSec : g.cooldown + a.intervalSec;
       final crit = ctx.rng.nextDouble() < stats.critChance;
       if (crit) hitStop('crit');
       final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);
-      for (final v in volleys) {
+      for (final shot in volleys) {
+        final flying = launch(g, a, shot, base, crit: crit); // 탄이 있으면 날려 보내고 도착 때 판정(flight.dart)
+        final v = flying?.volley ?? shot;
         final m = geo.muzzle(v.x, v.y);
         ctx.emit(
           AttackFired(
@@ -121,8 +125,10 @@ class Round {
             fromX: m?.x,
             fromY: m?.y,
             angle: m?.angle,
+            flightTicks: flying?.ticks,
           ),
         );
+        if (flying != null) continue;
         land(g, a, v, base, crit: crit);
         legendAfterHit(this, g, v, base, crit: crit);
       }

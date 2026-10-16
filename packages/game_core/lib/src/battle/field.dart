@@ -1,9 +1,13 @@
+import 'package:game_core/src/battle/flight.dart';
+import 'package:game_core/src/battle/gun.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/battle/topdown/top_threat.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
+
+export 'package:game_core/src/battle/gun.dart';
 
 export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor, shapeField;
 export 'package:game_core/src/battle/topdown/top_threat.dart' show EnemyShot, TopdownStep;
@@ -118,65 +122,6 @@ class Foe {
   );
 }
 
-/// 무기 슬롯 하나 (출전 선원).
-class Gun {
-  Gun({
-    required this.crewId,
-    required this.family,
-    required this.power,
-    required this.skill,
-    this.rarity = 0,
-    this.legend,
-  }) : attack = family.attackAt(rarity);
-
-  /// [crewId]의 계열·등급 사다리·스킬(선원 `skill`이 있으면 그것)로 만든다.
-  factory Gun.of(GameTables t, String crewId, {required double power, int rarity = 0}) {
-    final crew = t.crews.byId(crewId);
-    final family = t.skills.byId(crew.family);
-    final skillId = crew.skill;
-    return Gun(
-      crewId: crewId,
-      family: family,
-      power: power,
-      rarity: rarity,
-      skill: skillId == null ? family.skill : t.skills.skillById(skillId),
-      legend: t.skills.legendFor(crewId, rarity, t.rarities.rarities.indexWhere((r) => r.id == 'legend')),
-    );
-  }
-
-  final String crewId;
-  final FamilyDef family;
-
-  /// 선원 파워 (레벨 배율 × 승급 배율).
-  final double power;
-
-  /// 등급 순번 (0 = 일반). 사다리와 전설 화면 스킬을 정한다.
-  final int rarity;
-
-  /// 등급 사다리를 적용한 기본 공격.
-  final AttackDef attack;
-  final SkillDef skill;
-
-  /// 전설 고유 능력 (전설 미만이면 null).
-  final LegendDef? legend;
-
-  /// 다음 발사까지 남은 초 (공격 속도 배율 적용 전 기준).
-  double cooldown = 0;
-
-  /// 다음 스킬까지 남은 초 (공격 속도 배율 적용 전 기준).
-  double skillCooldown = 0;
-
-  FleetSlot view() {
-    double ratio(double left, double full) => full <= 0 ? 0.0 : (left / full).clamp(0.0, 1.0);
-    return FleetSlot(
-      crewId: crewId,
-      cooldown: ratio(cooldown, attack.intervalSec),
-      skillCooldown: ratio(skillCooldown, skill.cooldownSec),
-      rarity: rarity,
-    );
-  }
-}
-
 /// 지속 피해 장판 (수중). 남은 시간 동안 매 틱 [perTick] × 비율의 피해.
 class Zone {
   Zone({
@@ -243,7 +188,8 @@ class Field {
 
   BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
 
-  final List<EnemyShot> enemyShots = []; // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
+  final List<EnemyShot> enemyShots = [];
+  final List<Flight> flights = []; // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 

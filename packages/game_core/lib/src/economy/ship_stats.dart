@@ -9,21 +9,37 @@ import 'package:meta/meta.dart';
 // 배 부위 강화의 효과·비용 (설계서 4.2, 상한은 4.8). 전투 레인이 그대로 부른다.
 // 모든 값은 ship_parts.json에서 읽는다.
 
+/// 공식의 레벨 자리: 가속이 있으면 Lv + d² ÷ (2 × accelLevels) (d = accelFrom을 넘은 레벨 수), 없으면 Lv.
+num partStep(ShipPartDef def, int level) {
+  final a = def.accelLevels;
+  final d = math.max(0, level - def.accelFrom);
+  return a == null ? level : level + d * d / (a + a);
+}
+
 /// 부위 [def]의 Lv[level] 효과 (마일스톤 도약 포함).
 BigNum partEffect(ShipPartDef def, int level) {
+  final x = partStep(def, level);
   final raw = def.formula == 'exp'
-      ? BigNum.powOf(def.growth, level).times(def.base)
-      : BigNum.from(def.base + def.growth * level);
+      ? BigNum.powOf(def.growth, x).times(def.base)
+      : BigNum.from(def.base + def.growth * x);
   return raw * _milestone(def, level);
 }
 
 /// 부위 [def]를 Lv[level]에서 Lv[level]+1로 올리는 비용.
-BigNum partCost(ShipPartDef def, int level) => BigNum.powOf(def.costGrowth, level).times(def.costBase);
+BigNum partCost(ShipPartDef def, int level) => BigNum.powOf(def.costGrowth, partStep(def, level)).times(def.costBase);
 
-/// Lv[from]에서 [count]번 강화하는 비용 합 (등비수열 공식, 반복 없음): `costBase × g^from × (g^count − 1) / (g − 1)`.
+/// Lv[from]에서 [count]번 강화하는 비용 합. 가속이 없으면 등비수열 공식(반복 없음): `costBase × g^from × (g^count − 1) / (g − 1)`,
+/// 가속이 있으면 한 레벨씩 더한다(가속 곡선은 금방 커져 횟수가 작다).
 BigNum partCostSum(ShipPartDef def, int from, int count) {
   if (count <= 0) return BigNum.zero;
   if (count == 1) return partCost(def, from); // 한 번은 partCost와 비트까지 같게(경계 판정)
+  if (def.accelLevels != null) {
+    var sum = BigNum.zero;
+    for (var lv = from; lv < from + count; lv++) {
+      sum = sum + partCost(def, lv);
+    }
+    return sum;
+  }
   final g = def.costGrowth;
   return (BigNum.powOf(g, from + count) - BigNum.powOf(g, from)).times(def.costBase / (g - 1));
 }
@@ -32,6 +48,18 @@ BigNum partCostSum(ShipPartDef def, int from, int count) {
 int affordableLevels(ShipPartDef def, int from, BigNum gold) {
   final room = def.maxLevel == null ? null : def.maxLevel! - from;
   if ((room != null && room <= 0) || gold < partCost(def, from)) return 0;
+  if (def.accelLevels != null) {
+    // partCostSum과 같은 순서로 더해 비교한다(경계에서 반올림이 어긋나지 않게).
+    var k = 0;
+    var sum = BigNum.zero;
+    while (room == null || k < room) {
+      final next = sum + partCost(def, from + k);
+      if (next > gold) break;
+      sum = next;
+      k++;
+    }
+    return k;
+  }
   final g = def.costGrowth;
   // g^k ≤ 1 + gold × (g − 1) / (costBase × g^from)
   final x = gold.times((g - 1) / def.costBase) / BigNum.powOf(g, from);

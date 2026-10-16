@@ -9,6 +9,9 @@ const _bossFlightMs = 650.0;
 /// 빠른 강화 부위 흰빛(ms).
 const _partUpGlowMs = 300.0;
 
+/// 근접 계열 — 탑다운은 발사체 대신 휘두르기(TopSlash).
+const _assault = 'assault';
+
 /// 탑다운 전용 연출 도우미 (event_director 300줄 한도로 나눔).
 extension _TopEvents on EventDirector {
   /// 탑다운 발사 임팩트: 포구 섬광(쏜 선원의 등급 색)·고리·연기 — 발사체가 실제로 떠나는 시각에.
@@ -75,4 +78,56 @@ extension _TopEvents on EventDirector {
     }
     scene.topHits.upgradeAt = scene.clockMs;
   }
+
+  /// 원거리 적 탄(EnemyFired, S5 위협): 쏜 자리 → 선체 가장자리, flightTicks 뒤 ShipDamaged와 같은 시각에 닿는다. 작은 탄, 색은 종류별.
+  void _enemyShot(EnemyFired e, BattleView frame) {
+    final speed = math.max(1, frame.speed);
+    final ship = scene.topShip;
+    final dx = e.fromX - ship.dx;
+    final dy = e.fromY - ship.dy;
+    final len = math.max(1e-6, math.sqrt(dx * dx + dy * dy));
+    final color = _enemyShotColors[e.kind] ?? 0xFFFFFFFF;
+    scene.topHits.shots.fire(
+      e.fromX,
+      e.fromY,
+      ship.dx + dx / len * 10,
+      ship.dy + dy / len * 10,
+      scene.clockMs,
+      e.flightTicks * _player.tickMs / speed,
+      color,
+      big: false,
+    );
+  }
+
+  /// 솟아오르기 예고(EnemyEmerging): warnTicks 동안 물보라, 끝나면 터짐(몸은 EnemyPose.emerging 동안 숨김).
+  void _emerging(EnemyEmerging e, BattleView frame) {
+    scene.topHits.emerge(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
+  }
+
+  /// 강습(assault) 탑다운: 발사체 대신 피해 순간(index)에 배에서 대상마다 휘두르기 + 베기 자국. 색 = 쏜 선원 등급 색.
+  void _topMelee(AttackFired e, int index, BattleView frame) {
+    var rarity = 0;
+    for (final s in frame.fleet) {
+      if (s.crewId == e.crewId) rarity = s.rarity;
+    }
+    final colors = scene.tables.rarities.rarities;
+    final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
+    final delayMs = math.max<double>(0, (index - _player.position) * _player.tickMs / math.max(1, frame.speed));
+    final ship = scene.topShip;
+    final targets = e.targetIds.isEmpty ? const [-1] : e.targetIds;
+    for (final id in targets.take(6)) {
+      final t = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
+      scene.topHits.slash.swing(ship.dx, ship.dy, t?.x ?? e.x, t?.y ?? e.y, scene.clockMs + delayMs, color);
+    }
+    _flashSlot(frame, e.crewId);
+  }
 }
+
+/// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.
+const _enemyShotColors = {
+  'feather': 0xFFF4F1E8,
+  'spike': 0xFFB36BFF,
+  'water': 0xFF5DC8F0,
+  'snow': 0xFFE6F6FF,
+  'ember': 0xFFFF7A2F,
+};

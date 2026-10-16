@@ -44,7 +44,7 @@ class TopEnemies {
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
-      if ((e.layer == 'underwater') != under) continue;
+      if ((e.layer == 'underwater') != under || e.emerging) continue;
       if (!cull.contains(Offset(e.drawX, e.drawY))) continue;
       final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
       final sheet = sprites.sheet(key);
