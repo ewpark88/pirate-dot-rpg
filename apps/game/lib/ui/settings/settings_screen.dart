@@ -67,7 +67,7 @@ class SettingsScreen extends ConsumerWidget {
                     key: const Key('settings.back'),
                     semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: () => Navigator.of(context).maybePop(),
-                    child: const PixelBitmap(PixelBitmaps.back),
+                    child: const Icon(Icons.arrow_back_rounded, size: 22, color: Skin.ink),
                   ),
                   const SizedBox(width: 12),
                   Text(l10n.uiSettingsTitle, style: Theme.of(context).textTheme.titleMedium),
@@ -107,6 +107,8 @@ class SettingsScreen extends ConsumerWidget {
                           for (final (key, label, value) in switches.where((e) => keys.contains(e.$1)))
                             PixelListRow(
                               onTap: () => set(key, !value),
+                              // 줄마다 아이콘 (설정 r2 최종 다듬기).
+                              leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
                               title: Text(label),
                               trailing: PixelToggle(
                                 key: Key('settings.$key'),
@@ -144,6 +146,18 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
+
+/// 설정 줄 아이콘.
+IconData _settingIcon(String key) => switch (key) {
+  'bgm' => Icons.music_note_rounded,
+  'sfx' => Icons.volume_up_rounded,
+  'vibration' => Icons.vibration_rounded,
+  'shake' => Icons.waves_rounded,
+  'flash' => Icons.flash_on_rounded,
+  'powerSave' => Icons.battery_saver_rounded,
+  'autoBoss' => Icons.military_tech_rounded,
+  _ => Icons.notifications_rounded,
+};
 
 /// 설정 묶음: 머리 글 + 떠 있는 판 (스킨 r2 ①).
 class _Group extends StatelessWidget {
