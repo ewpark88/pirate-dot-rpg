@@ -243,6 +243,8 @@ class EventDirector implements ReplayListener {
     // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
     final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
     if (fever) _fx('kill', e.x + 3, e.y - 3);
+    // 화물칸 가득(S2 GoldOverflow): 코인 대신 회색 '+0'.
+    if (scene.isTop && scene.topHits.crew.full(scene.clockMs)) return scene.topHits.crew.zero(e.x, e.y, scene.clockMs);
     final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;

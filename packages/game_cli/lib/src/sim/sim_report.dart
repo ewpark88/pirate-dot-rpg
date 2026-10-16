@@ -107,7 +107,7 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
       '',
       within: Duration.zero,
     ),
-    c('cargoFullPct', '화물칸 가득 찬 시간', (r) => r.goldSupply?.fullPct, '%', within: Duration.zero),
+    c('cargoFullPct', '사고 싶은 강화가 화물칸 용량에 막힌 시간', (r) => r.goldSupply?.fullPct, '%', within: Duration.zero),
     c('overflowPct', '넘친 골드 ÷ 처치 골드', (r) => r.overflowPct, '%', within: Duration.zero),
     c('affordablePct', '강화를 살 수 있던 순간', (r) => r.goldSupply?.affordablePct, '%', within: Duration.zero),
     c('upgradeGapStage10Sec', '강화 간격(스테이지 8~12)', (r) => r.goldSupply?.gapMedian(8, 12), '초', within: Duration.zero),

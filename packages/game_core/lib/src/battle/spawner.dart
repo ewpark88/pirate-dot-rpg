@@ -5,7 +5,7 @@ import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
-import 'package:game_data/game_data.dart' show BossDef;
+import 'package:game_data/game_data.dart' show BossDef, WavesTable;
 
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
@@ -80,7 +80,7 @@ void startBoss(
           w.hpBase,
           w.hpGrowth,
           stage,
-        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale),
+        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale * wallBossScale(w, stage)),
     speed: w.bossSpeed,
     attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
     gold: gold ? stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier) : BigNum.zero,
@@ -136,4 +136,14 @@ double tutorialBossScale(GameState s, SystemContext ctx) {
       ? w.tutorialFailHpMultiplier
       : 1.0;
   return early * fail;
+}
+
+/// 벽 보스 (사용자 '너무 쉽다', 2026-10-16): waves.boss.wallEvery 스테이지마다(해역 보스 자리) 체력 × wallHpMultiplier,
+/// midWallEvery마다 × midWallHpMultiplier. 키가 없으면 1.
+double wallBossScale(WavesTable w, int stage) {
+  final b = w.raw.obj('boss');
+  if (b.has('wallEvery') && stage % b.integer('wallEvery') == 0) return b.number('wallHpMultiplier');
+  // 중간 벽(선택): midWallEvery 스테이지마다 조금 단단하게 — 보통 스테이지 첫 도전이 늘 성공하지 않게.
+  if (b.has('midWallEvery') && stage % b.integer('midWallEvery') == 0) return b.number('midWallHpMultiplier');
+  return 1;
 }

@@ -52,4 +52,11 @@ void main() {
     final empty = pricey.copyWith(wallet: pricey.wallet.copyWith(gold: BigNum.zero));
     expect(autoUpgradePick(empty, t), isNull);
   });
+
+  test('CancelAutoUpgrade: 버프를 끄고 남은 시간은 버린다', () {
+    final on = addAutoUpgrade(rich(), t, EconomyHarness.start);
+    final off = sys.handle(on, const CancelAutoUpgrade(), h.ctx)!;
+    expect(autoUpgradeRemaining(off, EconomyHarness.start), Duration.zero);
+    expect(Command.fromJson(const CancelAutoUpgrade().toJson()).toJson(), const CancelAutoUpgrade().toJson());
+  });
 }

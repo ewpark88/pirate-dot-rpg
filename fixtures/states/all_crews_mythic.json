@@ -24,11 +24,11 @@
   },
   "ship": {
     "parts": {
-      "cannon": 400,
-      "hull": 380,
+      "cannon": 40,
+      "hull": 38,
       "sail": 30,
       "crowsnest": 45,
-      "cargo": 300
+      "cargo": 34
     },
     "honor": {
       "parts": {},

@@ -55,6 +55,7 @@ class EconomySystem implements GameSystem {
     final OpGrantPieces c => opGrantPieces(state, c),
     final OpSetRebirths c => opSetRebirths(state, c),
     final PickBottle c => pickBottle(state, c, ctx),
+    CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
     _ => null,
   };
 

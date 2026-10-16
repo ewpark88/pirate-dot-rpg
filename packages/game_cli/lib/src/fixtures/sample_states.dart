@@ -23,7 +23,7 @@ Map<String, GameState> sampleStates(GameTables t) {
       operator: true,
       progress: const Progress(stage: 160, bestStage: 160),
       wallet: Wallet(gold: BigNum.parse('3.3e21'), gems: 99999, mapPieces: 120),
-      ship: const ShipState(parts: {'cannon': 400, 'hull': 380, 'sail': 30, 'crowsnest': 45, 'cargo': 300}),
+      ship: const ShipState(parts: {'cannon': 40, 'hull': 38, 'sail': 30, 'crowsnest': 45, 'cargo': 34}),
       crews: {for (final c in t.crews.crews) c.id: const CrewState(level: 75)},
       collection: {for (final c in t.crews.crews) c.id},
       battle: _battle(t, stage: 160, fleet: const ['volke', 'volt', 'moby', 'orca', 'kraki', 'manta']),
@@ -35,7 +35,7 @@ Map<String, GameState> sampleStates(GameTables t) {
 GameState _midgame(GameState base, GameTables t) => base.copyWith(
   wallet: Wallet(gold: BigNum.parse('1.25e6'), gems: 140),
   progress: const Progress(stage: 37, wave: 2, bestStage: 41, rage: 0.4),
-  ship: const ShipState(parts: {'cannon': 52, 'hull': 40, 'sail': 18, 'crowsnest': 12, 'cargo': 9}),
+  ship: const ShipState(parts: {'cannon': 16, 'hull': 15, 'sail': 18, 'crowsnest': 12, 'cargo': 17}),
   crews: const {
     'octo': CrewState(level: 15, cards: 2),
     'manta': CrewState(level: 46, exp: 3),

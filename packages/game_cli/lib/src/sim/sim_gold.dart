@@ -22,7 +22,7 @@ class SimGold {
     return bought;
   }
 
-  /// 화물칸(금고)이 가득 차 있던 순간의 비율(%).
+  /// 사고 싶은 강화가 화물칸 용량에 막혀 있던 순간의 비율(%).
   double? get fullPct => decisions == 0 ? null : full / decisions * 100;
 
   /// 살 수 있는 강화가 있던 순간의 비율(%).
