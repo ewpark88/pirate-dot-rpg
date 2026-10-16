@@ -53,7 +53,19 @@ void main() {
       return [for (final e in fl.foes) (e.x, e.y)];
     }
 
-    expect(run(withPatterns(null)), run(base));
+    // 옛 표 = 지금 표에서 스폰 패턴 키를 뺀 것(표에 값이 들어간 뒤에도 '키 없음 = 옛 순서'를 잰다).
+    final old = TopField.of(
+      WavesTable.fromJson(
+        JsonReader({
+          ...w.raw.raw,
+          'top': {...w.raw.obj('top').raw}
+            ..remove('spawnPatterns')
+            ..remove('scatterGapSec')
+            ..remove('arcSpreadDeg'),
+        }, 'test'),
+      ),
+    );
+    expect(run(withPatterns(null)), run(old));
   });
 
   test('scatter: 1~2마리씩 시간차(0.3~1.2초)로 대기, 대기 중엔 움직이지 않고 화면 밖', () {
