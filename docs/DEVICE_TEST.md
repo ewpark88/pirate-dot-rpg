@@ -3,6 +3,8 @@
 설계서 11장: **M2 관문에서 손맛이 없으면 M3로 가지 않고 연출·속도를 다듬는다. 손맛은 시뮬로 검증할 수 없는 유일한 항목이다.**
 이 문서대로 기기에서 두 가지(손맛, 성능)를 보고 결과를 S1에게 알려 준다.
 
+> **탑다운 기준 실기기 확인 목록(15분)은 [docs/plans/active/platform-device-check-topdown.md](plans/active/platform-device-check-topdown.md)를 먼저 본다.** 아래 1절의 옆모습 문구는 옛 내용이다.
+
 ## 0. 준비 (처음 한 번)
 - **release는 반드시 `python -I -B docs/store/device/release_smoke.py` 통과 후 사람에게 넘긴다**(2026-10-15 release 실행 즉시 종료 사고 — 빌드 검사로는 실행 중 크래시를 못 잡는다).
 - Android 폰(가능하면 저사양 1대), 설정 → 개발자 옵션 → USB 디버깅 켬, PC와 USB 연결

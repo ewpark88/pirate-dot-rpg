@@ -9,4 +9,4 @@ steps:
   - advance: 1t
   - expect: { mode: top, stage: 10, wave: 0, quadrants: 4 }
   - advance: 40s
-  - expect: { mode: top, stage: 11 }
+  - expect: { mode: top, stage: 11 }  # 40초에 한 스테이지(시드 기준) — 선원 수치(계열 v3 출격 등)가 바뀌면 같이 고친다

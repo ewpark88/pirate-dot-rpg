@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/targeting.dart' show Volley, attackReach, spread;
+import 'package:game_core/src/battle/targeting.dart' show Hit, Volley, attackReach, spread;
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -65,6 +65,7 @@ class TopAim {
   }
 
   List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, Rng rng, {double reachBonus = 0}) {
+    if (a.shape == 'ring') return ring(a, n, foes, reachBonus: reachBonus);
     final out = <Volley>[];
     final avoid = <Foe>{};
     for (var i = 0; i < n; i++) {
@@ -88,7 +89,7 @@ class TopAim {
     double ax;
     double ay;
     switch (a.shape) {
-      case 'circle':
+      case 'circle' || 'cluster': // 집속탄 본탄도 무리 중심에(자탄은 cluster.dart)
         final radius = circleRadius(a);
         int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
         // 무리 중심(계열 기본 cluster) — 선원 개성 v2가 다른 조준(가장 강한·무작위 등)을 주면 그 적을 중심으로.
@@ -101,7 +102,7 @@ class TopAim {
         (ax, ay) = (center.x, center.y);
         hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= radius).toList()
           ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
-      case 'line':
+      case 'line' || 'laser': // 레이저(계열 v3)도 같은 광선 — 관통 수는 laserPierce(0 = 화면 끝까지), 감쇠 없음
         // 배 → 대상 방향 광선(폭 안, 배 앞쪽만, 가까운 순 pierce마리). 대상은 그 광선에 가장 많이 걸리는 적
         // (같으면 가까운 쪽) — 옆모습에서 한 줄(레인)로 오는 무리를 꿰뚫던 것과 같은 몫.
         List<Foe> along(Foe t) {
@@ -112,7 +113,7 @@ class TopAim {
           double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
           return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
                 ..sort((p, q) => proj(p).compareTo(proj(q))))
-              .take(a.pierce)
+              .take(pierceOf(a, targets.length))
               .toList();
         }
         var best = first();
@@ -126,7 +127,7 @@ class TopAim {
         }
         (ax, ay) = (best.x, best.y);
         hit = bestHit;
-        falloff = true;
+        falloff = a.shape == 'line';
       case 'chain':
         final start = first();
         (ax, ay) = (start.x, start.y);
@@ -172,6 +173,49 @@ class TopAim {
         hit = [t];
     }
     return (x: ax, y: ay, hits: spread(hit, w, falloff: falloff));
+  }
+
+  /// 원형 탄막(계열 v3): 배를 중심으로 [n]방향 고르게(가장 가까운 적 쪽부터). 방향마다 광선 위 첫 적(사거리 안),
+  /// 없으면 사거리 끝으로 빈 탄(맞을 적 없음 — 연출만). 보이는 적이 하나도 없으면 쏘지 않는다.
+  List<Volley> ring(AttackDef a, int n, List<Foe> foes, {double reachBonus = 0}) {
+    final targets = eligible(a, foes, reachBonus: reachBonus);
+    if (targets.isEmpty) return const [];
+    final near = nearest(targets, top.shipX, top.shipY);
+    final r = attackReach(a, w.field);
+    final reach = (r == null ? top.viewHeight * half : r * top.reachScale + reachBonus) + top.shipRadius;
+    final start = math.atan2(near.y - top.shipY, near.x - top.shipX);
+    return [
+      for (var i = 0; i < n; i++)
+        () {
+          final angle = start + math.pi / half * i / n;
+          final ux = math.cos(angle);
+          final uy = math.sin(angle);
+          double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
+          double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
+          final on = targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a) + top.radiusOf(e)).toList()
+            ..sort((p, q) => proj(p).compareTo(proj(q)));
+          if (on.isNotEmpty) return (x: on.first.x, y: on.first.y, hits: [(foe: on.first, factor: 1.0)]);
+          return (x: top.shipX + ux * reach, y: top.shipY + uy * reach, hits: <Hit>[]);
+        }(),
+    ];
+  }
+
+  /// 광선이 꿰는 수: 레이저는 laserPierce(0 = 전부 — [all]), 그 밖은 pierce.
+  int pierceOf(AttackDef a, int all) {
+    if (a.shape != 'laser') return a.pierce;
+    final n = a.raw.numberOr('laserPierce', 1).round();
+    return n <= 0 ? all : n;
+  }
+
+  /// 지금 배에서 (ux, uy) 방향 광선 위 적(가까운 순, 관통 수만큼) — 레이저 빔이 매 틱 다시 잰다.
+  List<Foe> beamHits(AttackDef a, double ux, double uy, List<Foe> foes) {
+    final targets = eligible(a, foes);
+    double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
+    double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
+    return (targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a)).toList()
+          ..sort((p, q) => proj(p).compareTo(proj(q))))
+        .take(pierceOf(a, targets.length))
+        .toList();
   }
 
   /// 첫 대상(선원 개성 v2 조준 8종, docs/specs/platform-crew-identity-v2.md 1절). 계열 기본값 nearest·front는 가까운 적.

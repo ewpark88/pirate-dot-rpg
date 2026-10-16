@@ -110,12 +110,37 @@ class _Quests extends ConsumerWidget {
                         l10n.uiQuestProgress(q.progress, q.target),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.textDim),
                       ),
+                      // 진행 막대 (r2 최종 다듬기).
+                      const SizedBox(height: 3),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
+                        child: LinearProgressIndicator(
+                          key: Key('daily.bar.${q.id}'),
+                          value: q.target == 0 ? 1 : (q.progress / q.target).clamp(0.0, 1.0),
+                          minHeight: 5,
+                          backgroundColor: Skin.track,
+                          color: q.done ? Skin.mint : Skin.primaryBottom,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
                 if (q.claimed)
-                  Text(l10n.uiQuestClaimed, style: const TextStyle(color: PixelPalette.textDim))
+                  // 받음: 초록 체크 알약.
+                  Container(
+                    key: Key('daily.claimed.${q.id}'),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: const Color(0xFFDDF7EA), borderRadius: BorderRadius.circular(12)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.check_rounded, size: 16, color: Skin.mintInk),
+                        const SizedBox(width: 3),
+                        Text(l10n.uiQuestClaimed, style: Skin.text(13, color: Skin.mintInk)),
+                      ],
+                    ),
+                  )
                 else
                   PixelButton(
                     key: Key('daily.claim.${q.id}'),
@@ -229,7 +254,8 @@ class _DayCell extends StatelessWidget {
             if (checked)
               const SkinIcon(UiSprites.check, size: 22)
             else
-              SkinIcon(ticket ? UiSprites.tabSummon : UiSprites.gem, size: 22),
+              // 소환권 = 카드 뒷면 그림 (별은 등급만 뜻한다 — 사용자 지적 2026-10-16).
+              SkinIcon(ticket ? UiSprites.cardBack : UiSprites.gem, size: 22),
             const SizedBox(height: 3),
             FittedBox(
               fit: BoxFit.scaleDown,

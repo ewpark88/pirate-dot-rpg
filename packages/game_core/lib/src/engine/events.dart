@@ -35,6 +35,7 @@ sealed class GameEvent {
         flightTicks: j['flightTicks'] as int?,
         kind: j['kind'] as String?,
         splashRadius: (j['splashRadius'] as num?)?.toDouble(),
+        beamTicks: j['beamTicks'] as int?,
       ),
       'damage' => Damage(
         t,
@@ -107,6 +108,7 @@ class AttackFired extends GameEvent {
     this.flightTicks,
     this.kind,
     this.splashRadius,
+    this.beamTicks,
   });
 
   final String crewId;
@@ -131,6 +133,9 @@ class AttackFired extends GameEvent {
   /// 맞은 자리 폭발 반경(선택 — 전설 상위·신화, 렌더가 큰 임팩트).
   final double? splashRadius;
 
+  /// 레이저 빔 유지 틱(선택, 계열 v3) — 그동안 매 틱 Damage.
+  final int? beamTicks;
+
   @override
   String get type => 'attackFired';
 
@@ -147,6 +152,7 @@ class AttackFired extends GameEvent {
     if (flightTicks != null) 'flightTicks': flightTicks,
     if (kind != null) 'kind': kind,
     if (splashRadius != null) 'splashRadius': splashRadius,
+    if (beamTicks != null) 'beamTicks': beamTicks,
   };
 }
 

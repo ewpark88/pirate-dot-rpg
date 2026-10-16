@@ -49,7 +49,9 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'attackMissed' ||
     'shieldUp' ||
     'shieldBroken' ||
-    'bossPattern' => _threatEventFromJson(t, j),
+    'bossPattern' ||
+    'crewSortie' ||
+    'bombletBurst' => _threatEventFromJson(t, j),
     'goldOverflow' => GoldOverflow(t, lost: big('lost')),
     'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' => _fastEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),

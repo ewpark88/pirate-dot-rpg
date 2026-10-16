@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-16 밤 · S5 · 빠른 항해 돌파·지그재그·돌격대·등급 보정·운영자 선원 시험·계열 v3·도감 v2
+- **현재 위치**: 계열 행동 v3 사용자 승인(추천대로) → 엔진 출격(강습·공중)부터. 도감 v2 기획 초안 S1 확인 대기.
+- 한 일(모두 main 또는 S1 머지 대기): 빠른 항해 돌파(가속 리듬 build→rush→finale, 건너뛰기, 실은·넘친 골드) · 피버 좌우 → 지그재그(느린 값, 배 기울기) · 돌격대(넉백·기절·끌기 면역) · 전설 이상 rarityTempo·aim.legend/mythic·맞은 자리 폭발 · 보스 firstRestSec·enemy_ship blast · 운영자 선원 시험·세이브 백업(review/operator-crews, S4 검토) · 현상금 테스트 실제 경제로 · release_check 통과(배포 aab 운영자 표식 0) · 아침 확인 목록 v2(15분) · 기획 계열 v3·도감 v2.
+- 진단: 보스전 배 피해 0.29% = 보스가 3초 안에 죽어 첫 패턴(3.05초)을 못 봄 → firstRestSec.
+- 남은 일: 계열 v3 엔진(출격 → 레이저 → 원형 → 집속 → 기존 타이밍), S2 rankAims 전 등급·Gun export(S4), 스토어 스크린샷 최종 굽기, 야간 sim 점검, release_smoke(폰 허락 뒤).
+
 ## 2026-10-16 저녁 · S5 · 선원 개성 v2 엔진 1~3단계, 보스 행동 v2
 - **현재 위치**: 개성 v2 1~3단계 main 머지(d07663c). 보스 행동 v2 review/boss-patterns 36a5e75 S1 머지 대기. 표 값(aim 40명·traitScale·turtle/pelly/pumpum legends)은 S2.
 - 한 일: 조준 8종·탄 비행·예측·MISS(AttackMissed) · 쿨다운 남은 몫 넘기기(0.3초가 0.35초로 돌던 버그) · 특징 일반 40%부터(개수형은 발마다 확률) · aim power = 간격 비례(같은 DPS) · 보호막(turtle)·낙뢰(pelly)·피버 서포트(pumpum, 사용자 추가 지시) · 보스 패턴 4종(탄막·돌진·소환·장판) + 바다 괴물 돌진 보스(붙은 시간 68% → 5.5%) · store_shots 옆모습 갈래 삭제(S3 요청).

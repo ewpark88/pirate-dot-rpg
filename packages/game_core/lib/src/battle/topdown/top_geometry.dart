@@ -30,19 +30,14 @@ class TopGeometry implements BattleGeometry {
 
   final WavesTable w;
 
-  /// 지금 배 자리의 전장 값. 피버 좌우 이동이면 [base]에서 shipX만 옮긴 사본([weave]).
+  /// 지금 배 자리의 전장 값 — 피버 좌우 이동이면 [base](바다 가운데)에서 배만 옮긴 사본([weave]).
   TopField top;
-
-  /// 배가 고정일 때의 전장 값(바다 가운데).
   final TopField base;
 
-  /// 피버 좌우 이동 진행 틱(shapeField가 센다 — 피버가 아니면 0).
+  /// 피버 좌우 이동 진행 틱(shapeField가 센다) · 배 방향(라디안, 0 위·시계 — BattleView.shipHeading).
   int weaveTick = 0;
-
-  /// 배가 향하는 방향(라디안, 0 위·시계 방향 — BattleView.shipHeading). 피버 지그재그면 이동 방향으로 기운다.
   double shipHeading = 0;
 
-  /// 피버 자세(feverPose) 그대로.
   void pose(({double x, double y, double heading}) p) => weave(p.x, dy: p.y, heading: p.heading);
 
   /// 배 중심을 바다 가운데에서 ([dx], [dy])만큼 옮기고 [heading]으로 기울인다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
@@ -80,6 +75,8 @@ class TopGeometry implements BattleGeometry {
   @override
   List<Foe> eligible(AttackDef a, List<Foe> foes, {double reachBonus = 0}) =>
       _aim.eligible(a, foes, reachBonus: reachBonus);
+
+  List<Foe> beamHits(AttackDef a, double ux, double uy, List<Foe> foes) => _aim.beamHits(a, ux, uy, foes);
 
   @override
   List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, Rng rng, {double reachBonus = 0}) =>

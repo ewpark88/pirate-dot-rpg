@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/beam.dart';
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
@@ -94,9 +95,9 @@ class Round {
   void fireGuns() {
     for (final g in field.guns) {
       g.cooldown -= dt * attackSpeed;
-      if (g.cooldown > 0 && !zeroCooldown) continue;
+      if ((g.cooldown > 0 && !zeroCooldown) || g.sortie != null) continue; // 출격 중이면 다시 쏘지 않는다
       final a = g.attack;
-      final shots = a.projectiles + extraShots(g, ctx.rng);
+      final shots = shotCount(g, ctx.rng);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
         for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
@@ -126,7 +127,8 @@ class Round {
             fromX: m?.x,
             fromY: m?.y,
             angle: m?.angle,
-            flightTicks: flying?.ticks,
+            flightTicks: isBeam(a) ? null : flying?.ticks,
+            beamTicks: isBeam(a) ? flying?.ticks : null,
             kind: a.raw.strOrNull('kind'),
             splashRadius: a.raw.has('splashRadius') ? a.raw.number('splashRadius') : null,
           ),

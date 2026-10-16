@@ -39,7 +39,7 @@
           "lead": true,
           "hitRadius": 15
         },
-        "powerScale": 1.09
+        "powerScale": 1.0129
       }
     },
     {
@@ -60,28 +60,26 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 3.2894
+        "powerScale": 3.0989,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
       "id": "uni",
       "num": 4,
       "baseRarity": "hero",
-      "family": "lob",
+      "family": "ring",
       "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/uni.png",
       "nameKey": "crewUniName",
       "aim": {
         "targets": "random",
-        "intervalSec": 1.3,
-        "topRadius": 15,
-        "projectile": {
-          "speed": 200,
-          "lead": false,
-          "hitRadius": 15
-        },
-        "powerScale": 1.4362
+        "intervalSec": 1.8,
+        "powerScale": 1
       }
     },
     {
@@ -102,7 +100,7 @@
           "lead": true,
           "hitRadius": 28
         },
-        "powerScale": 0.6046
+        "powerScale": 0.7684
       }
     },
     {
@@ -122,7 +120,11 @@
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 1.1686
+        "powerScale": 1.1686,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -141,6 +143,10 @@
           "speed": 320,
           "lead": true,
           "hitRadius": 7
+        },
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
         }
       }
     },
@@ -161,7 +167,11 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.8985
+        "powerScale": 0.8985,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -181,7 +191,11 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.9519
+        "powerScale": 0.9519,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -198,7 +212,11 @@
         "intervalSec": 1.4,
         "shape": "chain",
         "chains": 3,
-        "powerScale": 0.4896
+        "powerScale": 0.4896,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -213,14 +231,18 @@
       "aim": {
         "targets": "nearest",
         "intervalSec": 1.4,
-        "powerScale": 1.1111
+        "powerScale": 1.0165,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
       "id": "nar",
       "num": 12,
       "baseRarity": "rare",
-      "family": "pierce",
+      "family": "laser",
       "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/nar.png",
@@ -228,7 +250,7 @@
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.4,
-        "powerScale": 0.8232
+        "powerScale": 0.9729
       }
     },
     {
@@ -243,7 +265,11 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 2.5,
-        "powerScale": 0.9283
+        "powerScale": 0.9283,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -258,7 +284,11 @@
       "aim": {
         "targets": "cluster",
         "intervalSec": 2.0,
-        "powerScale": 1.082
+        "powerScale": 0.9988,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -273,7 +303,11 @@
       "aim": {
         "targets": "boss",
         "intervalSec": 3.6,
-        "powerScale": 0.949
+        "powerScale": 0.949,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -294,7 +328,11 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 1.4664
+        "powerScale": 1.4664,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -314,7 +352,11 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 1.0626
+        "powerScale": 1.0626,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -334,7 +376,11 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.0516
+        "powerScale": 1.0516,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -354,7 +400,11 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.0342
+        "powerScale": 1.0342,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -375,28 +425,26 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 0.7504
+        "powerScale": 0.7504,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
       "id": "puffer",
       "num": 21,
       "baseRarity": "common",
-      "family": "underwater",
+      "family": "ring",
       "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/puffer.png",
       "nameKey": "crewPufferName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 2.2,
-        "topRadius": 24,
-        "projectile": {
-          "speed": 120,
-          "lead": false,
-          "hitRadius": 24
-        },
-        "powerScale": 1.2005
+        "intervalSec": 2.6,
+        "powerScale": 1
       }
     },
     {
@@ -417,7 +465,7 @@
           "lead": true,
           "hitRadius": 34
         },
-        "powerScale": 0.954
+        "powerScale": 1.0102
       }
     },
     {
@@ -438,7 +486,11 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 2.2598
+        "powerScale": 1.9091,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -459,7 +511,11 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.6395
+        "powerScale": 1.6395,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -480,7 +536,7 @@
           "lead": true,
           "hitRadius": 44
         },
-        "powerScale": 0.8115
+        "powerScale": 0.7638
       }
     },
     {
@@ -494,14 +550,24 @@
       "nameKey": "crewPollyName",
       "aim": {
         "targets": "random",
-        "intervalSec": 0.6,
+        "intervalSec": 1.1,
         "shape": "single",
         "projectile": {
           "speed": 320,
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 1.7175
+        "powerScale": 2.4846,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        },
+        "common": {
+          "powerScale": 1.12
+        },
+        "rare": {
+          "powerScale": 0.8929
+        }
       }
     },
     {
@@ -515,14 +581,18 @@
       "nameKey": "crewGullName",
       "aim": {
         "targets": "air",
-        "intervalSec": 1.1,
+        "intervalSec": 2.0,
         "shape": "single",
         "projectile": {
           "speed": 320,
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 3.0649
+        "powerScale": 3.2217,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -536,7 +606,7 @@
       "nameKey": "crewPellyName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 2.0,
+        "intervalSec": 3.6,
         "shape": "circle",
         "topRadius": 22,
         "kind": "lightning",
@@ -544,7 +614,10 @@
           "delaySec": 0.4,
           "hitRadius": 22
         },
-        "powerScale": 0.6417
+        "powerScale": 0.6406,
+        "behavior": {
+          "kind": "lightning"
+        }
       }
     },
     {
@@ -558,14 +631,18 @@
       "nameKey": "crewAlbaName",
       "aim": {
         "targets": "farthest",
-        "intervalSec": 2.8,
+        "intervalSec": 5.0,
         "shape": "single",
         "projectile": {
           "speed": 320,
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 2.0548
+        "powerScale": 1.7191,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -579,7 +656,7 @@
       "nameKey": "crewMantaName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 3.6,
+        "intervalSec": 6.5,
         "shape": "circle",
         "topRadius": 26,
         "dotSec": 2,
@@ -588,7 +665,7 @@
           "lead": true,
           "hitRadius": 26
         },
-        "powerScale": 0.6929
+        "powerScale": 0.6471
       }
     },
     {
@@ -602,9 +679,13 @@
       "nameKey": "crewSharkName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 0.8,
+        "intervalSec": 2.0,
         "shape": "single",
-        "powerScale": 3.6547
+        "powerScale": 4.0451,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
@@ -618,7 +699,7 @@
       "nameKey": "crewCrabbyName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 1.7,
+        "intervalSec": 4.2,
         "powerScale": 0.8811
       }
     },
@@ -633,8 +714,8 @@
       "nameKey": "crewKingName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 2.1,
-        "powerScale": 0.967
+        "intervalSec": 5.2,
+        "powerScale": 0.8608
       }
     },
     {
@@ -648,7 +729,7 @@
       "nameKey": "crewLobsterName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 1.4,
+        "intervalSec": 3.5,
         "powerScale": 0.9601
       }
     },
@@ -663,10 +744,10 @@
       "nameKey": "crewDavyName",
       "aim": {
         "targets": "boss",
-        "intervalSec": 3.1,
+        "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.7493
+        "powerScale": 0.7866
       }
     },
     {
@@ -710,7 +791,7 @@
       "skill": "support_rally",
       "aim": {
         "intervalSec": 3.6,
-        "powerScale": 0.8376
+        "powerScale": 0.8726
       }
     },
     {
@@ -726,22 +807,27 @@
         "intervalSec": 1.7,
         "shape": "single",
         "targets": "nearest",
-        "powerScale": 5.31
+        "powerScale": 5.31,
+        "mythic": {
+          "splashRadius": 14,
+          "splashRatio": 0.5
+        }
       }
     },
     {
       "id": "lamp",
       "num": 40,
       "baseRarity": "legend",
-      "family": "shock",
+      "family": "laser",
       "reachBonus": 6,
       "fx": "level_up",
       "portrait": "crews/lamp.png",
       "nameKey": "crewLampName",
       "skill": "support_rally",
       "aim": {
+        "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.7848
+        "powerScale": 0.7377
       }
     }
   ]

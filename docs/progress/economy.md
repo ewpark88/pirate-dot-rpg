@@ -5,10 +5,21 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 공속 ×1.4(미커밋) 균형 확인 → 커밋 / S5 엔진(등급 템포·신화 범위·돌격대) 수치 / 보스전 배 피해 25~45%(보스 공격 배율) / 현상금 B2 / 야간 리포트 |
+| 바로 다음 할 일 | 계열 v3 1·2단계(출격·레이저) 균형 재적합(진행 중) → 커밋 / 3단계 원형·4단계 집속(S5) / 보스 HP·돌격대 attackMul(S5 f8fc657 머지 뒤) / 야간 리포트 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 · S2 · 등급 템포 커밋·계열 v3
+- fa788e8 rarityTempo·신화 splash 23명·돌격대 표·crewAttack(S4)·신화 색 빨강.
+- 계열 v3(미커밋): 강습·공중 behavior sortie + 간격 ×2.5·×1.8, pelly는 낙뢰라 출격 제외(aim behavior lightning), laser 계열 신설(pierce 바탕 ×1.6, 빔 0.4초, laserPierce [1,2,3,5,0]) · lamp·nar 재배정, crews 검증 '계열당 5명' → '원래 8계열에 1명 이상'.
+- 남은 문제: S4에 battleFamilyLaser 이름 키 요청 필요(지금 pierce 이름을 빌림).
+
+### 2026-10-16 · S2 · 공속·현상금 B2·안내 키·돌격대
+- ce9cdb3 공속 ×1.4(평균 2.16초) 균형 0.907~1.099 / dd9931b 현상금 B2(티켓 충전·시작·소탕·요일 고정·현상금 중 상자 멈춤) / fa0e753 Settings.hints + MarkHint.
+- 돌격대 표(waves.top.vanguard count 2·hpMul 4·speedMul 1.6) — 공격이 무리 몫이라 파밍 피해 0.38% → S5 attackMul(f8fc657).
+- 보스전 배 피해 1.9%: 보스가 첫 패턴(3초) 전에 죽음 → S5 firstRestSec 0.6·enemy_ship blast(f8fc657).
+- 미커밋: rarityTempo [1,1,1,0.9,0.8], 단일·관통·연쇄 23명 aim.mythic splash(14·0.5), 균형 재적합 중.
 
 ### 2026-10-16 · S2 · 난이도 커밋·공속 감속
 - 099b82e 난이도: 보스 28배·벽(10단위 ×2.0, 5단위 ×1.4)·초반 보스 0.08·파 2·무리 HP 1.1·처치 골드 2.8·조각 0.02 등. 스테이지 10 8.0분·40 50.6분·10단위 50%·환생 뒤 돌파 35.9분.
