@@ -1880,8 +1880,9 @@ const Map<String, String> rawTables = {
     "durationMs": 900
   },
   "audio": {
-    "sfxMinGapMs": 40,
-    "sfxMaxPerFrame": 6
+    "sfxMinGapMs": 80,
+    "sfxMaxPerFrame": 3,
+    "sfxMaxPerSec": 14
   },
   "sprites": {
     "enemyFrames": 2,
@@ -2456,7 +2457,11 @@ const Map<String, String> rawTables = {
     }
   },
   "frameCap": {
-    "battleFps": 60
+    "battleFps": 60,
+    "idleSec": 60,
+    "dimSec": 180,
+    "dimFps": 12,
+    "dimBrightness": 0.15
   }
 }
 ''',

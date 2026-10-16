@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/paint/stage_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_dim.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_scene_painter.dart';
 import 'package:pirate_dot/render/top/top_wave_fx.dart';
@@ -40,6 +41,10 @@ class ScenePainter {
 
   /// 운영자 모드: 적 히트박스 표시 (탑다운은 아직 그리지 않는다 — 운영자 칩 호환).
   bool showHitboxes = false;
+
+  /// 방치 절전 화면 밝기(0~1) — null이면 평소 그리기, 값이 있으면 TopDim만(BattleGame 방치 3분).
+  double? dim;
+  late final _dim = TopDim(scene);
 
   final _paint = Paint()..isAntiAlias = false;
   final _stroke = Paint()
