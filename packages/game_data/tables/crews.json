@@ -11,7 +11,7 @@
       "nameKey": "crewOctoName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 1.4,
+        "intervalSec": 2.0,
         "topRadius": 20,
         "projectile": {
           "speed": 120,
@@ -32,7 +32,7 @@
       "nameKey": "crewStarryName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 2.2,
+        "intervalSec": 3.1,
         "topRadius": 15,
         "projectile": {
           "speed": 120,
@@ -53,7 +53,7 @@
       "nameKey": "crewCrabsName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 0.6,
+        "intervalSec": 0.8,
         "shape": "single",
         "projectile": {
           "speed": 200,
@@ -74,7 +74,7 @@
       "nameKey": "crewUniName",
       "aim": {
         "targets": "random",
-        "intervalSec": 0.9,
+        "intervalSec": 1.3,
         "topRadius": 15,
         "projectile": {
           "speed": 200,
@@ -95,14 +95,14 @@
       "nameKey": "crewVolkeName",
       "aim": {
         "targets": "farthest",
-        "intervalSec": 3.0,
+        "intervalSec": 3.6,
         "topRadius": 28,
         "projectile": {
           "speed": 120,
           "lead": true,
           "hitRadius": 28
         },
-        "powerScale": 0.6509
+        "powerScale": 0.6046
       }
     },
     {
@@ -116,7 +116,7 @@
       "nameKey": "crewPangName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 0.4,
+        "intervalSec": 0.6,
         "projectile": {
           "speed": 320,
           "lead": false,
@@ -136,7 +136,7 @@
       "nameKey": "crewHippoName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 1.2,
+        "intervalSec": 1.7,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -155,7 +155,7 @@
       "nameKey": "crewBonesName",
       "aim": {
         "targets": "weakest",
-        "intervalSec": 0.8,
+        "intervalSec": 1.1,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -175,7 +175,7 @@
       "nameKey": "crewLionName",
       "aim": {
         "targets": "boss",
-        "intervalSec": 1.6,
+        "intervalSec": 2.2,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -195,7 +195,7 @@
       "nameKey": "crewVoltName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 1.0,
+        "intervalSec": 1.4,
         "shape": "chain",
         "chains": 3,
         "powerScale": 0.4896
@@ -212,8 +212,8 @@
       "nameKey": "crewSwordName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 1.0,
-        "powerScale": 1.0576
+        "intervalSec": 1.4,
+        "powerScale": 1.1111
       }
     },
     {
@@ -227,8 +227,8 @@
       "nameKey": "crewNarName",
       "aim": {
         "targets": "farthest",
-        "intervalSec": 2.4,
-        "powerScale": 0.7959
+        "intervalSec": 3.4,
+        "powerScale": 0.8232
       }
     },
     {
@@ -242,8 +242,8 @@
       "nameKey": "crewWalrusName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 1.8,
-        "powerScale": 0.9701
+        "intervalSec": 2.5,
+        "powerScale": 0.9283
       }
     },
     {
@@ -257,7 +257,7 @@
       "nameKey": "crewSawName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 1.4,
+        "intervalSec": 2.0,
         "powerScale": 1.082
       }
     },
@@ -272,7 +272,8 @@
       "nameKey": "crewMobyName",
       "aim": {
         "targets": "boss",
-        "intervalSec": 3.0
+        "intervalSec": 3.6,
+        "powerScale": 0.949
       }
     },
     {
@@ -286,7 +287,7 @@
       "nameKey": "crewOtterName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 0.5,
+        "intervalSec": 0.7,
         "chains": 2,
         "projectile": {
           "speed": 320,
@@ -307,7 +308,7 @@
       "nameKey": "crewPinguName",
       "aim": {
         "targets": "random",
-        "intervalSec": 1.0,
+        "intervalSec": 1.4,
         "projectile": {
           "speed": 320,
           "lead": false,
@@ -327,7 +328,7 @@
       "nameKey": "crewSheldonName",
       "aim": {
         "targets": "weakest",
-        "intervalSec": 1.2,
+        "intervalSec": 1.7,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -347,7 +348,7 @@
       "nameKey": "crewDolphyName",
       "aim": {
         "targets": "farthest",
-        "intervalSec": 1.5,
+        "intervalSec": 2.1,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -367,14 +368,14 @@
       "nameKey": "crewOrcaName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 2.0,
+        "intervalSec": 2.8,
         "chains": 5,
         "projectile": {
           "speed": 320,
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 0.7954
+        "powerScale": 0.7504
       }
     },
     {
@@ -388,7 +389,7 @@
       "nameKey": "crewPufferName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 1.6,
+        "intervalSec": 2.2,
         "topRadius": 24,
         "projectile": {
           "speed": 120,
@@ -409,7 +410,7 @@
       "nameKey": "crewJellyName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 2.4,
+        "intervalSec": 3.4,
         "topRadius": 34,
         "projectile": {
           "speed": 120,
@@ -430,7 +431,7 @@
       "nameKey": "crewBaraName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 1.2,
+        "intervalSec": 1.7,
         "shape": "single",
         "projectile": {
           "speed": 200,
@@ -451,14 +452,14 @@
       "nameKey": "crewMorayName",
       "aim": {
         "targets": "boss",
-        "intervalSec": 2.0,
+        "intervalSec": 2.8,
         "shape": "single",
         "projectile": {
           "speed": 200,
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.7348
+        "powerScale": 1.6395
       }
     },
     {
@@ -472,7 +473,7 @@
       "nameKey": "crewKrakiName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 3.0,
+        "intervalSec": 3.6,
         "topRadius": 44,
         "projectile": {
           "speed": 120,
@@ -493,7 +494,7 @@
       "nameKey": "crewPollyName",
       "aim": {
         "targets": "random",
-        "intervalSec": 0.4,
+        "intervalSec": 0.6,
         "shape": "single",
         "projectile": {
           "speed": 320,
@@ -514,7 +515,7 @@
       "nameKey": "crewGullName",
       "aim": {
         "targets": "air",
-        "intervalSec": 0.8,
+        "intervalSec": 1.1,
         "shape": "single",
         "projectile": {
           "speed": 320,
@@ -535,7 +536,7 @@
       "nameKey": "crewPellyName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 1.4,
+        "intervalSec": 2.0,
         "shape": "circle",
         "topRadius": 22,
         "kind": "lightning",
@@ -557,7 +558,7 @@
       "nameKey": "crewAlbaName",
       "aim": {
         "targets": "farthest",
-        "intervalSec": 2.0,
+        "intervalSec": 2.8,
         "shape": "single",
         "projectile": {
           "speed": 320,
@@ -578,7 +579,7 @@
       "nameKey": "crewMantaName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 2.6,
+        "intervalSec": 3.6,
         "shape": "circle",
         "topRadius": 26,
         "dotSec": 2,
@@ -601,7 +602,7 @@
       "nameKey": "crewSharkName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 0.6,
+        "intervalSec": 0.8,
         "shape": "single",
         "powerScale": 3.6547
       }
@@ -617,7 +618,7 @@
       "nameKey": "crewCrabbyName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 1.2,
+        "intervalSec": 1.7,
         "powerScale": 0.8811
       }
     },
@@ -632,7 +633,7 @@
       "nameKey": "crewKingName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 1.5,
+        "intervalSec": 2.1,
         "powerScale": 0.967
       }
     },
@@ -647,7 +648,7 @@
       "nameKey": "crewLobsterName",
       "aim": {
         "targets": "cluster",
-        "intervalSec": 1.0,
+        "intervalSec": 1.4,
         "powerScale": 0.9601
       }
     },
@@ -662,7 +663,7 @@
       "nameKey": "crewDavyName",
       "aim": {
         "targets": "boss",
-        "intervalSec": 2.2,
+        "intervalSec": 3.1,
         "angleDeg": 90,
         "range": 50,
         "powerScale": 0.7493
@@ -678,8 +679,8 @@
       "portrait": "crews/turtle.png",
       "nameKey": "crewTurtleName",
       "aim": {
-        "intervalSec": 1.8,
-        "powerScale": 0.836
+        "intervalSec": 2.5,
+        "powerScale": 0.8805
       }
     },
     {
@@ -692,9 +693,9 @@
       "portrait": "crews/pumpum.png",
       "nameKey": "crewPumpumName",
       "aim": {
-        "intervalSec": 2.6,
+        "intervalSec": 3.6,
         "range": 75,
-        "powerScale": 1.0579
+        "powerScale": 1.1193
       }
     },
     {
@@ -708,7 +709,7 @@
       "nameKey": "crewCookName",
       "skill": "support_rally",
       "aim": {
-        "intervalSec": 3.0,
+        "intervalSec": 3.6,
         "powerScale": 0.8376
       }
     },
@@ -722,7 +723,7 @@
       "portrait": "crews/corey.png",
       "nameKey": "crewCoreyName",
       "aim": {
-        "intervalSec": 1.2,
+        "intervalSec": 1.7,
         "shape": "single",
         "targets": "nearest",
         "powerScale": 5.31
@@ -739,7 +740,7 @@
       "nameKey": "crewLampName",
       "skill": "support_rally",
       "aim": {
-        "intervalSec": 2.0,
+        "intervalSec": 2.8,
         "powerScale": 0.7848
       }
     }

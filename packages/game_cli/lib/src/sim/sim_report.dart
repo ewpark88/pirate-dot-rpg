@@ -98,6 +98,15 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('eventGoldPct', '돌발 이벤트 골드 ÷ 처치 골드', (r) => r.eventGoldPct, '%', within: Duration.zero),
     c('challengeWinPct', '즉석 도전 성공률', (r) => r.challengeWinPct, '%', within: Duration.zero),
     c('feverIntervalMin', '피버 평균 간격(접속 시간)', (r) => r.feverIntervalMin, '분', within: Duration.zero),
+    c(
+      'bossFightDamagePct',
+      '보스전 한 번 배 체력 피해',
+      (r) => SimThreat.median(r.threat?.bossFightDamage ?? const []) == null
+          ? null
+          : SimThreat.median(r.threat!.bossFightDamage)! * 100,
+      '%',
+      within: Duration.zero,
+    ),
     c('bossFirstWinPct', '보스 첫 도전 성공(보통 스테이지)', (r) => r.threat?.bossFirstWinPct, '%', within: Duration.zero),
     c('wallFirstWinPct', '보스 첫 도전 성공(10단위 해역 보스)', (r) => r.threat?.wallFirstWinPct, '%', within: Duration.zero),
     c(
