@@ -30,6 +30,9 @@ class TopSeaPainter {
 
   /// 피버 질주 0~1: 바다 흐름 ×4, 항적 2배 길게, 뱃머리 V자 물보라 크게(사용자 '배가 빠르게 나아가는 연출').
   double boost = 0;
+
+  /// 지금 흐름 속도(단위/초) — 피버 S자 항적이 흐름을 따라 뒤로 흘러간다.
+  double get flowSpeed => _speed * (1 + 7 * boost);
   Offset _dir = const Offset(0, 1);
   late final Color _feverBase = Color(_c('feverBase'));
   late final Color _feverDeep = Color(_c('feverDeep'));
