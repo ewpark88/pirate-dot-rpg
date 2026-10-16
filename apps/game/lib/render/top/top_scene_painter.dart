@@ -154,6 +154,7 @@ class TopScenePainter {
       ..paint(c, under: false, cull: visibleWorld);
     fever.embers(c, scene.topShip);
     scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
+    scene.topHits.boss.paint(c, clockMs, scene.topShip, _bossAt, flash: scene.settings.flash);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
       ..bosses(c, _foes.radiusOf);
@@ -177,6 +178,11 @@ class TopScenePainter {
       ..rushers(c, frame.box)
       ..speedLines(c, frame.box);
     _marks.screenFlash(c, Offset.zero & frame.box);
+  }
+
+  Offset? _bossAt(int id) {
+    final p = scene.poseOf(id);
+    return p == null ? null : Offset(p.drawX, p.drawY);
   }
 
   /// 피버 질주 위아래 흔들림(흔들기 설정 따름).

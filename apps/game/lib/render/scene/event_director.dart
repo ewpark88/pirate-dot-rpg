@@ -16,8 +16,7 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 
 part 'event_director_top.dart';
 
-/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, 수치는 juice·fx_map). 앞서 알림(onAhead, lookahead 틱 전): 발사체·슬롯
-/// 번쩍임. 지금(onNow): 피격 번쩍임·넉백·숫자·이펙트·흔들림·코인·진동.
+/// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, juice·fx_map): onAhead = 발사체·슬롯 번쩍, onNow = 피격·숫자·이펙트·흔들림·코인.
 class EventDirector implements ReplayListener {
   EventDirector(this.scene)
     : _crewFamily = _familyByCrew(scene.tables),
@@ -153,6 +152,8 @@ class EventDirector implements ReplayListener {
           _enemyShot(e, tick.frame);
         case EnemyEmerging() when scene.isTop:
           _emerging(e, tick.frame);
+        case BossPatternShown() when scene.isTop:
+          _bossPattern(e, tick.frame);
         case PartUpgraded(:final part) when scene.isTop:
           _partUp(part);
         case BossFailed():
