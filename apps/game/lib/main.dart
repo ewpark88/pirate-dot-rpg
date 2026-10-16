@@ -20,16 +20,19 @@ import 'package:pirate_dot/adapters/audio/flame_audio_sdk.dart';
 import 'package:pirate_dot/adapters/file_save_store.dart';
 import 'package:pirate_dot/adapters/notify/local_notifications_sdk.dart';
 import 'package:pirate_dot/adapters/notify/offline_full_notifier.dart';
+import 'package:pirate_dot/adapters/power/power_channel.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart' show operatorBackupProvider;
 import 'package:pirate_dot/operator/flags.dart';
+import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/proto/proto_screen.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/state/idle.dart';
 import 'package:pirate_dot/ui/state/platform_providers.dart';
 
 /// 첫 프레임 전 SDK 초기화가 이보다 오래 걸리면 포기하고 없이 시작한다(Noop·무음) — 스플래시에 갇히지 않게.
@@ -151,6 +154,22 @@ Future<void> main() async {
     gameStateProvider.select((s) => s.settings.notifications),
     (_, on) => unawaited(notifier.onSettingChanged(enabled: on)),
   );
+  // 발열 대책(실기기 S24 2026-10-17): 주사율 60Hz(방치·절전·발열 보통 이상 30Hz), 방치·발열 심함이면 효과음 끔, 발열 단계 공유.
+  final power = PowerChannel();
+  void applyPower() {
+    final idle = container.read(idleLevelProvider);
+    final thermal = container.read(thermalLevelProvider);
+    unawaited(power.setFrameRate(targetFrameRate(idle: idle, thermal: thermal)));
+    audio.quiet = sfxQuiet(idle: idle, thermal: thermal);
+  }
+
+  container
+    ..listen(idleLevelProvider, (_, _) => applyPower())
+    ..listen(thermalLevelProvider, (_, _) => applyPower());
+  power.changes.listen((t) => container.read(thermalLevelProvider.notifier).set(t));
+  unawaited(power.thermal().then((t) => container.read(thermalLevelProvider.notifier).set(t)));
+  unawaited(power.keepScreenOn().then((on) => debugPrint('power: keepScreenOn=$on')));
+  applyPower();
   // 백그라운드로 가면 저장하고 멈춘다. 돌아오면 다시 돈다 (오프라인 보상은 UI 복귀 팝업이 ClaimOffline으로 받는다).
   // 엔진이 떨어지면(액티비티 종료) 타이머·배경음을 멈춘다 — 떨어진 엔진에 플랫폼 메시지를 계속 보내지 않게.
   AppLifecycleListener(

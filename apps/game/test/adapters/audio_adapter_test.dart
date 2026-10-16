@@ -69,17 +69,47 @@ void main() {
     expect(() => broken.playSfx('hit'), returnsNormally);
   });
 
-  test('20. 같은 id 동시 4개까지, 하나 끝나면 다시 된다', () async {
+  test('20. 같은 id 동시 4개까지, 하나 끝나면 다시 된다(같은 소리는 60ms 간격)', () async {
+    var now = 0;
     final sdk = FakeAudioSdk({'sfx/hit.ogg'});
-    final a = await AudioAdapter.load(sdk);
+    final a = await AudioAdapter.load(sdk, nowMs: () => now);
     for (var i = 0; i < 5; i++) {
       a.playSfx('hit');
+      now += AudioAdapter.sameSfxGapMs;
     }
     expect(sdk.sfx.length, 4);
     sdk.playing.first.complete();
     await pumpEventQueue();
     a.playSfx('hit');
     expect(sdk.sfx.length, 5);
+  });
+
+  test('발열 대책: 같은 소리 60ms 안 반복은 버림, 전체 동시 6개, quiet면 효과음 끔(배경음은 그대로)', () async {
+    var now = 0;
+    final sdk = FakeAudioSdk({for (var i = 0; i < 8; i++) 'sfx/s$i.ogg', 'bgm/sea.ogg'});
+    final a = await AudioAdapter.load(sdk, nowMs: () => now)
+      ..playSfx('s0')
+      ..playSfx('s0');
+    expect(sdk.sfx.length, 1, reason: '같은 소리 간격 안');
+    for (var i = 1; i < 8; i++) {
+      a.playSfx('s$i');
+    }
+    expect(sdk.sfx.length, AudioAdapter.maxTotalSfx, reason: '전체 동시 상한');
+    for (final c in sdk.playing) {
+      c.complete();
+    }
+    await pumpEventQueue();
+    now += 1000;
+    a
+      ..quiet = true
+      ..playSfx('s7')
+      ..playBgm('sea');
+    expect(sdk.sfx.length, AudioAdapter.maxTotalSfx, reason: 'quiet면 효과음 없음');
+    expect(sdk.bgm, ['bgm/sea.ogg']);
+    a
+      ..quiet = false
+      ..playSfx('s7');
+    expect(sdk.sfx.length, AudioAdapter.maxTotalSfx + 1);
   });
 
   test('21. 효과음 볼륨 0이면 재생 안 함, 같은 배경음은 한 번만', () async {
