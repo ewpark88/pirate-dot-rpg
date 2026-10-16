@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -34,6 +35,7 @@ class SummonTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('summonTab');
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
     // 비용은 상태에 따라 달라진다 (첫 10연 무료) — 경제 summonCostFor로만 구한다.

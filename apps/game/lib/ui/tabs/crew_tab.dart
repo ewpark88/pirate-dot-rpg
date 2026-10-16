@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_card.dart';
@@ -35,6 +36,7 @@ class CrewTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('crewTab');
     final l10n = AppLocalizations.of(context);
     // 보유·도감 수가 바뀔 때만 격자를 다시 짠다 (선원은 줄지 않으므로 수로 충분). 카드 내용은 CrewCard가 구독한다.
     final collected = ref.watch(gameStateProvider.select((s) => (s.collection.length, s.crews.length))).$1;

@@ -6,9 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/hud/hud_bubble.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
+
+export 'package:pirate_dot/ui/hud/hud_bubble.dart';
 
 // 선원 줄 오른쪽 버튼이 무엇인지 한눈에 (사용자 질문 2026-10-16 "동그라미로 떠 있는 슬롯은 뭐냐", "새로고침 버튼 같은 건 뭐냐").
 // 궁극기: 그림(선장 초상)은 렌더, UI는 '궁극기' 꼬리표·함성 원형 게이지 + %·가득 차면 금빛 맥박·'탭!'·발동 띠·처음 말풍선.
@@ -21,9 +24,20 @@ class HudHints extends Notifier<Map<String, int>> {
   @override
   Map<String, int> build() => const {};
 
-  int count(String id) => state[id] ?? 0;
+  /// 세이브에 남기는 '처음 1회' 안내 (Settings.hints · MarkHint — 앱을 다시 켜도 다시 안 뜬다).
+  static const persistent = {'ult.bubble', 'boss.bubble', 'rebirth.bubble', 'rebirth.seen'};
 
-  void shown(String id) => state = {...state, id: count(id) + 1};
+  /// 본 횟수: 이번 실행 수, 세이브에 본 기록이 있으면 최소 1.
+  int count(String id) {
+    final n = state[id] ?? 0;
+    final saved = persistent.contains(id) && ref.read(gameStateProvider).settings.hints.contains(id);
+    return saved && n == 0 ? 1 : n;
+  }
+
+  void shown(String id) {
+    state = {...state, id: (state[id] ?? 0) + 1};
+    if (persistent.contains(id)) ref.read(commandSinkProvider).send(MarkHint(id));
+  }
 
   /// 켜짐/꺼짐 표시 (말풍선이 지금 떠 있는지 — 한 번에 하나만).
   void set(String id, {required bool on}) => state = {...state, id: on ? 1 : 0};
@@ -268,23 +282,4 @@ class _RagePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RagePainter old) => old.value != value || old.pulse != pulse;
-}
-
-class HudBubble extends StatelessWidget {
-  const HudBubble({required this.text, super.key});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(maxWidth: 220),
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: Skin.shadow,
-      border: Border.all(color: Skin.goldBottom, width: 2),
-    ),
-    child: Text(text, style: Skin.text(13)),
-  );
 }

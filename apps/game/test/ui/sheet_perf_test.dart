@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
@@ -27,6 +28,13 @@ Future<Duration> _run100(WidgetTester tester, GameState base) async {
   return sw.elapsed;
 }
 
+/// 조각마다 틱 100번 동안 허용하는 build 횟수. 골드에 따라 바뀌는 것(배 강화 줄 — 살 수 있나)도 몇 번뿐이다.
+int _maxBuilds(String id) => switch (id) {
+  'crewCard' => 80, // 40장 × 처음 한 번 + 여유
+  'partRow' => 25,
+  _ => 5,
+};
+
 void main() {
   final base = loadFixture('all_crews_mythic');
 
@@ -34,14 +42,21 @@ void main() {
     testWidgets('시트 $name 열고 틱 100번: 닫힌 상태보다 크게 느리지 않다', (tester) async {
       await pumpGame(tester, base, openTab: false);
       final closed = await _run100(tester, base);
+      debugBuildCounts.clear();
       await tester.tap(find.byKey(Key('tab.$tab')));
       await tester.pumpAndSettle();
+      // 세기가 실제로 동작하는지: 시트를 열면 그 탭이 한 번은 지어진다.
+      expect(debugBuildCounts, isNotEmpty, reason: '$name build 세기');
+      debugBuildCounts.clear();
       final open = await _run100(tester, base);
       // 측정값을 로그로 남긴다(회귀 원인 찾기).
       // ignore: avoid_print
-      print('PERF $name closed=${closed.inMilliseconds}ms open=${open.inMilliseconds}ms');
-      // 시트가 틱마다 하는 일은 작아야 한다: 틱당 평균 추가 시간 ≤ 4ms (테스트 기계 기준, 여유 큼).
-      expect((open - closed).inMicroseconds / 100, lessThan(4000), reason: '$name 틱당 추가 처리 시간');
+      print('PERF $name closed=${closed.inMilliseconds}ms open=${open.inMilliseconds}ms builds=$debugBuildCounts');
+      // 시간은 PC 부하에 흔들린다(S1 --full 실패) → 무거운 조각이 틱 100번 동안 다시 지어진 횟수로 잰다.
+      // 틱마다 다시 지으면 100+, 지금은 골드가 바뀌는 몇 번뿐이어야 한다.
+      for (final e in debugBuildCounts.entries) {
+        expect(e.value, lessThanOrEqualTo(_maxBuilds(e.key)), reason: '$name: ${e.key} build ${e.value}회 / 틱 100번');
+      }
     });
   }
 
@@ -50,12 +65,15 @@ void main() {
     final gap = base.copyWith(fleet: [...ids.take(ids.length - 1), null], fleetInit: true);
     await pumpGame(tester, gap, openTab: false);
     final closed = await _run100(tester, gap);
+    debugBuildCounts.clear();
     await tester.tap(find.byKey(Key('fleet.slot.${ids.length - 1}')));
     await tester.pumpAndSettle();
+    expect(debugBuildCounts['fleetPicker'], greaterThan(0), reason: 'picker build 세기');
+    debugBuildCounts.clear();
     final open = await _run100(tester, gap);
     // 측정값을 로그로 남긴다(회귀 원인 찾기).
     // ignore: avoid_print
-    print('PERF picker closed=${closed.inMilliseconds}ms open=${open.inMilliseconds}ms');
-    expect((open - closed).inMicroseconds / 100, lessThan(4000), reason: 'picker 틱당 추가 처리 시간');
+    print('PERF picker closed=${closed.inMilliseconds}ms open=${open.inMilliseconds}ms builds=$debugBuildCounts');
+    expect(debugBuildCounts['fleetPicker'] ?? 0, lessThanOrEqualTo(5), reason: 'picker build / 틱 100번');
   });
 }

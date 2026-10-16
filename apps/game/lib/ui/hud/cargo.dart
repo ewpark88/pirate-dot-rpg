@@ -201,6 +201,20 @@ class _AutoUpgradeChipState extends ConsumerState<AutoUpgradeChip> {
             Text(l10n.uiAutoUpgradeShort, style: Skin.text(13, color: Skin.primaryEdge)),
             const SizedBox(width: 4),
             Text(time, style: Skin.text(13)),
+            // 끄기 (경제 CancelAutoUpgrade — 남은 시간은 버린다).
+            GestureDetector(
+              key: const Key('autoUpgrade.off'),
+              behavior: HitTestBehavior.opaque,
+              onTap: () => ref.read(commandSinkProvider).send(const CancelAutoUpgrade()),
+              child: Semantics(
+                button: true,
+                label: l10n.uiAutoUpgradeOff,
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(6, 8, 2, 8),
+                  child: Icon(Icons.close_rounded, size: 16, color: Skin.sub),
+                ),
+              ),
+            ),
           ],
         ),
       ),

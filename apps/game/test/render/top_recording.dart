@@ -232,3 +232,30 @@ List<RecordedTick> withBounty(List<RecordedTick> rec, {int at = 60, int clearAt 
       ],
     ),
 ];
+
+/// 돌격대·상위 착탄 폭발 주입 (S5 chargers): 모든 프레임에서 앞 8마리를 vanguard로, [at] 틱에 pang(신화면 무지개)의 splashRadius 30 한 발.
+List<RecordedTick> withVanguardSplash(List<RecordedTick> rec, {int at = 120}) => [
+  for (var i = 0; i < rec.length; i++)
+    () {
+      final j = rec[i].frame.toJson();
+      final enemies = [for (final e in j['enemies'] as List) Map<String, dynamic>.from(e as Map)];
+      for (var k = 0; k < enemies.length && k < 8; k++) {
+        enemies[k]['vanguard'] = true;
+      }
+      final frame = BattleView.fromJson({...j, 'enemies': enemies});
+      final t = frame.enemies.isEmpty ? null : frame.enemies[frame.enemies.length ~/ 2];
+      return RecordedTick(frame, [
+        ...rec[i].events,
+        if (i == at && t != null)
+          AttackFired(
+            frame.tick,
+            crewId: 'pang',
+            family: 'direct',
+            targetIds: [t.id],
+            x: t.x,
+            y: t.y,
+            splashRadius: 30,
+          ),
+      ]);
+    }(),
+];

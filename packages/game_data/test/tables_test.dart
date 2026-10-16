@@ -51,7 +51,7 @@ void main() {
     });
 
     test('없는 계열을 참조하는 선원', () {
-      final raw = patched('crews', (m) => ((m['crews'] as List).first as Map)['family'] = 'laser');
+      final raw = patched('crews', (m) => ((m['crews'] as List).first as Map)['family'] = 'no_such_family');
       expect(() => GameTables.load(raw), throwsA(isA<TableValidationException>()));
     });
 

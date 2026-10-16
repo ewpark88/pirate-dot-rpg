@@ -55,22 +55,29 @@ class TopScenePainter {
     final clockMs = scene.clockMs;
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0);
     _lastMs = clockMs;
-    final target = frame.shipScreen.dy;
+    // 보스전 카메라(사용자 '보스전이 박진감 넘치게'): 0.6초에 걸쳐 배를 화면 아래 78%로 당기고 1.08배, 등장 순간 줌 펀치.
+    final boss = scene.frame.bossActive;
+    if (dt > 0) _bossCam += ((boss ? 1 : 0) - _bossCam) * math.min(1, dt / 200);
+    if (boss && !_wasBoss) _punchAt = clockMs;
+    _wasBoss = boss;
+    final punchT = (clockMs - _punchAt) / 300;
+    final zoom = 1 + 0.08 * _bossCam + (punchT >= 0 && punchT < 1 ? 0.06 * (1 - punchT) * (1 - punchT) : 0);
+    final target = frame.shipScreen.dy + (0.78 - TopFrame.kShipAt) * frame.fieldDp.height * _bossCam;
     final y = _shipY ?? target;
     // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
-    // 시트가 전장을 가리면(상자가 가장 컸던 높이의 75% 미만) 가벼운 연출 — 절전과 같은 입자 절반.
-    _maxBoxH = math.max(_maxBoxH, frame.box.height);
+    _maxBoxH = math.max(_maxBoxH, frame.box.height); // 시트가 가리면(가장 컸던 높이 75% 미만) 가벼운 연출
     scene.topHits.lite = scene.settings.powerSave || frame.box.height < _maxBoxH * 0.75;
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
     final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
-    final dot = frame.dot;
+    final dot = frame.dot * zoom;
     final kick = scene.topHits.juice.kick(clockMs);
     final view = scene.frame;
     final ship = scene.topShip;
     final cam = scene.topCamera;
+    _camT = (sx, sy, dot, cam);
     _turn.update(ship.dx, clockMs, dt);
     // 환생 v2(S2 d9593dc): 그림 등급 = 명예 등급(shipTierLook), 스킨 = shipSkin(운영자 미리보기 skin이 있으면 그것), 보물 바다 = treasureSea.
     final tier = view.shipTierLook ?? scene.moments.shipTierId;
@@ -217,6 +224,17 @@ class TopScenePainter {
   double _shipR = 16;
   double _maxBoxH = 0;
   final _ghost = Paint();
+
+  double _bossCam = 0;
+  bool _wasBoss = false;
+  double _punchAt = -1000000000;
+  (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
+
+  /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
+  Offset worldToScreen(Offset world) => Offset(_camT.$1, _camT.$2) + (world - _camT.$4) * _camT.$3;
+
+  /// 상자 dp → 전장 좌표.
+  Offset screenToWorld(Offset dp) => _camT.$4 + (dp - Offset(_camT.$1, _camT.$2)) / _camT.$3;
 
   late final _turn = ShipTurn(scene);
 

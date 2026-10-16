@@ -207,6 +207,16 @@ extension _TopEvents on EventDirector {
       scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
     }
     if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
+    // 돌격대 박치기: 큰 충돌(강 단계 흔들림·멈춤 + 붉은 폭발).
+    if (scene.isTop && e.fromX != null && _vanguardAt(e.fromX!, e.fromY!)) {
+      scene.topHits.juice.hit(
+        scene.clockMs,
+        Offset(e.fromX!, e.fromY!) - scene.topShip,
+        strong: true,
+        shake: scene.settings.shake,
+      );
+      scene.topHits.impact.add(e.fromX!, e.fromY!, 26, 0xFFE8443A, scene.clockMs);
+    }
     if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
   }
 
@@ -214,6 +224,11 @@ extension _TopEvents on EventDirector {
   void _juiceHit(Damage e, int index) {
     final en = _player.enemyAt(index, e.targetId);
     if (en == null) return;
+    // 레이저가 켜진 선원의 피해: 맞은 자리 작은 불꽃.
+    final crew = e.crewId;
+    if (crew != null && scene.topHits.family.beaming(crew, scene.clockMs)) {
+      scene.topHits.impact.add(en.x, en.y, 8, 0xFFFFE08A, scene.clockMs);
+    }
     final strong = en.boss;
     if (!strong && !e.crit) return;
     final ship = scene.topShip;
