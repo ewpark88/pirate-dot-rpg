@@ -1,4 +1,5 @@
 import 'package:game_core/game_core.dart';
+import 'package:game_core/src/economy/economy_system.dart';
 import 'package:test/test.dart';
 
 import 'harness.dart';
@@ -90,5 +91,16 @@ void main() {
       [s.wallet.mapPieces + 2, s.progress.mapPiecesEarned + 2],
     );
     expect(bountyReward(s, t, 'iceberg_walrus', 1, XorShiftRng(1)), const BountyReward(type: 'gems', amount: 20));
+  });
+
+  test('광고 입장권: 티켓 +1(상한을 넘어도), 같은 날 두 번째는 안 됨 (기준 8)', () {
+    final h = EconomyHarness();
+    final s0 = withBounty(BountyState(tickets: t.meta.raw.obj('bounty').integer('ticketCap')));
+    expect(canWatchAd(s0, t, AdPlacement.bountyTicket), isTrue);
+    final s1 = const EconomySystem().handle(s0, const GrantAdReward(AdPlacement.bountyTicket), h.ctx)!;
+    expect(s1.bounty!.tickets, s0.bounty!.tickets + 1);
+    expect(s1.bounty!.adOn, isNotNull);
+    expect(canWatchAd(s1, t, AdPlacement.bountyTicket), isFalse);
+    expect(canWatchAd(EconomyHarness().newGame(), t, AdPlacement.bountyTicket), isFalse, reason: '현상금 상태 없음');
   });
 }

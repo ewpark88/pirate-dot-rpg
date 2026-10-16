@@ -1,3 +1,5 @@
+import 'package:game_core/game_core.dart';
+
 /// 골드 수급 계측 (사용자 신고 2026-10-16: '돈이 너무 많이 벌린다, 강화를 늘 누를 수 있다').
 /// 가상 플레이어는 decisionSec마다 강화를 살펴본다 — 그 순간 하나라도 살 수 있었는가, 산 순간 사이 간격(스테이지별).
 class SimGold {
@@ -6,8 +8,9 @@ class SimGold {
   Duration? _last;
   final gaps = <(int stage, double sec)>[];
 
-  /// 한 번 살펴본 결과 — [bought]를 그대로 돌려준다.
-  int decide(int bought, Duration online, int stage) {
+  /// 한 번 살펴본 결과 — [bought]를 그대로 돌려준다. 간격은 첫 회차만(환생 뒤는 빠른 항해로 왜곡된다).
+  int decide(int bought, Duration online, Progress p) {
+    final stage = p.rebirths == 0 ? p.stage : -1;
     decisions++;
     if (bought == 0) return 0;
     affordable++;
