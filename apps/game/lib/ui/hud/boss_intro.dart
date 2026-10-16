@@ -24,7 +24,8 @@ class BossIntro extends ConsumerStatefulWidget {
 }
 
 class _BossIntroState extends ConsumerState<BossIntro> with SingleTickerProviderStateMixin {
-  late final AnimationController _ctl = AnimationController(vsync: this, duration: bossIntroShow);
+  // initState에서 만든다 — 지연(late =) 생성이면 한 번도 안 뜬 채 dispose에서 처음 만들어져 오류가 난다.
+  late final AnimationController _ctl;
   StreamSubscription<RecordedTick>? _sub;
 
   /// 지금 보이는 보스 (id, 스테이지).
@@ -33,6 +34,7 @@ class _BossIntroState extends ConsumerState<BossIntro> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
+    _ctl = AnimationController(vsync: this, duration: bossIntroShow);
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       for (final e in tick.events) {
         if (e is BossSpawned) _show(e);
