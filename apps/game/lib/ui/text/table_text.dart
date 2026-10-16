@@ -112,6 +112,10 @@ final Map<String, String Function(AppLocalizations)> _getters = {
   'battleFamilyAir': (l) => l.battleFamilyAir,
   'battleFamilyAssault': (l) => l.battleFamilyAssault,
   'battleFamilyShock': (l) => l.battleFamilyShock,
+  // 계열 v3 새 계열 이름(S5 기획 · S2 표 nameKey가 이 키를 쓴다).
+  'uiFamilyLaser': (l) => l.uiFamilyLaser,
+  'uiFamilyRing': (l) => l.uiFamilyRing,
+  'uiFamilyCluster': (l) => l.uiFamilyCluster,
   'battleComboDouble': (l) => l.battleComboDouble,
   'battleComboTriple': (l) => l.battleComboTriple,
   'battleComboMassacre': (l) => l.battleComboMassacre,

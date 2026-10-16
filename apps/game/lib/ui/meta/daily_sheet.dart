@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -33,6 +34,7 @@ class DailyIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('dailyIcon');
     // 상단 바에 늘 있으므로 받을 수(숫자)만 구독한다 — 상태 전체를 보면 엔진 틱마다 다시 짓는다(사용자 버그 2026-10-16 버벅임).
     final questsOf = ref.watch(dailyQuestsProvider);
     final attendanceOf = ref.watch(attendanceProvider);

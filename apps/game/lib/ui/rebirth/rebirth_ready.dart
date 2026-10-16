@@ -24,11 +24,14 @@ final rebirthReadyProvider = Provider<bool>((ref) {
   );
 });
 
-/// 아직 한 번도 환생하지 않았고 지금 할 수 있으며, 이번 실행에서 환생 창을 아직 안 열었다 → 손가락으로 길 안내.
+/// 아직 한 번도 환생하지 않았고 지금 할 수 있으며, 환생 창을 아직 안 열었다(세이브에 남음) → 손가락으로 길 안내.
 final rebirthGuideProvider = Provider<bool>((ref) {
   final ready = ref.watch(rebirthReadyProvider);
   final first = ref.watch(gameStateProvider.select((s) => s.progress.rebirths == 0));
-  final seen = ref.watch(hudHintsProvider.select((h) => (h['rebirth.seen'] ?? 0) > 0));
+  // 이번 실행에서 봤거나 세이브에 본 기록(Settings.hints)이 있으면 끝.
+  final seen =
+      ref.watch(hudHintsProvider.select((h) => (h['rebirth.seen'] ?? 0) > 0)) ||
+      ref.watch(gameStateProvider.select((s) => s.settings.hints.contains('rebirth.seen')));
   return ready && first && !seen;
 });
 

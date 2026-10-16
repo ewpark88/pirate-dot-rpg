@@ -145,7 +145,7 @@ class CrewDetailDialog extends ConsumerWidget {
               ],
             ),
             // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
-            CrewIdentityPanel(crewId: def.id),
+            CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
