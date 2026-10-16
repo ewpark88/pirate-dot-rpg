@@ -4,7 +4,7 @@ part of 'battle_game.dart';
 mixin _UiLinks on FlameGame {
   BattleScene get scene;
   bool get _sceneReady;
-  TopFrame get _topFrame;
+  ScenePainter get painter;
 
   Offset? _goldTargetDp;
   void Function(BigNum amount)? _onCoinArrive;
@@ -42,8 +42,9 @@ mixin _UiLinks on FlameGame {
       ..fled = v.fled;
   }
 
-  Offset worldToDp(Offset world) => _topFrame.worldToDp(world, scene.topCamera);
-  Offset dpToWorld(Offset dp) => _topFrame.dpToWorld(dp, scene.topCamera);
+  // 그린 카메라 그대로(보스전 당김·확대·피버 가속 포함) — 탭 자리가 그림과 어긋나지 않게.
+  Offset worldToDp(Offset world) => painter.top.worldToScreen(world);
+  Offset dpToWorld(Offset dp) => painter.top.screenToWorld(dp);
 
   /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
   CutInState get cutIn => scene.moments.cutIn;

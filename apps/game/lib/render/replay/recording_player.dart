@@ -33,6 +33,9 @@ class EnemyPose {
   /// 솟아오르기 예고 중(EnemyView.emerging) — 몸은 숨기고 물보라만.
   bool emerging = false;
 
+  /// 돌격대(EnemyView.vanguard, S5 chargers) — 붉은 테·물보라 꼬리.
+  bool vanguard = false;
+
   void _set(EnemyView v, double nx, double ny) {
     id = v.id;
     kind = v.kind;
@@ -47,6 +50,7 @@ class EnemyPose {
     vulnerable = v.vulnerable;
     heading = v.heading;
     emerging = v.emerging;
+    vanguard = v.vanguard;
     x = nx;
     y = ny;
     drawX = nx;

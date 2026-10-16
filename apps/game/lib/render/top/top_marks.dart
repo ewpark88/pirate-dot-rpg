@@ -79,11 +79,29 @@ class TopMarks {
       if (e.layer == 'underwater' || !cull.contains(Offset(e.drawX, e.drawY))) continue;
       final r = radiusOf(e);
       final at = Offset(e.drawX.roundToDouble(), e.drawY.roundToDouble());
+      if (e.vanguard) _vanguard(c, e, at, r);
       final tier = looks.tierColor(e.tier);
       if (tier != null) _circle(c, at, r + 1, 1, tier);
       if (e.shielded) _circle(c, at, r + 1 + _shieldGap, _shieldPx, _shieldColor);
       _status.paint(c, e, r);
     }
+  }
+
+  /// 돌격대: 붉은 테(맥박) + 뒤로 길게 물보라 꼬리 + 붉은 잔상 2겹 (사용자 '무리 사이를 뚫고 와서 박는 놈이 구분되게', S5).
+  void _vanguard(Canvas c, EnemyPose e, Offset at, double r) {
+    final now = scene.clockMs;
+    final back = Offset(-math.cos(e.heading), -math.sin(e.heading));
+    for (var k = 1; k <= 6; k++) {
+      final p = at + back * (r + k * 3.2) + Offset(-back.dy, back.dx) * (k.isEven ? 1.5 : -1.5);
+      _fill.color = const Color(0xFFF2FBFF).withValues(alpha: 0.75 * (1 - k / 7));
+      c.drawRect(Rect.fromCenter(center: p, width: 2.5 - k * 0.2, height: 2.5 - k * 0.2), _fill);
+    }
+    for (var k = 1; k <= 2; k++) {
+      _fill.color = const Color(0xFFE8443A).withValues(alpha: 0.25 / k);
+      c.drawCircle(at + back * (k * 4.0), r * 0.8, _fill);
+    }
+    final pulse = 0.5 + 0.5 * math.sin(now / 90 + e.id);
+    _circle(c, at, r + 2, 2, (((0x99 + 0x66 * pulse).round()) << 24) | 0xE8443A);
   }
 
   /// 보스 체력 막대: 보스 위 알약형(해골 아이콘), 배 막대와 같은 3단계 색·흰 지연 조각.

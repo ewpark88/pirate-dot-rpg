@@ -207,6 +207,16 @@ extension _TopEvents on EventDirector {
       scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
     }
     if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
+    // 돌격대 박치기: 큰 충돌(강 단계 흔들림·멈춤 + 붉은 폭발).
+    if (scene.isTop && e.fromX != null && _vanguardAt(e.fromX!, e.fromY!)) {
+      scene.topHits.juice.hit(
+        scene.clockMs,
+        Offset(e.fromX!, e.fromY!) - scene.topShip,
+        strong: true,
+        shake: scene.settings.shake,
+      );
+      scene.topHits.impact.add(e.fromX!, e.fromY!, 26, 0xFFE8443A, scene.clockMs);
+    }
     if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
   }
 
@@ -226,6 +236,34 @@ extension _TopEvents on EventDirector {
 
   /// 타격감 v3 처치: 잉크·조각이 튐(적 크기 8).
   void _juiceKill(Kill e) => scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
+
+  /// 전설 상위·신화 단일형 착탄 폭발(AttackFired.splashRadius, S5): 엔진 반경 그대로, 피해 시각([impact] 틱)에 터진다.
+  /// 신화는 무지개 충격파. 등급 색 = 쏜 선원.
+  void _splash(AttackFired e, double impact, BattleView frame) {
+    var rarity = 0;
+    for (final s in frame.fleet) {
+      if (s.crewId == e.crewId) rarity = s.rarity;
+    }
+    final colors = scene.tables.rarities.rarities;
+    final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
+    final delayMs = math.max<double>(0, (impact - _player.position) * _player.tickMs / math.max(1, frame.speed));
+    scene.topHits.impact.add(
+      e.x,
+      e.y,
+      e.splashRadius!,
+      color,
+      scene.clockMs + delayMs,
+      rainbow: rarity >= colors.length - 1,
+    );
+  }
+
+  bool _vanguardAt(double x, double y) {
+    for (var k = 0; k < scene.poseCount; k++) {
+      final p = scene.poses[k];
+      if (p.vanguard && (p.x - x).abs() < 4 && (p.y - y).abs() < 4) return true;
+    }
+    return false;
+  }
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

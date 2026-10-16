@@ -80,6 +80,7 @@ class EventDirector implements ReplayListener {
       }
     }
     if (scene.isTop) _topMuzzle(e, frame, tip, start);
+    if (scene.isTop && e.splashRadius != null) _splash(e, impact, frame);
     if (_muzzleFamilies.contains(e.family)) {
       final delayMs = math.max<double>(0, (start - _player.position) * tickMs / math.max(1, frame.speed));
       scene.spawnEffect(scene.fx.muzzle.str('fx'), tip.dx + 4, tip.dy + scene.shipBob, delayMs: delayMs);
