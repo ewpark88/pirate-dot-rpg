@@ -998,6 +998,18 @@ const Map<String, String> rawTables = {
       "size": 6,
       "path": "line",
       "flightMs": 900
+    },
+    "laser": {
+      "color": "#FF5A6E",
+      "size": 5,
+      "path": "line",
+      "flightMs": 300
+    },
+    "ring": {
+      "color": "#F5B041",
+      "size": 5,
+      "path": "line",
+      "flightMs": 700
     }
   },
   "projectileAliases": {

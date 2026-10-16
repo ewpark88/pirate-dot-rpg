@@ -1,11 +1,13 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_bounty.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
+import 'package:pirate_dot/render/top/top_family_v3.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_juice.dart';
@@ -39,6 +41,12 @@ class TopHits {
 
   /// 타격감 v3(히트스톱·방향 흔들림·넉백·처치 조각).
   final juice = TopJuice();
+
+  /// 계열 행동 v3(출격·레이저).
+  final family = TopFamilyV3();
+
+  /// 그림 은행(출격 초상) — ScenePainter.paintTop이 넣는다.
+  SpriteDraw? sprites;
 
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
@@ -216,6 +224,7 @@ class TopHits {
     final ship = s.topShip;
     juice.paint(c, now, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
+    family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);
     fast.paintWorld(c, now, ship);
     bounty.paintWorld(c, now, s.poses, s.poseCount, active: view.bounty != null);
@@ -226,6 +235,7 @@ class TopHits {
   }
 
   void clear() {
+    family.clear();
     juice.clear();
     muzzles.clear();
     bounty.clear();
