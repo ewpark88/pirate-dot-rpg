@@ -12,18 +12,26 @@ void main() {
   test('40명 모두 특색 값과 한 줄 문구(ko/en)가 있다', () async {
     final ko = await AppLocalizations.delegate.load(const Locale('ko'));
     final en = await AppLocalizations.delegate.load(const Locale('en'));
-    final ids = GameTables.load().crews.crews.map((c) => c.id).toList();
+    final t = GameTables.load();
+    final ids = t.crews.crews.map((c) => c.id).toList();
     expect(ids, hasLength(40));
     final lines = <String>{};
     for (final id in ids) {
-      expect(crewIdentities[id], isNotNull, reason: id);
+      expect(crewIdentity(t, id), isNotNull, reason: id);
       expect(crewTraitLine(ko, id), isNotEmpty);
       expect(crewTraitLine(en, id), isNotEmpty);
       lines.add(crewTraitLine(ko, id));
     }
     expect(lines, hasLength(40), reason: '한 줄은 선원마다 다르다');
     // 기획 2절: 범위 17명 (S5 확인 2026-10-16, corey는 단일).
-    expect(crewIdentities.values.where((v) => v.area), hasLength(17));
+    expect(ids.where((id) => crewIdentity(t, id)!.area), hasLength(17));
+    // 표에서 읽은 값 몇 개 (기획 2절과 같다).
+    expect(crewIdentity(t, 'octo'), (aim: AimKind.cluster, interval: 1.4, area: true, hit: HitKind.lead));
+    expect(crewIdentity(t, 'crabs')!.hit, HitKind.free);
+    expect(crewIdentity(t, 'sword')!.hit, HitKind.instant);
+    expect(crewIdentity(t, 'turtle')!.aim, AimKind.ring);
+    expect(crewIdentity(t, 'gull')!.aim, AimKind.air);
+    expect(crewIdentity(t, 'corey')!.area, isFalse);
   });
 
   testWidgets('선원 카드에 아이콘 줄, 상세에 특색 판(한 줄 + 조준·연사·범위·명중)', (tester) async {

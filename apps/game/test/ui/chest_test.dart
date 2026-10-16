@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
@@ -39,6 +40,16 @@ void main() {
     final battle = tester.getRect(find.byKey(const Key('battle.area')));
     final at =
         battle.topLeft + topFrameFor(battle.size, s24Dpr).worldToDp(const Offset(150, 200), const Offset(135, 240));
+    expect(tester.getCenter(find.byKey(const Key('chest'))), offsetMoreOrLessEquals(at, epsilon: 0.5));
+  });
+
+  testWidgets('피버 중 배가 좌우로 움직여도(shipX ±60) 상자 자리는 카메라 기준(waves.top.shipX) — 렌더와 같다', (tester) async {
+    final base = _withChest();
+    final moved = base.copyWith(battle: base.battle!.copyWith(shipX: 195));
+    await pumpGame(tester, moved, openTab: false);
+    final battle = tester.getRect(find.byKey(const Key('battle.area')));
+    final camX = GameTables.load().waves.top.shipX;
+    final at = battle.topLeft + topFrameFor(battle.size, s24Dpr).worldToDp(const Offset(150, 200), Offset(camX, 240));
     expect(tester.getCenter(find.byKey(const Key('chest'))), offsetMoreOrLessEquals(at, epsilon: 0.5));
   });
 
