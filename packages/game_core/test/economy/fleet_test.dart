@@ -100,7 +100,10 @@ void main() {
 
     test('같은 계열 상한(maxSameFamilyInFleet)을 넘기면 거절하고 FleetRejected', () {
       final max = t.skills.maxSameFamilyInFleet;
-      final family = t.crews.crews.first.family;
+      // 상한보다 인원이 많은 계열(계열 v3 뒤 계열마다 2~5명)
+      final family = t.crews.crews
+          .map((c) => c.family)
+          .firstWhere((f) => t.crews.crews.where((c) => c.family == f).length > t.skills.maxSameFamilyInFleet);
       final same = [
         for (final c in t.crews.crews)
           if (c.family == family) c.id,
