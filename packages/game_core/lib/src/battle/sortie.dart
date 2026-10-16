@@ -37,7 +37,7 @@ extension Sorties on Round {
   ({Volley volley, int ticks})? launchSortie(Gun g, AttackDef a, Volley v, BigNum base, {required bool crit}) {
     final b = a.raw.has('behavior') ? a.raw.obj('behavior') : null;
     final geo = this.geo;
-    if (b == null || b.str('kind') != 'sortie' || geo is! TopGeometry) return null;
+    if (b == null || b.strOrNull('kind') != 'sortie' || geo is! TopGeometry) return null;
     final out = _ticks(b.number('outSec'));
     final now = g.sortie;
     if (now != null) {

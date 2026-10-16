@@ -6,6 +6,7 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/sortie.dart';
+import 'package:game_core/src/battle/stagger.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
@@ -22,6 +23,8 @@ class Flight {
     required this.base,
     required this.crit,
     required this.arriveTick,
+    this.fixed = false,
+    this.afterHit = true,
   });
 
   final Gun gun;
@@ -32,6 +35,12 @@ class Flight {
   final BigNum base;
   final bool crit;
   final int arriveTick;
+
+  /// 정해진 적에게만(계열 v3 시차 타격 — 연발·튕김·파동 링): 도착 때 자리를 다시 재지 않고 살아 있는 대상만 맞힌다.
+  final bool fixed;
+
+  /// 맞은 뒤 전설 능력·자탄을 부르는가(시차 타격은 첫 번만, 자탄은 안 부름).
+  final bool afterHit;
 }
 
 /// 선원 탄 비행: 쏘기(예측 사격 포함)와 도착 판정.
@@ -40,6 +49,8 @@ extension Flights on Round {
   ({Volley volley, int ticks})? launch(Gun g, AttackDef a, Volley v, BigNum base, {required bool crit}) {
     final sortie = launchSortie(g, a, v, base, crit: crit); // 강습·공중: 선원 본인이 출격(sortie.dart)
     if (sortie != null) return sortie;
+    final staggered = launchStaggered(g, a, v, base, crit: crit); // 연발·튕김·파동 링(stagger.dart)
+    if (staggered != null) return staggered;
     final beam = launchBeam(g, a, v, base, crit: crit); // 레이저: 빔 유지(beam.dart)
     if (beam != null) return beam;
     final p = a.projectile;
@@ -107,11 +118,18 @@ extension Flights on Round {
         continue;
       }
       land(f.gun, f.attack, v, f.base, crit: f.crit);
-      if (!isBomblet(f.attack)) legendAfterHit(this, f.gun, v, f.base, crit: f.crit);
+      if (f.afterHit && !isBomblet(f.attack)) legendAfterHit(this, f.gun, v, f.base, crit: f.crit);
     }
   }
 
   Volley? _landing(TopGeometry geo, Flight f) {
+    if (f.fixed) {
+      final alive = [
+        for (final h in f.volley.hits)
+          if (h.foe.alive) h,
+      ];
+      return alive.isEmpty ? null : (x: f.volley.x, y: f.volley.y, hits: alive);
+    }
     final a = f.attack;
     final x = f.volley.x;
     final y = f.volley.y;
