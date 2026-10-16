@@ -59,7 +59,7 @@ class BattleSystem implements GameSystem {
         if (run == null) return state;
         var s = state; // 남은 스테이지마다: 보스 처치 골드 + 보스 격파 보상(젬·카드·배 등급·스테이지)
         while (s.progress.stage <= run.to) {
-          s = addGold(s, ctx.tables, fastSailBossGold(s, ctx.tables, s.progress.stage)).state;
+          s = skipFastSailGold(s, run, ctx.tables);
           s = _bossCleared(s, _field!, ctx);
         }
         closeFastSail(s, _field!, ctx, skipped: true);

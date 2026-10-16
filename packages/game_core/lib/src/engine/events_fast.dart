@@ -20,6 +20,7 @@ GameEvent _fastEventFromJson(int t, Json j) => switch (j['type'] as String) {
     to: j['to'] as int,
     stages: j['stages'] as int,
     gold: BigNum.parse(j['gold'] as String),
+    lost: BigNum.parse(j['lost'] as String),
     gems: j['gems'] as int,
     skipped: j['skipped'] as bool,
   ),
@@ -79,7 +80,7 @@ class BreakthroughStrike extends GameEvent {
   };
 }
 
-/// 돌파 구간 끝: [from] → [to] 스테이지, 돌파한 수 [stages], 그동안 얻은 [gold]·[gems]. [skipped] = 건너뛰기로 끝냄.
+/// 돌파 구간 끝: [from] → [to] 스테이지, 돌파한 수 [stages], 그동안 실은 [gold]·넘친 [lost]·[gems]. [skipped] = 건너뛰기로 끝냄.
 class FastSailEnded extends GameEvent {
   const FastSailEnded(
     super.tick, {
@@ -87,6 +88,7 @@ class FastSailEnded extends GameEvent {
     required this.to,
     required this.stages,
     required this.gold,
+    required this.lost,
     required this.gems,
     required this.skipped,
   });
@@ -95,6 +97,9 @@ class FastSailEnded extends GameEvent {
   final int to;
   final int stages;
   final BigNum gold;
+
+  /// 화물칸이 차서 싣지 못한 골드(S2 — UI '화물칸이 작아 X를 못 실었어요').
+  final BigNum lost;
   final int gems;
   final bool skipped;
 
@@ -107,6 +112,7 @@ class FastSailEnded extends GameEvent {
     'to': to,
     'stages': stages,
     'gold': gold.toJson(),
+    'lost': lost.toJson(),
     'gems': gems,
     'skipped': skipped,
   };
