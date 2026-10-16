@@ -30,12 +30,20 @@ class TopSeaPainter {
 
   /// 피버 질주 0~1: 바다 흐름 ×4, 항적 2배 길게, 뱃머리 V자 물보라 크게(사용자 '배가 빠르게 나아가는 연출').
   double boost = 0;
+  Offset _dir = const Offset(0, 1);
   late final Color _feverBase = Color(_c('feverBase'));
   late final Color _feverDeep = Color(_c('feverDeep'));
   late final Color _feverShallow = Color(_c('feverShallow'));
 
   /// 파랑 → (금빛 바다 gold면) 금빛 → (피버면) 호박색.
-  Color _mix(Color blue, Color gold, Color fever) => Color.lerp(this.gold ? gold : blue, fever, this.fever)!;
+  /// 파랑 ↔ 호박 중간은 밝은 크림 쪽으로 띄운다 — 그냥 섞으면 회색(꺼질 때 서서히 돌아올 때).
+  Color _mix(Color blue, Color gold, Color fever) {
+    final t = this.fever;
+    final mid = Color.lerp(this.gold ? gold : blue, fever, t)!;
+    return t <= 0 || t >= 1 ? mid : Color.lerp(mid, _cream.withValues(alpha: mid.a), 2.4 * t * (1 - t))!;
+  }
+
+  static const _cream = Color(0xFFFFF4D6);
   late final double _tile = cfg.number('tile');
   late final double _speed = cfg.number('flowSpeed');
   final _paint = Paint()..isAntiAlias = false;
@@ -59,7 +67,8 @@ class TopSeaPainter {
   void advance(double clockMs, double heading) {
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0) / 1000;
     _lastMs = clockMs;
-    flow += Offset(-math.sin(heading), math.cos(heading)) * (_speed * (1 + 3 * boost) * dt);
+    _dir = Offset(-math.sin(heading), math.cos(heading));
+    flow += _dir * (_speed * (1 + 7 * boost) * dt);
   }
 
   static int _hash(int a, int b) {
@@ -131,8 +140,8 @@ class TopSeaPainter {
     }
     _paint.color = _mix(_base, _goldBase, _feverBase);
     c.drawRect(view.inflate(1), _paint);
-    void layer(Path p, Color color, double parallax) {
-      final o = flow * parallax;
+    void layer(Path p, Color color, double parallax, {double back = 0}) {
+      final o = flow * parallax - _dir * back;
       final dx = (o.dx % _tile) - _tile;
       final dy = (o.dy % _tile) - _tile;
       _paint.color = color;
@@ -145,6 +154,14 @@ class TopSeaPainter {
 
     layer(_deepPath, _mix(_deep, _deep, _feverDeep.withValues(alpha: _deep.a)), 0.6);
     layer(_shallowPath, _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a)), 0.6);
+    // 질주 모션 블러: 물결·얕은 곳을 흐름 반대쪽으로 흐린 잔상 2겹 — 세로로 늘어나 보인다.
+    if (boost > 0.05) {
+      for (final k in const [1.0, 2.0]) {
+        final shallow = _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a));
+        layer(_shallowPath, shallow.withValues(alpha: _shallow.a * 0.5 * boost), 0.6, back: 5 * k * boost);
+        layer(_wavePath, _mix(_wave, _goldWave, _goldWave).withValues(alpha: 0.45 * boost / k), 1, back: 6 * k * boost);
+      }
+    }
     layer(_wavePath, _mix(_wave, _goldWave, _goldWave), 1);
     // 거품: 천천히 숨 쉬듯 나타났다 사라짐
     final foamA = 0.35 + 0.35 * math.sin(clockMs / 900);
@@ -183,14 +200,14 @@ class TopSeaPainter {
   /// 배 기준 좌표(뱃머리 위, 고물 = +[stern], 뱃머리 = −[bow])로 그린다.
   void wake(Canvas c, double stern, double bow, double halfWidth, double clockMs) {
     // 점들을 알파 4단계 묶음으로 모아 drawRawPoints 몇 번(S1 배터리 — 전에는 점마다 drawRect 약 90번).
-    final length = (60 + 60 * boost).round();
+    final length = (60 + 160 * boost).round();
     for (final b in _wakeBuckets) {
       b.n = 0;
     }
     final phase = (clockMs / 50) % 6;
     for (var i = 0; i < length; i += 2) {
       final fade = 1 - i / length;
-      final spread = halfWidth * 0.7 + i * 0.6;
+      final spread = halfWidth * 0.7 + i * (0.6 + 0.5 * boost);
       final y = stern + i + 1;
       if ((i + phase).floor() % 6 < 4) {
         _wakeBuckets[(fade * 3.99).floor()]
@@ -207,15 +224,36 @@ class TopSeaPainter {
     }
     // 뱃머리 물보라: 양옆 짧은 흰 줄
     final spray = 0.5 + 0.5 * math.sin(clockMs / 120);
-    final sprays = 5 + (8 * boost).round();
+    // 질주: 뱃머리 흰 파도 벽(물을 가르는 V자) — 두 줄로 두껍게, 2배 이상 길게.
+    final sprays = 5 + (26 * boost).round();
     for (var k = 0; k < sprays; k++) {
-      final y = -bow + 10 + k * (2 + 1.5 * boost);
-      final x = halfWidth * 0.55 + k * (1.2 + 2.2 * boost) + spray;
+      final y = -bow + 10 + k * (2 + 2.6 * boost);
+      final x = halfWidth * 0.55 + k * (1.2 + 5 * boost) + spray;
+      if (boost > 0.5) {
+        _wakeBuckets[2]
+          ..add(-x - 6, y + 2)
+          ..add(x + 6, y + 2);
+      }
+      if (boost > 0.3) {
+        _wakeBuckets[3]
+          ..add(-x - 3, y + 1)
+          ..add(x + 3, y + 1);
+      }
       _wakeBuckets[3]
         ..add(-x - 1, y)
         ..add(x + 1, y);
     }
-    _points.strokeWidth = 2;
+    // 질주: 고물 뒤 물방울 튐(양옆으로 흩어지며 뒤로).
+    if (boost > 0.2) {
+      for (var k = 0; k < 12; k++) {
+        final t = ((clockMs / 500) + k / 12) % 1;
+        final side = k.isEven ? 1 : -1;
+        final x = side * (halfWidth * 0.5 + t * 14 + (k % 3) * 2);
+        final y = stern + 4 + t * 26;
+        _wakeBuckets[(3 - t * 3.99).floor().clamp(0, 3)].add(x.roundToDouble(), y.roundToDouble());
+      }
+    }
+    _points.strokeWidth = 2 + boost;
     for (var k = 0; k < 4; k++) {
       final b = _wakeBuckets[k];
       if (b.n == 0) continue;
@@ -224,7 +262,7 @@ class TopSeaPainter {
     }
   }
 
-  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(320));
+  final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(480));
 }
 
 /// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.
