@@ -8,6 +8,7 @@ import 'package:pirate_dot/render/top/top_bounty.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
+import 'package:pirate_dot/render/top/top_juice.dart';
 import 'package:pirate_dot/render/top/top_muzzle.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
@@ -35,6 +36,9 @@ class TopHits {
 
   /// 현상금 사냥 B3.
   final bounty = TopBounty();
+
+  /// 타격감 v3(히트스톱·방향 흔들림·넉백·처치 조각).
+  final juice = TopJuice();
 
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
@@ -210,6 +214,7 @@ class TopHits {
     final view = s.frame;
     final flash = s.settings.flash;
     final ship = s.topShip;
+    juice.paint(c, now, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
     shots.paint(c, now, flash: flash);
     fast.paintWorld(c, now, ship);
@@ -221,6 +226,7 @@ class TopHits {
   }
 
   void clear() {
+    juice.clear();
     muzzles.clear();
     bounty.clear();
     fast.clear();

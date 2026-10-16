@@ -38,6 +38,16 @@ class SoundDirector {
   static const _primeSalt = 19349663;
   static const _pitchSteps = 200;
 
+  double _lastThud = -1000000000;
+
+  /// 타격감 v3 저음 '쿵' 층: 치명 타격음을 피치를 낮춰(0.55, 큰 것 0.42) 겹친다 — 무료 효과음 그대로. 120ms에 한 번.
+  void thud(double clockMs, {required bool big}) {
+    final a = audio;
+    if (a == null || clockMs - _lastThud < 120) return;
+    _lastThud = clockMs;
+    a.playSfx('hit_crit', pitch: big ? 0.42 : 0.55);
+  }
+
   /// [event](fx_map events 키)의 효과음. [clockMs]는 장면 시계, [tick]·[salt]는 변형·피치를 고르는 값.
   void sfx(String event, {required double clockMs, int tick = 0, int salt = 0}) {
     final a = audio;

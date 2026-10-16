@@ -1686,8 +1686,9 @@ const Map<String, String> rawTables = {
       "#58A6FF",
       "#C07BFF",
       "#FFCF4A",
-      "#7AF0FF"
-    ]
+      "#D7263D"
+    ],
+    "mythicInner": "#FFD447"
   },
   "coinFx": {
     "sizeDp": 18,
@@ -2039,7 +2040,7 @@ const Map<String, String> rawTables = {
     "sumColor": "#FF8A1F",
     "lifeMs": 600,
     "risePx": 24,
-    "critBouncePx": 0,
+    "critBouncePx": 6,
     "mergeMs": 250,
     "stackRows": 3
   },

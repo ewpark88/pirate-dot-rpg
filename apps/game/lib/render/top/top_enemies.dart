@@ -50,7 +50,7 @@ class TopEnemies {
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
       final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
-      final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock);
+      final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
           sheet,

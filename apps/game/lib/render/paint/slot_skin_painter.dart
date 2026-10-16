@@ -36,6 +36,7 @@ class SlotSkinPainter {
   late final int _gauge = _c('gauge');
   late final int _gaugeBack = _c('gaugeBack');
   late final List<int> _rarity = [for (final c in _cfg.strs('rarity')) parseArgb(c, 'slotSkin.rarity')];
+  late final int _mythicInner = parseArgb(_cfg.str('mythicInner'), 'slotSkin.mythicInner');
   late final Map<String, int> _familyColor = {
     for (final e in scene.fx.familyColors.raw.entries) e.key: parseArgb(e.value as String, 'familyColors.${e.key}'),
   };
@@ -97,7 +98,8 @@ class SlotSkinPainter {
       ..shader = null
       ..style = PaintingStyle.stroke
       ..strokeWidth = _px(1.5)
-      ..color = const Color(0x99FFFFFF);
+      // 신화: 진한 빨강 테 + 금 안쪽 선(사용자 '희귀 파랑과 구분', S4와 같은 색).
+      ..color = rarity == _rarity.last ? Color(_mythicInner) : const Color(0x99FFFFFF);
     c.drawRRect(inner.deflate(_px(0.75)), _paint);
     _paint.style = PaintingStyle.fill;
     return inner;
