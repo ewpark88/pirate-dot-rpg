@@ -71,14 +71,14 @@
   "challenges": {
     "intervalSec": [180, 300], "minStage": 5, "rateWindowSec": 30,
     "kinds": [
-      { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 1.15, "reward": { "type": "goldMinutes", "value": 1 } },
+      { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 0.85, "reward": { "type": "goldMinutes", "value": 1 } },
       { "id": "combo", "weight": 25, "sec": 45, "multiKill": 5, "times": 2, "reward": { "type": "fever", "value": 0.3 } },
       { "id": "noHit", "weight": 20, "sec": 20, "reward": { "type": "goldMinutes", "value": 1 } },
       { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
     ]
   },
   "fever": {
-    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.05, "challengeWin": 0.3, "seaEventWin": 0.15,
+    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
@@ -102,7 +102,7 @@
     ]
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.08, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.25, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },

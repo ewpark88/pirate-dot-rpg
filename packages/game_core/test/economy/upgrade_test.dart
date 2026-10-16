@@ -12,24 +12,27 @@ void main() {
   late EconomyHarness h;
 
   setUp(() => h = EconomyHarness());
+  final cannon = EconomyHarness.tables.shipParts.byId('cannon');
+  final m = cannon.milestoneEvery!;
+  num cost(int lv) => cannon.costBase * math.pow(cannon.costGrowth, lv);
 
   test('기준 1: 대포 Lv0에서 3회 강화하면 Lv3, 비용 합만큼 골드가 줄고 PartUpgraded 3개', () {
     final s0 = h.newGame(gold: BigNum.from(1000));
     final s = sys.handle(s0, const UpgradePart('cannon', times: 3), h.ctx)!;
     expect(s.ship.level('cannon'), 3);
-    final cost = 10 * (1 + 1.15 + math.pow(1.15, 2));
-    expect(s.wallet.gold.closeTo(BigNum.from(1000 - cost)), isTrue);
+    expect(s.wallet.gold.closeTo(BigNum.from(1000 - cost(0) - cost(1) - cost(2))), isTrue);
     expect(h.of<PartUpgraded>().map((e) => e.level), [1, 2, 3]);
     expect(h.of<SaveRequested>(), hasLength(1));
   });
 
-  test('기준 2: 대포 Lv24 → 25에서 PartMilestone, 공격력 ×2 도약', () {
-    final s0 = h.newGame(gold: BigNum.from(1e6)).copyWith(ship: const ShipState().withLevel('cannon', 24));
+  test('기준 2: 대포 milestoneEvery − 1 → milestoneEvery에서 PartMilestone, 공격력 × milestoneMultiplier 도약', () {
+    final s0 = h.newGame(gold: BigNum.parse('1e30')).copyWith(ship: const ShipState().withLevel('cannon', m - 1));
     final s = sys.handle(s0, const UpgradePart('cannon'), h.ctx)!;
-    expect(s.ship.level('cannon'), 25);
-    expect(h.of<PartMilestone>().single.level, 25);
+    expect(s.ship.level('cannon'), m);
+    expect(h.of<PartMilestone>().single.level, m);
     final t = EconomyHarness.tables.shipParts;
-    expect(shipAttack(t, 25).closeTo(BigNum.from(4 * math.pow(1.11, 25) * 2)), isTrue);
+    final jump = shipAttack(t, m) / shipAttack(t, m - 1);
+    expect(jump.toDouble(), closeTo(cannon.growth * cannon.milestoneMultiplier, 1e-9));
   });
 
   test('기준 3: 골드가 모자라면 상태·이벤트 변화 없음', () {
@@ -41,9 +44,10 @@ void main() {
   });
 
   test('times만큼 못 사면 살 수 있는 만큼만 산다', () {
-    final s0 = h.newGame(gold: BigNum.from(25));
+    // 2레벨 값보다 조금 많고 3레벨 값엔 모자란 골드.
+    final s0 = h.newGame(gold: BigNum.from(cost(0) + cost(1) + cost(2) / 2));
     final s = sys.handle(s0, const UpgradePart('cannon', times: 10), h.ctx)!;
-    expect(s.ship.level('cannon'), 2); // 10 + 11.5 = 21.5 ≤ 25 < 21.5 + 13.225
+    expect(s.ship.level('cannon'), 2);
     expect(h.of<PartUpgraded>(), hasLength(2));
   });
 

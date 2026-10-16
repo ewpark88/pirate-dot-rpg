@@ -54,13 +54,14 @@ void main() {
   });
 
   group('UpgradePart 일괄', () {
-    test('times 50: 50레벨, 골드는 공식 합만큼, 마일스톤(25·50) 이벤트', () {
+    test('times 50: 50레벨, 골드는 공식 합만큼, 마일스톤(milestoneEvery 배수) 이벤트', () {
       final cannon = t.shipParts.byId('cannon');
       final s0 = h.newGame(gold: partCostSum(cannon, 0, 50).times(1.5));
       final s = sys.handle(s0, const UpgradePart('cannon', times: 50), h.ctx)!;
       expect(s.ship.level('cannon'), 50);
       expect((s0.wallet.gold - s.wallet.gold).closeTo(partCostSum(cannon, 0, 50)), isTrue);
-      expect(h.of<PartMilestone>().map((e) => e.level), [25, 50]);
+      final m = cannon.milestoneEvery!;
+      expect(h.of<PartMilestone>().map((e) => e.level), [for (var lv = m; lv <= 50; lv += m) lv]);
       expect(h.of<PartUpgraded>().last.level, 50);
     });
 
