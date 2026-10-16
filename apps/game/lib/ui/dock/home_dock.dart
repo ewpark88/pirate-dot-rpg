@@ -32,7 +32,7 @@ class HomeDock extends ConsumerWidget {
         null,
         // 상점에서 살 수 있는 칸, 또는 현상금 티켓이 상한(9)일 때만 (넘치기 직전 = 지금 쓰면 이득).
         ref.watch(rebirthShopProvider.select((s) => s.anyAffordable)) ||
-            ref.watch(bountyProvider.select((v) => v.tickets >= bountyTicketCap)),
+            ref.watch(bountyProvider.select((v) => v.tickets)) >= ref.watch(bountyLimitsProvider).ticketCap,
       ),
       (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
       (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
