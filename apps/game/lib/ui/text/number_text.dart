@@ -11,12 +11,18 @@ const _fractionDigits = 2;
 /// 소수 둘째 자리까지, 끝의 0과 점은 지운다 (1.90 → 1.9, 17.00 → 17).
 String shortDecimal(double value) => value.toStringAsFixed(_fractionDigits).replaceFirst(RegExp(r'\.?0+$'), '');
 
+/// 이 배율부터는 1.25K처럼 줄여 쓴다.
+const double _bigMultiplier = 1000;
+
 /// 0.17 → "17%".
 String percentText(AppLocalizations l10n, double ratio) => l10n.uiPercent(shortDecimal(ratio * _percent));
 
 /// 배 부위 효과 표시: 공격력·HP는 큰 수, 속도·골드는 배율, 치명타는 퍼센트.
 String partEffectText(AppLocalizations l10n, ShipPartDef def, BigNum effect) => switch (def.stat) {
-  'speed' || 'gold' => l10n.uiEffectMultiplier(shortDecimal(effect.toDouble())),
+  // 배율이 1000을 넘으면(골드 성장이 큰 화물칸) 큰 수 표기로 — 줄 넘침 방지.
+  'speed' || 'gold' => l10n.uiEffectMultiplier(
+    effect.toDouble() < _bigMultiplier ? shortDecimal(effect.toDouble()) : effect.format(),
+  ),
   'critChance' => percentText(l10n, effect.toDouble()),
   _ => effect.format(),
 };
