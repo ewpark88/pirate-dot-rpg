@@ -656,5 +656,14 @@
   "uiBountyFled": "Fled!",
   "uiBossTagRegion": "REGION BOSS",
   "uiBossTagMid": "MID-BOSS",
-  "uiBossIncoming": "Boss incoming!"
+  "uiBossIncoming": "Boss incoming!",
+  "uiIdSplash": "Small blast where it hits",
+  "uiAutoUpgradeOff": "Turn off",
+  "uiIdRange": "Range",
+  "uiRangeShort": "Short",
+  "uiRangeMid": "Mid",
+  "uiRangeLong": "Long",
+  "uiFamilyLaser": "Laser",
+  "uiFamilyRing": "Ring barrage",
+  "uiFamilyCluster": "Cluster bomb"
 }

@@ -40,28 +40,48 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 20
         },
-        "powerScale": 0.8434
+        "powerScale": 0.8434,
+        "reach": 155,
+        "rare": {
+          "reach": 159
+        },
+        "hero": {
+          "reach": 163
+        },
+        "legend": {
+          "reach": 167
+        },
+        "mythic": {
+          "reach": 171
+        }
       }
     },
     {
       "id": "starry",
       "num": 2,
       "baseRarity": "common",
-      "family": "lob",
+      "family": "cluster",
       "reachBonus": -3,
       "fx": "explosion_aoe",
       "portrait": "crews/starry.png",
       "nameKey": "crewStarryName",
       "aim": {
         "targets": "strongest",
-        "intervalSec": 3.1,
-        "topRadius": 15,
-        "projectile": {
-          "speed": 120,
-          "lead": true,
-          "hitRadius": 15
+        "intervalSec": 3.0,
+        "powerScale": 1,
+        "reach": 160,
+        "rare": {
+          "reach": 164
         },
-        "powerScale": 1.0129
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
+        },
+        "mythic": {
+          "reach": 176
+        }
       }
     },
     {
@@ -85,7 +105,18 @@ const Map<String, String> rawTables = {
         "powerScale": 3.0989,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 166
+        },
+        "reach": 150,
+        "rare": {
+          "reach": 154
+        },
+        "hero": {
+          "reach": 158
+        },
+        "legend": {
+          "reach": 162
         }
       }
     },
@@ -101,14 +132,27 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "random",
         "intervalSec": 1.8,
-        "powerScale": 1
+        "powerScale": 1,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
       "id": "volke",
       "num": 5,
       "baseRarity": "legend",
-      "family": "lob",
+      "family": "cluster",
       "reachBonus": 6,
       "fx": "explosion_aoe",
       "portrait": "crews/volke.png",
@@ -116,13 +160,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.6,
-        "topRadius": 28,
-        "projectile": {
-          "speed": 120,
-          "lead": true,
-          "hitRadius": 28
+        "powerScale": 1,
+        "reach": 165,
+        "rare": {
+          "reach": 169
         },
-        "powerScale": 0.7684
+        "hero": {
+          "reach": 173
+        },
+        "legend": {
+          "reach": 177
+        },
+        "mythic": {
+          "reach": 181
+        }
       }
     },
     {
@@ -145,7 +196,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.1686,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -168,7 +230,18 @@ const Map<String, String> rawTables = {
         },
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -192,7 +265,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.8985,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -216,7 +300,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9519,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -237,7 +332,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.4896,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -256,7 +362,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0165,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -272,7 +389,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.4,
-        "powerScale": 0.9729
+        "powerScale": 0.9729,
+        "reach": 170,
+        "rare": {
+          "reach": 174
+        },
+        "hero": {
+          "reach": 178
+        },
+        "legend": {
+          "reach": 182
+        },
+        "mythic": {
+          "reach": 186
+        }
       }
     },
     {
@@ -290,7 +420,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9283,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -309,7 +450,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.9988,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -328,7 +480,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.949,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 171
+        },
+        "reach": 155,
+        "rare": {
+          "reach": 159
+        },
+        "hero": {
+          "reach": 163
+        },
+        "legend": {
+          "reach": 167
         }
       }
     },
@@ -353,7 +516,22 @@ const Map<String, String> rawTables = {
         "powerScale": 1.4664,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114,
+          "powerScale": 1.0753
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "common": {
+          "powerScale": 0.93
         }
       }
     },
@@ -377,7 +555,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0626,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -401,7 +590,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0516,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -425,7 +625,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.0342,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 166
+        },
+        "reach": 150,
+        "rare": {
+          "reach": 154
+        },
+        "hero": {
+          "reach": 158
+        },
+        "legend": {
+          "reach": 162
         }
       }
     },
@@ -450,7 +661,18 @@ const Map<String, String> rawTables = {
         "powerScale": 0.7504,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -466,7 +688,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.6,
-        "powerScale": 1
+        "powerScale": 1,
+        "reach": 80,
+        "rare": {
+          "reach": 84
+        },
+        "hero": {
+          "reach": 88
+        },
+        "legend": {
+          "reach": 92
+        },
+        "mythic": {
+          "reach": 96
+        }
       }
     },
     {
@@ -487,7 +722,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 34
         },
-        "powerScale": 1.0102
+        "powerScale": 1.0102,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -511,7 +759,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.9091,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -536,7 +795,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.6395,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -558,7 +828,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 44
         },
-        "powerScale": 0.7638
+        "powerScale": 0.7638,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -582,13 +865,22 @@ const Map<String, String> rawTables = {
         "powerScale": 2.4846,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
         },
         "common": {
           "powerScale": 1.12
         },
         "rare": {
-          "powerScale": 0.8929
+          "powerScale": 0.8929,
+          "reach": 114
+        },
+        "reach": 110,
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -613,7 +905,18 @@ const Map<String, String> rawTables = {
         "powerScale": 3.2217,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 126
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
         }
       }
     },
@@ -639,6 +942,19 @@ const Map<String, String> rawTables = {
         "powerScale": 0.6406,
         "behavior": {
           "kind": "lightning"
+        },
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
         }
       }
     },
@@ -663,7 +979,18 @@ const Map<String, String> rawTables = {
         "powerScale": 1.7191,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 176
+        },
+        "reach": 160,
+        "rare": {
+          "reach": 164
+        },
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
         }
       }
     },
@@ -687,7 +1014,20 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 26
         },
-        "powerScale": 0.6471
+        "powerScale": 0.6471,
+        "reach": 110,
+        "rare": {
+          "reach": 114
+        },
+        "hero": {
+          "reach": 118
+        },
+        "legend": {
+          "reach": 122
+        },
+        "mythic": {
+          "reach": 126
+        }
       }
     },
     {
@@ -706,7 +1046,18 @@ const Map<String, String> rawTables = {
         "powerScale": 4.0451,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 86
+        },
+        "reach": 70,
+        "rare": {
+          "reach": 74
+        },
+        "hero": {
+          "reach": 78
+        },
+        "legend": {
+          "reach": 82
         }
       }
     },
@@ -722,7 +1073,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 4.2,
-        "powerScale": 0.8811
+        "powerScale": 0.8811,
+        "reach": 74,
+        "rare": {
+          "reach": 78
+        },
+        "hero": {
+          "reach": 82
+        },
+        "legend": {
+          "reach": 86
+        },
+        "mythic": {
+          "reach": 90
+        }
       }
     },
     {
@@ -737,7 +1101,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "strongest",
         "intervalSec": 5.2,
-        "powerScale": 0.8608
+        "powerScale": 0.8608,
+        "reach": 72,
+        "rare": {
+          "reach": 76
+        },
+        "hero": {
+          "reach": 80
+        },
+        "legend": {
+          "reach": 84
+        },
+        "mythic": {
+          "reach": 88
+        }
       }
     },
     {
@@ -752,7 +1129,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "cluster",
         "intervalSec": 3.5,
-        "powerScale": 0.9601
+        "powerScale": 0.9601,
+        "reach": 72,
+        "rare": {
+          "reach": 76
+        },
+        "hero": {
+          "reach": 80
+        },
+        "legend": {
+          "reach": 84
+        },
+        "mythic": {
+          "reach": 88
+        }
       }
     },
     {
@@ -769,7 +1159,20 @@ const Map<String, String> rawTables = {
         "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.7866
+        "powerScale": 0.7866,
+        "reach": 78,
+        "rare": {
+          "reach": 82
+        },
+        "hero": {
+          "reach": 86
+        },
+        "legend": {
+          "reach": 90
+        },
+        "mythic": {
+          "reach": 94
+        }
       }
     },
     {
@@ -783,7 +1186,20 @@ const Map<String, String> rawTables = {
       "nameKey": "crewTurtleName",
       "aim": {
         "intervalSec": 2.5,
-        "powerScale": 0.8805
+        "powerScale": 0.8332,
+        "reach": 76,
+        "rare": {
+          "reach": 80
+        },
+        "hero": {
+          "reach": 84
+        },
+        "legend": {
+          "reach": 88
+        },
+        "mythic": {
+          "reach": 92
+        }
       }
     },
     {
@@ -798,7 +1214,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "intervalSec": 3.6,
         "range": 75,
-        "powerScale": 1.1193
+        "powerScale": 1.1193,
+        "reach": 80,
+        "rare": {
+          "reach": 84
+        },
+        "hero": {
+          "reach": 88
+        },
+        "legend": {
+          "reach": 92
+        },
+        "mythic": {
+          "reach": 96
+        }
       }
     },
     {
@@ -813,7 +1242,20 @@ const Map<String, String> rawTables = {
       "skill": "support_rally",
       "aim": {
         "intervalSec": 3.6,
-        "powerScale": 0.8726
+        "powerScale": 0.9375,
+        "reach": 74,
+        "rare": {
+          "reach": 78
+        },
+        "hero": {
+          "reach": 82
+        },
+        "legend": {
+          "reach": 86
+        },
+        "mythic": {
+          "reach": 90
+        }
       }
     },
     {
@@ -832,7 +1274,18 @@ const Map<String, String> rawTables = {
         "powerScale": 5.31,
         "mythic": {
           "splashRadius": 14,
-          "splashRatio": 0.5
+          "splashRatio": 0.5,
+          "reach": 86
+        },
+        "reach": 70,
+        "rare": {
+          "reach": 74
+        },
+        "hero": {
+          "reach": 78
+        },
+        "legend": {
+          "reach": 82
         }
       }
     },
@@ -849,7 +1302,20 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.7377
+        "powerScale": 0.7377,
+        "reach": 160,
+        "rare": {
+          "reach": 164
+        },
+        "hero": {
+          "reach": 168
+        },
+        "legend": {
+          "reach": 172
+        },
+        "mythic": {
+          "reach": 176
+        }
       }
     }
   ]
@@ -2336,16 +2802,17 @@ const Map<String, String> rawTables = {
   'skills': r'''
 {
   "families": [
-    {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.5111,  0.5617,  0.6501,  0.7124,  0.4635]}},
-    {"id": "ring", "projectile": "ring", "attack": {"reach": 140, "shape": "ring", "targets": "nearest", "intervalSec": 2.34, "power": 0.7164, "excludeLayers": [], "topWidth": 8}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"ringCount": [8, 10, 12, 16, 24], "power": [3.9189,  4.4374,  4.3926,  3.9663,  2.4852]}},
-    {"id": "direct", "projectile": "bullet", "attack": {"reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8985,  0.9254,  0.8748,  1.1407,  0.9725]}},
+    {"id": "lob", "projectile": "cannonball", "attack": {"reach": 135, "shape": "circle", "radius": 18, "targets": "cluster", "intervalSec": 1.3, "power": 0.398, "excludeLayers": []}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "battleFamilyLob", "ladder": {"projectiles": [1, 1, 2, 2, 3], "radius": [20, 23, 23, 26, 26], "power": [0.4882,  0.5387,  0.6501,  0.7124,  0.4635]}},
+    {"id": "ring", "projectile": "ring", "attack": {"reach": 140, "shape": "ring", "targets": "nearest", "intervalSec": 2.34, "power": 0.7164, "excludeLayers": [], "topWidth": 8}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "uiFamilyRing", "ladder": {"ringCount": [8, 10, 12, 16, 24], "power": [3.9189,  4.4374,  4.3926,  3.9663,  2.4852]}},
+    {"id": "cluster", "projectile": "cluster", "attack": {"reach": 160, "shape": "cluster", "targets": "cluster", "intervalSec": 2.86, "power": 0.4378, "excludeLayers": [], "topRadius": 20, "behavior": {"kind": "cluster", "bombletRadius": 12, "bombletDelaySec": 0.1, "scatterRadius": 40, "bombletRatio": 1.0}}, "skill": {"reach": 135, "id": "lob_rain", "shape": "circle", "radius": 18, "count": 5, "cooldownSec": 8, "multiplier": 0.331, "fx": "explosion_aoe"}, "ultimate": {"id": "ult_cannon_rain", "fx": "explosion_aoe"}, "nameKey": "uiFamilyCluster", "ladder": {"bomblets": [4, 5, 6, 8, 12], "power": [0.9223,  0.9743,  0.933,  0.9399,  0.6431]}},
+    {"id": "direct", "projectile": "bullet", "attack": {"behavior": {"burst": 5, "burstGapSec": 0.08}, "reach": 172, "shape": "single", "targets": "nearest", "shots": 3, "intervalSec": 0.9, "power": 0.946, "excludeLayers": []}, "skill": {"reach": 172, "id": "direct_snipe", "shape": "single", "count": 5, "cooldownSec": 6, "multiplier": 0.473, "fx": "hit_spark", "targets": "strongest"}, "ultimate": {"id": "ult_volley", "fx": "muzzle"}, "nameKey": "battleFamilyDirect", "ladder": {"burst": [3, 4, 5, 6, 8], "power": [0.8985,  0.9254,  0.8748,  1.1407,  0.9725]}},
     {"id": "pierce", "projectile": "harpoon", "attack": {"topWidth": 20, "reach": 168, "shape": "line", "width": 6, "pierce": 4, "targets": "nearest", "intervalSec": 1.6, "power": 0.8154, "excludeLayers": []}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 2, 2, 3], "pierce": [4, 6, 6, 8, 8], "power": [0.8721,  0.7794,  0.8067,  0.9257,  0.9181]}},
-    {"id": "laser", "projectile": "laser", "attack": {"topWidth": 14, "reach": 180, "shape": "laser", "targets": "nearest", "intervalSec": 2.56, "power": 1.3046, "excludeLayers": [], "behavior": {"kind": "laser", "beamSec": 0.4}}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "battleFamilyPierce", "ladder": {"projectiles": [1, 1, 1, 1, 1], "laserPierce": [1, 2, 3, 5, 0], "power": [2.761,  1.8918,  1.4098,  1.3516,  1.3199]}},
-    {"id": "skip", "projectile": "stone", "attack": {"reach": 155, "shape": "chain", "chains": 3, "targets": "nearest", "intervalSec": 1.5, "power": 0.801, "excludeLayers": []}, "skill": {"reach": 155, "id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 0.5, "fx": "hit_spark", "endFx": "tidal_wave"}, "ultimate": {"id": "ult_tidal_wave", "fx": "tidal_wave", "knockback": 30}, "nameKey": "battleFamilySkip", "ladder": {"chains": [3, 4, 5, 6, 8], "power": [0.7863,  0.7731,  0.6768,  0.7151,  0.7052]}},
-    {"id": "underwater", "projectile": "torpedo", "attack": {"topRadius": 34, "reach": 125, "shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"reach": 125, "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.5608,  0.6128,  0.6059,  0.6159,  0.4736]}},
+    {"id": "laser", "projectile": "laser", "attack": {"topWidth": 14, "reach": 180, "shape": "laser", "targets": "nearest", "intervalSec": 2.56, "power": 1.3046, "excludeLayers": [], "behavior": {"kind": "laser", "beamSec": 0.4}}, "skill": {"reach": 168, "id": "pierce_triple", "shape": "line", "width": 6, "count": 3, "cooldownSec": 8, "multiplier": 0.392, "fx": "slash"}, "ultimate": {"id": "ult_harpoon_storm", "fx": "slash"}, "nameKey": "uiFamilyLaser", "ladder": {"projectiles": [1, 1, 1, 1, 1], "laserPierce": [1, 2, 3, 5, 0], "power": [2.761,  1.8918,  1.4098,  1.3516,  1.3199]}},
+    {"id": "skip", "projectile": "stone", "attack": {"behavior": {"hopSec": 0.12}, "reach": 155, "shape": "chain", "chains": 3, "targets": "nearest", "intervalSec": 1.5, "power": 0.801, "excludeLayers": []}, "skill": {"reach": 155, "id": "skip_splash", "shape": "chain", "chains": 8, "count": 1, "cooldownSec": 10, "multiplier": 0.5, "fx": "hit_spark", "endFx": "tidal_wave"}, "ultimate": {"id": "ult_tidal_wave", "fx": "tidal_wave", "knockback": 30}, "nameKey": "battleFamilySkip", "ladder": {"chains": [3, 4, 5, 6, 8], "power": [0.7863,  0.7731,  0.6768,  0.7151,  0.7052]}},
+    {"id": "underwater", "projectile": "torpedo", "attack": {"behavior": {"submerged": true}, "topRadius": 34, "reach": 125, "shape": "circle", "radius": 16, "targets": "cluster", "dotSec": 2, "intervalSec": 1.8, "power": 0.513, "excludeLayers": ["air"]}, "skill": {"reach": 125, "id": "underwater_minefield", "shape": "circle", "radius": 14, "count": 4, "cooldownSec": 9, "multiplier": 0.366, "fx": "explosion_aoe", "dotSec": 4}, "ultimate": {"id": "ult_kraken", "fx": "explosion_aoe"}, "nameKey": "battleFamilyUnderwater", "ladder": {"radius": [16, 18, 20, 22, 24], "dotSec": [2, 2.5, 3, 3.5, 4], "power": [0.5608,  0.6128,  0.6059,  0.6159,  0.4736]}},
     {"id": "air", "projectile": "lightning", "attack": {"behavior": {"kind": "sortie", "outSec": 0.35, "strikeSec": 0.25, "backSec": 0.35}, "reach": 160, "shape": "random", "count": 2, "targets": "random", "intervalSec": 2.2, "power": 1.332, "excludeLayers": []}, "skill": {"reach": 160, "id": "air_storm", "shape": "chain", "chains": 6, "count": 1, "cooldownSec": 9, "multiplier": 0.666, "fx": "lightning"}, "ultimate": {"id": "ult_thunderstorm", "fx": "lightning"}, "nameKey": "battleFamilyAir", "ladder": {"count": [2, 3, 3, 4, 5], "power": [1.3529,  1.4649,  1.4071,  1.5579,  1.606]}},
     {"id": "assault", "projectile": "hook", "attack": {"behavior": {"kind": "sortie", "outSec": 0.35, "strikeSec": 0.25, "backSec": 0.35}, "reach": 120, "shape": "cone", "angleDeg": 60, "range": 40, "knockback": 4, "targets": "front", "intervalSec": 1.2, "power": 1.896, "excludeLayers": ["air"]}, "skill": {"reach": 120, "id": "assault_ram", "shape": "cone", "angleDeg": 90, "range": 60, "count": 1, "cooldownSec": 7, "multiplier": 1.348, "fx": "slash", "knockback": 6}, "ultimate": {"id": "ult_ghost_charge", "fx": "slash", "knockback": 20}, "nameKey": "battleFamilyAssault", "ladder": {"angleDeg": [60, 70, 80, 90, 110], "knockback": [4, 5, 6, 7, 8], "power": [0.0895,  0.1225,  0.123,  0.1017,  0.1199]}},
-    {"id": "shock", "projectile": "shockwave", "attack": {"reach": 117, "shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.3676, "excludeLayers": []}, "skill": {"reach": 117, "id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.5884,  0.5279,  0.4704,  0.4472,  0.4953]}}
+    {"id": "shock", "projectile": "shockwave", "attack": {"behavior": {"ringSpeed": 160}, "reach": 117, "shape": "push", "range": 60, "knockback": 10, "targets": "front", "intervalSec": 3, "power": 0.3676, "excludeLayers": []}, "skill": {"reach": 117, "id": "shock_wave", "shape": "push", "range": 320, "count": 1, "cooldownSec": 12, "multiplier": 0.379, "fx": "tidal_wave", "knockback": 30}, "ultimate": {"id": "ult_great_wave", "fx": "tidal_wave", "knockback": 40, "stunSec": 1.5}, "nameKey": "battleFamilyShock", "ladder": {"knockback": [10, 12, 14, 16, 20], "stunSec": [0, 0.3, 0.5, 0.7, 1.0], "power": [0.5884,  0.5547,  0.5111,  0.4472,  0.4953]}}
   ],
   "crewSkills": [{"id": "support_rally", "reach": 117, "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
@@ -2355,7 +2822,7 @@ const Map<String, String> rawTables = {
   "critBurstDamage": 0.5,
   "rarityTempo": [1, 1, 1, 0.9, 0.8],
   "traitScale": [0.4, 0.6, 0.8],
-  "legends": {"octo": {"zone": {"radius": 20, "sec": 3, "slow": 0.3}, "mythic": {"zone": {"radius": 40, "sec": 3, "slow": 0.3}, "powerScale": 1.9139}, "powerScale": 1.116}, "starry": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "extraProjectiles": 1, "powerScale": 2.0147}, "powerScale": 1.1186}, "crabs": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2574}, "powerScale": 1.1326}, "uni": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 2.0166}, "powerScale": 1.2975}, "volke": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "extraProjectiles": 2, "powerScale": 2.2982}, "powerScale": 1.0128}, "pang": {"critBurst": 12, "mythic": {"critBurst": 24, "powerScale": 1.0144}, "powerScale": 0.9786}, "hippo": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.25, "vulnerableSec": 2}, "powerScale": 0.8603}, "powerScale": 0.987}, "bones": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.8387}, "powerScale": 0.8549}, "lion": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.6}, "powerScale": 0.7486}, "powerScale": 0.8779}, "volt": {"extraChains": 2, "onHit": {"stunSec": 0.3}, "mythic": {"extraChains": 4, "onHit": {"stunSec": 0.3}, "powerScale": 0.912}, "powerScale": 0.879}, "sword": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4511}, "powerScale": 1.248}, "nar": {"noFalloff": true, "mythic": {"noFalloff": true, "zone": {"radius": 12, "sec": 2, "slow": 0.3}, "powerScale": 1.3143}, "powerScale": 1.1238}, "walrus": {"onHit": {"pull": 12}, "mythic": {"onHit": {"pull": 24}, "powerScale": 1.1342}, "powerScale": 0.9374}, "saw": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4289}, "powerScale": 1.2479}, "moby": {"onHit": {"pull": 16}, "mythic": {"onHit": {"pull": 20}, "critBurst": 20, "powerScale": 1.1689}, "powerScale": 1.105}, "otter": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 1.0237}, "powerScale": 1.0697}, "pingu": {"onHit": {"stunSec": 0.5}, "mythic": {"onHit": {"stunSec": 1.0}, "powerScale": 0.9487}, "powerScale": 0.9248}, "sheldon": {"critBurst": 14, "mythic": {"critBurst": 20, "powerScale": 0.9844}, "powerScale": 0.929}, "dolphy": {"onHit": {"pull": -6}, "mythic": {"onHit": {"pull": -12}, "powerScale": 0.9738}, "powerScale": 0.9204}, "orca": {"extraChains": 2, "mythic": {"extraChains": 4, "powerScale": 1.1865}, "powerScale": 1.1467}, "puffer": {"critBurst": 14, "mythic": {"critBurst": 28, "powerScale": 1.8032}, "powerScale": 1.1816}, "jelly": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "mythic": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "extraProjectiles": 1, "powerScale": 2.1597}, "powerScale": 1.3141}, "bara": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.8399}, "powerScale": 1.5312}, "moray": {"onHit": {"stunSec": 2}, "mythic": {"onHit": {"stunSec": 2}, "extraProjectiles": 1, "powerScale": 1.6474}, "powerScale": 1.3041}, "kraki": {"zone": {"radius": 20, "sec": 4, "stunEverySec": 1}, "mythic": {"zone": {"radius": 40, "sec": 4, "stunEverySec": 1}, "powerScale": 1.8288}, "powerScale": 1.2681}, "polly": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.9257}, "powerScale": 0.9903}, "gull": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 0.9267}, "powerScale": 1.232}, "pelly": {"arc": {"count": 3, "ratio": 0.35, "stunSec": 0.2}, "powerScale": 0.921, "mythic": {"arc": {"count": 5, "ratio": 0.35, "stunSec": 0.3}, "powerScale": 0.9349}}, "alba": {"critBurst": 16, "mythic": {"critBurst": 32, "powerScale": 0.9428}, "powerScale": 1.061}, "manta": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "mythic": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "extraProjectiles": 1, "powerScale": 1.3723}, "powerScale": 1.0418}, "shark": {"onHit": {"vulnerable": 0.1, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.2, "vulnerableSec": 2}, "powerScale": 1.2843}, "powerScale": 1.0904}, "crabby": {"onHit": {"pull": 20}, "mythic": {"onHit": {"pull": 20}, "extraProjectiles": 1, "powerScale": 1.2725}, "powerScale": 1.0465}, "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.1949}, "powerScale": 1.0048}, "lobster": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2471}, "powerScale": 1.0507}, "davy": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.2347}, "powerScale": 1.0553}, "turtle": {"shield": {"everySec": 8, "durationSec": 4, "hpRatio": 0.25}, "powerScale": 1.1207, "mythic": {"shield": {"everySec": 6, "durationSec": 4, "hpRatio": 0.35}, "powerScale": 1.3669}}, "pumpum": {"fever": {"chargeBonus": 0.5, "extraSec": 5}, "powerScale": 1.1099, "mythic": {"fever": {"chargeBonus": 0.8, "extraSec": 8}, "powerScale": 1.3436}}, "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 1.3211}, "powerScale": 1.1097}, "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 0.9941}, "powerScale": 1.1616}, "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 1.0278}, "powerScale": 0.879}}
+  "legends": {"octo": {"zone": {"radius": 20, "sec": 3, "slow": 0.3}, "mythic": {"zone": {"radius": 40, "sec": 3, "slow": 0.3}, "powerScale": 1.9139}, "powerScale": 1.116}, "starry": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "extraProjectiles": 1, "powerScale": 2.0147}, "powerScale": 1.0274}, "crabs": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2574}, "powerScale": 1.1326}, "uni": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 2.0166}, "powerScale": 1.2975}, "volke": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "extraProjectiles": 2, "powerScale": 2.2982}, "powerScale": 1.1115}, "pang": {"critBurst": 12, "mythic": {"critBurst": 24, "powerScale": 1.0144}, "powerScale": 0.9786}, "hippo": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.25, "vulnerableSec": 2}, "powerScale": 0.8603}, "powerScale": 0.987}, "bones": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.8387}, "powerScale": 0.8549}, "lion": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.6}, "powerScale": 0.7486}, "powerScale": 0.8779}, "volt": {"extraChains": 2, "onHit": {"stunSec": 0.3}, "mythic": {"extraChains": 4, "onHit": {"stunSec": 0.3}, "powerScale": 0.9526}, "powerScale": 0.879}, "sword": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4511}, "powerScale": 1.248}, "nar": {"noFalloff": true, "mythic": {"noFalloff": true, "zone": {"radius": 12, "sec": 2, "slow": 0.3}, "powerScale": 1.3143}, "powerScale": 1.1238}, "walrus": {"onHit": {"pull": 12}, "mythic": {"onHit": {"pull": 24}, "powerScale": 1.1342}, "powerScale": 0.9374}, "saw": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4289}, "powerScale": 1.2479}, "moby": {"onHit": {"pull": 16}, "mythic": {"onHit": {"pull": 20}, "critBurst": 20, "powerScale": 1.1689}, "powerScale": 1.105}, "otter": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 1.0237}, "powerScale": 1.0697}, "pingu": {"onHit": {"stunSec": 0.5}, "mythic": {"onHit": {"stunSec": 1.0}, "powerScale": 0.9487}, "powerScale": 0.9248}, "sheldon": {"critBurst": 14, "mythic": {"critBurst": 20, "powerScale": 0.9844}, "powerScale": 0.929}, "dolphy": {"onHit": {"pull": -6}, "mythic": {"onHit": {"pull": -12}, "powerScale": 0.9738}, "powerScale": 0.9204}, "orca": {"extraChains": 2, "mythic": {"extraChains": 4, "powerScale": 1.1865}, "powerScale": 1.1467}, "puffer": {"critBurst": 14, "mythic": {"critBurst": 28, "powerScale": 1.8032}, "powerScale": 1.1816}, "jelly": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "mythic": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "extraProjectiles": 1, "powerScale": 2.1597}, "powerScale": 1.3141}, "bara": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.8399}, "powerScale": 1.5312}, "moray": {"onHit": {"stunSec": 2}, "mythic": {"onHit": {"stunSec": 2}, "extraProjectiles": 1, "powerScale": 1.6474}, "powerScale": 1.3041}, "kraki": {"zone": {"radius": 20, "sec": 4, "stunEverySec": 1}, "mythic": {"zone": {"radius": 40, "sec": 4, "stunEverySec": 1}, "powerScale": 1.8288}, "powerScale": 1.2681}, "polly": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.9257}, "powerScale": 0.9903}, "gull": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 0.9267}, "powerScale": 1.232}, "pelly": {"arc": {"count": 3, "ratio": 0.35, "stunSec": 0.2}, "powerScale": 0.921, "mythic": {"arc": {"count": 5, "ratio": 0.35, "stunSec": 0.3}, "powerScale": 0.9349}}, "alba": {"critBurst": 16, "mythic": {"critBurst": 32, "powerScale": 0.9428}, "powerScale": 1.061}, "manta": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "mythic": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "extraProjectiles": 1, "powerScale": 1.3723}, "powerScale": 1.0418}, "shark": {"onHit": {"vulnerable": 0.1, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.2, "vulnerableSec": 2}, "powerScale": 1.2843}, "powerScale": 1.0904}, "crabby": {"onHit": {"pull": 20}, "mythic": {"onHit": {"pull": 20}, "extraProjectiles": 1, "powerScale": 1.2725}, "powerScale": 1.0465}, "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.1949}, "powerScale": 1.0048}, "lobster": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2471}, "powerScale": 1.0507}, "davy": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.2347}, "powerScale": 1.0553}, "turtle": {"shield": {"everySec": 8, "durationSec": 4, "hpRatio": 0.25}, "powerScale": 0.9972, "mythic": {"shield": {"everySec": 6, "durationSec": 4, "hpRatio": 0.35}, "powerScale": 1.2967}}, "pumpum": {"fever": {"chargeBonus": 0.5, "extraSec": 5}, "powerScale": 1.1663, "mythic": {"fever": {"chargeBonus": 0.8, "extraSec": 8}, "powerScale": 1.3436}}, "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 1.4827}, "powerScale": 1.2591}, "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 0.9424}, "powerScale": 1.1616}, "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 1.0278}, "powerScale": 0.879}}
 }
 ''',
   'waves': r'''

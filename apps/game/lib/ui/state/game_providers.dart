@@ -37,6 +37,9 @@ abstract interface class CommandSink {
 class CommandLog implements CommandSink {
   final List<Command> sent = [];
 
+  /// '처음 1회 안내' 기록(MarkHint)은 화면 동작 명령과 따로 모은다 — 명령 순서를 보는 곳에 섞이지 않게.
+  final List<MarkHint> hints = [];
+
   @override
-  void send(Command command) => sent.add(command);
+  void send(Command command) => command is MarkHint ? hints.add(command) : sent.add(command);
 }

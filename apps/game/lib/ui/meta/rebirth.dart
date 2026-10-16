@@ -20,6 +20,7 @@ import 'package:pirate_dot/ui/rebirth/treasure_route.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -36,6 +37,7 @@ class RebirthCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('rebirthCard');
     final previewOf = ref.watch(rebirthPreviewProvider);
     // RebirthPreview에는 ==가 없다 — 레코드에 넣으면 틱마다 '바뀜'이 되어 카드가 매 틱 다시 지어지고 무거운 미리보기
     // (rebirthForecast)를 매 틱 돌린다(사용자 버그 2026-10-16 시트 버벅임). 화면에 쓰는 값(==가 있는 것)만 구독한다.

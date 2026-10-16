@@ -61,7 +61,7 @@ void main() {
 
   testWidgets('자동 강화: 광고 준비면 상단 "자동" 광고 버튼, 버프 중이면 남은 시간 칩', (tester) async {
     final s = _filled(0.5);
-    await pumpGame(tester, s, openTab: false, overrides: [adOfferProvider.overrideWith((ref, _) => true)]);
+    final sent = await pumpGame(tester, s, openTab: false, overrides: [adOfferProvider.overrideWith((ref, _) => true)]);
     expect(find.byKey(const Key('ad.autoUpgrade')), findsOneWidget);
     expect(find.byKey(const Key('autoUpgrade.on')), findsNothing);
     final c = ProviderScope.containerOf(tester.element(find.byKey(const Key('top.gold'))));
@@ -70,6 +70,9 @@ void main() {
         .replace(s.copyWith(buffs: s.buffs.copyWith(autoUpgradeUntil: s.savedAt.add(const Duration(minutes: 9)))));
     await tester.pump();
     expect(find.byKey(const Key('autoUpgrade.on')), findsOneWidget);
+    // 끄기 → CancelAutoUpgrade (남은 시간을 버린다).
+    await tester.tap(find.byKey(const Key('autoUpgrade.off')));
+    expect(sent.sent.whereType<CancelAutoUpgrade>(), hasLength(1));
     await tester.pump(const Duration(seconds: 2));
   });
 
