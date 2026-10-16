@@ -33,10 +33,20 @@ class DailyIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (quests, attendance) = _daily(ref);
-    if (quests == null && attendance == null) return const SizedBox.shrink();
-    // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
-    final count = (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
+    // 상단 바에 늘 있으므로 받을 수(숫자)만 구독한다 — 상태 전체를 보면 엔진 틱마다 다시 짓는다(사용자 버그 2026-10-16 버벅임).
+    final questsOf = ref.watch(dailyQuestsProvider);
+    final attendanceOf = ref.watch(attendanceProvider);
+    final now = ref.watch(clockProvider).now();
+    final count = ref.watch(
+      gameStateProvider.select((s) {
+        final quests = questsOf(s);
+        final attendance = attendanceOf(s, now);
+        if (quests == null && attendance == null) return -1;
+        // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
+        return (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
+      }),
+    );
+    if (count < 0) return const SizedBox.shrink();
     final icon = PixelIconButton(
       key: const Key('daily.icon'),
       asset: UiSprites.quest,

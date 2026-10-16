@@ -36,7 +36,8 @@ class BossDef {
       weakFamilies = j.strs('weakFamilies'),
       mechanic = j.has('mechanic') ? BossMechanic.fromJson(j.obj('mechanic')) : null,
       patterns = j.has('patterns') ? j.objs('patterns').map(BossPatternDef.fromJson).toList() : const [],
-      restSec = j.numberOr('restSec', 0);
+      restSec = j.numberOr('restSec', 0),
+      firstRestSec = j.has('firstRestSec') ? j.number('firstRestSec') : null;
 
   final String id;
 
@@ -53,6 +54,9 @@ class BossDef {
 
   /// 패턴 사이 쉼(초) — 이때는 기본 원거리 공격(BossFired).
   final double restSec;
+
+  /// 등장 뒤 첫 패턴까지 쉼(초, 없으면 restSec) — 보스가 금방 죽어도 첫 패턴을 보게(S2).
+  final double? firstRestSec;
 }
 
 /// 보스 패턴 하나: volley(조준 탄막) · charge(돌진) · summon(졸개) · blast(배 둘레 장판).

@@ -16,12 +16,17 @@ void main() {
   final start = DateTime.utc(2026, 11);
   const stage = 20;
 
-  GameTables withPatterns(List<Map<String, Object?>> patterns, {double rest = 2}) {
+  GameTables withPatterns(List<Map<String, Object?>> patterns, {double rest = 2, double? first}) {
     final raw = Map<String, String>.of(rawTables);
     final regions = jsonDecode(raw['regions']!) as Map<String, dynamic>;
     for (final b in (regions['bosses'] as List).cast<Map<String, dynamic>>()) {
       b['patterns'] = patterns;
       b['restSec'] = rest;
+      if (first == null) {
+        b.remove('firstRestSec');
+      } else {
+        b['firstRestSec'] = first;
+      }
     }
     raw['regions'] = jsonEncode(regions);
     return GameTables.load(raw);
@@ -76,6 +81,13 @@ void main() {
     expect(hits.length, greaterThanOrEqualTo(3));
     final during = r.events.whereType<BossFired>().where((e) => e.tick > shown[0].tick && e.tick <= shown[1].tick);
     expect(during, isEmpty);
+  });
+
+  test('firstRestSec: 등장 뒤 첫 패턴은 그만큼 빨리, 그다음부터는 restSec', () {
+    final r = fight(withPatterns([volley], first: 0.6), 6);
+    final warns = r.events.whereType<BossPatternShown>().where((e) => e.phase == 'warn').toList();
+    expect(warns.first.tick, ticks(0.6) - 1);
+    expect(warns[1].tick - warns[0].tick, ticks(0.6) + ticks(2), reason: '예고 0.6 + 쉼 2');
   });
 
   test('돌진: 예고 뒤 배로 달려와 한 번 큰 피해(상한 × capMul), 다시 standoff로 돌아가 다음 패턴', () {

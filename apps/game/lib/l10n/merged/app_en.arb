@@ -176,6 +176,19 @@
   "opAdResult": "Ad result: {result}",
   "opPrivacyOptions": "Privacy Options",
   "opTestRing": "Notification in 10s",
+  "opRestoreMySave": "Back to my save",
+  "opLabTapHint": "Pick a rarity, tap a crew: own + fleet slot 1",
+  "opLabCollectAll": "Get every crew (keep save)",
+  "opLabSwarm": "Swarm of {count}",
+  "@opLabSwarm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opLabWave": "Normal wave (with vanguard)",
+  "opGroupLab": "Crew lab",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -619,5 +632,26 @@
   "uiFastSailEndGems": "Gems +{gems}",
   "uiFastSailEndLost": "Gold lost to a full cargo hold: {gold}",
   "uiFastSailEndCheer": "You're stronger — on to new seas!",
-  "uiFastSailEndOk": "Sail on"
+  "uiFastSailEndOk": "Sail on",
+  "uiCrewUpCount": "{count} can level up",
+  "uiCrewUpBadge": "Can level up by merging",
+  "uiCrewUpShowAll": "Show all",
+  "uiSortNum": "No.",
+  "uiSortRarity": "Rarity",
+  "uiSortDps": "Attack",
+  "uiFilter": "Filter",
+  "uiFilterCount": "Filter {count}",
+  "uiFilterAll": "All",
+  "uiFilterOwned": "Owned",
+  "uiFilterUnowned": "Not owned",
+  "uiFilterFamily": "Family",
+  "uiFilterReset": "Reset",
+  "uiFilterEmpty": "No crew match",
+  "uiFastSailStart": "FAST SAIL BREAKTHROUGH!",
+  "uiFastSailStrike": "BREAK!",
+  "uiFastSailFinale": "BREAKTHROUGH!",
+  "uiFastSailEnded": "Stages {from} → {to} cleared!",
+  "uiSortPower": "Power",
+  "uiBountyWanted": "WANTED",
+  "uiBountyFled": "Fled!"
 }

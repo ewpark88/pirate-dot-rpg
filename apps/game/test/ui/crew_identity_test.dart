@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 import 'ui_harness.dart';
 
@@ -26,7 +27,9 @@ void main() {
     // 기획 2절: 범위 17명 (S5 확인 2026-10-16, corey는 단일).
     expect(ids.where((id) => crewIdentity(t, id)!.area), hasLength(17));
     // 표에서 읽은 값 몇 개 (기획 2절과 같다).
-    expect(crewIdentity(t, 'octo'), (aim: AimKind.cluster, interval: 1.4, area: true, hit: HitKind.lead));
+    // 연사 간격은 표(crews.json aim.intervalSec — S2 공속 조정에도 따라감).
+    final octoSec = t.crews.byId('octo').aim!.number('intervalSec');
+    expect(crewIdentity(t, 'octo'), (aim: AimKind.cluster, interval: octoSec, area: true, hit: HitKind.lead));
     expect(crewIdentity(t, 'crabs')!.hit, HitKind.free);
     expect(crewIdentity(t, 'sword')!.hit, HitKind.instant);
     expect(crewIdentity(t, 'turtle')!.aim, AimKind.ring);
@@ -44,7 +47,8 @@ void main() {
     expect(find.byKey(const Key('crew.identity.panel.octo')), findsOneWidget);
     expect(find.text('Ink bomb into the crowd'), findsOneWidget);
     expect(find.text('Crowd'), findsOneWidget);
-    expect(find.text('Every 1.4s'), findsOneWidget);
+    final sec = shortDecimal(GameTables.load().crews.byId('octo').aim!.number('intervalSec'));
+    expect(find.text('Every ${sec}s'), findsOneWidget);
     expect(find.text('Leads shots'), findsOneWidget);
   });
 

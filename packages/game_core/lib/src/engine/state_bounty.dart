@@ -14,6 +14,7 @@ class BountyState {
     this.progress = const {},
     this.adOn,
     this.active,
+    this.weekday,
   });
 
   factory BountyState.fromJson(Json j) => BountyState(
@@ -45,6 +46,9 @@ class BountyState {
   /// 진행 중인 현상금 전투. 세이브에 남아 있으면 앱이 꺼졌던 것 → 불러올 때 실패(interrupted) 처리.
   final BountyActive? active;
 
+  /// 운영자 요일 고정 1~7 (OpSetWeekday). 세이브에 남지 않는다(toJson에서 뺀다).
+  final int? weekday;
+
   BountyState copyWith({
     int? tickets,
     String? refilledOn,
@@ -53,6 +57,8 @@ class BountyState {
     String? adOn,
     BountyActive? active,
     bool clearActive = false,
+    int? weekday,
+    bool clearWeekday = false,
   }) => BountyState(
     tickets: tickets ?? this.tickets,
     refilledOn: refilledOn ?? this.refilledOn,
@@ -60,6 +66,7 @@ class BountyState {
     progress: progress ?? this.progress,
     adOn: adOn ?? this.adOn,
     active: clearActive ? null : active ?? this.active,
+    weekday: clearWeekday ? null : weekday ?? this.weekday,
   );
 
   Json toJson() => {
