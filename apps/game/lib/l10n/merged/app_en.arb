@@ -493,5 +493,21 @@
   "uiUndo": "Undo",
   "uiFeverBig": "FEVER!",
   "uiFeverEnd": "Fever over · gold +{amount}",
-  "uiCrewDps": "Attack/sec {value}"
+  "uiCrewDps": "Attack/sec {value}",
+  "uiUltTag": "Ultimate",
+  "uiUltTap": "Tap!",
+  "uiUltHint": "When the roar gauge fills, tap for the captain's ultimate!",
+  "uiUltBanner": "{captain} · {ult}",
+  "uiUltCannonRain": "Cannon Storm",
+  "uiUltVolley": "Full Volley",
+  "uiUltHarpoonStorm": "Harpoon Storm",
+  "uiUltTidalWave": "Tidal Wave",
+  "uiUltKraken": "Kraken Call",
+  "uiUltThunderstorm": "Thunderstorm",
+  "uiUltGhostCharge": "Ghost Charge",
+  "uiUltGreatWave": "Great Wave",
+  "uiBossRetry": "Boss!",
+  "uiBossRetryHint": "You can challenge the boss again",
+  "uiQuickUpgradeShort": "Need {amount}",
+  "uiQuickUpgradeDone": "+{part} Lv {level}"
 }

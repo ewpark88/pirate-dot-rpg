@@ -493,5 +493,21 @@
   "uiUndo": "되돌리기",
   "uiFeverBig": "FEVER!",
   "uiFeverEnd": "피버 끝 · 골드 +{amount}",
-  "uiCrewDps": "초당 공격력 {value}"
+  "uiCrewDps": "초당 공격력 {value}",
+  "uiUltTag": "궁극기",
+  "uiUltTap": "탭!",
+  "uiUltHint": "함성이 가득 차면 선장 궁극기! 눌러서 터뜨려요",
+  "uiUltBanner": "{captain} · {ult}",
+  "uiUltCannonRain": "포탄 폭풍",
+  "uiUltVolley": "일제 사격",
+  "uiUltHarpoonStorm": "작살 폭풍",
+  "uiUltTidalWave": "해일",
+  "uiUltKraken": "크라켄 소환",
+  "uiUltThunderstorm": "번개 폭풍",
+  "uiUltGhostCharge": "유령 돌격",
+  "uiUltGreatWave": "대해일",
+  "uiBossRetry": "보스 도전!",
+  "uiBossRetryHint": "보스에 다시 도전할 수 있어요",
+  "uiQuickUpgradeShort": "부족 {amount}",
+  "uiQuickUpgradeDone": "+{part} Lv {level}"
 }
