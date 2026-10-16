@@ -61,12 +61,14 @@ class TopScenePainter {
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로 — 앞이 더 보이게).
-    // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 12dp 위로 '쑥').
-    final sy = ((_shipY! + 6 * fever.level - 12 * fever.lunge()) * dpr).roundToDouble() / dpr;
+    // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
+    final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
     final vib = fever.vibration();
     final dot = frame.dot;
     final view = scene.frame;
     final ship = scene.topShip;
+    final cam = scene.topCamera;
+    _weave(ship.dx, clockMs, dt);
     // 환생 v2(S2 d9593dc): 그림 등급 = 명예 등급(shipTierLook), 스킨 = shipSkin(운영자 미리보기 skin이 있으면 그것), 보물 바다 = treasureSea.
     final tier = view.shipTierLook ?? scene.moments.shipTierId;
     final skinId = skin ?? view.shipSkin;
@@ -78,7 +80,7 @@ class TopScenePainter {
       ..scale(dot);
     final viewRect = Rect.fromLTWH(-sx / dot, -sy / dot, frame.box.width / dot, frame.box.height / dot);
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
-    visibleWorld = viewRect.shift(scene.topShip).inflate(_cullMargin);
+    visibleWorld = viewRect.shift(cam).inflate(_cullMargin);
     fever.update(clockMs);
     _sea
       ..fever = fever.sea
@@ -91,26 +93,43 @@ class TopScenePainter {
       ..storm = view.seaEvent?.id == 'storm'
       ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, view.shipHeading, powerSave: powerSave)
       ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
-    // 전장 좌표로: 배 중심이 원점.
+    // 전장 좌표로: 카메라(바다 가운데·배 높이)가 원점.
     c
       ..save()
-      ..translate(-ship.dx, -ship.dy);
+      ..translate(-cam.dx, -cam.dy);
+    fever.weaveTrail(c, ship, clockMs, _sea.flowSpeed);
     _marks.zones(c);
     _foes.paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
     if (size != null) {
       final m = scene.moments;
+      // 배는 카메라에서 좌우로 비켜 그린다(피버 좌우 이동).
+      c
+        ..save()
+        ..translate(ship.dx - cam.dx, 0);
       fever
         ..aura(c, size.width * _shipScale / 2)
         ..wind(c, size.width * _shipScale / 2);
       c
         ..save()
         ..translate(_shipShake(clockMs), _surge(clockMs))
-        ..rotate(view.shipHeading)
+        ..rotate(view.shipHeading + _bank)
         // 질주: 앞으로 살짝 기울임(길이 방향 4% 눌림).
         ..scale(_shipScale, _shipScale * (1 - 0.04 * fever.level));
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
+      // 피버 시작 금빛 잔상: 가속 동안 배 실루엣 3개가 뒤로 처진다.
+      final burst = fever.burst();
+      if (burst > 0) {
+        for (var k = 3; k >= 1; k--) {
+          _ghost.colorFilter = ColorFilter.mode(Color.fromRGBO(255, 216, 74, 0.55 * burst / k), BlendMode.srcIn);
+          c
+            ..saveLayer(null, _ghost)
+            ..translate(0, 9.0 * k * burst);
+          _ship.paint(c, tier, view.shipLook);
+          c.restore();
+        }
+      }
       final sinking = _sink(c, m.sinkMs);
       final skinGlow = skinId != null && _skinGlow(skinId);
       final celebrate = m.glowMs > 0;
@@ -137,10 +156,11 @@ class TopScenePainter {
         _marks.shipAura(c, box);
         _hp.paint(c, box);
       }
+      c.restore();
     }
     c
       ..save()
-      ..translate(-ship.dx, -ship.dy);
+      ..translate(-cam.dx, -cam.dy);
     _marks.chest(c, clockMs);
     scene.topHits.paint(
       c,
@@ -184,6 +204,28 @@ class TopScenePainter {
   Offset? _bossAt(int id) {
     final p = scene.poseOf(id);
     return p == null ? null : Offset(p.drawX, p.drawY);
+  }
+
+  final _ghost = Paint();
+
+  double _prevX = double.nan;
+  double _bank = 0;
+  double _vx = 0;
+
+  /// 피버 좌우 이동: x 변화로 뱅크(이동 방향으로 최대 15°, 부드럽게), 방향을 바꾸면 큰 물보라.
+  void _weave(double x, double clockMs, double dt) {
+    if (_prevX.isNaN || dt <= 0) {
+      _prevX = x;
+      return;
+    }
+    final vx = (x - _prevX) / dt * Duration.millisecondsPerSecond;
+    _prevX = x;
+    if (_vx.abs() > 12 && vx.abs() > 12 && vx.sign != _vx.sign) {
+      scene.topHits.impact.add(x, scene.topShip.dy + 6, 20, 0xFFE6F6FF, clockMs, water: true);
+    }
+    _vx = vx;
+    final target = (vx / 90).clamp(-1.0, 1.0) * 15 * math.pi / 180;
+    _bank += (target - _bank) * math.min(1, dt / 120);
   }
 
   /// 피버 질주 위아래 흔들림(흔들기 설정 따름).

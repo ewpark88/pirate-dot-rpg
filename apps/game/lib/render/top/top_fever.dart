@@ -153,6 +153,13 @@ class TopFever {
     return math.sin(math.pi * age / 400);
   }
 
+  /// 시작 0.6초 폭발 세기 1 → 0 (금빛 잔상·속도선 폭발). 흔들기(동작) 끄기면 0.
+  double burst() {
+    final age = _lastMs - _startMs;
+    if (age < 0 || age >= 600 || !scene.settings.shake) return 0;
+    return 1 - age / 600;
+  }
+
   /// 피버 동안 아주 약한 진동(dp). 흔들기 끄기·절전이면 0.
   Offset vibration() {
     if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return Offset.zero;
@@ -215,6 +222,26 @@ class TopFever {
           ..drawRect(Rect.fromLTWH(x, y, 3, 34), _paint)
           ..drawRect(Rect.fromLTWH(x + 5, y + 10, 2, 22), _paint);
       }
+    }
+  }
+
+  final List<(double, double)> _trail = []; // (배 x, 장면 ms)
+
+  /// 피버 S자 항적: 지난 배 x를 흐름 속도로 뒤로 흘려 흰 거품 줄로(전장 좌표 — 카메라 원점 캔버스).
+  void weaveTrail(Canvas c, Offset ship, double ms, double flowSpeed) {
+    if (_trail.isEmpty || ms - _trail.last.$2 >= 40) _trail.add((ship.dx, ms));
+    _trail.removeWhere((p) => ms - p.$2 > 1600);
+    if (level <= 0 || _trail.length < 2) return;
+    for (var i = 0; i < _trail.length; i++) {
+      final (x, at) = _trail[i];
+      final age = (ms - at) / 1000;
+      final y = ship.dy + 22 + age * flowSpeed;
+      final a = (1 - age / 1.6).clamp(0.0, 1.0) * level;
+      _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.75 * a);
+      c
+        ..drawRect(Rect.fromLTWH(x - 5, y, 2, 2), _paint)
+        ..drawRect(Rect.fromLTWH(x + 3, y, 2, 2), _paint);
+      if (i.isEven) c.drawRect(Rect.fromLTWH(x - 1, y + 1, 2, 2), _paint);
     }
   }
 
