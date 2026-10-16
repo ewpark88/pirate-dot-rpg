@@ -640,5 +640,8 @@
   "uiFastSailEnded": "스테이지 {from} → {to} 돌파!",
   "uiSortPower": "파워순",
   "uiBountyWanted": "현상수배",
-  "uiBountyFled": "도망쳤다!"
+  "uiBountyFled": "도망쳤다!",
+  "uiBossTagRegion": "대보스",
+  "uiBossTagMid": "중간 보스",
+  "uiBossIncoming": "보스 등장!"
 }
