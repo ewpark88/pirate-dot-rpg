@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-16 저녁 · S5 · 선원 개성 v2 엔진 1~3단계, 보스 행동 v2
+- **현재 위치**: 개성 v2 1~3단계 main 머지(d07663c). 보스 행동 v2 review/boss-patterns 36a5e75 S1 머지 대기. 표 값(aim 40명·traitScale·turtle/pelly/pumpum legends)은 S2.
+- 한 일: 조준 8종·탄 비행·예측·MISS(AttackMissed) · 쿨다운 남은 몫 넘기기(0.3초가 0.35초로 돌던 버그) · 특징 일반 40%부터(개수형은 발마다 확률) · aim power = 간격 비례(같은 DPS) · 보호막(turtle)·낙뢰(pelly)·피버 서포트(pumpum, 사용자 추가 지시) · 보스 패턴 4종(탄막·돌진·소환·장판) + 바다 괴물 돌진 보스(붙은 시간 68% → 5.5%) · store_shots 옆모습 갈래 삭제(S3 요청).
+- 배운 것: 탄 예측은 한 번 고쳐 계산하면 탄속과 대상 속도가 비슷할 때 크게 틀린다 → 만나는 시각을 이분 탐색. 소환처럼 적 목록을 바꾸는 단계는 사본으로 순회.
+- 남은 일: 실기기 재측정(폰 허락 뒤), 스토어 스크린샷 최종 굽기(체력 막대 뒤).
+
 ## 2026-10-16 오후 · S5 · 피버 오라·배 위협 엔진, 보호막·번개 선원, 보스 패턴 기획
 - **현재 위치**: review/fever-aura 0b782d5 → review/ship-threat 002cda9(위에 쌓음, check --full 통과) S1 머지 대기. 표 키는 S2(오라 91e9833), regions `ranged`는 S2 요청으로 내가 ship-threat에 넣는다.
 - 한 일: 피버 오라(배 둘레 녹이기 + 앞쪽 적 빨리) · 배 위협 (a) 원거리 적 EnemyFired·탄 비행 (b) 가까이 등장 EnemyEmerging · 선원 개성 v2에 보호막(turtle)·낙뢰(pelly) 7절 · 보스 패턴 기획 docs/specs/platform-boss-patterns.md.
