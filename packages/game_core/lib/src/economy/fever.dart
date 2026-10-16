@@ -1,4 +1,5 @@
 import 'package:game_core/src/economy/crew_stats.dart' show rarityOfLevel;
+import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -33,11 +34,11 @@ int feverKillsAt(GameTables t, int stage) {
   final legend = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
   var charge = 0.0;
   var extra = 0.0;
-  for (final id in s.fleet) {
-    final c = id == null ? null : s.crews[id];
+  for (final id in activeFleet(s, t)) {
+    final c = s.crews[id];
     if (c == null) continue;
     final rarity = t.rarities.rarities.indexOf(rarityOfLevel(t.rarities, c.level));
-    final f = t.skills.legendFor(id!, rarity, legend)?.fever;
+    final f = t.skills.legendFor(id, rarity, legend)?.fever;
     if (f == null) continue;
     charge += f.chargeBonus;
     extra += f.extraSec;
