@@ -218,7 +218,11 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
               if (flash > 0)
                 Positioned.fill(
                   child: IgnorePointer(
-                    child: ColoredBox(color: Colors.white.withValues(alpha: flash * 0.8)),
+                    // 사용자 '번쩍임 눈 아프다'(2026-10-16): 흰빛 0.8 → 따뜻한 금빛 0.3으로 약하게.
+                    child: ColoredBox(
+                      key: const Key('summon.flash'),
+                      color: const Color(0xFFFFE9A8).withValues(alpha: flash * 0.3),
+                    ),
                   ),
                 ),
               if (_cutIns.isNotEmpty)

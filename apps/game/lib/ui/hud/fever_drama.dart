@@ -101,7 +101,7 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
         fit: StackFit.expand,
         children: [
           // 가장자리 불꽃 빛 (피버 동안, 가장자리만). 맥박은 전장 틱으로(끝없는 애니메이션 없음). 번쩍임 끄기면 멈춘 옅은 빛.
-          if (left > 0) _EdgeGlow(pulse: flashOn && !calm ? 0.5 + 0.5 * math.sin(tick / 3) : 0.3),
+          if (left > 0) _EdgeGlow(pulse: flashOn && !calm ? 0.45 + 0.15 * math.sin(tick / 6) : 0.3),
           // 'FEVER!' 쾅.
           AnimatedBuilder(
             animation: _slamCtl,

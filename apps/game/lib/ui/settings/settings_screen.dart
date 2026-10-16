@@ -109,7 +109,15 @@ class SettingsScreen extends ConsumerWidget {
                               onTap: () => set(key, !value),
                               // 줄마다 아이콘 (설정 r2 최종 다듬기).
                               leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
-                              title: Text(label),
+                              title: key == 'flash'
+                                  ? Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(label),
+                                        Text(l10n.uiSettingsFlashSub, style: Skin.text(12, color: Skin.sub)),
+                                      ],
+                                    )
+                                  : Text(label),
                               trailing: PixelToggle(
                                 key: Key('settings.$key'),
                                 value: value,
