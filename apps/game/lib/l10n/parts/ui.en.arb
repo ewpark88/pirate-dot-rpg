@@ -442,5 +442,7 @@
   "uiFastSailStrike": "BREAK!",
   "uiFastSailFinale": "BREAKTHROUGH!",
   "uiFastSailEnded": "Stages {from} → {to} cleared!",
-  "uiSortPower": "Power"
+  "uiSortPower": "Power",
+  "uiBountyWanted": "WANTED",
+  "uiBountyFled": "Fled!"
 }

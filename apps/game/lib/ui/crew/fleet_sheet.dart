@@ -188,6 +188,13 @@ class _CrewRow extends ConsumerWidget {
                   border: Border.all(color: rarityColor(rarity), width: 3),
                   color: Skin.cream,
                 ),
+                // 신화는 금 안쪽 선 (빨강 + 금).
+                foregroundDecoration: rarityInnerGold(rarity)
+                    ? BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: mythicGold, width: 1.5),
+                      )
+                    : null,
                 child: ClipOval(child: Image.asset(pbPortrait(def.id), fit: BoxFit.cover)),
               ),
               const SizedBox(width: 8),

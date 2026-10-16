@@ -5,6 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 export 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 
@@ -104,7 +105,7 @@ class CrewIdentityIcons extends ConsumerWidget {
     final ink = light ? Colors.white : Skin.ink;
     return Semantics(
       label:
-          '${aimText(l10n, id.aim)} · ${l10n.uiRateSec(id.interval)} · '
+          '${aimText(l10n, id.aim)} · ${l10n.uiRateSec(shortDecimal(id.interval))} · '
           '${id.area ? l10n.uiAreaWide : l10n.uiAreaSingle} · ${hitText(l10n, id.hit)}',
       excludeSemantics: true,
       child: Row(
@@ -240,7 +241,7 @@ class CrewIdentityPanel extends ConsumerWidget {
               item(
                 _RateBars(bars: rateBars(id.interval), size: 18, color: Skin.ink),
                 l10n.uiIdRate,
-                l10n.uiRateSec(id.interval),
+                l10n.uiRateSec(shortDecimal(id.interval)),
               ),
               item(
                 Icon(
