@@ -1,5 +1,16 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 · S5 · 보급·선체 체력·궁극기 제거/보스 브레이크·발열 — 사용자 퇴근으로 멈춤
+- **현재 위치(멈춤)**: S1 머지 대기 — review/thermal cfc6754(발열 5건), review/fever-break 2b5955d(+ lane/platform 06e33fe 메모). 머지됨 또는 S1 처리 중 — review/fast-sail-supply 28ec135, review/hull-hp e0185d6.
+- 한 일: 빠른 항해 보급(S2 함수 연결 + 보급 뒤 체력 최대 새로 채움, 83-1 침몰 0) · 선체 강화 즉시 체력 반영 · 궁극기 제거 → 피버 첫 일격 + 보스 브레이크(사용자 직접 지시) · 발열 5건(60Hz 요청·오디오 상한·thermal 단계·화면 켜짐 확인·thermal_log.py).
+- **남은 할 일(다음에)**:
+  1. 스토어 스크린샷 '02 궁극기' 장면을 '피버 첫 일격'(또는 보스 브레이크)으로 바꾸고 6세트 최종 굽기(지금 42장 — 02만 빠짐)
+  2. 폰 허락 뒤: release_smoke, thermal_log.py로 발열 전후 비교(30분), 60Hz 적용 확인(dumpsys display)
+  3. 렌더 lite·30fps를 thermalLevelProvider로(S3에 알림), 도감 dex 세이브(S2·S4) 엔진 이벤트 자리
+  4. 도감 v2 데이터: S3 대보스 그림 id(boss_sea_croc 등 6) 나오면 S2 숫자로 regions.json
+  5. 야간 sim 점검(메모리 한도 안 순차)
+- 배운 것: 보급처럼 '전장을 만든 뒤 배 상태를 바꾸는' 길은 Field의 체력 최대가 따라가지 않는다(만들 때 한 번) — shapeField에서 함께 갱신.
+
 ## 2026-10-17 새벽 · S5 · 계열 행동 v3 엔진 5단계 완료, 도감 v2 엔진
 - **현재 위치**: 계열 v3 엔진(출격·레이저·원형·집속·시차 타격) main 8195a8c. 도감 v2 엔진 review/bestiary 9100d02 S1 머지 대기 — 보스·잡몹 데이터는 S3 그림이 나오는 대로 S2와.
 - 한 일: 출격 CrewSortie · 레이저 빔 유지(배 따라감) · 원형 탄막(빈 방향 탄) · 집속 자탄 BombletBurst · 기관포 연발·물수제비 튕김·파동 링 시차 타격 · 보스 순환·대보스·먹물·삼키기·분열(둘 다 잡아야 격파)·자폭·떼 · 등급별 aim 전 등급 · Gun export · 보스 firstRestSec·enemy_ship blast·돌격대 attackMul · 운영자 선원 시험·세이브 백업 · 현상금 테스트 실제 경제 · release_check 통과 · 기획 계열 v3·도감 v2 · 아침 확인 목록 v2.
