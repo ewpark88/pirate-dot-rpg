@@ -145,3 +145,66 @@ List<RecordedTick> withGoldOverflow(List<RecordedTick> rec, {int at = 120}) => [
         ? RecordedTick(rec[i].frame, [...rec[i].events, GoldOverflow(rec[i].frame.tick, lost: BigNum.from(1000))])
         : rec[i],
 ];
+
+/// 빠른 항해 돌파 주입 (S5 fast-sail): [at] 틱에 시작(31 → 43), build 5번(간격 40·30·22·17·13틱) → rush 6번(5틱) → finale(12틱 뒤) → 끝.
+/// 그 사이 프레임에 BattleView.fastSail을 넣는다. 보스 자리 = 배 앞 90.
+List<RecordedTick> withFastSail(List<RecordedTick> rec, {int at = 60}) {
+  final strikes = <int, (String, double)>{};
+  var t = at + 20;
+  for (final gap in const [40, 30, 22, 17, 13]) {
+    t += gap;
+    strikes[t] = ('build', 40 / gap);
+  }
+  for (var k = 0; k < 6; k++) {
+    t += 5;
+    strikes[t] = ('rush', 8);
+  }
+  t += 12;
+  strikes[t] = ('finale', 8);
+  final end = t + 10;
+  var combo = 0;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      () {
+        final f = rec[i].frame;
+        final sx = f.shipX ?? 135;
+        final sy = f.shipY ?? 240;
+        final s = strikes[i];
+        if (s != null) combo++;
+        final events = [
+          ...rec[i].events,
+          if (i == at) FastSailStarted(f.tick, from: 31, to: 43),
+          if (s != null)
+            BreakthroughStrike(
+              f.tick,
+              stage: 31 + combo,
+              bossId: 'enemy_ship',
+              x: sx,
+              y: sy - 90,
+              combo: combo,
+              phase: s.$1,
+              speed: s.$2,
+            ),
+          if (i == end)
+            FastSailEnded(
+              f.tick,
+              from: 31,
+              to: 43,
+              stages: 12,
+              gold: BigNum.from(1000),
+              lost: BigNum.zero,
+              gems: 5,
+              skipped: false,
+            ),
+        ];
+        final inSail = i >= at && i < end;
+        final frame = inSail
+            ? BattleView.fromJson({
+                ...f.toJson(),
+                'fastSail': {'from': 31, 'to': 43, 'combo': combo, 'phase': s?.$1 ?? 'build', 'speed': s?.$2 ?? 1},
+              })
+            : f;
+        return RecordedTick(frame, events);
+      }(),
+  ];
+}

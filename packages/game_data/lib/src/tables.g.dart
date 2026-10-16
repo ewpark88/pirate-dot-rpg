@@ -831,6 +831,18 @@ const Map<String, String> rawTables = {
       "fx": null,
       "sfx": "fanfare_small"
     },
+    "fastSailStarted": {
+      "fx": null,
+      "sfx": "fanfare"
+    },
+    "breakthroughStrike": {
+      "fx": null,
+      "sfx": "boss_clear"
+    },
+    "fastSailEnded": {
+      "fx": null,
+      "sfx": "fanfare"
+    },
     "goldfishCaught": {
       "fx": null,
       "sfx": "coin"

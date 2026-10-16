@@ -60,7 +60,6 @@ class TopScenePainter {
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
     final dpr = frame.dpr;
     final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
-    // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로 — 앞이 더 보이게).
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
     final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
     final dot = frame.dot;
@@ -176,6 +175,7 @@ class TopScenePainter {
     fever.embers(c, scene.topShip);
     scene.topHits.impact.paint(c, clockMs, flash: scene.settings.flash, lite: scene.settings.powerSave);
     scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
+    scene.topHits.fast.paintWorld(c, clockMs, ship);
     scene.topHits.boss.paint(c, clockMs, scene.topShip, _bossAt, flash: scene.settings.flash);
     scene.topHits.crew
       ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: clockMs)
@@ -202,6 +202,7 @@ class TopScenePainter {
     fever
       ..rushers(c, frame.box)
       ..speedLines(c, frame.box);
+    scene.topHits.fast.paintScreen(c, frame.box, clockMs, flash: scene.settings.flash);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
 

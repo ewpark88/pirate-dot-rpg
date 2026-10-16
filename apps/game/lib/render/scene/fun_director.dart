@@ -14,6 +14,18 @@ bool funEvent(BattleScene s, GameEvent e) {
     case ShieldBroken():
       s.topHits.crew.brokenAt = s.clockMs;
       s.shake.trigger(s.juice.shake['aoe']!);
+    case FastSailStarted(:final from, :final to):
+      s.topHits.fast.started(from, to, s.clockMs);
+      _sfx(s, 'fastSailStarted', e);
+    case FastSailEnded(:final from, :final to):
+      s.topHits.fast.ended(from, to, s.clockMs);
+      _sfx(s, 'fastSailEnded', e);
+    case BreakthroughStrike(:final x, :final y, :final combo, :final phase, :final speed):
+      s.topHits.fast.strike(x, y, combo, phase, speed, s.clockMs);
+      _sfx(s, 'breakthroughStrike', e);
+      s.topHits.impact.add(x, y, phase == 'finale' ? 90 : 50, 0xFFFFD84A, s.clockMs + (phase == 'finale' ? 600 : 160));
+      if (phase == 'finale') s.slowMoMs = 600;
+      s.shake.trigger(s.juice.shake[phase == 'finale' ? 'ultimate' : 'aoe']!);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):

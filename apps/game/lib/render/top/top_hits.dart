@@ -5,6 +5,7 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
+import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
@@ -26,6 +27,9 @@ class TopHits {
 
   /// 선원 개성 v2(보호막·낙뢰·빗나감·북 파동).
   final crew = TopCrewFx();
+
+  /// 빠른 항해 돌파.
+  final fast = TopFastSail();
 
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
@@ -238,6 +242,7 @@ class TopHits {
   }
 
   void clear() {
+    fast.clear();
     crew.clear();
     impact.clear();
     boss.clear();
