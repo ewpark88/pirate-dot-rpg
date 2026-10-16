@@ -30,7 +30,7 @@ void main() {
   }
 
   GameState reborn() => GameState.newGame(playerId: 'f', seed: 9, now: start).copyWith(
-    progress: const Progress(stage: 10, bestStage: 40, rebirths: 1),
+    progress: const Progress(stage: 10, bestStage: 60, rebirths: 1),
     crews: const {'octo': CrewState()},
   );
 
@@ -48,7 +48,7 @@ void main() {
 
   test('구간: 시작·끝 한 번씩, from·to = 범위, 보스마다 BreakthroughStrike(연속 수), 리듬 build → rush → finale', () {
     final t = withBreak();
-    final to = (40 * t.waves.rebirthSkip.fraction).ceil();
+    final to = (60 * t.waves.rebirthSkip.fraction).ceil();
     final r = run(t, 60);
     final started = r.events.whereType<FastSailStarted>().single;
     expect((started.from, started.to), (10, to));

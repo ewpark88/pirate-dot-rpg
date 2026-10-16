@@ -14,11 +14,25 @@ bool funEvent(BattleScene s, GameEvent e) {
     case ShieldBroken():
       s.topHits.crew.brokenAt = s.clockMs;
       s.shake.trigger(s.juice.shake['aoe']!);
+    case FastSailStarted(:final from, :final to):
+      s.topHits.fast.started(from, to, s.clockMs);
+      _sfx(s, 'fastSailStarted', e);
+    case FastSailEnded(:final from, :final to):
+      s.topHits.fast.ended(from, to, s.clockMs);
+      _sfx(s, 'fastSailEnded', e);
+    case BreakthroughStrike(:final x, :final y, :final combo, :final phase, :final speed):
+      s.topHits.fast.strike(x, y, combo, phase, speed, s.clockMs);
+      _sfx(s, 'breakthroughStrike', e);
+      s.topHits.impact.add(x, y, phase == 'finale' ? 90 : 50, 0xFFFFD84A, s.clockMs + (phase == 'finale' ? 600 : 160));
+      if (phase == 'finale') s.slowMoMs = 600;
+      s.shake.trigger(s.juice.shake[phase == 'finale' ? 'ultimate' : 'aoe']!);
+    case GoldOverflow():
+      s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
       s.topHits.crew.miss(x, y, s.clockMs);
     case FeverStarted():
+      // 화면 흔들기 없음(사용자 '화면이 좌우로 움직이면 조잡하다') — 시작 임팩트는 금빛 번쩍·충격파·'쑥' 가속(세로).
       s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
-      s.shake.trigger(s.juice.shake['aoe']!);
       s.haptic(HapticLevel.medium);
       _sfx(s, 'feverStarted', e);
     case GoldfishCaught(:final targetId, :final gold):

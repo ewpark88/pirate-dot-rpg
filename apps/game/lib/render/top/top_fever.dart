@@ -39,7 +39,8 @@ class TopFever {
   void update(double ms) {
     final dt = (ms - _lastMs).clamp(0.0, 100.0);
     _lastMs = ms;
-    final on = scene.frame.feverTicksLeft > 0;
+    // 빠른 항해 돌파 동안도 황금 질주(바다·속도선·질주) — S5 fastSail.
+    final on = scene.frame.feverTicksLeft > 0 || scene.frame.fastSail != null;
     if (on && !_was) _startMs = ms;
     _was = on;
     level = on ? math.min(1, level + dt / _fadeInMs) : math.max(0, level - dt / _fadeOutMs);
@@ -47,7 +48,7 @@ class TopFever {
 
   /// 바다 물들임 세기 0~1 (TopSeaPainter.fever로 — 바다 색 자체를 금·주황으로 섞는다).
   /// 켜질 때는 시작 금빛 번쩍 아래에서 바로 금(파랑+금이 섞이면 탁한 회색·올리브 — S1), 꺼질 때만 서서히.
-  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 ? 1 : level);
+  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 || scene.frame.fastSail != null ? 1 : level);
 
   /// 빛 줄기: 비스듬한 밝은 띠 3개가 천천히 흘러간다(빛나는 황금 바다, S1). 배 중심 원점 화면 단위 [view], 적보다 먼저.
   void rays(Canvas c, Rect view) {
@@ -160,13 +161,6 @@ class TopFever {
     return 1 - age / 600;
   }
 
-  /// 피버 동안 아주 약한 진동(dp). 흔들기 끄기·절전이면 0.
-  Offset vibration() {
-    if (level <= 0 || !scene.settings.shake || scene.settings.powerSave) return Offset.zero;
-    final ms = _lastMs;
-    return Offset(math.sin(ms / 23) * 0.4, math.cos(ms / 29) * 0.4) * level;
-  }
-
   /// 배 둘레 바람 줄(흰 짧은 곡선이 양옆으로 뒤로 흘러감), 배 중심 원점. 흔들기 끄기면 없음.
   void wind(Canvas c, double shipR) {
     if (level <= 0 || !scene.settings.shake) return;
@@ -252,7 +246,8 @@ class TopFever {
     // 시작 0.6초는 속도선 폭발(더 많고 진하게).
     final age = ms - _startMs;
     final burst = age >= 0 && age < 600 ? 1 - age / 600 : 0.0;
-    final n = 22 + (18 * burst).round();
+    final rush = (scene.frame.fastSail?.speed ?? 1) / 8;
+    final n = 22 + (18 * burst).round() + (20 * rush).round();
     for (var i = 0; i < n; i++) {
       final left = i.isEven;
       final edge = box.width * (0.04 + (i * 37 % 9) / 100);
