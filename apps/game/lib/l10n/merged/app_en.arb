@@ -585,5 +585,8 @@
   "uiRebirthCompareNow": "Rebirth now",
   "uiRebirthCompareLater": "At stage {stage}",
   "uiRebirthCompareValue": "+{count} pieces · {mult}",
-  "uiRebirthLockedWhy": "Rebirth makes you permanently stronger with map pieces"
+  "uiRebirthLockedWhy": "Rebirth makes you permanently stronger with map pieces",
+  "uiChestTitle": "Treasure chest",
+  "uiChestTake": "Just take · {amount}",
+  "uiChestPill": "Choose chest reward"
 }
