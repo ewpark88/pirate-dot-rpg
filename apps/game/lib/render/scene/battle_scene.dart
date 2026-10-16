@@ -144,7 +144,7 @@ class BattleScene {
   /// 한 화면 프레임. [dtMs]는 실제 경과 시간.
   void update(double dtMs) {
     clockMs += dtMs;
-    final rate = slowMoMs > 0 ? juice.bossSlowMoRate : 1.0;
+    final rate = topHits.juice.frozen(dtMs) ? 0.0 : (slowMoMs > 0 ? juice.bossSlowMoRate : 1.0); // 렌더 히트스톱(v3)
     if (slowMoMs > 0) slowMoMs -= dtMs;
     player.advance(dtMs * rate);
     _updateStage();

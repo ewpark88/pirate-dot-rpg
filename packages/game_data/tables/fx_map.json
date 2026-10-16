@@ -819,8 +819,9 @@
       "#58A6FF",
       "#C07BFF",
       "#FFCF4A",
-      "#7AF0FF"
-    ]
+      "#D7263D"
+    ],
+    "mythicInner": "#FFD447"
   },
   "coinFx": {
     "sizeDp": 18,

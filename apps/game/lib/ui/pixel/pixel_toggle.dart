@@ -89,9 +89,12 @@ class PixelSegmented<T> extends StatelessWidget {
 
 /// 설정 같은 목록의 한 줄: 글자 + 오른쪽 위젯, 아래 얇은 구분선 (ListTile·Divider 대신).
 class PixelListRow extends StatelessWidget {
-  const PixelListRow({required this.title, this.trailing, this.onTap, super.key});
+  const PixelListRow({required this.title, this.leading, this.trailing, this.onTap, super.key});
 
   final Widget title;
+
+  /// 왼쪽 아이콘 (설정 r2).
+  final Widget? leading;
   final Widget? trailing;
   final VoidCallback? onTap;
 
@@ -113,6 +116,7 @@ class PixelListRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
+                if (leading case final l?) ...[l, const SizedBox(width: 12)],
                 Expanded(child: title),
                 ?trailing,
               ],

@@ -83,6 +83,9 @@ void main() {
     // 미달성 줄은 받기 비활성, 진행이 보인다
     expect(tester.widget<PixelButton>(find.byKey(const Key('daily.claim.q3'))).onPressed, isNull);
     expect(find.text('0/1'), findsNWidgets(2));
+    // r2: 받은 줄은 초록 체크 알약, 줄마다 진행 막대.
+    expect(find.byKey(const Key('daily.claimed.q1')), findsOneWidget);
+    expect(tester.widget<LinearProgressIndicator>(find.byKey(const Key('daily.bar.q3'))).value, 0);
   });
 
   testWidgets('기준 5: 달성·미수령 줄이 있으면 빨간 점, 그 줄 받기 → ClaimDaily(id)', (tester) async {
