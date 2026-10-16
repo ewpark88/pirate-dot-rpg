@@ -31,8 +31,8 @@ class Round {
   /// 함성 게이지 0~rageMax.
   double rage;
 
-  /// 이번 틱에 처치한 수 (일일 퀘스트 '처치').
-  int kills = 0;
+  final killedKinds = <String, int>{}; // 이번 틱 처치: kind → 수 (도감)
+  int get kills => killedKinds.values.fold(0, (a, b) => a + b); // 이번 틱 처치 수 (일일 퀘스트 '처치')
 
   GameTables get t => ctx.tables;
   WavesTable get w => t.waves;
@@ -283,7 +283,7 @@ class Round {
   void _kill(Foe e) {
     final g = e.gold.times(stats.goldMultiplier);
     gold = gold + g;
-    kills += 1;
+    killedKinds.update(e.kind, (n) => n + 1, ifAbsent: () => 1);
     ctx.emit(Kill(ctx.tick, targetId: e.id, gold: g, x: e.x, y: e.y));
     field
       ..comboKills += 1

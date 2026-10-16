@@ -178,7 +178,7 @@ void main() {
     expect(ev.whereType<BossCleared>().single.stage, 5);
     expect(ev.whereType<SaveRequested>().map((x) => x.reason), contains('bossCleared'));
     expect(e.state.progress.stage, 6);
-    expect(e.state.wallet.gems, w.bossGems);
+    expect(e.state.wallet.gems, w.bossGems + dexFirstKillGems(tables, boss: true)); // + 도감 첫 처치
     expect(e.state.battle!.chest?.x, 150, reason: '보스를 잡아도 떠 있던 보물상자는 남는다');
     final cards =
         e.state.crews.values.fold(0, (n, c) => n + c.cards) + e.state.crews.values.fold(0, (n, c) => n + c.exp);

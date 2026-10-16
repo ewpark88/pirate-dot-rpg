@@ -5,10 +5,21 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 계열 v3 4·5단계(집속·사거리 차등·시차) 균형 확인 → check → 커밋 / 보스 HP '처치 10~20초'·돌격대 attackMul sim / 야간 100명 리포트 / 도감 v2 수치(S5) |
+| 바로 다음 할 일 | (사용자 퇴근으로 멈춤 2026-10-16) 아래 '남은 일' 순서대로 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 저녁 · S2 · 멈춤 지점 (사용자 퇴근)
+- 커밋: 8825141 계열 v3 4·5단계 + 사거리 차등(균형 0.916~1.084), e74bd9f 빠른 항해 보급(fastSailSupplyLevels, S5 28ec135가 엔진 연결), 992462f 설정 flashLevel·sleepAfterSec, 이번 도감 경제 계약(progress.dex·첫 처치 젬 5).
+- 남은 일(순서):
+  1. S5 fever-break 2b5955d: skills.json bossBreak 수치(출발 0.35·0.05·0.05·0.008·3·3, 목표 제어 편성 보스 처치 시간 ±15%), rage(perKill·max·autoTrigger)·즉석 도전 'ultimate' 정리, progress.rage 세이브 정리 결정, sim 피버 간격·골드 비중 확인.
+  2. 선체 강화가 그 스테이지 체력 최대에 안 먹음(S5 발견) — S1 결정 대기, 고치면 sim 벽 침몰·파밍 피해 재측정.
+  3. 보스 HP '처치 10~20초'·보스전 피해 25~45%·돌격대 attackMul 파밍 5~15% — attackMul 6은 0.75%로 효과 없음(되돌림). 다음 시도 boss.hpMultiplier 70·vanguard hpMul 10·attackMul 10·goldBase 3.5(돌리다 멈춤).
+  4. 보통 보스 첫 도전 89%(목표 70~85), 환생 뒤 첫 벽 0.96(목표 0.75~0.85), 이전 최고 돌파 27.6분(목표 30~60) — 보급(①) 넣은 뒤 다시 잼.
+  5. 도감 v2 수치(S5 9100d02 키: bossRotation·wallBoss·splitAt·ink·swallow·bomber·swarmCount) — S3 그림 id 나오면 regions 초안 + sim. enemies nameKey는 S4 uiMonster* 키.
+  6. 야간 100명 리포트(혼자 돌리기).
+- 남은 문제: check --full의 Flutter 빨강(계열 v3 표 탓 — 집속 발사체 모양 렌더 없음, S4 crew_filter·identity 수정 lane/ui 미머지, 골든 재생성 S1). 표 커밋은 앞으로 --full.
 
 ### 2026-10-16 · S2 · 계열 v3 표 완료
 - 6d44d33 계열 v3 1~3단계(출격·레이저·원형) 균형 0.912~1.100. review/tables-test-family c2662a1(없는 계열 예시 laser → no_such_family).
