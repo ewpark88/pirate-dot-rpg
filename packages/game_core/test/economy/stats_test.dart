@@ -11,24 +11,39 @@ void main() {
   bool near(BigNum a, num b) => a.closeTo(BigNum.from(b));
 
   group('배 부위 효과 (설계서 4.2)', () {
-    test('대포 공격력 = 4 × 1.11^Lv, 25레벨마다 ×2', () {
-      expect(near(shipAttack(parts, 0), 4), isTrue);
-      expect(near(shipAttack(parts, 24), 4 * math.pow(1.11, 24)), isTrue);
-      expect(near(shipAttack(parts, 25), 4 * math.pow(1.11, 25) * 2), isTrue);
-      expect(near(shipAttack(parts, 50), 4 * math.pow(1.11, 50) * 4), isTrue);
+    // 기대값은 표에서 읽는다(골드 재조정 2026-10-16처럼 수치가 바뀌어도 공식만 검사).
+    final cannon = parts.byId('cannon');
+    final hull = parts.byId('hull');
+    final cargo = parts.byId('cargo');
+    num exp(ShipPartDef p, int lv) =>
+        p.base * math.pow(p.growth, lv) * math.pow(p.milestoneMultiplier, lv ~/ p.milestoneEvery!);
+
+    test('대포 공격력 = base × growth^Lv, milestoneEvery마다 × milestoneMultiplier', () {
+      final m = cannon.milestoneEvery!;
+      expect(near(shipAttack(parts, 0), cannon.base), isTrue);
+      expect(near(shipAttack(parts, m - 1), exp(cannon, m - 1)), isTrue);
+      expect(near(shipAttack(parts, m), exp(cannon, m)), isTrue);
+      expect(near(shipAttack(parts, m * 2), exp(cannon, m * 2)), isTrue);
+      expect(shipAttack(parts, m) / shipAttack(parts, m - 1) > BigNum.from(cannon.milestoneMultiplier), isTrue);
     });
 
     test('대포 Lv1000도 BigNum으로 넘치지 않는다', () {
       final big = shipAttack(parts, 1000);
       expect(
         big.log10,
-        closeTo(math.log(4) / math.ln10 + 1000 * math.log(1.11) / math.ln10 + 40 * math.log(2) / math.ln10, 1e-6),
+        closeTo(
+          (math.log(cannon.base) +
+                  1000 * math.log(cannon.growth) +
+                  (1000 ~/ cannon.milestoneEvery!) * math.log(cannon.milestoneMultiplier)) /
+              math.ln10,
+          1e-6,
+        ),
       );
     });
 
-    test('선체 HP = 1300 × 1.12^Lv, 25레벨마다 ×2', () {
-      expect(near(shipMaxHp(parts, 0), 1300), isTrue);
-      expect(near(shipMaxHp(parts, 25), 1300 * math.pow(1.12, 25) * 2), isTrue);
+    test('선체 HP = base × growth^Lv, milestoneEvery마다 × milestoneMultiplier', () {
+      expect(near(shipMaxHp(parts, 0), hull.base), isTrue);
+      expect(near(shipMaxHp(parts, hull.milestoneEvery!), exp(hull, hull.milestoneEvery!)), isTrue);
     });
 
     test('돛 공격 속도 = 1 + 0.05 × Lv, 상한 ×2.5', () {
@@ -45,27 +60,30 @@ void main() {
       expect(critChance(parts, 99), closeTo(0.5, 1e-12));
     });
 
-    test('화물칸 골드 배율 = 1 + 0.1 × Lv, 25레벨마다 ×2', () {
-      expect(goldMultiplier(parts, 0), 1);
-      expect(goldMultiplier(parts, 10), closeTo(2, 1e-12));
-      expect(goldMultiplier(parts, 25), closeTo(3.5 * 2, 1e-12));
+    test('화물칸 골드 배율 = base + growth × Lv, milestoneEvery마다 × milestoneMultiplier', () {
+      final m = cargo.milestoneEvery!;
+      expect(goldMultiplier(parts, 0), cargo.base);
+      expect(goldMultiplier(parts, m - 1), closeTo(cargo.base + cargo.growth * (m - 1), 1e-12));
+      expect(goldMultiplier(parts, m), closeTo((cargo.base + cargo.growth * m) * cargo.milestoneMultiplier, 1e-12));
     });
 
     test('강화 비용 = costBase × costGrowth^Lv', () {
-      expect(near(partCost(parts.byId('cannon'), 0), 10), isTrue);
-      expect(near(partCost(parts.byId('cannon'), 3), 10 * math.pow(1.15, 3)), isTrue);
-      expect(near(partCost(parts.byId('sail'), 2), 60 * math.pow(1.28, 2)), isTrue);
+      for (final p in parts.parts) {
+        expect(near(partCost(p, 0), p.costBase), isTrue);
+        expect(near(partCost(p, 3), p.costBase * math.pow(p.costGrowth, 3)), isTrue);
+      }
     });
 
     test('ShipStats.of는 ShipState의 레벨로 다섯 값을 모은다', () {
-      const ship = ShipState(parts: {'cannon': 25, 'hull': 3, 'sail': 10, 'crowsnest': 20, 'cargo': 10});
+      final m = cannon.milestoneEvery!;
+      final ship = ShipState(parts: {'cannon': m, 'hull': 3, 'sail': 10, 'crowsnest': 20, 'cargo': 2});
       final s = ShipStats.of(parts, ship);
-      expect(near(s.attack, 4 * math.pow(1.11, 25) * 2), isTrue);
-      expect(near(s.maxHp, 1300 * math.pow(1.12, 3)), isTrue);
+      expect(near(s.attack, exp(cannon, m)), isTrue);
+      expect(near(s.maxHp, exp(hull, 3)), isTrue);
       expect(s.attackSpeed, closeTo(1.5, 1e-12));
       expect(s.critChance, closeTo(0.25, 1e-12));
       expect(s.critMultiplier, 2);
-      expect(s.goldMultiplier, closeTo(2, 1e-12));
+      expect(s.goldMultiplier, closeTo(cargo.base + cargo.growth * 2, 1e-12));
     });
   });
 
