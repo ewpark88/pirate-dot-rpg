@@ -1669,10 +1669,22 @@ const Map<String, String> rawTables = {
     "intervalSec": [60, 120], "minStage": 5,
     "events": [
       { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 3, "autoCatchRatio": 0.3 },
-      { "id": "merchant", "weight": 20, "durationSec": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
+      { "id": "merchant", "weight": 20, "durationSec": 20, "passMargin": 40, "passSpread": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
       { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "rage": 0.3 },
       { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
+    ]
+  },
+  "bounty": {
+    "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
+    "days": [
+      { "weekday": 1, "boss": "giant_hermit", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
+      { "weekday": 2, "boss": "thunder_ray", "reward": { "type": "cards", "base": 2, "perTier": 0.2 } },
+      { "weekday": 3, "boss": "iceberg_walrus", "reward": { "type": "gifts", "base": 2, "perTier": 0.1 } },
+      { "weekday": 4, "boss": "lava_whale", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
+      { "weekday": 5, "boss": "kraken", "reward": { "type": "cards", "base": 2, "perTier": 0.2 } },
+      { "weekday": 6, "boss": "ghost_admiral", "reward": { "type": "mapPieces", "base": 1, "perTier": 0.1 } },
+      { "weekday": 7, "boss": "*", "reward": "asBoss" }
     ]
   },
   "challenges": {

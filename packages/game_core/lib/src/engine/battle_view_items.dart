@@ -178,3 +178,18 @@ class ChallengeView {
 
   Json toJson() => {'id': id, 'target': target, 'value': value, 'ticksLeft': ticksLeft};
 }
+
+/// 현상금 전투 표시 (현상금 B0): 보스·단계·남은 틱.
+@immutable
+class BountyView {
+  const BountyView({required this.bossId, required this.tier, required this.ticksLeft});
+
+  factory BountyView.fromJson(Json j) =>
+      BountyView(bossId: j['bossId'] as String, tier: j['tier'] as int, ticksLeft: j['ticksLeft'] as int);
+
+  final String bossId;
+  final int tier;
+  final int ticksLeft;
+
+  Json toJson() => {'bossId': bossId, 'tier': tier, 'ticksLeft': ticksLeft};
+}

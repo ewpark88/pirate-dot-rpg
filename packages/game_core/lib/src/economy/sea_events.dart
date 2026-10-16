@@ -107,9 +107,27 @@ GameState startSeaEvent(GameState s, Field f, SystemContext ctx, String id) {
         f.foes.add(foe('goldfish', 'goldfish', at, _unkillable, mobGold.times(e.number('perFish')), 0, BigNum.zero));
       }
     case 'merchant':
-      final at = ring(top.number('approachRadius'), ctx.rng.nextDouble() * fullTurn);
+      // 스쳐 지나가기: 보이는 화면 한쪽 밖 → 반대쪽 밖, 배 둘레에서 passMargin(+0~passSpread) 떨어진 가로선(위·아래 무작위).
+      // durationSec 안에 건너는 속도(엔진은 passX·passY면 배율 없이 직진 — S5 TopGeometry).
+      final dir = ctx.rng.nextDouble() < half ? 1.0 : -1.0;
+      final side = ctx.rng.nextDouble() < half ? 1.0 : -1.0;
+      final edge = top.number('viewWidth') * half + top.number('spawnMargin');
+      final off = top.number('shipRadius') + e.number('passMargin') + ctx.rng.nextDouble() * e.number('passSpread');
       f.foes.add(
-        foe('merchant_ship', 'merchant', at, mobHp.times(e.number('hpMultiplier')), BigNum.zero, mobSpeed, BigNum.zero),
+        Foe(
+          id: f.nextId(),
+          kind: 'merchant_ship',
+          layer: 'surface',
+          x: top.number('shipX') - dir * edge,
+          y: top.number('shipY') + side * off,
+          maxHp: mobHp.times(e.number('hpMultiplier')),
+          speed: (edge + edge) / e.number('durationSec'),
+          attack: BigNum.zero,
+          gold: BigNum.zero,
+          eventKind: 'merchant',
+          passX: dir,
+          passY: 0,
+        ),
       );
     case 'ambush':
       final boss = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.bossHpMultiplier * e.number('bossHpRatio'));

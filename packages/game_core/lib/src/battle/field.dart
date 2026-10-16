@@ -24,6 +24,8 @@ class Foe {
     this.ownerId,
     this.tier = 0,
     this.eventKind,
+    this.passX,
+    this.passY,
   }) : hp = maxHp;
 
   final int id;
@@ -44,6 +46,10 @@ class Foe {
 
   /// 돌발 이벤트 적(goldfish | merchant | ambush). 파 끝 판정에서 빠진다(Field.waveFoes).
   final String? eventKind;
+
+  /// 스쳐 지나가는 방향(단위 벡터, 보물 상선). 있으면 배로 오지 않고 이 방향으로 speed 그대로 직진 — 겹침 풀기·밀기·접촉 없음(TopGeometry).
+  final double? passX;
+  final double? passY;
 
   /// 잡몹 정의 (역할: 분열·부활). 보스는 null.
   final EnemyDef? def;
@@ -274,6 +280,7 @@ class Field {
     feverTicksLeft: prev.feverTicksLeft,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,
+    bounty: prev.bounty,
     mode: 'top',
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,

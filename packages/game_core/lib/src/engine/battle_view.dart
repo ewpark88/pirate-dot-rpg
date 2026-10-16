@@ -38,6 +38,7 @@ class BattleView {
     this.feverTicksLeft = 0,
     this.seaEvent,
     this.challenge,
+    this.bounty,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -68,6 +69,7 @@ class BattleView {
     feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
     seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
     challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
+    bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -131,6 +133,9 @@ class BattleView {
   final SeaEventView? seaEvent;
   final ChallengeView? challenge;
 
+  /// 현상금 전투 중이면 그 보스·단계·남은 틱 (현상금 B0). 없으면 JSON에 키가 없다.
+  final BountyView? bounty;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -155,6 +160,8 @@ class BattleView {
     bool clearSeaEvent = false,
     ChallengeView? challenge,
     bool clearChallenge = false,
+    BountyView? bounty,
+    bool clearBounty = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -180,6 +187,7 @@ class BattleView {
     feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
     seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
     challenge: clearChallenge ? null : challenge ?? this.challenge,
+    bounty: clearBounty ? null : bounty ?? this.bounty,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
@@ -219,6 +227,7 @@ class BattleView {
     if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),
+    if (bounty != null) 'bounty': bounty!.toJson(),
   };
 
   /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
@@ -250,5 +259,6 @@ class BattleView {
     feverTicksLeft: feverTicksLeft,
     seaEvent: seaEvent,
     challenge: challenge,
+    bounty: bounty,
   );
 }

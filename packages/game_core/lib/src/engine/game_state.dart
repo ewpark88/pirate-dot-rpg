@@ -68,7 +68,7 @@ class GameState {
     fleet: (j['fleet'] as List?)?.cast<String?>() ?? const [],
     fleetInit: j['fleetInit'] as bool? ?? false,
     rebirthShop: (j['rebirthShop'] as Map?)?.cast<String, int>() ?? const {},
-    bounty: j['bounty'] as Json?,
+    bounty: j['bounty'] == null ? null : BountyState.fromJson(j['bounty'] as Json),
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
     summonsTotal: (j['summon'] as Json)['total'] as int,
@@ -102,8 +102,8 @@ class GameState {
   /// 보물지도 상점: 항목 id → 레벨 (환생해도 유지, 세이브 v6).
   final Map<String, int> rebirthShop;
 
-  /// 현상금 사냥 자리 (docs/specs/platform-content-bounty.md, 구현 보류) — 원문 그대로 보존만 한다 (세이브 v6).
-  final Json? bounty;
+  /// 현상금 사냥 (docs/specs/platform-content-bounty.md 4절, 세이브 v6 키 그대로). null = 아직 없음(경제가 첫 틱에 채운다).
+  final BountyState? bounty;
 
   /// 해적의 증표.
   final int tokens;
@@ -145,7 +145,7 @@ class GameState {
     List<String?>? fleet,
     bool? fleetInit,
     Map<String, int>? rebirthShop,
-    Json? bounty,
+    BountyState? bounty,
     int? tokens,
     int? pityCount,
     int? summonsTotal,
@@ -200,7 +200,7 @@ class GameState {
     'fleet': fleet,
     'fleetInit': fleetInit,
     'rebirthShop': rebirthShop,
-    'bounty': bounty,
+    'bounty': bounty?.toJson(),
     'tokens': tokens,
     'summon': {'pityCount': pityCount, 'total': summonsTotal},
     'tutorialStep': tutorialStep,

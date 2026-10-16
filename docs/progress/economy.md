@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 스폰 패턴(산발·무리·대열) 값 넣고 스테이지 10(6~12분)·오프라인 8시간·이벤트 골드 10~20% 맞춤 → 야간 30일 리포트 탑다운 재측정 |
-| 막힌 것 | 없음 |
+| 바로 다음 할 일 | 현상금 B0 계약(작업 트리, 테스트 통과) check --full → 커밋 → S5 해시 / 그다음 B2(티켓 충전·소탕·광고 티켓·현상금 중 이벤트·상자 멈춤·sim 하루 젬 +30~120) → 야간 30일 리포트 탑다운 |
+| 막힌 것 | B0 check --full이 메모리 부족으로 강제 종료 — 허락 받으면 다시 실행 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-16 · S2 · 스폰 패턴 값·진행 보정 + 현상금 B0
+- 162d954: spawnPatterns 산발 0.5·무리 0.35·대열 0.15, scatterGapSec 0.15~0.5, travelSec 1.5, rebirthSkip 0.5, forecastMinWaveSec 11, 도전 targetFactor 1.15, 선원 재적합(0.954~1.066). sim: 스테이지 10 6.8분·오프라인 5회·환생 뒤 돌파 29.5분·이벤트 14%·도전 63%.
+- 현상금 B0(미커밋): 명령 5·이벤트 5·BountyState(v6 키 그대로)·BattleView.bounty·함수 4(canStartBounty {weekday})·meta.bounty 표(공유 game_tables.dart를 피해 meta 안)·테스트 5.
+  남은 문제: OpSetWeekday 보관 자리(EconomySystem이 const라 필드 불가 → B2에서 결정), 광고 티켓 실제 처리(S1이 자리표시 넣음).
 
 ### 2026-10-15~16 · S2 · T4-B 균형 결정·T4-2b·돌발 이벤트·즉석 도전
 - 계열 안 편차 결정: 전설·신화 powerScale을 선원별로 계열 평균에 맞춤(새 손잡이 없음, reachBonus는 원인 아님). main 기준(배 캡슐 13% 축소 뒤) 재적합 f000a95 — 5레벨 0.945~1.063, 투척 45 1.19 → 1.0.
