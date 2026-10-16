@@ -491,5 +491,7 @@
   "uiSettingsFlashSub": "끄면 화면이 번쩍이지 않아요 · 켜도 눈부시지 않게 약하게",
   "uiSleepTouch": "화면을 터치하면 돌아와요",
   "uiSleepStage": "스테이지 {stage} · 항해 중",
-  "uiSleepTitle": "절전 화면"
+  "uiSleepTitle": "절전 화면",
+  "uiResupplyTitle": "보급 — 배가 강해졌다!",
+  "uiResupplyPart": "{part} Lv {from} → {to}"
 }
