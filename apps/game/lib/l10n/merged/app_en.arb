@@ -607,5 +607,17 @@
   "uiAutoUpgradeAd": "Auto-upgrade {min}m",
   "uiAutoUpgradeShort": "Auto",
   "uiAutoUpgradeLeft": "Auto-upgrade left {time}",
-  "uiAutoUpgradeNext": "Next: {part}"
+  "uiAutoUpgradeNext": "Next: {part}",
+  "uiFastSailTitle": "Fast-sail breakthrough!",
+  "uiFastSailStage": "Stage {stage}",
+  "uiFastSailRange": "{from} → {to}",
+  "uiFastSailCombo": "×{count} in a row",
+  "uiFastSailSkip": "Skip",
+  "uiFastSailEndTitle": "Stages {from} → {to} cleared!",
+  "uiFastSailEndStages": "{count} bosses defeated",
+  "uiFastSailEndGold": "Gold +{gold}",
+  "uiFastSailEndGems": "Gems +{gems}",
+  "uiFastSailEndLost": "Gold lost to a full cargo hold: {gold}",
+  "uiFastSailEndCheer": "You're stronger — on to new seas!",
+  "uiFastSailEndOk": "Sail on"
 }

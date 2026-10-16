@@ -5,6 +5,7 @@ import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
+import 'package:pirate_dot/ui/hud/fast_sail.dart';
 import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
@@ -28,13 +29,22 @@ class BattleTopStrip extends StatelessWidget {
       const BossWeakness(),
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
-      const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _Pills()),
+      // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
+      const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
       // 처음 환생할 수 있게 된 순간 큰 말풍선 한 번.
       const RebirthReadyBubble(),
       const BossFailNotice(),
       if (tutorial) const TutorialBubble(),
     ],
   );
+}
+
+class _PillsOrFastSail extends ConsumerWidget {
+  const _PillsOrFastSail();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ref.watch(fastSailProvider) == null ? const _Pills() : const FastSailBanner();
 }
 
 class _Pills extends ConsumerWidget {
