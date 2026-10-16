@@ -95,7 +95,10 @@ extension Flights on Round {
     for (final f in due) {
       final v = _landing(geo, f);
       if (v == null) {
-        ctx.emit(AttackMissed(ctx.tick, crewId: f.gun.crewId, x: f.volley.x, y: f.volley.y));
+        // 원형 탄막의 빈 탄(처음부터 노린 적 없음)은 MISS를 띄우지 않는다
+        if (f.volley.hits.isNotEmpty) {
+          ctx.emit(AttackMissed(ctx.tick, crewId: f.gun.crewId, x: f.volley.x, y: f.volley.y));
+        }
         continue;
       }
       land(f.gun, f.attack, v, f.base, crit: f.crit);
@@ -122,8 +125,8 @@ extension Flights on Round {
     final near = pool.where((e) => dist(e) <= reach + geo.top.radiusOf(e)).toList()
       ..sort((p, q) => dist(p).compareTo(dist(q)));
     if (near.isEmpty) return null;
-    final aimed = f.volley.hits.first.foe;
-    if (near.contains(aimed)) {
+    final aimed = f.volley.hits.isEmpty ? null : f.volley.hits.first.foe; // 원형 탄막의 빈 탄은 조준한 적이 없다
+    if (aimed != null && near.contains(aimed)) {
       return (
         x: x,
         y: y,

@@ -14,6 +14,13 @@ import 'package:game_data/game_data.dart';
 /// 특징(전설 미만)의 '발마다 확률': [chance]가 0보다 크면 결정론 난수로 굴린다(0이면 난수를 쓰지 않는다 — 옛 결과 그대로).
 bool roll(double chance, Rng rng) => chance > 0 && rng.nextDouble() < chance;
 
+/// 한 번 발사의 발 수(한 발 피해 = 한 번 피해 ÷ 이 수): 원형 탄막은 ringCount(등급 ladder), 그 밖은 projectiles + 전설·특징 추가.
+int shotCount(Gun g, Rng rng) {
+  final a = g.attack;
+  if (a.shape == 'ring') return a.raw.numberOr('ringCount', a.projectiles.toDouble()).round();
+  return a.projectiles + extraShots(g, rng);
+}
+
 /// 발사체 추가 수: 전설 extraProjectiles + 특징 확률 몫.
 int extraShots(Gun g, Rng rng) {
   final l = g.legend;

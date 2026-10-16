@@ -97,7 +97,7 @@ class Round {
       g.cooldown -= dt * attackSpeed;
       if ((g.cooldown > 0 && !zeroCooldown) || g.sortie != null) continue; // 출격 중이면 다시 쏘지 않는다
       final a = g.attack;
-      final shots = a.projectiles + extraShots(g, ctx.rng);
+      final shots = shotCount(g, ctx.rng);
       final bonus = t.crews.byId(g.crewId).reachBonus;
       final volleys = [
         for (final v in geo.aimMany(a, shots, field.foes, ctx.rng, reachBonus: bonus))
