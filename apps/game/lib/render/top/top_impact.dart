@@ -9,7 +9,7 @@ class TopImpact {
   final _fill = Paint();
   final _ring = Paint()..style = PaintingStyle.stroke;
   static const _lifeMs = 600.0;
-  static const _max = 24;
+  static const _max = 12; // 입자 예산(S1 성능 — '모두 신화' 범위 공격이 매 틱 겹칠 때)
 
   /// ([x],[y])에 반지름 [radius] 임팩트. [color] = 등급 색, [water] = 수중(물기둥·거품).
   void add(double x, double y, double radius, int color, double atMs, {bool water = false}) {
@@ -68,7 +68,7 @@ class TopImpact {
         c.drawOval(Rect.fromCenter(center: Offset(h.x, h.y - hgt), width: r * 0.5, height: r * 0.25), _fill);
       }
       // 파편·거품 입자
-      final n = lite ? 6 : 12;
+      final n = lite || _hits.length > 6 ? 4 : 8;
       for (var i = 0; i < n; i++) {
         final a = i * 2 * math.pi / n + h.x * 0.37;
         final d = r * (0.2 + 1.0 * _ease(t)) * (0.7 + 0.3 * ((i * 7) % 5) / 4);
