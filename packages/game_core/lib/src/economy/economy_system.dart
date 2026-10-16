@@ -57,6 +57,8 @@ class EconomySystem implements GameSystem {
     final OpSetRebirths c => opSetRebirths(state, c),
     final PickBottle c => pickBottle(state, c, ctx),
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
+    MarkHint(:final id) =>
+      state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),
     final StartBounty c => startBounty(state, c, ctx),
     final SweepBounty c => sweepBounty(state, c, ctx),
     final OpSetBountyTickets c => opSetBountyTickets(state, c),
