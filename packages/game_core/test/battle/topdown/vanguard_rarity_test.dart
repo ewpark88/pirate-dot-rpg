@@ -31,7 +31,13 @@ void main() {
   }
 
   final t = patched((w, s, c) {
-    (w['top'] as Map<String, dynamic>)['vanguard'] = {'count': 2, 'hpMul': 4, 'speedMul': 1.6, 'fromStage': 5};
+    (w['top'] as Map<String, dynamic>)['vanguard'] = {
+      'count': 2,
+      'hpMul': 4,
+      'speedMul': 1.6,
+      'attackMul': 3,
+      'fromStage': 5,
+    };
     s['rarityTempo'] = [1, 1, 1, 0.9, 0.8];
     c.firstWhere((x) => x['id'] == 'pang')['aim'] = {
       'intervalSec': 1.2,
@@ -58,6 +64,7 @@ void main() {
       expect(v, hasLength(2));
       expect(v.first.maxHp.toDouble(), closeTo(mob.maxHp.toDouble() * 4, 1e-6));
       expect(v.first.speed, closeTo(mob.speed * 1.6, 1e-9));
+      expect(v.first.attack.toDouble(), closeTo(mob.attack.toDouble() * 3, 1e-9), reason: 'attackMul');
       expect(v.first.view().vanguard, isTrue);
       expect(mob.view().toJson().containsKey('vanguard'), isFalse);
       final early = field(3);
