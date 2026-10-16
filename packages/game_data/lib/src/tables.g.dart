@@ -1476,6 +1476,12 @@ const Map<String, String> rawTables = {
       "size": 5,
       "path": "line",
       "flightMs": 700
+    },
+    "cluster": {
+      "color": "#E67E22",
+      "size": 7,
+      "path": "arc",
+      "flightMs": 1100
     }
   },
   "projectileAliases": {
@@ -1874,8 +1880,9 @@ const Map<String, String> rawTables = {
     "durationMs": 900
   },
   "audio": {
-    "sfxMinGapMs": 40,
-    "sfxMaxPerFrame": 6
+    "sfxMinGapMs": 80,
+    "sfxMaxPerFrame": 3,
+    "sfxMaxPerSec": 14
   },
   "sprites": {
     "enemyFrames": 2,
@@ -2112,7 +2119,6 @@ const Map<String, String> rawTables = {
     "blastMax": 10,
     "waterY": 96,
     "blastParts": [
-      "flash",
       "burst",
       "shockwave",
       "fireball_0_hot",
@@ -2451,7 +2457,11 @@ const Map<String, String> rawTables = {
     }
   },
   "frameCap": {
-    "battleFps": 60
+    "battleFps": 60,
+    "idleSec": 60,
+    "dimSec": 180,
+    "dimFps": 12,
+    "dimBrightness": 0.15
   }
 }
 ''',
@@ -2836,7 +2846,7 @@ const Map<String, String> rawTables = {
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2.8, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 28, "wallEvery": 10, "wallHpMultiplier": 2.0, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.08 },
   "travelSec": 1.5,
-  "rebirthSkip": { "fraction": 0.45, "waves": 0, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
+  "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
     "swarmSpacing": 3,

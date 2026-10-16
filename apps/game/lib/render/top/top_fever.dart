@@ -31,7 +31,7 @@ class TopFever {
   double _startMs = -1000000000;
   double _lastMs = 0;
   bool _was = false;
-  static const _fadeInMs = 300.0;
+  static const _fadeInMs = 500.0;
   static const _fadeOutMs = 1200.0;
   static const _ringMs = 650.0;
 
@@ -47,8 +47,9 @@ class TopFever {
   }
 
   /// 바다 물들임 세기 0~1 (TopSeaPainter.fever로 — 바다 색 자체를 금·주황으로 섞는다).
-  /// 켜질 때는 시작 금빛 번쩍 아래에서 바로 금(파랑+금이 섞이면 탁한 회색·올리브 — S1), 꺼질 때만 서서히.
-  double get sea => _seaAlpha * (scene.frame.feverTicksLeft > 0 || scene.frame.fastSail != null ? 1 : level);
+  /// 켜질 때도 [_fadeInMs]에 걸쳐 물든다 — 한 프레임에 파랑 → 금으로 바뀌면 화면 밝기가 46% 튄다(사용자 '번쩍임 눈 아프다').
+  /// 중간 회색은 TopSeaPainter._mix의 크림 띄우기가 막는다.
+  double get sea => _seaAlpha * level * level * (3 - 2 * level); // smoothstep — 처음 프레임 변화가 작다
 
   /// 빛 줄기: 비스듬한 밝은 띠 3개가 천천히 흘러간다(빛나는 황금 바다, S1). 배 중심 원점 화면 단위 [view], 적보다 먼저.
   void rays(Canvas c, Rect view) {

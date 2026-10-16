@@ -13,6 +13,7 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/perf_overlay.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/perf/frame_cap.dart';
+import 'package:pirate_dot/render/perf/idle_watch.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
@@ -22,6 +23,7 @@ import 'package:pirate_dot/render/top/top_frame.dart';
 
 export 'package:pirate_dot/render/juice/juice_settings.dart' show HapticLevel, JuiceSettings;
 export 'package:pirate_dot/render/layout.dart' show kLogicalHeight, kLogicalWidth;
+export 'package:pirate_dot/render/perf/idle_watch.dart' show IdleLevel;
 export 'package:pirate_dot/render/scene/moments.dart' show CutInState;
 
 part 'battle_game_links.dart';
@@ -101,6 +103,30 @@ class BattleGame extends FlameGame with _UiLinks {
   final perf = PerfMonitor();
   final _overlay = PerfOverlay();
   late final _cap = FrameCap(this);
+  late final JsonReader _capCfg = _tables.fxMap.raw.obj('frameCap');
+  final _idleClock = Stopwatch()..start();
+
+  /// 방치 단계(입력 없음 60초 → 절전 그리기, 3분 → 어두운 절전 화면). S4는 [IdleLevel.dim]일 때 UI 덮개를 얹는다.
+  late final idle = IdleWatch(
+    idleMs: _capCfg.number('idleSec') * 1000,
+    dimMs: _capCfg.number('dimSec') * 1000,
+    now: () => _idleClock.elapsedMicroseconds / 1000,
+  )..level.addListener(_applyIdle);
+
+  /// 방치 중엔 사용자 설정 위에 절전·흔들림 끔을 덮는다(설정 값 자체는 그대로).
+  JuiceSettings get _effective =>
+      idle.level.value == IdleLevel.active ? _settings : _settings.copyWith(shake: false, powerSave: true);
+
+  void _applyIdle() {
+    scene.settings = _effective;
+    scene.sound.budgetScale = switch (idle.level.value) {
+      IdleLevel.active => 1,
+      IdleLevel.idle => 0.5,
+      IdleLevel.dim => 0.15,
+    };
+    painter.dim = idle.level.value == IdleLevel.dim ? _capCfg.number('dimBrightness') : null;
+    _applyCap();
+  }
 
   /// 장면을 진행한 횟수 (절전 확인용).
   int sceneUpdates = 0;
@@ -125,17 +151,20 @@ class BattleGame extends FlameGame with _UiLinks {
   JuiceSettings get settings => _settings;
   set settings(JuiceSettings v) {
     _settings = v;
-    scene.settings = v;
+    scene.settings = _effective;
     _applyCap();
   }
 
   /// 실제 프레임(그리기 포함)을 묶는다: 평소 fx_map frameCap.battleFps(60), 절전 juice powerSave.fps(30). 붙기 전·테스트에서는 update 누적으로만.
   void _applyCap() => !isMounted ? null : _cap.start(_capFps);
-  num get _capFps => _settings.powerSave ? scene.juice.powerSaveFps : scene.fx.raw.obj('frameCap').number('battleFps');
+  num get _capFps => painter.dim != null
+      ? _capCfg.number('dimFps')
+      : (_effective.powerSave ? scene.juice.powerSaveFps : _capCfg.number('battleFps'));
 
   @override
   void onMount() {
     super.onMount();
+    idle.attach();
     _applyCap();
   }
 
@@ -167,7 +196,7 @@ class BattleGame extends FlameGame with _UiLinks {
     };
     mode = m;
     final frame = scene0Layout;
-    scene = BattleScene(_tables, recording, settings: _settings, onHaptic: onHaptic)
+    scene = BattleScene(_tables, recording, settings: _effective, onHaptic: onHaptic)
       ..audio = audio
       ..coinFlow.goldTargetDp = _goldTargetDp
       ..coinFlow.onCoinArrive = _onCoinArrive;
@@ -175,7 +204,8 @@ class BattleGame extends FlameGame with _UiLinks {
     painter = ScenePainter(scene)
       ..showHitboxes = _showHitboxes
       ..sprites = _sprites
-      ..useSprites = _useSprites;
+      ..useSprites = _useSprites
+      ..dim = idle.level.value == IdleLevel.dim ? _capCfg.number('dimBrightness') : null;
     _sceneReady = true;
   }
 
@@ -217,6 +247,7 @@ class BattleGame extends FlameGame with _UiLinks {
     super.update(dt);
     final dtMs = dt * Duration.millisecondsPerSecond;
     perf.add(dtMs);
+    idle.tick();
     if (perfOverlay) {
       _overlay.update(dtMs, perf, stats);
       _summaryAccum += dtMs;
@@ -226,7 +257,7 @@ class BattleGame extends FlameGame with _UiLinks {
       }
     }
     var stepMs = dtMs;
-    if (settings.powerSave && !_cap.active) {
+    if (_effective.powerSave && !_cap.active) {
       // 절전(상한 타이머가 없을 때 — 테스트 등): juice powerSave.fps 주기로만 장면을 진행하고, 그 사이 프레임은 직전 그림을 다시 그린다.
       _powerSaveAccum += dtMs;
       final period = Duration.millisecondsPerSecond / scene.juice.powerSaveFps;
@@ -248,6 +279,7 @@ class BattleGame extends FlameGame with _UiLinks {
     unawaited(_sub?.cancel());
     _sub = null;
     _cap.stop();
+    idle.detach();
     super.onRemove();
   }
 }

@@ -25,8 +25,17 @@ void main() {
       lines.add(crewTraitLine(ko, id));
     }
     expect(lines, hasLength(40), reason: '한 줄은 선원마다 다르다');
-    // 기획 2절: 범위 17명 (S5 확인 2026-10-16, corey는 단일).
-    expect(ids.where((id) => crewIdentity(t, id)!.area), hasLength(17));
+    // 범위 = 모양(aim.shape ?? 계열)이 areaShapes거나 topRadius — 표에서 계산(계열 v3로 수가 바뀌어도 맞게).
+    bool expectArea(String id) {
+      final c = t.crews.byId(id);
+      final shape = c.aim?.strOrNull('shape') ?? t.skills.byId(c.family).attack.shape;
+      return areaShapes.contains(shape) || (c.aim?.has('topRadius') ?? false);
+    }
+
+    for (final id in ids) {
+      expect(crewIdentity(t, id)!.area, expectArea(id), reason: id);
+    }
+    expect(ids.where((id) => crewIdentity(t, id)!.area), isNotEmpty);
     // 표에서 읽은 값 몇 개 (기획 2절과 같다).
     // 연사 간격은 표(crews.json aim.intervalSec — S2 공속 조정에도 따라감).
     final octoSec = t.crews.byId('octo').aim!.number('intervalSec');

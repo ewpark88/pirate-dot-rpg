@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
 import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverPose;
@@ -96,6 +97,7 @@ BattleGeometry geometryFor(GameTables t, int stage, {int hullStage = 1}) {
 /// 돌발 이벤트 '폭풍'이면 적 이동 배율(meta.seaEvents 폭풍 enemySpeed)도 매번 맞춘다.
 void shapeField(Field f, GameState s, GameTables t) {
   if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
+    if (f.shipSeen != null) _refreshHull(f, s, t); // 배를 강화했다(전장을 처음 만들 때는 이미 맞다)
     final old = f.geometry;
     f
       ..shipSeen = s.ship
@@ -112,6 +114,17 @@ void shapeField(Field f, GameState s, GameTables t) {
       ..weaveTick = on ? g.weaveTick + 1 : 0
       ..pose(feverPose(s, t, g.weaveTick, on: on));
   }
+}
+
+/// 선체 강화가 바로 먹게(S1 '강화했는데 그대로' 버그): 배 체력 최대를 새로 정하고, 늘어난 만큼 지금 체력도 더한다(줄면 최대로 자름).
+void _refreshHull(Field f, GameState s, GameTables t) {
+  final max = CombatStats.of(s, t).shipHp;
+  final grown = max - f.shipHpMax;
+  if (grown.isZero) return;
+  final hp = grown.isNegative ? f.shipHp : f.shipHp + grown;
+  f
+    ..shipHpMax = max
+    ..shipHp = hp > max ? max : hp;
 }
 
 /// 지금 돌발 이벤트의 적 이동 배율(meta.seaEvents 그 이벤트의 enemySpeed, 없으면 1).

@@ -10,7 +10,9 @@ class RegionDef {
       boss = j.str('boss'),
       midBoss = j.str('midBoss'),
       regionBoss = j.str('regionBoss'),
-      nameKey = j.str('nameKey');
+      nameKey = j.str('nameKey'),
+      bossRotation = j.has('bossRotation') ? j.strs('bossRotation') : const [],
+      wallBoss = j.strOrNull('wallBoss');
 
   final String id;
   final int fromStage;
@@ -25,6 +27,12 @@ class RegionDef {
   final String midBoss;
   final String regionBoss;
   final String nameKey;
+
+  /// 도감 v2(docs/specs/platform-bestiary-v2.md): 보통 스테이지 보스 순환(스테이지 번호로 고정 순서). 비면 [boss] 하나.
+  final List<String> bossRotation;
+
+  /// 10단위 벽(wallEvery)의 대보스. null이면 보통 순환.
+  final String? wallBoss;
 }
 
 /// 보스 하나 (설계서 4.11). 체력은 일반 보스(waves.boss.hpMultiplier) 대비 [hpMultiplier]배.
@@ -37,6 +45,7 @@ class BossDef {
       mechanic = j.has('mechanic') ? BossMechanic.fromJson(j.obj('mechanic')) : null,
       patterns = j.has('patterns') ? j.objs('patterns').map(BossPatternDef.fromJson).toList() : const [],
       restSec = j.numberOr('restSec', 0),
+      splitAt = j.has('splitAt') ? [for (final v in j.raw['splitAt'] as List) (v as num).toDouble()] : const [],
       firstRestSec = j.has('firstRestSec') ? j.number('firstRestSec') : null;
 
   final String id;
@@ -57,6 +66,9 @@ class BossDef {
 
   /// 등장 뒤 첫 패턴까지 쉼(초, 없으면 restSec) — 보스가 금방 죽어도 첫 패턴을 보게(S2).
   final double? firstRestSec;
+
+  /// 분열(도감 v2 — 아메바·슬라임): HP 비율이 이 값들 아래로 내려갈 때마다 둘로 갈라진다(둘 다 잡아야 격파).
+  final List<double> splitAt;
 }
 
 /// 보스 패턴 하나: volley(조준 탄막) · charge(돌진) · summon(졸개) · blast(배 둘레 장판).
@@ -70,7 +82,9 @@ class BossPatternDef {
       speedMul = j.numberOr('speedMul', 1),
       spreadDeg = j.numberOr('spreadDeg', 0),
       radiusShipMul = j.numberOr('radiusShipMul', 0),
-      capMul = j.numberOr('capMul', 1);
+      capMul = j.numberOr('capMul', 1),
+      durationSec = j.numberOr('durationSec', 0),
+      healRatio = j.numberOr('healRatio', 0);
 
   final String type;
   final double warnSec;
@@ -93,6 +107,12 @@ class BossPatternDef {
   /// 장판 반지름 = 배 반경 × radiusShipMul.
   final double radiusShipMul;
   final double capMul;
+
+  /// 먹물(ink): 먹물 구름이 남는 초(그 안 적은 조준되지 않는다).
+  final double durationSec;
+
+  /// 삼키기(swallow): 삼킨 잡몹 한 마리당 보스 HP 회복(최대 HP 비율).
+  final double healRatio;
 }
 
 /// 해역 보스 패턴: frontArmor, shield, lava, tentacles, summoner (docs/specs/battle-m3-bosses.md).
@@ -129,7 +149,9 @@ class EnemyDef {
       splitCount = j.intOrNull('splitCount') ?? 0,
       splitHpRatio = j.numberOr('splitHpRatio', 0),
       reviveHpRatio = j.numberOr('reviveHpRatio', 0),
-      ranged = j.has('ranged') ? j.obj('ranged') : null;
+      ranged = j.has('ranged') ? j.obj('ranged') : null,
+      bomber = j.has('bomber') ? j.obj('bomber') : null,
+      swarmCount = j.intOrNull('swarmCount') ?? 0;
 
   final String id;
 
@@ -153,12 +175,20 @@ class EnemyDef {
 
   /// 원거리 공격(배 위협 (a), 선택): {range, intervalSec, damageRatio, projectileSpeed, kind}. 없으면 접촉만.
   final JsonReader? ranged;
+
+  /// 도감 v2 자폭(선택): {capMul, blastRadius, blastRatio} — 배에 닿으면 터져 한 대 상한 × capMul 피해 후 사라짐(보상 없음),
+  /// 먼저 잡히면 반경 안 적에게 최대 HP × blastRatio.
+  final JsonReader? bomber;
+
+  /// 도감 v2 떼(선택): 한 마리 자리에 이 수만큼 작은 적(HP·골드·공격 ÷ 수). 0이면 보통.
+  final int swarmCount;
 }
 
 class RegionsTable {
   RegionsTable.fromJson(JsonReader j)
     : stagesPerRegion = j.integer('stagesPerRegion'),
       midBossEvery = j.integer('midBossEvery'),
+      wallEvery = j.intOrNull('wallEvery') ?? 0,
       loopStages = j.integer('loopStages'),
       maxLoopTier = j.integer('maxLoopTier'),
       regions = j.objs('regions').map(RegionDef.fromJson).toList(),
@@ -167,6 +197,9 @@ class RegionsTable {
 
   final int stagesPerRegion;
   final int midBossEvery;
+
+  /// 대보스 벽 간격(도감 v2, 10). 0이면 대보스 없음.
+  final int wallEvery;
 
   /// 이 스테이지 수마다 해역을 처음부터 다시 돈다 (무한 항해).
   final int loopStages;
@@ -190,13 +223,21 @@ class RegionsTable {
   }
 
   /// 스테이지 보스: 해역 마지막 = 해역 보스, midBossEvery마다 = 중간 보스, 그 밖 = 일반 보스.
+  /// 도감 v2: 그 밖은 10단위(wallEvery) 벽이면 해역 대보스, 아니면 해역 보스 순환(같은 스테이지는 늘 같은 보스).
   BossDef bossAt(int stage) {
     final r = regionAt(stage);
-    final id = stage % stagesPerRegion == 0
-        ? r.regionBoss
-        : stage % midBossEvery == 0
-        ? r.midBoss
-        : r.boss;
+    final String id;
+    if (stage % stagesPerRegion == 0) {
+      id = r.regionBoss;
+    } else if (stage % midBossEvery == 0) {
+      id = r.midBoss;
+    } else if (r.wallBoss != null && wallEvery > 0 && stage % wallEvery == 0) {
+      id = r.wallBoss!;
+    } else if (r.bossRotation.isNotEmpty) {
+      id = r.bossRotation[stage % r.bossRotation.length];
+    } else {
+      id = r.boss;
+    }
     return bosses[id]!;
   }
 
@@ -208,7 +249,7 @@ class RegionsTable {
       for (final en in r.enemies) {
         expect(e, that: enemyIds.contains(en), message: 'regions: ${r.id}의 적 $en이 enemies에 없음');
       }
-      for (final b in [r.boss, r.midBoss, r.regionBoss]) {
+      for (final b in [r.boss, r.midBoss, r.regionBoss, ...r.bossRotation, ?r.wallBoss]) {
         expect(e, that: bosses.containsKey(b), message: 'regions: ${r.id}의 보스 $b가 bosses에 없음');
       }
     }

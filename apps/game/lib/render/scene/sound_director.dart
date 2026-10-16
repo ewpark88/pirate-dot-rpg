@@ -6,16 +6,24 @@ import 'package:game_data/game_data.dart';
 /// - sfx id는 `fx_map.json events[].sfx`. 타격음(damage·critHit)은 변형 `juice.sound.hitVariants`개와 피치 ±`pitchJitter`,
 ///   고르는 값은 (틱, 대상 id)에서 계산 — 같은 기록이면 같은 소리 순서.
 /// - 같은 id는 `fx_map.audio.sfxMinGapMs` 안에 다시 부르지 않고, 한 화면 프레임에 `sfxMaxPerFrame`개까지.
+/// - 초당 `sfxMaxPerSec`개 예산(S24 실측 오디오 CPU 56% — 신화 여럿이면 초당 수백 번 재생을 요청했다). 방치 중엔 [budgetScale]로 줄인다.
 class SoundDirector {
   SoundDirector(this._fx, JuiceTable juice)
     : _minGapMs = _fx.audio.number('sfxMinGapMs'),
       _maxPerFrame = _fx.audio.integer('sfxMaxPerFrame'),
+      _maxPerSec = _fx.audio.number('sfxMaxPerSec'),
       _variants = juice.raw.obj('sound').integer('hitVariants'),
       _jitter = juice.raw.obj('sound').number('pitchJitter');
 
   final FxMapTable _fx;
   final double _minGapMs;
   final int _maxPerFrame;
+  final double _maxPerSec;
+
+  /// 초당 예산 배율 — BattleGame 방치(0.5)·어두운 화면(0.15).
+  double budgetScale = 1;
+  double _tokens = 4;
+  double _tokenClock = 0;
   final int _variants;
   final double _jitter;
 
@@ -59,6 +67,11 @@ class SoundDirector {
       _thisFrame = 0;
     }
     if (_thisFrame >= _maxPerFrame) return;
+    // 초당 예산: 시계만큼 채우고(최대 1/4초 분량 몰아치기), 한 번에 하나씩 쓴다.
+    final rate = _maxPerSec * budgetScale / 1000;
+    _tokens = (_tokens + (clockMs - _tokenClock).clamp(0, 1000) * rate).clamp(0, 1 + rate * 250);
+    _tokenClock = clockMs;
+    if (_tokens < 1) return;
     final last = _lastMs[id];
     if (last != null && clockMs - last < _minGapMs) return;
     var variant = 0;
@@ -71,6 +84,7 @@ class SoundDirector {
     a.playSfx(id, variant: variant, pitch: pitch);
     _lastMs[id] = clockMs;
     _thisFrame++;
+    _tokens -= 1;
     log.add(id);
     if (log.length > _logMax) log.removeAt(0);
   }

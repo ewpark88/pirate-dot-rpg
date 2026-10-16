@@ -39,6 +39,7 @@ class TopGeometry implements BattleGeometry {
   double shipHeading = 0;
 
   void pose(({double x, double y, double heading}) p) => weave(p.x, dy: p.y, heading: p.heading);
+  TopAim get targeting => _aim; // 조준(먹물 구름 blinds를 보스 패턴이 정한다)
 
   /// 배 중심을 바다 가운데에서 ([dx], [dy])만큼 옮기고 [heading]으로 기울인다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
   void weave(double dx, {double dy = 0, double heading = 0}) {
