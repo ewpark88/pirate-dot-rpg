@@ -14,8 +14,10 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'family_tables.dart';
+
 void main() {
-  final tables = GameTables.load();
+  final tables = familyTables(); // 계열 기본 규칙(선원 aim·traitScale 없음)
   final w = tables.waves;
   final start = DateTime.utc(2026, 11);
 
@@ -56,7 +58,8 @@ void main() {
     bool offCamera(EnemyView x) =>
         (x.x - top.number('shipX')).abs() > top.number('viewWidth') / 2 ||
         (x.y - top.number('shipY')).abs() > top.number('viewHeight') / 2;
-    expect(enemies.every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
+    // 가까이 등장(nearSpawn) 몫은 배 근처에서 예고 중 — 그 밖은 모두 화면 밖.
+    expect(enemies.where((x) => !x.emerging).every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
 
     final f = fieldWith([]);
     spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1

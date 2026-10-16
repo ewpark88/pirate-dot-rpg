@@ -136,9 +136,12 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.open')));
     await tester.pumpAndSettle();
-    expect(find.text('Kept: crew, collection, gems, ship look'), findsOneWidget);
+    // 그대로인 것은 설명 판(rebirth.why)의 '그대로' 줄(사용자 지시 2026-10-16).
+    expect(find.text('Crew · collection · gems · ship look'), findsOneWidget);
     expect(find.text('Chest: 80 gems · 1 hero+ summon(s)'), findsOneWidget);
     expect(find.byKey(const Key('rebirth.sea.2')), findsNothing);
+    await tester.ensureVisible(find.byKey(const Key('rebirth.sea.1')));
+    await tester.pump();
     await tester.tap(find.byKey(const Key('rebirth.sea.1')));
     await tester.pump();
     expect(log.sent.whereType<SetTreasureRoute>().map((c) => c.toJson()), [const SetTreasureRoute(1).toJson()]);

@@ -12,7 +12,9 @@ import 'package:game_data/game_data.dart';
     final max = p.maxLevel;
     if (max != null && lv >= max) continue;
     final cost = partCost(p, lv);
-    final seen = cost.times(weights?[p.id] ?? 1);
+    final w = weights?[p.id] ?? 1;
+    if (w.isInfinite) continue; // 이번에는 안 사는 부위
+    final seen = cost.times(w);
     if (bestSeen == null || seen < bestSeen) (best, bestSeen) = ((part: p.id, cost: cost), seen);
   }
   return best;
@@ -41,8 +43,14 @@ int buyCheapest(CoreEngine engine, GameTables t, GameState s) {
     for (final e in t.meta.raw.obj('sim').obj('buyCostWeight').raw.entries) e.key: (e.value as num).toDouble(),
   };
   var bought = 0;
+  // 화물칸(금고 용량)은 금고가 거의 찼거나(cargoBuyFull) 다른 강화가 용량을 넘을 때만 산다(economy-cargo-capacity 3절).
+  final cap = goldCapacity(s, t);
+  final noCargo = {...weights, 'cargo': double.infinity};
+  final other = cheapestUpgrade(t, levels, weights: noCargo);
+  final needCargo =
+      s.wallet.gold >= cap.times(t.meta.raw.obj('sim').number('cargoBuyFull')) || (other != null && other.cost > cap);
   while (true) {
-    final next = cheapestUpgrade(t, levels, weights: weights);
+    final next = cheapestUpgrade(t, levels, weights: needCargo ? weights : noCargo);
     if (next == null) return bought;
     final cost = next.cost.times(mult);
     if (gold < cost) return bought;

@@ -112,7 +112,9 @@ void main() {
       final claimed = sys.handle(away, const ClaimOffline(), h.ctx)!;
       expect(claimed.lastOfflineGold, isNotNull);
       final doubled = sys.handle(claimed, const GrantAdReward(AdPlacement.offline), h.ctx)!;
-      expect(doubled.wallet.gold.closeTo(claimed.wallet.gold + claimed.lastOfflineGold!), isTrue);
+      final want = claimed.wallet.gold + claimed.lastOfflineGold!;
+      final cap = goldCapacity(claimed, t); // 광고 ×2도 화물칸 용량까지
+      expect(doubled.wallet.gold.closeTo(want < cap ? want : cap), isTrue);
       expect(doubled.lastOfflineGold, isNull);
       expect(sys.handle(doubled, const GrantAdReward(AdPlacement.offline), h.ctx)!.wallet.gold, doubled.wallet.gold);
     });

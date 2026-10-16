@@ -14,6 +14,9 @@ class SimFun {
 
   /// 피버: 발동 수, 피버 중 처치 골드.
   int fevers = 0;
+
+  /// 화물칸이 가득 차 버린 골드.
+  BigNum overflowGold = BigNum.zero;
   BigNum feverGold = BigNum.zero;
 
   /// 이번 틱 사건을 보고, 필요하면 탭 명령을 넣는다.
@@ -24,6 +27,8 @@ class SimFun {
         if (feverOn(engine.state)) feverGold = feverGold + gold;
       case FeverStarted():
         fevers++;
+      case GoldOverflow(:final lost):
+        overflowGold = overflowGold + lost;
       case GoldfishCaught(:final gold):
         eventGold = eventGold + gold;
       case BottlePicked(:final reward) when reward.startsWith('gold:'):
@@ -47,6 +52,9 @@ class SimFun {
 
   /// 피버 중 처치 골드 ÷ 처치 골드 (%).
   double? get feverGoldPct => killGold.isZero ? null : (feverGold / killGold).toDouble() * 100;
+
+  /// 넘친 골드 ÷ 처치 골드 (%).
+  double? get overflowPct => killGold.isZero ? null : (overflowGold / killGold).toDouble() * 100;
 
   /// 끝난 도전 중 성공 (%).
   double? get challengeWinPct => challenges == 0 ? null : challengeWins / challenges * 100;

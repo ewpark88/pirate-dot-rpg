@@ -120,7 +120,12 @@ void main() {
   });
 
   test('표에 없으면 꺼짐, 이벤트·EnemyView.emerging JSON 왕복', () {
-    final plain = geometryFor(GameTables.load(rawTables), stage) as TopGeometry;
+    // 표에서 nearSpawn을 뺀 사본(실제 표에는 S2 값이 들어 있다).
+    final noNear = Map<String, String>.of(rawTables);
+    final w0 = jsonDecode(noNear['waves']!) as Map<String, dynamic>;
+    (w0['top'] as Map<String, dynamic>).remove('nearSpawn');
+    noNear['waves'] = jsonEncode(w0);
+    final plain = geometryFor(GameTables.load(noNear), stage) as TopGeometry;
     final f = field()..geometry = plain;
     plain.spawnWave(
       f,

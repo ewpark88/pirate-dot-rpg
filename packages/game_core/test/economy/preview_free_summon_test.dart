@@ -25,7 +25,8 @@ void main() {
       expect(p.seconds, e.seconds);
       expect(p.gold, e.gold);
       expect(p.cards, e.cards);
-      expect(s.wallet.gold, p.gold);
+      final cap = goldCapacity(s0, t); // 화물칸 용량까지만 실린다
+      expect(s.wallet.gold, p.gold < cap ? p.gold : cap);
     });
 
     test('8시간 상한, 효율 계수 포함', () {

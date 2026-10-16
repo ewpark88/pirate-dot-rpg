@@ -1,4 +1,5 @@
 import 'package:game_core/src/economy/ads.dart';
+import 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradeStep;
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/formation.dart';
@@ -58,10 +59,13 @@ class EconomySystem implements GameSystem {
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) => tickChest(
-    tutorialTick(
-      rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
-      ctx.tables,
+  GameState update(GameState state, SystemContext ctx) => autoUpgradeStep(
+    tickChest(
+      tutorialTick(
+        rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+        ctx.tables,
+      ),
+      ctx,
     ),
     ctx,
   );
