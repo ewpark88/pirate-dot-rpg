@@ -441,5 +441,6 @@
   "uiFastSailStart": "빠른 항해 돌파!",
   "uiFastSailStrike": "격파!",
   "uiFastSailFinale": "돌파!",
-  "uiFastSailEnded": "스테이지 {from} → {to} 돌파!"
+  "uiFastSailEnded": "스테이지 {from} → {to} 돌파!",
+  "uiSortPower": "파워순"
 }

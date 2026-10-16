@@ -106,6 +106,27 @@ void main() {
     expect(find.byKey(const Key('crew.filter.empty')), findsOneWidget);
   });
 
+  testWidgets('편성 고르기에도 같은 정렬·필터(보유 칩 없음) · 줄마다 특색 아이콘·초당 공격력', (tester) async {
+    final base = loadFixture('stage37_midgame');
+    final ids = [for (final f in base.battle!.fleet) f.crewId];
+    final gap = base.copyWith(fleet: [...ids.take(ids.length - 1), null], fleetInit: true);
+    await pumpGame(tester, gap, openTab: false);
+    await tester.tap(find.byKey(Key('fleet.slot.${ids.length - 1}')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('crew.sort')), findsOneWidget);
+    expect(find.byKey(const Key('crew.owned')), findsNothing);
+    expect(find.byKey(Key('fleet.dps.${ids.last}')), findsOneWidget);
+    expect(find.byKey(Key('crew.identity.${ids.last}')), findsOneWidget);
+    // 조준 '공중 우선'(보유 없음) → 안내.
+    await tester.tap(find.byKey(const Key('crew.filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('crew.filter.aim.air')));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('fleet.pick.empty')), findsOneWidget);
+  });
+
   group('골든 4기기', () {
     setUpAll(loadGoldenFonts);
 
@@ -125,6 +146,18 @@ void main() {
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_crew_filter_$name.png'));
       });
     }
+
+    testWidgets('편성 고르기 360', (tester) async {
+      final base = loadFixture('stage37_midgame');
+      final ids = [for (final f in base.battle!.fleet) f.crewId];
+      final gap = base.copyWith(fleet: [...ids.take(ids.length - 1), null], fleetInit: true);
+      await pumpGame(tester, gap, size: const Size(360, 640), dpr: 3, locale: const Locale('ko'), openTab: false);
+      await tester.tap(find.byKey(Key('fleet.slot.${ids.length - 1}')));
+      await tester.pumpAndSettle();
+      await precacheImages(tester);
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_fleet_picker_360.png'));
+    });
 
     testWidgets('필터 시트 360', (tester) async {
       await pumpGame(

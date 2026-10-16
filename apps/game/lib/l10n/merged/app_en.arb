@@ -637,5 +637,6 @@
   "uiFastSailStart": "FAST SAIL BREAKTHROUGH!",
   "uiFastSailStrike": "BREAK!",
   "uiFastSailFinale": "BREAKTHROUGH!",
-  "uiFastSailEnded": "Stages {from} → {to} cleared!"
+  "uiFastSailEnded": "Stages {from} → {to} cleared!",
+  "uiSortPower": "Power"
 }

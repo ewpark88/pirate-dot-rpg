@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_filter.dart';
+import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
+import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -61,17 +64,19 @@ class _FleetPicker extends ConsumerWidget {
     final tables = ref.watch(tablesProvider);
     final slots = ref.watch(fleetSlotsProvider);
     final levels = ref.watch(gameStateProvider.select((s) => {for (final e in s.crews.entries) e.key: e.value.level}));
-    // 쉬는 선원을 먼저(파워순), 출전 중인 선원은 뒤에 (출전 중을 고르면 자리만 바뀐다 — 사용자 버그 2026-10-15).
+    // 도감과 같은 정렬·필터(보유만). 기본(번호순)일 땐 파워순. 쉬는 선원 먼저, 출전 중은 뒤(고르면 자리만 바뀐다 — 사용자 버그 2026-10-15).
+    final q = ref.watch(crewQueryProvider);
     int power(CrewDef c) => (crewPowerOf(tables, levels[c.id]!) * 1000).round();
-    final owned =
-        [
-          for (final c in tables.crews.crews)
-            if (levels.containsKey(c.id)) c,
-        ]..sort((a, b) {
-          final da = slots.contains(a.id) ? 1 : 0;
-          final db = slots.contains(b.id) ? 1 : 0;
-          return da != db ? da - db : power(b) - power(a);
-        });
+    final queried = queryCrews(
+      ref.read(gameStateProvider),
+      tables,
+      q.copyWith(owned: OwnedFilter.owned, upOnly: false),
+    );
+    if (q.sort == CrewSort.number) queried.sort((a, b) => power(b) - power(a));
+    final owned = [
+      ...queried.where((c) => !slots.contains(c.id)),
+      ...queried.where((c) => slots.contains(c.id)),
+    ];
     void pick(String? id) {
       final swap = id != null && slots.contains(id) && slots.indexOf(id) != slot;
       ref.read(fleetCommandsProvider).setSlot(slot, id);
@@ -91,7 +96,14 @@ class _FleetPicker extends ConsumerWidget {
               PixelButton(key: const Key('fleet.clear'), onPressed: () => pick(null), child: Text(l10n.uiFleetClear)),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
+        const CrewQueryBar(picker: true),
+        const SizedBox(height: 4),
+        if (owned.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: Text(l10n.uiFilterEmpty, key: const Key('fleet.pick.empty'))),
+          ),
         for (final c in owned)
           _CrewRow(
             def: c,
@@ -184,10 +196,23 @@ class _CrewRow extends ConsumerWidget {
                       '${l10n.uiLevel(level)} · ${tableText(l10n, tables.skills.byId(def.family).nameKey)}',
                       style: dim,
                     ),
+                    // 특색 아이콘 4개(개성 v2) — 고를 때 성향이 보이게.
+                    CrewIdentityIcons(crewId: def.id, size: 12),
                   ],
                 ),
               ),
-              if (deployed) Text(l10n.uiCrewDeployed, style: const TextStyle(color: PixelPalette.accent)),
+              // 이 선원 혼자의 초당 공격력(경제 fleetDps — 상세와 같은 값).
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    ref.watch(gameStateProvider.select((s) => fleetDps(s, tables, [def.id]).format())),
+                    key: Key('fleet.dps.${def.id}'),
+                    style: Skin.text(15, color: Skin.goldInk),
+                  ),
+                  if (deployed) Text(l10n.uiCrewDeployed, style: const TextStyle(color: PixelPalette.accent)),
+                ],
+              ),
             ],
           ),
         ),
