@@ -67,8 +67,6 @@ class BattleSystem implements GameSystem {
         return _project(s, _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
-      case TriggerUltimate():
-        return state; // 궁극기 제거(사용자 결정 2026-10-17) — 피버 첫 일격으로(fever_strike.dart)
       case OpJumpStage(:final stage):
         _field = null;
         final p = state.progress;
