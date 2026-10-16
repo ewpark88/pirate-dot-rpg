@@ -108,7 +108,7 @@ class TopScenePainter {
       // 배는 카메라에서 좌우로 비켜 그린다(피버 좌우 이동).
       c
         ..save()
-        ..translate(ship.dx - cam.dx, 0);
+        ..translate(ship.dx - cam.dx, ship.dy - cam.dy);
       fever
         ..aura(c, size.width * _shipScale / 2)
         ..wind(c, size.width * _shipScale / 2);
