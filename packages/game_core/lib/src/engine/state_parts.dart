@@ -69,10 +69,15 @@ class Buffs {
   /// 자동 강화 종료 시각(UTC): 보상형 광고로만 켜진다(사용자 결정 2026-10-16 — 평소엔 수동 강화만). 선택 키.
   final DateTime? autoUpgradeUntil;
 
-  Buffs copyWith({DateTime? tailwindUntil, DateTime? bossSupportUntil, DateTime? autoUpgradeUntil}) => Buffs(
+  Buffs copyWith({
+    DateTime? tailwindUntil,
+    DateTime? bossSupportUntil,
+    DateTime? autoUpgradeUntil,
+    bool clearAutoUpgrade = false,
+  }) => Buffs(
     tailwindUntil: tailwindUntil ?? this.tailwindUntil,
     bossSupportUntil: bossSupportUntil ?? this.bossSupportUntil,
-    autoUpgradeUntil: autoUpgradeUntil ?? this.autoUpgradeUntil,
+    autoUpgradeUntil: clearAutoUpgrade ? null : autoUpgradeUntil ?? this.autoUpgradeUntil,
   );
 
   Json toJson() => {

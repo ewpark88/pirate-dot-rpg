@@ -81,13 +81,14 @@ void main() {
     expect(locked.minStage, r.integer('minStage'));
   });
 
-  test('기준 4: 보너스 = 조각 × 0.05, 초당 골드 추정에 더해진다', () {
-    expect(rebirthBonus(at(50, pieces: 10), t), closeTo(0.5, 1e-12));
+  test('기준 4: 보너스 = 조각 × bonusPerPiece, 초당 골드 추정에 더해진다', () {
+    final per = t.meta.rebirth.number('bonusPerPiece');
+    expect(rebirthBonus(at(50, pieces: 10), t), closeTo(10 * per, 1e-12));
     final base = at(50);
     final boosted = at(50, pieces: 10);
     final fleet = offlineFleet(base, t);
     final ratio = (goldPerSecEstimate(boosted, t, fleet) / goldPerSecEstimate(base, t, fleet)).toDouble();
-    expect(ratio, greaterThan(1.5 - 1e-9));
+    expect(ratio, greaterThan(1 + 10 * per - 1e-9));
   });
 
   test('기준 5: OpRebirthNow는 해금 무시(조각은 공식대로), OpReset은 새 게임', () {

@@ -118,8 +118,7 @@ class SimPlayer {
         break;
       }
     }
-    final full = s.wallet.gold >= goldCapacity(s, t);
-    result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress, isFull: full);
+    result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress, isFull: cargoBlocked(t, s));
     buyRebirthShop(engine, t, s);
     // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
     if (!identical(s.crews, _crewsSeen)) {

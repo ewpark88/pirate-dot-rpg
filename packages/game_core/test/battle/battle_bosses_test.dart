@@ -47,7 +47,7 @@ void main() {
     expect(tables.regions.bossAt(50).id, 'giant_hermit');
     expect(tables.regions.bossAt(51).id, tables.regions.regionAt(51).boss);
     final (_, _, boss) = bossFight(50, 'direct');
-    final normal = stageCurve(w.hpBase, w.hpGrowth, 50).times(w.bossHpMultiplier);
+    final normal = stageCurve(w.hpBase, w.hpGrowth, 50).times(w.bossHpMultiplier * wallBossScale(w, 50)); // 50 = 벽 보스
     expect(boss.maxHp.closeTo(normal.times(tables.regions.bosses['giant_hermit']!.hpMultiplier)), isTrue);
   });
 
