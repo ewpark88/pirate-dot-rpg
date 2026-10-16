@@ -34,9 +34,12 @@ void main() {
     for (final name in ['Cannon', 'Hull', 'Sail', "Crow's Nest", 'Cargo Hold']) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
-    expect(find.text('Lv 52'), findsOneWidget);
-    expect(find.text('Lv 18/30'), findsOneWidget); // 돛은 최대 레벨이 있다
-    expect(find.text(partEffect(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
+    // 레벨은 샘플에서 읽는다(경제가 샘플을 다시 맞춰도 깨지지 않게).
+    final cLv = st.ship.level('cannon');
+    final sail = tables.shipParts.byId('sail');
+    expect(find.text('Lv $cLv'), findsOneWidget);
+    expect(find.text('Lv ${st.ship.level('sail')}/${sail.maxLevel}'), findsOneWidget); // 돛은 최대 레벨이 있다
+    expect(find.text(partEffect(cannon, cLv).format()), findsOneWidget);
     // 효과 글은 표(ship_parts)에서 계산 — 경제가 숫자를 다시 맞춰도 깨지지 않게.
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     // 화물칸은 '최대 a → b'(cargo_test).
@@ -44,7 +47,7 @@ void main() {
       final def = tables.shipParts.byId(id);
       expect(find.text(partEffectText(l10n, def, partEffect(def, st.ship.level(id)))), findsWidgets, reason: id);
     }
-    expect(find.text(partCost(tables.shipParts.byId('cannon'), 52).format()), findsOneWidget);
+    expect(find.text(partCost(cannon, cLv).format()), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('ship.upgrade.cannon')));
     expect(log.sent.map((c) => c.toJson()), [
@@ -53,13 +56,14 @@ void main() {
   });
 
   testWidgets('기준 5: 최대 레벨이면 비활성 + MAX', (tester) async {
-    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: shipTab, size: _tall, fullSheet: true);
+    final st = loadFixture('all_crews_mythic');
+    await pumpGame(tester, st, tab: shipTab, size: _tall, fullSheet: true);
     expect(_button(tester, 'sail').onPressed, isNull);
     expect(_button(tester, 'crowsnest').onPressed, isNull);
     // 배수 알약의 MAX 1개 + 최대 레벨 부위 2개.
     expect(find.text('MAX'), findsNWidgets(3));
-    // 최대 레벨이 없는 부위는 MAX 대신 비용을 보인다 (Lv400 비용이 골드보다 커서 비활성).
-    expect(find.text(partCost(tables.shipParts.byId('cannon'), 400).format()), findsOneWidget);
+    // 최대 레벨이 없는 부위는 MAX 대신 비용을 보인다 (샘플 대포 레벨의 비용).
+    expect(find.text(partCost(tables.shipParts.byId('cannon'), st.ship.level('cannon')).format()), findsOneWidget);
     // 큰 배율(화물칸 후반)은 줄여 쓴다 — 줄 넘침 없음(골드 재조정 1f52fc3 뒤 발견).
     expect(tester.takeException(), isNull);
   });

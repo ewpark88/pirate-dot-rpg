@@ -633,5 +633,9 @@
   "uiFilterUnowned": "Not owned",
   "uiFilterFamily": "Family",
   "uiFilterReset": "Reset",
-  "uiFilterEmpty": "No crew match"
+  "uiFilterEmpty": "No crew match",
+  "uiFastSailStart": "FAST SAIL BREAKTHROUGH!",
+  "uiFastSailStrike": "BREAK!",
+  "uiFastSailFinale": "BREAKTHROUGH!",
+  "uiFastSailEnded": "Stages {from} → {to} cleared!"
 }

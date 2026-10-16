@@ -197,7 +197,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               key: const Key('battle.area'),
               fit: StackFit.expand,
               children: [
-                ref.watch(battleViewBuilderProvider)?.call(context) ?? GameWidget(game: ref.watch(battleGameProvider)),
+                ref.watch(battleViewBuilderProvider)?.call(context) ??
+                    GameWidget(game: withTopTexts(ref.watch(battleGameProvider), context)),
                 const ChestLayer(),
                 const BattleButtons(),
                 // 피버 연출 (큰 글자·가장자리 빛·큰 원형 게이지 — 누름 통과).
