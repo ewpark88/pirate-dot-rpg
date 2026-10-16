@@ -80,7 +80,7 @@ class TopHits {
   }
 
   double _flashAt = -1000000000;
-  static const _flashGapMs = 300.0;
+  static const _flashGapMs = 500.0; // 배 피격 틴트 간격(사용자 '번쩍임 자제' — 0.5초 이상)
 
   /// 배 번쩍을 새로 켜도 되는가(연달아 맞을 때 배가 계속 하얗게 보이지 않게 [_flashGapMs]마다 한 번). 켜면 시각을 적는다.
   bool takeFlash(double now) {
@@ -112,7 +112,7 @@ class TopHits {
       final t = ((now - p.ms) / spotMs).clamp(0.0, 1.0);
       final fade = 1 - t;
       if (flash && t < 0.25) {
-        _paint.color = Color.fromARGB((200 * (1 - t / 0.25)).round(), 255, 255, 255);
+        _paint.color = Color.fromARGB((120 * (1 - t / 0.25)).round(), 255, 226, 122); // 흰 대신 옅은 노랑
         c.drawCircle(Offset(p.x, p.y), 5 * (1 - t), _paint);
       }
       for (var k = 0; k < 8; k++) {

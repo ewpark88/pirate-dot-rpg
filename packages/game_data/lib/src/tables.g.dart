@@ -1476,6 +1476,12 @@ const Map<String, String> rawTables = {
       "size": 5,
       "path": "line",
       "flightMs": 700
+    },
+    "cluster": {
+      "color": "#E67E22",
+      "size": 7,
+      "path": "arc",
+      "flightMs": 1100
     }
   },
   "projectileAliases": {
@@ -2112,7 +2118,6 @@ const Map<String, String> rawTables = {
     "blastMax": 10,
     "waterY": 96,
     "blastParts": [
-      "flash",
       "burst",
       "shockwave",
       "fireball_0_hot",

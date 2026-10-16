@@ -152,7 +152,6 @@ class TopScenePainter {
         c,
         tier,
         view.shipLook,
-        flash: scene.shipFlashMs > 0 && scene.settings.flash,
         // 부품 축하가 우선, 없으면 빛나는 스킨(phantom)의 돛이 은은하게 맥박.
         glowPart: celebrate ? m.glowPart : (skinGlow ? 'sail' : null),
         glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),

@@ -54,7 +54,7 @@ class TopEnemies {
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
           sheet,
-          () => _Batch(sheet.image, flash: e.flash),
+          () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
         )
         ..xf.add(
           RSTransform.fromComponents(
@@ -71,7 +71,8 @@ class TopEnemies {
     }
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       if (b.xf.isEmpty) continue;
-      final paint = b.flash ? _flashPaint : (under ? _underPaint : _atlasPaint);
+      // 흰 실루엣은 보스만(강), 보통 명중은 금빛 색 번쩍(사용자 '흰 번쩍임 눈 아프다').
+      final paint = b.flash ? (b.boss ? _flashPaint : _tintPaint) : (under ? _underPaint : _atlasPaint);
       c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
     }
     for (final b in _hotBatches.values) {
@@ -105,6 +106,10 @@ class TopEnemies {
     ..isAntiAlias = false
     ..filterQuality = FilterQuality.none
     ..color = const Color.fromRGBO(255, 255, 255, _underwaterAlpha);
+  final _tintPaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none
+    ..colorFilter = const ColorFilter.mode(Color(0x66FFD24A), BlendMode.srcATop);
   final _flashPaint = Paint()
     ..isAntiAlias = false
     ..filterQuality = FilterQuality.none
@@ -113,9 +118,10 @@ class TopEnemies {
 
 /// 같은 그림(종류·번쩍임) 적 묶음 — 프레임마다 비우고 다시 채운다(리스트 재사용).
 class _Batch {
-  _Batch(this.image, {required this.flash});
+  _Batch(this.image, {required this.flash, this.boss = false});
   final Image image;
   final bool flash;
+  final bool boss;
   final xf = <RSTransform>[];
   final src = <Rect>[];
 
