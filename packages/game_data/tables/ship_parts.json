@@ -1,7 +1,7 @@
 {
   "parts": [
     { "id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.11, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartCannon" },
-    { "id": "hull", "stat": "hp", "formula": "exp", "base": 60, "growth": 1.12, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartHull" },
+    { "id": "hull", "stat": "hp", "formula": "exp", "base": 1300, "growth": 1.12, "costBase": 10, "costGrowth": 1.15, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 15, 35, 55, 90, 140, 250], "nameKey": "shipPartHull" },
     { "id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 1.28, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail" },
     { "id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 1.28, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest" },
     { "id": "cargo", "stat": "gold", "formula": "linear", "base": 1, "growth": 0.1, "costBase": 40, "costGrowth": 1.2, "maxLevel": null, "milestoneEvery": 25, "milestoneMultiplier": 2, "visualStages": [1, 10, 20, 35, 60, 100, 160], "nameKey": "shipPartCargo" }

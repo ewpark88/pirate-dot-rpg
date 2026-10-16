@@ -26,9 +26,9 @@ void main() {
       );
     });
 
-    test('선체 HP = 60 × 1.12^Lv, 25레벨마다 ×2', () {
-      expect(near(shipMaxHp(parts, 0), 60), isTrue);
-      expect(near(shipMaxHp(parts, 25), 60 * math.pow(1.12, 25) * 2), isTrue);
+    test('선체 HP = 1300 × 1.12^Lv, 25레벨마다 ×2', () {
+      expect(near(shipMaxHp(parts, 0), 1300), isTrue);
+      expect(near(shipMaxHp(parts, 25), 1300 * math.pow(1.12, 25) * 2), isTrue);
     });
 
     test('돛 공격 속도 = 1 + 0.05 × Lv, 상한 ×2.5', () {
@@ -61,7 +61,7 @@ void main() {
       const ship = ShipState(parts: {'cannon': 25, 'hull': 3, 'sail': 10, 'crowsnest': 20, 'cargo': 10});
       final s = ShipStats.of(parts, ship);
       expect(near(s.attack, 4 * math.pow(1.11, 25) * 2), isTrue);
-      expect(near(s.maxHp, 60 * math.pow(1.12, 3)), isTrue);
+      expect(near(s.maxHp, 1300 * math.pow(1.12, 3)), isTrue);
       expect(s.attackSpeed, closeTo(1.5, 1e-12));
       expect(s.critChance, closeTo(0.25, 1e-12));
       expect(s.critMultiplier, 2);

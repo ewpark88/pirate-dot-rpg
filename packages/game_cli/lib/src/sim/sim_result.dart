@@ -59,6 +59,10 @@ class SimResult {
   double? eventGoldPct;
   double? challengeWinPct;
 
+  /// 위협(SimThreat): 벽에서 선원 0명 침몰 초(중앙값), 파밍 파당 배 체력 피해(%, 중앙값).
+  double? wallSinkSec;
+  double? farmWaveDamagePct;
+
   /// 환생 뒤 회복 시간 ÷ 직전 회차가 같은 스테이지까지 걸린 시간(접속 시간)의 최댓값. 상대 기준 회복 지표.
   double? rebirthRecoverRatioMax;
 

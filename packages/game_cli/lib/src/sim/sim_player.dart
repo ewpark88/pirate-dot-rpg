@@ -1,6 +1,7 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
 import 'package:game_cli/src/sim/sim_fun.dart';
 import 'package:game_cli/src/sim/sim_result.dart';
+import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
@@ -13,7 +14,6 @@ export 'package:game_cli/src/sim/sim_result.dart';
 class SimPlayer {
   SimPlayer(this.t, {required this.seed, this.bossAd = false, String view = 'top'}) : clock = ManualClock(_start) {
     final fresh = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
-    // 전장 방식: 기본 탑다운(T4). side는 옆모습 코드 삭제 전 비교용.
     final initial = view == 'top' ? fresh : fresh.copyWith(settings: Settings(battleView: view));
     engine = CoreEngine(tables: t, clock: clock, initial: initial);
     result = SimResult(seed);
@@ -42,7 +42,6 @@ class SimPlayer {
   Duration? _farmSince;
   int _upgradesAtFarm = 0;
 
-  /// 설계서 4.12 튜토리얼 3단계 안내 문구의 ‘강화 2번’.
   static const _tutorialRetryUpgrades = 2;
   Duration? _wallSince;
 
@@ -66,8 +65,8 @@ class SimPlayer {
   final _waveGaps = <(Duration at, Duration gap)>[];
   final _killGold = <(Duration at, BigNum gold)>[];
   late final _fun = SimFun(t);
+  late final _threat = SimThreat(t);
 
-  /// 일정대로 [total]만큼 (오프라인 포함) 돈다.
   SimResult run(Duration total, SimSchedule first) {
     var schedule = first;
     final tick = Duration(milliseconds: t.waves.tickMs);
@@ -90,7 +89,6 @@ class SimPlayer {
   }
 
   void _goOffline(Duration away) {
-    // 앱이 꺼질 때 저장 = savedAt 갱신. 돌아오면 복귀 보상.
     engine
       ..enqueue(OpLoadState(engine.state.copyWith(savedAt: clock.now())))
       ..tick()
@@ -201,6 +199,7 @@ class SimPlayer {
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       _fun.observe(e, engine);
+      _threat.observe(e, engine);
       switch (e) {
         case Kill(:final gold):
           _killGold.add((_elapsed, gold));
@@ -278,6 +277,8 @@ class SimPlayer {
       ..mapPieces = s.wallet.mapPieces
       ..eventGoldPct = _fun.eventGoldPct
       ..challengeWinPct = _fun.challengeWinPct
+      ..wallSinkSec = SimThreat.median(_threat.sinkSec)
+      ..farmWaveDamagePct = _threat.farmWaveDamagePct
       ..waveSecFirst10Min = avg([
         for (final (at, gap) in _waveGaps)
           if (at <= early) gap,

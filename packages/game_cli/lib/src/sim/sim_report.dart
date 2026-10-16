@@ -96,6 +96,8 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
     c('offline8hUpgrades', '오프라인 8시간 = 다음 강화', (r) => r.offline8hUpgrades.toDouble(), '회', within: Duration.zero),
     c('eventGoldPct', '돌발 이벤트 골드 ÷ 처치 골드', (r) => r.eventGoldPct, '%', within: Duration.zero),
     c('challengeWinPct', '즉석 도전 성공률', (r) => r.challengeWinPct, '%', within: Duration.zero),
+    c('wallSinkSec', '벽에서 선원 0명 침몰(무리 전부 붙음)', (r) => r.wallSinkSec, '초', within: Duration.zero),
+    c('farmWaveDamagePct', '파밍 파당 배 체력 피해', (r) => r.farmWaveDamagePct, '%', within: Duration.zero),
     c('adSummonsPerGemAd', '젬 광고 1회 = 소환', (_) => adSummons, '회', within: Duration.zero),
     c('starterPromotionMin', '옥토 첫 등급 상승(승급·점프)', (r) => _min(r.starterPromotion), '분'),
     c('firstLegendOwnedDays', '첫 전설 보유', (r) => _days(r.firstLegendOwned), '일'),
