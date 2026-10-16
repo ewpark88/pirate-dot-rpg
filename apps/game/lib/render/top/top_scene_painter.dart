@@ -102,6 +102,7 @@ class TopScenePainter {
     _foes.paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
+    _shipR = size == null ? 16 : size.width * _shipScale / 2;
     if (size != null) {
       final m = scene.moments;
       // 배는 카메라에서 좌우로 비켜 그린다(피버 좌우 이동).
@@ -176,6 +177,9 @@ class TopScenePainter {
     scene.topHits.impact.paint(c, clockMs, flash: scene.settings.flash, lite: scene.settings.powerSave);
     scene.topHits.shots.paint(c, clockMs, flash: scene.settings.flash);
     scene.topHits.boss.paint(c, clockMs, scene.topShip, _bossAt, flash: scene.settings.flash);
+    scene.topHits.crew
+      ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: clockMs)
+      ..paint(c, clockMs, ship, _shipR, view.shipShield, scene.poses, scene.poseCount, flash: scene.settings.flash);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
       ..bosses(c, _foes.radiusOf);
@@ -206,6 +210,7 @@ class TopScenePainter {
     return p == null ? null : Offset(p.drawX, p.drawY);
   }
 
+  double _shipR = 16;
   final _ghost = Paint();
 
   double _prevX = double.nan;
