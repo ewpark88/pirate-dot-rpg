@@ -7,7 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -42,6 +45,9 @@ Future<CommandLog> pumpGame(
     ..devicePixelRatio = dpr;
   addTearDown(tester.view.reset);
   final log = CommandLog();
+  // 배 미리보기(렌더 ShipPreview) 그림을 진짜 시계에서 먼저 읽는다 — 앱이 가짜 시계 안에서 시작하면 그 미래가 끝나지 않는다.
+  // 한 번 읽으면 같은 파일의 다음 테스트는 바로 지나간다.
+  await tester.runAsync(() => _preloadShips().timeout(const Duration(seconds: 20), onTimeout: () {}));
   await tester.pumpWidget(
     ProviderScope(
       // 같은 테스트에서 다시 그려도 새 앱으로 시작한다(시트 열림 같은 화면 상태를 이어받지 않게).
@@ -76,6 +82,18 @@ Future<CommandLog> pumpGame(
   }
   return log;
 }
+
+Future<void>? _shipsLoaded;
+
+Future<void> _preloadShips() => _shipsLoaded ??= () async {
+  final tables = GameTables.load();
+  await ShipPreview.preload(
+    tables,
+    skins: {
+      for (final id in ['coral', 'storm', 'gold', 'phantom']) id: ?skinPalette(tables, id),
+    },
+  );
+}();
 
 /// 골든용 글꼴: Flutter SDK에 들어 있는 Roboto와 Material 아이콘을 읽는다.
 /// 기본 글꼴(Ahem)은 글자를 네모로 그려 잘림을 볼 수 없다. Galmuri가 들어오면(art 레인) 그 글꼴로 바꾼다.

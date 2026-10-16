@@ -8,12 +8,13 @@ import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
+import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
 import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/rebirth_shop.dart'
     show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
-import 'package:game_core/src/economy/sea_events.dart' show seaEventStep, startSeaEvent, tapGoldfish;
+import 'package:game_core/src/economy/sea_events.dart' show startSeaEvent, tapGoldfish;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -31,6 +32,7 @@ class BattleSystem implements GameSystem {
   Object? _fleetSeen;
   final _dress = ShipDressCache();
   int _kills = 0;
+  final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
   bool _zeroCooldown = false;
@@ -105,7 +107,7 @@ class BattleSystem implements GameSystem {
         ..tickStatus()
         ..tickCombo();
     });
-    final after = seaEventStep(_resolve(next, _field!, ctx), _field!, ctx);
+    final after = _fun.step(_resolve(next, _field!, ctx), _field!, ctx, kills: _kills);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     return feverStep(_tailwindSpeed(_project(after, f, ctx.tables), ctx), ctx, kills: _kills, bossKilled: boss);
@@ -169,7 +171,6 @@ class BattleSystem implements GameSystem {
       return s;
     }
     if (f.shipHp.isZero) {
-      // 무리전 침몰: 벌 없이 배를 고치고 이 파를 처음부터.
       _restart(f, ctx);
       return s;
     }
@@ -202,7 +203,6 @@ class BattleSystem implements GameSystem {
     final next = carded.copyWith(
       wallet: carded.wallet.copyWith(gems: carded.wallet.gems + t.waves.bossGems),
       progress: p.copyWith(stage: stage, wave: 0, farming: false, bestStage: stage > p.bestStage ? stage : null),
-      // 떠 있던 보물상자는 이어진다(경제 레인이 띄우고 치운다).
       battle: BattleView(
         tick: old.tick,
         shipHp: BigNum.one,

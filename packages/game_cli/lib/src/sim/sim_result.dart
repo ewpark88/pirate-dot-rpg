@@ -55,6 +55,10 @@ class SimResult {
   /// 첫 환생 직전 rebirthForecast.minutesRaw (환생 v2 수용 기준 13: 실제 rebirthBeatBest와 ±30%).
   double? rebirthForecastMin;
 
+  /// 돌발 이벤트 골드 ÷ 처치 골드(%), 즉석 도전 성공률(%) — SimFun.
+  double? eventGoldPct;
+  double? challengeWinPct;
+
   /// 환생 뒤 회복 시간 ÷ 직전 회차가 같은 스테이지까지 걸린 시간(접속 시간)의 최댓값. 상대 기준 회복 지표.
   double? rebirthRecoverRatioMax;
 

@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 설정 화면 (설계서 4.12). 바꾸면 SetSetting만 보낸다 — 화면은 엔진이 돌려준 상태로 다시 그린다.
@@ -76,36 +77,46 @@ class SettingsScreen extends ConsumerWidget {
             ),
             Expanded(
               child: ListView(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 16),
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.uiSettingsLanguage),
-                        const SizedBox(height: 8),
-                        PixelSegmented<String>(
-                          key: const Key('settings.lang'),
-                          segments: [
-                            ('system', l10n.uiLangSystem),
-                            ('ko', l10n.uiLangKo),
-                            ('en', l10n.uiLangEn),
-                          ],
-                          selected: lang,
-                          onChanged: (v) => set('lang', v),
-                        ),
-                      ],
+                  // 스킨 r2: 묶음마다 떠 있는 판 + 머리 글.
+                  _Group(
+                    title: l10n.uiSettingsLanguage,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: PixelSegmented<String>(
+                        key: const Key('settings.lang'),
+                        segments: [
+                          ('system', l10n.uiLangSystem),
+                          ('ko', l10n.uiLangKo),
+                          ('en', l10n.uiLangEn),
+                        ],
+                        selected: lang,
+                        onChanged: (v) => set('lang', v),
+                      ),
                     ),
                   ),
-                  for (final (key, label, value) in switches)
-                    PixelListRow(
-                      onTap: () => set(key, !value),
-                      title: Text(label),
-                      trailing: PixelToggle(
-                        key: Key('settings.$key'),
-                        value: value,
-                        semanticLabel: label,
-                        onChanged: (v) => set(key, v),
+                  for (final (title, keys) in [
+                    (l10n.uiSettingsSound, const ['bgm', 'sfx', 'vibration']),
+                    (l10n.uiSettingsDisplay, const ['shake', 'flash', 'powerSave']),
+                    (l10n.uiSettingsPlay, const ['autoBoss', 'autoUpgrade', 'notifications']),
+                  ])
+                    _Group(
+                      title: title,
+                      child: Column(
+                        children: [
+                          for (final (key, label, value) in switches.where((e) => keys.contains(e.$1)))
+                            PixelListRow(
+                              onTap: () => set(key, !value),
+                              title: Text(label),
+                              trailing: PixelToggle(
+                                key: Key('settings.$key'),
+                                value: value,
+                                semanticLabel: label,
+                                onChanged: (v) => set(key, v),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   // 개인정보 옵션(UMP 재동의) — AdMob이 필요하다고 할 때만 (개인정보처리방침의 약속, 스펙 platform-m4).
@@ -117,16 +128,12 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () => unawaited(ads.showPrivacyOptions()),
                     ),
                   // 도움말: 큰 수 단위 (계획 E11).
-                  Padding(
+                  _Group(
                     key: const Key('settings.help'),
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.uiSettingsHelp, style: Theme.of(context).textTheme.titleSmall),
-                        const SizedBox(height: 6),
-                        Text(l10n.uiNumberUnits, style: const TextStyle(color: PixelPalette.textDim)),
-                      ],
+                    title: l10n.uiSettingsHelp,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(l10n.uiNumberUnits, style: const TextStyle(color: PixelPalette.textDim)),
                     ),
                   ),
                 ],
@@ -137,4 +144,30 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// 설정 묶음: 머리 글 + 떠 있는 판 (스킨 r2 ①).
+class _Group extends StatelessWidget {
+  const _Group({required this.title, required this.child, super.key});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 10),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 6, bottom: 4),
+          child: Text(title, style: Skin.text(15, color: Skin.sub)),
+        ),
+        SkinDepth(
+          padding: EdgeInsets.zero,
+          child: ClipRRect(borderRadius: BorderRadius.circular(Skin.radiusCard), child: child),
+        ),
+      ],
+    ),
+  );
 }
