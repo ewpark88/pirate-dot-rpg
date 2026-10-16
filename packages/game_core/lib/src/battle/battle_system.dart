@@ -2,6 +2,7 @@ import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/fast_sail.dart';
+import 'package:game_core/src/battle/fever_strike.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
@@ -67,8 +68,6 @@ class BattleSystem implements GameSystem {
         return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
-      case TriggerUltimate():
-        return _round(state, ctx, (r) => r.castUltimate());
       case OpJumpStage(:final stage):
         _field = null;
         final p = state.progress;
@@ -113,7 +112,7 @@ class BattleSystem implements GameSystem {
     if (early != null) return _project(early, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx.tables);
     final next = _round(state, ctx, (r) {
       final f = r.field;
-      if (r.t.skills.rageAutoTrigger) r.castUltimate();
+      r.feverStrike(state); // 피버가 시작되는 틱의 첫 일격(궁극기 효과)
       if (f.waveFoes.isEmpty && !f.bossActive) {
         f.travelLeft -= r.dt;
         if (f.travelLeft <= 0) _nextEncounter(f, state, ctx);
