@@ -131,15 +131,18 @@ void main() {
     );
   });
 
-  testWidgets('일요일: 아무 보스나 도전 가능', (tester) async {
-    await _pump(tester, day: 18);
+  testWidgets('일요일: 카드는 특정 보스를 고르지 않음(추천 없음) · 도전 = 시트에서 아무 보스나', (tester) async {
+    await _pump(tester, day: 18, vm: const BountyVm(cleared: {'giant_hermit': 5}));
     await _show(tester, 'bounty.card');
-    await tester.tap(find.byKey(const Key('bounty.card')));
+    expect(find.text('All bounty bosses today'), findsOneWidget);
+    expect(find.byKey(const Key('bounty.sweep')), findsNothing);
+    await tester.tap(find.byKey(const Key('bounty.challenge')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('bounty.sheet')), findsOneWidget);
     expect(find.text('Sunday — any boss'), findsOneWidget);
+    await _show(tester, 'bounty.day.2');
     await tester.tap(find.byKey(const Key('bounty.day.2')));
     await tester.pump();
-    expect(find.text('Challenge'), findsWidgets);
     expect(find.text('Another boss today'), findsNothing);
   });
 

@@ -68,11 +68,10 @@ class BossPortrait extends StatelessWidget {
   );
 }
 
-/// 오늘 보여 줄 보스 (월~토 = 그 요일, 일요일 = 깬 단계가 가장 낮은 보스 — 정보일 뿐 강요 없음).
-BountyDay todayBounty(int weekday, BountyVm vm) {
-  if (weekday != DateTime.sunday) return bountyDays.firstWhere((d) => d.weekday == weekday);
-  return bountyDays.reduce((a, b) => vm.clearedOf(b.bossId) < vm.clearedOf(a.bossId) ? b : a);
-}
+/// 오늘 보여 줄 보스: 월~토 = 그 요일 보스. 일요일은 특정 보스를 고르지 않는다(S1 결정 — 추천 표시 없음),
+/// 그림·시트 첫 선택만 표 순서 첫 보스(중립).
+BountyDay todayBounty(int weekday) =>
+    bountyDays.firstWhere((d) => d.weekday == weekday, orElse: () => bountyDays.first);
 
 /// 항해 탭 카드 '현상금 사냥' (보물지도 카드 위): 오늘 보스·보상·티켓 n/9·[도전] [소탕 ×N]·티켓 0이면 [광고로 1장].
 class BountyCard extends ConsumerWidget {
@@ -83,16 +82,18 @@ class BountyCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final vm = ref.watch(bountyProvider);
     final weekday = ref.watch(bountyWeekdayProvider);
-    final day = todayBounty(weekday, vm);
+    final day = todayBounty(weekday);
+    final sunday = weekday == DateTime.sunday;
     final best = vm.clearedOf(day.bossId);
     final control = ref.read(bountyProvider.notifier);
+    void openSheet() => unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const BountySheet()));
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: _cardMaxWidth),
         child: GestureDetector(
           key: const Key('bounty.card'),
           behavior: HitTestBehavior.opaque,
-          onTap: () => unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const BountySheet())),
+          onTap: openSheet,
           child: SkinCard(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -108,25 +109,26 @@ class BountyCard extends ConsumerWidget {
                         children: [
                           Text(l10n.uiBountyTitle, style: Skin.text(13, color: Skin.sub)),
                           Text(
-                            bossName(l10n, ref, day.bossId),
+                            sunday ? l10n.uiBountyAllBosses : bossName(l10n, ref, day.bossId),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Skin.text(18),
                           ),
-                          Row(
-                            children: [
-                              SkinIcon(rewardIcon(day.reward), size: 16),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  rewardText(l10n, day.reward, day.amountAt(vm.openTierOf(day.bossId))),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Skin.text(13, color: Skin.mintInk),
+                          if (!sunday)
+                            Row(
+                              children: [
+                                SkinIcon(rewardIcon(day.reward), size: 16),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    rewardText(l10n, day.reward, day.amountAt(vm.openTierOf(day.bossId))),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Skin.text(13, color: Skin.mintInk),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -155,11 +157,12 @@ class BountyCard extends ConsumerWidget {
                       Expanded(
                         child: SkinButton(
                           key: const Key('bounty.challenge'),
-                          onPressed: () => control.start(day.bossId, vm.openTierOf(day.bossId)),
+                          // 일요일은 보스를 시트에서 고른다.
+                          onPressed: sunday ? openSheet : () => control.start(day.bossId, vm.openTierOf(day.bossId)),
                           child: Text(l10n.uiBountyChallenge),
                         ),
                       ),
-                      if (best > 0) ...[
+                      if (best > 0 && !sunday) ...[
                         const SizedBox(width: 8),
                         Expanded(
                           child: SkinButton(

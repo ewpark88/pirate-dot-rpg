@@ -27,7 +27,7 @@ class _BountySheetState extends ConsumerState<BountySheet> {
     final weekday = ref.watch(bountyWeekdayProvider);
     final day = bountyDays.firstWhere(
       (d) => d.bossId == _boss,
-      orElse: () => todayBounty(weekday, vm),
+      orElse: () => todayBounty(weekday),
     );
     final open = bountyOpenOn(weekday, day);
     final best = vm.clearedOf(day.bossId);

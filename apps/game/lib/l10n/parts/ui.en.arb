@@ -290,5 +290,6 @@
   "uiWeek4": "Thu",
   "uiWeek5": "Fri",
   "uiWeek6": "Sat",
-  "uiWeek7": "Sun"
+  "uiWeek7": "Sun",
+  "uiBountyAllBosses": "All bounty bosses today"
 }
