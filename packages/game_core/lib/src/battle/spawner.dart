@@ -1,5 +1,6 @@
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
+import 'package:game_core/src/battle/topdown/top_vanguard.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -11,8 +12,11 @@ import 'package:game_data/game_data.dart' show BossDef, WavesTable;
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
 
 /// 무리 한 파 — 전장 모양([Field.geometry], 탑다운)이 자리를 정한다.
-void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) =>
-    f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
+void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
+  final before = f.foes.length;
+  f.geometryOr(ctx.tables.waves).spawnWave(f, stage, ctx, count: count, kind: kind);
+  if (count == null) addVanguard(f, stage, ctx, f.foes.sublist(before)); // 보통 무리 파만(소환·운영자 제외)
+}
 
 /// 무리 한 파의 적들(수치만, 자리는 (0,0) — 전장 모양이 놓는다). 마리 수 = `topMobCountAt`(무리 습격, 2026-10-15),
 /// 마리당 HP·공격·골드 = 단일 곡선 × 몫(`mobPoolAt / 마리 수`) — 한 파 총량은 pool 기준 그대로(진행·경제 불변).

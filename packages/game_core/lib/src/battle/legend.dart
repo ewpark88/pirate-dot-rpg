@@ -133,8 +133,27 @@ void lightningArc(Round r, Gun g, Volley v, BigNum base) {
     ..control(hit, stunSec: arc.stunSec);
 }
 
-/// 한 발이 끝난 뒤 전설 능력: onHit, 장판, 치명타 폭발, 번개 연쇄.
+/// 맞은 자리 작은 폭발(사용자 '전설 상위·신화는 범위 공격과 막강한 임팩트' — aim.legend·aim.mythic의 splashRadius·splashRatio):
+/// 조준점 반경 안 맞지 않은 적에게 base × splashRatio.
+void splash(Round r, Gun g, Volley v, BigNum base) {
+  final radius = g.attack.raw.numberOr('splashRadius', 0);
+  if (radius <= 0) return;
+  final hitIds = {for (final h in v.hits) h.foe.id};
+  final around = [
+    for (final e in r.geo.eligible(g.attack, r.field.foes))
+      if (!hitIds.contains(e.id) && (e.x - v.x) * (e.x - v.x) + (e.y - v.y) * (e.y - v.y) <= radius * radius) e,
+  ];
+  if (around.isEmpty) return;
+  r.strike(
+    (x: v.x, y: v.y, hits: spread(around, r.w)),
+    base.times(g.attack.raw.number('splashRatio')),
+    crewId: g.crewId,
+  );
+}
+
+/// 한 발이 끝난 뒤: 맞은 자리 폭발(등급), 전설 능력 onHit·장판·치명타 폭발·번개 연쇄.
 void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
+  splash(r, g, v, base);
   if (g.legend == null) return;
   applyOnHit(r, g, v.hits.map((h) => h.foe), base, x: v.x, y: v.y);
   spawnLegendZone(r, g, v.x, v.y);
