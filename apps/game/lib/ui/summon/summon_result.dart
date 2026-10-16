@@ -9,8 +9,8 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
-import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/summon/summon_buttons.dart';
 import 'package:pirate_dot/ui/summon/summon_card.dart';
 import 'package:pirate_dot/ui/summon/summon_cutin.dart';
 import 'package:pirate_dot/ui/summon/summon_fx.dart';
@@ -28,6 +28,9 @@ const _landEach = Duration(milliseconds: 380);
 const _landStagger = Duration(milliseconds: 70);
 const _hint = Duration(milliseconds: 1200);
 const _flip = Duration(milliseconds: 820);
+
+/// '모두 열기' 차례 간격.
+const _revealGap = Duration(milliseconds: 120);
 
 /// 소환 연출: 카드가 날아와 뒷면으로 깔림 → 등급 기대감 → 탭(또는 모두 열기)으로 3D 뒤집기 → 전설·신화 컷인 → 결과.
 class SummonResultDialog extends ConsumerStatefulWidget {
@@ -51,6 +54,12 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
   /// 뒤집힌 뒤 보여 줄 전설·신화 컷인 줄.
   final _cutIns = <int>[];
 
+  /// '모두 열기'의 차례 뒤집기 타이머 (닫으면 멈춤).
+  final _timers = <Timer>[];
+
+  /// 지금까지 뒤집은 장 수 — 차례 효과음 음높이가 조금씩 오른다.
+  var _flipped = 0;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +68,9 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
 
   @override
   void dispose() {
+    for (final t in _timers) {
+      t.cancel();
+    }
     _land.dispose();
     _hintCtl.dispose();
     for (final f in _flips) {
@@ -81,20 +93,45 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
     if (_revealed[i]) return;
     final tier = _tier(ref.read(tablesProvider).rarities, i);
     setState(() => _revealed[i] = true);
+    final order = _flipped++;
+    // 등장음은 앞면이 보이는 순간(뒤집기 30%)에 — 누른 순간이 아니라(소환 연출 v3 타이밍).
+    // 일반·희귀 pop(차례마다 음이 조금씩 오른다), 영웅 작은 팡파르, 전설·신화 팡파르 (fx_map sfx id).
+    var played = false;
+    void sound() {
+      if (played || _flips[i].value < 0.3) return;
+      played = true;
+      final audio = ref.read(audioPortProvider);
+      if (tier >= Tier.legend) {
+        audio?.playSfx('fanfare');
+      } else if (tier >= Tier.hero) {
+        audio?.playSfx('fanfare_small');
+      } else {
+        audio?.playSfx('pop', pitch: 1 + 0.06 * math.min(order, 9));
+      }
+    }
+
+    _flips[i].addListener(sound);
     unawaited(
       _flips[i].forward().whenComplete(() {
+        _flips[i].removeListener(sound);
         if (mounted && tier >= Tier.legend) setState(() => _cutIns.add(i));
       }),
     );
-    // 등장음: 일반·희귀 pop, 영웅 작은 팡파르, 전설·신화 팡파르 (fx_map sfx id).
-    ref
-        .read(audioPortProvider)
-        ?.playSfx(tier >= Tier.legend ? 'fanfare' : (tier >= Tier.hero ? 'fanfare_small' : 'pop'));
   }
 
+  /// 모두 열기: 낮은 등급부터 차례로(0.12초 간격) — 높은 등급이 마지막에 터진다.
   void _revealAll() {
-    for (var i = 0; i < _n; i++) {
-      _reveal(i);
+    final rarities = ref.read(tablesProvider).rarities;
+    final order = [
+      for (var i = 0; i < _n; i++)
+        if (!_revealed[i]) i,
+    ]..sort((a, b) => _tier(rarities, a).compareTo(_tier(rarities, b)));
+    for (final (k, i) in order.indexed) {
+      if (k == 0) {
+        _reveal(i);
+      } else {
+        _timers.add(Timer(_revealGap * k, () => mounted ? _reveal(i) : null));
+      }
     }
   }
 
@@ -165,7 +202,13 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 480),
-                          child: allRevealed ? _resultButtons(l10n, canAgain: canAgain) : _revealAllButton(l10n),
+                          child: SummonResultButtons(
+                            allRevealed: allRevealed,
+                            canAgain: canAgain,
+                            onRevealAll: _revealAll,
+                            onAgain: _again,
+                            onClose: _close,
+                          ),
                         ),
                       ),
                     ],
@@ -194,36 +237,6 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
       ),
     );
   }
-
-  Widget _revealAllButton(AppLocalizations l10n) => SkinButton(
-    key: const Key('summon.revealAll'),
-    height: 56,
-    onPressed: _revealAll,
-    child: Text(l10n.uiSummonRevealAll),
-  );
-
-  Widget _resultButtons(AppLocalizations l10n, {required bool canAgain}) => Row(
-    children: [
-      Expanded(
-        child: SkinButton(
-          key: const Key('summon.again'),
-          tone: SkinTone.gold,
-          height: 56,
-          onPressed: canAgain ? _again : null,
-          child: Text(l10n.uiSummonAgain),
-        ),
-      ),
-      const SizedBox(width: 10),
-      Expanded(
-        child: SkinButton(
-          key: const Key('summon.result.ok'),
-          height: 56,
-          onPressed: _close,
-          child: Text(l10n.uiSummonResultOk),
-        ),
-      ),
-    ],
-  );
 
   /// 카드 격자: 화면 폭·높이에 맞춰 가장 크게 (10연 2×5, 1회 1장).
   Widget _grid(AppLocalizations l10n, GameTables tables, List<int> tiers, double hint) => LayoutBuilder(
