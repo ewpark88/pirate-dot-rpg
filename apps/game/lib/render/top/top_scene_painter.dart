@@ -93,6 +93,7 @@ class TopScenePainter {
       final m = scene.moments;
       c
         ..save()
+        ..translate(_shipShake(clockMs), 0)
         ..rotate(view.shipHeading)
         ..scale(_shipScale);
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
@@ -126,6 +127,7 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
+    scene.topHits.paint(c, clockMs, flash: scene.settings.flash);
     _enemies(c, under: false);
     _marks
       ..enemies(c, visibleWorld, _radiusOf)
@@ -148,6 +150,19 @@ class TopScenePainter {
     _overlays.paint(c, frame.box, clockMs);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
+
+  /// 돌진(배를 때린 적이 배 쪽으로 툭): 배 중심 방향 단위 벡터 × 돌진 거리.
+  Offset _lungeOf(int id, double x, double y, double clock) {
+    final d = scene.topHits.lungeOf(id, clock);
+    if (d == 0) return Offset.zero;
+    final to = scene.topShip - Offset(x, y);
+    final len = to.distance;
+    return len < 1e-6 ? Offset.zero : to / len * d;
+  }
+
+  /// 배 미세 흔들림(맞은 동안 ±0.8단위, 화면 흔들기 설정을 따른다).
+  double _shipShake(double clock) =>
+      scene.shipFlashMs > 0 && scene.settings.shake ? ((clock / 40).floor().isEven ? 0.8 : -0.8) : 0;
 
   /// 적 그림 반지름(단위) — 상태 아이콘·보호막 고리 자리.
   double _radiusOf(EnemyPose e) {
@@ -223,6 +238,7 @@ class TopScenePainter {
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
       final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
+      final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock);
       (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
         ..xf.add(
           RSTransform.fromComponents(
@@ -231,8 +247,8 @@ class TopScenePainter {
             scale: 1,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
-            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7).roundToDouble(),
-            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7).roundToDouble(),
+            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble(),
+            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble(),
           ),
         )
         ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));

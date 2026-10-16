@@ -17,6 +17,7 @@ import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
 import 'package:pirate_dot/render/scene/scene_state.dart';
 import 'package:pirate_dot/render/scene/sound_director.dart';
+import 'package:pirate_dot/render/top/top_hits.dart';
 
 export 'package:pirate_dot/render/scene/scene_state.dart';
 
@@ -106,6 +107,7 @@ class BattleScene {
   /// 선원 슬롯 발사 번쩍임 남은 시간(ms), 슬롯 순서.
   final slotFlashMs = List<double>.filled(kMaxSlots, 0);
   double shipFlashMs = 0;
+  final topHits = TopHits(); // 탑다운 배 충돌 연출(돌진·물보라).
 
   /// 배 스킬: 회복 번쩍임·버프 테두리 남은 시간(ms).
   double shipHealMs = 0;
@@ -117,9 +119,7 @@ class BattleScene {
   double bossFailMs = 0;
   double slowMoMs = 0;
   double shipHpRatio = 1;
-
-  /// 실제 경과 시간(ms) — 깜빡임 같은 장식용.
-  double clockMs = 0;
+  double clockMs = 0; // 실제 경과 시간(ms) — 깜빡임 같은 장식용.
 
   JuiceSettings _settings;
   JuiceSettings get settings => _settings;
@@ -136,7 +136,6 @@ class BattleScene {
   List<EnemyPose> get poses => player.poses;
   int get poseCount => player.poseCount;
   EnemyPose? poseOf(int id) => player.poseOf(id);
-
   static double _down(double v, double dt) => v > 0 ? v - dt : v;
 
   /// 배 위아래 출렁임(px): round(sin(t·2)) — 기준 장면 그대로.
@@ -272,6 +271,7 @@ class BattleScene {
     slowMoMs = 0;
     screenFlashMs = 0;
     shipFlashMs = 0;
+    topHits.clear();
     shipHealMs = 0;
     shipBuffMs = 0;
     bossWarnMs = 0;

@@ -3,18 +3,18 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/hp_pill.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
-import 'package:pirate_dot/render/paint/status_painter.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/top/top_status.dart';
 
 /// 탑다운 표시들 (T4-3 — 옆모습 화가만 그리던 것을 옮김): 수중 구역, 적 상태 아이콘·보호막·정예 테두리,
 /// 떠내려온 보물상자, 배 회복·강화 빛, 화면 번쩍. 그림은 전장 좌표(배 중심 원점 아님 — 부르는 쪽이 옮겨 둔다).
 class TopMarks {
-  TopMarks(this.scene, this.sprites) : _status = StatusPainter(scene);
+  TopMarks(this.scene, this.sprites) : _status = TopStatus(scene);
 
   final BattleScene scene;
   final SpriteDraw sprites;
-  final StatusPainter _status;
+  final TopStatus _status;
   final _fill = Paint()..isAntiAlias = false;
   final _ring = Paint()
     ..isAntiAlias = false
@@ -61,7 +61,7 @@ class TopMarks {
       final tier = looks.tierColor(e.tier);
       if (tier != null) _circle(c, at, r + 1, 1, tier);
       if (e.shielded) _circle(c, at, r + 1 + _shieldGap, _shieldPx, _shieldColor);
-      _status.paint(c, e, e.drawY - r, e.drawY + r);
+      _status.paint(c, e, r);
     }
   }
 

@@ -124,15 +124,16 @@ class EventDirector implements ReplayListener {
           scene.shake.trigger(_juice.shake['ultimate']!);
           scene.haptic(HapticLevel.medium);
         case ShipDamaged():
+          // 탑다운은 번쩍을 길게(부딪힘이 보이게, S1), 단 연달아 맞으면 300ms마다 한 번 — 옆모습은 그대로.
+          if (!scene.isTop) {
+            scene.shipFlashMs = _juice.flashFrames * kFrameMs;
+          } else if (scene.topHits.takeFlash(scene.clockMs)) {
+            scene.shipFlashMs = _topHitFlashMs;
+          }
           scene
-            ..shipFlashMs = _juice.flashFrames * kFrameMs
             ..shipHpRatio = e.hpRatio
-            ..numbers.add(
-              e.amount,
-              scene.shipCenter.dx,
-              scene.shipCenter.dy - kShipHeight / 2 - kNumberLiftPx,
-              DamageKind.ship,
-            );
+            ..numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
+          if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
           if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
         case BossCleared():
           _bossKill();
@@ -282,5 +283,15 @@ class EventDirector implements ReplayListener {
   void _fx(String event, double x, double y) {
     final id = scene.fx.fxFor(event);
     if (id != null) scene.spawnEffect(id, x, y);
+  }
+
+  static const _topHitFlashMs = 110.0;
+
+  /// 배 피해 숫자 자리: 탑다운은 맞은 쪽 선체 위(작게, 빨강), 옆모습은 배 위.
+  Offset _shipNumberAt(ShipDamaged e) {
+    final c = scene.shipCenter;
+    if (!scene.isTop || e.fromX == null || e.fromY == null) return Offset(c.dx, c.dy - kShipHeight / 2 - kNumberLiftPx);
+    final side = (e.fromX! - c.dx).clamp(-10.0, 10.0);
+    return Offset(c.dx + side, c.dy - 22);
   }
 }

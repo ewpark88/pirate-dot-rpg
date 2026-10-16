@@ -115,7 +115,9 @@ class DamageNumbers {
     return null;
   }
 
-  double _scaleOf(DamageKind kind) => kind == DamageKind.normal ? spec.normalScale : spec.critScale;
+  // 배 피해는 작게(S1 — 배 위 빨간 작은 숫자): 일반 크기.
+  double _scaleOf(DamageKind kind) =>
+      kind == DamageKind.normal || kind == DamageKind.ship ? spec.normalScale : spec.critScale;
 
   void update(double dtMs) {
     for (final n in pool.active) {
