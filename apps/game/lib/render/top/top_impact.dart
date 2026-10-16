@@ -36,14 +36,29 @@ class TopImpact {
         ..strokeWidth = 2.5
         ..color = (h.water ? const Color(0xFFE6F6FF) : const Color(0xFF14243A)).withValues(alpha: 0.35 * (1 - t));
       c.drawCircle(at, r * 0.85, _ring);
-      // 흰 번쩍 코어
-      if (flash && t < 0.15) {
-        final k = t / 0.15;
-        _fill.color = const Color(0xFFFFFFFF).withValues(alpha: 0.9 * (1 - k));
-        c.drawCircle(at, r * (0.35 + 0.25 * k), _fill);
+      // 타격감 v3 밝기 대비: 첫 2프레임 꽉 찬 흰 원 → 주황 불덩이 → 검은 연기(수중은 연기 대신 물기둥).
+      if (t < 0.06) {
+        _fill.color = flash ? const Color(0xFFFFFFFF) : const Color(0xFFFFE08A);
+        c.drawCircle(at, r * 0.6, _fill);
+      } else if (t < 0.32) {
+        final k = (t - 0.06) / 0.26;
+        _fill.color = Color.lerp(const Color(0xFFFFE08A), const Color(0xFFFF5A1A), k)!.withValues(alpha: 1 - k * 0.5);
+        c.drawCircle(at, r * (0.55 - 0.2 * k), _fill);
+      }
+      if (!h.water && t > 0.2) {
+        final k = (t - 0.2) / 0.8;
+        for (var p = 0; p < 3; p++) {
+          final a = p * 2.1 + h.x * 0.05;
+          _fill.color = const Color(0xFF231C26).withValues(alpha: 0.55 * (1 - k));
+          c.drawCircle(
+            at + Offset(math.cos(a) * r * 0.25, math.sin(a) * r * 0.2 - r * 0.3 * k),
+            r * (0.18 + 0.15 * k),
+            _fill,
+          );
+        }
       }
       // 등급 색 충격파 고리 2겹
-      for (final (delay, width) in const [(0.0, 3.5), (0.12, 2.0)]) {
+      for (final (delay, width) in const [(0.0, 5.5), (0.12, 3.0)]) {
         final k = ((t - delay) / 0.55).clamp(0.0, 1.0);
         if (k <= 0 || k >= 1) continue;
         _ring

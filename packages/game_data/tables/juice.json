@@ -32,7 +32,7 @@
     "sumColor": "#FF8A1F",
     "lifeMs": 600,
     "risePx": 24,
-    "critBouncePx": 0,
+    "critBouncePx": 6,
     "mergeMs": 250,
     "stackRows": 3
   },

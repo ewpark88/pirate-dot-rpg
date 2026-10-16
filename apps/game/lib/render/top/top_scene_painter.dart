@@ -8,6 +8,7 @@ import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
+import 'package:pirate_dot/render/top/ship_turn.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_enemies.dart';
 import 'package:pirate_dot/render/top/top_fever.dart';
@@ -66,10 +67,11 @@ class TopScenePainter {
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
     final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
     final dot = frame.dot;
+    final kick = scene.topHits.juice.kick(clockMs);
     final view = scene.frame;
     final ship = scene.topShip;
     final cam = scene.topCamera;
-    _weave(ship.dx, clockMs, dt);
+    _turn.update(ship.dx, clockMs, dt);
     // 환생 v2(S2 d9593dc): 그림 등급 = 명예 등급(shipTierLook), 스킨 = shipSkin(운영자 미리보기 skin이 있으면 그것), 보물 바다 = treasureSea.
     final tier = view.shipTierLook ?? scene.moments.shipTierId;
     final skinId = skin ?? view.shipSkin;
@@ -78,7 +80,10 @@ class TopScenePainter {
       ..save()
       ..clipRect(Offset.zero & frame.box)
       // 피버 중 화면은 좌우로 움직이지 않는다(사용자 '화면이 좌우로 움직이면 조잡하다') — 흔들림은 세로만.
-      ..translate(sx + (fever.level > 0 ? 0 : scene.shake.offsetX * dot), sy + scene.shake.offsetY * dot)
+      ..translate(
+        sx + (fever.level > 0 ? 0 : scene.shake.offsetX * dot + kick.dx),
+        sy + scene.shake.offsetY * dot + kick.dy,
+      )
       ..scale(dot);
     final viewRect = Rect.fromLTWH(-sx / dot, -sy / dot, frame.box.width / dot, frame.box.height / dot);
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
@@ -117,7 +122,7 @@ class TopScenePainter {
       c
         ..save()
         ..translate(_shipShake(clockMs), _surge(clockMs))
-        ..rotate(_heading + _bank)
+        ..rotate(_turn.angle)
         // 질주: 앞으로 살짝 기울임(길이 방향 4% 눌림).
         ..scale(_shipScale, _shipScale * (1 - 0.04 * fever.level));
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
@@ -213,29 +218,7 @@ class TopScenePainter {
   double _maxBoxH = 0;
   final _ghost = Paint();
 
-  double _prevX = double.nan;
-  double _bank = 0;
-  double _heading = 0;
-  double _vx = 0;
-
-  /// 피버 좌우 이동: x 변화로 뱅크(이동 방향으로 최대 15°, 부드럽게), 방향을 바꾸면 큰 물보라.
-  void _weave(double x, double clockMs, double dt) {
-    if (_prevX.isNaN || dt <= 0) {
-      _prevX = x;
-      return;
-    }
-    final vx = (x - _prevX) / dt * Duration.millisecondsPerSecond;
-    _prevX = x;
-    if (_vx.abs() > 12 && vx.abs() > 12 && vx.sign != _vx.sign) {
-      scene.topHits.impact.add(x, scene.topShip.dy + 6, 30, 0xFFE6F6FF, clockMs, water: true);
-    }
-    _vx = vx;
-    final target = (vx / 90).clamp(-1.0, 1.0) * 15 * math.pi / 180;
-    // 엔진이 배 방향(shipHeading, 피버 지그재그 ±25°)을 주면 그 각도로 — 꺾을 때 약 0.25초에 빠르게 돌고, x 변화 뱅크는 쓰지 않는다.
-    final heading = scene.frame.shipHeading;
-    _heading += (heading - _heading) * math.min(1, dt / 80);
-    _bank += ((heading != 0 ? 0 : target) - _bank) * math.min(1, dt / 120);
-  }
+  late final _turn = ShipTurn(scene);
 
   /// 피버 질주 위아래 흔들림(흔들기 설정 따름).
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
