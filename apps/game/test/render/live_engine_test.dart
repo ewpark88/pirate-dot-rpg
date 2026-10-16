@@ -47,7 +47,7 @@ void main() {
 
     // 실제 엔진 프레임을 그려도 예외가 없다.
     final rec = ui.PictureRecorder();
-    ScenePainter(game.scene).paint(ui.Canvas(rec));
+    paintTopStd(ScenePainter(game.scene), ui.Canvas(rec));
     rec.endRecording().dispose();
     game.onRemove();
     host.stop();

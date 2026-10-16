@@ -40,7 +40,7 @@ void main() {
     await tester.runAsync(() async {
       final scene = BattleScene(tables, [_at(0), _at(1)], loop: false)..update(kFrameMs);
       final rec = ui.PictureRecorder();
-      ScenePainter(scene).paint(ui.Canvas(rec));
+      paintTopStd(ScenePainter(scene), ui.Canvas(rec));
       final img = await rec.endRecording().toImage(kLogicalWidth.toInt(), kLogicalHeight.toInt());
 
       final legend = _hex(tables.rarities.byId('legend').color);

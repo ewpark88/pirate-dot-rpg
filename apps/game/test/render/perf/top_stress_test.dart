@@ -13,7 +13,7 @@ import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
 import '../helpers.dart';
-import 'draw_calls_test.dart' show CountingCanvas;
+import 'counting_canvas.dart';
 
 const _kinds = ['crab', 'piranha', 'jelly', 'gull', 'urchin', 'puffer'];
 
