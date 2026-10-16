@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/idle/idle_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -23,10 +24,13 @@ class PirateDotApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       theme: pixelTheme(),
       // 태블릿은 UI 전체를 확대해 그린다(글자·버튼·패널·창 모두 같은 비율) — 사용자 원칙 '태블릿에서도 유동적으로'.
-      builder: (context, child) => UiScale(
-        child: Theme(
-          data: pixelTheme(devicePixelRatio: MediaQuery.devicePixelRatioOf(context)),
-          child: child!,
+      // 절전 화면·잔상 방지(IdleGate)는 모든 화면 위 — 설정 창이 열려 있어도 동작한다.
+      builder: (context, child) => IdleGate(
+        child: UiScale(
+          child: Theme(
+            data: pixelTheme(devicePixelRatio: MediaQuery.devicePixelRatioOf(context)),
+            child: child!,
+          ),
         ),
       ),
       home: const HomeScreen(),
