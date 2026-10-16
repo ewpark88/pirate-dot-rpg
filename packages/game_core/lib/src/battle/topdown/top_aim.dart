@@ -35,8 +35,9 @@ class TopAim {
   double edge(Foe e) {
     // 선체 캡슐 몸통에서(없으면 반경 shipRadius 원 — 캡슐 반폭·반길이가 모두 shipRadius).
     final reach = math.max(0, top.hullHalfLength - top.hullHalfWidth);
-    final cy = (e.y - top.shipY).clamp(-reach, reach).toDouble();
-    return _dist(e.x, e.y, top.shipX, top.shipY + cy) - top.hullHalfWidth - top.radiusOf(e);
+    final hy = top.shipY + top.hullOffset;
+    final cy = (e.y - hy).clamp(-reach, reach).toDouble();
+    return _dist(e.x, e.y, top.shipX, hy + cy) - top.hullHalfWidth - top.radiusOf(e);
   }
 
   bool onScreen(Foe e) =>
@@ -47,7 +48,13 @@ class TopAim {
     final reach = r == null ? null : r * top.reachScale + reachBonus;
     return [
       for (final e in foes)
-        if (e.alive && onScreen(e) && !a.excludeLayers.contains(e.layer) && (reach == null || edge(e) <= reach)) e,
+        // 황금 물고기(돌발 이벤트)는 탭으로만 잡는다 — 자동 조준에서 뺀다(S2 스펙).
+        if (e.alive &&
+            e.eventKind != 'goldfish' &&
+            onScreen(e) &&
+            !a.excludeLayers.contains(e.layer) &&
+            (reach == null || edge(e) <= reach))
+          e,
     ];
   }
 

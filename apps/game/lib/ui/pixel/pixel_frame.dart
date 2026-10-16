@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
-/// 판 (스킨 r1): 둥근 모서리 판 + 부드러운 그림자. 테두리 색을 주면(등급 색·금색 등) 그 색 테두리를 두른다.
+/// 판 (스킨 r2 깊이감 = [SkinDepth]): 떠 있는 둥근 판. 테두리 색을 주면(등급 색·금색 등) 그 색 테두리를 두른다.
 /// 이름과 인자는 도트 시절 그대로 — highlight·shade·dropShadow는 이제 쓰지 않는다(모양은 스킨이 정한다).
 class PixelFrame extends StatelessWidget {
   const PixelFrame({
@@ -33,16 +33,11 @@ class PixelFrame extends StatelessWidget {
   final int padding;
 
   @override
-  Widget build(BuildContext context) {
-    final edge = border == PixelPalette.border ? null : Border.all(color: border, width: 1.5 * borderDots);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: fill,
-        borderRadius: BorderRadius.circular(Skin.radiusCard),
-        border: edge,
-        boxShadow: Skin.shadowSmall,
-      ),
-      child: Padding(padding: EdgeInsets.all(2.0 * padding), child: child),
-    );
-  }
+  Widget build(BuildContext context) => SkinDepth(
+    fill: fill,
+    border: border == PixelPalette.border ? null : border,
+    borderWidth: 1.5 * borderDots,
+    padding: EdgeInsets.all(2.0 * padding),
+    child: child,
+  );
 }

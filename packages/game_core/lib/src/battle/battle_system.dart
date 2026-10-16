@@ -143,8 +143,7 @@ class BattleSystem implements GameSystem {
     return s;
   }
 
-  /// 첫 회차 초반(1~earlyStageMax) 보스는 입력 없이도 시작 편성으로 잡히게 약하게,
-  /// 튜토리얼 3단계의 첫 보스는 일부러 못 잡게 (설계서 4.12). 실패 후 재도전(파밍 → ChallengeBoss)은 보통 보스.
+  /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
   double _tutorialBossScale(GameState s, SystemContext ctx) {
     final w = ctx.tables.waves;
     final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
@@ -252,14 +251,15 @@ class BattleSystem implements GameSystem {
     final f = _field;
     if (f != null && f.matches(view, s.progress.stage)) {
       if (!identical(_crewsSeen, s.crews) || !identical(_fleetSeen, s.fleet)) _arm(f, s, ctx);
+      shapeField(f, s, ctx.tables); // 선체 강화로 배가 커지면 모양만 바꾼다(무리는 그대로)
       return f;
     }
     final stats = CombatStats.of(s, ctx.tables);
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..geometry = geometryFor(ctx.tables, s.progress.stage)
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables);
+    shapeField(nf, s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;
       startBoss(nf, s.progress.stage, ctx, emit: false, hpRatio: b?.hpRatio ?? 1, x: b?.x, y: b?.y);

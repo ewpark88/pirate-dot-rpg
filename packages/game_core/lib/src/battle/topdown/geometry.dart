@@ -1,7 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
+import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/game_engine.dart';
+import 'package:game_core/src/engine/game_state.dart';
+import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
@@ -64,13 +69,45 @@ abstract interface class BattleGeometry {
   ({double x, double y, double angle})? muzzle(double tx, double ty);
 }
 
-/// 전장 모양(탑다운 — 옆모습은 T4-2에서 삭제). 배 반경·선체 캡슐은 [stage]의 배 등급(ship_tiers).
-BattleGeometry geometryFor(GameTables t, int stage) {
+/// 전장 모양(탑다운). 배 반경 = 배 등급(ship_tiers topRadius). 선체 캡슐 = 배율 1 선체(ship_tiers topHalfWidth·topHullBow·topHullStern)
+/// × 그리기 배율 `waves.top.shipScale` × 선체 강화 단계 [hullStage]의 커짐(`waves.top.hullGrow` 폭·뱃머리·배꼬리, 단계당 1 + g·(단계−1))
+/// — 렌더와 같은 키·같은 그림 기준이라 어긋나지 않는다(apps/game/test/render/ship_hitbox_test.dart가 지킨다).
+BattleGeometry geometryFor(GameTables t, int stage, {int hullStage = 1}) {
   final tier = t.shipTiers.tierAt(stage);
+  final top = t.waves.raw.obj('top');
+  final scale = top.numberOr('shipScale', 1);
+  final grow = top.has('hullGrow') ? top.obj('hullGrow') : null;
+  final k = math.max(0, hullStage - 1);
+  double g(String key) => 1 + (grow == null ? 0.0 : grow.numberOr(key, 0)) * k;
+  final bow = tier.topHullBow * scale * g('bow');
+  final stern = tier.topHullStern * scale * g('stern');
   return TopGeometry.of(
     t.waves,
     shipRadius: tier.topRadius,
-    hullHalfWidth: tier.topHalfWidth,
-    hullHalfLength: tier.topHalfLength,
+    hullHalfWidth: tier.topHalfWidth * scale * g('width'),
+    hullHalfLength: (bow + stern) * half,
+    hullOffset: (stern - bow) * half,
   );
+}
+
+/// [f]에 지금 배(등급·선체 강화 단계)에 맞는 모양을 둔다. 배 상태가 바뀔 때만 다시 만든다 — 강화해도 무리는 그대로.
+/// 돌발 이벤트 '폭풍'이면 적 이동 배율(meta.seaEvents 폭풍 enemySpeed)도 매번 맞춘다.
+void shapeField(Field f, GameState s, GameTables t) {
+  if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
+    f
+      ..shipSeen = s.ship
+      ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
+  }
+  final g = f.geometry;
+  if (g is TopGeometry) g.speedScale = seaEventSpeed(s, t);
+}
+
+/// 지금 돌발 이벤트의 적 이동 배율(meta.seaEvents 그 이벤트의 enemySpeed, 없으면 1).
+double seaEventSpeed(GameState s, GameTables t) {
+  final id = s.battle?.seaEvent?.id;
+  if (id == null) return 1;
+  for (final e in t.meta.raw.obj('seaEvents').objs('events')) {
+    if (e.str('id') == id) return e.numberOr('enemySpeed', 1);
+  }
+  return 1;
 }
