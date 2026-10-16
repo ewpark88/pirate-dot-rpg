@@ -105,11 +105,12 @@ void shapeField(Field f, GameState s, GameTables t) {
   }
   final g = f.geometry;
   if (g is TopGeometry) {
+    final on = feverOn(s) || f.fastSail != null; // 빠른 항해 돌파도 피버처럼 전진·좌우
     g
       ..speedScale = seaEventSpeed(s, t)
-      ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw)
-      ..weaveTick = feverOn(s) ? g.weaveTick + 1 : 0
-      ..weave(feverWeave(s, t, g.weaveTick));
+      ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
+      ..weaveTick = on ? g.weaveTick + 1 : 0
+      ..weave(feverWeave(s, t, g.weaveTick, on: on));
   }
 }
 

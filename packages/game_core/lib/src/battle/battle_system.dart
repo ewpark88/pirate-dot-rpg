@@ -1,11 +1,13 @@
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
+import 'package:game_core/src/battle/fast_sail.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
+import 'package:game_core/src/battle/tailwind_speed.dart';
 import 'package:game_core/src/battle/topdown/top_bounty.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
@@ -32,6 +34,7 @@ class BattleSystem implements GameSystem {
   Object? _crewsSeen;
   Object? _fleetSeen;
   final _dress = ShipDressCache();
+  final _tailwind = TailwindSpeed();
   int _kills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
@@ -51,6 +54,16 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case SkipFastSail():
+        final run = _sync(state, ctx).fastSail;
+        if (run == null) return state;
+        var s = state; // 남은 스테이지마다: 보스 처치 골드 + 보스 격파 보상(젬·카드·배 등급·스테이지)
+        while (s.progress.stage <= run.to) {
+          s = addGold(s, ctx.tables, fastSailBossGold(s, ctx.tables, s.progress.stage)).state;
+          s = _bossCleared(s, _field!, ctx);
+        }
+        closeFastSail(s, _field!, ctx, skipped: true);
+        return _project(s, _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case TriggerUltimate():
@@ -112,15 +125,20 @@ class BattleSystem implements GameSystem {
         ..tickZones()
         ..topdownStep(state)
         ..tickStatus()
-        ..tickCombo();
+        ..tickCombo()
+        ..breakthrough(state); // 빠른 항해 돌파(fast_sail.dart)
     });
     if (_field!.bounty != null) {
       return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
-    final after = _fun.step(_resolve(next, _field!, ctx), _field!, ctx, kills: _kills);
+    final resolved = _resolve(next, _field!, ctx);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
+    final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
+    final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
-    return feverStep(_tailwindSpeed(_project(after, f, ctx.tables), ctx), ctx, kills: _kills, bossKilled: boss);
+    closeFastSail(after, f, ctx);
+    final shown = _tailwind.apply(_project(after, f, ctx.tables), ctx);
+    return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
   }
 
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
@@ -133,26 +151,6 @@ class BattleSystem implements GameSystem {
     } else {
       spawnWave(f, p.stage, ctx);
     }
-  }
-
-  bool _tailwindBoost = false;
-
-  /// 순풍 중에는 배속을 tailwind.speedMultiplier로(앱이 주기마다 그만큼 틱을 돈다). 운영자 배속(1 아님)은 그대로.
-  GameState _tailwindSpeed(GameState s, SystemContext ctx) {
-    final b = s.battle;
-    if (b == null) return s;
-    final until = s.buffs.tailwindUntil;
-    final on = until != null && until.isAfter(ctx.clock.now());
-    final boost = ctx.tables.ads.placements.firstWhere((p) => p.id == 'tailwind').reward.integer('speedMultiplier');
-    if (on && !_tailwindBoost && b.speed == 1) {
-      _tailwindBoost = true;
-      return s.copyWith(battle: b.copyWith(speed: boost));
-    }
-    if (!on && _tailwindBoost) {
-      _tailwindBoost = false;
-      return b.speed == boost ? s.copyWith(battle: b.copyWith(speed: 1)) : s;
-    }
-    return s;
   }
 
   GameState _resolve(GameState s, Field f, SystemContext ctx) {
@@ -211,7 +209,9 @@ class BattleSystem implements GameSystem {
         chest: old.chest,
       ),
     );
-    final nf = _sync(next, ctx)..travelLeft = t.waves.travelSec;
+    final nf = _sync(next, ctx)
+      ..travelLeft = t.waves.travelSec
+      ..fastSail = f.fastSail; // 돌파 구간은 새 전장으로 이어간다
     return _project(next, nf, ctx.tables);
   }
 

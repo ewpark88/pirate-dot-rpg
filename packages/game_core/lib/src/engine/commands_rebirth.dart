@@ -79,3 +79,12 @@ class OpSetRebirths extends OperatorCommand {
   @override
   Json _fields() => {'count': count};
 }
+
+/// 빠른 항해 돌파 건너뛰기(docs/specs/platform-fast-sail-breakthrough.md 5, UI는 환생 2회차부터): 남은 스테이지 보스 보상을 한 번에 받고
+/// 구간 끝 다음 스테이지로. 구간 중이 아니면 무시.
+class SkipFastSail extends Command {
+  const SkipFastSail();
+
+  @override
+  String get type => 'skipFastSail';
+}

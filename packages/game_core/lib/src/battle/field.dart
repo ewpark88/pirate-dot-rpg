@@ -1,3 +1,4 @@
+import 'package:game_core/src/battle/fast_sail.dart' show FastSailRun;
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/gun.dart';
 import 'package:game_core/src/battle/shield.dart';
@@ -194,7 +195,9 @@ class Field {
 
   final List<EnemyShot> enemyShots = [];
   final List<Flight> flights = [];
-  ShipShield? shield; // 배 흡수막(shield.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
+  ShipShield? shield; // 배 흡수막(shield.dart)
+  FastSailRun?
+  fastSail; // 빠른 항해 돌파 구간(fast_sail.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 
@@ -254,5 +257,6 @@ class Field {
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
     shipShield: shield?.ratio ?? 0,
+    fastSail: fastSail?.view(),
   );
 }
