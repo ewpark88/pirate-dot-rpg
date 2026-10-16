@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
-import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverWeave;
+import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverPose;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/fever.dart' show feverOn;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
@@ -110,7 +110,7 @@ void shapeField(Field f, GameState s, GameTables t) {
       ..speedScale = seaEventSpeed(s, t)
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
       ..weaveTick = on ? g.weaveTick + 1 : 0
-      ..weave(feverWeave(s, t, g.weaveTick, on: on));
+      ..pose(feverPose(s, t, g.weaveTick, on: on));
   }
 }
 

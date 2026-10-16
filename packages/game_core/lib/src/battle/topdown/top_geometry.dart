@@ -39,11 +39,19 @@ class TopGeometry implements BattleGeometry {
   /// 피버 좌우 이동 진행 틱(shapeField가 센다 — 피버가 아니면 0).
   int weaveTick = 0;
 
-  /// 배 중심 x를 바다 가운데에서 [dx]만큼 옮긴다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
-  void weave(double dx) {
+  /// 배가 향하는 방향(라디안, 0 위·시계 방향 — BattleView.shipHeading). 피버 지그재그면 이동 방향으로 기운다.
+  double shipHeading = 0;
+
+  /// 피버 자세(feverPose) 그대로.
+  void pose(({double x, double y, double heading}) p) => weave(p.x, dy: p.y, heading: p.heading);
+
+  /// 배 중심을 바다 가운데에서 ([dx], [dy])만큼 옮기고 [heading]으로 기울인다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
+  void weave(double dx, {double dy = 0, double heading = 0}) {
+    shipHeading = heading;
     final x = base.shipX + dx;
-    if (x == top.shipX) return;
-    top = base.withShipX(x);
+    final y = base.shipY + dy;
+    if (x == top.shipX && y == top.shipY) return;
+    top = base.withShipAt(x, y);
     _aim.top = top;
     _spawn.top = top;
   }

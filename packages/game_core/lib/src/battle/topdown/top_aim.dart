@@ -10,13 +10,14 @@ import 'package:game_data/game_data.dart';
 /// 탑다운 조준: 계열 8종의 2D 모양 (docs/contracts/requests/platform-topdown-t0.md D).
 /// 거리는 배 둘레 → 적 가장자리(skills.json reach를 배에서 반경으로).
 class TopAim {
-  TopAim(this.top, this.w) : viewX = top.shipX;
+  TopAim(this.top, this.w) : viewX = top.shipX, viewY = top.shipY;
 
   /// 지금 배 자리(피버 좌우 이동 때 TopGeometry.weave가 바꾼다).
   TopField top;
 
   /// 카메라 가운데 x — 배가 좌우로 움직여도 카메라(보이는 사각형)는 바다 가운데 그대로.
   final double viewX;
+  final double viewY;
   final WavesTable w;
 
   double _centerDist(Foe e) => _dist(e.x, e.y, top.shipX, top.shipY);
@@ -46,7 +47,7 @@ class TopAim {
 
   /// 카메라 안이고 등장 대기 중이 아닌가(대기·가까이 등장 예고 중엔 조준·궁극기 대상이 아니다).
   bool onScreen(Foe e) =>
-      e.holdSec <= 0 && (e.x - viewX).abs() <= top.viewWidth * half && (e.y - top.shipY).abs() <= top.viewHeight * half;
+      e.holdSec <= 0 && (e.x - viewX).abs() <= top.viewWidth * half && (e.y - viewY).abs() <= top.viewHeight * half;
 
   List<Foe> eligible(AttackDef a, List<Foe> foes, {double reachBonus = 0}) {
     final r = attackReach(a, w.field);
