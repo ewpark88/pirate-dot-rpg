@@ -243,6 +243,9 @@ class Field {
   /// 전장 모양(탑다운). 없으면 waves.top 기본 배 반경으로 — [geometryOr].
   BattleGeometry? geometry;
 
+  /// 진행 중인 현상금 전투(탑다운 B1, top_bounty.dart). 타이머는 [bossTicksLeft]를 같이 쓴다.
+  ({String bossId, int tier})? bounty;
+
   /// [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다).
   Object? shipSeen;
 
@@ -280,8 +283,8 @@ class Field {
     feverTicksLeft: prev.feverTicksLeft,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,
-    bounty: prev.bounty,
     mode: 'top',
+    bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
   );
