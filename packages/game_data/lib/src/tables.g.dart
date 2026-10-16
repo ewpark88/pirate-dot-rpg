@@ -1509,6 +1509,7 @@ const Map<String, String> rawTables = {
       "border": "#FFD84A",
       "orange": "#FF8A2A",
       "seaAlpha": 1,
+      "meltRadius": 42,
       "borderDp": 6,
       "pulseMs": 420,
       "coinsPerSec": 10,

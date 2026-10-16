@@ -37,7 +37,7 @@ class TopEnemies {
   /// 적을 그림(종류)별로 묶어 drawAtlas 한 번씩 — 150마리여도 그리기 몇 번(S1 부하: 100~150마리 60fps).
   /// 맞은 적(흰 번쩍임)은 흰 실루엣 묶음으로 따로, 물속은 반투명 붓으로.
   void paint(Canvas c, {required bool under, required Rect cull}) {
-    for (final b in _batches.values.followedBy(_flashBatches.values)) {
+    for (final b in _batches.values.followedBy(_flashBatches.values).followedBy(_hotBatches.values)) {
       b.clear();
     }
     final clock = scene.clockMs;
@@ -51,7 +51,11 @@ class TopEnemies {
       if (sheet == null) continue;
       final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock);
-      (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
+      final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
+      (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
+          sheet,
+          () => _Batch(sheet.image, flash: e.flash),
+        )
         ..xf.add(
           RSTransform.fromComponents(
             // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
@@ -70,10 +74,21 @@ class TopEnemies {
       final paint = b.flash ? _flashPaint : (under ? _underPaint : _atlasPaint);
       c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
     }
+    for (final b in _hotBatches.values) {
+      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, null, null, null, _hotPaint);
+    }
   }
 
   final Map<SpriteSheet, _Batch> _batches = {};
   final Map<SpriteSheet, _Batch> _flashBatches = {};
+  final Map<SpriteSheet, _Batch> _hotBatches = {};
+
+  /// 피버 녹이기: 이 자리(전장 좌표)의 적은 빨갛게 달아오른다. null이면 없음.
+  bool Function(double x, double y)? hotAt;
+  final _hotPaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none
+    ..colorFilter = const ColorFilter.mode(Color(0xFFFF8A50), BlendMode.modulate);
   final Map<String, String> _enemyKeys = {};
 
   /// 돌발 이벤트 적(황금 물고기·바다뱀·상인선)은 td_event 그림, 나머지는 td_enemy·td_boss.
