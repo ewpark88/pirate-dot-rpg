@@ -15,7 +15,7 @@ class _Painter extends CustomPainter {
   final ScenePainter painter;
 
   @override
-  void paint(ui.Canvas canvas, Size size) => painter.paint(canvas);
+  void paint(ui.Canvas canvas, Size size) => paintTopStd(painter, canvas);
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
@@ -67,6 +67,6 @@ void main() {
         ),
       ),
     );
-    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/battle_cutin.png'));
+    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_cutin.png'));
   });
 }
