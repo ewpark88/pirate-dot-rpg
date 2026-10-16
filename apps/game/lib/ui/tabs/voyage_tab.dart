@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
@@ -29,6 +30,7 @@ class VoyageTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    countBuild('voyage');
     // 카드 3장 (layout-v2-brief): 해역 · 오프라인/순풍 · 보물지도.
     // 환생할 수 있으면 보물지도 카드를 맨 위로 — 알약·말풍선 바로가기로 오면 바로 보인다(사용자 지시 2026-10-16).
     final ready = ref.watch(rebirthReadyProvider);

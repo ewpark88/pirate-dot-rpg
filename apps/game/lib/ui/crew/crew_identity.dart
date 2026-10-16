@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_identity_paint.dart';
 import 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -17,13 +19,18 @@ enum AimKind { nearest, strongest, weakest, cluster, boss, random, farthest, air
 enum HitKind { instant, lead, free }
 
 /// 선원 한 명의 특색: 조준 · 연사 간격(초) · 범위 공격인가 · 명중 방식.
-typedef CrewIdentity = ({AimKind aim, double interval, bool area, HitKind hit});
+/// range = 사거리 단계 0 짧음 · 1 보통 · 2 김 (사용자 지시 '캐릭터마다 사정거리 차등', S2 aim reach).
+typedef CrewIdentity = ({AimKind aim, double interval, bool area, HitKind hit, int range});
+
+/// 사거리(reach: 배 둘레 → 적 가장자리) → 단계. 짧음 ≤ 90 · 보통 91~140 · 김 ≥ 141 (S2 기준).
+int rangeLevel(double reach) => reach <= 90 ? 0 : (reach <= 140 ? 1 : 2);
 
 /// 선원 특색을 표(crews.json `aim` · 계열 공격)에서 읽는다 (S2 개성 v2 계약). aim이 없으면 계열 공격 그대로.
 /// - 조준: aim.targets(없으면 계열 targets — 'front'는 배 둘레).
 /// - 범위: 모양(aim.shape ?? 계열 shape)이 원·부채꼴·밀어내기이거나 topRadius가 있으면.
 /// - 명중: 발사체가 없으면 즉시(근접·광선), 예측(lead)이거나 속도 없는 지연 공격이면 예측, 아니면 빗나갈 수 있음.
-CrewIdentity? crewIdentity(GameTables t, String crewId) {
+/// [rarity] = 등급 번호(0 일반 … 4 신화) — 연사는 경제 crewAttack(등급 템포·등급별 aim 반영, S2).
+CrewIdentity? crewIdentity(GameTables t, String crewId, {int rarity = 0}) {
   final def = t.crews.crews.where((c) => c.id == crewId).firstOrNull;
   if (def == null) return null;
   final attack = t.skills.byId(def.family).attack;
@@ -42,7 +49,8 @@ CrewIdentity? crewIdentity(GameTables t, String crewId) {
   }
   return (
     aim: AimKind.values.where((a) => a.name == targets).firstOrNull ?? AimKind.ring,
-    interval: aim?.numberOr('intervalSec', attack.intervalSec) ?? attack.intervalSec,
+    interval: crewAttack(t, crewId, rarity).intervalSec,
+    range: rangeLevel(crewAttack(t, crewId, rarity).raw.numberOr('reach', 0)),
     area: area,
     hit: hit,
   );
@@ -89,9 +97,12 @@ String hitText(AppLocalizations l, HitKind h) => switch (h) {
 
 /// 아이콘 4개 한 줄 (카드 아래 작게 / 상세에 크게). [size] = 아이콘 한 칸 크기.
 class CrewIdentityIcons extends ConsumerWidget {
-  const CrewIdentityIcons({required this.crewId, this.size = 14, this.light = false, super.key});
+  const CrewIdentityIcons({required this.crewId, this.size = 14, this.light = false, this.rarity = 0, super.key});
 
   final String crewId;
+
+  /// 등급 번호 (연사 간격이 등급 템포를 따른다).
+  final int rarity;
   final double size;
 
   /// 어두운 바탕(소환 결과) 위면 밝은 색.
@@ -99,7 +110,7 @@ class CrewIdentityIcons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = crewIdentity(ref.watch(tablesProvider), crewId);
+    final id = crewIdentity(ref.watch(tablesProvider), crewId, rarity: rarity);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final ink = light ? Colors.white : Skin.ink;
@@ -114,7 +125,12 @@ class CrewIdentityIcons extends ConsumerWidget {
         children: [
           Icon(aimIcon(id.aim), size: size, color: ink),
           SizedBox(width: size * 0.3),
-          _RateBars(bars: rateBars(id.interval), size: size, color: ink),
+          IdRateBars(bars: rateBars(id.interval), size: size, color: ink),
+          SizedBox(width: size * 0.3),
+          CustomPaint(
+            size: Size(size * 1.2, size),
+            painter: IdRangePainter(level: id.range, color: ink),
+          ),
           SizedBox(width: size * 0.3),
           Icon(
             id.area ? Icons.blur_circular_rounded : Icons.fiber_manual_record_rounded,
@@ -124,7 +140,7 @@ class CrewIdentityIcons extends ConsumerWidget {
           SizedBox(width: size * 0.3),
           CustomPaint(
             size: Size.square(size),
-            painter: _ArrowPainter(curved: id.hit == HitKind.free, color: ink),
+            painter: IdArrowPainter(curved: id.hit == HitKind.free, color: ink),
           ),
         ],
       ),
@@ -132,78 +148,24 @@ class CrewIdentityIcons extends ConsumerWidget {
   }
 }
 
-class _RateBars extends StatelessWidget {
-  const _RateBars({required this.bars, required this.size, required this.color});
-
-  final int bars;
-  final double size;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: size,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        for (var i = 0; i < 5; i++) ...[
-          if (i > 0) SizedBox(width: size * 0.08),
-          Container(
-            width: size * 0.18,
-            height: size * (0.35 + 0.13 * i),
-            decoration: BoxDecoration(
-              color: i < bars ? color : color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(1),
-            ),
-          ),
-        ],
-      ],
-    ),
-  );
-}
-
-/// 명중: 곧은 화살(즉시·예측 = 거의 맞음) / 휜 화살(빗나갈 수 있음).
-class _ArrowPainter extends CustomPainter {
-  _ArrowPainter({required this.curved, required this.color});
-
-  final bool curved;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final p = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.12
-      ..strokeCap = StrokeCap.round;
-    final path = Path()..moveTo(w * 0.1, w * 0.6);
-    if (curved) {
-      path.quadraticBezierTo(w * 0.45, w * 0.05, w * 0.85, w * 0.45);
-    } else {
-      path.lineTo(w * 0.85, w * 0.6);
-    }
-    canvas.drawPath(path, p);
-    final tip = curved ? Offset(w * 0.85, w * 0.45) : Offset(w * 0.85, w * 0.6);
-    final back = curved ? const Offset(-0.32, -0.05) : const Offset(-0.25, -0.2);
-    final back2 = curved ? const Offset(-0.12, -0.32) : const Offset(-0.25, 0.2);
-    canvas
-      ..drawLine(tip, tip + back * w, p)
-      ..drawLine(tip, tip + back2 * w, p);
-  }
-
-  @override
-  bool shouldRepaint(_ArrowPainter old) => old.curved != curved || old.color != color;
-}
+String rangeText(AppLocalizations l, int level) => switch (level) {
+  0 => l.uiRangeShort,
+  1 => l.uiRangeMid,
+  _ => l.uiRangeLong,
+};
 
 /// 상세의 특색 판: 아이콘마다 이름 + 한 줄 특색.
 class CrewIdentityPanel extends ConsumerWidget {
-  const CrewIdentityPanel({required this.crewId, super.key});
+  const CrewIdentityPanel({required this.crewId, this.rarity = 0, super.key});
 
   final String crewId;
 
+  /// 등급 번호 (연사 · 신화 작은 폭발).
+  final int rarity;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = crewIdentity(ref.watch(tablesProvider), crewId);
+    final id = crewIdentity(ref.watch(tablesProvider), crewId, rarity: rarity);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     Widget item(Widget icon, String label, String value) => Expanded(
@@ -233,13 +195,20 @@ class CrewIdentityPanel extends ConsumerWidget {
             key: const Key('crew.identity.line'),
             style: Skin.text(15, color: Skin.primaryEdge),
           ),
+          // 신화 단일형: 맞은 자리 작은 폭발(경제 aim.mythic splashRadius, S2).
+          if (crewAttack(ref.watch(tablesProvider), crewId, rarity).raw.numberOr('splashRadius', 0) > 0)
+            Text(
+              l10n.uiIdSplash,
+              key: const Key('crew.identity.splash'),
+              style: Skin.text(13, color: Skin.goldInk),
+            ),
           const SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               item(Icon(aimIcon(id.aim), size: 20, color: Skin.ink), l10n.uiIdAim, aimText(l10n, id.aim)),
               item(
-                _RateBars(bars: rateBars(id.interval), size: 18, color: Skin.ink),
+                IdRateBars(bars: rateBars(id.interval), size: 18, color: Skin.ink),
                 l10n.uiIdRate,
                 l10n.uiRateSec(shortDecimal(id.interval)),
               ),
@@ -254,8 +223,16 @@ class CrewIdentityPanel extends ConsumerWidget {
               ),
               item(
                 CustomPaint(
+                  size: const Size(24, 20),
+                  painter: IdRangePainter(level: id.range, color: Skin.ink),
+                ),
+                l10n.uiIdRange,
+                rangeText(l10n, id.range),
+              ),
+              item(
+                CustomPaint(
                   size: const Size.square(20),
-                  painter: _ArrowPainter(curved: id.hit == HitKind.free, color: Skin.ink),
+                  painter: IdArrowPainter(curved: id.hit == HitKind.free, color: Skin.ink),
                 ),
                 l10n.uiIdHit,
                 hitText(l10n, id.hit),

@@ -73,6 +73,28 @@ void main() {
     expect(find.textContaining('Need '), findsOneWidget);
   });
 
+  testWidgets('처음 1회 안내는 세이브에 남는다: 말풍선을 띄우면 MarkHint, 이미 본 기록(hints)이 있으면 안 뜬다', (tester) async {
+    final log = await pumpGame(tester, _with(rage: 1), openTab: false);
+    expect(find.byKey(const Key('hud.ult.bubble')), findsOneWidget);
+    expect(log.hints.map((c) => c.id), contains('ult.bubble'));
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  testWidgets('세이브에 ult.bubble을 본 기록이 있으면 궁극기 말풍선 없음', (tester) async {
+    final s = _with(rage: 1);
+    final seen = s.copyWith(
+      settings: Settings.fromJson({
+        ...s.settings.toJson(),
+        'battleView': s.settings.battleView,
+        'hints': const ['ult.bubble'],
+      }),
+    );
+    await pumpGame(tester, seen, openTab: false);
+    expect(find.byKey(const Key('hud.ult.bubble')), findsNothing);
+    expect(find.byKey(const Key('hud.ult.tap')), findsOneWidget); // 탭! 표시(3회)는 실행마다
+    await tester.pump(const Duration(seconds: 5));
+  });
+
   group('골든 4기기', () {
     setUpAll(loadGoldenFonts);
 
