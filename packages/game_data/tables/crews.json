@@ -71,21 +71,15 @@
       "id": "uni",
       "num": 4,
       "baseRarity": "hero",
-      "family": "lob",
+      "family": "ring",
       "reachBonus": 3,
       "fx": "explosion_aoe",
       "portrait": "crews/uni.png",
       "nameKey": "crewUniName",
       "aim": {
         "targets": "random",
-        "intervalSec": 1.3,
-        "topRadius": 15,
-        "projectile": {
-          "speed": 200,
-          "lead": false,
-          "hitRadius": 15
-        },
-        "powerScale": 1.4362
+        "intervalSec": 1.8,
+        "powerScale": 1
       }
     },
     {
@@ -248,7 +242,7 @@
       "id": "nar",
       "num": 12,
       "baseRarity": "rare",
-      "family": "pierce",
+      "family": "laser",
       "reachBonus": -3,
       "fx": "slash",
       "portrait": "crews/nar.png",
@@ -256,11 +250,7 @@
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.4,
-        "powerScale": 0.9259,
-        "mythic": {
-          "splashRadius": 14,
-          "splashRatio": 0.5
-        }
+        "powerScale": 0.9729
       }
     },
     {
@@ -446,21 +436,15 @@
       "id": "puffer",
       "num": 21,
       "baseRarity": "common",
-      "family": "underwater",
+      "family": "ring",
       "reachBonus": -6,
       "fx": "explosion_aoe",
       "portrait": "crews/puffer.png",
       "nameKey": "crewPufferName",
       "aim": {
         "targets": "nearest",
-        "intervalSec": 2.2,
-        "topRadius": 24,
-        "projectile": {
-          "speed": 120,
-          "lead": false,
-          "hitRadius": 24
-        },
-        "powerScale": 1.5588
+        "intervalSec": 2.6,
+        "powerScale": 1
       }
     },
     {
@@ -577,6 +561,12 @@
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5
+        },
+        "common": {
+          "powerScale": 1.12
+        },
+        "rare": {
+          "powerScale": 0.8929
         }
       }
     },
@@ -828,15 +818,16 @@
       "id": "lamp",
       "num": 40,
       "baseRarity": "legend",
-      "family": "shock",
+      "family": "laser",
       "reachBonus": 6,
       "fx": "level_up",
       "portrait": "crews/lamp.png",
       "nameKey": "crewLampName",
       "skill": "support_rally",
       "aim": {
+        "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.773
+        "powerScale": 0.7377
       }
     }
   ]
