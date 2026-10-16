@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/crew/crew_pill.dart';
 import 'package:pirate_dot/ui/crew/crew_text.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -111,7 +113,7 @@ class CrewDetailDialog extends ConsumerWidget {
                         spacing: 6,
                         runSpacing: 4,
                         children: [
-                          _Pill(
+                          CrewPill(
                             fill: color.withValues(alpha: 0.18),
                             border: color,
                             child: Row(
@@ -125,7 +127,7 @@ class CrewDetailDialog extends ConsumerWidget {
                             ),
                           ),
                           if (deployed)
-                            _Pill(
+                            CrewPill(
                               fill: const Color(0xFFDDF7EA),
                               border: Skin.mint,
                               child: Text(l10n.uiCrewDeployed, style: Skin.text(13, color: Skin.mintInk)),
@@ -137,6 +139,8 @@ class CrewDetailDialog extends ConsumerWidget {
                 ),
               ],
             ),
+            // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
+            CrewIdentityPanel(crewId: def.id),
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
@@ -276,25 +280,5 @@ class _BigPortrait extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
     width: _cardWidth,
     child: PbCardFront(crew: def, rarity: rarity, name: name, silhouette: !owned),
-  );
-}
-
-/// 작은 알약 (등급·출전 표시).
-class _Pill extends StatelessWidget {
-  const _Pill({required this.child, required this.fill, required this.border});
-
-  final Widget child;
-  final Color fill;
-  final Color border;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-    decoration: BoxDecoration(
-      color: fill,
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: border, width: 1.5),
-    ),
-    child: child,
   );
 }

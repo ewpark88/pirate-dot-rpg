@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -98,7 +99,34 @@ class SummonRevealCard extends ConsumerWidget {
             onTap: onTap,
             child: AnimatedBuilder(
               animation: flip,
-              builder: (_, _) => FlipCard(t: (flip.value / 0.6).clamp(0, 1).toDouble(), back: back, front: front),
+              builder: (_, _) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FlipCard(t: (flip.value / 0.6).clamp(0, 1).toDouble(), back: back, front: front),
+                  // 앞면이 보이면 특색 아이콘 + 한 줄 (선원 개성 v2).
+                  SizedBox(
+                    height: summonCaptionHeight,
+                    child: Opacity(
+                      opacity: ((flip.value - 0.6) / 0.4).clamp(0, 1).toDouble(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(height: 3),
+                          FittedBox(child: CrewIdentityIcons(crewId: crew.id, size: 12, light: true)),
+                          Text(
+                            crewTraitLine(l10n, crew.id),
+                            key: Key('summon.card.$i.trait'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: Skin.text(11, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -106,6 +134,9 @@ class SummonRevealCard extends ConsumerWidget {
     );
   }
 }
+
+/// 카드 아래 특색 줄 높이(dp) — 결과 격자가 카드 크기를 정할 때 뺀다.
+const double summonCaptionHeight = 32;
 
 /// 카드 위 작은 금색 배지 (중복 ‘+카드’) — 카드가 작아도 가리지 않게.
 class _SmallBadge extends StatelessWidget {
