@@ -90,6 +90,14 @@ void main() {
       expect(h.events, isEmpty);
     });
 
+    test('마지막 출전 선원은 내릴 수 없다 — FleetRejected(last), 둘 이상이면 내리기 허용', () {
+      final one = formed(const {'octo': CrewState(), 'turtle': CrewState()}, ['octo', null]);
+      expect(sys.handle(one, const SetFleetSlot(0), h.ctx)!.fleet, one.fleet);
+      expect([h.of<FleetRejected>().single.crewId, h.of<FleetRejected>().single.reason], ['octo', 'last']);
+      final two = formed(const {'octo': CrewState(), 'turtle': CrewState()}, ['octo', 'turtle']);
+      expect(sys.handle(two, const SetFleetSlot(0), h.ctx)!.fleet.first, isNull);
+    });
+
     test('같은 계열 상한(maxSameFamilyInFleet)을 넘기면 거절하고 FleetRejected', () {
       final max = t.skills.maxSameFamilyInFleet;
       final family = t.crews.crews.first.family;

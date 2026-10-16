@@ -18,8 +18,21 @@ double feverDamageBonus(GameState s, GameTables t) =>
 double feverGoldMultiplier(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('goldMultiplier') : 1;
 
+/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16: 시간이 아니라 처치 500~1000).
+/// = killsBase × (그 스테이지 탑다운 무리 수 ÷ 기본 무리 수), killsMax 상한 — 무리가 커져도 체감 간격이 비슷하게.
+int feverKillsAt(GameTables t, int stage) {
+  final f = t.meta.raw.obj('fever');
+  final base = t.waves.raw.obj('top').obj('mobCount').integer('base');
+  final n = (f.integer('killsBase') * t.waves.topMobCountAt(stage) / base).round();
+  return n < f.integer('killsMax') ? n : f.integer('killsMax');
+}
+
+/// 게이지에 [amount]를 더한다 (특정 조건 — 즉석 도전 성공·돌발 이벤트 성공). 가득 차면 다음 틱 feverStep이 켠다. 피버 중이면 무시.
+GameState addFever(GameState s, double amount) =>
+    feverOn(s) ? s : s.copyWith(progress: s.progress.copyWith(fever: s.progress.fever + amount));
+
 /// 한 틱 진행: 피버 중이면 남은 틱을 줄이고(끝나면 FeverEnded), 아니면 이번 틱 처치로 게이지를 채워 가득 차면 FeverStarted.
-/// 동시 처치(이번 틱 2마리 이상)는 마리당 × multiKillBonus, 보스 처치는 + bossKill.
+/// 처치 1마리 = 1 ÷ feverKillsAt, 보스 처치는 + bossKill.
 GameState feverStep(GameState s, SystemContext ctx, {required int kills, required bool bossKilled}) {
   final f = ctx.tables.meta.raw.obj('fever');
   final v = s.battle ?? BattleView.empty;
@@ -28,9 +41,7 @@ GameState feverStep(GameState s, SystemContext ctx, {required int kills, require
     if (left == 0) ctx.emit(FeverEnded(ctx.tick));
     return s.copyWith(battle: v.copyWith(feverTicksLeft: left, fever: 0));
   }
-  final add =
-      kills * f.number('perKill') * (kills > 1 ? f.number('multiKillBonus') : 1) +
-      (bossKilled ? f.number('bossKill') : 0);
+  final add = kills / feverKillsAt(ctx.tables, s.progress.stage) + (bossKilled ? f.number('bossKill') : 0);
   if (add == 0 && v.fever == s.progress.fever) return s;
   var gauge = s.progress.fever + add;
   var ticks = 0;
