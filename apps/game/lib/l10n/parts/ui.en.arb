@@ -488,5 +488,8 @@
   "uiMonsterGhostjelly": "Ghost Jelly",
   "uiMonsterCursegull": "Curse Gull",
   "uiMonsterWraith": "Wraith",
-  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft"
+  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft",
+  "uiSleepTouch": "Touch the screen to return",
+  "uiSleepStage": "Stage {stage} · sailing",
+  "uiSleepTitle": "Power saving"
 }
