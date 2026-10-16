@@ -15,6 +15,7 @@ import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 
 part 'event_director_top.dart';
+part 'event_director_v3.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, juice·fx_map): onAhead = 발사체·슬롯 번쩍, onNow = 피격·숫자·이펙트·흔들림·코인.
 class EventDirector implements ReplayListener {
@@ -40,7 +41,7 @@ class EventDirector implements ReplayListener {
   @override
   void onAhead(RecordedTick tick, int index) {
     for (final e in tick.events) {
-      if (e is AttackFired) _launch(e, index, tick.frame);
+      if (e is AttackFired && !_sortieShot(tick, e.crewId)) _launch(e, index, tick.frame);
       if (e is BossFired && scene.isTop) _bossShot(e, index, tick.frame);
     }
   }
@@ -48,6 +49,7 @@ class EventDirector implements ReplayListener {
   void _launch(AttackFired e, int index, BattleView frame) {
     if (scene.isTop && e.family == _assault) return _topMelee(e, index, frame);
     if (scene.isTop && e.kind == 'lightning') return _lightning(e, index, frame);
+    if (scene.isTop && e.beamTicks != null) return _beam(e, index, frame);
     final style = scene.fx.projectileFor(e.family);
     final ship = scene.topShip;
     final (tickMs, tip) = (
@@ -140,6 +142,8 @@ class EventDirector implements ReplayListener {
         case ShipLookChanged():
           scene.moments.onPartUp(e.part);
           funEvent(scene, e);
+        case CrewSortie() when scene.isTop:
+          _sortie(e, tick.frame);
         case EnemyFired() when scene.isTop:
           _enemyShot(e, tick.frame);
         case EnemyEmerging() when scene.isTop:

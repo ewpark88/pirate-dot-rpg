@@ -36,6 +36,8 @@ bool funEvent(BattleScene s, GameEvent e) {
     case BountyFailed():
       s.topHits.bounty.failed(_bossAt(s), s.clockMs);
       _sfx(s, 'bossFailed', e);
+    case BombletBurst(:final x, :final y, :final radius):
+      s.topHits.impact.add(x, y, radius, 0xFFFF8A2A, s.clockMs);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
