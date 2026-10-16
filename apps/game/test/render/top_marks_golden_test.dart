@@ -14,7 +14,7 @@ import 'helpers.dart';
 import 'top_recording.dart';
 
 /// 탑다운 표시 골든 (T4-3 — 옆모습 화가만 그리던 것): 수중 구역, 정예 고리·보호막·상태 아이콘, 떠내려온 보물상자, 배 강화 테.
-/// 장면 상태를 직접 켜서 한 화면에 모두(S24).
+/// 장면 상태를 직접 켜서 한 화면에 모두(S24). 체력 막대 알약형(배 하트·보스 해골).
 class _Painter extends CustomPainter {
   _Painter(this.painter, this.frame, this.dpr);
   final ScenePainter painter;
@@ -64,6 +64,12 @@ void main() {
           e.tier = 1;
       }
     }
+    // 보스 체력 막대(해골·3단계 색): 화면 안 적 하나를 보스(33%)로.
+    final boss = scene.poses[1]
+      ..boss = true
+      ..kind = tables.fxMap.bossLook.keys.first
+      ..hpRatio = 0.33;
+    expect(boss.boss, isTrue);
     final ship = scene.topShip;
     scene.zones.obtain()
       ..x = ship.dx - 50

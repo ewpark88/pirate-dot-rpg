@@ -127,7 +127,9 @@ class TopScenePainter {
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
     _enemies(c, under: false);
-    _marks.enemies(c, visibleWorld, _radiusOf);
+    _marks
+      ..enemies(c, visibleWorld, _radiusOf)
+      ..bosses(c, _radiusOf);
     if (view.seaEvent?.id == 'bottle') {
       final b = scene.bottleAt;
       sprites.draw(
