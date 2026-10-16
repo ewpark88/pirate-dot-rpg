@@ -6,6 +6,7 @@ import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
+import 'package:game_core/src/battle/topdown/top_bounty.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/challenge.dart';
@@ -50,6 +51,8 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case RetreatBounty():
+        return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case TriggerUltimate():
         return _round(state, ctx, (r) => r.castUltimate());
       case OpJumpStage(:final stage):
@@ -91,6 +94,9 @@ class BattleSystem implements GameSystem {
 
   @override
   GameState update(GameState state, SystemContext ctx) {
+    final fresh = _field == null; // 앱을 켜 세이브를 불러온 첫 틱 — 남은 현상금 active는 중단 처리
+    final early = TopBounty.prepare(state, _sync(state, ctx), ctx, fresh: fresh);
+    if (early != null) return _project(early, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx.tables);
     final next = _round(state, ctx, (r) {
       final f = r.field;
       if (r.t.skills.rageAutoTrigger) r.castUltimate();
@@ -107,6 +113,10 @@ class BattleSystem implements GameSystem {
         ..tickStatus()
         ..tickCombo();
     });
+    if (_field!.bounty != null) {
+      // 현상금 중: 본 전투 판정·돌발 이벤트·피버 없이 현상금 판정만 (S1 결정: 피버 멈춤).
+      return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
+    }
     final after = _fun.step(_resolve(next, _field!, ctx), _field!, ctx, kills: _kills);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
@@ -119,7 +129,7 @@ class BattleSystem implements GameSystem {
     final w = ctx.tables.waves;
     final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: _tutorialBossScale(s, ctx), extraSec: bossExtraSec(s, ctx.tables));
+      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx), extraSec: bossExtraSec(s, ctx.tables));
     } else {
       spawnWave(f, p.stage, ctx);
     }
@@ -143,16 +153,6 @@ class BattleSystem implements GameSystem {
       return b.speed == boost ? s.copyWith(battle: b.copyWith(speed: 1)) : s;
     }
     return s;
-  }
-
-  /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
-  double _tutorialBossScale(GameState s, SystemContext ctx) {
-    final w = ctx.tables.waves;
-    final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
-    final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
-        ? w.tutorialFailHpMultiplier
-        : 1.0;
-    return early * fail;
   }
 
   /// 이번 틱 결과로 진행 상태를 바꾼다: 파 정리, 보스 처치·시간 초과, 배 침몰.
