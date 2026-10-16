@@ -5,12 +5,14 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
+import 'package:pirate_dot/render/top/top_marks.dart';
 import 'package:pirate_dot/render/top/top_overlays.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
@@ -27,6 +29,7 @@ class TopScenePainter {
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
   late final TopOverlays _overlays = TopOverlays(scene, sprites, atmosphere);
+  late final TopMarks _marks = TopMarks(scene, sprites);
 
   /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). fx_map topShip.scale.
   late final double _shipScale = scene.fx.raw.obj('topShip').number('scale');
@@ -78,6 +81,7 @@ class TopScenePainter {
     c
       ..save()
       ..translate(-ship.dx, -ship.dy);
+    _marks.zones(c);
     _enemies(c, under: true);
     c.restore();
     final size = _ship.sizeOf(tier);
@@ -109,12 +113,17 @@ class TopScenePainter {
         width: size.width * _shipScale,
         height: size.height * _shipScale,
       );
-      if (m.sinkMs <= 0) _hp.paint(c, box);
+      if (m.sinkMs <= 0) {
+        _marks.shipAura(c, box);
+        _hp.paint(c, box);
+      }
     }
     c
       ..save()
       ..translate(-ship.dx, -ship.dy);
+    _marks.chest(c, clockMs);
     _enemies(c, under: false);
+    _marks.enemies(c, visibleWorld, _radiusOf);
     if (view.seaEvent?.id == 'bottle') {
       final b = scene.bottleAt;
       sprites.draw(
@@ -131,6 +140,13 @@ class TopScenePainter {
     if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
     c.restore();
     _overlays.paint(c, frame.box, clockMs);
+    _marks.screenFlash(c, Offset.zero & frame.box);
+  }
+
+  /// 적 그림 반지름(단위) — 상태 아이콘·보호막 고리 자리.
+  double _radiusOf(EnemyPose e) {
+    final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
+    return (sprites.sheet(key)?.frameW ?? 12) / 2;
   }
 
   late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');

@@ -1498,7 +1498,8 @@ const Map<String, String> rawTables = {
       "goldfish",
       "sea_serpent",
       "merchant_ship",
-      "bottle"
+      "bottle",
+      "chest"
     ],
     "fever": {
       "border": "#FFD84A",
