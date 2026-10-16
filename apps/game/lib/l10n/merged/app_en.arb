@@ -653,5 +653,8 @@
   "uiFastSailEnded": "Stages {from} → {to} cleared!",
   "uiSortPower": "Power",
   "uiBountyWanted": "WANTED",
-  "uiBountyFled": "Fled!"
+  "uiBountyFled": "Fled!",
+  "uiBossTagRegion": "REGION BOSS",
+  "uiBossTagMid": "MID-BOSS",
+  "uiBossIncoming": "Boss incoming!"
 }

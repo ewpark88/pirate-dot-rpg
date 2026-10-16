@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
+import 'package:pirate_dot/ui/hud/boss_intro.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/fast_sail.dart';
@@ -31,6 +32,8 @@ class BattleTopStrip extends StatelessWidget {
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
       const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
+      // 보스 등장 이름표 (2초).
+      const BossIntro(),
       // 처음 환생할 수 있게 된 순간 큰 말풍선 한 번.
       const RebirthReadyBubble(),
       const BossFailNotice(),
