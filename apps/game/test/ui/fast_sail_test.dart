@@ -61,7 +61,16 @@ void main() {
       ..add(RecordedTick(s.battle!, [GoldOverflow(2, lost: BigNum.parse('3e4'))]))
       ..add(
         RecordedTick(_ended(s), [
-          FastSailEnded(3, from: 10, to: 40, stages: 30, gold: BigNum.parse('1.2e5'), gems: 15, skipped: false),
+          FastSailEnded(
+            3,
+            from: 10,
+            to: 40,
+            stages: 30,
+            gold: BigNum.parse('1.2e5'),
+            lost: BigNum.parse('3e4'),
+            gems: 15,
+            skipped: false,
+          ),
         ]),
       );
     await tester.pumpAndSettle();
@@ -116,7 +125,16 @@ void main() {
         ..add(RecordedTick(s.battle!, [GoldOverflow(2, lost: BigNum.parse('3e4'))]))
         ..add(
           RecordedTick(_ended(s), [
-            FastSailEnded(3, from: 10, to: 40, stages: 30, gold: BigNum.parse('1.2e5'), gems: 15, skipped: false),
+            FastSailEnded(
+              3,
+              from: 10,
+              to: 40,
+              stages: 30,
+              gold: BigNum.parse('1.2e5'),
+              lost: BigNum.parse('3e4'),
+              gems: 15,
+              skipped: false,
+            ),
           ]),
         );
       await tester.pumpAndSettle();

@@ -15,6 +15,8 @@ void main() {
     final rs = waves['rebirthSkip'] as Map<String, dynamic>;
     if (on) {
       rs
+        ..['fraction'] =
+            0.55 // 구간 길이를 고정(S2가 표를 바꿔도 리듬 단계를 다 본다)
         ..['breakSec'] = 2.0
         ..['travelSec'] = 0.3
         ..['breakAccel'] = 0.75

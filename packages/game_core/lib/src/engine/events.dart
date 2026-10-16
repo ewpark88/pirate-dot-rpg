@@ -34,6 +34,7 @@ sealed class GameEvent {
         angle: (j['angle'] as num?)?.toDouble(),
         flightTicks: j['flightTicks'] as int?,
         kind: j['kind'] as String?,
+        splashRadius: (j['splashRadius'] as num?)?.toDouble(),
       ),
       'damage' => Damage(
         t,
@@ -105,6 +106,7 @@ class AttackFired extends GameEvent {
     this.angle,
     this.flightTicks,
     this.kind,
+    this.splashRadius,
   });
 
   final String crewId;
@@ -126,6 +128,9 @@ class AttackFired extends GameEvent {
   /// 연출 종류(선택, crews.json aim `kind` — 예 'lightning' 낙뢰). 없으면 계열 기본.
   final String? kind;
 
+  /// 맞은 자리 폭발 반경(선택 — 전설 상위·신화, 렌더가 큰 임팩트).
+  final double? splashRadius;
+
   @override
   String get type => 'attackFired';
 
@@ -141,6 +146,7 @@ class AttackFired extends GameEvent {
     if (angle != null) 'angle': angle,
     if (flightTicks != null) 'flightTicks': flightTicks,
     if (kind != null) 'kind': kind,
+    if (splashRadius != null) 'splashRadius': splashRadius,
   };
 }
 

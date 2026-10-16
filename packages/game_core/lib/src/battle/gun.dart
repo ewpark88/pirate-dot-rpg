@@ -11,13 +11,18 @@ class Gun {
     this.rarity = 0,
     this.legend,
     JsonReader? aim,
-  }) : attack = family.attackAt(rarity).overlay(aim);
+    List<JsonReader> rankAims = const [],
+    double tempo = 1,
+  }) : attack = rankAims.fold(family.attackAt(rarity).overlay(aim), (a, r) => a.overlay(r)).tempo(tempo);
 
   /// [crewId]의 계열·등급 사다리·스킬(선원 `skill`이 있으면 그것)로 만든다.
   factory Gun.of(GameTables t, String crewId, {required double power, int rarity = 0}) {
     final crew = t.crews.byId(crewId);
     final family = t.skills.byId(crew.family);
     final skillId = crew.skill;
+    int at(String id) => t.rarities.rarities.indexWhere((r) => r.id == id);
+    final aim = crew.aim;
+    final tempo = t.skills.rarityTempo;
     return Gun(
       crewId: crewId,
       family: family,
@@ -25,7 +30,13 @@ class Gun {
       rarity: rarity,
       skill: skillId == null ? family.skill : t.skills.skillById(skillId),
       legend: t.skills.legendFor(crewId, rarity, t.rarities.rarities.indexWhere((r) => r.id == 'legend')),
-      aim: crew.aim,
+      aim: aim,
+      // 등급별 덮어쓰기(S2): aim.legend는 전설 이상, aim.mythic은 신화 이상에서 그 위에 — 예 단일형 신화의 splashRadius
+      rankAims: [
+        for (final id in const ['legend', 'mythic'])
+          if (aim != null && aim.has(id) && at(id) >= 0 && rarity >= at(id)) aim.obj(id),
+      ],
+      tempo: rarity < tempo.length ? tempo[rarity] : 1,
     );
   }
 

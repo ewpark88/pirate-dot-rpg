@@ -212,7 +212,7 @@ class TopGeometry implements BattleGeometry {
   void settle(Field f, double dt) {
     final mobs = [
       for (final e in f.foes)
-        if (e.alive && !e.standsOff && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
+        if (e.alive && !e.standsOff && !e.vanguard && e.ownerId == null && e.holdSec <= 0 && e.passX == null) e,
     ];
     final min = top.mobRadius / half;
     for (var i = 0; i < mobs.length; i++) {
@@ -253,7 +253,7 @@ class TopGeometry implements BattleGeometry {
   /// 배에서 바깥쪽으로. approachRadius 밖으로는 밀지 않는다.
   @override
   void push(Foe e, double distance) {
-    if (e.passX != null) return; // 지나가는 배는 경로를 지킨다
+    if (e.passX != null || e.vanguard) return; // 지나가는 배는 경로를, 돌격대는 돌진을 지킨다
     final d = _dist(e);
     if (d == 0) return;
     _spawn.place(e, _angle(e), math.min(d + distance, math.max(d, top.approachRadius)));
@@ -261,7 +261,7 @@ class TopGeometry implements BattleGeometry {
 
   @override
   void pull(Foe e, double x, double y, double amount) {
-    if (e.passX != null) return;
+    if (e.passX != null || e.vanguard) return;
     final dx = x - e.x;
     final dy = y - e.y;
     final d = math.sqrt(dx * dx + dy * dy);
