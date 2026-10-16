@@ -105,7 +105,8 @@ class Round {
         if (g.cooldown < 0) g.cooldown = 0;
         continue;
       }
-      g.cooldown = a.intervalSec;
+      // 남은 몫을 넘긴다 — 간격이 틱 단위로 올림되지 않게(S2 승인). 운영자 쿨다운 0에선 쌓이지 않게 새로.
+      g.cooldown = zeroCooldown ? a.intervalSec : g.cooldown + a.intervalSec;
       final crit = ctx.rng.nextDouble() < stats.critChance;
       if (crit) hitStop('crit');
       final base = damageOf(g, a.power * (crit ? stats.critMultiplier : 1) / shots);

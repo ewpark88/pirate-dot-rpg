@@ -125,7 +125,7 @@ void main() {
     expect(instant.whereType<Damage>(), hasLength(1));
   });
 
-  test('연사: 0.3초 선원 60초 발사 ≈ 200, 3.0초 ≈ 20 (돛 배율 그대로)', () {
+  test('연사: 0.3초 선원 60초 발사 ≈ 200, 3.0초 ≈ 20 (× 돛 공격 속도)', () {
     List<Foe> target(TopGeometry g) => [foe(g, 1, 0, -80, hp: 1000000000000000)];
     final speed = CombatStats.of(s, plain).attackSpeed;
     int shots(double interval) => fight(
@@ -136,12 +136,9 @@ void main() {
       target,
       60,
     ).whereType<AttackFired>().length;
-    // 지금 엔진: 쏜 뒤 쿨다운 = 간격(남은 몫을 넘기지 않음)이라 간격이 틱(0.05초) 단위로 올림되고, 딱 맞는 배수는
-    // 부동소수 오차로 한 틱 더 — 0.3초는 실제 0.35초(S2에 알림: v2 균형 때 남은 몫 넘기기로 고칠지).
-    final dt = plain.waves.tickMs / 1000;
-    double expected(double interval) => 60 / (interval / speed + dt);
-    expect(shots(0.3), closeTo(expected(0.3), expected(0.3) * 0.03));
-    expect(shots(3), closeTo(expected(3), 2));
+    // 쏜 뒤 남은 몫을 넘기므로 간격 그대로(틱 올림 없음).
+    expect(shots(0.3), closeTo(60 / 0.3 * speed, 2));
+    expect(shots(3), closeTo(60 / 3 * speed, 1));
     expect(shots(0.3) / shots(3), greaterThan(8), reason: '연사형은 한 방형의 8배 넘게 쏜다');
   });
 
