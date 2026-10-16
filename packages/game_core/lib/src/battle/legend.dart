@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/cluster.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
@@ -13,6 +14,13 @@ import 'package:game_data/game_data.dart';
 
 /// 특징(전설 미만)의 '발마다 확률': [chance]가 0보다 크면 결정론 난수로 굴린다(0이면 난수를 쓰지 않는다 — 옛 결과 그대로).
 bool roll(double chance, Rng rng) => chance > 0 && rng.nextDouble() < chance;
+
+/// 한 번 발사의 발 수(한 발 피해 = 한 번 피해 ÷ 이 수): 원형 탄막은 ringCount(등급 ladder), 그 밖은 projectiles + 전설·특징 추가.
+int shotCount(Gun g, Rng rng) {
+  final a = g.attack;
+  if (a.shape == 'ring') return a.raw.numberOr('ringCount', a.projectiles.toDouble()).round();
+  return a.projectiles + extraShots(g, rng);
+}
 
 /// 발사체 추가 수: 전설 extraProjectiles + 특징 확률 몫.
 int extraShots(Gun g, Rng rng) {
@@ -153,6 +161,7 @@ void splash(Round r, Gun g, Volley v, BigNum base) {
 
 /// 한 발이 끝난 뒤: 맞은 자리 폭발(등급), 전설 능력 onHit·장판·치명타 폭발·번개 연쇄.
 void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
+  scatterBomblets(r, g, v, base); // 집속탄: 자탄 산개(cluster.dart)
   splash(r, g, v, base);
   if (g.legend == null) return;
   applyOnHit(r, g, v.hits.map((h) => h.foe), base, x: v.x, y: v.y);

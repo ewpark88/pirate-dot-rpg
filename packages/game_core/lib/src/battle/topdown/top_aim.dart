@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/targeting.dart' show Volley, attackReach, spread;
+import 'package:game_core/src/battle/targeting.dart' show Hit, Volley, attackReach, spread;
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -65,6 +65,7 @@ class TopAim {
   }
 
   List<Volley> aimMany(AttackDef a, int n, List<Foe> foes, Rng rng, {double reachBonus = 0}) {
+    if (a.shape == 'ring') return ring(a, n, foes, reachBonus: reachBonus);
     final out = <Volley>[];
     final avoid = <Foe>{};
     for (var i = 0; i < n; i++) {
@@ -88,7 +89,7 @@ class TopAim {
     double ax;
     double ay;
     switch (a.shape) {
-      case 'circle':
+      case 'circle' || 'cluster': // 집속탄 본탄도 무리 중심에(자탄은 cluster.dart)
         final radius = circleRadius(a);
         int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
         // 무리 중심(계열 기본 cluster) — 선원 개성 v2가 다른 조준(가장 강한·무작위 등)을 주면 그 적을 중심으로.
@@ -172,6 +173,31 @@ class TopAim {
         hit = [t];
     }
     return (x: ax, y: ay, hits: spread(hit, w, falloff: falloff));
+  }
+
+  /// 원형 탄막(계열 v3): 배를 중심으로 [n]방향 고르게(가장 가까운 적 쪽부터). 방향마다 광선 위 첫 적(사거리 안),
+  /// 없으면 사거리 끝으로 빈 탄(맞을 적 없음 — 연출만). 보이는 적이 하나도 없으면 쏘지 않는다.
+  List<Volley> ring(AttackDef a, int n, List<Foe> foes, {double reachBonus = 0}) {
+    final targets = eligible(a, foes, reachBonus: reachBonus);
+    if (targets.isEmpty) return const [];
+    final near = nearest(targets, top.shipX, top.shipY);
+    final r = attackReach(a, w.field);
+    final reach = (r == null ? top.viewHeight * half : r * top.reachScale + reachBonus) + top.shipRadius;
+    final start = math.atan2(near.y - top.shipY, near.x - top.shipX);
+    return [
+      for (var i = 0; i < n; i++)
+        () {
+          final angle = start + math.pi / half * i / n;
+          final ux = math.cos(angle);
+          final uy = math.sin(angle);
+          double proj(Foe e) => (e.x - top.shipX) * ux + (e.y - top.shipY) * uy;
+          double off(Foe e) => ((e.x - top.shipX) * uy - (e.y - top.shipY) * ux).abs();
+          final on = targets.where((e) => proj(e) > 0 && off(e) <= beamHalfWidth(a) + top.radiusOf(e)).toList()
+            ..sort((p, q) => proj(p).compareTo(proj(q)));
+          if (on.isNotEmpty) return (x: on.first.x, y: on.first.y, hits: [(foe: on.first, factor: 1.0)]);
+          return (x: top.shipX + ux * reach, y: top.shipY + uy * reach, hits: <Hit>[]);
+        }(),
+    ];
   }
 
   /// 광선이 꿰는 수: 레이저는 laserPierce(0 = 전부 — [all]), 그 밖은 pierce.
