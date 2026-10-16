@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/cluster.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
@@ -160,6 +161,7 @@ void splash(Round r, Gun g, Volley v, BigNum base) {
 
 /// 한 발이 끝난 뒤: 맞은 자리 폭발(등급), 전설 능력 onHit·장판·치명타 폭발·번개 연쇄.
 void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
+  scatterBomblets(r, g, v, base); // 집속탄: 자탄 산개(cluster.dart)
   splash(r, g, v, base);
   if (g.legend == null) return;
   applyOnHit(r, g, v.hits.map((h) => h.foe), base, x: v.x, y: v.y);

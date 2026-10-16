@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/beam.dart';
+import 'package:game_core/src/battle/cluster.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
@@ -93,6 +94,10 @@ extension Flights on Round {
     if (due.isEmpty) return;
     field.flights.removeWhere(due.contains);
     for (final f in due) {
+      if (isBomblet(f.attack)) {
+        final radius = geo.zoneRadius(f.attack);
+        ctx.emit(BombletBurst(ctx.tick, crewId: f.gun.crewId, x: f.volley.x, y: f.volley.y, radius: radius));
+      }
       final v = _landing(geo, f);
       if (v == null) {
         // 원형 탄막의 빈 탄(처음부터 노린 적 없음)은 MISS를 띄우지 않는다
@@ -102,7 +107,7 @@ extension Flights on Round {
         continue;
       }
       land(f.gun, f.attack, v, f.base, crit: f.crit);
-      legendAfterHit(this, f.gun, v, f.base, crit: f.crit);
+      if (!isBomblet(f.attack)) legendAfterHit(this, f.gun, v, f.base, crit: f.crit);
     }
   }
 
