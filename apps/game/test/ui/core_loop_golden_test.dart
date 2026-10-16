@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
+import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
@@ -22,6 +23,8 @@ void main() {
         overrides: [initialGameStateProvider.overrideWithValue(loadFixture('stage37_midgame'))],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
+          // 앱과 같은 테마(글꼴·하늘 바탕)로 — 실제 창 모습.
+          theme: pixelTheme(),
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

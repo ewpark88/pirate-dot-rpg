@@ -456,5 +456,8 @@
   "uiRewardFever": "Fever +{percent}%",
   "uiRewardTailwind": "Tailwind {min}m",
   "uiFever": "Fever",
-  "uiFeverOn": "Fever! {sec}s"
+  "uiFeverOn": "Fever! {sec}s",
+  "uiSettingsSound": "Sound",
+  "uiSettingsDisplay": "Display",
+  "uiSettingsPlay": "Play"
 }
