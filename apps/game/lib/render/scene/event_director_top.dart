@@ -137,6 +137,31 @@ extension _TopEvents on EventDirector {
         b.cancel(e.enemyId);
     }
   }
+
+  /// 범위 피해 합: 합계 숫자 + 흔들림, 탑다운은 임팩트 v2(반경 = 이번 틱 같은 선원이 맞힌 적 중 가장 먼 거리 + 6).
+  void _aoe(AoeDamageSum e, RecordedTick tick, int index) {
+    scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
+    scene.shake.trigger(_juice.shake['aoe']!);
+    if (!scene.isTop) return;
+    String? crew;
+    var r = 12.0;
+    for (final d in tick.events.whereType<Damage>()) {
+      final en = _player.enemyAt(index, d.targetId) ?? _player.enemyAt(index - 1, d.targetId);
+      if (en == null) continue;
+      final dist = math.sqrt((en.x - e.x) * (en.x - e.x) + (en.y - e.y) * (en.y - e.y));
+      if (dist > 70 || (crew != null && d.crewId != crew)) continue;
+      crew ??= d.crewId;
+      r = math.max(r, dist + 6);
+    }
+    var rarity = 0;
+    for (final s in tick.frame.fleet) {
+      if (s.crewId == crew) rarity = s.rarity;
+    }
+    final colors = scene.tables.rarities.rarities;
+    final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
+    final water = crew != null && _crewFamily[crew] == 'underwater';
+    scene.topHits.impact.add(e.x, e.y, math.min(r, 64), color, scene.clockMs, water: water);
+  }
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

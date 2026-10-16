@@ -1,0 +1,98 @@
+import 'dart:math' as math;
+import 'dart:ui';
+
+/// 탑다운 범위 공격 임팩트 v2 (사용자 '모레이 같은 범위 스킬 임팩트가 허접하다', S1):
+/// 흰 번쩍 코어 → 등급 색 충격파 고리 2겹(빠르게 퍼짐) → 파편(수중은 거품) 입자 → 바닥 잔흔(0.6초에 사라짐).
+/// 수중(underwater)은 가운데 물기둥이 솟았다 무너진다. 크기 = 엔진이 이번 틱에 맞힌 적까지의 거리(반경 그대로).
+class TopImpact {
+  final List<_Hit> _hits = [];
+  final _fill = Paint();
+  final _ring = Paint()..style = PaintingStyle.stroke;
+  static const _lifeMs = 600.0;
+  static const _max = 24;
+
+  /// ([x],[y])에 반지름 [radius] 임팩트. [color] = 등급 색, [water] = 수중(물기둥·거품).
+  void add(double x, double y, double radius, int color, double atMs, {bool water = false}) {
+    if (_hits.length >= _max) _hits.removeAt(0);
+    _hits.add(_Hit(x, y, radius, color, atMs, water: water));
+  }
+
+  void clear() => _hits.clear();
+
+  static double _ease(double t) => 1 - (1 - t) * (1 - t) * (1 - t);
+
+  /// 전장 좌표. [flash] 꺼짐이면 흰 번쩍 코어를 뺀다, [lite](절전·폭발 많음)면 입자를 반.
+  void paint(Canvas c, double now, {required bool flash, required bool lite}) {
+    _hits.removeWhere((h) => now - h.ms >= _lifeMs);
+    for (final h in _hits) {
+      final age = now - h.ms;
+      if (age < 0) continue;
+      final t = age / _lifeMs;
+      final at = Offset(h.x, h.y);
+      final col = Color(h.color);
+      final r = h.radius;
+      // 바닥 잔흔: 어두운 물 고리(수중은 거품 고리), 천천히 사라짐
+      _ring
+        ..strokeWidth = 2.5
+        ..color = (h.water ? const Color(0xFFE6F6FF) : const Color(0xFF14243A)).withValues(alpha: 0.35 * (1 - t));
+      c.drawCircle(at, r * 0.85, _ring);
+      // 흰 번쩍 코어
+      if (flash && t < 0.15) {
+        final k = t / 0.15;
+        _fill.color = const Color(0xFFFFFFFF).withValues(alpha: 0.9 * (1 - k));
+        c.drawCircle(at, r * (0.35 + 0.25 * k), _fill);
+      }
+      // 등급 색 충격파 고리 2겹
+      for (final (delay, width) in const [(0.0, 3.5), (0.12, 2.0)]) {
+        final k = ((t - delay) / 0.55).clamp(0.0, 1.0);
+        if (k <= 0 || k >= 1) continue;
+        _ring
+          ..strokeWidth = width * (1 - k) + 0.5
+          ..color = Color.lerp(const Color(0xFFFFFFFF), col, k)!.withValues(alpha: 1 - k);
+        c.drawCircle(at, r * (0.25 + 0.9 * _ease(k)), _ring);
+      }
+      // 물기둥(수중): 솟았다 무너짐
+      if (h.water && t < 0.7) {
+        final k = t / 0.7;
+        final up = math.sin(math.pi * k);
+        final hgt = r * 0.9 * up;
+        _fill.color = const Color(0xFFBFE9FF).withValues(alpha: 0.85 * (1 - k * 0.6));
+        c.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(h.x - r * 0.18, h.y - hgt, r * 0.36, hgt + 2),
+            Radius.circular(r * 0.18),
+          ),
+          _fill,
+        );
+        _fill.color = const Color(0xFFFFFFFF).withValues(alpha: 0.9 * (1 - k));
+        c.drawOval(Rect.fromCenter(center: Offset(h.x, h.y - hgt), width: r * 0.5, height: r * 0.25), _fill);
+      }
+      // 파편·거품 입자
+      final n = lite ? 6 : 12;
+      for (var i = 0; i < n; i++) {
+        final a = i * 2 * math.pi / n + h.x * 0.37;
+        final d = r * (0.2 + 1.0 * _ease(t)) * (0.7 + 0.3 * ((i * 7) % 5) / 4);
+        final lift = h.water ? 0.0 : r * 0.5 * 4 * t * (1 - t);
+        _fill.color = (h.water ? const Color(0xFFE6F6FF) : (i.isEven ? col : const Color(0xFF3A3040))).withValues(
+          alpha: 1 - t,
+        );
+        final s = h.water ? 1.5 + (i % 3) : 1.5;
+        if (h.water) {
+          c.drawCircle(at + Offset(math.cos(a) * d, math.sin(a) * d - lift), s, _fill);
+        } else {
+          c.drawRect(Rect.fromLTWH(h.x + math.cos(a) * d, h.y + math.sin(a) * d - lift, s * 1.3, s), _fill);
+        }
+      }
+    }
+  }
+}
+
+class _Hit {
+  _Hit(this.x, this.y, this.radius, this.color, this.ms, {required this.water});
+  final double x;
+  final double y;
+  final double radius;
+  final int color;
+  final double ms;
+  final bool water;
+}
