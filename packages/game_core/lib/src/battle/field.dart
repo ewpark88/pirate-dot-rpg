@@ -1,6 +1,7 @@
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/gun.dart';
 import 'package:game_core/src/battle/shield.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/battle/topdown/top_threat.dart';
@@ -83,6 +84,8 @@ class Foe {
   double? nearY;
   bool warned = false;
   double fireTimer = 0;
+  BossPlan? plan; // 보스 행동 v2 패턴 상태(boss_patterns.dart) — 패턴이 있는 보스·바다 괴물
+  bool get standsOff => boss || plan != null; // standoff 원에 서서 돈다(보스·패턴 있는 이벤트 적)
   bool get emerging => warned && holdSec > 0;
 
   bool revived = false; // 부활을 이미 썼다

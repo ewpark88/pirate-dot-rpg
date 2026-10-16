@@ -121,6 +121,22 @@ extension _TopEvents on EventDirector {
     }
     _flashSlot(frame, e.crewId);
   }
+
+  /// 보스 행동 v2(BossPatternShown): warn → 예고 그림, act → 동작(돌진 자국·장판 폭발 + 큰 흔들림), cancel → 지움.
+  void _bossPattern(BossPatternShown e, BattleView frame) {
+    final b = scene.topHits.boss;
+    final now = scene.clockMs;
+    switch (e.phase) {
+      case 'warn':
+        final warnMs = e.warnTicks * _player.tickMs / math.max(1, frame.speed);
+        b.warn(e.enemyId, e.kind, e.x, e.y, e.angle, e.count, e.radius, now, warnMs);
+      case 'act':
+        b.act(e.enemyId, now);
+        if (e.kind == 'blast' || e.kind == 'charge') scene.shake.trigger(_juice.shake['ultimate']!);
+      case 'cancel':
+        b.cancel(e.enemyId);
+    }
+  }
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

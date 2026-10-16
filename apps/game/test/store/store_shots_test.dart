@@ -15,10 +15,8 @@ import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
-import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
-import 'package:pirate_dot/render/viewport/integer_scale.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -382,19 +380,9 @@ class _ScenePaint extends CustomPainter {
   @override
   void paint(ui.Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = _sea);
-    if (painter.scene.isTop) {
-      // 탑다운: 앱(BattleGame)과 같이 캔버스를 상자 dp 그대로 두고 탑다운 카메라로 그린다.
-      painter.scene.layout = battleFrameFor(size, dpr);
-      painter.paintTop(canvas, topFrameFor(size, dpr));
-      return;
-    }
-    final s = integerScale(size.width, size.height, dpr: dpr);
-    canvas
-      ..save()
-      ..translate(s.offsetX, s.offsetY)
-      ..scale(s.scale);
-    painter.paint(canvas);
-    canvas.restore();
+    // 탑다운: 앱(BattleGame)과 같이 캔버스를 상자 dp 그대로 두고 탑다운 카메라로 그린다(옆모습은 T4-3에서 지워짐).
+    painter.scene.layout = battleFrameFor(size, dpr);
+    painter.paintTop(canvas, topFrameFor(size, dpr));
   }
 
   @override

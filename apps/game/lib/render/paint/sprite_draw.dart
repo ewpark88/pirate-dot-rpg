@@ -31,7 +31,7 @@ class SpriteDraw {
     _underwater = _tint(a);
   }
 
-  /// 감속 색조 필터 (StatusPainter가 정한 색).
+  /// 감속 색조 필터 (없으면 색조 없음).
   ColorFilter? slowed;
 
   SpriteSheet? sheet(String key) {

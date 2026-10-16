@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 
 import 'ui_harness.dart';
 
@@ -22,6 +23,13 @@ void main() {
   testWidgets('해역 보스 스테이지(50)면 ‘Region boss stage!’', (tester) async {
     final s = loadFixture('stage37_midgame');
     await pumpGame(tester, s.copyWith(progress: s.progress.copyWith(stage: 50)));
+    // 스테이지 50은 환생 가능 → 보물지도 카드가 맨 위라 해역 카드까지 스크롤.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('voyage.region')),
+      200,
+      scrollable: find.descendant(of: find.byType(VoyageTab), matching: find.byType(Scrollable)).first,
+    );
+    await tester.pump();
     expect(find.text('Region boss stage!'), findsOneWidget);
     expect(find.text('Next: Storm Sea'), findsOneWidget);
   });

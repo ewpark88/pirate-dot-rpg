@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -27,6 +28,8 @@ class BattleTopStrip extends StatelessWidget {
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _Pills()),
+      // 처음 환생할 수 있게 된 순간 큰 말풍선 한 번.
+      const RebirthReadyBubble(),
       const BossFailNotice(),
       if (tutorial) const TutorialBubble(),
     ],
@@ -39,14 +42,18 @@ class _Pills extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
-    final (fever, challenge) = ref.watch(
-      gameStateProvider.select((s) => ((s.battle?.feverTicksLeft ?? 0) > 0, s.battle?.challenge != null)),
+    final (fever, challenge, sea) = ref.watch(
+      gameStateProvider.select(
+        (s) => ((s.battle?.feverTicksLeft ?? 0) > 0, s.battle?.challenge != null, s.battle?.seaEvent != null),
+      ),
     );
-    // 우선순위: 현상금 > 도전 > 돌발 이벤트. 피버 동안은(오른쪽에 원형 시간) 알약 하나만.
-    final pills = switch ((bounty, fever, challenge)) {
-      (true, _, _) => const [BountyStrip()],
-      (false, true, true) => const [ChallengeStrip()],
-      _ => const [SeaEventStrip(), ChallengeStrip()],
+    // 우선순위: 현상금 > 도전 > 돌발 이벤트 > 환생 가능. 피버 동안은(오른쪽에 원형 시간) 알약 하나만.
+    final pills = switch ((bounty, fever, challenge, sea)) {
+      (true, _, _, _) => const [BountyStrip()],
+      (false, true, true, _) => const [ChallengeStrip()],
+      (false, true, false, true) => const [SeaEventStrip()],
+      (false, true, false, false) => const [RebirthReadyPill()],
+      _ => const [SeaEventStrip(), ChallengeStrip(), RebirthReadyPill()],
     };
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

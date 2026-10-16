@@ -150,7 +150,7 @@ class TopAim {
         final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if ((e.boss || edge(e) <= coneRange(a)) &&
+            if ((e.standsOff || edge(e) <= coneRange(a)) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,
@@ -159,7 +159,7 @@ class TopAim {
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'push':
         // 배 둘레 고리: 둘레에서 range 안 전부. 보스는 사거리 안이면 range와 상관없이(옆모습과 같은 규칙 — 보스는 멀리 선다).
-        hit = targets.where((e) => e.boss || edge(e) <= ringRange(a)).toList()
+        hit = targets.where((e) => e.standsOff || edge(e) <= ringRange(a)).toList()
           ..sort((p, q) => edge(p).compareTo(edge(q)));
         if (hit.isEmpty) return null;
         (ax, ay) = (top.shipX, top.shipY);

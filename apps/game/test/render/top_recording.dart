@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
@@ -100,6 +102,38 @@ List<RecordedTick> withThreat(List<RecordedTick> rec, {int at = 120}) {
               EnemyFired(f.tick, enemyId: far[1].id, fromX: far[1].x, fromY: far[1].y, flightTicks: 20, kind: 'water'),
               EnemyEmerging(f.tick, enemyId: -1, x: sx + 34, y: sy - 26, warnTicks: 12),
             ])
+          : rec[i],
+  ];
+}
+
+/// 보스 행동 v2 예고·동작 주입 (S5 BossPatternShown): [at] 틱에 배에서 먼 적 하나를 보스 자리로 [kind] 예고(12틱), [at]+12에 동작.
+List<RecordedTick> withBossPattern(List<RecordedTick> rec, String kind, {int at = 120}) {
+  final f = rec[at].frame;
+  final sx = f.shipX ?? 135;
+  final sy = f.shipY ?? 240;
+  final far = [...f.enemies]
+    ..sort((a, b) => ((b.x - sx).abs() + (b.y - sy).abs()).compareTo((a.x - sx).abs() + (a.y - sy).abs()));
+  final e = far.first;
+  // 화면 안에 보이게 배 앞 90단위 쪽으로 당긴 자리.
+  final bx = sx + (e.x - sx).clamp(-80.0, 80.0);
+  final by = sy - 90.0;
+  final angle = math.atan2(sy - by, sx - bx);
+  BossPatternShown ev(int tick, String phase) => BossPatternShown(
+    tick,
+    enemyId: e.id,
+    kind: kind,
+    phase: phase,
+    warnTicks: 12,
+    x: bx,
+    y: by,
+    angle: angle,
+    count: kind == 'summon' ? 4 : 5,
+    radius: 56,
+  );
+  return [
+    for (var i = 0; i < rec.length; i++)
+      i == at || i == at + 12
+          ? RecordedTick(rec[i].frame, [...rec[i].events, ev(rec[i].frame.tick, i == at ? 'warn' : 'act')])
           : rec[i],
   ];
 }

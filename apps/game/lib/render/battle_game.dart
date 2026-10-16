@@ -11,7 +11,6 @@ import 'package:pirate_dot/render/demo/stress_recording.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/perf_overlay.dart';
-import 'package:pirate_dot/render/paint/power_save_cache.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/perf/frame_cap.dart';
 import 'package:pirate_dot/render/perf/perf_monitor.dart';
@@ -100,21 +99,15 @@ class BattleGame extends FlameGame with _UiLinks {
 
   final perf = PerfMonitor();
   final _overlay = PerfOverlay();
-  final _cache = PowerSaveCache();
   late final _cap = FrameCap(this);
 
   /// 장면을 진행한 횟수 (절전 확인용).
   int sceneUpdates = 0;
-  bool _dirty = true;
-  bool _top = false;
   @override
   TopFrame _topFrame = topFrameFor(const Size(320, 180), 1);
   double _powerSaveAccum = 0;
   double _summaryAccum = 0;
   bool _showHitboxes = false;
-  // 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
-  // ignore: prefer_function_declarations_over_variables
-  late final void Function(Canvas canvas) _paintScene = (c) => painter.paint(c);
 
   static const _sea = Color(0xFF1B4F72);
   static const _summaryEveryMs = 10000.0;
@@ -131,7 +124,6 @@ class BattleGame extends FlameGame with _UiLinks {
   JuiceSettings _settings;
   JuiceSettings get settings => _settings;
   set settings(JuiceSettings v) {
-    if (!v.powerSave) _cache.dispose();
     _settings = v;
     scene.settings = v;
     _applyCap();
@@ -185,8 +177,6 @@ class BattleGame extends FlameGame with _UiLinks {
       ..sprites = _sprites
       ..useSprites = _useSprites;
     _sceneReady = true;
-    _cache.dispose();
-    _dirty = true;
   }
 
   void _onTick(RecordedTick tick) {
@@ -216,19 +206,10 @@ class BattleGame extends FlameGame with _UiLinks {
     final frame = battleFrameFor(Size(size.x, size.y), dpr, bottomInset: _bottomInset);
     scene.layout = frame;
     _topFrame = topFrameFor(Size(size.x, size.y), dpr);
-    // 상자 크기가 바뀌면(시트를 끄는 동안 매 프레임) 절전 캐시의 옛 그림을 버리고 바로 다시 그린다(S4: 선원 줄이 옛 자리에 남음).
-    _cache.dispose();
-    _dirty = true;
-    if (_top) {
-      // 탑다운(T2): 캔버스를 상자 dp 그대로 — 탑다운 카메라·옆모습 HUD는 ScenePainter.paintTop이 옮긴다.
-      camera.viewfinder
-        ..zoom = 1
-        ..position = Vector2.zero();
-      return;
-    }
+    // 탑다운(T2·T4-3): 캔버스를 상자 dp 그대로 — 탑다운 카메라·HUD 배치는 ScenePainter.paintTop이 옮긴다.
     camera.viewfinder
-      ..zoom = frame.dot
-      ..position = Vector2(frame.viewDots.left, frame.viewDots.top);
+      ..zoom = 1
+      ..position = Vector2.zero();
   }
 
   @override
@@ -255,22 +236,10 @@ class BattleGame extends FlameGame with _UiLinks {
     }
     scene.update(stepMs);
     sceneUpdates++;
-    if (scene.isTop != _top) {
-      _top = scene.isTop;
-      if (hasLayout) onGameResize(size);
-    }
-    _dirty = true;
   }
 
   void _renderScene(Canvas canvas) {
-    if (_top) {
-      painter.paintTop(canvas, _topFrame);
-    } else if (settings.powerSave) {
-      _cache.render(canvas, dirty: _dirty, paint: _paintScene);
-    } else {
-      painter.paint(canvas);
-    }
-    _dirty = false;
+    painter.paintTop(canvas, _topFrame);
     if (perfOverlay) _overlay.paint(canvas);
   }
 
@@ -279,7 +248,6 @@ class BattleGame extends FlameGame with _UiLinks {
     unawaited(_sub?.cancel());
     _sub = null;
     _cap.stop();
-    _cache.dispose();
     super.onRemove();
   }
 }

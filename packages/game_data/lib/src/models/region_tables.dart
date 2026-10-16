@@ -34,7 +34,9 @@ class BossDef {
       nameKey = j.str('nameKey'),
       hpMultiplier = j.number('hpMultiplier'),
       weakFamilies = j.strs('weakFamilies'),
-      mechanic = j.has('mechanic') ? BossMechanic.fromJson(j.obj('mechanic')) : null;
+      mechanic = j.has('mechanic') ? BossMechanic.fromJson(j.obj('mechanic')) : null,
+      patterns = j.has('patterns') ? j.objs('patterns').map(BossPatternDef.fromJson).toList() : const [],
+      restSec = j.numberOr('restSec', 0);
 
   final String id;
 
@@ -45,6 +47,48 @@ class BossDef {
   /// 약점 표시용 계열 (UI·렌더가 아이콘으로).
   final List<String> weakFamilies;
   final BossMechanic? mechanic;
+
+  /// 보스 행동 v2(docs/specs/platform-boss-patterns.md): 순서대로 돌아가는 패턴. 비면 지금처럼 원거리 기본 공격만.
+  final List<BossPatternDef> patterns;
+
+  /// 패턴 사이 쉼(초) — 이때는 기본 원거리 공격(BossFired).
+  final double restSec;
+}
+
+/// 보스 패턴 하나: volley(조준 탄막) · charge(돌진) · summon(졸개) · blast(배 둘레 장판).
+class BossPatternDef {
+  BossPatternDef.fromJson(JsonReader j)
+    : type = j.str('type'),
+      warnSec = j.number('warnSec'),
+      count = j.intOrNull('count') ?? 1,
+      damageRatio = j.numberOr('damageRatio', 0),
+      speed = j.numberOr('speed', 0),
+      speedMul = j.numberOr('speedMul', 1),
+      spreadDeg = j.numberOr('spreadDeg', 0),
+      radiusShipMul = j.numberOr('radiusShipMul', 0),
+      capMul = j.numberOr('capMul', 1);
+
+  final String type;
+  final double warnSec;
+
+  /// 탄막 발 수 · 소환 마리 수.
+  final int count;
+
+  /// 배 피해 = 보스 공격 × damageRatio (한 대 상한 waves.shipHitCap × [capMul]).
+  final double damageRatio;
+
+  /// 탄막 탄속(단위/초).
+  final double speed;
+
+  /// 돌진 속도 = 보스 속도 × speedMul.
+  final double speedMul;
+
+  /// 탄막 부채꼴 전체 각(도, 연출·이벤트).
+  final double spreadDeg;
+
+  /// 장판 반지름 = 배 반경 × radiusShipMul.
+  final double radiusShipMul;
+  final double capMul;
 }
 
 /// 해역 보스 패턴: frontArmor, shield, lava, tentacles, summoner (docs/specs/battle-m3-bosses.md).
