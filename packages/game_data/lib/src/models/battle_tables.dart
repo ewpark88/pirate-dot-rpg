@@ -141,10 +141,30 @@ class FieldDef {
 }
 
 class RebirthSkip {
-  RebirthSkip(JsonReader j) : fraction = j.number('fraction'), waves = j.integer('waves');
+  RebirthSkip(JsonReader j)
+    : fraction = j.number('fraction'),
+      waves = j.integer('waves'),
+      breakSec = j.numberOr('breakSec', 0),
+      travelSec = j.numberOr('travelSec', 0),
+      breakAccel = j.numberOr('breakAccel', 1),
+      breakMinSec = j.numberOr('breakMinSec', 0),
+      finaleSec = j.numberOr('finaleSec', 0);
 
   final double fraction;
   final int waves;
+
+  /// 빠른 항해 돌파(docs/specs/platform-fast-sail-breakthrough.md): 보스 등장 뒤 이 초 안에 못 잡으면 돌파 사격. 0이면 돌파 없음(지금처럼).
+  final double breakSec;
+
+  /// 돌파 구간의 스테이지 사이 이동(초). 리듬이 빨라지면 같은 비율로 짧아진다.
+  final double travelSec;
+
+  /// 리듬 가속(사용자 지시 '점점 빨라지다 순식간에'): 격파마다 breakSec × breakAccel, 최소 breakMinSec(= 순식간 rush).
+  final double breakAccel;
+  final double breakMinSec;
+
+  /// 마지막 스테이지 보스: 이 초 뒤 피날레 돌파(렌더가 슬로모션). 0이면 보통 리듬.
+  final double finaleSec;
 }
 
 /// 탑다운 전장 (탑다운 전환 T0, Settings.battleView == 'top'). 좌표는 왼쪽 위 원점, 배 중심 고정.

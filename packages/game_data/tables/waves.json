@@ -7,7 +7,7 @@
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1.5,
-  "rebirthSkip": { "fraction": 0.55, "waves": 0 },
+  "rebirthSkip": { "fraction": 0.55, "waves": 0, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
     "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
     "swarmSpacing": 3,
