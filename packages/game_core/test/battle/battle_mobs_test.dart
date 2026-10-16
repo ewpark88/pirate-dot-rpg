@@ -37,9 +37,10 @@ void main() {
       final f = Field(stage: stage, shipHpMax: BigNum.one, shipHp: BigNum.one)..geometry = geometryFor(t, stage);
       final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: (_) {});
       spawnWave(f, stage, ctx, kind: 'crab'); // crab hpScale 1
-      expect(f.foes, hasLength(w.topMobCountAt(stage)));
+      final wave = f.foes.where((x) => !x.vanguard).toList(); // 돌격대(waves.top.vanguard)는 파 총량 밖의 덤
+      expect(wave, hasLength(w.topMobCountAt(stage)));
       final pool = w.mobPoolAt(stage);
-      BigNum sum(BigNum Function(Foe) of) => f.foes.fold(BigNum.zero, (a, x) => a + of(x));
+      BigNum sum(BigNum Function(Foe) of) => wave.fold(BigNum.zero, (a, x) => a + of(x));
       expect(
         sum((x) => x.maxHp).closeTo(stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * pool)),
         isTrue,
