@@ -13,7 +13,10 @@ import 'package:pirate_dot/ui/text/table_text.dart';
 
 /// 격자 위 한 줄: [정렬 ▼] [보유 전체/보유/미보유] [필터 n].
 class CrewQueryBar extends ConsumerWidget {
-  const CrewQueryBar({super.key});
+  const CrewQueryBar({this.picker = false, super.key});
+
+  /// 편성 고르기: 보유 선원만이라 보유 칩·합치기 칩을 숨긴다.
+  final bool picker;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +24,8 @@ class CrewQueryBar extends ConsumerWidget {
     final q = ref.watch(crewQueryProvider);
     final set = ref.read(crewQueryProvider.notifier).set;
     String sortText(CrewSort v) => switch (v) {
-      CrewSort.number => l10n.uiSortNum,
+      // 편성 고르기의 기본은 파워순(쉬는 선원 먼저).
+      CrewSort.number => picker ? l10n.uiSortPower : l10n.uiSortNum,
       CrewSort.rarity => l10n.uiSortRarity,
       CrewSort.dps => l10n.uiSortDps,
     };
@@ -38,7 +42,7 @@ class CrewQueryBar extends ConsumerWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         // 합치기 가능 n명 → 그 선원만 보기 (다시 누르면 모두). 위 '일괄 합치기'로 한 번에 합친다.
-        if (up > 0 || q.upOnly)
+        if (!picker && (up > 0 || q.upOnly))
           _Chip(
             key: const Key('crew.upOnly'),
             icon: Icons.arrow_circle_up_rounded,
@@ -55,13 +59,14 @@ class CrewQueryBar extends ConsumerWidget {
           // 누를 때마다 다음 정렬.
           onTap: () => set(q.copyWith(sort: CrewSort.values[(q.sort.index + 1) % CrewSort.values.length])),
         ),
-        _Chip(
-          key: const Key('crew.owned'),
-          icon: Icons.inventory_rounded,
-          label: ownedText(q.owned),
-          on: q.owned != OwnedFilter.all,
-          onTap: () => set(q.copyWith(owned: OwnedFilter.values[(q.owned.index + 1) % OwnedFilter.values.length])),
-        ),
+        if (!picker)
+          _Chip(
+            key: const Key('crew.owned'),
+            icon: Icons.inventory_rounded,
+            label: ownedText(q.owned),
+            on: q.owned != OwnedFilter.all,
+            onTap: () => set(q.copyWith(owned: OwnedFilter.values[(q.owned.index + 1) % OwnedFilter.values.length])),
+          ),
         _Chip(
           key: const Key('crew.filter'),
           icon: Icons.tune_rounded,
