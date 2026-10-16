@@ -37,10 +37,10 @@ Future<void> _revealAll(WidgetTester tester) async {
 
 const _mythicOnly = [SummonResult(crewId: 'manta', rarity: 'mythic')];
 
-/// 화면 전체 흰 번쩍임 (신화 기대감, 반투명 흰 ColoredBox).
+/// 화면 전체 번쩍임 (신화 기대감 — 약한 금빛, 사용자 '번쩍임 눈 아프다' 뒤 알파 ≤ 0.3).
 Iterable<ColoredBox> _flashes(WidgetTester tester) => tester
-    .widgetList<ColoredBox>(find.byType(ColoredBox))
-    .where((b) => b.color.r == 1 && b.color.g == 1 && b.color.b == 1 && b.color.a > 0 && b.color.a < 1);
+    .widgetList<ColoredBox>(find.byKey(const Key('summon.flash')))
+    .where((b) => b.color.a > 0 && b.color.a <= 0.3);
 
 /// 창이 뜨고(0.25초) 카드가 깔린 뒤(1장 0.45초) 기대감 중간(0.6초)까지.
 Future<void> _toHintPeak(WidgetTester tester) async {

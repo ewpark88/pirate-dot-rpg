@@ -246,7 +246,7 @@
   "uiSettingsSfx": "Sound Effects",
   "uiSettingsVibration": "Vibration",
   "uiSettingsShake": "Screen Shake",
-  "uiSettingsFlash": "Flash",
+  "uiSettingsFlash": "Flash effects",
   "uiSettingsPowerSave": "Power Saving",
   "uiSettingsAutoBoss": "Auto Boss",
   "uiSummonFree": "Free",
@@ -696,5 +696,6 @@
   "uiMonsterSkeleton": "Skeleton",
   "uiMonsterGhostjelly": "Ghost Jelly",
   "uiMonsterCursegull": "Curse Gull",
-  "uiMonsterWraith": "Wraith"
+  "uiMonsterWraith": "Wraith",
+  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft"
 }
