@@ -1,4 +1,5 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
+import 'package:game_cli/src/sim/sim_fun.dart';
 import 'package:game_cli/src/sim/sim_result.dart';
 import 'package:game_cli/src/sim/sim_upgrades.dart';
 import 'package:game_core/game_core.dart';
@@ -64,6 +65,7 @@ class SimPlayer {
   Map<String, int> _rarityIndex = const {};
   final _waveGaps = <(Duration at, Duration gap)>[];
   final _killGold = <(Duration at, BigNum gold)>[];
+  late final _fun = SimFun(t);
 
   /// 일정대로 [total]만큼 (오프라인 포함) 돈다.
   SimResult run(Duration total, SimSchedule first) {
@@ -198,6 +200,7 @@ class SimPlayer {
 
   void _observe(List<GameEvent> events) {
     for (final e in events) {
+      _fun.observe(e, engine);
       switch (e) {
         case Kill(:final gold):
           _killGold.add((_elapsed, gold));
@@ -271,8 +274,10 @@ class SimPlayer {
         if (at > _elapsed - early) g,
     ];
     final estimate = goldPerSecEstimate(s, t, offlineFleet(s, t));
-    result.mapPieces = s.wallet.mapPieces;
     result
+      ..mapPieces = s.wallet.mapPieces
+      ..eventGoldPct = _fun.eventGoldPct
+      ..challengeWinPct = _fun.challengeWinPct
       ..waveSecFirst10Min = avg([
         for (final (at, gap) in _waveGaps)
           if (at <= early) gap,
