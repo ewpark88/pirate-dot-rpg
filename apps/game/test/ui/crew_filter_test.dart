@@ -52,7 +52,8 @@ void main() {
       final boss = queryCrews(s, _t, const CrewQuery(aim: AimKind.boss));
       expect(boss.every((c) => crewIdentity(_t, c.id)!.aim == AimKind.boss), isTrue);
       expect(boss, isNotEmpty);
-      expect(queryCrews(s, _t, const CrewQuery(area: true)), hasLength(17));
+      final areaCount = _t.crews.crews.where((c) => crewIdentity(_t, c.id)!.area).length;
+      expect(queryCrews(s, _t, const CrewQuery(area: true)), hasLength(areaCount));
       final lob = queryCrews(s, _t, const CrewQuery(family: 'lob'));
       expect(lob.every((c) => c.family == 'lob'), isTrue);
     });
