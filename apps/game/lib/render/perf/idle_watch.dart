@@ -25,7 +25,7 @@ class IdleWatch {
 
   /// 화면 전체 포인터를 듣는다(위젯 트리 밖 전역 경로 — UI 레인을 건드리지 않는다).
   void attach() {
-    if (_routed) return;
+    if (_routed || _following) return;
     _routed = true;
     _lastInput = now();
     GestureBinding.instance.pointerRouter.addGlobalRoute(_onPointer);
@@ -43,12 +43,26 @@ class IdleWatch {
 
   /// 입력이 있었다(테스트·UI가 직접 불러도 된다).
   void input() {
+    if (_following) return;
     _lastInput = now();
     level.value = IdleLevel.active;
   }
 
-  /// 프레임마다: 지난 시간으로 단계를 갱신한다.
+  /// UI가 원본(S1 결정 — 앱 루트 idleLevelProvider, 모든 터치): 받은 단계를 그대로 쓰고 스스로 세지 않는다.
+  bool get following => _following;
+  bool _following = false;
+
+  void follow(IdleLevel l) {
+    if (!_following) {
+      _following = true;
+      detach();
+    }
+    level.value = l;
+  }
+
+  /// 프레임마다: 지난 시간으로 단계를 갱신한다(UI를 따를 때는 아무것도 안 함).
   void tick() {
+    if (_following) return;
     final quiet = now() - _lastInput;
     level.value = dimMs > 0 && quiet >= dimMs ? IdleLevel.dim : (quiet >= idleMs ? IdleLevel.idle : IdleLevel.active);
   }
