@@ -123,8 +123,11 @@ void main() {
     });
 
     test('샘플 기록을 반복 재생해도 풀이 새 객체를 만들지 않는다', () {
-      final s = _scene(decodeRecording(sampleBattleJsonl), loop: true);
-      for (var i = 0; i < 200; i++) {
+      final rec = decodeRecording(sampleBattleJsonl);
+      final s = _scene(rec, loop: true);
+      // 워밍업 = 샘플 한 바퀴 전부(가장 붐비는 순간이 어디든 풀이 다 자라게 — 엔진이 바뀌면 샘플도 다시 뽑힌다).
+      final loopFrames = (rec.length * tables.waves.tickMs / (1000 / 60)).ceil() + 60;
+      for (var i = 0; i < loopFrames; i++) {
         s.update(1000 / 60);
       }
       final created = s.stats.pooledObjects;

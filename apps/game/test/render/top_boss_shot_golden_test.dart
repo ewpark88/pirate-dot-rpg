@@ -14,7 +14,7 @@ import 'helpers.dart';
 import 'top_recording.dart';
 
 /// 보스 포탄 (사용자 '보스가 폭탄도 안 쏜다', S1·S5): 엔진 BossFired를 비행 시간만큼 앞서 띄워 피해 시각에 배에 닿는다.
-/// 크고 어두운 포탄 + 보스 색 빛 테·불 꼬리, 닿으면 폭발. 실제 기록(보스 소환)에서 첫 보스 발사 0.3초 전·닿은 직후(S24).: 때린 적이 배 쪽으로 툭 박고(돌진 120ms),
+/// 크고 어두운 포탄 + 보스 색 빛 테·불 꼬리, 닿으면 폭발. 기록에 보스 발사를 주입(withBossFire — 엔진 균형이 바뀌어도 같다)해 첫 보스 발사 0.3초 전·닿은 직후(S24).: 때린 적이 배 쪽으로 툭 박고(돌진 120ms),
 /// 닿은 자리에 물보라·나뭇조각, 배 번쩍·미세 흔들림, 배 위 작은 빨간 피해 숫자. 실제 엔진 기록의 첫 배 피격 60ms 뒤(S24).
 class _Painter extends CustomPainter {
   _Painter(this.painter, this.frame, this.dpr);
@@ -38,7 +38,7 @@ void main() {
       const dpr = 2.8125;
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       const box = Size(384, 832 - 48 - 24 - 76);
-      final rec = topRecording(tables, ticks: 700, stage: 60, bossAt: 5);
+      final rec = withBossFire(topRecording(tables, ticks: 400));
       final at = rec.indexWhere((t) => t.events.any((e) => e is BossFired));
       expect(at, greaterThan(0), reason: '기록에 보스 발사가 있어야 한다');
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
