@@ -35,6 +35,7 @@ class BattleSystem implements GameSystem {
   Object? _fleetSeen;
   final _dress = ShipDressCache();
   final _tailwind = TailwindSpeed();
+  final Map<String, int> Function(GameState, GameTables, int)? _supply = null; // 빠른 항해 보급(S2 fastSailSupplyLevels)
   int _kills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
@@ -62,8 +63,7 @@ class BattleSystem implements GameSystem {
           s = skipFastSailGold(s, run, ctx.tables);
           s = _bossCleared(s, _field!, ctx);
         }
-        closeFastSail(s, _field!, ctx, skipped: true);
-        return _project(s, _field!, ctx.tables);
+        return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
       case RetreatBounty():
         return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case TriggerUltimate():
@@ -136,8 +136,7 @@ class BattleSystem implements GameSystem {
     final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
-    closeFastSail(after, f, ctx);
-    final shown = _tailwind.apply(_project(after, f, ctx.tables), ctx);
+    final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
     return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
   }
 

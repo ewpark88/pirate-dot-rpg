@@ -14,6 +14,12 @@ GameEvent _fastEventFromJson(int t, Json j) => switch (j['type'] as String) {
     phase: j['phase'] as String,
     speed: (j['speed'] as num).toDouble(),
   ),
+  'shipResupplied' => ShipResupplied(
+    t,
+    stage: j['stage'] as int,
+    before: (j['before'] as Map).cast<String, int>(),
+    after: (j['after'] as Map).cast<String, int>(),
+  ),
   _ => FastSailEnded(
     t,
     from: j['from'] as int,
@@ -116,4 +122,19 @@ class FastSailEnded extends GameEvent {
     'gems': gems,
     'skipped': skipped,
   };
+}
+
+/// 빠른 항해 보급: 도착 스테이지 [stage]에 맞게 배 부위를 [before] → [after] 레벨로 무상으로 올렸다(UI·렌더 축하 연출).
+class ShipResupplied extends GameEvent {
+  const ShipResupplied(super.tick, {required this.stage, required this.before, required this.after});
+
+  final int stage;
+  final Map<String, int> before;
+  final Map<String, int> after;
+
+  @override
+  String get type => 'shipResupplied';
+
+  @override
+  Json _fields() => {'stage': stage, 'before': before, 'after': after};
 }
