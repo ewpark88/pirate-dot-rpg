@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/beam.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/shield.dart';
@@ -26,6 +27,7 @@ extension TopdownStep on Round {
   void topdownStep(GameState s) {
     tickFlights();
     tickSorties();
+    tickBeams();
     tickShield();
     tickBossPatterns();
     feverAura(s);

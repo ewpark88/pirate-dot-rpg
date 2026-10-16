@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/beam.dart';
 import 'package:game_core/src/battle/bosses.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
@@ -126,7 +127,8 @@ class Round {
             fromX: m?.x,
             fromY: m?.y,
             angle: m?.angle,
-            flightTicks: flying?.ticks,
+            flightTicks: isBeam(a) ? null : flying?.ticks,
+            beamTicks: isBeam(a) ? flying?.ticks : null,
             kind: a.raw.strOrNull('kind'),
             splashRadius: a.raw.has('splashRadius') ? a.raw.number('splashRadius') : null,
           ),
