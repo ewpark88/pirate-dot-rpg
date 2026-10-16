@@ -1,3 +1,5 @@
+import 'package:game_core/src/economy/crew_stats.dart' show rarityOfLevel;
+import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -27,6 +29,23 @@ int feverKillsAt(GameTables t, int stage) {
   return n < f.integer('killsMax') ? n : f.integer('killsMax');
 }
 
+/// 피버 서포트 선원(개성 v2 7.3, legends `fever`)의 합: 출전 중인 선원의 그 등급 능력(특징 배율 포함).
+({double charge, double extraSec}) feverSupport(GameState s, GameTables t) {
+  final legend = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
+  var charge = 0.0;
+  var extra = 0.0;
+  for (final id in activeFleet(s, t)) {
+    final c = s.crews[id];
+    if (c == null) continue;
+    final rarity = t.rarities.rarities.indexOf(rarityOfLevel(t.rarities, c.level));
+    final f = t.skills.legendFor(id, rarity, legend)?.fever;
+    if (f == null) continue;
+    charge += f.chargeBonus;
+    extra += f.extraSec;
+  }
+  return (charge: charge, extraSec: extra);
+}
+
 /// 게이지에 [amount]를 더한다 (특정 조건 — 즉석 도전 성공·돌발 이벤트 성공). 가득 차면 다음 틱 feverStep이 켠다. 피버 중이면 무시.
 GameState addFever(GameState s, double amount) =>
     feverOn(s) ? s : s.copyWith(progress: s.progress.copyWith(fever: s.progress.fever + amount));
@@ -41,12 +60,15 @@ GameState feverStep(GameState s, SystemContext ctx, {required int kills, require
     if (left == 0) ctx.emit(FeverEnded(ctx.tick));
     return s.copyWith(battle: v.copyWith(feverTicksLeft: left, fever: 0));
   }
-  final add = kills / feverKillsAt(ctx.tables, s.progress.stage) + (bossKilled ? f.number('bossKill') : 0);
+  final support = feverSupport(s, ctx.tables);
+  final add =
+      (kills / feverKillsAt(ctx.tables, s.progress.stage) + (bossKilled ? f.number('bossKill') : 0)) *
+      (1 + support.charge);
   if (add == 0 && v.fever == s.progress.fever) return s;
   var gauge = s.progress.fever + add;
   var ticks = 0;
   if (gauge >= 1) {
-    ticks = (f.number('durationSec') / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
+    ticks = ((f.number('durationSec') + support.extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
     ctx.emit(FeverStarted(ctx.tick, untilTick: ctx.tick + ticks));
     gauge = 0;
   }

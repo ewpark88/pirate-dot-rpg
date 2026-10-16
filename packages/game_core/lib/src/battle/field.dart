@@ -1,5 +1,6 @@
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/gun.dart';
+import 'package:game_core/src/battle/shield.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/battle/topdown/top_threat.dart';
@@ -189,7 +190,8 @@ class Field {
   BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
 
   final List<EnemyShot> enemyShots = [];
-  final List<Flight> flights = []; // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
+  final List<Flight> flights = [];
+  ShipShield? shield; // 배 흡수막(shield.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
 
@@ -202,10 +204,16 @@ class Field {
 
   Iterable<Foe> get living => foes.where((f) => f.alive);
 
-  /// 배가 [raw]만큼 맞고 깎인 양을 돌려준다. 한 대는 최대 HP × [capRatio](waves.shipHitCap)까지 — 한 대에 가라앉지 않게.
+  /// 배가 [raw]만큼 맞고 (보호막을 뺀) 깎인 양을 돌려준다. 한 대는 최대 HP × [capRatio](waves.shipHitCap)까지 — 한 대에 가라앉지 않게.
   BigNum hurtShip(BigNum raw, double capRatio) {
     final cap = shipHpMax.times(capRatio);
-    final amount = raw > cap ? cap : raw;
+    var amount = raw > cap ? cap : raw;
+    final s = shield; // 보호막이 먼저 받는다(개성 v2 7.1)
+    if (s != null && !s.hp.isZero) {
+      final absorbed = amount > s.hp ? s.hp : amount;
+      s.hp = s.hp - absorbed;
+      amount = amount - absorbed;
+    }
     final hp = shipHp - amount;
     shipHp = hp.isNegative ? BigNum.zero : hp;
     return amount;
@@ -242,5 +250,6 @@ class Field {
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
+    shipShield: shield?.ratio ?? 0,
   );
 }
