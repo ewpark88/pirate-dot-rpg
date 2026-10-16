@@ -239,7 +239,10 @@ class EventDirector implements ReplayListener {
   void _kill(Kill e, int index) {
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
-    final n = _juice.coinCount;
+    // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
+    final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
+    if (fever) _fx('kill', e.x + 3, e.y - 3);
+    final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;
     for (var c = 0; c < n; c++) {

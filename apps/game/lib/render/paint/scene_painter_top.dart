@@ -7,7 +7,9 @@ extension TopPaint on ScenePainter {
     _numberScale = scene.layout.dot / frame.dot;
     // 이펙트는 배가 작아진 탑다운(가로 270)에서 배 대비 과하지 않게 한 번 더 줄인다(사용자 '거슬린다').
     _fxScale = _numberScale * 0.7;
-    _pb.unitDp = frame.dot;
+    _pb
+      ..unitDp = frame.dot
+      ..fever = top.fever.level;
     top.paint(canvas, frame, _worldFx);
     final l = scene.layout;
     canvas

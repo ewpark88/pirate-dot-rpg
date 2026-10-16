@@ -51,8 +51,13 @@ class TopOverlays {
     }
     final f = scene.moments.feverFlashMs;
     if (f > 0 && flash) {
-      _overlay.color = _feverColor.withValues(alpha: 0.35 * f / _fever.number('flashMs'));
+      // 피버 시작 금빛 번쩍(사용자 '임펙트가 없다' — 0.35 → 0.6).
+      // 'screen' 섞기: 밝아지며 금빛(덮으면 파랑+금 = 탁한 초록).
+      _overlay
+        ..color = _feverColor.withValues(alpha: 0.75 * f / _fever.number('flashMs'))
+        ..blendMode = BlendMode.screen;
       c.drawRect(Offset.zero & box, _overlay);
+      _overlay.blendMode = BlendMode.srcOver;
     }
     final l = atmosphere.lightning(ms);
     if (l > 0 && flash) {

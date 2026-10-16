@@ -5,12 +5,12 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
-import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
-import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
+import 'package:pirate_dot/render/top/top_enemies.dart';
+import 'package:pirate_dot/render/top/top_fever.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_marks.dart';
 import 'package:pirate_dot/render/top/top_overlays.dart';
@@ -30,6 +30,10 @@ class TopScenePainter {
   late final ShipHpPainter _hp = ShipHpPainter(scene);
   late final TopOverlays _overlays = TopOverlays(scene, sprites, atmosphere);
   late final TopMarks _marks = TopMarks(scene, sprites);
+  late final TopEnemies _foes = TopEnemies(scene, sprites);
+
+  /// 피버 연출(세기 level은 발사체 불 꼬리에도 쓴다).
+  late final TopFever fever = TopFever(scene);
 
   /// 배 그림 배율 (사용자 '조금만 더 줄여' — 화면 폭 약 15%). waves.top.shipScale — 엔진 선체 캡슐과 같은 키(platform-ship-hitbox).
   late final double _shipScale = scene.tables.waves.raw.obj('top').number('shipScale');
@@ -45,7 +49,6 @@ class TopScenePainter {
 
   /// 지금 프레임에 보이는 전장(전장 좌표, 여유 포함). ScenePainter가 발사체·이펙트·코인·숫자 컬링에 쓴다.
   Rect visibleWorld = Rect.largest;
-  static const _underwaterAlpha = 0.55;
 
   void paint(Canvas c, TopFrame frame, void Function(Canvas c) fx) {
     final clockMs = scene.clockMs;
@@ -73,7 +76,9 @@ class TopScenePainter {
     final viewRect = Rect.fromLTWH(-sx / dot, -sy / dot, frame.box.width / dot, frame.box.height / dot);
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
     visibleWorld = viewRect.shift(scene.topShip).inflate(_cullMargin);
+    fever.update(clockMs);
     _sea
+      ..fever = fever.sea
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
     final powerSave = scene.settings.powerSave;
@@ -86,11 +91,12 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _marks.zones(c);
-    _enemies(c, under: true);
+    _foes.paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
     if (size != null) {
       final m = scene.moments;
+      fever.aura(c, size.width * _shipScale / 2);
       c
         ..save()
         ..translate(_shipShake(clockMs), 0)
@@ -128,10 +134,10 @@ class TopScenePainter {
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
     scene.topHits.paint(c, clockMs, flash: scene.settings.flash);
-    _enemies(c, under: false);
+    _foes.paint(c, under: false, cull: visibleWorld);
     _marks
-      ..enemies(c, visibleWorld, _radiusOf)
-      ..bosses(c, _radiusOf);
+      ..enemies(c, visibleWorld, _foes.radiusOf)
+      ..bosses(c, _foes.radiusOf);
     if (view.seaEvent?.id == 'bottle') {
       final b = scene.bottleAt;
       sprites.draw(
@@ -148,27 +154,13 @@ class TopScenePainter {
     if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
     c.restore();
     _overlays.paint(c, frame.box, clockMs);
+    fever.speedLines(c, frame.box);
     _marks.screenFlash(c, Offset.zero & frame.box);
-  }
-
-  /// 돌진(배를 때린 적이 배 쪽으로 툭): 배 중심 방향 단위 벡터 × 돌진 거리.
-  Offset _lungeOf(int id, double x, double y, double clock) {
-    final d = scene.topHits.lungeOf(id, clock);
-    if (d == 0) return Offset.zero;
-    final to = scene.topShip - Offset(x, y);
-    final len = to.distance;
-    return len < 1e-6 ? Offset.zero : to / len * d;
   }
 
   /// 배 미세 흔들림(맞은 동안 ±0.8단위, 화면 흔들기 설정을 따른다).
   double _shipShake(double clock) =>
       scene.shipFlashMs > 0 && scene.settings.shake ? ((clock / 40).floor().isEven ? 0.8 : -0.8) : 0;
-
-  /// 적 그림 반지름(단위) — 상태 아이콘·보호막 고리 자리.
-  double _radiusOf(EnemyPose e) {
-    final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
-    return (sprites.sheet(key)?.frameW ?? 12) / 2;
-  }
 
   late final double _recoilMs = scene.fx.raw.obj('shipParts').number('recoilMs');
 
@@ -220,80 +212,4 @@ class TopScenePainter {
 
   final _bubble = Paint();
   final _sinkPaint = Paint();
-
-  /// 적을 그림(종류)별로 묶어 drawAtlas 한 번씩 — 150마리여도 그리기 몇 번(S1 부하: 100~150마리 60fps).
-  /// 맞은 적(흰 번쩍임)은 흰 실루엣 묶음으로 따로, 물속은 반투명 붓으로.
-  void _enemies(Canvas c, {required bool under}) {
-    for (final b in _batches.values.followedBy(_flashBatches.values)) {
-      b.clear();
-    }
-    final cull = visibleWorld;
-    final clock = scene.clockMs;
-    // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
-    for (var k = 0; k < scene.poseCount; k++) {
-      final e = scene.poses[k];
-      if ((e.layer == 'underwater') != under) continue;
-      if (!cull.contains(Offset(e.drawX, e.drawY))) continue;
-      final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
-      final sheet = sprites.sheet(key);
-      if (sheet == null) continue;
-      final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
-      final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock);
-      (e.flash ? _flashBatches : _batches).putIfAbsent(sheet, () => _Batch(sheet.image, flash: e.flash))
-        ..xf.add(
-          RSTransform.fromComponents(
-            // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation: e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08,
-            scale: 1,
-            anchorX: sheet.frameW / 2,
-            anchorY: sheet.frameH / 2,
-            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble(),
-            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble(),
-          ),
-        )
-        ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
-    }
-    for (final b in _batches.values.followedBy(_flashBatches.values)) {
-      if (b.xf.isEmpty) continue;
-      final paint = b.flash ? _flashPaint : (under ? _underPaint : _atlasPaint);
-      c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
-    }
-  }
-
-  final Map<SpriteSheet, _Batch> _batches = {};
-  final Map<SpriteSheet, _Batch> _flashBatches = {};
-  final Map<String, String> _enemyKeys = {};
-
-  /// 돌발 이벤트 적(황금 물고기·바다뱀·상인선)은 td_event 그림, 나머지는 td_enemy·td_boss.
-  String _keyFor(String kind, {required bool boss}) {
-    if (sprites.sheet('td_event:$kind') != null) return 'td_event:$kind';
-    return boss ? 'td_boss:$kind' : 'td_enemy:$kind';
-  }
-
-  final Map<String, String> _bossKeys = {};
-  final _atlasPaint = Paint()
-    ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none;
-  late final _underPaint = Paint()
-    ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
-    ..color = const Color.fromRGBO(255, 255, 255, _underwaterAlpha);
-  final _flashPaint = Paint()
-    ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
-    ..colorFilter = const ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcIn);
-}
-
-/// 같은 그림(종류·번쩍임) 적 묶음 — 프레임마다 비우고 다시 채운다(리스트 재사용).
-class _Batch {
-  _Batch(this.image, {required this.flash});
-  final Image image;
-  final bool flash;
-  final xf = <RSTransform>[];
-  final src = <Rect>[];
-
-  void clear() {
-    xf.clear();
-    src.clear();
-  }
 }
