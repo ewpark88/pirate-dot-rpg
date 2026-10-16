@@ -126,6 +126,32 @@ class PbCardFront extends StatelessWidget {
         ),
         Positioned.fill(child: _image(pbCardFront(rarity.id))),
         // 등급 별은 카드 앞면 그림(리본 왼쪽)에 이미 그려져 있다 — 코드로 또 그리지 않는다(사용자 지적 2026-10-16 별 중복).
+        // 신화: 카드 몸 둘레 진한 빨강 + 금 안쪽 선 (희귀 파랑과 확실히 다르게 — 사용자 지시 2026-10-16).
+        if (rarity.id == 'mythic')
+          Positioned(
+            left: _bodyX - 3,
+            top: _bodyY - 3,
+            width: 246,
+            height: 346,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                key: const Key('pb.mythicFrame'),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: const Color(0xFFD7263D), width: 8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(11),
+                      border: Border.all(color: const Color(0xFFFFD447), width: 3),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         // 이름 (몸 120,292 가운데, 어두운 획).
         Positioned(
           left: 14,

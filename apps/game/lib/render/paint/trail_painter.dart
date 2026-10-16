@@ -62,7 +62,7 @@ class TrailPainter {
     }
     final w0 = bombSize * _widthRatio;
     final clock = scene.clockMs;
-    final crowded = scene.projectiles.active.length > _crowd;
+    final crowded = scene.projectiles.active.length > _crowd || scene.topHits.lite;
     switch (r) {
       case 0:
         _taper(c, n, w0 * 0.7, (_) => _white.withValues(alpha: _commonAlpha));

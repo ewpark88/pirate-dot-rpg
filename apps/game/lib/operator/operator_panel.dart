@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/operator/crew_lab_group.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
 import 'package:pirate_dot/operator/platform_group.dart';
 import 'package:pirate_dot/operator/render_group.dart';
-import 'package:pirate_dot/operator/sample_states.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 배포 빌드 잔존 검사용 표식 — 지우지 말 것 (tool/check --release, 요청서 platform-release-check A).
@@ -60,14 +60,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
       padding: const EdgeInsets.all(12),
       children: [
         Text(l10n.opPanelTitle, style: Theme.of(context).textTheme.titleLarge),
-        _Group(l10n.opGroupSave, [
-          for (final name in sampleStateNames)
-            OutlinedButton(
-              key: Key('op.sample.$name'),
-              onPressed: () => _send(OpLoadState(loadSampleState(name))),
-              child: Text(sampleLabels[name] ?? name),
-            ),
-        ]),
+        _Group(l10n.opGroupSave, [SaveBackupGroup(sampleLabels: sampleLabels)]),
         _Group(l10n.opGroupBattle, [
           for (final s in _speeds)
             OutlinedButton(
@@ -134,6 +127,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
           ),
         ]),
         _Group(l10n.opGroupPlatform, const [PlatformTestGroup()]),
+        _Group(l10n.opGroupLab, const [CrewLabGroup()]), // 선원 시험(맨 아래 — 위 묶음 자리는 그대로)
       ],
     );
   }

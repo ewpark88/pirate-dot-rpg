@@ -51,17 +51,33 @@ class TopStatus {
     if (e.vulnerable) icon(_shield, _red, 0xFFFFB0A8);
   }
 
+  // 글자 그림 캐시(모양·색마다 한 번) — 무리 속 아이콘이 많아도 drawPicture 한 번씩(S1 성능 '모두 신화' 버벅임).
+  final Map<String, Picture> _cache = {};
+
   void _glyph(Canvas c, double l, double t, List<String> rows, int main, int light) {
+    final key = '${identityHashCode(rows)}|$main|$light';
+    final pic = _cache[key] ??= _record(rows, main, light);
+    c
+      ..save()
+      ..translate(l, t)
+      ..drawPicture(pic)
+      ..restore();
+  }
+
+  Picture _record(List<String> rows, int main, int light) {
+    final rec = PictureRecorder();
+    final c = Canvas(rec);
     for (var y = -1; y <= 5; y++) {
       for (var x = -1; x <= 5; x++) {
         final ch = y >= 0 && y < 5 && x >= 0 && x < 5 ? rows[y][x] : '.';
         if (ch != '.') {
-          _px(c, l + x, t + y, ch == 'o' ? light : main);
+          _px(c, x.toDouble(), y.toDouble(), ch == 'o' ? light : main);
         } else if (_near(rows, x, y)) {
-          _px(c, l + x, t + y, _edge);
+          _px(c, x.toDouble(), y.toDouble(), _edge);
         }
       }
     }
+    return rec.endRecording();
   }
 
   static bool _near(List<String> rows, int x, int y) {

@@ -91,7 +91,7 @@ class TopHits {
 
   /// 물보라(흰·하늘 점이 둥글게 퍼짐)·나뭇조각(배 바깥쪽으로 튐)·작은 번쩍. 전장 좌표.
   void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
-    muzzles.paint(c, now, flash: flash, powerSave: powerSave);
+    muzzles.paint(c, now, flash: flash, powerSave: powerSave || lite);
     _paintUpgrade(c, ship, now);
     _paintEmerges(c, now);
     slash.paint(c, now);
@@ -124,6 +124,9 @@ class TopHits {
       }
     }
   }
+
+  /// 가벼운 연출(입자 절반): 절전이거나 시트가 전장을 가렸을 때 — TopScenePainter가 프레임마다 넣는다(사용자 '모두 신화' 버벅임).
+  bool lite = false;
 
   /// 발사 임팩트(포구 섬광·고리·연기).
   final muzzles = TopMuzzle();
@@ -207,7 +210,7 @@ class TopHits {
     final view = s.frame;
     final flash = s.settings.flash;
     final ship = s.topShip;
-    impact.paint(c, now, flash: flash, lite: s.settings.powerSave);
+    impact.paint(c, now, flash: flash, lite: lite);
     shots.paint(c, now, flash: flash);
     fast.paintWorld(c, now, ship);
     bounty.paintWorld(c, now, s.poses, s.poseCount, active: view.bounty != null);
