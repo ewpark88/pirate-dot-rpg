@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
+import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -87,6 +88,19 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                       key: const Key('hud.gauge.stage'),
                       style: Skin.text(14, color: Colors.white),
                     ),
+                    // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
+                    if (g.farming && !g.boss) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        key: const Key('hud.farming'),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8C766),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(l10n.uiFarming, style: Skin.text(11, color: Skin.goldInk)),
+                      ),
+                    ],
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -136,7 +150,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           child: CustomPaint(
                             key: Key(preBoss ? 'hud.gauge.skull.hot' : 'hud.gauge.skull'),
                             size: const Size(22, 22),
-                            painter: _SkullPainter(
+                            painter: SkullPainter(
                               color: g.boss || preBoss
                                   ? Color.lerp(const Color(0xFFFFD6DB), Skin.danger, preBoss ? 0.4 + 0.6 * t : 1)!
                                   : Colors.white70,
@@ -253,41 +267,4 @@ class _TimerBar extends StatelessWidget {
       ],
     ),
   );
-}
-
-/// 코드로 그린 작은 해골 (보스 표시).
-class _SkullPainter extends CustomPainter {
-  _SkullPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final fill = Paint()..color = color;
-    final hole = Paint()..color = const Color(0xFF2B3A55);
-    canvas
-      ..drawOval(Rect.fromLTRB(w * 0.08, 0, w * 0.92, h * 0.78), fill)
-      ..drawRRect(RRect.fromLTRBR(w * 0.26, h * 0.6, w * 0.74, h, Radius.circular(w * 0.1)), fill)
-      ..drawOval(Rect.fromLTRB(w * 0.22, h * 0.3, w * 0.45, h * 0.55), hole)
-      ..drawOval(Rect.fromLTRB(w * 0.55, h * 0.3, w * 0.78, h * 0.55), hole)
-      ..drawPath(
-        Path()
-          ..moveTo(w * 0.5, h * 0.56)
-          ..lineTo(w * 0.44, h * 0.68)
-          ..lineTo(w * 0.56, h * 0.68)
-          ..close(),
-        hole,
-      );
-    final teeth = Paint()
-      ..color = const Color(0xFF2B3A55)
-      ..strokeWidth = math.max(1, w / 18);
-    for (final x in [0.4, 0.5, 0.6]) {
-      canvas.drawLine(Offset(w * x, h * 0.82), Offset(w * x, h * 0.98), teeth);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_SkullPainter old) => old.color != color;
 }

@@ -18,7 +18,6 @@ import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
-import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
@@ -141,7 +140,14 @@ class CrewDetailDialog extends ConsumerWidget {
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
-              _Growth(crew: crew, rarity: rarity, tables: tables, atGate: _atGate.contains(status)),
+              _Growth(
+                crew: crew,
+                rarity: rarity,
+                tables: tables,
+                atGate: _atGate.contains(status),
+                // 이 선원 혼자의 초당 피해 (상단 바 함대 합계와 같은 계산 — 경제 fleetDps).
+                dps: ref.watch(gameStateProvider.select((s) => fleetDps(s, tables, [def.id]).format())),
+              ),
             section(icon: UiSprites.flag, l10n.uiCrewType, [
               Text(tableText(l10n, family.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, family.attack.shape), style: dim),
@@ -187,7 +193,7 @@ class CrewDetailDialog extends ConsumerWidget {
           ),
           PixelButton(
             key: Key('crew.detail.undeploy.${def.id}'),
-            onPressed: () => undeployCrew(ref, def.id),
+            onPressed: () => undeployCrew(context, ref, def.id),
             child: Text(l10n.uiCrewUndeploy),
           ),
         ] else if (crew != null)
@@ -209,9 +215,18 @@ class CrewDetailDialog extends ConsumerWidget {
 
 /// 레벨 / 등급 최대 · 경험치 막대(문 앞이면 안내) · 카드 수 · 파워.
 class _Growth extends StatelessWidget {
-  const _Growth({required this.crew, required this.rarity, required this.tables, required this.atGate});
+  const _Growth({
+    required this.crew,
+    required this.rarity,
+    required this.tables,
+    required this.atGate,
+    required this.dps,
+  });
 
   final CrewState crew;
+
+  /// 이 선원의 초당 공격력 (표시 글).
+  final String dps;
   final RarityDef rarity;
   final GameTables tables;
   final bool atGate;
@@ -231,10 +246,7 @@ class _Growth extends StatelessWidget {
             spacing: 12,
             children: [
               Text(l10n.uiLevelMax(crew.level, rarity.levelMax), style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(
-                l10n.uiCrewPower(shortDecimal(crewPowerOf(tables, crew.level))),
-                key: const Key('crew.detail.power'),
-              ),
+              Text(l10n.uiCrewDps(dps), key: const Key('crew.detail.power')),
             ],
           ),
           const SizedBox(height: 4),

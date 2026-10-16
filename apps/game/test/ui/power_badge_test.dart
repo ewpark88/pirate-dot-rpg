@@ -15,10 +15,10 @@ void main() {
     await pumpGame(tester, s, openTab: false);
     final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
     final tables = container.read(tablesProvider);
-    expect(tester.widget<Text>(find.byKey(const Key('hud.power.value'))).data, fleetPower(s, tables).power.format());
+    expect(tester.widget<Text>(find.byKey(const Key('hud.power.value'))).data, fleetPower(s, tables).dps.format());
     final up = s.copyWith(ship: s.ship.withLevel('cannon', s.ship.level('cannon') + 20));
     container.read(gameStateProvider.notifier).replace(up);
     await tester.pump();
-    expect(tester.widget<Text>(find.byKey(const Key('hud.power.value'))).data, fleetPower(up, tables).power.format());
+    expect(tester.widget<Text>(find.byKey(const Key('hud.power.value'))).data, fleetPower(up, tables).dps.format());
   });
 }

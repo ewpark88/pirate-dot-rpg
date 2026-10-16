@@ -221,7 +221,7 @@
   "uiBossFailShort": "보스를 놓쳤어요 — 강화하고 다시 도전!",
   "uiBossFailUpgrade": "{part} 강화",
   "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
-  "uiPower": "전투력",
+  "uiPower": "초당 공격력",
   "uiGaugeStage": "{stage}-{wave}",
   "uiGaugeSeconds": "{sec}초",
   "uiMult": "×{n}",
@@ -291,5 +291,11 @@
   "uiWeek5": "금",
   "uiWeek6": "토",
   "uiWeek7": "일",
-  "uiBountyAllBosses": "오늘은 모든 현상금 보스"
+  "uiBountyAllBosses": "오늘은 모든 현상금 보스",
+  "uiFleetKeepOne": "출전 선원은 한 명 이상 있어야 해요",
+  "uiFleetRemoved": "{name} 내렸어요",
+  "uiUndo": "되돌리기",
+  "uiFeverBig": "FEVER!",
+  "uiFeverEnd": "피버 끝 · 골드 +{amount}",
+  "uiCrewDps": "초당 공격력 {value}"
 }

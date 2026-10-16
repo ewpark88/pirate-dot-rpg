@@ -417,7 +417,7 @@
   "uiBossFailShort": "Boss got away — upgrade and retry!",
   "uiBossFailUpgrade": "Upgrade {part}",
   "uiFarmingRetry": "Farming · boss retry ready",
-  "uiPower": "Power",
+  "uiPower": "Attack / sec",
   "uiGaugeStage": "{stage}-{wave}",
   "uiGaugeSeconds": "{sec}s",
   "uiMult": "×{n}",
@@ -487,5 +487,11 @@
   "uiWeek5": "Fri",
   "uiWeek6": "Sat",
   "uiWeek7": "Sun",
-  "uiBountyAllBosses": "All bounty bosses today"
+  "uiBountyAllBosses": "All bounty bosses today",
+  "uiFleetKeepOne": "Keep at least one crew deployed",
+  "uiFleetRemoved": "{name} removed",
+  "uiUndo": "Undo",
+  "uiFeverBig": "FEVER!",
+  "uiFeverEnd": "Fever over · gold +{amount}",
+  "uiCrewDps": "Attack/sec {value}"
 }

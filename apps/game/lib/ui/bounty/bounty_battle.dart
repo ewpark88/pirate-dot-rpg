@@ -26,6 +26,7 @@ class BountyStrip extends ConsumerWidget {
     return IgnorePointer(
       child: Container(
         key: const Key('bounty.strip'),
+        constraints: const BoxConstraints(maxWidth: 160),
         padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
         decoration: BoxDecoration(
           color: const Color(0xFF7A3E17).withValues(alpha: 0.92),

@@ -6,14 +6,15 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
-/// 지금 함대 전투력 (경제 `fleetPower`). 표시 글자가 바뀔 때만 다시 그린다(틱마다 작은 변화는 무시).
+/// 지금 함대 초당 공격력 (경제 `fleetPower(...).dps` — S1 결정 2026-10-16: 적 피해 숫자와 같은 단위).
+/// 표시 글자가 바뀔 때만 다시 그린다(틱마다 작은 변화는 무시).
 final fleetPowerProvider = Provider<BigNum>((ref) {
   final tables = ref.watch(tablesProvider);
-  ref.watch(gameStateProvider.select((s) => fleetPower(s, tables).power.format()));
-  return fleetPower(ref.read(gameStateProvider), tables).power;
+  ref.watch(gameStateProvider.select((s) => fleetPower(s, tables).dps.format()));
+  return fleetPower(ref.read(gameStateProvider), tables).dps;
 });
 
-/// 상단 바 골드·젬 옆 전투력 (S1 지시 — 전장을 가리지 않게). 사용자 지시(골드와 같은 원칙): 숫자만 조용히 바뀐다.
+/// 상단 바 골드·젬 옆 초당 공격력 (S1 지시 — 전장을 가리지 않게). 사용자 지시(골드와 같은 원칙): 숫자만 조용히 바뀐다.
 class PowerBadge extends ConsumerWidget {
   const PowerBadge({super.key});
 

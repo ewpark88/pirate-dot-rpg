@@ -87,7 +87,7 @@ void main() {
 
   testWidgets('파밍 중 띠: 파밍이면 보이고 아니면 없다', (tester) async {
     await pumpGame(tester, _farming(), openTab: false);
-    expect(find.text('Farming · boss retry ready'), findsOneWidget);
+    expect(find.byKey(const Key('hud.farming')), findsOneWidget); // 게이지 안 꼬리표
     await pumpGame(tester, loadFixture('stage37_midgame'), openTab: false);
     expect(find.byKey(const Key('hud.farming')), findsNothing);
   });

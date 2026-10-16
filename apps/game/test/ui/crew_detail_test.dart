@@ -62,6 +62,7 @@ void main() {
     final slot = loadFixture('stage37_midgame').battle!.fleet.indexWhere((f) => f.crewId == 'octo');
     await tester.tap(find.byKey(const Key('crew.detail.undeploy.octo')));
     expect(fleet.calls, ['set $slot -']);
+    await tester.pump(const Duration(seconds: 5)); // '되돌리기' 안내가 닫힐 때까지
   });
 
   testWidgets('A: 미보유 선원 → 실루엣 + 얻는 방법, 출전 버튼 없음', (tester) async {

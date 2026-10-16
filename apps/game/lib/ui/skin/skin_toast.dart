@@ -4,9 +4,13 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 /// 잠깐 뜨는 안내 (스킨 r1): 화면 아래쪽 잉크색 알약, [_show] 뒤 사라진다. 새 안내가 오면 앞의 것을 바꾼다.
 const _show = Duration(milliseconds: 2200);
 
+/// 되돌리기처럼 누를 것이 있는 안내는 조금 더 오래.
+const _showWithAction = Duration(seconds: 4);
+
 OverlayEntry? _current;
 
-void showSkinToast(BuildContext context, String text) {
+/// [action]을 주면 오른쪽에 누를 수 있는 글(예: '되돌리기')을 붙인다 — 누르면 [onAction] 후 닫힌다.
+void showSkinToast(BuildContext context, String text, {String? action, VoidCallback? onAction}) {
   final overlay = Overlay.maybeOf(context, rootOverlay: true);
   if (overlay == null) return;
   _current?.remove();
@@ -16,6 +20,7 @@ void showSkinToast(BuildContext context, String text) {
       right: 24,
       bottom: 120,
       child: IgnorePointer(
+        ignoring: action == null,
         child: Center(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
@@ -35,10 +40,33 @@ void showSkinToast(BuildContext context, String text) {
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: Skin.shadow,
                 ),
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: Skin.text(16, color: Colors.white),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        style: Skin.text(16, color: Colors.white),
+                      ),
+                    ),
+                    if (action != null) ...[
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        key: const Key('skin.toast.action'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          onAction?.call();
+                          _current?.remove();
+                          _current = null;
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Text(action, style: Skin.text(16, color: Skin.goldTop)),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
@@ -49,7 +77,7 @@ void showSkinToast(BuildContext context, String text) {
   );
   _current = entry;
   overlay.insert(entry);
-  Future.delayed(_show, () {
+  Future.delayed(action == null ? _show : _showWithAction, () {
     if (_current == entry) {
       entry.remove();
       _current = null;
