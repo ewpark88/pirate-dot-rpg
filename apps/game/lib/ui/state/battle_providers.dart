@@ -52,6 +52,9 @@ BattleGame withTopTexts(BattleGame game, BuildContext context) {
     strike: l10n.uiFastSailStrike,
     finale: l10n.uiFastSailFinale,
     ended: l10n.uiFastSailEnded,
+    // 현상금 B3 연출(S3): 수배 포스터 머리말 · 실패 문구.
+    wanted: l10n.uiBountyWanted,
+    fled: l10n.uiBountyFled,
   );
   return game;
 }

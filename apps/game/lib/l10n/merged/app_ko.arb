@@ -644,5 +644,7 @@
   "uiFastSailStrike": "격파!",
   "uiFastSailFinale": "돌파!",
   "uiFastSailEnded": "스테이지 {from} → {to} 돌파!",
-  "uiSortPower": "파워순"
+  "uiSortPower": "파워순",
+  "uiBountyWanted": "현상수배",
+  "uiBountyFled": "도망쳤다!"
 }
