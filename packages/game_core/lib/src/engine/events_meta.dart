@@ -39,6 +39,11 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'challengeStarted' ||
     'challengeProgress' ||
     'challengeEnded' => _funEventFromJson(t, j),
+    'bountyStarted' ||
+    'bountyCleared' ||
+    'bountyFailed' ||
+    'bountySwept' ||
+    'bountyTicketsRefilled' => _bountyEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };

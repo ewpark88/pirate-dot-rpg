@@ -1672,6 +1672,18 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
+  "bounty": {
+    "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
+    "days": [
+      { "weekday": 1, "boss": "giant_hermit", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
+      { "weekday": 2, "boss": "thunder_ray", "reward": { "type": "cards", "base": 2, "perTier": 0.2 } },
+      { "weekday": 3, "boss": "iceberg_walrus", "reward": { "type": "gifts", "base": 2, "perTier": 0.1 } },
+      { "weekday": 4, "boss": "lava_whale", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
+      { "weekday": 5, "boss": "kraken", "reward": { "type": "cards", "base": 2, "perTier": 0.2 } },
+      { "weekday": 6, "boss": "ghost_admiral", "reward": { "type": "mapPieces", "base": 1, "perTier": 0.1 } },
+      { "weekday": 7, "boss": "*", "reward": "asBoss" }
+    ]
+  },
   "challenges": {
     "intervalSec": [180, 300], "minStage": 5, "rateWindowSec": 30,
     "kinds": [

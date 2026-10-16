@@ -132,7 +132,11 @@ void main() {
           skinChosen: true,
         ),
         settings: const Settings(title: 'deckhand'),
-        bounty: const {'tickets': 3},
+        bounty: const BountyState(
+          tickets: 3,
+          cleared: {'kraken': 2},
+          active: BountyActive(bossId: 'kraken', tier: 3),
+        ),
       );
       final back = SaveCodec.decode(SaveCodec.encode(s));
       expect(back.toJson(), s.toJson());

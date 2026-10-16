@@ -274,6 +274,7 @@ class Field {
     feverTicksLeft: prev.feverTicksLeft,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,
+    bounty: prev.bounty,
     mode: 'top',
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,

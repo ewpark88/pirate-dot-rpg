@@ -9,6 +9,8 @@ sealed class OperatorCommand extends Command {
     'op.setCrew' => OpSetCrew(j['crewId'] as String, level: j['level'] as int),
     'op.setFleet' => OpSetFleet((j['crewIds'] as List?)?.cast<String>()),
     'op.seaEvent' => OpSeaEvent(j['id'] as String),
+    'op.setBountyTickets' => OpSetBountyTickets(j['count'] as int),
+    'op.setWeekday' => OpSetWeekday(j['weekday'] as int?),
     'op.grantPieces' => OpGrantPieces(j['count'] as int),
     'op.setRebirths' => OpSetRebirths(j['count'] as int),
     'op.grant' => OpGrant(
