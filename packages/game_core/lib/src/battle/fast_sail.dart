@@ -167,7 +167,16 @@ GameState closeFastSail(
     ),
   );
   f.fastSail = null;
-  return supply == null ? after : resupply(after, supply(after, ctx.tables, after.progress.stage), ctx);
+  if (supply == null) return after;
+  final supplied = resupply(after, supply(after, ctx.tables, after.progress.stage), ctx);
+  if (!identical(supplied, after)) {
+    // 전장은 배 체력 최대를 만들 때 한 번 정하므로, 보급한 선체가 바로 먹게 새로 채운다(가득)
+    final hp = CombatStats.of(supplied, ctx.tables).shipHp;
+    f
+      ..shipHpMax = hp
+      ..shipHp = hp;
+  }
+  return supplied;
 }
 
 /// 배 부위를 [target] 레벨로(내리지 않음, 부위 최대 레벨로 자름). 바뀐 게 있으면 ShipResupplied(축하 연출).

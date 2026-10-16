@@ -13,6 +13,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show grantBossCards;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
+import 'package:game_core/src/economy/fast_sail_supply.dart' show fastSailSupplyLevels;
 import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
@@ -35,7 +36,7 @@ class BattleSystem implements GameSystem {
   Object? _fleetSeen;
   final _dress = ShipDressCache();
   final _tailwind = TailwindSpeed();
-  final Map<String, int> Function(GameState, GameTables, int)? _supply = null; // 빠른 항해 보급(S2 fastSailSupplyLevels)
+  static const Map<String, int> Function(GameState, GameTables, int) _supply = fastSailSupplyLevels; // 빠른 항해 보급(S2)
   int _kills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
