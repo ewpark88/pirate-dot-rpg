@@ -73,7 +73,10 @@ void main() {
   });
 
   test('기준 3: 황금 물고기 3마리 탭 → 3마리 골드, 남은 마리의 autoCatchRatio(내림)는 끝날 때 자동', () {
-    final e = engine(start())..enqueue(const OpSeaEvent('goldfish'));
+    final e =
+        engine(start()) // 무적: 원거리 적(배 위협)에 배가 가라앉으면 이벤트가 끝나 자동 잡기를 못 본다
+          ..enqueue(const OpSetInvincible(on: true))
+          ..enqueue(const OpSeaEvent('goldfish'));
     run(e, tickSec);
     final fish = e.state.battle!.enemies.where((x) => x.eventKind == 'goldfish').toList();
     expect(fish.length, inInclusiveRange(8, 12));

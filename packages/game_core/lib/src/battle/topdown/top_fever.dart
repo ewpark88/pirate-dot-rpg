@@ -27,7 +27,8 @@ extension FeverAura on Round {
     final bossFactor = a.numberOr('bossFactor', 1);
     final hits = [
       for (final e in field.living)
-        if (e.holdSec <= 0 && _within(g, e, radius)) (foe: e, factor: e.boss ? bossFactor : 1.0),
+        if (e.holdSec <= 0 && e.eventKind != 'goldfish' && _within(g, e, radius))
+          (foe: e, factor: e.boss ? bossFactor : 1.0),
     ];
     if (hits.isEmpty) return;
     strike((x: g.top.shipX, y: g.top.shipY, hits: hits), perPulse);
