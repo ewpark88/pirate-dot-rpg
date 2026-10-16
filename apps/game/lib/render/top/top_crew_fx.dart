@@ -35,6 +35,17 @@ class TopCrewFx {
   }
 
   final List<double> _spills = [];
+  final List<(double, double, double)> _zeros = []; // x, y, ms — 처치 자리 회색 '+0'
+
+  /// 화물칸이 가득(최근 0.7초 안에 GoldOverflow) — 처치 코인 대신 회색 '+0'.
+  bool full(double now) => _spills.isNotEmpty && now - _spills.last < 700;
+
+  /// 가득일 때 처치 자리 회색 '+0'(0.5초에 하나로 묶음).
+  void zero(double x, double y, double now) {
+    if (_zeros.isNotEmpty && now - _zeros.last.$3 < 500) return;
+    if (_zeros.length >= 8) _zeros.removeAt(0);
+    _zeros.add((x, y, now));
+  }
 
   /// 화물칸 가득(GoldOverflow — 0.5초마다): 화물칸에서 금화가 양옆으로 넘쳐 바다에 떨어진다.
   void spill(double now) {
@@ -96,6 +107,7 @@ class TopCrewFx {
     _misses.clear();
     _drums.clear();
     _spills.clear();
+    _zeros.clear();
     upAt = rippleAt = brokenAt = -1000000000;
   }
 
@@ -112,6 +124,11 @@ class TopCrewFx {
   }) {
     _shield(c, now, ship, shipR + 6, shield);
     _paintSpills(c, now, ship, shipR);
+    _zeros.removeWhere((z) => now - z.$3 > 600);
+    for (final (x, y, at) in _zeros) {
+      final t = (now - at) / 600;
+      drawPixelText(c, '+0', x - 3, y - 8 - 8 * t, (((1 - t) * 0xDD).round() << 24) | 0x9AA4B1);
+    }
     _paintStrikes(c, now, poses, poseCount, flash: flash);
     _misses.removeWhere((m) => now - m.$3 > 700);
     for (final (x, y, at) in _misses) {
