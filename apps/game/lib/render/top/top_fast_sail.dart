@@ -211,12 +211,18 @@ class TopTexts {
     this.strike = 'BREAK!',
     this.finale = 'BREAKTHROUGH!',
     this.ended = _endedEn,
+    this.wanted = 'WANTED',
+    this.fled = 'Fled!',
   });
 
   final String start;
   final String strike;
   final String finale;
   final String Function(int from, int to) ended;
+
+  /// 현상금 수배 포스터 머리말·도망 문구.
+  final String wanted;
+  final String fled;
 
   static String _endedEn(int from, int to) => 'STAGE $from → $to CLEARED!';
 }

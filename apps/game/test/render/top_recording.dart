@@ -208,3 +208,27 @@ List<RecordedTick> withFastSail(List<RecordedTick> rec, {int at = 60}) {
       }(),
   ];
 }
+
+/// 현상금 주입 (S2·S5 bounty): [at]에 BountyStarted, 그 뒤 프레임에 BattleView.bounty, [clearAt]에 BountyCleared(젬 30).
+List<RecordedTick> withBounty(List<RecordedTick> rec, {int at = 60, int clearAt = 240}) => [
+  for (var i = 0; i < rec.length; i++)
+    RecordedTick(
+      i >= at && i < clearAt
+          ? BattleView.fromJson({
+              ...rec[i].frame.toJson(),
+              'bounty': {'bossId': 'enemy_ship', 'tier': 3, 'ticksLeft': clearAt - i},
+            })
+          : rec[i].frame,
+      [
+        ...rec[i].events,
+        if (i == at) BountyStarted(rec[i].frame.tick, bossId: 'enemy_ship', tier: 3, timeLimitTicks: clearAt - at),
+        if (i == clearAt)
+          BountyCleared(
+            rec[i].frame.tick,
+            bossId: 'enemy_ship',
+            tier: 3,
+            reward: const BountyReward(type: 'gems', amount: 30),
+          ),
+      ],
+    ),
+];

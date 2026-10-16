@@ -4,9 +4,11 @@ import 'dart:ui';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
+import 'package:pirate_dot/render/top/top_bounty.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
+import 'package:pirate_dot/render/top/top_muzzle.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
 
@@ -30,6 +32,9 @@ class TopHits {
 
   /// 빠른 항해 돌파.
   final fast = TopFastSail();
+
+  /// 현상금 사냥 B3.
+  final bounty = TopBounty();
 
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
@@ -86,7 +91,7 @@ class TopHits {
 
   /// 물보라(흰·하늘 점이 둥글게 퍼짐)·나뭇조각(배 바깥쪽으로 튐)·작은 번쩍. 전장 좌표.
   void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
-    _paintMuzzles(c, now, flash: flash, powerSave: powerSave);
+    muzzles.paint(c, now, flash: flash, powerSave: powerSave);
     _paintUpgrade(c, ship, now);
     _paintEmerges(c, now);
     slash.paint(c, now);
@@ -120,52 +125,8 @@ class TopHits {
     }
   }
 
-  final List<_Muzzle> _muzzles = [];
-  final Map<String, double> _lastMuzzle = {};
-  static const _muzzleGapMs = 140.0;
-
-  /// 발사 임팩트 (사용자 '폭탄을 쏠 때 임팩트가 없다'): 포구([x],[y], 쏘는 방향 [angle]) 섬광(등급 색 [color] 테 + 흰 중심 80ms)·작은 고리·연기 퍼프.
-  /// 같은 선원은 [_muzzleGapMs]마다 한 번(동시 발사가 많아도 화면이 하얘지지 않게). [atMs] = 실제 발사 시각(장면 ms).
-  void muzzle(double x, double y, double angle, int color, String crewId, double atMs) {
-    final last = _lastMuzzle[crewId];
-    if (last != null && atMs - last < _muzzleGapMs) return;
-    _lastMuzzle[crewId] = atMs;
-    if (_muzzles.length >= 16) _muzzles.removeAt(0);
-    _muzzles.add(_Muzzle(x + math.cos(angle) * 6, y + math.sin(angle) * 6, atMs, angle, color));
-  }
-
-  void _paintMuzzles(Canvas c, double now, {required bool flash, required bool powerSave}) {
-    _muzzles.removeWhere((m) => now - m.ms >= 450);
-    for (final m in _muzzles) {
-      final age = now - m.ms;
-      if (age < 0) continue;
-      final at = Offset(m.x, m.y);
-      if (!powerSave) {
-        for (var k = 0; k < 3; k++) {
-          final t = age / 450;
-          final a = m.angle + (k - 1) * 0.7;
-          final d = 3 + 7 * t;
-          _paint.color = Color.fromRGBO(220, 220, 228, 0.55 * (1 - t));
-          c.drawCircle(at + Offset(math.cos(a) * d, math.sin(a) * d), 1.5 + 2.5 * t, _paint);
-        }
-      }
-      if (age < 250) {
-        final t = age / 250;
-        _ring
-          ..strokeWidth = 1
-          ..color = Color(m.color).withValues(alpha: 0.8 * (1 - t));
-        c.drawCircle(at, 3 + 8 * t, _ring);
-      }
-      if (age < 80 && flash) {
-        _ring
-          ..strokeWidth = 1.5
-          ..color = Color(m.color);
-        c.drawCircle(at, 4.5, _ring);
-        _paint.color = const Color(0xFFFFFFFF);
-        c.drawCircle(at, 3, _paint);
-      }
-    }
-  }
+  /// 발사 임팩트(포구 섬광·고리·연기).
+  final muzzles = TopMuzzle();
 
   final _ring = Paint()..style = PaintingStyle.stroke;
 
@@ -241,7 +202,24 @@ class TopHits {
     }
   }
 
+  /// 적 위 층(전장 좌표): 범위 임팩트·적 포탄·돌파 사격·현상금 핀·보스 예고·선원 개성 — TopScenePainter가 적 다음에 부른다.
+  void paintOver(Canvas c, BattleScene s, double now, double shipR, Offset? Function(int id) bossAt) {
+    final view = s.frame;
+    final flash = s.settings.flash;
+    final ship = s.topShip;
+    impact.paint(c, now, flash: flash, lite: s.settings.powerSave);
+    shots.paint(c, now, flash: flash);
+    fast.paintWorld(c, now, ship);
+    bounty.paintWorld(c, now, s.poses, s.poseCount, active: view.bounty != null);
+    boss.paint(c, now, ship, bossAt, flash: flash);
+    crew
+      ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: now)
+      ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
+  }
+
   void clear() {
+    muzzles.clear();
+    bounty.clear();
     fast.clear();
     crew.clear();
     impact.clear();
@@ -250,8 +228,6 @@ class TopHits {
     _emerges.clear();
     upgradeAt = -1000000000;
     shots.clear();
-    _muzzles.clear();
-    _lastMuzzle.clear();
     _flashAt = -1000000000;
     _lunge.clear();
     _spots.clear();
@@ -264,15 +240,6 @@ class _Spot {
   final double y;
   final double ms;
   final double angle;
-}
-
-class _Muzzle {
-  _Muzzle(this.x, this.y, this.ms, this.angle, this.color);
-  final double x;
-  final double y;
-  final double ms;
-  final double angle;
-  final int color;
 }
 
 class _Emerge {
