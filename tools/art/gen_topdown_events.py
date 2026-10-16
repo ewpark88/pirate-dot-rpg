@@ -107,7 +107,37 @@ def bottle(f):
     return px
 
 
-EVENTS = {"goldfish": goldfish, "sea_serpent": sea_serpent, "merchant_ship": merchant_ship, "bottle": bottle}
+def chest(f):
+    """떠내려온 보물상자(위에서 비스듬히): 나무 상자·금 띠·자물쇠, 둘째 프레임은 뚜껑 틈 금빛과 반짝임. 물결 거품 테."""
+    g = Grid(24)
+    wood, wood_d, wood_l = (150, 96, 50), (104, 64, 34), (186, 128, 72)
+    g.poly([(4, 9), (19, 9), (19, 19), (4, 19)], wood_d)  # 몸통(앞면)
+    g.poly([(5, 10), (18, 10), (18, 18), (5, 18)], wood)
+    g.poly([(4, 4), (19, 4), (20, 9), (3, 9)], wood_d)  # 뚜껑(윗면)
+    g.poly([(5, 5), (18, 5), (19, 8), (4, 8)], wood_l)
+    for x in (7, 16):  # 금 띠
+        g.line(x, 4, x, 19, GOLD_D)
+        g.line(x, 5, x, 18, GOLD)
+    g.line(3, 9, 20, 9, GOLD_D)
+    if f:  # 뚜껑 틈 금빛
+        g.line(5, 9, 18, 9, GOLD_L)
+    g.ellipse(11.5, 11, 1.6, 1.6, GOLD, GOLD_L)  # 자물쇠
+    g.put(11.5, 12, wood_d)
+    px = g.done()
+    for x, y in ((3, 2), (20, 14)) if f else ((19, 2), (2, 15)):  # 반짝임
+        for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+            if 0 <= x + dx < 24 and 0 <= y + dy < 24 and px[y + dy][x + dx] is None:
+                px[y + dy][x + dx] = GOLD_L
+    for k in range(24):  # 물가 거품
+        a = k / 24 * 2 * math.pi
+        if (k + (1 if f else 0)) % 3:
+            x, y = int(12 + math.cos(a) * 11), int(13 + math.sin(a) * 9)
+            if 0 <= x < 24 and 0 <= y < 24 and px[y][x] is None:
+                px[y][x] = (236, 248, 255)
+    return px
+
+
+EVENTS = {"goldfish": goldfish, "sea_serpent": sea_serpent, "merchant_ship": merchant_ship, "bottle": bottle, "chest": chest}
 
 
 def files():

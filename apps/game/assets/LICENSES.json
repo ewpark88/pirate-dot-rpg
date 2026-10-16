@@ -1032,6 +1032,10 @@
       "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
       "license": "OWN"
     },
+    "fx/td_event_chest.png": {
+      "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
     "fx/td_event_goldfish.png": {
       "source": "자체 디자인 → tools/art/gen_topdown_events.py 위에서 본 픽셀 격자",
       "license": "OWN"
