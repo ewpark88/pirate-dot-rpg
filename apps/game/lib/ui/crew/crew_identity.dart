@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_trait_text.dart';
@@ -23,7 +24,8 @@ typedef CrewIdentity = ({AimKind aim, double interval, bool area, HitKind hit});
 /// - 조준: aim.targets(없으면 계열 targets — 'front'는 배 둘레).
 /// - 범위: 모양(aim.shape ?? 계열 shape)이 원·부채꼴·밀어내기이거나 topRadius가 있으면.
 /// - 명중: 발사체가 없으면 즉시(근접·광선), 예측(lead)이거나 속도 없는 지연 공격이면 예측, 아니면 빗나갈 수 있음.
-CrewIdentity? crewIdentity(GameTables t, String crewId) {
+/// [rarity] = 등급 번호(0 일반 … 4 신화) — 연사는 경제 crewAttack(등급 템포·등급별 aim 반영, S2).
+CrewIdentity? crewIdentity(GameTables t, String crewId, {int rarity = 0}) {
   final def = t.crews.crews.where((c) => c.id == crewId).firstOrNull;
   if (def == null) return null;
   final attack = t.skills.byId(def.family).attack;
@@ -42,7 +44,7 @@ CrewIdentity? crewIdentity(GameTables t, String crewId) {
   }
   return (
     aim: AimKind.values.where((a) => a.name == targets).firstOrNull ?? AimKind.ring,
-    interval: aim?.numberOr('intervalSec', attack.intervalSec) ?? attack.intervalSec,
+    interval: crewAttack(t, crewId, rarity).intervalSec,
     area: area,
     hit: hit,
   );
@@ -89,9 +91,12 @@ String hitText(AppLocalizations l, HitKind h) => switch (h) {
 
 /// 아이콘 4개 한 줄 (카드 아래 작게 / 상세에 크게). [size] = 아이콘 한 칸 크기.
 class CrewIdentityIcons extends ConsumerWidget {
-  const CrewIdentityIcons({required this.crewId, this.size = 14, this.light = false, super.key});
+  const CrewIdentityIcons({required this.crewId, this.size = 14, this.light = false, this.rarity = 0, super.key});
 
   final String crewId;
+
+  /// 등급 번호 (연사 간격이 등급 템포를 따른다).
+  final int rarity;
   final double size;
 
   /// 어두운 바탕(소환 결과) 위면 밝은 색.
@@ -99,7 +104,7 @@ class CrewIdentityIcons extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = crewIdentity(ref.watch(tablesProvider), crewId);
+    final id = crewIdentity(ref.watch(tablesProvider), crewId, rarity: rarity);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final ink = light ? Colors.white : Skin.ink;
@@ -197,13 +202,16 @@ class _ArrowPainter extends CustomPainter {
 
 /// 상세의 특색 판: 아이콘마다 이름 + 한 줄 특색.
 class CrewIdentityPanel extends ConsumerWidget {
-  const CrewIdentityPanel({required this.crewId, super.key});
+  const CrewIdentityPanel({required this.crewId, this.rarity = 0, super.key});
 
   final String crewId;
 
+  /// 등급 번호 (연사 · 신화 작은 폭발).
+  final int rarity;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = crewIdentity(ref.watch(tablesProvider), crewId);
+    final id = crewIdentity(ref.watch(tablesProvider), crewId, rarity: rarity);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     Widget item(Widget icon, String label, String value) => Expanded(
@@ -233,6 +241,13 @@ class CrewIdentityPanel extends ConsumerWidget {
             key: const Key('crew.identity.line'),
             style: Skin.text(15, color: Skin.primaryEdge),
           ),
+          // 신화 단일형: 맞은 자리 작은 폭발(경제 aim.mythic splashRadius, S2).
+          if (crewAttack(ref.watch(tablesProvider), crewId, rarity).raw.numberOr('splashRadius', 0) > 0)
+            Text(
+              l10n.uiIdSplash,
+              key: const Key('crew.identity.splash'),
+              style: Skin.text(13, color: Skin.goldInk),
+            ),
           const SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

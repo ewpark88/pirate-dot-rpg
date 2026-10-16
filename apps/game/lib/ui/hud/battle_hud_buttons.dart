@@ -21,9 +21,20 @@ class HudHints extends Notifier<Map<String, int>> {
   @override
   Map<String, int> build() => const {};
 
-  int count(String id) => state[id] ?? 0;
+  /// 세이브에 남기는 '처음 1회' 안내 (Settings.hints · MarkHint — 앱을 다시 켜도 다시 안 뜬다).
+  static const persistent = {'ult.bubble', 'boss.bubble', 'rebirth.bubble', 'rebirth.seen'};
 
-  void shown(String id) => state = {...state, id: count(id) + 1};
+  /// 본 횟수: 이번 실행 수, 세이브에 본 기록이 있으면 최소 1.
+  int count(String id) {
+    final n = state[id] ?? 0;
+    final saved = persistent.contains(id) && ref.read(gameStateProvider).settings.hints.contains(id);
+    return saved && n == 0 ? 1 : n;
+  }
+
+  void shown(String id) {
+    state = {...state, id: (state[id] ?? 0) + 1};
+    if (persistent.contains(id)) ref.read(commandSinkProvider).send(MarkHint(id));
+  }
 
   /// 켜짐/꺼짐 표시 (말풍선이 지금 떠 있는지 — 한 번에 하나만).
   void set(String id, {required bool on}) => state = {...state, id: on ? 1 : 0};

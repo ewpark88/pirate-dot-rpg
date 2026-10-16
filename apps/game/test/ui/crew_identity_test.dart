@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
@@ -56,6 +57,21 @@ void main() {
     expect(rateBars(0.3), 5);
     expect(rateBars(1), 3);
     expect(rateBars(3), 1);
+  });
+
+  testWidgets('신화 단일형 선원 상세: 맞은 자리 작은 폭발(aim.mythic splashRadius) · 연사는 등급 템포(crewAttack)', (tester) async {
+    final t = GameTables.load();
+    final single = t.crews.crews.firstWhere(
+      (c) => crewAttack(t, c.id, 4).raw.numberOr('splashRadius', 0) > 0,
+    );
+    await pumpGame(tester, loadFixture('all_crews_mythic'), tab: crewTab, fullSheet: true);
+    await tester.ensureVisible(find.byKey(Key('crew.card.${single.id}')));
+    await tester.pump();
+    await tester.tap(find.byKey(Key('crew.card.${single.id}')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('crew.identity.splash')), findsOneWidget);
+    final sec = shortDecimal(crewAttack(t, single.id, 4).intervalSec);
+    expect(find.text('Every ${sec}s'), findsOneWidget);
   });
 
   group('골든', () {

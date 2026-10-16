@@ -447,5 +447,7 @@
   "uiBountyFled": "도망쳤다!",
   "uiBossTagRegion": "대보스",
   "uiBossTagMid": "중간 보스",
-  "uiBossIncoming": "보스 등장!"
+  "uiBossIncoming": "보스 등장!",
+  "uiIdSplash": "맞은 자리 작은 폭발",
+  "uiAutoUpgradeOff": "끄기"
 }
