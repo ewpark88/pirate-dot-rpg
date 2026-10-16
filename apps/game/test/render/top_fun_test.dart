@@ -29,10 +29,10 @@ void main() {
     return s;
   }
 
-  test('피버 시작: 금빛 번쩍·흔들림', () {
+  test('피버 시작: 금빛 번쩍, 화면 흔들기 없음(사용자 "화면이 좌우로 움직이면 조잡하다")', () {
     final s = run([const FeverStarted(10, untilTick: 100)]);
     expect(s.moments.feverFlashMs, greaterThan(0));
-    expect(s.shake.peak, greaterThan(0));
+    expect(s.shake.peak, 0);
   });
 
   test('황금 물고기 잡힘: 금 숫자 + 금화가 배로(금액 그대로)', () {

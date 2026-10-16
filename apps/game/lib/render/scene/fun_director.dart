@@ -14,6 +14,8 @@ bool funEvent(BattleScene s, GameEvent e) {
     case ShieldBroken():
       s.topHits.crew.brokenAt = s.clockMs;
       s.shake.trigger(s.juice.shake['aoe']!);
+    case GoldOverflow():
+      s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
       s.topHits.crew.miss(x, y, s.clockMs);
     case FeverStarted():

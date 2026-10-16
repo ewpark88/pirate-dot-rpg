@@ -34,6 +34,49 @@ class TopCrewFx {
     _strikes.add(_Strike(x, y, startMs, warnMs));
   }
 
+  final List<double> _spills = [];
+
+  /// 화물칸 가득(GoldOverflow — 0.5초마다): 화물칸에서 금화가 양옆으로 넘쳐 바다에 떨어진다.
+  void spill(double now) {
+    if (_spills.length >= 6) _spills.removeAt(0);
+    _spills.add(now);
+  }
+
+  void _paintSpills(Canvas c, double now, Offset ship, double shipR) {
+    _spills.removeWhere((m) => now - m > 900);
+    for (final m in _spills) {
+      final t = (now - m) / 900;
+      final cargo = ship + Offset(0, shipR * 0.35);
+      for (var k = 0; k < 6; k++) {
+        final side = k.isEven ? 1.0 : -1.0;
+        final spread = 0.6 + (k ~/ 2) * 0.35;
+        final x = cargo.dx + side * (shipR * 0.5 + 26 * spread * t);
+        final y = cargo.dy - 14 * spread * 4 * t * (1 - t) + 6 * t;
+        if (t < 0.8) {
+          _fill.color = const Color(0xFF8A5A10).withValues(alpha: 1 - t);
+          c.drawCircle(Offset(x, y), 2.6, _fill);
+          _fill.color = const Color(0xFFFFD84A).withValues(alpha: 1 - t);
+          c.drawCircle(Offset(x, y), 2, _fill);
+        } else {
+          final k2 = (t - 0.8) / 0.2;
+          _line
+            ..strokeWidth = 1
+            ..color = const Color(0xFFE6F6FF).withValues(alpha: 1 - k2);
+          c.drawCircle(Offset(x, y), 2 + 4 * k2, _line);
+        }
+      }
+      if (t < 0.6) {
+        drawPixelText(
+          c,
+          'FULL',
+          cargo.dx - 7,
+          cargo.dy - shipR - 14 - 6 * t,
+          (((1 - t / 0.6) * 0xFF).round() << 24) | 0xFFC23A,
+        );
+      }
+    }
+  }
+
   void miss(double x, double y, double now) {
     if (_misses.length >= 16) _misses.removeAt(0);
     _misses.add((x, y, now));
@@ -52,6 +95,7 @@ class TopCrewFx {
     _strikes.clear();
     _misses.clear();
     _drums.clear();
+    _spills.clear();
     upAt = rippleAt = brokenAt = -1000000000;
   }
 
@@ -67,6 +111,7 @@ class TopCrewFx {
     required bool flash,
   }) {
     _shield(c, now, ship, shipR + 6, shield);
+    _paintSpills(c, now, ship, shipR);
     _paintStrikes(c, now, poses, poseCount, flash: flash);
     _misses.removeWhere((m) => now - m.$3 > 700);
     for (final (x, y, at) in _misses) {

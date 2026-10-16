@@ -137,3 +137,11 @@ List<RecordedTick> withBossPattern(List<RecordedTick> rec, String kind, {int at 
           : rec[i],
   ];
 }
+
+/// 화물칸 가득 주입 (S2 GoldOverflow — 0.5초마다): [at]·[at]+10 틱.
+List<RecordedTick> withGoldOverflow(List<RecordedTick> rec, {int at = 120}) => [
+  for (var i = 0; i < rec.length; i++)
+    i == at || i == at + 10
+        ? RecordedTick(rec[i].frame, [...rec[i].events, GoldOverflow(rec[i].frame.tick, lost: BigNum.from(1000))])
+        : rec[i],
+];
