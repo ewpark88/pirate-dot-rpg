@@ -14,7 +14,7 @@ void main() {
   setUp(() => h = EconomyHarness());
   final cannon = EconomyHarness.tables.shipParts.byId('cannon');
   final m = cannon.milestoneEvery!;
-  num cost(int lv) => cannon.costBase * math.pow(cannon.costGrowth, lv);
+  num cost(int lv) => cannon.costBase * math.pow(cannon.costGrowth, partStep(cannon, lv));
 
   test('기준 1: 대포 Lv0에서 3회 강화하면 Lv3, 비용 합만큼 골드가 줄고 PartUpgraded 3개', () {
     final s0 = h.newGame(gold: BigNum.from(1000));
@@ -32,7 +32,8 @@ void main() {
     expect(h.of<PartMilestone>().single.level, m);
     final t = EconomyHarness.tables.shipParts;
     final jump = shipAttack(t, m) / shipAttack(t, m - 1);
-    expect(jump.toDouble(), closeTo(cannon.growth * cannon.milestoneMultiplier, 1e-9));
+    final step = partStep(cannon, m) - partStep(cannon, m - 1);
+    expect(jump.toDouble(), closeTo(math.pow(cannon.growth, step) * cannon.milestoneMultiplier, 1e-9));
   });
 
   test('기준 3: 골드가 모자라면 상태·이벤트 변화 없음', () {

@@ -37,7 +37,8 @@ void main() {
 
     test('affordableLevels = 골드로 살 수 있는 최대 수, 최대 레벨에서 멈춘다', () {
       final cannon = t.shipParts.byId('cannon');
-      for (final (from, n) in [(0, 1), (0, 3), (12, 40), (400, 123)]) {
+      // 가속 곡선(accelLevels)이면 레벨이 높을수록 금방 커지므로 작은 범위로 본다.
+      for (final (from, n) in [(0, 1), (0, 3), (5, 4), (10, 6)]) {
         final exact = partCostSum(cannon, from, n); // 판정 기준은 공식 합 (반복 합과는 1e-9 안에서 같다)
         expect(affordableLevels(cannon, from, exact), n, reason: '정확히 $n개 값');
         expect(

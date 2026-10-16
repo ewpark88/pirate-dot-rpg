@@ -60,6 +60,33 @@ class AttackDef {
   final int chains;
   final int count;
 
+  /// [over]의 키를 덮어쓴 모양(선원 개성 v2 `aim`). 없으면 그대로.
+  /// 연사를 바꾸고 power를 주지 않으면 power = (등급 사다리) power × 새 간격 ÷ 계열 간격 — 연사형·한 방형이 같은 DPS(S2).
+  /// `powerScale`(선택)은 그 위에 곱한다(선원별 미세 보정, balance crews).
+  AttackDef overlay(JsonReader? over) {
+    if (over == null) return this;
+    final o = over.raw;
+    var power = o.containsKey('power') ? over.number('power') : this.power;
+    if (!o.containsKey('power') && o.containsKey('intervalSec') && intervalSec > 0) {
+      power = power * over.number('intervalSec') / intervalSec;
+    }
+    power = power * over.numberOr('powerScale', 1);
+    return AttackDef.fromJson(JsonReader({...raw.raw, ...o, 'power': power}, over.path));
+  }
+
+  /// 날아가는 탄(선원 개성 v2 `projectile`): 탄속(단위/초)·예측 사격·도착 지점 맞는 반경. 없으면 즉시 맞는다.
+  /// delaySec가 있으면 거리와 상관없이 그 시간 뒤 조준점에 떨어진다(낙뢰 예고, 개성 v2 7.2).
+  ({double speed, bool lead, double hitRadius, double delaySec})? get projectile {
+    if (!raw.has('projectile')) return null;
+    final p = raw.obj('projectile');
+    return (
+      speed: p.numberOr('speed', 0),
+      lead: p.raw['lead'] == true,
+      hitRadius: p.numberOr('hitRadius', 0),
+      delaySec: p.numberOr('delaySec', 0),
+    );
+  }
+
   /// 사다리([ladder]의 키 → 등급별 값)를 [rarity] 등급 순번으로 덮어쓴 모양.
   AttackDef withLadder(Map<String, List<num>> ladder, int rarity) {
     if (ladder.isEmpty) return this;
@@ -160,7 +187,10 @@ class SkillsTable {
       critBurstDamage = j.number('critBurstDamage'),
       legends = {
         for (final e in (j.raw['legends'] as Map<String, dynamic>).entries) e.key: j.obj('legends').obj(e.key),
-      };
+      },
+      traitScale = j.has('traitScale')
+          ? [for (final v in j.raw['traitScale'] as List) (v as num).toDouble()]
+          : const [];
 
   final List<FamilyDef> families;
 
@@ -183,13 +213,20 @@ class SkillsTable {
   /// 전설 치명타 폭발 피해 비율.
   final double critBurstDamage;
 
+  /// 선원 개성 v2 특징 배율(등급 순번 0~전설 전): 전설 미만도 전설 능력을 이 배율로(일반 0.4…). 비면 전설부터만.
+  final List<double> traitScale;
+
   /// 선원 id → 전설 능력 원문 (등급에 따라 [legendFor]).
   final Map<String, JsonReader> legends;
 
   /// [rarity] 등급(3 = 전설, 4 = 신화)의 [crewId] 전설 능력. 전설 미만이거나 데이터가 없으면 null.
   LegendDef? legendFor(String crewId, int rarity, int legendRarity) {
     final raw = legends[crewId];
-    if (raw == null || rarity < legendRarity) return null;
+    if (raw == null) return null;
+    if (rarity < legendRarity) {
+      final k = rarity < traitScale.length ? traitScale[rarity] : 0.0;
+      return k > 0 ? LegendDef.scaled(raw, k) : null; // 특징(trait, 개성 v2) — 배율 0이면 없음
+    }
     return LegendDef.of(raw, mythic: rarity > legendRarity);
   }
 

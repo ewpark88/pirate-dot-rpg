@@ -78,11 +78,7 @@ class TopAim {
     final targets = eligible(a, foes, reachBonus: reachBonus);
     final pickable = targets.where((e) => !avoid.contains(e)).toList();
     if (pickable.isEmpty) return null;
-    Foe nearest(Iterable<Foe> pool, double x, double y) =>
-        pool.reduce((m, e) => _dist(e.x, e.y, x, y) < _dist(m.x, m.y, x, y) ? e : m);
-    Foe first() => a.targets == 'strongest'
-        ? pickable.reduce((m, e) => e.hp > m.hp ? e : m)
-        : nearest(pickable, top.shipX, top.shipY);
+    Foe first() => pickFirst(a, pickable, rng);
 
     final List<Foe> hit;
     var falloff = false;
@@ -92,10 +88,13 @@ class TopAim {
       case 'circle':
         final radius = circleRadius(a);
         int around(Foe c) => targets.where((e) => _dist(e.x, e.y, c.x, c.y) <= radius).length;
-        final center = pickable.reduce((m, e) {
-          final d = around(e) - around(m);
-          return d > 0 || (d == 0 && _centerDist(e) < _centerDist(m)) ? e : m;
-        });
+        // 무리 중심(계열 기본 cluster) — 선원 개성 v2가 다른 조준(가장 강한·무작위 등)을 주면 그 적을 중심으로.
+        final center = a.targets != null && a.targets != 'cluster'
+            ? first()
+            : pickable.reduce((m, e) {
+                final d = around(e) - around(m);
+                return d > 0 || (d == 0 && _centerDist(e) < _centerDist(m)) ? e : m;
+              });
         (ax, ay) = (center.x, center.y);
         hit = targets.where((e) => _dist(e.x, e.y, ax, ay) <= radius).toList()
           ..sort((p, q) => _dist(p.x, p.y, ax, ay).compareTo(_dist(q.x, q.y, ax, ay)));
@@ -151,7 +150,7 @@ class TopAim {
         final halfAngle = arcDeg(a) * half * radiansPerDegree;
         hit = [
           for (final e in targets)
-            if ((e.boss || edge(e) <= coneRange(a)) &&
+            if ((e.standsOff || edge(e) <= coneRange(a)) &&
                 (edge(e) <= w.field.coneNearPx ||
                     _angleBetween(math.atan2(e.y - top.shipY, e.x - top.shipX), dir) <= halfAngle))
               e,
@@ -160,7 +159,7 @@ class TopAim {
         (ax, ay) = (hit.first.x, hit.first.y);
       case 'push':
         // 배 둘레 고리: 둘레에서 range 안 전부. 보스는 사거리 안이면 range와 상관없이(옆모습과 같은 규칙 — 보스는 멀리 선다).
-        hit = targets.where((e) => e.boss || edge(e) <= ringRange(a)).toList()
+        hit = targets.where((e) => e.standsOff || edge(e) <= ringRange(a)).toList()
           ..sort((p, q) => edge(p).compareTo(edge(q)));
         if (hit.isEmpty) return null;
         (ax, ay) = (top.shipX, top.shipY);
@@ -171,7 +170,41 @@ class TopAim {
     }
     return (x: ax, y: ay, hits: spread(hit, w, falloff: falloff));
   }
+
+  /// 첫 대상(선원 개성 v2 조준 8종, docs/specs/platform-crew-identity-v2.md 1절). 계열 기본값 nearest·front는 가까운 적.
+  Foe pickFirst(AttackDef a, List<Foe> pool, Rng rng) {
+    Foe most(double Function(Foe) score) => pool.reduce((m, e) => score(e) > score(m) ? e : m);
+    final close = nearest(pool, top.shipX, top.shipY);
+    switch (a.targets) {
+      case 'strongest':
+        return pool.reduce((m, e) => e.hp > m.hp ? e : m);
+      case 'weakest':
+        return pool.reduce((m, e) => e.hp < m.hp ? e : m);
+      case 'boss':
+        return pool.where((e) => e.boss).firstOrNull ?? pool.reduce((m, e) => e.hp > m.hp ? e : m);
+      case 'farthest':
+        return most(edge);
+      case 'air':
+        final air = pool.where((e) => e.layer == 'air');
+        return air.isEmpty ? close : nearest(air, top.shipX, top.shipY);
+      case 'random':
+        return pool[rng.nextInt(pool.length)];
+      case 'cluster':
+        // 둘레(적 지름 cluster 반경 — aim `clusterRadius`, 없으면 잡몹 지름) 안 이웃이 가장 많은 적, 같으면 가까운 쪽.
+        final r = a.raw.numberOr('clusterRadius', top.mobRadius / half);
+        int around(Foe c) => pool.where((e) => _dist(e.x, e.y, c.x, c.y) <= r).length;
+        return pool.reduce((m, e) {
+          final d = around(e) - around(m);
+          return d > 0 || (d == 0 && _centerDist(e) < _centerDist(m)) ? e : m;
+        });
+      default:
+        return close;
+    }
+  }
 }
+
+Foe nearest(Iterable<Foe> pool, double x, double y) =>
+    pool.reduce((m, e) => _dist(e.x, e.y, x, y) < _dist(m.x, m.y, x, y) ? e : m);
 
 /// 두 각의 차(0~π).
 double _angleBetween(double a, double b) {

@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/combat.dart';
+import 'package:game_core/src/battle/flight.dart';
+import 'package:game_core/src/battle/shield.dart';
+import 'package:game_core/src/battle/topdown/boss_patterns.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
@@ -17,9 +20,12 @@ class EnemyShot {
   final double fromY;
 }
 
-/// 탑다운 전투의 틱마다 추가 단계: 피버 오라 + 배 위협(docs/specs/platform-ship-threat.md).
+/// 탑다운 전투의 틱마다 추가 단계: 선원 탄 도착 + 피버 오라 + 배 위협(docs/specs/platform-ship-threat.md).
 extension TopdownStep on Round {
   void topdownStep(GameState s) {
+    tickFlights();
+    tickShield();
+    tickBossPatterns();
     feverAura(s);
     _emerge();
     _enemyFire();

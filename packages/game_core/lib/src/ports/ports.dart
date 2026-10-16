@@ -31,7 +31,7 @@ abstract interface class SaveStore {
 }
 
 /// 보상형 광고 장치 id (ads.json의 placements[].id).
-enum AdPlacement { chest, tailwind, offline, bossSupport, freeSummon, bountyTicket }
+enum AdPlacement { chest, tailwind, offline, bossSupport, freeSummon, bountyTicket, autoUpgrade }
 
 enum AdResult { rewarded, dismissed, failed, notLoaded }
 

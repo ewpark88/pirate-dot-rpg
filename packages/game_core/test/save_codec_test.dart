@@ -99,4 +99,20 @@ void main() {
       expect((store.main, store.backup), ('b', 'a'));
     });
   });
+
+  test('v6 → v7: 대포·선체·화물칸 레벨 ÷ 3(올림), 돛·망루 그대로 (골드 재조정)', () {
+    final v6 = SaveCodec.decode(File('test/fixtures/saves/v6.json').readAsStringSync());
+    expect(v6.ship.parts, {'cannon': 18, 'hull': 14, 'sail': 18, 'crowsnest': 12, 'cargo': 3});
+    expect(
+      migrateV6ToV7({
+        'schemaVersion': 6,
+        'ship': <String, dynamic>{
+          'parts': <String, dynamic>{'cargo': 1},
+        },
+      })['ship'],
+      {
+        'parts': {'cargo': 1},
+      },
+    );
+  });
 }

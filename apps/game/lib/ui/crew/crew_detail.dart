@@ -64,7 +64,8 @@ class CrewDetailDialog extends ConsumerWidget {
     final title = Theme.of(context).textTheme.titleSmall;
 
     // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본.
-    Widget section(String head, List<Widget> body, {Color? fill, Color? border, String? icon}) => Padding(
+    // 아이콘: 그림 경로(String) 또는 머티리얼 아이콘(IconData). 별은 등급만 뜻하므로 여기 쓰지 않는다.
+    Widget section(String head, List<Widget> body, {Color? fill, Color? border, Object? icon}) => Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Container(
         width: double.infinity,
@@ -79,7 +80,8 @@ class CrewDetailDialog extends ConsumerWidget {
           children: [
             Row(
               children: [
-                if (icon != null) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                if (icon is String) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                if (icon is IconData) ...[Icon(icon, size: 18, color: Skin.goldInk), const SizedBox(width: 4)],
                 Flexible(child: Text(head, style: title)),
               ],
             ),
@@ -119,10 +121,8 @@ class CrewDetailDialog extends ConsumerWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // 등급 별은 카드 리본에만(한 의미 한 자리) — 알약은 등급 이름만.
                                 Text(tableText(l10n, rarity.nameKey), style: Skin.text(13)),
-                                const SizedBox(width: 4),
-                                const SkinIcon(UiSprites.star, size: 14),
-                                Text(rarity.stars.toString(), style: Skin.text(13)),
                               ],
                             ),
                           ),
@@ -156,7 +156,7 @@ class CrewDetailDialog extends ConsumerWidget {
               Text(tableText(l10n, family.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, family.attack.shape), style: dim),
             ]),
-            section(icon: UiSprites.star, l10n.uiCrewSkill, [
+            section(icon: Icons.bolt_rounded, l10n.uiCrewSkill, [
               Text(skillName(l10n, skill.id), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, skill.area.shape), style: dim),
               Text(skillDesc(l10n, skill), style: dim),
@@ -164,7 +164,7 @@ class CrewDetailDialog extends ConsumerWidget {
             if (legend != null)
               section(
                 l10n.uiCrewLegend,
-                icon: legendNow == null ? UiSprites.lock : UiSprites.star,
+                icon: legendNow == null ? UiSprites.lock : Icons.workspace_premium_rounded,
                 // 열린 전설 능력은 금빛 판, 아직이면 흐린 판.
                 fill: legendNow == null ? Skin.track : const Color(0xFFFFF4CF),
                 border: legendNow == null ? Skin.plainEdge : Skin.goldBottom,

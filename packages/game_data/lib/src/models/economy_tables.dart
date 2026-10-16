@@ -14,6 +14,8 @@ class ShipPartDef {
       maxLevel = j.intOrNull('maxLevel'),
       milestoneEvery = j.intOrNull('milestoneEvery'),
       milestoneMultiplier = j.number('milestoneMultiplier'),
+      accelLevels = (j.raw['accelLevels'] as num?)?.toDouble(),
+      accelFrom = j.intOrNull('accelFrom') ?? 0,
       visualStages = [for (final v in j.raw['visualStages'] as List) (v as num).toInt()],
       nameKey = j.str('nameKey');
 
@@ -29,6 +31,13 @@ class ShipPartDef {
   final int? maxLevel;
   final int? milestoneEvery;
   final double milestoneMultiplier;
+
+  /// 가속(선택, 골드 재조정 2026-10-16 '강화가 갈수록 드물게'): 있으면 효과·비용의 레벨 자리에 Lv + d² ÷ (2 × accelLevels)를 쓴다(d = max(0, Lv − accelFrom)).
+  /// 레벨이 오를수록 한 번이 더 크고 비싸다. 없으면 Lv 그대로.
+  final double? accelLevels;
+
+  /// 가속이 시작되는 레벨(그 아래는 Lv 그대로 — 초반 벽·튜토리얼 보스를 지키려고). 없으면 0.
+  final int accelFrom;
 
   /// 배 외형이 바뀌는 레벨 (오름차순, 1부터). 지금 단계 = 이 목록에서 레벨 이하인 것의 수 (사용자 지시 2026-10-15).
   final List<int> visualStages;

@@ -6,24 +6,45 @@ import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
+import 'package:game_core/src/ports/ports.dart';
 import 'package:game_data/game_data.dart';
 
 // 전설 고유 능력의 효과 부품 (docs/specs/battle-m3-legend.md).
 
-/// extraChains·noFalloff: 마지막 대상에서 가까운 적으로 더 잇고, 비율을 다시 매긴다.
-Volley extendVolley(Gun g, Volley v, List<Foe> foes, WavesTable w, {required BattleGeometry geometry}) {
+/// 특징(전설 미만)의 '발마다 확률': [chance]가 0보다 크면 결정론 난수로 굴린다(0이면 난수를 쓰지 않는다 — 옛 결과 그대로).
+bool roll(double chance, Rng rng) => chance > 0 && rng.nextDouble() < chance;
+
+/// 발사체 추가 수: 전설 extraProjectiles + 특징 확률 몫.
+int extraShots(Gun g, Rng rng) {
   final l = g.legend;
-  if (l == null || (l.extraChains == 0 && !l.noFalloff) || v.hits.isEmpty) return v;
+  if (l == null) return 0;
+  return l.extraProjectiles + (roll(l.extraProjectilesChance, rng) ? 1 : 0);
+}
+
+/// extraChains·noFalloff: 마지막 대상에서 가까운 적으로 더 잇고, 비율을 다시 매긴다.
+Volley extendVolley(
+  Gun g,
+  Volley v,
+  List<Foe> foes,
+  WavesTable w, {
+  required BattleGeometry geometry,
+  required Rng rng,
+}) {
+  final l = g.legend;
+  if (l == null || v.hits.isEmpty) return v;
+  final extraChains = l.extraChains + (roll(l.extraChainsChance, rng) ? 1 : 0);
+  final noFalloff = l.noFalloff || roll(l.noFalloffChance, rng);
+  if (extraChains == 0 && !noFalloff) return v;
   final hit = [for (final h in v.hits) h.foe];
   final pool = geometry.eligible(g.attack, foes).where((e) => !hit.contains(e)).toList();
-  for (var i = 0; i < l.extraChains && pool.isNotEmpty; i++) {
+  for (var i = 0; i < extraChains && pool.isNotEmpty; i++) {
     final last = hit.last;
     final next = pool.reduce((m, e) => _d2(e, last) < _d2(m, last) ? e : m);
     hit.add(next);
     pool.remove(next);
   }
   final hadFalloff = v.hits.length > 1 && v.hits[1].factor < v.hits[0].factor;
-  final falloff = !l.noFalloff && (hadFalloff || l.extraChains > 0);
+  final falloff = !noFalloff && (hadFalloff || extraChains > 0);
   return (x: v.x, y: v.y, hits: spread(hit, w, falloff: falloff));
 }
 
@@ -93,12 +114,32 @@ void critBurst(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
   r.strike((x: v.x, y: v.y, hits: spread(around, r.w)), base.times(r.t.skills.critBurstDamage), crewId: g.crewId);
 }
 
-/// 한 발이 끝난 뒤 전설 능력: onHit, 장판, 치명타 폭발.
+/// 번개 연쇄(개성 v2 7.2 낙뢰): 떨어진 자리에서 가까운 순으로 맞지 않은 적 count(+확률 1)마리에게 base × ratio, 기절.
+void lightningArc(Round r, Gun g, Volley v, BigNum base) {
+  final arc = g.legend?.arc;
+  if (arc == null) return;
+  final n = arc.count + (roll(arc.chance, r.ctx.rng) ? 1 : 0);
+  if (n <= 0) return;
+  final hitIds = {for (final h in v.hits) h.foe.id};
+  double d2(Foe e) => (e.x - v.x) * (e.x - v.x) + (e.y - v.y) * (e.y - v.y);
+  final next = [
+    for (final e in r.geo.eligible(g.attack, r.field.foes))
+      if (!hitIds.contains(e.id)) e,
+  ]..sort((p, q) => d2(p).compareTo(d2(q)));
+  final hit = next.take(n).toList();
+  if (hit.isEmpty) return;
+  r
+    ..strike((x: v.x, y: v.y, hits: spread(hit, r.w)), base.times(arc.ratio), crewId: g.crewId)
+    ..control(hit, stunSec: arc.stunSec);
+}
+
+/// 한 발이 끝난 뒤 전설 능력: onHit, 장판, 치명타 폭발, 번개 연쇄.
 void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
   if (g.legend == null) return;
   applyOnHit(r, g, v.hits.map((h) => h.foe), base, x: v.x, y: v.y);
   spawnLegendZone(r, g, v.x, v.y);
   critBurst(r, g, v, base, crit: crit);
+  lightningArc(r, g, v, base);
 }
 
 double _d2(Foe a, Foe b) => (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
