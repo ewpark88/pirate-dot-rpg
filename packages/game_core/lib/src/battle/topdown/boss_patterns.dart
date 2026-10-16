@@ -4,7 +4,9 @@ import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show spawnWave;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
+import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
+import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart';
 
 /// 보스 행동 v2 (docs/specs/platform-boss-patterns.md): 쉼 → 예고 → 동작을 패턴 순서대로 돈다.
@@ -33,6 +35,7 @@ extension BossPatterns on Round {
   void tickBossPatterns() {
     final g = geo;
     if (g is! TopGeometry) return;
+    _inkAndSplit(g);
     for (final e in field.living.toList()) {
       // 소환이 적을 더하니 사본으로
       final plan = e.plan;
@@ -91,6 +94,31 @@ extension BossPatterns on Round {
       case 'summon':
         spawnWave(field, field.stage, ctx, count: p.count);
         _next(plan);
+      case 'ink':
+        // 먹물(도감 v2): 보스와 배 사이 원 — 그 안 적은 durationSec 동안 조준되지 않는다
+        final ticks = math.max(1, (p.durationSec / dt).round());
+        final ink = (
+          x: (e.x + g.top.shipX) * half,
+          y: (e.y + g.top.shipY) * half,
+          r: g.top.shipRadius * p.radiusShipMul,
+          until: ctx.tick + ticks,
+        );
+        field.inks.add(ink);
+        ctx.emit(InkCloud(ctx.tick, enemyId: e.id, x: ink.x, y: ink.y, radius: ink.r, ticks: ticks));
+        _next(plan);
+      case 'swallow':
+        // 삼키기(도감 v2): 보스 둘레 원 안 잡몹을 삼켜(보상 없음) 마리당 최대 HP × healRatio 회복 — 먼저 잡으면 막는다
+        final r = g.top.shipRadius * p.radiusShipMul + g.top.radiusOf(e);
+        final eaten = [
+          for (final m in field.living)
+            if (!m.standsOff && m.eventKind == null && _gap(m, e) <= r) m,
+        ];
+        field.foes.removeWhere(eaten.contains);
+        final healed = e.maxHp.times(p.healRatio * eaten.length);
+        final hp = e.hp + healed;
+        e.hp = hp > e.maxHp ? e.maxHp : hp;
+        ctx.emit(BossSwallowed(ctx.tick, enemyId: e.id, eaten: [for (final m in eaten) m.id], healed: healed));
+        _next(plan);
       default: // blast: 예고한 배 둘레 원이 터진다
         _hurt(e, p);
         _next(plan);
@@ -118,6 +146,45 @@ extension BossPatterns on Round {
         fromY: e.y,
       ),
     );
+  }
+
+  /// 먹물 구름 정리·조준 가림 갱신, 분열(BossDef.splitAt — HP 비율이 문턱 아래로 내려갈 때마다 둘로).
+  void _inkAndSplit(TopGeometry g) {
+    field.inks.removeWhere((i) => i.until <= ctx.tick);
+    g.targeting.blinds = List.of(field.inks);
+    for (final e in field.living.toList()) {
+      final at = e.bossDef?.splitAt ?? const <double>[];
+      if (!e.boss || e.splits >= at.length || (e.hp / e.maxHp).toDouble() > at[e.splits]) continue;
+      final halfHp = e.hp.times(half);
+      final child =
+          Foe(
+              id: field.nextId(),
+              kind: e.kind,
+              layer: e.layer,
+              x: e.x + g.top.radiusOf(e) / half,
+              y: e.y,
+              maxHp: e.maxHp,
+              speed: e.speed,
+              attack: e.attack,
+              gold: BigNum.zero, // 처치 골드는 원래 몸 하나
+              boss: true,
+              bossDef: e.bossDef,
+              tier: e.tier,
+            )
+            ..splits = e.splits + 1
+            ..hp = halfHp;
+      e
+        ..hp = halfHp
+        ..splits += 1;
+      field.foes.add(child);
+      ctx.emit(BossSplit(ctx.tick, parentId: e.id, childId: child.id, x: child.x, y: child.y));
+    }
+  }
+
+  double _gap(Foe a, Foe b) {
+    final dx = a.x - b.x;
+    final dy = a.y - b.y;
+    return math.sqrt(dx * dx + dy * dy);
   }
 
   void _next(BossPlan plan) {

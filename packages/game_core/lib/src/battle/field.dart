@@ -83,6 +83,10 @@ class Foe {
   /// 돌격대(waves.top.vanguard, S1·S2): 넉백·기절·끌기 면역, 무리 사이를 뚫고 배로 곧장 — EnemyView.vanguard.
   bool vanguard = false;
 
+  /// 도감 v2: 분열한 횟수(BossDef.splitAt 중 쓴 수) · 자폭 적이 이미 터졌나.
+  int splits = 0;
+  bool exploded = false;
+
   /// 등장 대기(초, 스폰 패턴 scatter·가까이 등장): 0보다 크면 기다린다 — 움직이지도·조준되지도·겹침을 풀지도 않는다.
   double holdSec = 0;
 
@@ -204,6 +208,7 @@ class Field {
   final List<Flight> flights = [];
   final List<Beam> beams = []; // 유지되는 레이저 빔(beam.dart)
   ShipShield? shield; // 배 흡수막(shield.dart)
+  final List<({double x, double y, double r, int until})> inks = []; // 먹물 구름(조준 가림, 도감 v2)
   FastSailRun?
   fastSail; // 빠른 항해 돌파 구간(fast_sail.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 

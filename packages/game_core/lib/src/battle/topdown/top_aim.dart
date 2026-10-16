@@ -18,6 +18,9 @@ class TopAim {
   /// 카메라 가운데 x — 배가 좌우로 움직여도 카메라(보이는 사각형)는 바다 가운데 그대로.
   final double viewX;
   final double viewY;
+
+  /// 먹물 구름(도감 v2): 이 원들 안의 적은 조준되지 않는다. 보스 패턴이 매 틱 정한다.
+  List<({double x, double y, double r, int until})> blinds = const [];
   final WavesTable w;
 
   double _centerDist(Foe e) => _dist(e.x, e.y, top.shipX, top.shipY);
@@ -57,6 +60,7 @@ class TopAim {
         // 황금 물고기(돌발 이벤트)는 탭으로만 잡는다 — 자동 조준에서 뺀다(S2 스펙).
         if (e.alive &&
             e.eventKind != 'goldfish' &&
+            !blinds.any((b) => (e.x - b.x) * (e.x - b.x) + (e.y - b.y) * (e.y - b.y) <= b.r * b.r) &&
             onScreen(e) &&
             !a.excludeLayers.contains(e.layer) &&
             (reach == null || edge(e) <= reach))

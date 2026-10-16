@@ -157,8 +157,8 @@ class BattleSystem implements GameSystem {
     final w = ctx.tables.waves;
     final p = s.progress;
     if (f.bossActive) {
-      final boss = f.foes.where((e) => e.boss).firstOrNull;
-      if (boss != null && !boss.alive) return _bossCleared(s, f, ctx);
+      final bosses = f.foes.where((e) => e.boss); // 분열하면 여럿 — 모두 쓰러져야 격파(도감 v2)
+      if (bosses.isNotEmpty && bosses.every((e) => !e.alive)) return _bossCleared(s, f, ctx);
       f.bossTicksLeft -= 1;
       if (f.bossTicksLeft <= 0 || f.shipHp.isZero) {
         ctx.emit(BossFailed(ctx.tick, stage: p.stage));
