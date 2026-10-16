@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/hud/battle_hud_buttons.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
+import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -40,6 +41,8 @@ class BattleButtons extends ConsumerWidget {
         return Stack(
           clipBehavior: Clip.none,
           children: [
+            // 해역 보스 첫 등장 컷인(렌더) 위 보스 이름 — 컷인 동안만.
+            const Positioned.fill(child: BossCutInName()),
             // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
             // 선원 칸 3상태 (그림은 렌더 slot_states): 출전 중 = 선원 상세, 열린 빈 칸 = 편성 시트, 잠김 = 열리는 조건 안내.
             for (final (i, r) in f.slotRects.indexed)
