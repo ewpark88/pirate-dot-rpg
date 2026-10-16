@@ -15,7 +15,7 @@ import 'helpers.dart';
 import 'top_recording.dart';
 
 /// 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다', S1): 때린 적이 배 쪽으로 툭 박고(돌진 120ms),
-/// 닿은 자리에 물보라·나뭇조각, 배 번쩍·미세 흔들림, 배 위 작은 빨간 피해 숫자. 실제 엔진 기록의 첫 배 피격 60ms 뒤(S24).
+/// 닿은 자리에 물보라·나뭇조각, 배 번쩍·미세 흔들림, 배 위 작은 빨간 피해 숫자. 실제 엔진 기록(stage 31)에서 때린 적이 살아 있는 첫 배 피격 60ms 뒤(S24).
 class _Painter extends CustomPainter {
   _Painter(this.painter, this.frame, this.dpr);
   final ScenePainter painter;
@@ -42,8 +42,16 @@ void main() {
     const dpr = 2.8125;
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     const box = Size(384, 832 - 48 - 24 - 76);
-    final rec = topRecording(tables, ticks: 900, stage: 60);
-    final at = rec.indexWhere((t) => t.events.any((e) => e is ShipDamaged && e.fromX != null));
+    final rec = topRecording(tables, ticks: 400);
+    // 엔진 변화(위협 재조정 등)에 견디게: 때린 적이 그 틱에 살아 있는 첫 피격(마지막 적이 같은 틱에 죽으면 돌진할 적이 없다).
+    final at = rec.indexWhere(
+      (t) => t.events.any(
+        (e) =>
+            e is ShipDamaged &&
+            e.fromX != null &&
+            t.frame.enemies.any((v) => (v.x - e.fromX!).abs() < 3 && (v.y - e.fromY!).abs() < 3),
+      ),
+    );
     expect(at, greaterThan(0), reason: '기록에 배 피격이 있어야 한다');
     final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
     final painter = ScenePainter(scene)..sprites = bank;
