@@ -35,6 +35,7 @@ class TopField {
     this.scatterGapMin = 0,
     this.scatterGapMax = 0,
     this.arcSpreadDeg = 0,
+    this.nearSpawn,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
        bossSpawnRadius = bossSpawnRadius ?? approachRadius,
@@ -81,6 +82,15 @@ class TopField {
       scatterGapMin: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).first as num).toDouble() : 0,
       scatterGapMax: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).last as num).toDouble() : 0,
       arcSpreadDeg: j.numberOr('arcSpreadDeg', 0),
+      nearSpawn: j.has('nearSpawn')
+          ? (
+              ratio: j.obj('nearSpawn').number('ratio'),
+              distanceMin: j.obj('nearSpawn').number('distanceMin'),
+              distanceMax: j.obj('nearSpawn').number('distanceMax'),
+              warnSec: j.obj('nearSpawn').number('warnSec'),
+              midDelayMaxSec: j.obj('nearSpawn').numberOr('midDelayMaxSec', 0),
+            )
+          : null,
     );
   }
 
@@ -108,6 +118,10 @@ class TopField {
 
   /// arc 패턴: 반원 대열의 퍼짐(도).
   final double arcSpreadDeg;
+
+  /// 배 위협 (b) 가까이 등장(waves.top.nearSpawn, 선택): 한 파의 ratio만큼을 배 몸통에서 distanceMin~Max 자리에,
+  /// warnSec 예고 뒤 솟아오르게. 절반은 파 도중(0~midDelayMaxSec 뒤). null이면 없음.
+  final ({double ratio, double distanceMin, double distanceMax, double warnSec, double midDelayMaxSec})? nearSpawn;
 
   /// 잡몹 이동 속도 배율(탑다운 화면에서 배까지 몇 초 안에 닿게, 사용자 신고 2026-10-15 '멈춰 있는 것 같다'). 보스는 그대로.
   final double mobSpeedScale;
@@ -186,6 +200,7 @@ class TopField {
           scatterGapMin: scatterGapMin,
           scatterGapMax: scatterGapMax,
           arcSpreadDeg: arcSpreadDeg,
+          nearSpawn: nearSpawn,
         );
 
   /// [e]의 원 반지름.

@@ -80,7 +80,8 @@ class EnemyDef {
       splitInto = j.strOrNull('splitInto'),
       splitCount = j.intOrNull('splitCount') ?? 0,
       splitHpRatio = j.numberOr('splitHpRatio', 0),
-      reviveHpRatio = j.numberOr('reviveHpRatio', 0);
+      reviveHpRatio = j.numberOr('reviveHpRatio', 0),
+      ranged = j.has('ranged') ? j.obj('ranged') : null;
 
   final String id;
 
@@ -101,6 +102,9 @@ class EnemyDef {
 
   /// 부활: 처음 처치되면 체력 [reviveHpRatio]로 한 번 일어난다.
   final double reviveHpRatio;
+
+  /// 원거리 공격(배 위협 (a), 선택): {range, intervalSec, damageRatio, projectileSpeed, kind}. 없으면 접촉만.
+  final JsonReader? ranged;
 }
 
 class RegionsTable {
