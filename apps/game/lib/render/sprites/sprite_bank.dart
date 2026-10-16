@@ -34,10 +34,9 @@ class SpriteBank {
   /// 읽어 볼 에셋 목록. 경로는 테이블(crews.json portrait, skills.json projectile, fx_map fxSheets)에서 나온다.
   static List<SpriteEntry> manifest(GameTables t) {
     final fx = t.fxMap;
-    final enemyFrames = fx.sprites.integer('enemyFrames');
     return [
       for (final c in t.crews.crews) (key: 'crew:${c.id}', path: c.portrait, frames: 1),
-      for (final k in t.regions.enemies.keys) (key: 'enemy:$k', path: 'enemies/$k.png', frames: enemyFrames),
+      // 보스 옆 그림: 보스 첫 등장 컷인 초상(StagePainter.paintCutIn) — UI 현상금 카드도 같은 파일을 쓴다.
       for (final b in fx.bossLook.keys) (key: 'boss:$b', path: 'bosses/$b.png', frames: 1),
       // 탑다운 적·보스 (T2: gen_topdown_enemies·gen_topdown_bosses, 머리가 위, 2프레임)
       for (final k in t.regions.enemies.keys) (key: 'td_enemy:$k', path: 'enemies/td_$k.png', frames: 2),
@@ -50,16 +49,6 @@ class SpriteBank {
         for (final v in fx.raw.obj('atmosphere').obj('landmarks').obj('byRegion').raw.values) ...(v as List),
       })
         (key: 'td_land:$l', path: 'fx/td_land_$l.png', frames: 2),
-      for (final tier in t.shipTiers.tiers) (key: 'ship:${tier.id}', path: 'ship/${tier.sprite}.png', frames: 1),
-      // 배 부품 외형 단계 (tools/art/gen_ship_parts.py): 등급마다 부품 시트, 프레임 = 단계.
-      for (final tier in t.shipTiers.tiers)
-        for (final part in fx.raw.obj('shipParts').obj('stages').raw.entries)
-          (
-            key: 'ship_part:${tier.id}:${part.key}',
-            path: 'ship/part_${tier.sprite.replaceFirst('ship_', '')}_${part.key}.png',
-            frames: part.value as int,
-          ),
-      (key: 'ship_cannon', path: 'ship/part_cannon.png', frames: fx.raw.obj('shipParts').integer('cannonStages')),
       // 탑다운 배 층 (tools/art/gen_topdown_ships.py, T2): 바탕 1장 + 부위별 단계 시트.
       for (final tier in t.shipTiers.tiers) ...[
         (key: 'td:${tier.id}:base', path: 'ship/td_${tier.sprite.replaceFirst('ship_', '')}_base.png', frames: 1),
