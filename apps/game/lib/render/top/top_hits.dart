@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
 
@@ -14,6 +15,9 @@ class TopHits {
 
   /// 강습 근접 휘두르기·베기 자국.
   final slash = TopSlash();
+
+  /// 보스 행동 v2 예고·동작.
+  final boss = TopBossPattern();
 
   /// 적 id → 돌진 시작 시각(장면 ms).
   final Map<int, double> _lunge = {};
@@ -226,6 +230,7 @@ class TopHits {
   }
 
   void clear() {
+    boss.clear();
     slash.clear();
     _emerges.clear();
     upgradeAt = -1000000000;
