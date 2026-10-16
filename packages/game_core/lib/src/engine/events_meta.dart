@@ -53,7 +53,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'crewSortie' ||
     'bombletBurst' => _threatEventFromJson(t, j),
     'goldOverflow' => GoldOverflow(t, lost: big('lost')),
-    'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' => _fastEventFromJson(t, j),
+    'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' || 'shipResupplied' => _fastEventFromJson(t, j),
     'inkCloud' || 'bossSwallowed' || 'bossSplit' || 'bomberBlast' => _bestiaryEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),

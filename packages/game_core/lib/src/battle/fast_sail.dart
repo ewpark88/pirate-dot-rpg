@@ -139,10 +139,18 @@ BigNum fastSailBossGold(GameState s, GameTables t, int stage) {
   return stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier * CombatStats.of(s, t).goldMultiplier);
 }
 
-/// 보스 처치로 스테이지가 [after]가 된 뒤: 구간 끝(to를 넘음)이면 FastSailEnded(얻은 골드·젬)를 내고 닫는다.
-void closeFastSail(GameState after, Field f, SystemContext ctx, {bool skipped = false}) {
+/// 보스 처치로 스테이지가 [after]가 된 뒤: 구간 끝(to를 넘음, 또는 건너뛰기)이면 FastSailEnded(얻은 골드·젬)를 내고 닫은 뒤
+/// **보급**(사용자 실기기 '빠른 항해로 83까지 갔는데 골드·배 레벨이 없어 계속 침몰', S1·S2): 배 부위를 도착 스테이지 권장 레벨로
+/// 무상으로 올린다([supply] — S2 economy, 없으면 그대로). 구간이 안 끝났으면 [after] 그대로.
+GameState closeFastSail(
+  GameState after,
+  Field f,
+  SystemContext ctx, {
+  bool skipped = false,
+  Map<String, int> Function(GameState s, GameTables t, int stage)? supply,
+}) {
   final run = f.fastSail;
-  if (run == null || (after.progress.stage <= run.to && !skipped)) return;
+  if (run == null || (after.progress.stage <= run.to && !skipped)) return after;
   final kept = after.wallet.gold - run.startGold;
   final gold = kept.isNegative ? BigNum.zero : kept;
   final lost = run.gross - gold;
@@ -159,4 +167,31 @@ void closeFastSail(GameState after, Field f, SystemContext ctx, {bool skipped = 
     ),
   );
   f.fastSail = null;
+  if (supply == null) return after;
+  final supplied = resupply(after, supply(after, ctx.tables, after.progress.stage), ctx);
+  if (!identical(supplied, after)) {
+    // 전장은 배 체력 최대를 만들 때 한 번 정하므로, 보급한 선체가 바로 먹게 새로 채운다(가득)
+    final hp = CombatStats.of(supplied, ctx.tables).shipHp;
+    f
+      ..shipHpMax = hp
+      ..shipHp = hp;
+  }
+  return supplied;
+}
+
+/// 배 부위를 [target] 레벨로(내리지 않음, 부위 최대 레벨로 자름). 바뀐 게 있으면 ShipResupplied(축하 연출).
+GameState resupply(GameState s, Map<String, int> target, SystemContext ctx) {
+  final before = s.ship.parts;
+  final after = {
+    for (final MapEntry(:key, :value) in before.entries)
+      key: () {
+        final want = target[key] ?? value;
+        final max = ctx.tables.shipParts.byId(key).maxLevel;
+        final capped = max != null && want > max ? max : want;
+        return capped > value ? capped : value;
+      }(),
+  };
+  if (after.entries.every((e) => before[e.key] == e.value)) return s;
+  ctx.emit(ShipResupplied(ctx.tick, stage: s.progress.stage, before: before, after: after));
+  return s.copyWith(ship: s.ship.copyWith(parts: after));
 }

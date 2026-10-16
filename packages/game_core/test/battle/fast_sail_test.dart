@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:game_core/game_core.dart';
+import 'package:game_core/src/battle/fast_sail.dart' show resupply;
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
@@ -137,5 +138,44 @@ void main() {
       ..tick();
     expect(e.drainEvents().whereType<FastSailEnded>(), isEmpty);
     expect(e.state.progress.stage, stage);
+  });
+
+  group('보급(사용자 실기기 — 빠른 항해 뒤 배 레벨이 없어 침몰)', () {
+    final t = withBreak();
+    SystemContext ctx(List<GameEvent> out) =>
+        SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: out.add);
+    final s = reborn().copyWith(
+      ship: const ShipState(parts: {'cannon': 5, 'hull': 40, 'sail': 0, 'crowsnest': 0, 'cargo': 2}),
+    );
+
+    test('목표 레벨로 올리되 내리지 않고, 최대 레벨로 자르고, ShipResupplied(before → after)', () {
+      final ev = <GameEvent>[];
+      final cannonMax = t.shipParts.byId('cannon').maxLevel;
+      final out = resupply(s, {'cannon': 30, 'hull': 10, 'sail': 1 << 30}, ctx(ev));
+      expect(out.ship.parts['cannon'], 30);
+      expect(out.ship.parts['hull'], 40, reason: '내리지 않음');
+      final sailMax = t.shipParts.byId('sail').maxLevel;
+      expect(out.ship.parts['sail'], sailMax ?? 1 << 30);
+      expect(out.ship.parts['cargo'], 2, reason: '목표 없는 부위 그대로');
+      final e = ev.whereType<ShipResupplied>().single;
+      expect(e.before['cannon'], 5);
+      expect(e.after['cannon'], 30);
+      expect(GameEvent.fromJson(e.toJson()).toJson(), e.toJson());
+      expect(cannonMax == null || cannonMax >= 30, isTrue);
+    });
+
+    test('바뀐 게 없으면 이벤트 없음 · 건너뛰기로 끝나도 보급', () {
+      final ev = <GameEvent>[];
+      expect(identical(resupply(s, {'cannon': 1}, ctx(ev)), s), isTrue);
+      expect(ev, isEmpty);
+      final e = CoreEngine(tables: t, clock: ManualClock(start), initial: reborn())
+        ..advance(10)
+        ..drainEvents()
+        ..enqueue(const SkipFastSail())
+        ..tick();
+      // 건너뛰기로 끝나도 보급(표 waves.rebirthSkip.supply — S2 fastSailSupplyLevels)
+      final sup = e.drainEvents().whereType<ShipResupplied>().single;
+      expect(e.state.ship.parts, sup.after);
+    });
   });
 }
