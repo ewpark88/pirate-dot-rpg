@@ -12,7 +12,8 @@ const Map<String, String> rawTables = {
     { "id": "tailwind", "dailyLimit": 8, "reward": { "type": "buff", "durationSec": 1800, "goldMultiplier": 2, "speedMultiplier": 2, "maxStackSec": 14400 } },
     { "id": "offline", "dailyLimit": null, "perReturn": 1, "reward": { "type": "goldMultiplier", "value": 2 } },
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
-    { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } }
+    { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
+    { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -1893,6 +1894,7 @@ const Map<String, String> rawTables = {
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 1.8,
+  "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1.5,

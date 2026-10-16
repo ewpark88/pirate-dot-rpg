@@ -3,6 +3,7 @@
   "wavesPerStage": 3,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 1.8,
+  "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2, "goldGrowth": 1.13 },
   "boss": { "hpMultiplier": 9, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 4, "earlyStageMax": 2, "earlyHpMultiplier": 0.25 },
   "travelSec": 1.5,

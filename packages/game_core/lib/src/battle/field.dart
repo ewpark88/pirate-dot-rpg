@@ -98,7 +98,6 @@ class Foe {
   bool get alive => !hp.isZero && !hp.isNegative;
   bool get stunned => stunTimer > 0;
 
-  /// [heading]은 향하는 방향(없으면 EnemyView 기본).
   EnemyView view({double? heading}) => EnemyView(
     id: id,
     kind: kind,
@@ -264,7 +263,16 @@ class Field {
 
   Iterable<Foe> get living => foes.where((f) => f.alive);
 
-  /// 즉석 도전용(ChallengeTracker가 읽고 비운다): 궁극기로 처치한 수, 이번 틱 닫힌 동시 처치 수.
+  /// 배가 [raw]만큼 맞고 깎인 양을 돌려준다. 한 대는 최대 HP × [capRatio](waves.shipHitCap)까지 — 한 대에 가라앉지 않게.
+  BigNum hurtShip(BigNum raw, double capRatio) {
+    final cap = shipHpMax.times(capRatio);
+    final amount = raw > cap ? cap : raw;
+    final hp = shipHp - amount;
+    shipHp = hp.isNegative ? BigNum.zero : hp;
+    return amount;
+  }
+
+  /// 즉석 도전용: 궁극기 처치 수, 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
   int ultimateKills = 0;
   int multiKill = 0;
 
