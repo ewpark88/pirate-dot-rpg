@@ -411,5 +411,17 @@
   "uiAutoUpgradeAd": "자동 강화 {min}분",
   "uiAutoUpgradeShort": "자동",
   "uiAutoUpgradeLeft": "자동 강화 남은 시간 {time}",
-  "uiAutoUpgradeNext": "다음 강화: {part}"
+  "uiAutoUpgradeNext": "다음 강화: {part}",
+  "uiFastSailTitle": "빠른 항해 돌파!",
+  "uiFastSailStage": "스테이지 {stage}",
+  "uiFastSailRange": "{from} → {to}",
+  "uiFastSailCombo": "×{count} 연속 격파",
+  "uiFastSailSkip": "건너뛰기",
+  "uiFastSailEndTitle": "스테이지 {from} → {to} 돌파!",
+  "uiFastSailEndStages": "보스 {count}마리 격파",
+  "uiFastSailEndGold": "골드 +{gold}",
+  "uiFastSailEndGems": "젬 +{gems}",
+  "uiFastSailEndLost": "화물칸이 가득 차 넘친 골드 {gold}",
+  "uiFastSailEndCheer": "더 강해진 당신 — 이제 새 바다로!",
+  "uiFastSailEndOk": "계속 항해"
 }

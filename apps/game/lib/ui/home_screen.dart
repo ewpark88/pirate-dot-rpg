@@ -15,6 +15,7 @@ import 'package:pirate_dot/ui/hud/battle_top_strip.dart';
 import 'package:pirate_dot/ui/hud/bottle_choices.dart';
 import 'package:pirate_dot/ui/hud/chest_layer.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
+import 'package:pirate_dot/ui/hud/fast_sail.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
@@ -134,32 +135,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       child: SummonResultGate(
         child: RebirthDoneGate(
           child: BountyResultGate(
-            child: ShipLookCelebrationGate(
-              child: FleetRejectedToast(
-                child: PopScope(
-                  // 뒤로 가기 = 시트 닫기 (열려 있을 때).
-                  canPop: false,
-                  onPopInvokedWithResult: (didPop, _) {
-                    if (!didPop && _open) _close();
-                  },
-                  child: Scaffold(
-                    body: SafeArea(
-                      child: Column(
-                        children: [
-                          const SaveFailureBanner(),
-                          const TopBar(),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, body) {
-                                _bodyHeight = body.maxHeight;
-                                return AnimatedBuilder(
-                                  animation: _sheet,
-                                  builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                                );
-                              },
+            // 빠른 항해 돌파 끝 요약 창.
+            child: FastSailEndGate(
+              child: ShipLookCelebrationGate(
+                child: FleetRejectedToast(
+                  child: PopScope(
+                    // 뒤로 가기 = 시트 닫기 (열려 있을 때).
+                    canPop: false,
+                    onPopInvokedWithResult: (didPop, _) {
+                      if (!didPop && _open) _close();
+                    },
+                    child: Scaffold(
+                      body: SafeArea(
+                        child: Column(
+                          children: [
+                            const SaveFailureBanner(),
+                            const TopBar(),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, body) {
+                                  _bodyHeight = body.maxHeight;
+                                  return AnimatedBuilder(
+                                    animation: _sheet,
+                                    builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
