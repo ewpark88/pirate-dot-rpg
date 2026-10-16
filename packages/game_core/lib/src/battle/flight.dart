@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/beam.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/legend.dart';
@@ -38,6 +39,8 @@ extension Flights on Round {
   ({Volley volley, int ticks})? launch(Gun g, AttackDef a, Volley v, BigNum base, {required bool crit}) {
     final sortie = launchSortie(g, a, v, base, crit: crit); // 강습·공중: 선원 본인이 출격(sortie.dart)
     if (sortie != null) return sortie;
+    final beam = launchBeam(g, a, v, base, crit: crit); // 레이저: 빔 유지(beam.dart)
+    if (beam != null) return beam;
     final p = a.projectile;
     final geo = this.geo;
     if (p == null || (p.speed <= 0 && p.delaySec <= 0) || geo is! TopGeometry) return null;
