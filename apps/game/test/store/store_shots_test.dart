@@ -15,7 +15,9 @@ import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/viewport/integer_scale.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -53,7 +55,7 @@ void main() {
         stage,
         () => _Run(
           tables,
-          _fixture('all_crews_mythic'),
+          _fixture('all_crews_mythic', skin: 'phantom'),
           ticks: 320,
           commands: {
             0: [OpJumpStage(stage)],
@@ -69,7 +71,7 @@ void main() {
     // 중반 함대(스테이지 37 샘플)를 산호해 44·무리 30으로: 실제 37 무리(7마리)는 화면 오른쪽 끝에서 다 죽어 장면이 비어 보인다. 무적.
     mid = _Run(
       tables,
-      _fixture('stage37_midgame'),
+      _fixture('stage37_midgame', skin: 'coral'),
       ticks: 2600,
       commands: {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
@@ -79,7 +81,7 @@ void main() {
     // (폭풍해 51은 중반 함대가 거의 못 잡아 게이지가 안 차 궁극기가 안 난다 — 2026-10-15 확인)
     ult = _Run(
       tables,
-      _fixture('stage37_midgame', rage: 0.95),
+      _fixture('stage37_midgame', rage: 0.95, skin: 'storm'),
       ticks: 600,
       commands: {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
@@ -89,7 +91,7 @@ void main() {
     // 폭풍해 번개 가오리는 관통 선원이 없으면 보호막(청록 상자)이 내내 켜져 있어 고르지 않았다.
     boss = _Run(
       tables,
-      _fixture('stage37_midgame'),
+      _fixture('stage37_midgame', skin: 'gold'),
       ticks: 900,
       commands: {
         0: [const OpJumpStage(200), const OpSetInvincible(on: true)],
@@ -186,7 +188,7 @@ void main() {
         boss.firstClear(
           after: (e) => e is BossSpawned,
           skip: 80,
-          frame: (f) => f.enemies.any((e) => e.boss && !e.shielded && e.x > 140 && e.x < 240),
+          frame: (f) => f.enemies.any((e) => e.boss && !e.shielded && _inCamera(tables, e.x, e.y, inner: 0.85)),
           quiet: (e) => e is AttackFired || e is AoeDamageSum,
           quietTicks: 6,
         ),
@@ -215,8 +217,13 @@ void main() {
         late(75),
         // 후반 상태라 환생이 열려 있다 — 보물지도 카드의 버튼으로 확인 창(얻을 조각·보너스)을 연다.
         act: () async {
+          // 도크·시트 화면(탑다운): 항해 카드는 시트 안 — 도크의 항해 아이콘을 눌러 시트를 연다.
+          await tester.tap(find.byKey(const Key('tab.$voyageTab')));
+          await tester.pump();
+          await tester.pump(const Duration(seconds: 1));
           final open = find.byKey(const Key('rebirth.open'));
-          await tester.ensureVisible(open);
+          // 항해 탭 목록은 보이는 부분만 만든다 — 카드가 생길 때까지 굴린다(지루함 해소 카드가 위에 더 생김).
+          await tester.scrollUntilVisible(open, 200, scrollable: find.byType(Scrollable).first);
           await tester.pumpAndSettle();
           await tester.tap(open);
           await tester.pumpAndSettle();
@@ -249,10 +256,30 @@ const _sea = Color(0xFF1B4F72); // BattleGame.backgroundColor와 같게
 final GlobalKey _shotKey = GlobalKey();
 
 /// [rage]: 함성 게이지를 미리 채워 둔다(궁극기 장면용 — 실제 스테이지에선 게이지가 차는 데 몇 분 걸린다).
-GameState _fixture(String name, {double? rage}) {
+GameState _fixture(String name, {double? rage, String? skin}) {
   final json = jsonDecode(File('../../fixtures/states/$name.json').readAsStringSync()) as Map<String, dynamic>;
   if (rage != null) (json['progress'] as Map<String, dynamic>)['rage'] = rage;
-  return GameState.fromJson(json).copyWith(clearTutorial: true);
+  final s = GameState.fromJson(json).copyWith(clearTutorial: true);
+  if (skin == null) return s;
+  // 환생 스킨(산호·폭풍·황금·유령)을 입혀 장마다 배 색이 다르게 — 스킨은 환생 보상이라 '보물지도' 장면과 맞다.
+  final ship = s.ship;
+  return s.copyWith(
+    ship: ShipState(
+      parts: ship.parts,
+      honorParts: ship.honorParts,
+      honorTier: ship.honorTier,
+      skin: skin,
+      skinsOwned: {...ship.skinsOwned, skin},
+      skinChosen: true,
+    ),
+  );
+}
+
+/// 탑다운 카메라(배 중심 가운데, waves.top viewWidth × viewHeight) 안쪽 [inner] 비율 안인가.
+bool _inCamera(GameTables t, double x, double y, {double inner = 1}) {
+  final top = t.waves.raw.obj('top');
+  return (x - top.number('shipX')).abs() <= top.number('viewWidth') / 2 * inner &&
+      (y - top.number('shipY')).abs() <= top.number('viewHeight') / 2 * inner;
 }
 
 /// 샘플 상태에서 실제 엔진을 [ticks]만큼 돌린 기록.
@@ -285,10 +312,10 @@ class _Run {
     final end = (before ?? this.ticks.length) - ticks;
     for (var i = 0; i < end && i + ticks < this.ticks.length; i++) {
       if (!this.ticks[i].events.any(match)) continue;
-      // 처치가 화면 가운데쯤에서 났을 때만(오른쪽 끝에서 나면 연출이 잘린다).
-      final kills = this.ticks[i].events.whereType<Kill>().map((k) => k.x).toList();
-      if (kills.isNotEmpty && kills.reduce((a, b) => a + b) / kills.length > kLogicalWidth * 0.72) continue;
-      final n = this.ticks[i + ticks].frame.enemies.where((e) => e.x < kLogicalWidth - 20).length;
+      // 처치가 카메라 안쪽(가장자리 20% 밖 제외)에서 났을 때만(가장자리에서 나면 연출이 잘린다) — 탑다운 카메라 기준.
+      final kills = this.ticks[i].events.whereType<Kill>().toList();
+      if (kills.isNotEmpty && !kills.every((k) => _inCamera(tables, k.x, k.y, inner: 0.8))) continue;
+      final n = this.ticks[i + ticks].frame.enemies.where((e) => _inCamera(tables, e.x, e.y)).length;
       if (n > most) (bestAt, most) = (i, n);
     }
     if (bestAt < 0) throw StateError('기록에 원하는 이벤트가 없다 — 틱 수를 늘린다');
@@ -355,6 +382,12 @@ class _ScenePaint extends CustomPainter {
   @override
   void paint(ui.Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = _sea);
+    if (painter.scene.isTop) {
+      // 탑다운: 앱(BattleGame)과 같이 캔버스를 상자 dp 그대로 두고 탑다운 카메라로 그린다.
+      painter.scene.layout = battleFrameFor(size, dpr);
+      painter.paintTop(canvas, topFrameFor(size, dpr));
+      return;
+    }
     final s = integerScale(size.width, size.height, dpr: dpr);
     canvas
       ..save()
@@ -365,7 +398,7 @@ class _ScenePaint extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true; // 시트가 열려 상자가 줄면 다시 그린다(앱과 같은 크기)
 }
 
 Future<void> _pump(
