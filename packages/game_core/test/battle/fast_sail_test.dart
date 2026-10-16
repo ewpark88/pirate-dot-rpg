@@ -164,7 +164,7 @@ void main() {
       expect(cannonMax == null || cannonMax >= 30, isTrue);
     });
 
-    test('바뀐 게 없으면 이벤트 없음 · 구간 끝(건너뛰기 포함)에서만 보급', () {
+    test('바뀐 게 없으면 이벤트 없음 · 건너뛰기로 끝나도 보급', () {
       final ev = <GameEvent>[];
       expect(identical(resupply(s, {'cannon': 1}, ctx(ev)), s), isTrue);
       expect(ev, isEmpty);
@@ -173,9 +173,9 @@ void main() {
         ..drainEvents()
         ..enqueue(const SkipFastSail())
         ..tick();
-      // 표(S2 supplyRatio)·함수가 없으면 보급 없이 끝만 — 부위 그대로
-      expect(e.drainEvents().whereType<ShipResupplied>(), isEmpty);
-      expect(e.state.ship.parts, reborn().ship.parts);
+      // 건너뛰기로 끝나도 보급(표 waves.rebirthSkip.supply — S2 fastSailSupplyLevels)
+      final sup = e.drainEvents().whereType<ShipResupplied>().single;
+      expect(e.state.ship.parts, sup.after);
     });
   });
 }
