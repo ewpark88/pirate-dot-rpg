@@ -44,6 +44,33 @@ class TopFever {
   /// 바다 물들임 세기 0~1 (TopSeaPainter.fever로 — 바다 색 자체를 금·주황으로 섞는다).
   double get sea => _seaAlpha * level;
 
+  /// 빛 줄기: 비스듬한 밝은 띠 3개가 천천히 흘러간다(빛나는 황금 바다, S1). 배 중심 원점 화면 단위 [view], 적보다 먼저.
+  void rays(Canvas c, Rect view) {
+    if (level <= 0 || scene.settings.powerSave) return;
+    final ms = _lastMs;
+    final span = view.width + view.height;
+    c
+      ..save()
+      ..clipRect(view);
+    for (var i = 0; i < 3; i++) {
+      final x = view.left - view.height + ((ms / (60 + i * 17) + i * span / 3) % span);
+      final w = 14.0 + i * 8;
+      final pulse = 0.5 + 0.5 * math.sin(ms / 700 + i * 2);
+      _ray
+        ..reset()
+        ..moveTo(x, view.bottom)
+        ..lineTo(x + w, view.bottom)
+        ..lineTo(x + w + view.height * 0.6, view.top)
+        ..lineTo(x + view.height * 0.6, view.top)
+        ..close();
+      _paint.color = const Color(0xFFFFF6D0).withValues(alpha: (0.10 + 0.08 * pulse) * level);
+      c.drawPath(_ray, _paint);
+    }
+    c.restore();
+  }
+
+  final _ray = Path();
+
   /// 배 둘레 불꽃 오라(배 중심 원점, 배 아래) + 시작 충격파 고리.
   void aura(Canvas c, double shipR) {
     final ms = _lastMs;

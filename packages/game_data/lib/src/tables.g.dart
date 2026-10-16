@@ -1391,9 +1391,9 @@ const Map<String, String> rawTables = {
     "goldWave": "#FFE27A",
     "goldFoam": "#FFF6C8",
     "goldBase": "#2F8ACF",
-    "feverBase": "#C98532",
-    "feverDeep": "#A2611F",
-    "feverShallow": "#E2A04C"
+    "feverBase": "#F2B634",
+    "feverDeep": "#F59A2C",
+    "feverShallow": "#FFD66A"
   },
   "atmosphere": {
     "cycleSec": 720,

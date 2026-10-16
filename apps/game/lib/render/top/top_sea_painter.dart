@@ -154,11 +154,12 @@ class TopSeaPainter {
       ..save()
       ..translate(dx.roundToDouble(), dy.roundToDouble());
     for (var g = 0; g < 3; g++) {
-      final a = math.max<double>(0, math.sin(clockMs / (gold ? 160 : 260) + g * 2.1)) * (gold ? 1.0 : 1);
+      final a = math.max<double>(0, math.sin(clockMs / (gold || fever > 0.5 ? 160 : 260) + g * 2.1));
       if (a < 0.05) continue;
       _points
-        ..strokeWidth = 1
-        ..color = (gold ? _goldWave : _foam).withValues(alpha: a);
+        ..strokeWidth = fever > 0.5 ? 2 : 1
+        // 피버: 반짝임을 거의 흰 금빛으로(빛나는 황금 바다, S1).
+        ..color = Color.lerp(gold ? _goldWave : _foam, const Color(0xFFFFFBE0), fever)!.withValues(alpha: a);
       c.drawRawPoints(PointMode.points, _groupOf(g), _points);
     }
     c.restore();

@@ -81,6 +81,7 @@ class TopScenePainter {
       ..fever = fever.sea
       ..advance(clockMs, view.shipHeading)
       ..paint(c, viewRect, clockMs);
+    fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
       ..storm = view.seaEvent?.id == 'storm'
@@ -133,7 +134,7 @@ class TopScenePainter {
       ..save()
       ..translate(-ship.dx, -ship.dy);
     _marks.chest(c, clockMs);
-    scene.topHits.paint(c, clockMs, flash: scene.settings.flash);
+    scene.topHits.paint(c, clockMs, flash: scene.settings.flash, powerSave: scene.settings.powerSave);
     _foes.paint(c, under: false, cull: visibleWorld);
     _marks
       ..enemies(c, visibleWorld, _foes.radiusOf)
