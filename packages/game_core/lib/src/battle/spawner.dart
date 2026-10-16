@@ -94,7 +94,9 @@ void startBoss(
   );
   boss.hp = boss.maxHp.times(hpRatio);
   if (def.patterns.isNotEmpty) {
-    boss.plan = BossPlan(def.patterns, (def.restSec / (w.tickMs * secondsPerMillisecond)).round()); // 보스 행동 v2
+    int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
+    final first = def.firstRestSec;
+    boss.plan = BossPlan(def.patterns, ticks(def.restSec), firstTicks: first == null ? null : ticks(first)); // 보스 행동 v2
   }
   f.foes.add(boss);
   final m = def.mechanic;
