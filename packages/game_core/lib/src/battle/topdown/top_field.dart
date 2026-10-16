@@ -169,39 +169,56 @@ class TopField {
   /// 배 반경·선체 캡슐을 바꾼 사본(null이면 그대로).
   TopField withShipRadius(double? r, {double? halfWidth, double? halfLength, double offset = 0}) => r == null
       ? this
-      : TopField(
-          width: width,
-          height: height,
-          shipX: shipX,
-          shipY: shipY,
-          shipRadius: r,
-          mobRadius: mobRadius,
-          bossRadius: bossRadius,
-          spawnMargin: spawnMargin,
-          approachRadius: approachRadius,
-          approachBoost: approachBoost,
-          swarmGroupsMin: swarmGroupsMin,
-          swarmGroupsMax: swarmGroupsMax,
-          swarmSpreadDeg: swarmSpreadDeg,
-          separation: separation,
-          bossStandoff: bossStandoff,
-          bossOrbitDegPerSec: bossOrbitDegPerSec,
-          reachScale: reachScale,
-          bossSpawnRadius: bossSpawnRadius,
-          swarmSpacing: swarmSpacing,
-          spawnWeights: spawnWeights,
-          viewWidth: viewWidth,
-          viewHeight: viewHeight,
-          hullHalfWidth: halfWidth ?? r,
-          hullHalfLength: halfLength ?? r,
-          hullOffset: offset,
-          mobSpeedScale: mobSpeedScale,
-          spawnPatterns: spawnPatterns,
-          scatterGapMin: scatterGapMin,
-          scatterGapMax: scatterGapMax,
-          arcSpreadDeg: arcSpreadDeg,
-          nearSpawn: nearSpawn,
-        );
+      : _copy(shipX: shipX, r: r, halfWidth: halfWidth ?? r, halfLength: halfLength ?? r, offset: offset);
+
+  /// 배 중심 x만 옮긴 사본(피버 좌우 이동 — meta.fever.weave).
+  TopField withShipX(double x) => _copy(
+    shipX: x,
+    r: shipRadius,
+    halfWidth: hullHalfWidth,
+    halfLength: hullHalfLength,
+    offset: hullOffset,
+  );
+
+  TopField _copy({
+    required double shipX,
+    required double r,
+    required double halfWidth,
+    required double halfLength,
+    required double offset,
+  }) => TopField(
+    width: width,
+    height: height,
+    shipX: shipX,
+    shipY: shipY,
+    shipRadius: r,
+    mobRadius: mobRadius,
+    bossRadius: bossRadius,
+    spawnMargin: spawnMargin,
+    approachRadius: approachRadius,
+    approachBoost: approachBoost,
+    swarmGroupsMin: swarmGroupsMin,
+    swarmGroupsMax: swarmGroupsMax,
+    swarmSpreadDeg: swarmSpreadDeg,
+    separation: separation,
+    bossStandoff: bossStandoff,
+    bossOrbitDegPerSec: bossOrbitDegPerSec,
+    reachScale: reachScale,
+    bossSpawnRadius: bossSpawnRadius,
+    swarmSpacing: swarmSpacing,
+    spawnWeights: spawnWeights,
+    viewWidth: viewWidth,
+    viewHeight: viewHeight,
+    hullHalfWidth: halfWidth,
+    hullHalfLength: halfLength,
+    hullOffset: offset,
+    mobSpeedScale: mobSpeedScale,
+    spawnPatterns: spawnPatterns,
+    scatterGapMin: scatterGapMin,
+    scatterGapMax: scatterGapMax,
+    arcSpreadDeg: arcSpreadDeg,
+    nearSpawn: nearSpawn,
+  );
 
   /// [e]의 원 반지름.
   double radiusOf(Foe e) => e.boss ? bossRadius : mobRadius;

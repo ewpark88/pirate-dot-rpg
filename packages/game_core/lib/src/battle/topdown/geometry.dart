@@ -2,8 +2,9 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
-import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost;
+import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverWeave;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
+import 'package:game_core/src/economy/fever.dart' show feverOn;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -95,15 +96,21 @@ BattleGeometry geometryFor(GameTables t, int stage, {int hullStage = 1}) {
 /// 돌발 이벤트 '폭풍'이면 적 이동 배율(meta.seaEvents 폭풍 enemySpeed)도 매번 맞춘다.
 void shapeField(Field f, GameState s, GameTables t) {
   if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
+    final old = f.geometry;
     f
       ..shipSeen = s.ship
       ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
+    final g = f.geometry;
+    if (old is TopGeometry && g is TopGeometry) g.weaveTick = old.weaveTick; // 강화해도 좌우 이동이 끊기지 않게
   }
   final g = f.geometry;
   if (g is TopGeometry) {
+    final on = feverOn(s) || f.fastSail != null; // 빠른 항해 돌파도 피버처럼 전진·좌우
     g
       ..speedScale = seaEventSpeed(s, t)
-      ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw);
+      ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
+      ..weaveTick = on ? g.weaveTick + 1 : 0
+      ..weave(feverWeave(s, t, g.weaveTick, on: on));
   }
 }
 

@@ -9,6 +9,13 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 /// 이 함수가 처리한 이벤트면 true.
 bool funEvent(BattleScene s, GameEvent e) {
   switch (e) {
+    case ShieldUp():
+      s.topHits.crew.upAt = s.clockMs;
+    case ShieldBroken():
+      s.topHits.crew.brokenAt = s.clockMs;
+      s.shake.trigger(s.juice.shake['aoe']!);
+    case AttackMissed(:final x, :final y):
+      s.topHits.crew.miss(x, y, s.clockMs);
     case FeverStarted():
       s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
       s.shake.trigger(s.juice.shake['aoe']!);

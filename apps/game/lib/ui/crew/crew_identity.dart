@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 
 export 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 
 // 선원 개성 v2 표시 (기획 platform-crew-identity-v2 6절, 사용자 승인). 아이콘 4개(조준·연사·범위·명중) + 한 줄 특색.
-// crews.json `aim` 계약(S2) 전에는 기획 2절 40명 표를 그대로 옮긴 [crewIdentities]로 보인다 — 계약이 오면 표 값으로 바꾼다.
+// 값은 crews.json `aim` 계약(S2 171fb70)에서 [crewIdentity]로 읽는다.
 
 enum AimKind { nearest, strongest, weakest, cluster, boss, random, farthest, air, ring }
 
@@ -15,48 +18,34 @@ enum HitKind { instant, lead, free }
 /// 선원 한 명의 특색: 조준 · 연사 간격(초) · 범위 공격인가 · 명중 방식.
 typedef CrewIdentity = ({AimKind aim, double interval, bool area, HitKind hit});
 
-const Map<String, CrewIdentity> crewIdentities = {
-  'octo': (aim: AimKind.cluster, interval: 1.4, area: true, hit: HitKind.lead),
-  'starry': (aim: AimKind.strongest, interval: 2.2, area: true, hit: HitKind.lead),
-  'crabs': (aim: AimKind.nearest, interval: 0.6, area: false, hit: HitKind.free),
-  'uni': (aim: AimKind.random, interval: 0.9, area: true, hit: HitKind.free),
-  'volke': (aim: AimKind.farthest, interval: 3.0, area: true, hit: HitKind.lead),
-  'pang': (aim: AimKind.nearest, interval: 0.3, area: false, hit: HitKind.free),
-  'hippo': (aim: AimKind.strongest, interval: 1.2, area: false, hit: HitKind.lead),
-  'bones': (aim: AimKind.weakest, interval: 0.8, area: false, hit: HitKind.lead),
-  'lion': (aim: AimKind.boss, interval: 1.6, area: false, hit: HitKind.lead),
-  'volt': (aim: AimKind.cluster, interval: 1.0, area: false, hit: HitKind.instant),
-  'sword': (aim: AimKind.nearest, interval: 1.0, area: false, hit: HitKind.instant),
-  'nar': (aim: AimKind.farthest, interval: 2.4, area: false, hit: HitKind.instant),
-  'walrus': (aim: AimKind.strongest, interval: 1.8, area: false, hit: HitKind.lead),
-  'saw': (aim: AimKind.cluster, interval: 1.4, area: false, hit: HitKind.instant),
-  'moby': (aim: AimKind.boss, interval: 3.0, area: false, hit: HitKind.lead),
-  'otter': (aim: AimKind.nearest, interval: 0.5, area: false, hit: HitKind.free),
-  'pingu': (aim: AimKind.random, interval: 1.0, area: false, hit: HitKind.free),
-  'sheldon': (aim: AimKind.weakest, interval: 1.2, area: false, hit: HitKind.lead),
-  'dolphy': (aim: AimKind.farthest, interval: 1.5, area: false, hit: HitKind.lead),
-  'orca': (aim: AimKind.cluster, interval: 2.0, area: false, hit: HitKind.lead),
-  'puffer': (aim: AimKind.nearest, interval: 1.6, area: true, hit: HitKind.free),
-  'jelly': (aim: AimKind.cluster, interval: 2.4, area: true, hit: HitKind.lead),
-  'bara': (aim: AimKind.strongest, interval: 1.2, area: false, hit: HitKind.lead),
-  'moray': (aim: AimKind.boss, interval: 2.0, area: false, hit: HitKind.lead),
-  'kraki': (aim: AimKind.cluster, interval: 3.0, area: true, hit: HitKind.lead),
-  'polly': (aim: AimKind.random, interval: 0.4, area: false, hit: HitKind.free),
-  'gull': (aim: AimKind.air, interval: 0.8, area: false, hit: HitKind.lead),
-  'pelly': (aim: AimKind.strongest, interval: 1.4, area: true, hit: HitKind.lead),
-  'alba': (aim: AimKind.farthest, interval: 2.0, area: false, hit: HitKind.lead),
-  'manta': (aim: AimKind.cluster, interval: 2.6, area: true, hit: HitKind.lead),
-  'shark': (aim: AimKind.nearest, interval: 0.6, area: false, hit: HitKind.instant),
-  'crabby': (aim: AimKind.nearest, interval: 1.2, area: true, hit: HitKind.instant),
-  'king': (aim: AimKind.strongest, interval: 1.5, area: true, hit: HitKind.instant),
-  'lobster': (aim: AimKind.cluster, interval: 1.0, area: true, hit: HitKind.instant),
-  'davy': (aim: AimKind.boss, interval: 2.2, area: true, hit: HitKind.instant),
-  'turtle': (aim: AimKind.ring, interval: 1.8, area: true, hit: HitKind.instant),
-  'pumpum': (aim: AimKind.ring, interval: 2.6, area: true, hit: HitKind.instant),
-  'cook': (aim: AimKind.ring, interval: 3.0, area: true, hit: HitKind.instant),
-  'corey': (aim: AimKind.ring, interval: 1.2, area: false, hit: HitKind.instant),
-  'lamp': (aim: AimKind.ring, interval: 2.0, area: true, hit: HitKind.instant),
-};
+/// 선원 특색을 표(crews.json `aim` · 계열 공격)에서 읽는다 (S2 개성 v2 계약). aim이 없으면 계열 공격 그대로.
+/// - 조준: aim.targets(없으면 계열 targets — 'front'는 배 둘레).
+/// - 범위: 모양(aim.shape ?? 계열 shape)이 원·부채꼴·밀어내기이거나 topRadius가 있으면.
+/// - 명중: 발사체가 없으면 즉시(근접·광선), 예측(lead)이거나 속도 없는 지연 공격이면 예측, 아니면 빗나갈 수 있음.
+CrewIdentity? crewIdentity(GameTables t, String crewId) {
+  final def = t.crews.crews.where((c) => c.id == crewId).firstOrNull;
+  if (def == null) return null;
+  final attack = t.skills.byId(def.family).attack;
+  final aim = def.aim;
+  final targets = aim?.strOrNull('targets') ?? attack.targets;
+  final shape = aim?.strOrNull('shape') ?? attack.shape;
+  final area = const {'circle', 'cone', 'push'}.contains(shape) || (aim?.has('topRadius') ?? false);
+  final projectile = aim != null && aim.has('projectile') ? aim.obj('projectile') : null;
+  final HitKind hit;
+  if (projectile == null) {
+    hit = HitKind.instant;
+  } else if (projectile.raw['lead'] == true || !projectile.has('speed')) {
+    hit = HitKind.lead;
+  } else {
+    hit = HitKind.free;
+  }
+  return (
+    aim: AimKind.values.where((a) => a.name == targets).firstOrNull ?? AimKind.ring,
+    interval: aim?.numberOr('intervalSec', attack.intervalSec) ?? attack.intervalSec,
+    area: area,
+    hit: hit,
+  );
+}
 
 /// 연사 막대 칸 수 1~5 (짧은 간격일수록 많이).
 int rateBars(double interval) => switch (interval) {
@@ -98,7 +87,7 @@ String hitText(AppLocalizations l, HitKind h) => switch (h) {
 };
 
 /// 아이콘 4개 한 줄 (카드 아래 작게 / 상세에 크게). [size] = 아이콘 한 칸 크기.
-class CrewIdentityIcons extends StatelessWidget {
+class CrewIdentityIcons extends ConsumerWidget {
   const CrewIdentityIcons({required this.crewId, this.size = 14, this.light = false, super.key});
 
   final String crewId;
@@ -108,8 +97,8 @@ class CrewIdentityIcons extends StatelessWidget {
   final bool light;
 
   @override
-  Widget build(BuildContext context) {
-    final id = crewIdentities[crewId];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = crewIdentity(ref.watch(tablesProvider), crewId);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final ink = light ? Colors.white : Skin.ink;
@@ -206,14 +195,14 @@ class _ArrowPainter extends CustomPainter {
 }
 
 /// 상세의 특색 판: 아이콘마다 이름 + 한 줄 특색.
-class CrewIdentityPanel extends StatelessWidget {
+class CrewIdentityPanel extends ConsumerWidget {
   const CrewIdentityPanel({required this.crewId, super.key});
 
   final String crewId;
 
   @override
-  Widget build(BuildContext context) {
-    final id = crewIdentities[crewId];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = crewIdentity(ref.watch(tablesProvider), crewId);
     if (id == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     Widget item(Widget icon, String label, String value) => Expanded(

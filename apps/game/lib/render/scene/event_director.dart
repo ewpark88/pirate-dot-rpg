@@ -47,6 +47,7 @@ class EventDirector implements ReplayListener {
 
   void _launch(AttackFired e, int index, BattleView frame) {
     if (scene.isTop && e.family == _assault) return _topMelee(e, index, frame);
+    if (scene.isTop && e.kind == 'lightning') return _lightning(e, index, frame);
     final style = scene.fx.projectileFor(e.family);
     final ship = scene.topShip;
     final (tickMs, tip) = (
@@ -54,12 +55,13 @@ class EventDirector implements ReplayListener {
       Offset(e.fromX ?? ship.dx, e.fromY ?? ship.dy),
     );
     // 날아가는 시간(fx_map projectiles.<계열>.flightMs)만큼 앞서 띄운다 — 피해는 엔진 이벤트 시각 그대로(도착 = index).
-    final flightTicks = math.min(_rules.flightMs(e.family) / tickMs, _juice.lookaheadTicks.toDouble());
-    final start = index - flightTicks;
+    final (start, impact) = _flightWindow(e, index, tickMs);
     // 범위 계열(투척·수중, fx_map single)은 조준점에 한 발 — 대상마다 따로 날리면 같은 자리에 포탄이 겹친다.
     final targets = e.targetIds.isEmpty || _rules.single(e.family) ? const [-1] : e.targetIds;
     for (final id in targets) {
-      final target = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
+      final target = id < 0 || e.flightTicks != null
+          ? null
+          : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
       for (var b = 0; b < style.burst; b++) {
         scene.projectiles.obtain()
           ..style = style
@@ -71,7 +73,7 @@ class EventDirector implements ReplayListener {
           ..toX = target == null ? e.x : (target.boss ? scene.layout.clampBossX(target.x) : target.x)
           ..toY = target?.y ?? e.y
           ..startIndex = start + b * style.burstGapMs / tickMs
-          ..impactIndex = index.toDouble()
+          ..impactIndex = impact
           ..progress = 0
           ..x = tip.dx
           ..y = tip.dy;
@@ -117,8 +119,7 @@ class EventDirector implements ReplayListener {
         case Damage():
           _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
         case AoeDamageSum():
-          scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);
-          scene.shake.trigger(_juice.shake['aoe']!);
+          _aoe(e, tick, index);
         case Kill():
           _kill(e, index);
         case UltimateCast():
@@ -126,17 +127,7 @@ class EventDirector implements ReplayListener {
           scene.shake.trigger(_juice.shake['ultimate']!);
           scene.haptic(HapticLevel.medium);
         case ShipDamaged():
-          // 탑다운은 번쩍을 길게(부딪힘이 보이게, S1), 단 연달아 맞으면 300ms마다 한 번 — 옆모습은 그대로.
-          if (!scene.isTop) {
-            scene.shipFlashMs = _juice.flashFrames * kFrameMs;
-          } else if (scene.topHits.takeFlash(scene.clockMs)) {
-            scene.shipFlashMs = _kTopHitFlashMs;
-          }
-          scene
-            ..shipHpRatio = e.hpRatio
-            ..numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
-          if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
-          if (e.hpRatio <= 0 && !tick.frame.bossActive) scene.moments.onShipSunk();
+          _shipHit(e, tick);
         case BossCleared():
           _bossKill();
         case BossSpawned():

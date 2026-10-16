@@ -6,6 +6,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
+import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/power_badge.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
@@ -39,10 +40,18 @@ class TopBar extends ConsumerWidget {
           KeyedSubtree(key: topGoldIconKey, child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1)),
           const SizedBox(width: 4),
           // 길게 누르면 전체 자릿수.
-          BigNumText(
-            gold,
-            key: const Key('top.gold'),
-            style: const TextStyle(color: PixelPalette.gold),
+          // 골드 + 화물칸 '현재 / 최대' 막대(80% 주황 · 가득 빨강 깜빡임).
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BigNumText(
+                gold,
+                key: const Key('top.gold'),
+                style: const TextStyle(color: PixelPalette.gold),
+              ),
+              const GoldCapBar(),
+            ],
           ),
           const SizedBox(width: 10),
           const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
@@ -85,7 +94,7 @@ class TopBar extends ConsumerWidget {
                   alignment: Alignment.centerLeft,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: [TailwindBadge(), TailwindAdButton(), BossSupportAdButton()],
+                    children: [TailwindBadge(), TailwindAdButton(), BossSupportAdButton(), AutoUpgradeChip()],
                   ),
                 ),
               ),

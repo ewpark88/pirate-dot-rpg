@@ -14,7 +14,7 @@ import 'package:game_data/game_data.dart';
 
 /// 탑다운: 배 중심 고정, 적은 사방에서 무리로 다가오고, 보스는 배 둘레 원을 돈다 (탑다운 전환 T1).
 class TopGeometry implements BattleGeometry {
-  TopGeometry(this.w, this.top) : _aim = TopAim(top, w), _spawn = TopSpawn(top, w.field.spawnSpacing);
+  TopGeometry(this.w, this.top) : base = top, _aim = TopAim(top, w), _spawn = TopSpawn(top, w.field.spawnSpacing);
 
   /// `waves.json`의 `top` 절로. [shipRadius]가 있으면 배 반경만 그것으로(배 등급별 크기).
   factory TopGeometry.of(
@@ -29,7 +29,25 @@ class TopGeometry implements BattleGeometry {
   );
 
   final WavesTable w;
-  final TopField top;
+
+  /// 지금 배 자리의 전장 값. 피버 좌우 이동이면 [base]에서 shipX만 옮긴 사본([weave]).
+  TopField top;
+
+  /// 배가 고정일 때의 전장 값(바다 가운데).
+  final TopField base;
+
+  /// 피버 좌우 이동 진행 틱(shapeField가 센다 — 피버가 아니면 0).
+  int weaveTick = 0;
+
+  /// 배 중심 x를 바다 가운데에서 [dx]만큼 옮긴다(조준·접근·캡슐·오라·사거리가 모두 따라간다).
+  void weave(double dx) {
+    final x = base.shipX + dx;
+    if (x == top.shipX) return;
+    top = base.withShipX(x);
+    _aim.top = top;
+    _spawn.top = top;
+  }
+
   final TopAim _aim;
   final TopSpawn _spawn;
 
