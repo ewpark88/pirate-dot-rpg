@@ -126,6 +126,7 @@ class Round {
             fromY: m?.y,
             angle: m?.angle,
             flightTicks: flying?.ticks,
+            kind: a.raw.strOrNull('kind'),
           ),
         );
         if (flying != null) continue;

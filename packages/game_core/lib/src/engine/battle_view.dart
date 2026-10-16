@@ -34,6 +34,7 @@ class BattleView {
     this.shipTierLook,
     this.shipSkin,
     this.treasureSea,
+    this.shipShield = 0,
     this.fever = 0,
     this.feverTicksLeft = 0,
     this.seaEvent,
@@ -65,6 +66,7 @@ class BattleView {
     shipTierLook: j['shipTierLook'] as String?,
     shipSkin: j['shipSkin'] as String?,
     treasureSea: j['treasureSea'] as int?,
+    shipShield: (j['shipShield'] as num?)?.toDouble() ?? 0,
     fever: (j['fever'] as num?)?.toDouble() ?? 0,
     feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
     seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
@@ -125,6 +127,9 @@ class BattleView {
   /// 이번 회차 보물 바다 해역 번호 (null = 보통 바다) — 렌더가 금빛 물결을 덮는다.
   final int? treasureSea;
 
+  /// 배 흡수막 남은 비율 0~1(선원 개성 v2 7.1 보호막). 0이면 JSON에 키가 없다.
+  final double shipShield;
+
   /// 피버 게이지 0~1 (전장 위 얇은 막대). 피버 중이면 [feverTicksLeft] > 0.
   final double fever;
   final int feverTicksLeft;
@@ -167,6 +172,7 @@ class BattleView {
     double? shipX,
     double? shipY,
     double? shipHeading,
+    double? shipShield,
   }) => BattleView(
     tick: tick ?? this.tick,
     shipHp: shipHp ?? this.shipHp,
@@ -196,6 +202,7 @@ class BattleView {
     shipTierLook: shipTierLook,
     shipSkin: shipSkin,
     treasureSea: treasureSea,
+    shipShield: shipShield ?? this.shipShield,
   );
 
   Json toJson() => {
@@ -223,6 +230,7 @@ class BattleView {
     if (shipTierLook != null) 'shipTierLook': shipTierLook,
     if (shipSkin != null) 'shipSkin': shipSkin,
     if (treasureSea != null) 'treasureSea': treasureSea,
+    if (shipShield > 0) 'shipShield': shipShield,
     if (fever != 0) 'fever': fever,
     if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
@@ -255,6 +263,7 @@ class BattleView {
     shipTierLook: tierLook,
     shipSkin: skin,
     treasureSea: treasureSea,
+    shipShield: shipShield,
     fever: fever,
     feverTicksLeft: feverTicksLeft,
     seaEvent: seaEvent,

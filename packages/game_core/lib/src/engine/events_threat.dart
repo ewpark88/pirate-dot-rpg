@@ -11,6 +11,13 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     flightTicks: j['flightTicks'] as int,
     kind: j['kind'] as String,
   ),
+  'shieldUp' => ShieldUp(
+    t,
+    crewId: j['crewId'] as String,
+    hp: BigNum.parse(j['hp'] as String),
+    ticks: j['ticks'] as int,
+  ),
+  'shieldBroken' => ShieldBroken(t, crewId: j['crewId'] as String, reason: j['reason'] as String),
   'attackMissed' => AttackMissed(
     t,
     crewId: j['crewId'] as String,
@@ -79,4 +86,33 @@ class AttackMissed extends GameEvent {
 
   @override
   Json _fields() => {'crewId': crewId, 'x': x, 'y': y};
+}
+
+/// 보호막 선원(개성 v2 7.1)이 배에 흡수막 [hp]를 [ticks] 동안 세웠다.
+class ShieldUp extends GameEvent {
+  const ShieldUp(super.tick, {required this.crewId, required this.hp, required this.ticks});
+
+  final String crewId;
+  final BigNum hp;
+  final int ticks;
+
+  @override
+  String get type => 'shieldUp';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'hp': hp.toJson(), 'ticks': ticks};
+}
+
+/// 흡수막이 사라졌다 — [reason]: depleted(다 깎임) | expired(시간 끝).
+class ShieldBroken extends GameEvent {
+  const ShieldBroken(super.tick, {required this.crewId, required this.reason});
+
+  final String crewId;
+  final String reason;
+
+  @override
+  String get type => 'shieldBroken';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'reason': reason};
 }

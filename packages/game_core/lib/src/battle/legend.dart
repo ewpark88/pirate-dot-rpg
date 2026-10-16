@@ -114,12 +114,32 @@ void critBurst(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
   r.strike((x: v.x, y: v.y, hits: spread(around, r.w)), base.times(r.t.skills.critBurstDamage), crewId: g.crewId);
 }
 
-/// 한 발이 끝난 뒤 전설 능력: onHit, 장판, 치명타 폭발.
+/// 번개 연쇄(개성 v2 7.2 낙뢰): 떨어진 자리에서 가까운 순으로 맞지 않은 적 count(+확률 1)마리에게 base × ratio, 기절.
+void lightningArc(Round r, Gun g, Volley v, BigNum base) {
+  final arc = g.legend?.arc;
+  if (arc == null) return;
+  final n = arc.count + (roll(arc.chance, r.ctx.rng) ? 1 : 0);
+  if (n <= 0) return;
+  final hitIds = {for (final h in v.hits) h.foe.id};
+  double d2(Foe e) => (e.x - v.x) * (e.x - v.x) + (e.y - v.y) * (e.y - v.y);
+  final next = [
+    for (final e in r.geo.eligible(g.attack, r.field.foes))
+      if (!hitIds.contains(e.id)) e,
+  ]..sort((p, q) => d2(p).compareTo(d2(q)));
+  final hit = next.take(n).toList();
+  if (hit.isEmpty) return;
+  r
+    ..strike((x: v.x, y: v.y, hits: spread(hit, r.w)), base.times(arc.ratio), crewId: g.crewId)
+    ..control(hit, stunSec: arc.stunSec);
+}
+
+/// 한 발이 끝난 뒤 전설 능력: onHit, 장판, 치명타 폭발, 번개 연쇄.
 void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
   if (g.legend == null) return;
   applyOnHit(r, g, v.hits.map((h) => h.foe), base, x: v.x, y: v.y);
   spawnLegendZone(r, g, v.x, v.y);
   critBurst(r, g, v, base, crit: crit);
+  lightningArc(r, g, v, base);
 }
 
 double _d2(Foe a, Foe b) => (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
