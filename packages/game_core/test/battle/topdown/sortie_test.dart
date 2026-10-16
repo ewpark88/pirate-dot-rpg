@@ -22,6 +22,7 @@ void main() {
       c.remove('aim'); // 계열 공격만 본다
     }
     for (final f in (skills['families'] as List).cast<Map<String, dynamic>>()) {
+      (f['attack'] as Map<String, dynamic>).remove('behavior'); // 실제 표의 출격(강습·공중)을 지우고 이 테스트가 정한다
       if (f['id'] == 'assault' && on) {
         (f['attack'] as Map<String, dynamic>)['behavior'] = {
           'kind': 'sortie',

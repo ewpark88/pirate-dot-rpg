@@ -38,6 +38,7 @@ void main() {
         'intervalSec': 30,
         'kind': 'lightning',
         'projectile': {'delaySec': 0.4},
+        'behavior': {'kind': 'lightning'}, // 공중 계열 출격(계열 v3)에서 빠진다 — 실제 표와 같게
       };
     }
   }
