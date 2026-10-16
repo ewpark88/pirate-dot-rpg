@@ -185,6 +185,36 @@ class ChallengeView {
   Json toJson() => {'id': id, 'target': target, 'value': value, 'ticksLeft': ticksLeft};
 }
 
+/// 빠른 항해 돌파 중 (docs/specs/platform-fast-sail-breakthrough.md): 구간 from~to 스테이지, 연속 격파 수.
+@immutable
+class FastSailView {
+  const FastSailView({
+    required this.from,
+    required this.to,
+    required this.combo,
+    this.phase = 'build',
+    this.speed = 1,
+  });
+
+  factory FastSailView.fromJson(Json j) => FastSailView(
+    from: j['from'] as int,
+    to: j['to'] as int,
+    combo: j['combo'] as int,
+    phase: j['phase'] as String? ?? 'build',
+    speed: (j['speed'] as num?)?.toDouble() ?? 1,
+  );
+
+  final int from;
+  final int to;
+  final int combo;
+
+  /// 지금 리듬: build | rush | finale, 배율(BreakthroughStrike와 같음).
+  final String phase;
+  final double speed;
+
+  Json toJson() => {'from': from, 'to': to, 'combo': combo, 'phase': phase, 'speed': speed};
+}
+
 /// 현상금 전투 표시 (현상금 B0): 보스·단계·남은 틱.
 @immutable
 class BountyView {

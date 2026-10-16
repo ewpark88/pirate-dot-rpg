@@ -40,6 +40,7 @@ class BattleView {
     this.seaEvent,
     this.challenge,
     this.bounty,
+    this.fastSail,
   });
 
   factory BattleView.fromJson(Json j) => BattleView(
@@ -72,6 +73,7 @@ class BattleView {
     seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
     challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
     bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
+    fastSail: j['fastSail'] == null ? null : FastSailView.fromJson(j['fastSail'] as Json),
   );
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
@@ -141,6 +143,9 @@ class BattleView {
   /// 현상금 전투 중이면 그 보스·단계·남은 틱 (현상금 B0). 없으면 JSON에 키가 없다.
   final BountyView? bounty;
 
+  /// 빠른 항해 돌파 중이면 구간·연속 격파(선택 키).
+  final FastSailView? fastSail;
+
   /// [chest]를 없애려면 [clearChest].
   BattleView copyWith({
     int? tick,
@@ -203,6 +208,7 @@ class BattleView {
     shipSkin: shipSkin,
     treasureSea: treasureSea,
     shipShield: shipShield ?? this.shipShield,
+    fastSail: fastSail,
   );
 
   Json toJson() => {
@@ -236,6 +242,7 @@ class BattleView {
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),
     if (bounty != null) 'bounty': bounty!.toJson(),
+    if (fastSail != null) 'fastSail': fastSail!.toJson(),
   };
 
   /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
@@ -269,5 +276,6 @@ class BattleView {
     seaEvent: seaEvent,
     challenge: challenge,
     bounty: bounty,
+    fastSail: fastSail,
   );
 }
