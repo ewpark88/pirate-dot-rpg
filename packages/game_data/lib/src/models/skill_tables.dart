@@ -60,6 +60,17 @@ class AttackDef {
   final int chains;
   final int count;
 
+  /// [over]의 키를 덮어쓴 모양(선원 개성 v2 `aim`). 없으면 그대로.
+  AttackDef overlay(JsonReader? over) =>
+      over == null ? this : AttackDef.fromJson(JsonReader({...raw.raw, ...over.raw}, over.path));
+
+  /// 날아가는 탄(선원 개성 v2 `projectile`): 탄속(단위/초)·예측 사격·도착 지점 맞는 반경. 없으면 즉시 맞는다.
+  ({double speed, bool lead, double hitRadius})? get projectile {
+    if (!raw.has('projectile')) return null;
+    final p = raw.obj('projectile');
+    return (speed: p.number('speed'), lead: p.raw['lead'] == true, hitRadius: p.numberOr('hitRadius', 0));
+  }
+
   /// 사다리([ladder]의 키 → 등급별 값)를 [rarity] 등급 순번으로 덮어쓴 모양.
   AttackDef withLadder(Map<String, List<num>> ladder, int rarity) {
     if (ladder.isEmpty) return this;
