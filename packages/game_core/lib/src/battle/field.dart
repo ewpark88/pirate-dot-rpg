@@ -5,6 +5,7 @@ import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_data/game_data.dart';
 
 export 'package:game_core/src/battle/topdown/geometry.dart' show geometryFor, shapeField;
+export 'package:game_core/src/battle/topdown/top_fever.dart' show FeverAura;
 
 /// 전장의 적 하나. 시뮬 내부 값(실제 HP·접촉 타이머·기절)을 들고, 화면에는 [EnemyView]로 나간다.
 class Foe {
