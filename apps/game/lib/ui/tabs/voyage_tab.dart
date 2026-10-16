@@ -5,6 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
+import 'package:pirate_dot/ui/dex/monster_dex.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -47,6 +48,9 @@ class VoyageTab extends ConsumerWidget {
         // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
         const BountyCard(),
         if (!ready) ...const [SizedBox(height: 8), RebirthCard()],
+        // 바다 괴물 도감 (보물지도 옆, S1 2026-10-16 — 골격).
+        const SizedBox(height: 8),
+        const MonsterDexCard(),
       ],
     );
   }

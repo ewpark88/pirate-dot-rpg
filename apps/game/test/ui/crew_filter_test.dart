@@ -25,6 +25,13 @@ const List<(String, Size, double)> _devices = [
   ('tablet', Size(800, 1280), 2.0),
 ];
 
+/// 샘플 보유 선원 누구도 갖지 않은 조준 (표에서 고른다 — 조준 조정에도 '없음 안내' 검사가 깨지지 않게).
+AimKind _aimNoneOwned() {
+  final s = loadFixture('stage37_midgame');
+  final owned = {for (final id in s.crews.keys) crewIdentity(_t, id)!.aim};
+  return AimKind.values.firstWhere((a) => !owned.contains(a));
+}
+
 void main() {
   group('queryCrews (표·경제 함수 그대로)', () {
     final s = loadFixture('stage37_midgame');
@@ -98,7 +105,7 @@ void main() {
     await tester.pump();
     expect(find.text('Filter 1'), findsNothing);
     // 미보유 + 보유 선원만 있는 계열(=없음)이 되도록: 보유만 + 조준 '공중 우선'(갈매기, 미보유).
-    await tester.tap(find.byKey(const Key('crew.filter.aim.air')));
+    await tester.tap(find.byKey(Key('crew.filter.aim.${_aimNoneOwned().name}')));
     await tester.pumpAndSettle();
     await tester.tapAt(const Offset(10, 10)); // 시트 닫기
     await tester.pumpAndSettle();
@@ -121,7 +128,7 @@ void main() {
     // 조준 '공중 우선'(보유 없음) → 안내.
     await tester.tap(find.byKey(const Key('crew.filter')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('crew.filter.aim.air')));
+    await tester.tap(find.byKey(Key('crew.filter.aim.${_aimNoneOwned().name}')));
     await tester.pumpAndSettle();
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();
