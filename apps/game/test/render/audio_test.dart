@@ -57,19 +57,20 @@ void main() {
   test('수용 기준 2: 변형 0~2, 피치 1±0.08, 같은 기록이면 같은 순서', () {
     List<RecordedTick> hits() => [
       tickOf(0, enemies: [(1, 200)]),
-      for (var t = 1; t <= 10; t++)
+      // 두 틱(100ms)마다 한 번 — 같은 id 간격(sfxMinGapMs)·초당 예산(sfxMaxPerSec) 안.
+      for (var t = 1; t <= 20; t++)
         tickOf(
           t,
           enemies: [(1, 200)],
-          events: [Damage(t, targetId: 1, amount: BigNum.from(1))],
+          events: [if (t.isEven) Damage(t, targetId: 1, amount: BigNum.from(1))],
         ),
-      for (var t = 11; t < 14; t++) tickOf(t, enemies: [(1, 200)]),
+      for (var t = 21; t < 24; t++) tickOf(t, enemies: [(1, 200)]),
     ];
     final a = _Rec();
     final b = _Rec();
     // 틱의 절반씩 진행: 두 타격이 한 프레임에 겹쳐 간격 규칙으로 빠지지 않게.
-    _play(hits(), a, untilTicks: 13, frameMs: tickMs / 2);
-    _play(hits(), b, untilTicks: 13, frameMs: tickMs / 2);
+    _play(hits(), a, untilTicks: 23, frameMs: tickMs / 2);
+    _play(hits(), b, untilTicks: 23, frameMs: tickMs / 2);
     final variants = tables.juice.raw.obj('sound').integer('hitVariants');
     final jitter = tables.juice.raw.obj('sound').number('pitchJitter');
     expect(a.sfx, hasLength(10));
