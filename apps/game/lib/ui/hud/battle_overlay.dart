@@ -29,6 +29,8 @@ class BattleButtons extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, box) {
         final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
+        // 시트를 거의 끝까지 열어 전장이 아주 작으면(궁극기 원이 전장 위로 삐져 상단 바를 덮음) 버튼을 숨긴다.
+        if (f.ultimateRect.top < 0) return const SizedBox.shrink();
         // 그림 자리가 48dp보다 작으면 누르는 영역만 가운데 기준으로 키운다.
         Rect hit(Rect r) => Rect.fromCenter(
           center: r.center,

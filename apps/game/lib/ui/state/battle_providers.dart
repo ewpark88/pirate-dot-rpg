@@ -1,8 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/render/top/top_fast_sail.dart' show TopTexts;
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -41,3 +43,15 @@ final battleGameProvider = Provider<BattleGame>((ref) {
 
 /// 전장이 Flame 게임인가 (주입된 빈 상자가 아닌가). 운영자 ‘렌더’ 묶음은 이때만 쓸 수 있다.
 final hasBattleGameProvider = Provider<bool>((ref) => ref.watch(battleViewBuilderProvider) == null);
+
+/// 렌더 빠른 항해 돌파 연출 문구(렌더 레인은 ARB가 없다 — S3 TopTexts)를 지금 언어로 넣고 게임을 돌려준다.
+BattleGame withTopTexts(BattleGame game, BuildContext context) {
+  final l10n = AppLocalizations.of(context);
+  game.topTexts = TopTexts(
+    start: l10n.uiFastSailStart,
+    strike: l10n.uiFastSailStrike,
+    finale: l10n.uiFastSailFinale,
+    ended: l10n.uiFastSailEnded,
+  );
+  return game;
+}

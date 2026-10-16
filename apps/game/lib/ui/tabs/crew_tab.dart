@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_filter.dart';
+import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -37,7 +39,16 @@ class CrewTab extends ConsumerWidget {
     // 보유·도감 수가 바뀔 때만 격자를 다시 짠다 (선원은 줄지 않으므로 수로 충분). 카드 내용은 CrewCard가 구독한다.
     final collected = ref.watch(gameStateProvider.select((s) => (s.collection.length, s.crews.length))).$1;
     final owned = ref.read(gameStateProvider).crews.keys.toSet();
-    final crews = [...ref.watch(tablesProvider).crews.crews]..sort((a, b) => a.num.compareTo(b.num));
+    final tables = ref.watch(tablesProvider);
+    final total = tables.crews.crews.length;
+    // 정렬·필터 (사용자 지시 2026-10-16). 선원 레벨·경험치가 바뀔 때만 다시 고른다(공격력순·합치기 가능이 따라 바뀜).
+    final query = ref.watch(crewQueryProvider);
+    ref.watch(
+      gameStateProvider.select(
+        (s) => [for (final e in s.crews.entries) '${e.key}${e.value.level}.${e.value.exp}'].join(),
+      ),
+    );
+    final crews = queryCrews(ref.read(gameStateProvider), tables, query);
     final bonusOf = ref.watch(collectionBonusProvider);
     final bonus = ref.watch(
       gameStateProvider.select((s) {
@@ -63,7 +74,7 @@ class CrewTab extends ConsumerWidget {
                 spacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(l10n.uiCrewCollection(collected, crews.length), style: Skin.text(19)),
+                  Text(l10n.uiCrewCollection(collected, total), style: Skin.text(19)),
                   // 도감 보너스 (5명마다 공격력, 설계서 4.5).
                   if (bonus case (final attack, _))
                     Container(
@@ -85,7 +96,7 @@ class CrewTab extends ConsumerWidget {
                   Expanded(
                     child: PixelBar(
                       key: const Key('crew.collectionBar'),
-                      value: collected / crews.length,
+                      value: collected / total,
                       fill: Skin.goldBottom,
                     ),
                   ),
@@ -136,6 +147,20 @@ class CrewTab extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 10),
+        // 합치기 가능 n명 · 정렬 · 보유 · 특성 필터.
+        const CrewQueryBar(),
+        const SizedBox(height: 8),
+        if (crews.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                l10n.uiFilterEmpty,
+                key: const Key('crew.filter.empty'),
+                style: Skin.text(15, color: Skin.sub),
+              ),
+            ),
+          ),
         // 기준 gif 아래 선원 바처럼 큰 정사각 초상 카드. 줄마다 높이가 달라도 되게(승급 버튼이 있는 줄만 길어짐) 격자 대신 줄.
         // 테스트·도감이 40장을 모두 찾을 수 있게 한 덩어리로 짓는다(ListView는 화면 밖 자식을 안 지음).
         LayoutBuilder(
