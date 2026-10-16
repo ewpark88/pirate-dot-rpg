@@ -499,13 +499,17 @@
         },
         "reach": 110,
         "rare": {
-          "reach": 114
+          "reach": 114,
+          "powerScale": 1.0753
         },
         "hero": {
           "reach": 118
         },
         "legend": {
           "reach": 122
+        },
+        "common": {
+          "powerScale": 0.93
         }
       }
     },
@@ -1160,7 +1164,7 @@
       "nameKey": "crewTurtleName",
       "aim": {
         "intervalSec": 2.5,
-        "powerScale": 0.8805,
+        "powerScale": 0.8332,
         "reach": 76,
         "rare": {
           "reach": 80
@@ -1216,7 +1220,7 @@
       "skill": "support_rally",
       "aim": {
         "intervalSec": 3.6,
-        "powerScale": 0.8726,
+        "powerScale": 0.9375,
         "reach": 74,
         "rare": {
           "reach": 78

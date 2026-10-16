@@ -12,6 +12,9 @@ GameTables familyTables() {
   }
   raw['crews'] = jsonEncode(crews);
   final skills = jsonDecode(raw['skills']!) as Map<String, dynamic>..remove('traitScale');
+  for (final fam in (skills['families'] as List).cast<Map<String, dynamic>>()) {
+    (fam['attack'] as Map<String, dynamic>).remove('behavior'); // 계열 v3 연출 타이밍(연사 묶음·튕김 지연 등) 없이
+  }
   raw['skills'] = jsonEncode(skills);
   return GameTables.load(raw);
 }
