@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:flutter/painting.dart' show HSVColor;
+
 /// 탑다운 범위 공격 임팩트 v2 (사용자 '모레이 같은 범위 스킬 임팩트가 허접하다', S1):
 /// 흰 번쩍 코어 → 등급 색 충격파 고리 2겹(빠르게 퍼짐) → 파편(수중은 거품) 입자 → 바닥 잔흔(0.6초에 사라짐).
 /// 수중(underwater)은 가운데 물기둥이 솟았다 무너진다. 크기 = 엔진이 이번 틱에 맞힌 적까지의 거리(반경 그대로).
@@ -12,9 +14,9 @@ class TopImpact {
   static const _max = 12; // 입자 예산(S1 성능 — '모두 신화' 범위 공격이 매 틱 겹칠 때)
 
   /// ([x],[y])에 반지름 [radius] 임팩트. [color] = 등급 색, [water] = 수중(물기둥·거품).
-  void add(double x, double y, double radius, int color, double atMs, {bool water = false}) {
+  void add(double x, double y, double radius, int color, double atMs, {bool water = false, bool rainbow = false}) {
     if (_hits.length >= _max) _hits.removeAt(0);
-    _hits.add(_Hit(x, y, radius, color, atMs, water: water));
+    _hits.add(_Hit(x, y, radius, color, atMs, water: water, rainbow: rainbow));
   }
 
   void clear() => _hits.clear();
@@ -63,7 +65,11 @@ class TopImpact {
         if (k <= 0 || k >= 1) continue;
         _ring
           ..strokeWidth = width * (1 - k) + 0.5
-          ..color = Color.lerp(const Color(0xFFFFFFFF), col, k)!.withValues(alpha: 1 - k);
+          ..color =
+              (h.rainbow
+                      ? HSVColor.fromAHSV(1, (k * 360 + delay * 900) % 360, 0.7, 1).toColor()
+                      : Color.lerp(const Color(0xFFFFFFFF), col, k)!)
+                  .withValues(alpha: 1 - k);
         c.drawCircle(at, r * (0.25 + 0.9 * _ease(k)), _ring);
       }
       // 물기둥(수중): 솟았다 무너짐
@@ -103,11 +109,12 @@ class TopImpact {
 }
 
 class _Hit {
-  _Hit(this.x, this.y, this.radius, this.color, this.ms, {required this.water});
+  _Hit(this.x, this.y, this.radius, this.color, this.ms, {required this.water, this.rainbow = false});
   final double x;
   final double y;
   final double radius;
   final int color;
   final double ms;
   final bool water;
+  final bool rainbow;
 }
