@@ -21,9 +21,9 @@ void main() {
   final w = tables.waves;
   final start = DateTime.utc(2026, 11);
 
-  GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
+  GameState game({int stage = 1, Map<String, CrewState> crews = const {}}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
-        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        progress: Progress(stage: stage, bestStage: stage),
         crews: crews,
       );
   CoreEngine engineOf(GameState s) => CoreEngine(tables: tables, clock: ManualClock(start), initial: s);
@@ -152,7 +152,6 @@ void main() {
     expect(ults, hasLength(1), reason: '피버 하나에 첫 일격 하나');
     expect(ults.single.tick, started.tick + 1, reason: '피버가 켜진 다음 틱(전투가 피버 상태를 보는 첫 틱)');
     expect(ults.single.ultimateId, family('skip').ultimateId);
-    expect(e.state.progress.rage, 0, reason: '분노는 쌓이지 않는다');
   });
 
   test('처치하면 골드가 지갑에 들어간다', () {

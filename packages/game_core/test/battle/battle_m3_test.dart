@@ -18,9 +18,9 @@ void main() {
   late List<GameEvent> events;
   setUp(() => events = []);
 
-  GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
+  GameState game({int stage = 1, Map<String, CrewState> crews = const {}}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
-        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        progress: Progress(stage: stage, bestStage: stage),
         crews: crews,
       );
   SystemContext ctx([int seed = 1]) =>

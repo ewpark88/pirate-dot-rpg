@@ -288,7 +288,7 @@ class BattleSystem implements GameSystem {
 
   GameState _project(GameState s, Field f, GameTables t) => s.copyWith(
     battle: _dress.apply(
-      f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),
+      f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, gold: s.wallet.gold),
       s,
       t,
     ),

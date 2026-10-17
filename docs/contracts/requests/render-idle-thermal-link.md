@@ -28,4 +28,4 @@ ref
 - 연결 전엔 렌더가 스스로 센다(전역 포인터, 60초 idle·180초 dim). 발열은 0으로 본다.
 
 ## 처리 결과 (S1 작성)
-- [ ] 반영 / 거절 / 수정 반영 — 커밋:
+- [x] 반영 — S4 lane/ui 936b67f8(battleGameProvider에서 idle.follow·idle.heat 연결), main 머지는 S4 골든 수정과 함께
