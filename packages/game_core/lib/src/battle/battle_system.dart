@@ -37,6 +37,7 @@ class BattleSystem implements GameSystem {
   final _tailwind = TailwindSpeed();
   static const Map<String, int> Function(GameState, GameTables, int) _supply = fastSailSupplyLevels; // 빠른 항해 보급(S2)
   int _kills = 0;
+  int _gaugeKills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
@@ -145,7 +146,7 @@ class BattleSystem implements GameSystem {
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
-    return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
+    return sailing ? shown : feverStep(shown, ctx, kills: _gaugeKills, bossKilled: boss);
   }
 
   GameState _resolve(GameState s, Field f, SystemContext ctx) {
@@ -233,6 +234,8 @@ class BattleSystem implements GameSystem {
     );
     body(r);
     _kills = r.kills;
+    _gaugeKills = r.kills - f.feverMobKills; // 피버 고리 적은 다음 피버 게이지에 안 센다
+    f.feverMobKills = 0;
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
     final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
     _fun.overflow(paid.lost, ctx);

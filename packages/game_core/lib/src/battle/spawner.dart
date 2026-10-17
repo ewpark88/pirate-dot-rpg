@@ -70,7 +70,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
         gold: gold.times(1 / k),
         def: def,
         tier: t.regions.tierAt(stage),
-      );
+      )..feverMob = f.feverSwarm != null && f.hordeCount == 0; // 피버 고리(대군 습격 고리는 아님)
       if (def.bomber != null) e.contactTimer = double.infinity; // 자폭: 접촉 공격 대신 박아 터진다(bestiary.dart)
       f.foes.add(e);
     }

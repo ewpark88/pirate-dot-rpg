@@ -163,8 +163,7 @@ class Round {
     }
   }
 
-  /// 피버 첫 일격(사용자 결정 2026-10-17 — 궁극기·분노 게이지 제거, fever_strike.dart가 피버 시작 틱에 부른다):
-  /// 선장 계열 궁극기 효과로 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과.
+  /// 피버 첫 일격(사용자 결정 2026-10-17 — 궁극기·분노 게이지 제거, fever_strike.dart가 피버 시작 틱에 부른다): 선장 계열 궁극기 효과로 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과.
   bool castUltimate() {
     final captain = field.captainId;
     if (captain == null) return false;
@@ -287,6 +286,7 @@ class Round {
     ctx.emit(Kill(ctx.tick, targetId: e.id, gold: g, x: e.x, y: e.y));
     field
       ..comboKills += 1
+      ..feverMobKills += e.feverMob ? 1 : 0
       ..comboGold = field.comboGold + g
       ..comboTimer = w.multiKillWindowSec;
   }
