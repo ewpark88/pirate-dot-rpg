@@ -126,6 +126,11 @@ void main() {
       r.moveFoes();
     }
     expect(mob.y, greaterThan(y0), reason: '풀리면 배 쪽으로');
+    expect(mob.rootTimer, 0, reason: '0에서 멈춘다');
+    expect(mob.view().rooted, isFalse);
+    mob.rootTimer = 1;
+    expect(mob.view().rooted, isTrue, reason: 'EnemyView.rooted — 렌더 지속 표시');
+    expect(mob.view().toJson()['rooted'], isTrue);
   });
 
   test('해적왕 강타(davy): 보스·촉수에만 base × bossBonus 더, 잡몹은 그대로', () {
