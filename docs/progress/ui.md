@@ -4,9 +4,9 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui — A줄 UI 골든 일괄 중(손가락·광고 칩·재도전 표시·HUD 배치 안·시나리오 골격·상점 골격·스토어 샷 4개)
-| 다음 | S2 계약 오면: 자동 재도전 링(autoBossTicksLeft)·맛보기 팝업(ClaimTrial)·story.json 연결 · S5 결제 어댑터 오면 상점 연결 · 사용자 HUD 배치 선택 뒤 하나만 남기기
-| 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
+| 상태 | lane/ui cf103bcc — 대본·맛보기·재도전 링·배치 확정·승급 잠금·실기기 ①~⑤·선원 칸 Lv 끝(빠른 check 통과) |
+| 다음 | 탑·러시 화면(S5 계약 main 반영: 버튼·결과 창·HUD 'n층'/'보스 3/5 · 1:42', 탑 timeout 문구) · S5 결제 어댑터 오면 상점 연결 · trialsReady export 오면 UI 어댑터 지우기 |
+| 기다리는 것 | S2 trialsReady export · S5 결제 어댑터 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
 - 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
@@ -15,6 +15,13 @@
 - 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 밤 3 · S4 · 대본 연결·맛보기·재도전 링·배치 확정·승급 잠금·실기기 ①~⑤
+- e2333f92 story.json 대본 + S3 오프닝 배경. 81daad4b 맛보기 팝업(ClaimTrial, 끝나면 광고 10분 더/영구). 9102e65c 자동 재도전 링(autoBossTicksLeft).
+- bb31d3d4 HUD 배치 확정(떠 있는 띠 + 얇은 도크) — 다른 안·토글 지움. 0d5541e3 승급 '스테이지 45에서 열림'(stageLocked). a1f7f0b5 A줄 골든 일괄.
+- 실기기: c8e95807 광고 칩 오른쪽 세로 줄·돌발 이벤트 띠 안 아이콘·알약 한 줄, 9f16008f 시트 열림 중 보스 실패 = 토스트, aada0896 복귀 창 0골드면 ×2 숨김, 86e1480c 선원 탭 머리 한 줄(CrewHeader). 95823405 선원 칸 Lv(crewLevels).
+- 남은 문제: trialsReady를 UI가 같은 조건으로 따로 둠(export 오면 지움). 얇은 도크라 탭 이름 시험은 화면 낭독 이름으로.
+- 교훈: 앱 전체를 띄우는 새 팝업(맛보기)은 다른 시험을 가린다 — 처음부터 끄는 스위치(trialsEnabledProvider)와 '다른 창이 떠 있으면 기다림'을 같이 넣는다. 포맷은 레포 루트에서(dart format) — 앱 폴더에서 하면 다르게 나올 수 있다.
 
 ### 2026-10-17 밤 2 · S4 · 손가락 버그·광고 칩·재도전 표시·HUD 배치 안·시나리오·상점 골격
 - 4cbc61d7 화물칸 손가락이 계속 뜨던 버그(force: 금고 가득) → 처음 2번만. 손가락 0.9초 눌림 반복 + 금빛 맥박 테두리(GuideGlow), 숫자 덮지 않게, 말풍선이 보스 도전 버튼 피함.
