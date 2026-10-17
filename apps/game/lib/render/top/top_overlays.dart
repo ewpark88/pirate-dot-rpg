@@ -61,7 +61,13 @@ class TopOverlays {
     final pop = t < 0.25 ? 0.6 + 0.4 * (t - 0.15) / 0.1 : 1.0;
     _label.draw(c, '${m.towerFloor}F', Offset(box.width / 2, cy + box.height * 0.01), box.height * 0.1 * pop);
     if (m.towerClear) {
-      _label.draw(c, 'CLEAR!', Offset(box.width / 2, cy - h * 1.25), box.height * 0.035, color: const Color(0xFF7AFFB0));
+      _label.draw(
+        c,
+        'CLEAR!',
+        Offset(box.width / 2, cy - h * 1.25),
+        box.height * 0.035,
+        color: const Color(0xFF7AFFB0),
+      );
     }
   }
 
