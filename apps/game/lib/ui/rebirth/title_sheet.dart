@@ -6,6 +6,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
@@ -35,9 +36,9 @@ class TitleChip extends ConsumerWidget {
             decoration: BoxDecoration(
               gradient: const LinearGradient(colors: [Skin.goldTop, Skin.goldBottom]),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Skin.goldEdge, width: 1.5),
+              border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
             ),
-            child: Text(text, style: Skin.text(13, color: Skin.goldInk)),
+            child: Text(text, style: Skin.bold(13, color: Skin.goldInk)),
           ),
         ),
       ),
@@ -70,10 +71,11 @@ class TitleSheet extends ConsumerWidget {
             child: Container(
               constraints: const BoxConstraints(minHeight: 52),
               padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: owned ? Skin.cream : Skin.track,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: selected ? Skin.primaryBottom : Colors.transparent, width: 2.5),
+              // k2: 굵은 외곽선 줄(고른 것 = 파랑 테, 잠김 = 옅은 회보라).
+              decoration: Skin.inset(
+                fill: owned ? Colors.white : const Color(0xFFD3D1EA),
+                border: selected ? Skin.primaryBottom : Skin.outline,
+                radius: 14,
               ),
               child: Row(
                 children: [
@@ -99,7 +101,7 @@ class TitleSheet extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.uiTitle, style: Skin.text(22)),
+        SubRibbon(l10n.uiTitle),
         const SizedBox(height: 10),
         Flexible(
           child: SingleChildScrollView(

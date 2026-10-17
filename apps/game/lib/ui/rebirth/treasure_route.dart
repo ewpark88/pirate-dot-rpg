@@ -30,7 +30,7 @@ class TreasureRoute extends ConsumerWidget {
             decoration: BoxDecoration(
               color: on ? Skin.primaryBottom : Skin.plainBottom,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: on ? Skin.primaryEdge : Skin.plainEdge, width: 2),
+              border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
             ),
             child: Center(
               widthFactor: 1,
@@ -46,15 +46,11 @@ class TreasureRoute extends ConsumerWidget {
       key: const Key('rebirth.treasure'),
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF4CF),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Skin.goldBottom, width: 2),
-      ),
+      decoration: Skin.inset(fill: const Color(0xFFFFF4CF), radius: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.uiRebirthTreasureRoute, style: Skin.text(16, color: Skin.goldInk)),
+          Text(l10n.uiRebirthTreasureRoute, style: Skin.bold(16, color: Skin.goldInk)),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,
