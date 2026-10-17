@@ -42,6 +42,10 @@ const _kinds = [
   'squid',
   'siphon',
   'eel',
+  'skeleton',
+  'ghostjelly',
+  'cursegull',
+  'wraith',
 ];
 const _rowH = 150.0;
 
