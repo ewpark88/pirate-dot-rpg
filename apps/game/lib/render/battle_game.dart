@@ -94,8 +94,7 @@ class BattleGame extends FlameGame with _UiLinks {
   @override
   late BattleScene scene;
 
-  /// 장면을 새로 만들 때(데모·부하·라이브 전환) 상자 배치를 이어받는다.
-  BattleFrame? get scene0Layout => _sceneReady ? scene.layout : null;
+  BattleFrame? get scene0Layout => _sceneReady ? scene.layout : null; // 장면을 새로 만들 때 상자 배치를 이어받는다
   @override
   bool _sceneReady = false;
 
@@ -203,6 +202,7 @@ class BattleGame extends FlameGame with _UiLinks {
       ..coinFlow.goldTargetDp = _goldTargetDp
       ..coinFlow.onCoinArrive = _onCoinArrive;
     if (frame != null) scene.layout = frame;
+    if (_sceneReady) painter.dispose(); // 옛 장면 HD 텍스처를 바로 놓는다(GC에 맡기면 PSS가 늦게 준다)
     painter = ScenePainter(scene)
       ..showHitboxes = _showHitboxes
       ..sprites = _sprites
@@ -284,6 +284,7 @@ class BattleGame extends FlameGame with _UiLinks {
     _sub = null;
     _cap.stop();
     idle.detach();
+    if (_sceneReady) painter.dispose();
     super.onRemove();
   }
 }

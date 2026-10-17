@@ -118,6 +118,9 @@ class TopScenePainter {
     _marks.zones(c);
     _foes
       ..snap = dot * dpr
+      ..bakeDensity =
+          frame.dot *
+          dpr // 굽기 밀도는 보스 카메라 줌 빼고(줌 1.6이면 텍스처 2.56배 — S5 PSS)
       ..paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
@@ -240,17 +243,15 @@ class TopScenePainter {
 
   double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
   double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
+  void dispose() => _foes.hdSheets.dispose(); // 장면을 버릴 때 HD 텍스처를 바로 놓는다
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
   Offset worldToScreen(Offset world) => Offset(_camT.$1, _camT.$2) + (world - _camT.$4) * _camT.$3;
 
-  /// 상자 dp → 전장 좌표.
   Offset screenToWorld(Offset dp) => _camT.$4 + (dp - Offset(_camT.$1, _camT.$2)) / _camT.$3;
 
   late final _turn = ShipTurn(scene);
-
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
-
   bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
 
   /// 배 미세 흔들림(맞은 동안 ±0.8단위, 화면 흔들기 설정을 따른다).
@@ -265,8 +266,7 @@ class TopScenePainter {
   /// 환생 스킨 운영자 미리보기(없으면 BattleView.shipSkin) — 바뀌면 색 사본을 비동기로 만들고, 준비되면 그린다.
   String? skin;
 
-  /// 보물 바다 금빛 물결 미리보기(운영자) — 실제는 BattleView.treasureSea.
-  bool goldSea = false;
+  bool goldSea = false; // 보물 바다 금빛 물결 미리보기(운영자) — 실제는 BattleView.treasureSea
 
   final skins = ShipSkins();
   late final JsonReader _skinCfg = scene.fx.raw.obj('topShip').obj('skinPreview');
