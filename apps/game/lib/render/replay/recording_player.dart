@@ -41,9 +41,13 @@ class EnemyPose {
   /// 보스 브레이크 게이지 0~1(EnemyView.breakRatio) — 체력 막대 아래 노란 막대.
   double breakRatio = 0;
 
+  /// 물기 속박 중(EnemyView.rooted, bara) — 발밑 물 고리·이빨 자국을 엔진 값대로.
+  bool rooted = false;
+
   void _set(EnemyView v, double nx, double ny, double nh) {
     id = v.id;
     kind = v.kind;
+    rooted = v.rooted;
     layer = v.layer;
     boss = v.boss;
     hpRatio = v.hpRatio;

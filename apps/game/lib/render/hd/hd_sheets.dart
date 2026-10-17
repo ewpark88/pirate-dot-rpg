@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/hd_species.dart';
 
@@ -34,8 +35,58 @@ class HdSheets {
   /// 지금 캐시에 든 텍스처 바이트(측정·시험용).
   int get bytes => _bytes;
 
-  /// 칸 한 변 최대 px(대보스 메모리 상한 — 512² × 16장 ≈ 16MB).
+  /// HD 잡몹은 도트 칸보다 1.3배 크게 그린다(맞는 자리는 그대로 — 귀엽고 잘 보이게, S1 '귀엽지만 멋지고 화려').
+  static const enemyBoost = 1.3;
+
+  /// 그리는 크기(단위): 잡몹은 [enemyBoost]배.
+  static double drawWorld(double world, {required bool boss}) => boss ? world : world * enemyBoost;
+
+  /// 칸 한 변 최대 px(대보스 메모리 상한 — 512² × 16장 ≈ 16MB). 저사양(절전·발열)은 [lowCell].
   static const maxCell = 512.0;
+  static const lowCell = 384.0;
+
+  /// 지금 칸 상한 — 바뀌면 다시 굽는다(TopEnemies가 절전 여부로 매 프레임 넣는다).
+  double get cap => _cap;
+  set cap(double v) {
+    if (v == _cap) return;
+    _cap = v;
+    clear(_density);
+  }
+
+  double _cap = maxCell;
+
+  // ---- 미리 굽기(S5 측정: 폰에서 보스 첫 등장 프레임 40~120ms 끊김 → 스테이지가 바뀌면 그 해역 잡몹 + 이번 보스를
+  // 프레임당 한 종씩 미리 굽는다) ----
+  final List<(String, bool, double)> _queue = [];
+  int _planned = -1;
+
+  /// 스테이지 [stage]가 바뀌면 줄을 세운다. [worldOf] = 그 종의 칸 크기(단위, 도트 그림 없으면 null).
+  void plan(int stage, RegionsTable regions, double? Function(String kind, {required bool boss}) worldOf) {
+    if (stage == _planned || stage <= 0) return;
+    _planned = stage;
+    _queue.clear();
+    void add(String kind, {required bool boss}) {
+      if ((boss ? hdBosses : hdEnemies)[kind] == null || _ready.containsKey(boss ? 'b:$kind' : kind)) return;
+      final w0 = worldOf(kind, boss: boss);
+      final w = w0 == null ? null : drawWorld(w0, boss: boss);
+      if (w != null) _queue.add((kind, boss, w));
+    }
+
+    add(regions.bossAt(stage).id, boss: true);
+    for (final e in regions.regionAt(stage).enemies) {
+      add(e, boss: false);
+    }
+  }
+
+  /// 프레임당 한 종(줄이 비면 아무것도 안 함). 밀도를 아직 모르면 기다린다.
+  void step(double density) {
+    if (_queue.isEmpty || density <= 0) return;
+    final (kind, boss, world) = _queue.removeAt(0);
+    sheet(kind, boss: boss, world: world, density: density);
+  }
+
+  /// 남은 미리 굽기 수(시험).
+  int get queued => _queue.length;
 
   /// [kind](보스면 [boss]) 시트. HD 종이 아니면 null(도트로 그린다). [world] = 전장 크기(단위), [density] = 단위당 기기 px.
   HdSheet? sheet(String kind, {required bool boss, required double world, required double density}) {
@@ -46,7 +97,7 @@ class HdSheets {
     _used[key] = ++_tick;
     final have = _ready[key];
     if (have != null) return have;
-    final sheet = bake(sp, world, _density);
+    final sheet = bake(sp, world, _density, cap: _cap);
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
@@ -79,8 +130,8 @@ class HdSheets {
   }
 
   /// 한 종을 8장 × 2방향으로 굽는다(각 칸은 잘라 옆 칸에 번지지 않게).
-  static HdSheet bake(HdSpecies sp, double world, double density) {
-    final cell = (world * density).clamp(16.0, maxCell).roundToDouble();
+  static HdSheet bake(HdSpecies sp, double world, double density, {double cap = maxCell}) {
+    final cell = (world * density).clamp(16.0, cap).roundToDouble();
     final r = cell / (2 * sp.extent);
     final rec = PictureRecorder();
     final c = Canvas(rec);

@@ -1359,6 +1359,25 @@
       }
     }
   },
+  "uiCrewDamageStage": "이번 스테이지 피해 {value}",
+  "@uiCrewDamageStage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewDamageBoss": "지난 보스 {value} · {percent}",
+  "@uiCrewDamageBoss": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "uiChestTap": "톡!",
   "uiTalkBossTrait": "이 보스는 {trait}! {counters} 선원이 잘 통해요.",
   "uiTalkShipSkin": "새 배 스킨이 생겼어요! 배 탭 '배 스킨'에서 갈아입어 봐요.",

@@ -106,13 +106,22 @@ bool funEvent(BattleScene s, GameEvent e) {
       );
       s.topHits.cardsShown++;
       if (isNew || special) s.haptic(HapticLevel.medium);
-      _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
+      _sfx(
+        s,
+        isNew || special ? 'crewPromoted' : (from >= 0 && rs.indexOf(r) >= from ? 'cardRevealed' : 'coinArrive'),
+        e,
+      );
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y, :final reason):
       s.topHits.crew.miss(x, y, s.clockMs);
       if (reason == 'evade') s.topHits.traits?.bossFx.evade(x, y, s.clockMs);
+    // 쏘기 직전 빛(S5 EnemyWindup, 쏘기 약 0.4초 전): 예고 동안 쏘는 부위가 차오른다 — 보스(기본 포탄·일제 사격)는 크게.
+    case EnemyWindup(:final enemyId, :final atTicks, :final kind) when s.isTop:
+      final speed = s.frame.speed < 1 ? 1 : s.frame.speed;
+      s.topHits.muzzle.windup(enemyId, s.clockMs, atTicks * s.player.tickMs / speed, boss: kind != 'ranged');
     case BossTraitFired() when s.isTop:
+      _sfx(s, 'bossTrait', e);
       s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);
       if (e.trait == 'enrage' || e.trait == 'dash') s.shake.trigger(s.juice.shake['aoe']!);
     case FeverStarted():

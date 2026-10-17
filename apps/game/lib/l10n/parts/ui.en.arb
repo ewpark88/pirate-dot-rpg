@@ -1103,6 +1103,25 @@
       }
     }
   },
+  "uiCrewDamageStage": "This stage {value}",
+  "@uiCrewDamageStage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewDamageBoss": "Last boss {value} · {percent}",
+  "@uiCrewDamageBoss": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "uiChestTap": "Tap!",
   "uiTalkBossTrait": "This boss has {trait}! {counters} crew work well.",
   "uiTalkShipSkin": "You got a new ship skin! Try it in the Ship tab under 'Ship skin'.",

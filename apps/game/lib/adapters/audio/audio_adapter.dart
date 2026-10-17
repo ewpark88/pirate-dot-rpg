@@ -39,6 +39,9 @@ class AudioAdapter implements AudioPort {
   static const bgmFadeMs = 400;
   static const bgmFadeSteps = 8;
 
+  /// 배경음 기본 믹스 — 효과음 대비 0.7배(약 −3dB, S3 사운드 점검: 타격음이 산다). 설정 음량에 곱한다.
+  static const bgmMix = 0.7;
+
   final AudioSdk _sdk;
   final Set<String> _files;
   final _active = <String, int>{};
@@ -47,7 +50,7 @@ class AudioAdapter implements AudioPort {
   int _total = 0;
   bool _quiet = false;
   double _sfx = 1;
-  double _bgm = 1;
+  double _bgm = bgmMix;
   String? _bgmId;
   bool _bgmPlaying = false;
   int _fadeGen = 0; // 페이드가 겹치면 앞의 것을 버린다
@@ -142,9 +145,9 @@ class AudioAdapter implements AudioPort {
   @override
   void setVolumes({required double sfx, required double bgm}) {
     _sfx = sfx;
-    _bgm = bgm;
+    _bgm = bgm * bgmMix;
     if (_bgmPlaying) {
-      _fire(_sdk.setBgmVolume(bgm));
+      _fire(_sdk.setBgmVolume(_bgm));
     } else {
       _startBgm();
     }

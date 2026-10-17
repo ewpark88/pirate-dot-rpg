@@ -1,6 +1,14 @@
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/angler.dart';
 import 'package:pirate_dot/render/hd/species/blaze_pirate.dart';
+import 'package:pirate_dot/render/hd/species/boss_cephalo.dart';
+import 'package:pirate_dot/render/hd/species/boss_crabs.dart';
+import 'package:pirate_dot/render/hd/species/boss_fish.dart';
+import 'package:pirate_dot/render/hd/species/boss_jellies.dart';
+import 'package:pirate_dot/render/hd/species/boss_misc.dart';
+import 'package:pirate_dot/render/hd/species/boss_rays.dart';
+import 'package:pirate_dot/render/hd/species/boss_serpents.dart';
+import 'package:pirate_dot/render/hd/species/boss_undead.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
 import 'package:pirate_dot/render/hd/species/cursegull.dart';
 import 'package:pirate_dot/render/hd/species/deep_sub.dart';
@@ -14,17 +22,25 @@ import 'package:pirate_dot/render/hd/species/ghost_ship.dart';
 import 'package:pirate_dot/render/hd/species/ghostjelly.dart';
 import 'package:pirate_dot/render/hd/species/gull.dart';
 import 'package:pirate_dot/render/hd/species/hunter_sub.dart';
+import 'package:pirate_dot/render/hd/species/ice_slime.dart';
+import 'package:pirate_dot/render/hd/species/iceberg_walrus.dart';
 import 'package:pirate_dot/render/hd/species/icebreaker.dart';
 import 'package:pirate_dot/render/hd/species/icecrab.dart';
 import 'package:pirate_dot/render/hd/species/jelly.dart';
 import 'package:pirate_dot/render/hd/species/kraken.dart';
+import 'package:pirate_dot/render/hd/species/kraken_titan.dart';
+import 'package:pirate_dot/render/hd/species/lava_slime.dart';
 import 'package:pirate_dot/render/hd/species/lavacrab.dart';
 import 'package:pirate_dot/render/hd/species/lavacrab_small.dart';
 import 'package:pirate_dot/render/hd/species/lavaturtle.dart';
+import 'package:pirate_dot/render/hd/species/leviathan.dart';
+import 'package:pirate_dot/render/hd/species/monster_whale.dart';
 import 'package:pirate_dot/render/hd/species/penguin.dart';
 import 'package:pirate_dot/render/hd/species/piranha.dart';
+import 'package:pirate_dot/render/hd/species/poseidon.dart';
 import 'package:pirate_dot/render/hd/species/puffer.dart';
 import 'package:pirate_dot/render/hd/species/raider_ship.dart';
+import 'package:pirate_dot/render/hd/species/sea_croc.dart';
 import 'package:pirate_dot/render/hd/species/seal.dart';
 import 'package:pirate_dot/render/hd/species/siphon.dart';
 import 'package:pirate_dot/render/hd/species/skeleton.dart';
@@ -88,4 +104,36 @@ const Map<String, HdSpecies> hdBosses = {
   'deep_sub': deepSub,
   'ghost_ship': ghostShip,
   'kraken': kraken,
+  // 대보스 6(S3)
+  'ice_slime': iceSlime,
+  'sea_croc': seaCroc,
+  'kraken_titan': krakenTitan,
+  'leviathan': leviathan,
+  'monster_whale': monsterWhale,
+  'poseidon': poseidon,
+  // 해역·중간 보스(S3)
+  'jelly_queen': jellyQueen,
+  'phantom_jelly': phantomJelly,
+  'flame_eel': flameEel,
+  'great_serpent': greatSerpent,
+  'icecrab_chief': icecrabChief,
+  'hermit_conch': hermitConch,
+  'lava_slime': lavaSlime,
+  'angler_king': anglerKing,
+  'hammer_shark': hammerShark,
+  'twister_dolphin': twisterDolphin,
+  'thunder_ray_pup': thunderRayPup,
+  'deep_octopus': deepOctopus,
+  'giant_squid': giantSquid,
+  'cursegull_leader': cursegullLeader,
+  'lava_tortoise': lavaTortoise,
+  'seal_chief': sealChief,
+  'skeleton_captain': skeletonCaptain,
+  'specter': specter,
+  // 해역 보스(S3)
+  'giant_hermit': giantHermit,
+  'thunder_ray': thunderRay,
+  'lava_whale': lavaWhale,
+  'iceberg_walrus': icebergWalrus,
+  'kraken_tentacle': krakenTentacle,
 };
