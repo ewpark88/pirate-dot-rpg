@@ -167,8 +167,9 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
       ),
       actions: [
         if (_claimed) ...[
-          // 광고 ×2 (설계서 4.6: 복귀당 1회) — 경제가 허락하고 광고가 준비됐을 때만 보인다.
-          const OfflineAdButton(),
+          // 광고 ×2 (설계서 4.6: 복귀당 1회) — 경제가 허락하고 광고가 준비됐을 때만. 받은 골드가 0이면(화물칸 가득)
+          // '×2 · +0'이 되므로 숨긴다(S1 실기기 ②) — 그때 첫 버튼은 위 [화물칸 강화].
+          if (!got.isZero) const OfflineAdButton(),
           PixelButton(
             key: const Key('offline.ok'),
             onPressed: () => Navigator.of(context).pop(),
@@ -177,7 +178,8 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
         ] else
           PixelButton(
             key: const Key('offline.claim'),
-            primary: true,
+            // 받을 게 0이면(화물칸 가득) [화물칸 강화]가 주 버튼.
+            primary: !got.isZero,
             onPressed: _claim,
             child: Text(l10n.uiOfflineClaim),
           ),

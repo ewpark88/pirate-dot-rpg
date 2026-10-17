@@ -51,7 +51,13 @@ final battleGameProvider = Provider<BattleGame>((ref) {
     )
     // 방치 단계·발열 단계의 원본은 UI(앱 루트 IdleGate·플랫폼) — 렌더는 받은 값을 따르고 스스로 세지 않는다(S3 요청 render-idle-thermal-link).
     ..listen(idleLevelProvider, (_, l) => game.idle.follow(renderIdleOf(l)), fireImmediately: true)
-    ..listen(thermalLevelProvider, (_, t) => game.idle.heat.value = t.index, fireImmediately: true);
+    ..listen(thermalLevelProvider, (_, t) => game.idle.heat.value = t.index, fireImmediately: true)
+    // 선원 칸 큰 Lv(S3, 카드와 같은 기준): 계약(BattleView)에 레벨이 없어 UI가 넣는다 — 레벨이 바뀔 때만.
+    ..listen(
+      gameStateProvider.select((s) => [for (final e in s.crews.entries) '${e.key}:${e.value.level}'].join(',')),
+      (_, _) => game.crewLevels = {for (final e in ref.read(gameStateProvider).crews.entries) e.key: e.value.level},
+      fireImmediately: true,
+    );
   return game;
 });
 

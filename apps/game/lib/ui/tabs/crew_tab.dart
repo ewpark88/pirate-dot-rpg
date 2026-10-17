@@ -1,24 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
-import 'package:pirate_dot/ui/meta/meta_providers.dart';
-import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
-import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
-import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/crew/crew_header.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
-import 'package:pirate_dot/ui/skin/skin_button.dart';
-import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
-import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_card.dart';
-import 'package:pirate_dot/ui/text/number_text.dart';
-import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 export 'package:pirate_dot/ui/tabs/crew_card.dart' show CrewCard;
 
@@ -40,10 +29,9 @@ class CrewTab extends ConsumerWidget {
     countBuild('crewTab');
     final l10n = AppLocalizations.of(context);
     // 보유·도감 수가 바뀔 때만 격자를 다시 짠다 (선원은 줄지 않으므로 수로 충분). 카드 내용은 CrewCard가 구독한다.
-    final collected = ref.watch(gameStateProvider.select((s) => (s.collection.length, s.crews.length))).$1;
+    ref.watch(gameStateProvider.select((s) => (s.collection.length, s.crews.length)));
     final owned = ref.read(gameStateProvider).crews.keys.toSet();
     final tables = ref.watch(tablesProvider);
-    final total = tables.crews.crews.length;
     // 정렬·필터 (사용자 지시 2026-10-16). 선원 레벨·경험치가 바뀔 때만 다시 고른다(공격력순·합치기 가능이 따라 바뀜).
     final query = ref.watch(crewQueryProvider);
     ref.watch(
@@ -56,122 +44,13 @@ class CrewTab extends ConsumerWidget {
     final ups = levelUpIds(ref.read(gameStateProvider), tables);
     final mergeCount = ups.length;
     final firstUp = crews.where((c) => ups.contains(c.id)).firstOrNull?.id;
-    final bonusOf = ref.watch(collectionBonusProvider);
-    final bonus = ref.watch(
-      gameStateProvider.select((s) {
-        final b = bonusOf(s);
-        if (b == null) return null;
-        // 경제는 다음 보너스가 붙는 보유 수(nextAt)를 준다 → 남은 명 수. 다 모았으면(null) 0.
-        final next = b.nextAt;
-        return (b.attackBonus, next == null ? 0 : next - b.owned);
-      }),
-    );
 
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
-        // 도감 카드 (스킨 r1, 크림 판): 수 · 공격력 보너스, 진행 막대와 다음 보너스까지, 자동 편성 · 일괄 합치기.
-        PixelFrame(
-          fill: Skin.cream,
-          padding: 6,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(l10n.uiCrewCollection(collected, total), style: Skin.text(19)),
-                  // 도감 보너스 (5명마다 공격력, 설계서 4.5).
-                  if (bonus case (final attack, _))
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0C2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        l10n.uiCollectionBonus(percentText(l10n, attack)),
-                        style: Skin.text(14, color: Skin.goldInk),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: PixelBar(
-                      key: const Key('crew.collectionBar'),
-                      value: collected / total,
-                      fill: Skin.goldBottom,
-                    ),
-                  ),
-                  if (bonus case (_, final nextIn) when nextIn > 0) ...[
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        l10n.uiCollectionNext(nextIn),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Skin.text(14, color: Skin.sub),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              // 도감 수집 보상 (받을 칸이 있으면 금빛 [보상 받기]).
-              const SizedBox(height: 6),
-              const CollectionRewardRow(),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  // 수동 편성이 기본, 한 번에 채우기 (사용자 결정).
-                  Expanded(
-                    child: PixelButton(
-                      key: const Key('fleet.auto'),
-                      primary: true,
-                      onPressed: () => ref.read(fleetCommandsProvider).auto(),
-                      child: Text(l10n.uiFleetAuto),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TutorialSpot(
-                      id: 'crew.mergeAll',
-                      child: PixelDot(
-                        dotKey: const Key('crew.mergeAll.dot'),
-                        show: ref.watch(mergeBadgeProvider),
-                        // 가이드 v2: 56dp, 합칠 선원이 있으면 'n명 ↑'(피드백 #11·#16).
-                        child: SkinButton(
-                          key: const Key('crew.mergeAll'),
-                          tone: SkinTone.gold,
-                          height: 56,
-                          onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  mergeCount > 0 ? l10n.uiCrewMergeAllCount(mergeCount) : l10n.uiCrewMergeAll,
-                                  style: Skin.text(18),
-                                ),
-                                if (mergeCount > 0)
-                                  const Icon(Icons.arrow_upward_rounded, size: 20, color: Skin.mintInk),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
+        // 머리 한 줄: 도감 · 보상 · 자동 편성 · 일괄 합치기 (열자마자 카드 첫 줄이 보이게, S1 실기기 ③).
+        CrewHeader(mergeCount: mergeCount),
+        const SizedBox(height: 6),
         // 합치기 가능 n명 · 정렬 · 보유 · 특성 필터.
         const CrewQueryBar(),
         const SizedBox(height: 8),

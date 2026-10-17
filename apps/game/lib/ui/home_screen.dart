@@ -182,6 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     final sheetH = _sheet.value * body.maxHeight;
     // 전장 상자는 시트(열림)나 도크(닫힘) 위에서 끝난다 — 렌더가 받은 상자를 채우므로 선원 줄·궁극기가 늘 그 바로 위에 붙는다.
     final battleBottom = math.max(sheetH, kDockHeight);
+    final top = BattleTopStrip(tutorial: tutorial, sheetOpen: _open);
     return Stack(
       children: [
         Positioned(
@@ -211,7 +212,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
             ),
           ),
         ),
-        Positioned(left: 0, right: 0, top: 0, child: BattleTopStrip(tutorial: tutorial)),
+        Positioned(left: 0, right: 0, top: 0, child: top),
         // 도크: 시트 위(닫힘이면 화면 아래). 도크 위에는 아무것도 얹지 않는다 — 전장 상자가 도크 높이만큼만 비켜 있으므로(선원 줄 가림 버그).
         Positioned(
           left: 0,

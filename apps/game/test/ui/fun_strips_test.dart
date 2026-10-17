@@ -33,7 +33,7 @@ void main() {
   testWidgets('돌발 이벤트 띠: 황금 물고기 → 이름과 남은 막대, 끝나면 사라짐', (tester) async {
     await pumpGame(tester, _with(sea: const SeaEventView(id: 'goldfish', ticksLeft: 120)), openTab: false);
     expect(find.byKey(const Key('fun.sea.goldfish')), findsOneWidget);
-    expect(find.text('Golden fish! Tap to catch'), findsOneWidget);
+    expect(find.byTooltip('Golden fish! Tap to catch'), findsOneWidget);
     final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
     c.read(gameStateProvider.notifier).replace(_with());
     await tester.pump();

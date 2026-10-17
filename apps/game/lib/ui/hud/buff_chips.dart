@@ -3,7 +3,8 @@ import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 
 // 광고 버프·보상 칩 (사용자 2026-10-17 '칩이 작아 잘 안 보인다' + S5 실기기 ③ 19dp): 위 막대 안에서 줄어들던 칩을
-// 게이지 아래 오른쪽 줄로 옮겨 제 크기(44dp, 아이콘 36·외곽선 글자 15)로 보인다. 새로 생기면 통통 튀며 등장.
+// 제 크기(44dp, 아이콘 36·외곽선 글자 15)로. 자리는 오른쪽 끝 세로 줄(S1 실기기 ① — 가로 줄은 보스 몸·체력 막대를
+// 덮었다; 보스·배는 전장 가운데). 새로 생기면 통통 튀며 등장.
 
 class BuffChips extends StatelessWidget {
   const BuffChips({super.key});
@@ -13,9 +14,9 @@ class BuffChips extends StatelessWidget {
     alignment: Alignment.centerRight,
     child: Wrap(
       key: Key('hud.buffChips'),
-      spacing: 6,
-      runSpacing: 4,
-      alignment: WrapAlignment.end,
+      direction: Axis.vertical,
+      spacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.end,
       children: [
         _PopIn(child: TailwindAdButton()),
         _PopIn(child: BossSupportAdButton()),

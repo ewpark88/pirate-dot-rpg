@@ -30,6 +30,7 @@ void main() {
       tab: crewTab,
     );
     expect(find.byKey(const Key('collect.claim')), findsNothing);
-    expect(find.text('Next reward at 10: Free summon ×1'), findsOneWidget);
+    // 다음 칸 안내는 도감 칸 길게 누르기(머리 한 줄, 실기기 ③).
+    expect(find.byTooltip('Next reward at 10: Free summon ×1'), findsOneWidget);
   });
 }

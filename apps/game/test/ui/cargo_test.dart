@@ -4,9 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
+import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -149,6 +151,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(OfflineRewardDialog), findsNothing);
     expect(container.read(dockTabRequestProvider), shipTabIndex);
+  });
+
+  testWidgets('복귀 창: 화물칸이 가득이라 받을 골드가 0이면 광고 ×2(+0)를 숨기고 [화물칸 강화]가 주 버튼(실기기 ②)', (
+    tester,
+  ) async {
+    final s = _filled(1);
+    expect(goldRoom(s, _t).isZero, isTrue, reason: '시험 전제: 가득');
+    final container = ProviderContainer(
+      overrides: [
+        initialGameStateProvider.overrideWithValue(s),
+        adOfferProvider.overrideWith((ref, _) => true),
+      ],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: pixelTheme(),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: OfflineRewardDialog(preview: OfflinePreview(seconds: 3600, gold: BigNum.from(581), cards: 0)),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(tester.widget<PixelButton>(find.byKey(const Key('offline.claim'))).primary, isFalse);
+    await tester.tap(find.byKey(const Key('offline.claim')));
+    await tester.pump();
+    expect(find.byType(OfflineAdButton), findsNothing);
+    expect(find.byKey(const Key('offline.cargo')), findsOneWidget);
   });
 
   group('골든 4기기', () {
