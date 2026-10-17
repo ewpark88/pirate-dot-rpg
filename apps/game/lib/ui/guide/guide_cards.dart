@@ -216,6 +216,26 @@ GuideTalk? guideTalkFor(AppLocalizations l, {required GuideScene scene, int? ste
   );
 }
 
+/// 가이드 말 잠깐 멈춤 (환영 카드 순간 — S3 카드 연출이 전장 가운데에서 끝날 때까지, S3 c12ced0a).
+final guideHoldProvider = NotifierProvider<GuideHold, bool>(GuideHold.new);
+
+class GuideHold extends Notifier<bool> {
+  Timer? _end;
+
+  @override
+  bool build() {
+    ref.onDispose(() => _end?.cancel());
+    return false;
+  }
+
+  /// [duration] 동안 말을 접는다.
+  void hold(Duration duration) {
+    _end?.cancel();
+    state = true;
+    _end = Timer(duration, () => state = false);
+  }
+}
+
 /// 지금 가리킬 수 있는 id들 (TutorialSpot이 자리를 등록한다 — 말에 따라 그중 보이는 것만 밝힌다). 튜토리얼 단계가 먼저.
 final guidePointedProvider = Provider<Set<String>>((ref) {
   final step = ref.watch(tutorialStepProvider);
