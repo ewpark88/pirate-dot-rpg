@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:game_core/game_core.dart';
+import 'package:game_core/src/battle/spawner.dart' show hordeCountAt;
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/testing.dart';
@@ -32,7 +33,7 @@ void main() {
     final b = e.state.battle!;
     expect(b.mode, 'top');
     expect((b.shipX, b.shipY), (top.shipX, top.shipY));
-    expect(b.enemies, hasLength(tables.waves.topMobCountAt(1)));
+    expect(b.enemies, hasLength(hordeCountAt(tables, 1))); // 스테이지 첫 파 = 대군 습격(사용자 2026-10-17)
     for (final x in b.enemies.where((e) => !e.emerging)) {
       // 가까이 등장(nearSpawn) 몫은 제외
       final d = math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY, 2));

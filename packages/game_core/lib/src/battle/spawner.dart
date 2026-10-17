@@ -45,7 +45,9 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final t = ctx.tables;
   final w = t.waves;
   final species = t.regions.enemiesAt(stage, rebirths: f.rebirths); // 초반엔 1~2종, 진행·환생으로 늘어난다
-  final n = count ?? (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
+  final n =
+      count ??
+      (f.hordeCount > 0 ? f.hordeCount : (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage)));
   // 장면 파(던전)도 한 파 몫을 나눔. poolScale: 피버 보충 고리처럼 한 파 몫의 일부만(덤 — 진행·골드가 피버로 뛰지 않게).
   final share = (count == null || f.scenePooled ? w.mobPoolAt(stage) / n : 1.0) * f.poolScale;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
@@ -81,6 +83,15 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
 String? feverSwarmPattern(GameTables t, {required bool fever}) {
   final f = t.meta.raw.obj('fever');
   return fever && f.has('swarm') ? f.obj('swarm').str('pattern') : null;
+}
+
+/// 대군 습격 마리 수(waves.top.horde {min, max, rampStage}): 스테이지 1에 min, rampStage에 max까지 곧게. 표에 없으면 0(끔).
+int hordeCountAt(GameTables t, int stage) {
+  final top = t.waves.raw.obj('top');
+  if (!top.has('horde')) return 0;
+  final h = top.obj('horde');
+  final k = math.min<double>(1, math.max(0, stage - 1) / math.max(1, h.integer('rampStage') - 1));
+  return (h.integer('min') + (h.integer('max') - h.integer('min')) * k).round();
 }
 
 int feverSwarmCount(GameTables t, int stage) {

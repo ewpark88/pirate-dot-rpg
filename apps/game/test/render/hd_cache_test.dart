@@ -58,4 +58,15 @@ void main() {
     expect(lite.image.height * 2, full.image.height);
     s.dispose();
   });
+
+  test('작은 장면(선원 미리보기)은 상한 12MB·낮은 칸·찡긋 행 없음', () {
+    final s = HdSheets()..small = true;
+    for (final k in hdBosses.keys.take(6)) {
+      s.sheet(k, boss: true, world: 88, density: 4);
+    }
+    expect(s.budget, HdSheets.smallBudgetBytes);
+    expect(s.bytes, lessThanOrEqualTo(HdSheets.smallBudgetBytes));
+    expect(s.sheet('crab', boss: false, world: 31, density: 4)!.hits, isFalse);
+    s.dispose();
+  });
 }

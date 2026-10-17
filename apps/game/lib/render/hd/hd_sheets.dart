@@ -49,9 +49,14 @@ class HdSheets {
 
   /// 지금 밀도의 상한: 폰 48MB × (밀도/4)², 48~96MB(화면이 클수록 같은 종도 텍스처가 커지니 같은 장 수를 담게).
   int get budget {
+    if (small) return smallBudgetBytes;
     final scale = _density / phoneDensity;
     return (budgetBytes * scale * scale).clamp(budgetBytes, maxBudgetBytes).toInt();
   }
+
+  /// 작은 장면(선원 미리보기 등 — 화면에 여러 개 살아 있을 수 있다): 상한 [smallBudgetBytes]·칸 상한 lowCell·찡긋 행 없음.
+  bool small = false;
+  static const int smallBudgetBytes = 12 * 1024 * 1024;
 
   int _bytes = 0;
 
@@ -130,9 +135,9 @@ class HdSheets {
       sp,
       world,
       _density,
-      cap: _cap,
+      cap: small ? lowCell : _cap,
       moods: boss,
-      hits: !boss && _cap >= maxCell, // 찡긋 행은 저사양(lite)이면 안 굽는다(잡몹 시트 절반)
+      hits: !boss && !small && _cap >= maxCell, // 찡긋 행은 저사양(lite)·작은 장면이면 안 굽는다(잡몹 시트 절반)
       selfMood: hdMoodSpecies.contains(kind),
     );
     _bytes += _sizeOf(sheet);
