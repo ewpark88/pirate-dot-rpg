@@ -6,9 +6,16 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 /// 붉은 눈·흉터, 숨구멍에서 물줄기가 고리마다 솟는다.
 const monsterWhale = HdSpecies(_monsterWhale, extent: 1.55, ground: 1.02);
 
-void _monsterWhale(HdKit k, Canvas c, double r, double t) {
-  const grey = Color(0xFF8AA6D8);
-  const greyD = Color(0xFF34466E);
+/// 용암 고래(해역 보스 td_boss:lava_whale): 같은 고래 몸에 검은 현무암 피부·빛나는 용암 금, 숨구멍에서 연기와 불똥.
+const lavaWhale = HdSpecies(_lavaWhale, extent: 1.55, ground: 1.02);
+
+void _monsterWhale(HdKit k, Canvas c, double r, double t) => _whale(k, c, r, t, lava: false);
+
+void _lavaWhale(HdKit k, Canvas c, double r, double t) => _whale(k, c, r, t, lava: true);
+
+void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
+  final grey = lava ? const Color(0xFF6A5E62) : const Color(0xFF8AA6D8);
+  final greyD = lava ? const Color(0xFF221A1E) : const Color(0xFF34466E);
   final bob = k.wave(t, 1) * r * 0.04;
   // 꼬리(아래 뒤로 보이는 두 갈래)
   final flick = k.wave(t, 1, 1) * r * 0.06;
@@ -42,7 +49,7 @@ void _monsterWhale(HdKit k, Canvas c, double r, double t) {
     ..quadraticBezierTo(-r * 0.45, r * 0.85, -r * 0.75, r * 0.4)
     ..cubicTo(-r * 0.95, -r * 0.2, -r * 0.75, -r * 0.95, 0, -r * 0.95)
     ..close();
-  k.blob(c, body, const Color(0xFFA8C0EC), greyD);
+  k.blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD);
   // 흰 배(주름 줄)
   final belly = Path()
     ..moveTo(-r * 0.48, r * 0.1)
@@ -50,49 +57,74 @@ void _monsterWhale(HdKit k, Canvas c, double r, double t) {
     ..quadraticBezierTo(r * 0.38, r * 0.8, 0, r * 0.8)
     ..quadraticBezierTo(-r * 0.38, r * 0.8, -r * 0.48, r * 0.1)
     ..close();
-  k.blob(c, belly, const Color(0xFFF4F8FF), const Color(0xFFB8C8E0), gloss: false, line: 0.6);
+  k.blob(
+    c,
+    belly,
+    lava ? const Color(0xFFFFB45A) : const Color(0xFFF4F8FF),
+    lava ? const Color(0xFFD8501A) : const Color(0xFFB8C8E0),
+    gloss: false,
+    line: 0.6,
+  );
   final w = k.ink.strokeWidth;
   k.ink.strokeWidth = w * 0.45;
   for (var i = 1; i <= 3; i++) {
     c.drawLine(Offset(-r * 0.3 + i * r * 0.15, r * 0.2), Offset(-r * 0.3 + i * r * 0.15, r * 0.7), k.ink);
   }
   k.ink.strokeWidth = w;
-  // 따개비·흉터
-  k.spots(c, r, const [(-0.55, -0.45, 0.06), (-0.62, -0.3, 0.04), (0.6, -0.1, 0.05)], const Color(0xFFDCE6F4));
-  c
-    ..drawLine(Offset(r * 0.3, -r * 0.7), Offset(r * 0.55, -r * 0.45), k.ink)
-    ..drawLine(Offset(r * 0.36, -r * 0.5), Offset(r * 0.48, -r * 0.64), k.ink);
-  // 작살 둘(나무 자루 + 쇠촉)
-  for (final (x, y, a) in const [(-0.62, -0.05, -0.7), (0.55, 0.2, 0.6)]) {
-    final at = Offset(x * r, y * r);
-    final tip = at + Offset(a * r * 0.55, -r * 0.55);
-    k
-      ..limb(
-        c,
-        Path()
-          ..moveTo(at.dx, at.dy)
-          ..lineTo(tip.dx, tip.dy),
-        const Color(0xFFB07A40),
-        r * 0.06,
-      )
-      ..blob(
-        c,
-        Path()
-          ..moveTo(tip.dx - r * 0.07, tip.dy + r * 0.02)
-          ..lineTo(tip.dx + a * r * 0.12, tip.dy - r * 0.12)
-          ..lineTo(tip.dx + r * 0.07, tip.dy + r * 0.04)
-          ..close(),
-        const Color(0xFFE0E6F0),
-        const Color(0xFF8090A8),
-        gloss: false,
-        line: 0.6,
-      );
+  if (lava) {
+    // 용암 금(빛이 고리마다 일렁)
+    final g = 0.7 + 0.3 * (k.wave(t, 1, 2) + 1) / 2;
+    k.limb(
+      c,
+      Path()
+        ..moveTo(-r * 0.7, -r * 0.2)
+        ..lineTo(-r * 0.5, -r * 0.35)
+        ..lineTo(-r * 0.55, -r * 0.6)
+        ..moveTo(r * 0.72, -r * 0.05)
+        ..lineTo(r * 0.5, -r * 0.2)
+        ..lineTo(r * 0.58, -r * 0.5)
+        ..lineTo(r * 0.4, -r * 0.72),
+      Color.fromRGBO(255, (150 + 70 * g).round(), 50, 1),
+      r * 0.05,
+    );
+  } else {
+    // 따개비·흉터
+    k.spots(c, r, const [(-0.55, -0.45, 0.06), (-0.62, -0.3, 0.04), (0.6, -0.1, 0.05)], const Color(0xFFDCE6F4));
+    c
+      ..drawLine(Offset(r * 0.3, -r * 0.7), Offset(r * 0.55, -r * 0.45), k.ink)
+      ..drawLine(Offset(r * 0.36, -r * 0.5), Offset(r * 0.48, -r * 0.64), k.ink);
+    // 작살 둘(나무 자루 + 쇠촉)
+    for (final (x, y, a) in const [(-0.62, -0.05, -0.7), (0.55, 0.2, 0.6)]) {
+      final at = Offset(x * r, y * r);
+      final tip = at + Offset(a * r * 0.55, -r * 0.55);
+      k
+        ..limb(
+          c,
+          Path()
+            ..moveTo(at.dx, at.dy)
+            ..lineTo(tip.dx, tip.dy),
+          const Color(0xFFB07A40),
+          r * 0.06,
+        )
+        ..blob(
+          c,
+          Path()
+            ..moveTo(tip.dx - r * 0.07, tip.dy + r * 0.02)
+            ..lineTo(tip.dx + a * r * 0.12, tip.dy - r * 0.12)
+            ..lineTo(tip.dx + r * 0.07, tip.dy + r * 0.04)
+            ..close(),
+          const Color(0xFFE0E6F0),
+          const Color(0xFF8090A8),
+          gloss: false,
+          line: 0.6,
+        );
+    }
   }
   // 붉은 눈(화남) + 큰 입(이빨 몇 개)
   for (final s in const [-1.0, 1.0]) {
     final at = Offset(s * r * 0.42, -r * 0.42);
     final eye = Rect.fromCenter(center: at, width: r * 0.28, height: r * 0.3);
-    k.fill.color = const Color(0xFFFF4A3A);
+    k.fill.color = lava ? const Color(0xFFFFB02A) : const Color(0xFFFF4A3A);
     c
       ..drawOval(eye, k.fill)
       ..drawOval(eye, k.ink);
@@ -117,7 +149,8 @@ void _monsterWhale(HdKit k, Canvas c, double r, double t) {
   // 숨구멍 물줄기(고리 앞 절반에 솟고 사라짐)
   final spout = (k.wave(t, 1, -1.2) + 1) / 2;
   if (spout > 0.25) {
-    k.fill.color = Color.fromRGBO(220, 244, 255, 0.85 * spout);
+    // 용암 고래는 회색 연기 + 불똥
+    k.fill.color = lava ? Color.fromRGBO(90, 80, 84, 0.8 * spout) : Color.fromRGBO(220, 244, 255, 0.85 * spout);
     for (final (dx, dy, s) in const [
       (0.0, -1.2, 0.12),
       (-0.14, -1.32, 0.08),
@@ -125,6 +158,12 @@ void _monsterWhale(HdKit k, Canvas c, double r, double t) {
       (0.0, -1.42, 0.07),
     ]) {
       c.drawCircle(Offset(dx * r, (dy + 0.1 * (1 - spout)) * r), s * r * spout, k.fill);
+    }
+    if (lava) {
+      k.fill.color = Color.fromRGBO(255, 170, 50, spout);
+      c
+        ..drawCircle(Offset(-r * 0.2, -r * (1.3 + spout * 0.15)), r * 0.035, k.fill)
+        ..drawCircle(Offset(r * 0.22, -r * (1.25 + spout * 0.2)), r * 0.03, k.fill);
     }
   }
   c.restore();

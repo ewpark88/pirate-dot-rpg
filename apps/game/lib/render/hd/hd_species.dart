@@ -4,10 +4,12 @@ import 'package:pirate_dot/render/hd/species/boss_crabs.dart';
 import 'package:pirate_dot/render/hd/species/boss_fish.dart';
 import 'package:pirate_dot/render/hd/species/boss_jellies.dart';
 import 'package:pirate_dot/render/hd/species/boss_misc.dart';
+import 'package:pirate_dot/render/hd/species/boss_rays.dart';
 import 'package:pirate_dot/render/hd/species/boss_serpents.dart';
 import 'package:pirate_dot/render/hd/species/boss_undead.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
 import 'package:pirate_dot/render/hd/species/ice_slime.dart';
+import 'package:pirate_dot/render/hd/species/iceberg_walrus.dart';
 import 'package:pirate_dot/render/hd/species/jelly.dart';
 import 'package:pirate_dot/render/hd/species/kraken.dart';
 import 'package:pirate_dot/render/hd/species/kraken_titan.dart';
@@ -54,4 +56,10 @@ const Map<String, HdSpecies> hdBosses = {
   'seal_chief': sealChief,
   'skeleton_captain': skeletonCaptain,
   'specter': specter,
+  // 해역 보스(S3)
+  'giant_hermit': giantHermit,
+  'thunder_ray': thunderRay,
+  'lava_whale': lavaWhale,
+  'iceberg_walrus': icebergWalrus,
+  'kraken_tentacle': krakenTentacle,
 };

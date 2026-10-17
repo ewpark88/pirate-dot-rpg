@@ -9,6 +9,9 @@ const icecrabChief = HdSpecies(_icecrabChief, extent: 1.45);
 /// 소라게(td_boss:hermit_conch): 분홍 소라 껍데기를 진 게 — 껍데기에서 눈과 집게만 내밀고 들썩.
 const hermitConch = HdSpecies(_hermitConch, extent: 1.45, ground: 0.85);
 
+/// 거대 소라게(해역 보스 td_boss:giant_hermit): 모래빛 매끈한 소라 껍데기를 진 큰 붉은 게(가시 없음).
+const giantHermit = HdSpecies(_giantHermit, extent: 1.45, ground: 0.85);
+
 void _icecrabChief(HdKit k, Canvas c, double r, double t) {
   const ice = Color(0xFF9AD8FF);
   const iceD = Color(0xFF2A6AC0);
@@ -41,7 +44,13 @@ void _icecrabChief(HdKit k, Canvas c, double r, double t) {
   k.crown(c, Offset(0, -r * 0.88 + bob), r * 0.5);
 }
 
-void _hermitConch(HdKit k, Canvas c, double r, double t) {
+void _hermitConch(HdKit k, Canvas c, double r, double t) =>
+    _hermit(k, c, r, t, const Color(0xFFFFC8E0), const Color(0xFFD0508A), spikes: true);
+
+void _giantHermit(HdKit k, Canvas c, double r, double t) =>
+    _hermit(k, c, r, t, const Color(0xFFFFF0C8), const Color(0xFFC8A060), spikes: false);
+
+void _hermit(HdKit k, Canvas c, double r, double t, Color shellL, Color shellD, {required bool spikes}) {
   const red = Color(0xFFFF6A5A);
   const redD = Color(0xFFB02A2A);
   final bob = k.wave(t, 2) * r * 0.04;
@@ -53,7 +62,7 @@ void _hermitConch(HdKit k, Canvas c, double r, double t) {
     ..cubicTo(r * 0.9, -r * 0.7, r * 1.0, r * 0.1, r * 0.75, r * 0.55 + bob)
     ..quadraticBezierTo(0, r * 0.8, -r * 0.85, r * 0.55 + bob)
     ..close();
-  k.blob(c, shell, const Color(0xFFFFC8E0), const Color(0xFFD0508A));
+  k.blob(c, shell, shellL, shellD);
   // 나선 줄 + 가시
   final w = k.ink.strokeWidth;
   k.ink.strokeWidth = w * 0.55;
@@ -66,7 +75,10 @@ void _hermitConch(HdKit k, Canvas c, double r, double t) {
   }
   c.drawPath(spiral, k.ink);
   k.ink.strokeWidth = w;
-  for (final (x, y) in const [(-0.75, -0.25), (-0.45, -0.75), (0.2, -0.95), (0.75, -0.55), (0.88, 0.1)]) {
+  for (final (x, y)
+      in spikes
+          ? const [(-0.75, -0.25), (-0.45, -0.75), (0.2, -0.95), (0.75, -0.55), (0.88, 0.1)]
+          : const <(double, double)>[]) {
     final at = Offset(x * r, y * r + bob);
     final out = at / at.distance;
     k.blob(
