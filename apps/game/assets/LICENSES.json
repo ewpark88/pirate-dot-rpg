@@ -2243,6 +2243,14 @@
     "weapons/walrus.webp": {
       "source": "Pirate Busters 자체 IP → art/pb_v0.24_main/png/weapons/walrus@2x.png",
       "license": "OWN"
+    },
+    "ui/speed_off.png": {
+      "source": "자체 제작 — 렌더 2배속 질풍 시안(test/render/goldens/top_gale.png) 꺼짐 칸을 잘라 냄(상점 2배속 카드 비교 그림)",
+      "license": "OWN"
+    },
+    "ui/speed_on.png": {
+      "source": "자체 제작 — 렌더 2배속 질풍 시안(test/render/goldens/top_gale.png) 켜짐 칸을 잘라 냄(상점 2배속 카드 비교 그림)",
+      "license": "OWN"
     }
   }
 }
