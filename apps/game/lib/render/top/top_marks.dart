@@ -136,6 +136,7 @@ class TopMarks {
       _breakBar(c, e, (e.drawX - w / 2).roundToDouble() + 8, (e.drawY - r - 2).roundToDouble(), w - 8);
     }
     if (_bossLag.length > 8) _bossLag.clear();
+    scene.topHits.traits?.bossFx.paint(c, scene.clockMs, scene.poses, scene.poseCount, radiusOf);
     // 브레이크 도장·별은 보스 체력 막대 위에.
     scene.topHits.breaks.paint(c, scene.clockMs, _poseAt, flash: scene.settings.flash, lite: scene.topHits.lite);
   }
