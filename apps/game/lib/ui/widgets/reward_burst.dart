@@ -76,6 +76,8 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
 
   Widget _frame(double t, double sec) => LayoutBuilder(
     builder: (context, box) {
+      // 기기 '애니메이션 줄이기'도 가볍게(접근성).
+      final lite = widget.lite || (MediaQuery.maybeDisableAnimationsOf(context) ?? false);
       final size = box.biggest;
       final n = widget.items.length;
       final perRow = math.max(1, n > 5 ? (n / 2).ceil() : n); // 아이템이 없으면(빛만) 1
@@ -94,9 +96,9 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
               painter: RewardRaysPainter(
                 center: source,
                 t: bt,
-                spin: widget.lite ? 0 : (widget.progress ?? sec) * 0.6,
+                spin: lite ? 0 : (widget.progress ?? sec) * 0.6,
                 tier: widget.tier,
-                lite: widget.lite,
+                lite: lite,
               ),
             ),
           ),

@@ -62,7 +62,7 @@ void main() {
           RewardBurst(items: _items, source: UiSprites.chest, openedSource: UiSprites.chestOpen, progress: t),
       ]);
       expect(find.byKey(const Key('reward.item.6')), findsNWidgets(3));
-      await expectLater(find.byType(Row).first, matchesGoldenFile('goldens/ko_reward_burst_$name.png'));
+      await expectLater(find.byType(Row).first, matchesGoldenFile('../goldens/ko_reward_burst_$name.png'));
     });
   }
 
@@ -71,7 +71,7 @@ void main() {
       for (final tier in RewardTier.values)
         RewardBurst(items: _items.take(3).toList(), source: UiSprites.book, tier: tier, progress: 1),
     ]);
-    await expectLater(find.byType(Row).first, matchesGoldenFile('goldens/ko_reward_burst_tiers.png'));
+    await expectLater(find.byType(Row).first, matchesGoldenFile('../goldens/ko_reward_burst_tiers.png'));
   });
 
   testWidgets('움직이는 터짐은 1.8초 뒤 멈추고, lite는 빛줄기를 줄인다', (tester) async {

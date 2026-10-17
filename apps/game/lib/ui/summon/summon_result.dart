@@ -7,6 +7,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/hud/reward_gate.dart' show rewardLite;
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -193,7 +194,7 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
                   key: const Key('summon.rays'),
                   items: const [],
                   tier: RewardTier.values[best.clamp(0, RewardTier.values.length - 1)],
-                  lite: ref.watch(gameStateProvider.select((s) => s.settings.powerSave)),
+                  lite: rewardLite(ref),
                 ),
               ),
               if (best >= Tier.mythic) Positioned.fill(child: AuroraSweep(t: hint)),

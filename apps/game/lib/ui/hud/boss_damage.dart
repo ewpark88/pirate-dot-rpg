@@ -73,10 +73,12 @@ class _BossDamageGateState extends ConsumerState<BossDamageGate> {
         for (final c in cards) (icon: 'assets/${t.crews.byId(c.crewId).portrait}', label: '1', tier: tierOf(c.rarity)),
       ],
       source: UiSprites.trophy,
-      // 해역 보스(해역 마지막) 금 · 중간 보스 보라 · 보통 파랑.
+      // 해역 보스(해역 마지막) 금 · 중간 보스·10단위 벽 보라 · 보통 파랑.
       tier: e.stage % r.stagesPerRegion == 0
           ? RewardTier.gold
-          : (e.stage % r.midBossEvery == 0 ? RewardTier.purple : RewardTier.blue),
+          : (e.stage % r.midBossEvery == 0 || (r.wallEvery > 0 && e.stage % r.wallEvery == 0)
+                ? RewardTier.purple
+                : RewardTier.blue),
       lite: rewardLite(ref),
     );
   }

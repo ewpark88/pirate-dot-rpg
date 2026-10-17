@@ -124,5 +124,9 @@ void main() {
 Future<void> _passBurst(WidgetTester tester) async {
   expect(find.byKey(const Key('reward.burst')), findsOneWidget, reason: '처치 창 전 보상 터짐');
   await tester.tap(find.byKey(const Key('reward.burst')));
+  // 터짐을 누르면 기다리지 않고 바로 처치 창(S4 ⑤) — 창 열림 애니메이션 한 번이면 뜬다.
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+  expect(find.byKey(const Key('bossDamage')), findsOneWidget, reason: '터짐을 누르면 바로 처치 창');
   await tester.pumpAndSettle();
 }
