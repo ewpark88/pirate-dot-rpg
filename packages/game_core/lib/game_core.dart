@@ -15,7 +15,7 @@ export 'src/economy/formation.dart' show activeFleet, emptySlotCount, fleetSlots
 export 'src/economy/meta_views.dart' show CollectionBonus, GoalKind, NextGoal, collectionBonus, nextGoal;
 export 'src/economy/offline.dart';
 export 'src/economy/rebirth.dart' show RebirthPreview, piecesFor, rebirthBonus, rebirthPreview;
-export 'src/economy/rush.dart' show canStartRush, rushBosses, rushWeek; // 러시 카드(UI)
+export 'src/economy/rush.dart' show canStartRush, rushBosses, rushWeek, sceneBusy; // 러시 카드(UI)·sim
 export 'src/economy/ship_stats.dart';
 export 'src/economy/tower.dart' show canStartTower, towerChest, towerOpen, towerSweepFloor; // 탑 카드(UI)
 export 'src/engine/core_engine.dart' show CoreEngine, defaultSystems;

@@ -268,13 +268,9 @@ class SimPlayer {
         if (at > _elapsed - early) g,
     ];
     final estimate = goldPerSecEstimate(s, t, offlineFleet(s, t));
+    _fun.fill(result, _online);
     result
       ..mapPieces = s.wallet.mapPieces
-      ..eventGoldPct = _fun.eventGoldPct
-      ..challengeWinPct = _fun.challengeWinPct
-      ..feverIntervalMin = _fun.fevers == 0 ? null : _online.inSeconds / Duration.secondsPerMinute / _fun.fevers
-      ..feverGoldPct = _fun.feverGoldPct
-      ..overflowPct = _fun.overflowPct
       ..threat = _threat
       ..goldSupply = _gold
       ..wallSinkSec = SimThreat.median(_threat.sinkSec)

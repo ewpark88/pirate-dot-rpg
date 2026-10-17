@@ -78,6 +78,11 @@ class SimResult {
 
   /// 피버 평균 간격(접속 분), 피버 중 처치 골드 비중(%).
   double? feverIntervalMin;
+
+  /// 탑 층당 초·한 판 분, 러시 한 판 초(중앙값, 안 했으면 null).
+  double? towerFloorSec;
+  double? towerRunMin;
+  double? rushSec;
   double? feverGoldPct;
 
   /// 화물칸 넘친 골드 ÷ 처치 골드(%).
