@@ -1229,5 +1229,13 @@
   "uiTrialEndTitle": "Trial ended",
   "uiTrialEndAsk": "Liked it? Watch one ad for 10 more minutes!",
   "uiTrialAdMore": "Watch ad · 10 more min",
-  "uiTrialBuy": "Keep it forever (Shop)"
+  "uiTrialBuy": "Keep it forever (Shop)",
+  "uiAutoBossIn": "Auto in {n}s",
+  "@uiAutoBossIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

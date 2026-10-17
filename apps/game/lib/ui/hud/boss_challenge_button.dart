@@ -29,6 +29,9 @@ class BossChallengeButton extends ConsumerStatefulWidget {
 
 class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
   bool? _bubble;
+
+  /// 자동 재도전 링의 전체(처음 본 남은 틱).
+  int _autoMax = 0;
   Timer? _hide;
 
   @override
@@ -41,7 +44,7 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final (show, stage, tick, flashOn, canWin) = ref.watch(
+    final (show, stage, tick, flashOn, canWin, autoLeft) = ref.watch(
       gameStateProvider.select(
         (s) => (
           s.progress.farming && !(s.battle?.bossActive ?? false),
@@ -50,9 +53,15 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
           s.settings.flash,
           // 보스 vs 나가 '여유'면 다시 붙을 때 (S3 첫 15분 점검 — 실패 뒤 재도전을 안 눌러 스테이지 3에 15분).
           bossCompareOf(s, tables)?.level == 0,
+          // 자동 재도전(settings.autoBoss, S2)까지 남은 틱 — 0이면 없음.
+          s.battle?.autoBossTicksLeft ?? 0,
         ),
       ),
     );
+    // 자동 재도전 링: 처음 본 남은 값을 전체로 삼아 줄어드는 원.
+    if (autoLeft > _autoMax) _autoMax = autoLeft;
+    if (autoLeft == 0) _autoMax = 0;
+    final autoSec = (autoLeft * tables.waves.tickMs / Duration.millisecondsPerSecond).ceil();
     if (!show) {
       _bubble = null;
       return const SizedBox.shrink();
@@ -121,6 +130,19 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
                               child: BossPortrait(bossId: boss, size: 36),
                             ),
                           ),
+                          // 자동 재도전까지 남은 시간 원(원 테두리 위에 금빛으로 줄어든다).
+                          if (autoLeft > 0)
+                            SizedBox(
+                              width: bossChallengeSize,
+                              height: bossChallengeSize,
+                              child: CircularProgressIndicator(
+                                key: const Key('boss.autoRing'),
+                                value: _autoMax == 0 ? 0 : autoLeft / _autoMax,
+                                strokeWidth: 4,
+                                color: const Color(0xFFFFD84A),
+                                backgroundColor: Colors.transparent,
+                              ),
+                            ),
                           // 칼 교차 배지(오른쪽 위).
                           const Positioned(
                             top: -2,
@@ -159,7 +181,15 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
                   child: HudBubble(key: const Key('boss.bubble'), text: l10n.uiBossRetryHint),
                 ),
               )
-            // 이길 만하면 버튼 위에 금빛 '이길 수 있어요!'.
+            // 자동 재도전 n초가 먼저(있으면), 아니면 이길 만할 때 '이길 수 있어요!'.
+            else if (autoLeft > 0)
+              Positioned(
+                bottom: bossChallengeHeight + 2,
+                right: -6,
+                child: IgnorePointer(
+                  child: OutlineText(l10n.uiAutoBossIn(autoSec), key: const Key('boss.autoIn'), size: 13),
+                ),
+              )
             else if (canWin)
               Positioned(
                 bottom: bossChallengeHeight + 2,

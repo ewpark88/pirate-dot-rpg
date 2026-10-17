@@ -1560,5 +1560,13 @@
   "uiTrialEndTitle": "체험이 끝났어요",
   "uiTrialEndAsk": "마음에 들었나요? 광고 한 번이면 10분 더!",
   "uiTrialAdMore": "광고 보고 10분 더",
-  "uiTrialBuy": "영구로 갖기 (상점)"
+  "uiTrialBuy": "영구로 갖기 (상점)",
+  "uiAutoBossIn": "자동 도전 {n}초",
+  "@uiAutoBossIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }
