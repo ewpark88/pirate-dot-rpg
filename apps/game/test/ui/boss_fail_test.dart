@@ -7,6 +7,8 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tabs/crew_tab.dart';
+import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 
 import 'ui_harness.dart';
 
@@ -21,7 +23,7 @@ void _fail(StreamController<RecordedTick> feed, GameState s) =>
     feed.add(RecordedTick(s.battle!, const [BossFailed(1, stage: 37)]));
 
 void main() {
-  testWidgets('처음 실패: 자세히(규칙 한 줄 + 추천 강화 + 보스 도전), 두 번째부터 짧게', (tester) async {
+  testWidgets('처음 실패: 자세히(무엇을 하면 되는지 + 배 강화·선원 바로 가기 + 보스 도전), 두 번째부터 짧게', (tester) async {
     final feed = StreamController<RecordedTick>.broadcast(sync: true);
     addTearDown(feed.close);
     final s = _farming();
@@ -34,12 +36,11 @@ void main() {
     _fail(feed, s);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.detailed')), findsOneWidget);
-    expect(find.textContaining('Beat the boss before time runs out'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('bossFail.upgrade')));
-    await tester.pump();
-    expect(log.sent.whereType<UpgradePart>(), hasLength(1));
-    await tester.tap(find.byKey(const Key('bossFail.close')));
+    expect(find.textContaining('Upgrade your ship or level up your crew'), findsOneWidget);
+    expect(find.byKey(const Key('bossFail.crew')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('bossFail.ship')));
     await tester.pumpAndSettle();
+    expect(find.byType(ShipTab), findsOneWidget); // 배 탭 시트가 열림
     expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
 
     // 두 번째 실패: 경제 누계 bossFails 2 → 짧게.
@@ -49,6 +50,7 @@ void main() {
     _fail(feed, s);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('bossFail.short')), findsOneWidget);
+    expect(find.byKey(const Key('bossFail.ship')), findsOneWidget);
     await tester.tap(find.byKey(const Key('bossFail.challenge')));
     await tester.pumpAndSettle();
     expect(log.sent.whereType<ChallengeBoss>(), hasLength(1));
@@ -85,6 +87,19 @@ void main() {
     expect(find.byKey(const Key('bossFail.short')), findsNothing);
   });
 
+  testWidgets('선원 바로 가기 → 선원 탭 시트', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = _farming();
+    await pumpGame(tester, s, openTab: false, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    _fail(feed, s);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('bossFail.crew')));
+    await tester.pumpAndSettle();
+    expect(find.byType(CrewTab), findsOneWidget);
+    expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
+  });
+
   testWidgets('파밍 중 띠: 파밍이면 보이고 아니면 없다', (tester) async {
     await pumpGame(tester, _farming(), openTab: false);
     expect(find.byKey(const Key('hud.farming')), findsOneWidget); // 게이지 안 꼬리표
@@ -92,22 +107,30 @@ void main() {
     expect(find.byKey(const Key('hud.farming')), findsNothing);
   });
 
-  testWidgets('골든: 처음 실패 안내 ko', (tester) async {
-    await loadGoldenFonts();
-    final feed = StreamController<RecordedTick>.broadcast(sync: true);
-    addTearDown(feed.close);
-    final s = _farming();
-    await pumpGame(
-      tester,
-      s,
-      locale: const Locale('ko'),
-      openTab: false,
-      overrides: [battleFeedProvider.overrideWithValue(feed.stream)],
-    );
-    await precacheImages(tester);
-    _fail(feed, s);
-    await tester.pumpAndSettle();
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_boss_fail.png'));
-    await tester.pump(const Duration(seconds: 9));
-  });
+  for (final (name, size, dpr, locale) in [
+    ('ko_boss_fail_v2_360', const Size(360, 640), 3.0, const Locale('ko')),
+    ('en_boss_fail_v2_s24', s24Size, s24Dpr, const Locale('en')),
+    ('ko_boss_fail_v2_tablet', const Size(800, 1280), 2.0, const Locale('ko')),
+  ]) {
+    testWidgets('골든: 처음 실패 안내 $name', (tester) async {
+      await loadGoldenFonts();
+      final feed = StreamController<RecordedTick>.broadcast(sync: true);
+      addTearDown(feed.close);
+      final s = _farming();
+      await pumpGame(
+        tester,
+        s,
+        size: size,
+        dpr: dpr,
+        locale: locale,
+        openTab: false,
+        overrides: [battleFeedProvider.overrideWithValue(feed.stream)],
+      );
+      await precacheImages(tester);
+      _fail(feed, s);
+      await tester.pumpAndSettle();
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/$name.png'));
+      await tester.pump(const Duration(seconds: 9));
+    });
+  }
 }

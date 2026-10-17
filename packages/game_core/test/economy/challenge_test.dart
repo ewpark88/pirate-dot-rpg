@@ -10,14 +10,14 @@ void main() {
   final cfg = t.meta.raw.obj('challenges');
   final tickSec = t.waves.tickMs / 1000;
 
-  GameState start({int stage = 20, double rage = 0}) =>
+  GameState start({int stage = 20}) =>
       GameState.newGame(
         playerId: 'c',
         seed: 11,
         now: EconomyHarness.start,
         crews: t.meta.startingCrews,
       ).copyWith(
-        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        progress: Progress(stage: stage, bestStage: stage),
         clearTutorial: true,
       );
 
@@ -54,12 +54,12 @@ void main() {
     expect(e.state.battle!.challenge, isNull);
   });
 
-  test('기준 3: 함성 50%면 ultimate는 나오지 않는다', () {
+  test('기준 3: 분노 도전 ultimate는 없다(궁극기 제거, docs/specs/platform-fever-break.md)', () {
     final kinds = <String>{};
     for (var seed = 0; seed < 40; seed++) {
-      final s = start(rage: t.skills.rageMax * 0.5).copyWith(
+      final s = start().copyWith(
         rngSeed: seed,
-        progress: Progress(stage: 20, bestStage: 20, rage: t.skills.rageMax * 0.5, challengeInSec: 0.05),
+        progress: const Progress(stage: 20, bestStage: 20, challengeInSec: 0.05),
       );
       final e = engine(s)..tick();
       final started = e.drainEvents().whereType<ChallengeStarted>();

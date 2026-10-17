@@ -47,11 +47,8 @@ class ChallengeTracker {
     _killRate += (kills / dt - _killRate) * math.min(dt / _cfg(t).number('rateWindowSec'), 1);
     final hit = _lastHp != null && f.shipHp < _lastHp!;
     _lastHp = f.shipHp;
-    final ult = f.ultimateKills;
     final multi = f.multiKill;
-    f
-      ..ultimateKills = 0
-      ..multiKill = 0;
+    f.multiKill = 0;
     var next = seaEventStep(s, f, ctx);
     if (next.progress.stage < _cfg(t).integer('minStage')) return next;
     // 간격은 시작→시작: 도전 중·미루는 중에도 줄어들고, 0 이하면 미룰 이유가 없어지는 대로 시작.
@@ -60,18 +57,14 @@ class ChallengeTracker {
     final left = (next.progress.challengeInSec ?? first) - dt;
     next = next.copyWith(progress: next.progress.copyWith(challengeInSec: left));
     final c = next.battle?.challenge;
-    if (c != null) return _tick(next, ctx, c, kills: kills, ult: ult, multi: multi, hit: hit);
+    if (c != null) return _tick(next, ctx, c, kills: kills, multi: multi, hit: hit);
     if (left > 0 || f.bossActive || feverOn(next) || next.battle?.seaEvent != null) return next;
     return _start(next, ctx);
   }
 
   GameState _start(GameState s, SystemContext ctx) {
     final t = ctx.tables;
-    final rage = s.progress.rage / t.skills.rageMax;
-    final pool = [
-      for (final k in _cfg(t).objs('kinds'))
-        if (!k.has('minRage') || rage >= k.number('minRage')) k,
-    ];
+    final pool = _cfg(t).objs('kinds');
     final total = pool.fold<double>(0, (a, k) => a + k.number('weight'));
     var r = ctx.rng.nextDouble() * total;
     var kind = pool.last;
@@ -86,8 +79,7 @@ class ChallengeTracker {
     final target = switch (kind.str('id')) {
       'kills' => math.max((_killRate * sec * kind.number('targetFactor')).ceil(), 1),
       'combo' => kind.integer('times'),
-      'noHit' => sec.round(),
-      _ => kind.integer('kills'),
+      _ => sec.round(), // noHit
     };
     final ticks = (sec / (t.waves.tickMs * secondsPerMillisecond)).round();
     ctx.emit(ChallengeStarted(ctx.tick, id: kind.str('id'), target: target, untilTick: ctx.tick + ticks));
@@ -104,7 +96,6 @@ class ChallengeTracker {
     SystemContext ctx,
     ChallengeView c, {
     required int kills,
-    required int ult,
     required int multi,
     required bool hit,
   }) {
@@ -115,8 +106,7 @@ class ChallengeTracker {
     final value = switch (c.id) {
       'kills' => c.value + kills,
       'combo' => c.value + (multi >= kind.integer('multiKill') ? 1 : 0),
-      'noHit' => ((c.target * ticksPerSec - left) / ticksPerSec).floor(),
-      _ => c.value + ult,
+      _ => ((c.target * ticksPerSec - left) / ticksPerSec).floor(), // noHit
     };
     if (c.id == 'noHit' && hit) return _end(s, ctx, c, success: false);
     if (value != c.value && c.id != 'noHit') ctx.emit(ChallengeProgress(ctx.tick, id: c.id, value: value));

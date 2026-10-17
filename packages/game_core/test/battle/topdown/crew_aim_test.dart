@@ -94,7 +94,7 @@ void main() {
     final n = (seconds * 1000 / t.waves.tickMs).round();
     for (var i = 0; i < n; i++) {
       ctx.tick = i;
-      Round(f, ctx, stats, rage: 0, invincible: true)
+      Round(f, ctx, stats, invincible: true)
         ..moveFoes()
         ..fireGuns()
         ..topdownStep(s);

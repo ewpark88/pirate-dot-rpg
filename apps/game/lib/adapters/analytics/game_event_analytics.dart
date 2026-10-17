@@ -23,6 +23,11 @@ void logGameEvents(AnalyticsPort analytics, Iterable<GameEvent> events) {
         });
       case BountySwept(:final bossId, :final tier, :final count):
         analytics.log('bounty_sweep', {'boss': bossId, 'tier': tier, 'count': count});
+      // 도감(세이브마다 칸당 한 번씩만 나온다 — 엔진 recordDex)
+      case DexSeen(:final id, :final boss):
+        analytics.log('dex_seen', {'id': id, 'boss': boss ? 1 : 0});
+      case DexFirstKill(:final id, :final boss, :final gems):
+        analytics.log('dex_first_kill', {'id': id, 'boss': boss ? 1 : 0, 'gems': gems});
       default:
         break;
     }

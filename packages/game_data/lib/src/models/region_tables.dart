@@ -189,6 +189,7 @@ class RegionsTable {
     : stagesPerRegion = j.integer('stagesPerRegion'),
       midBossEvery = j.integer('midBossEvery'),
       wallEvery = j.intOrNull('wallEvery') ?? 0,
+      rotationFromStage = j.intOrNull('rotationFromStage') ?? 0,
       loopStages = j.integer('loopStages'),
       maxLoopTier = j.integer('maxLoopTier'),
       regions = j.objs('regions').map(RegionDef.fromJson).toList(),
@@ -200,6 +201,9 @@ class RegionsTable {
 
   /// 대보스 벽 간격(도감 v2, 10). 0이면 대보스 없음.
   final int wallEvery;
+
+  /// 보스 순환을 시작하는 스테이지(도감 v2 — 그 앞은 해역 일반 보스, 튜토리얼 3단계 보스 유지). 0이면 처음부터.
+  final int rotationFromStage;
 
   /// 이 스테이지 수마다 해역을 처음부터 다시 돈다 (무한 항해).
   final int loopStages;
@@ -233,7 +237,7 @@ class RegionsTable {
       id = r.midBoss;
     } else if (r.wallBoss != null && wallEvery > 0 && stage % wallEvery == 0) {
       id = r.wallBoss!;
-    } else if (r.bossRotation.isNotEmpty) {
+    } else if (r.bossRotation.isNotEmpty && stage >= rotationFromStage) {
       id = r.bossRotation[stage % r.bossRotation.length];
     } else {
       id = r.boss;
