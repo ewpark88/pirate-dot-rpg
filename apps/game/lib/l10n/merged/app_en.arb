@@ -734,5 +734,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiNewCrew": "New mate!"
 }

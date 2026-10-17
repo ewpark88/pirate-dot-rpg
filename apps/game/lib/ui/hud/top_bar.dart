@@ -59,7 +59,11 @@ class TopBar extends ConsumerWidget {
                     key: const Key('top.gold'),
                     style: const TextStyle(color: PixelPalette.gold),
                   ),
-                  Text(' / $cap', key: const Key('top.goldCap'), style: Skin.text(11, color: Skin.sub)),
+                  Text(
+                    ' / $cap',
+                    key: const Key('top.goldCap'),
+                    style: Skin.text(11, color: Skin.sub),
+                  ),
                 ],
               ),
               const GoldCapBar(),
