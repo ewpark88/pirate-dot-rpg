@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_loot_bits.dart';
 
 /// 보스 처치 보상 연출 (사용자 피드백 #18 '보스 처치 보상이 확실히 보이게', 2026-10-17):
 /// 보스 자리에서 연쇄 폭발·빛줄기·충격파 → 금화·젬·카드가 크게 튀어나와 잠깐 떠 있다가 배로 빨려 들어간다(도착마다 배 둘레 반짝).
@@ -63,6 +64,7 @@ class TopBossLoot {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
   final _ray = Path();
+  final _bits = LootBits();
 
   /// 전장 좌표로 그린다(적 위 층). [ship] = 배 중심.
   void paint(Canvas c, double now, Offset ship, SpriteDraw? sprites, {required bool flash}) {
@@ -70,8 +72,8 @@ class TopBossLoot {
     for (final b in _bursts) {
       final age = now - b.ms;
       if (age < 0) continue;
-      if (b.style != LootStyle.boss) _pillar(c, b, age);
-      if (b.style == LootStyle.reward) _stars(c, b, age);
+      if (b.style != LootStyle.boss) _bits.pillar(c, b.at, age, wide: b.style == LootStyle.reward);
+      if (b.style == LootStyle.reward) _bits.stars(c, b.at, age);
       _rays(c, b, age);
       if (flash && age < 160) {
         _paint.color = Color.fromRGBO(255, 248, 210, 0.85 * (1 - age / 160));
@@ -92,42 +94,6 @@ class TopBossLoot {
         arrivals += _piece(c, b, i, age, ship, sprites, kind: 2);
       }
       if (arrivals > 0) _absorb(c, ship, arrivals);
-    }
-  }
-
-  /// 하늘로 솟는 금빛 기둥(0~900ms): 넓은 옅은 띠 + 가운데 밝은 줄, 위로 갈수록 옅게.
-  void _pillar(Canvas c, _Burst b, double age) {
-    const ms = 900.0;
-    if (age >= ms) return;
-    final t = age / ms;
-    final rise = math.min<double>(1, t * 4);
-    final fade = t < 0.6 ? 1.0 : 1 - (t - 0.6) / 0.4;
-    final h = 150 * rise;
-    final w = (b.style == LootStyle.chest ? 16 : 22) * (1 - t * 0.5);
-    for (var k = 0; k < 4; k++) {
-      final y0 = b.at.dy - h * k / 4;
-      final y1 = b.at.dy - h * (k + 1) / 4;
-      _paint.color = Color.fromRGBO(255, 214, 90, 0.4 * fade * (1 - k / 4));
-      c.drawRect(Rect.fromLTRB(b.at.dx - w / 2, y1, b.at.dx + w / 2, y0), _paint);
-      _paint.color = Color.fromRGBO(255, 250, 220, 0.85 * fade * (1 - k / 4));
-      c.drawRect(Rect.fromLTRB(b.at.dx - w / 6, y1, b.at.dx + w / 6, y0), _paint);
-    }
-  }
-
-  /// 별가루(광고 보상): 배 둘레에서 빙글 돌며 솟아오르는 반짝 12개.
-  void _stars(Canvas c, _Burst b, double age) {
-    const ms = 1200.0;
-    if (age >= ms) return;
-    final t = age / ms;
-    for (var k = 0; k < 12; k++) {
-      final a = k * math.pi / 6 + t * 3;
-      final r = 14 + 10 * math.sin(k * 1.3) + 8 * t;
-      final p = b.at + Offset(math.cos(a) * r, math.sin(a) * r * 0.6 - 50 * t);
-      _paint.color = Color.fromRGBO(255, 236, 140, 1 - t);
-      final s = (k.isEven ? 2.0 : 1.0) + ((age / 100 + k).floor().isEven ? 1 : 0);
-      c
-        ..drawRect(Rect.fromCenter(center: p, width: s * 3, height: s), _paint)
-        ..drawRect(Rect.fromCenter(center: p, width: s, height: s * 3), _paint);
     }
   }
 
@@ -247,49 +213,12 @@ class TopBossLoot {
           ..save()
           ..translate(p.dx, p.dy)
           ..scale(1.6);
-        _gem(c, Offset.zero, age);
+        _bits.gem(c, Offset.zero, age);
         c.restore();
       default:
-        _card(c, p, b.cards[i], age, sprites);
+        _bits.card(c, p, b.cards[i], age, sprites);
     }
     return 0;
-  }
-
-  /// 젬: 분홍·하늘 마름모(테두리·하이라이트) + 반짝.
-  void _gem(Canvas c, Offset p, double age) {
-    final x = p.dx.roundToDouble();
-    final y = p.dy.roundToDouble();
-    _ray
-      ..reset()
-      ..moveTo(x, y - 7)
-      ..lineTo(x + 5, y - 1)
-      ..lineTo(x, y + 6)
-      ..lineTo(x - 5, y - 1)
-      ..close();
-    _paint.color = const Color(0xFF1B1726);
-    c.drawPath(_ray.shift(const Offset(0, 1)), _paint);
-    _paint.color = const Color(0xFFE0479E);
-    c.drawPath(_ray, _paint);
-    _paint.color = const Color(0xFFFF9AD5);
-    c.drawRect(Rect.fromLTWH(x - 3, y - 2, 3, 2), _paint);
-    _paint.color = const Color(0xFFFFFFFF);
-    c.drawRect(Rect.fromLTWH(x - 2, y - 4, 1, 2), _paint);
-    if ((age / 120).floor().isEven) c.drawRect(Rect.fromLTWH(x + 3, y - 7, 1, 1), _paint);
-  }
-
-  /// 카드: 등급 색 테두리 + 선원 초상, 가로로 뒤집히며 돈다.
-  void _card(Canvas c, Offset p, (String, int) card, double age, SpriteDraw? sprites) {
-    final flip = math.cos(age / 140).abs().clamp(0.25, 1.0);
-    final w = 12 * flip;
-    const h = 16.0;
-    final r = Rect.fromCenter(center: p, width: w + 2, height: h + 2);
-    _paint.color = const Color(0xFF1B1726);
-    c.drawRect(r, _paint);
-    _paint.color = Color(card.$2);
-    c.drawRect(r.deflate(1), _paint);
-    _paint.color = const Color(0xFFF6EBD0);
-    c.drawRect(r.deflate(2.5), _paint);
-    sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy, w - 3, w - 3);
   }
 
   /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
