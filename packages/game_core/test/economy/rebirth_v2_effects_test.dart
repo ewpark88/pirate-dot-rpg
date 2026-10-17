@@ -1,6 +1,7 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/economy/economy_system.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec;
 import 'package:game_core/testing.dart';
 import 'package:test/test.dart';
 
@@ -38,14 +39,15 @@ void main() {
     expect(previewUpgrade(s.copyWith(wallet: Wallet(gold: gold)), t, 'cannon').cost.closeTo(gold), isTrue);
   });
 
-  test('기준 5: bossTime 3 → 보스 제한 39초 · critChance 10 + 망루 최대 → 치명 ≤ 0.5 · critDamage +0.1/레벨', () {
+  test('기준 5: 보통 보스는 시간 제한 없음(bossTime은 현상금 제한에만 +9초) · critChance 10 + 망루 최대 → 치명 ≤ 0.5 · critDamage +0.1/레벨', () {
     final now = DateTime.utc(2026, 11);
     final s0 = shop(const {'bossTime': 3}, stage: 5);
     final e = CoreEngine(tables: t, clock: ManualClock(now), initial: s0)
       ..enqueue(const OpSpawnBoss())
       ..tick();
     final spawned = e.drainEvents().whereType<BossSpawned>().single;
-    expect(spawned.timeLimitTicks * t.waves.tickMs / 1000, closeTo(t.waves.bossTimeLimitSec + 9, 1e-9));
+    expect(spawned.timeLimitTicks, 0, reason: '2026-10-17 사용자 결정: 보스 시간 없음 — 침몰로만 실패');
+    expect(bossExtraSec(s0, t), closeTo(9, 1e-9));
     final crit = shop(const {
       'critChance': 10,
       'critDamage': 4,

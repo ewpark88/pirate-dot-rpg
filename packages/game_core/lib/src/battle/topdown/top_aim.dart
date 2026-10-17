@@ -55,6 +55,8 @@ class TopAim {
   List<Foe> eligible(AttackDef a, List<Foe> foes, {double reachBonus = 0}) {
     final r = attackReach(a, w.field);
     final reach = r == null ? null : r * top.reachScale + reachBonus;
+    // 배 지킴이(강습, 2026-10-17): 무리는 배 둘레(reach)만, 보스는 bossReach까지 — 멀리 선 보스(standoff)에게도 닿게.
+    final bossReach = a.raw.has('bossReach') ? a.raw.number('bossReach') * top.reachScale + reachBonus : reach;
     return [
       for (final e in foes)
         // 황금 물고기(돌발 이벤트)는 탭으로만 잡는다 — 자동 조준에서 뺀다(S2 스펙).
@@ -63,7 +65,7 @@ class TopAim {
             !blinds.any((b) => (e.x - b.x) * (e.x - b.x) + (e.y - b.y) * (e.y - b.y) <= b.r * b.r) &&
             onScreen(e) &&
             !a.excludeLayers.contains(e.layer) &&
-            (reach == null || edge(e) <= reach))
+            (reach == null || edge(e) <= ((e.boss || e.ownerId != null) ? bossReach! : reach)))
           e,
     ];
   }

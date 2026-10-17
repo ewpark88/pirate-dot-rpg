@@ -48,15 +48,10 @@ void main() {
 
     container.read(gameStateProvider.notifier).replace(_at(wave: _n, boss: true, ticks: 600));
     await tester.pump();
-    expect(find.byKey(const Key('hud.gauge.timer')), findsOneWidget);
-    expect(find.text('30s'), findsOneWidget);
-    container.read(gameStateProvider.notifier).replace(_at(wave: _n, boss: true, ticks: 150));
-    await tester.pump();
-    expect(find.text('8s'), findsOneWidget);
-    final bar = tester.widget<FractionallySizedBox>(
-      find.descendant(of: find.byKey(const Key('hud.gauge.timer')), matching: find.byType(FractionallySizedBox)),
-    );
-    expect(bar.widthFactor, closeTo(0.25, 1e-9));
+    // 보스 타이머 없음(사용자 2026-10-17, 엔진에서 제거) — 그 자리는 굵은 보스 체력 막대.
+    expect(find.byKey(const Key('hud.bossHp')), findsOneWidget);
+    expect(find.byKey(const Key('hud.gauge.timer')), findsNothing);
+    expect(find.text('30s'), findsNothing);
   });
 
   testWidgets('파밍 중: 해골은 뛰지 않는다', (tester) async {

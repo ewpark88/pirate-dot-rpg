@@ -57,6 +57,7 @@
     ]
   },
   "bounty": {
+    "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
     "days": [
       { "weekday": 1, "boss": "giant_hermit", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
@@ -145,6 +146,8 @@
       "challengeWinPct": { "min": 60, "max": 70 },
       "feverIntervalMin": { "min": 4, "max": 6 },
       "bossFightDamagePct": { "min": 25, "max": 45 },
+      "bossKillSec": { "min": 20, "max": 40 },
+      "bossFailSec": { "min": 15, "max": 30 },
       "bossFirstWinPct": { "min": 70, "max": 85 },
       "wallFirstWinPct": { "min": 30, "max": 50 },
       "rebirthWallRatio": { "min": 0.75, "max": 0.85 },

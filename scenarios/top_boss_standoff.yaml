@@ -1,6 +1,6 @@
 # 수용 기준: 탑다운 보스는 위쪽 화면 밖에서 나와 배 중심 standoff 원(waves.top.bossStandoff)에 서서 원을 돌고,
-# 원 안으로 들어오지 않는다(밀려도 standoff + 20 안). 제한 시간이 지나면 옆모습과 같이 파밍 (탑다운 전환 T1).
-# 담당: battle(T1 S5). 약한 편성(new_player)으로 스테이지 30 보스를 불러 시간 안에 못 잡게 하고, 배는 무적(침몰로 끝나지 않게).
+# 원 안으로 들어오지 않는다(밀려도 standoff + 20 안). 보스 시간 제한은 없다(사용자 결정 2026-10-17) — 배가 가라앉아야 파밍 (탑다운 전환 T1).
+# 담당: battle(T1 S5). 약한 편성(new_player)으로 스테이지 30 보스를 불러 못 잡게 하고, 처음엔 배를 무적으로(예전 30초가 지나도 계속), 무적을 끄면 침몰로 끝난다.
 name: 탑다운 — 보스 원 둘레 정지
 seed: 2
 state: fixtures/states/new_player.json
@@ -12,4 +12,7 @@ steps:
   - advance: 15s
   - expect: { bossActive: true, bossAtStandoff: true }
   - advance: 16s
+  - expect: { bossActive: true, farming: false, stage: 30 }
+  - input: { type: op.invincible, on: false }
+  - advance: 60s
   - expect: { bossActive: false, farming: true, stage: 30 }

@@ -109,11 +109,11 @@ void main() {
     });
   });
 
-  test('progress.bossFails: 보스 실패마다 +1, 세이브 왕복·환생 뒤 유지 (S4 안내용)', () {
+  test('progress.bossFails: 보스 실패(침몰)마다 +1, 세이브 왕복·환생 뒤 유지 (S4 안내용)', () {
     final now = EconomyHarness.start;
     final e = CoreEngine(tables: t, clock: ManualClock(now), initial: at(5))..enqueue(const OpSpawnBoss());
     var fails = 0;
-    for (var i = 0; i < (t.waves.bossTimeLimitSec + 2) * 1000 ~/ t.waves.tickMs && fails == 0; i++) {
+    for (var i = 0; i < 300 * 1000 ~/ t.waves.tickMs && fails == 0; i++) {
       e.tick();
       fails += e.drainEvents().whereType<BossFailed>().length;
     }

@@ -454,7 +454,6 @@
   "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
   "uiPower": "초당 공격력",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}초",
   "uiMult": "×{n}",
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
@@ -874,7 +873,7 @@
   "uiGuideStep6Title": "이제 자유롭게!",
   "uiGuideStep6Why": "앱을 꺼도 골드가 쌓여요. 위쪽 목표를 따라가면 돼요.",
   "uiGuideBossTitle": "보스전",
-  "uiGuideBossWhy": "위 주황 막대 = 남은 시간. 그 아래 브레이크 막대가 차면 보스가 쓰러져 큰 피해!",
+  "uiGuideBossWhy": "위 빨간 막대 = 보스 체력. 그 아래 브레이크 막대가 차면 보스가 쓰러져 큰 피해!",
   "uiGuideFeverTitle": "피버!",
   "uiGuideFeverWhy": "처치가 쌓이면 잠깐 모두 강해지고, 첫 일격이 화면을 쓸어요.",
   "uiGuideChestTitle": "보물상자",
@@ -927,19 +926,13 @@
   },
   "uiGuideSailTitle": "출항!",
   "uiGuideSailWhy": "환생으로 더 강해졌어요. 출항하면 지나온 바다를 빠르게 지나가요.",
-  "uiBossCompare": "보스 체력 {hp} · 약 {kill}초 / {limit}초 · 한 방 {hit}%",
+  "uiBossCompare": "약 {kill}초에 처치 · 한 방 {hit}%",
   "uiBossCompareEasy": "여유",
   "uiBossCompareTight": "빠듯",
   "uiBossCompareHard": "어려움",
   "@uiBossCompare": {
     "placeholders": {
-      "hp": {
-        "type": "String"
-      },
       "kill": {
-        "type": "int"
-      },
-      "limit": {
         "type": "int"
       },
       "hit": {
@@ -1029,7 +1022,6 @@
       }
     }
   },
-  "uiChestPill": "보물상자 보상 고르기",
   "uiSlotDamage": "피해 {amount}",
   "@uiSlotDamage": {
     "placeholders": {

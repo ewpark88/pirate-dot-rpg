@@ -37,7 +37,7 @@ void main() {
     expect(find.byKey(const Key('hud.break')), findsOneWidget);
     final fill = tester.widget<FractionallySizedBox>(find.byKey(const Key('hud.break.fill')));
     expect(fill.widthFactor, closeTo(0.4, 0.001));
-    final timer = tester.getRect(find.byKey(const Key('hud.gauge.timer')));
+    final timer = tester.getRect(find.byKey(const Key('hud.bossHp')));
     expect(tester.getRect(find.byKey(const Key('hud.break'))).top, greaterThanOrEqualTo(timer.bottom));
     expect(find.bySemanticsLabel('Boss break 40%'), findsOneWidget);
     await tester.pump(const Duration(seconds: 5));
