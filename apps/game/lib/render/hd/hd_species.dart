@@ -1,6 +1,7 @@
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/angler.dart';
 import 'package:pirate_dot/render/hd/species/blaze_pirate.dart';
+import 'package:pirate_dot/render/hd/species/boss_abyss2.dart';
 import 'package:pirate_dot/render/hd/species/boss_cephalo.dart';
 import 'package:pirate_dot/render/hd/species/boss_coral2.dart';
 import 'package:pirate_dot/render/hd/species/boss_crabs.dart';
@@ -123,6 +124,9 @@ const Map<String, HdSpecies> hdBosses = {
   'magma_golem': magmaGolem,
   'fire_salamander': fireSalamander,
   'ash_dragon': ashDragon,
+  'abyss_eye': abyssEye,
+  'lantern_eel': lanternEel,
+  'bone_shark': boneShark,
   'ghost_admiral': ghostAdmiral,
   'kraken': kraken,
   // 대보스 6(S3)
