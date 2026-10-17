@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
 import 'ui_harness.dart';
 
@@ -130,7 +131,7 @@ void main() {
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [TowerSwept(2, floor: 9, chestGems: 10)]));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Swept F9 · Gems 10'), findsOneWidget);
+    expect(find.byType(RewardBurst), findsOneWidget); // 소탕 = 보상 터짐(모든 받기 같은 연출)
     await tester.pump(const Duration(seconds: 4));
     feed.add(
       RecordedTick(s.battle!, const [RushEnded(3, killed: 5, ticks: 2000, reason: 'cleared', gems: 85, best: true)]),

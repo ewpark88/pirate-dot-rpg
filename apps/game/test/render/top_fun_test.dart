@@ -69,4 +69,10 @@ void main() {
     expect(shake[40], closeTo(5.2, 1e-9)); // ×1.3(S1 임팩트)
     expect(shake[5], closeTo(1.95, 1e-9));
   });
+
+  test('대군 습격(HordeIncoming): 붉은 띠 HORDE! + 마리 수 + 흔들림', () {
+    final s = run([const HordeIncoming(10, stage: 5, count: 80)]);
+    expect((s.moments.bannerText, s.moments.bannerSub, s.moments.bannerHot), ('HORDE!', 'x80', true));
+    expect(s.shake.peak, greaterThan(0));
+  });
 }

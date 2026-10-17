@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 저주 갈매기(td_enemy:cursegull — 공중·빠름·약함, docs/specs/economy-hd-monsters-b.md): 썩은 녹색 몸, 찢어진 날개깃(보라 테),
 /// 목에 저주 사슬 한 줄, 빨간 점 눈(사나움). 날갯짓 + 깃털 하나가 떨어진다.
@@ -62,6 +63,7 @@ void _cursegull(HdKit k, Canvas c, double r, double t) {
     line: 0.6,
   );
   final eye = Offset(-r * 0.22, -r * 0.2 + bob);
+  if (k.mood == HdMood.hit) return k.squintEye(c, eye, r * 0.3); // 맞음: 찡긋(잡몹 v2)
   k.fill.color = const Color(0xFFFFFFFF);
   c
     ..drawOval(Rect.fromCenter(center: eye, width: r * 0.28, height: r * 0.3), k.fill)

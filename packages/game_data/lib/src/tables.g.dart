@@ -3,6 +3,350 @@
 
 /// 테이블 이름(파일명에서 .json 뺀 것) → JSON 원문.
 const Map<String, String> rawTables = {
+  'achievements': r'''
+{
+  "_doc": "업적(docs/contracts/requests/ui-achievements.md, S4 안 그대로 — 젬은 S2가 BALANCE 하루 젬 규칙으로 확정). metric은 economy/achievements.dart achievementValue. lowerIsBetter면 값이 목표 이하일 때 단계(러시 최고 기록 초).",
+  "achievements": [
+    {
+      "id": "kills",
+      "nameKey": "platformAchKills",
+      "iconKey": "sword",
+      "metric": "kills",
+      "steps": [
+        {
+          "target": 1000,
+          "gems": 10
+        },
+        {
+          "target": 10000,
+          "gems": 20
+        },
+        {
+          "target": 100000,
+          "gems": 40
+        },
+        {
+          "target": 1000000,
+          "gems": 80
+        },
+        {
+          "target": 10000000,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "bosses",
+      "nameKey": "platformAchBosses",
+      "iconKey": "skull",
+      "metric": "bosses",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 50,
+          "gems": 30
+        },
+        {
+          "target": 200,
+          "gems": 60
+        },
+        {
+          "target": 1000,
+          "gems": 120
+        }
+      ]
+    },
+    {
+      "id": "stage",
+      "nameKey": "platformAchStage",
+      "iconKey": "flag",
+      "metric": "bestStage",
+      "steps": [
+        {
+          "target": 20,
+          "gems": 10
+        },
+        {
+          "target": 40,
+          "gems": 20
+        },
+        {
+          "target": 80,
+          "gems": 40
+        },
+        {
+          "target": 150,
+          "gems": 80
+        },
+        {
+          "target": 300,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "rebirths",
+      "nameKey": "platformAchRebirths",
+      "iconKey": "rebirth",
+      "metric": "rebirths",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 20
+        },
+        {
+          "target": 3,
+          "gems": 40
+        },
+        {
+          "target": 5,
+          "gems": 60
+        },
+        {
+          "target": 10,
+          "gems": 100
+        },
+        {
+          "target": 20,
+          "gems": 200
+        }
+      ]
+    },
+    {
+      "id": "collection",
+      "nameKey": "platformAchCollection",
+      "iconKey": "book",
+      "metric": "collection",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 20,
+          "gems": 40
+        },
+        {
+          "target": 30,
+          "gems": 80
+        },
+        {
+          "target": 40,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "mythic",
+      "nameKey": "platformAchMythic",
+      "iconKey": "star",
+      "metric": "mythicCrews",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 50
+        },
+        {
+          "target": 3,
+          "gems": 100
+        },
+        {
+          "target": 5,
+          "gems": 200
+        }
+      ]
+    },
+    {
+      "id": "tower",
+      "nameKey": "platformAchTower",
+      "iconKey": "trophy",
+      "metric": "towerBest",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 20,
+          "gems": 40
+        },
+        {
+          "target": 30,
+          "gems": 80
+        },
+        {
+          "target": 50,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "rushClear",
+      "nameKey": "platformAchRushClear",
+      "iconKey": "crown",
+      "metric": "rushClears",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 20
+        },
+        {
+          "target": 5,
+          "gems": 50
+        },
+        {
+          "target": 20,
+          "gems": 100
+        }
+      ]
+    },
+    {
+      "id": "rushFast",
+      "nameKey": "platformAchRushFast",
+      "iconKey": "clock",
+      "metric": "rushBestSec",
+      "steps": [
+        {
+          "target": 300,
+          "gems": 30
+        },
+        {
+          "target": 180,
+          "gems": 60
+        },
+        {
+          "target": 120,
+          "gems": 100
+        }
+      ],
+      "lowerIsBetter": true
+    },
+    {
+      "id": "fever",
+      "nameKey": "platformAchFever",
+      "iconKey": "fire",
+      "metric": "fevers",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 500,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "ultimate",
+      "nameKey": "platformAchUltimate",
+      "iconKey": "bolt",
+      "metric": "ultimates",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 1000,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "dungeon",
+      "nameKey": "platformAchDungeon",
+      "iconKey": "gate",
+      "metric": "dungeonSteps",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 50,
+          "gems": 50
+        },
+        {
+          "target": 200,
+          "gems": 100
+        }
+      ]
+    },
+    {
+      "id": "bounty",
+      "nameKey": "platformAchBounty",
+      "iconKey": "target",
+      "metric": "bounties",
+      "steps": [
+        {
+          "target": 5,
+          "gems": 10
+        },
+        {
+          "target": 30,
+          "gems": 30
+        },
+        {
+          "target": 100,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "summons",
+      "nameKey": "platformAchSummons",
+      "iconKey": "chest",
+      "metric": "summons",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 500,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "shipLevel",
+      "nameKey": "platformAchShipLevel",
+      "iconKey": "coin",
+      "metric": "shipLevel",
+      "steps": [
+        {
+          "target": 100,
+          "gems": 10
+        },
+        {
+          "target": 500,
+          "gems": 40
+        },
+        {
+          "target": 2000,
+          "gems": 100
+        }
+      ]
+    }
+  ]
+}
+''',
   'ads': r'''
 {
   "dailyCap": 25,
@@ -3419,12 +3763,12 @@ const Map<String, String> rawTables = {
   "loopStages": 300,
   "maxLoopTier": 3,
   "regions": [
-    {"id": "coral", "wallBoss": "sea_croc", "bossRotation": ["enemy_ship", "hermit_conch", "jelly_queen", "hammer_shark", "coral_golem", "clown_king", "pearl_clam"], "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
-    {"id": "storm", "wallBoss": "monster_whale", "bossRotation": ["storm_raider", "thunder_ray_pup", "great_serpent", "twister_dolphin", "storm_eagle", "cloud_whale", "thunder_crab"], "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["urchin", "flyingfish", "stormgull", "puffer", "crab"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
-    {"id": "glacier", "wallBoss": "ice_slime", "bossRotation": ["frost_pirate", "seal_chief", "giant_squid", "icecrab_chief", "frost_yeti", "ice_narwhal", "snow_owl_ship"], "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
-    {"id": "volcano", "wallBoss": "leviathan", "bossRotation": ["blaze_pirate", "lava_tortoise", "flame_eel", "lava_slime", "magma_golem", "fire_salamander", "ash_dragon"], "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
-    {"id": "abyss", "wallBoss": "kraken_titan", "bossRotation": ["hunter_sub", "angler_king", "deep_octopus", "phantom_jelly", "abyss_eye", "lantern_eel", "bone_shark"], "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
-    {"id": "phantom", "wallBoss": "poseidon", "bossRotation": ["wraith_ship", "skeleton_captain", "cursegull_leader", "specter", "banshee_queen", "cursed_bell", "ghost_kraken"], "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
+    {"id": "coral", "wallBoss": "sea_croc", "bossRotation": ["enemy_ship", "hermit_conch", "jelly_queen", "hammer_shark"], "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
+    {"id": "storm", "wallBoss": "monster_whale", "bossRotation": ["storm_raider", "thunder_ray_pup", "great_serpent", "twister_dolphin"], "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["urchin", "flyingfish", "stormgull", "puffer", "crab"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
+    {"id": "glacier", "wallBoss": "ice_slime", "bossRotation": ["frost_pirate", "seal_chief", "giant_squid", "icecrab_chief"], "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
+    {"id": "volcano", "wallBoss": "leviathan", "bossRotation": ["blaze_pirate", "lava_tortoise", "flame_eel", "lava_slime"], "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
+    {"id": "abyss", "wallBoss": "kraken_titan", "bossRotation": ["hunter_sub", "angler_king", "deep_octopus", "phantom_jelly"], "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
+    {"id": "phantom", "wallBoss": "poseidon", "bossRotation": ["wraith_ship", "skeleton_captain", "cursegull_leader", "specter"], "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
   ],
   "bosses": [
     {"id": "enemy_ship", "nameKey": "battleBossEnemyShip", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6},
@@ -3468,25 +3812,7 @@ const Map<String, String> rawTables = {
     {"id": "wraith_ship", "nameKey": "battleBossWraithShip", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["reflect"]},
     {"id": "skeleton_captain", "nameKey": "battleBossSkeletonCaptain", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["armor", "enrage"]},
     {"id": "cursegull_leader", "nameKey": "battleBossCursegullLeader", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 5}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["escort", "evade"]},
-    {"id": "specter", "nameKey": "battleBossSpecter", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["evade", "reflect"]},
-    {"id": "coral_golem", "nameKey": "econBossCoralGolem", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "summon", "warnSec": 0.6, "count": 3}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["armor"]},
-    {"id": "clown_king", "nameKey": "econBossClownKing", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["escort"]},
-    {"id": "pearl_clam", "nameKey": "econBossPearlClam", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["reflect"]},
-    {"id": "storm_eagle", "nameKey": "econBossStormEagle", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["dash"]},
-    {"id": "cloud_whale", "nameKey": "econBossCloudWhale", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["regen"]},
-    {"id": "thunder_crab", "nameKey": "econBossThunderCrab", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["enrage"]},
-    {"id": "frost_yeti", "nameKey": "econBossFrostYeti", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "summon", "warnSec": 0.6, "count": 3}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["enrage"]},
-    {"id": "ice_narwhal", "nameKey": "econBossIceNarwhal", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["dash"]},
-    {"id": "snow_owl_ship", "nameKey": "econBossSnowOwlShip", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["escort"]},
-    {"id": "magma_golem", "nameKey": "econBossMagmaGolem", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["armor"]},
-    {"id": "fire_salamander", "nameKey": "econBossFireSalamander", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["regen"]},
-    {"id": "ash_dragon", "nameKey": "econBossAshDragon", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["evade"]},
-    {"id": "abyss_eye", "nameKey": "econBossAbyssEye", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["reflect"]},
-    {"id": "lantern_eel", "nameKey": "econBossLanternEel", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["evade"]},
-    {"id": "bone_shark", "nameKey": "econBossBoneShark", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["enrage"]},
-    {"id": "banshee_queen", "nameKey": "econBossBansheeQueen", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["evade"]},
-    {"id": "cursed_bell", "nameKey": "econBossCursedBell", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["regen"]},
-    {"id": "ghost_kraken", "nameKey": "econBossGhostKraken", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "summon", "warnSec": 0.6, "count": 3}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["escort"]}
+    {"id": "specter", "nameKey": "battleBossSpecter", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 0.6, "traits": ["evade", "reflect"]}
   ],
   "enemies": [
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},

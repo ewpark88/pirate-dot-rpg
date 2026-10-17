@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
 import 'ui_harness.dart';
 
@@ -82,7 +83,7 @@ void main() {
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [DungeonCleared(3, group: 'mon', step: 3, gems: 3, swept: true)]));
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Swept step 3 · Gems 3'), findsOneWidget);
+    expect(find.byType(RewardBurst), findsOneWidget); // 소탕 = 보상 터짐
     await tester.pump(const Duration(seconds: 4));
   });
 

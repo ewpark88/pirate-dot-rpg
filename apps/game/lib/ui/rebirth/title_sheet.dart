@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -9,6 +10,7 @@ import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 항해 탭 해역 이름 옆 칭호 띠 (칭호가 하나라도 있으면). 누르면 칭호 목록.
 class TitleChip extends ConsumerWidget {
@@ -55,7 +57,12 @@ class TitleSheet extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final titles = ref.watch(titleProvider);
     final control = ref.read(rebirthV2Provider);
-    Widget row(String? id, String name, {required bool owned, int? need}) {
+    // 잠긴 칭호는 진행(지금 / 필요)과 막대 — 환생 칭호는 환생 횟수, 패스 칭호는 패스 단계(S1 2026-10-18 업적·칭호 정리).
+    final rebirths = ref.watch(gameStateProvider.select((s) => s.progress.rebirths));
+    final t = ref.watch(tablesProvider);
+    final passNow = ref.watch(gameStateProvider.select((s) => passLevel(s, t)));
+    final passMax = t.iap.pass.free.length;
+    Widget row(String? id, String name, {required bool owned, int? need, String? progressText, double? progress}) {
       final selected = titles.selected == id;
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
@@ -82,10 +89,21 @@ class TitleSheet extends ConsumerWidget {
                   Expanded(
                     child: Text(name, style: Skin.text(17, color: owned ? Skin.ink : Skin.sub)),
                   ),
-                  if (need != null && !owned) ...[
+                  if (progressText != null && !owned) ...[
                     const SkinIcon(UiSprites.lock),
                     const SizedBox(width: 4),
-                    Text(l10n.uiTitleLocked(need), style: Skin.text(14, color: Skin.sub)),
+                    SizedBox(
+                      width: 120,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(progressText, style: Skin.text(13, color: Skin.sub)),
+                          const SizedBox(height: 3),
+                          SkinBar(value: progress ?? 0, color: Skin.goldTop, height: 6),
+                        ],
+                      ),
+                    ),
                   ] else if (selected)
                     const SkinIcon(UiSprites.check),
                 ],
@@ -109,7 +127,22 @@ class TitleSheet extends ConsumerWidget {
               children: [
                 row(null, l10n.uiTitleNone, owned: true),
                 for (final (id, n) in titleDefs)
-                  row(id, titleName(l10n, id), owned: titles.owned.contains(id), need: n),
+                  row(
+                    id,
+                    titleName(l10n, id),
+                    owned: titles.owned.contains(id),
+                    need: n,
+                    progressText: l10n.uiTitleProgressRebirth(rebirths.clamp(0, n), n),
+                    progress: rebirths / n,
+                  ),
+                // 항해 패스 시즌1 30단계 무료 보상 칭호.
+                row(
+                  'passFlag',
+                  titleName(l10n, 'passFlag'),
+                  owned: titles.owned.contains('passFlag'),
+                  progressText: l10n.uiTitleProgressPass(passNow, passMax),
+                  progress: passNow / passMax,
+                ),
               ],
             ),
           ),

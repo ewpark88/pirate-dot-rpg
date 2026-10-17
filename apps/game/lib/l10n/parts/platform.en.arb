@@ -4,5 +4,20 @@
   "platformNotifyChannelName": "Offline rewards",
   "platformProtoTitle": "Top-down battle prototype",
   "platformProtoAgain": "Play again",
-  "platformProtoResult": "Survived 3 minutes! Kills {kills} · Gold {gold}"
+  "platformProtoResult": "Survived 3 minutes! Kills {kills} · Gold {gold}",
+  "platformAchKills": "Monster Hunter",
+  "platformAchBosses": "Boss Hunter",
+  "platformAchStage": "Into the Far Seas",
+  "platformAchRebirths": "Set Sail Again",
+  "platformAchCollection": "Crew Collector",
+  "platformAchMythic": "Captain of Legends",
+  "platformAchTower": "Abyss Conqueror",
+  "platformAchRushClear": "Boss Rush Finisher",
+  "platformAchRushFast": "Lightning Rush",
+  "platformAchFever": "Fever Master",
+  "platformAchUltimate": "Special Move Expert",
+  "platformAchDungeon": "Dungeon Explorer",
+  "platformAchBounty": "Bounty Hunter",
+  "platformAchSummons": "Lucky Summoner",
+  "platformAchShipLevel": "Master Shipwright"
 }

@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
+import 'package:pirate_dot/ui/ship/part_upgrade_fx.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
@@ -136,121 +137,125 @@ class _PartRow extends ConsumerWidget {
     final small = Theme.of(context).textTheme.bodySmall?.copyWith(color: PixelPalette.textDim);
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      // 안쪽 여백 = 프레임 3칸 + 2칸.
-      child: PixelFrame(
-        padding: 5,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                // k2: 부위 색 네모 칸 + 왼쪽 위 Lv 배지 (쿵푸할매 장비 화면처럼).
-                IconCell(
-                  size: 50,
-                  color: partCellColors[ref.read(tablesProvider).shipParts.parts.indexOf(def) % partCellColors.length],
-                  level: l10n.uiLevel(level),
-                  levelKey: Key('ship.lv.${def.id}'),
-                  child: PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
-                ),
-                const SizedBox(width: 8),
-                // 이름과 레벨은 한 덩어리.
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      // 안쪽 여백 = 프레임 3칸 + 2칸. 강화하면 손맛 연출(PartUpgradeFx — 눌림·빛·+%·콤보).
+      child: PartUpgradeFx(
+        def: def,
+        child: PixelFrame(
+          padding: 5,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  // k2: 부위 색 네모 칸 + 왼쪽 위 Lv 배지 (쿵푸할매 장비 화면처럼).
+                  IconCell(
+                    size: 50,
+                    color:
+                        partCellColors[ref.read(tablesProvider).shipParts.parts.indexOf(def) % partCellColors.length],
+                    level: l10n.uiLevel(level),
+                    levelKey: Key('ship.lv.${def.id}'),
+                    child: PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
+                  ),
+                  const SizedBox(width: 8),
+                  // 이름과 레벨은 한 덩어리.
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        // 레벨은 칸 배지에 — 최대가 있는 부위만 '현재/최대'.
+                        if (max != null) Text(l10n.uiLevelMax(level, max), style: small),
+                        // 화물칸 = 골드 금고: '최대 a → b'(다음 레벨 용량).
+                        if (def.stat == 'capacity')
+                          Text(
+                            l10n.uiCargoMaxNext(partEffect(def, level).format(), partEffect(def, level + 1).format()),
+                            key: Key('ship.effect.${def.id}'),
+                            style: Skin.text(14, color: PixelPalette.accent),
+                          ),
+                        if (honor)
+                          Text(
+                            l10n.uiRebirthHonorLook,
+                            key: Key('ship.honor.${def.id}'),
+                            style: Skin.text(12, color: Skin.goldInk),
+                          ),
+                      ],
+                    ),
+                  ),
+                  // 화물칸 효과는 이름 아래 줄('최대 a → b') — 오른쪽은 비운다.
+                  // 좁으면(360·신화 큰 수) 글자째 줄인다.
+                  if (def.stat != 'capacity')
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        // 강화하면 효과 숫자가 굴러 오른다(모션 기준 #50).
+                        child: RollingText(
+                          partEffectText(l10n, def, partEffect(def, level)),
+                          textKey: Key('ship.effect.${def.id}'),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: _buttonMinWidth),
+                    child: TutorialSpot(
+                      id: 'ship.upgrade.${def.id}',
+                      // 금고가 가득 차면 화물칸 강화 버튼을 가리킨다(사용자 지시 2026-10-16) — 처음 두 번만(2026-10-17 버그).
+                      force: def.id == 'cargo' && ref.watch(cargoFingerProvider),
+                      child: PixelButton(
+                        key: Key('ship.upgrade.${def.id}'),
+                        primary: true,
+                        onPressed: maxed || !affordable
+                            ? null
+                            : () {
+                                if (def.id == 'cargo') markCargoFingerDone(ref);
+                                ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult));
+                              },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!maxed) ...[
+                              Opacity(
+                                opacity: affordable ? 1 : 0.5,
+                                child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
+                              ),
+                              const SizedBox(width: 4),
+                            ],
+                            if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
+                            // ×1이 아니면 실제로 오를 레벨 수.
+                            if (!maxed && mult != 1 && levels > 0) ...[
+                              const SizedBox(width: 4),
+                              Text(
+                                l10n.uiUpgradeLevels(levels),
+                                key: Key('ship.upgrade.levels.${def.id}'),
+                                style: Skin.text(12, color: Colors.white70),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // 다음 외형: 작은 배 그림(이 부위만 다음 단계) + '다음 외형 Lv N'.
+              if (next != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
                     children: [
-                      Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
-                      // 레벨은 칸 배지에 — 최대가 있는 부위만 '현재/최대'.
-                      if (max != null) Text(l10n.uiLevelMax(level, max), style: small),
-                      // 화물칸 = 골드 금고: '최대 a → b'(다음 레벨 용량).
-                      if (def.stat == 'capacity')
-                        Text(
-                          l10n.uiCargoMaxNext(partEffect(def, level).format(), partEffect(def, level + 1).format()),
-                          key: Key('ship.effect.${def.id}'),
-                          style: Skin.text(14, color: PixelPalette.accent),
-                        ),
-                      if (honor)
-                        Text(
-                          l10n.uiRebirthHonorLook,
-                          key: Key('ship.honor.${def.id}'),
-                          style: Skin.text(12, color: Skin.goldInk),
-                        ),
+                      _NextLook(part: def.id, stage: nextStage!),
+                      const SizedBox(width: 6),
+                      Text(
+                        l10n.uiShipNextLook(next),
+                        key: Key('ship.next.${def.id}'),
+                        style: Skin.text(12, color: Skin.primaryEdge),
+                      ),
                     ],
                   ),
                 ),
-                // 화물칸 효과는 이름 아래 줄('최대 a → b') — 오른쪽은 비운다.
-                // 좁으면(360·신화 큰 수) 글자째 줄인다.
-                if (def.stat != 'capacity')
-                  Flexible(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      // 강화하면 효과 숫자가 굴러 오른다(모션 기준 #50).
-                      child: RollingText(
-                        partEffectText(l10n, def, partEffect(def, level)),
-                        textKey: Key('ship.effect.${def.id}'),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 8),
-                // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).
-                ConstrainedBox(
-                  constraints: const BoxConstraints(minWidth: _buttonMinWidth),
-                  child: TutorialSpot(
-                    id: 'ship.upgrade.${def.id}',
-                    // 금고가 가득 차면 화물칸 강화 버튼을 가리킨다(사용자 지시 2026-10-16) — 처음 두 번만(2026-10-17 버그).
-                    force: def.id == 'cargo' && ref.watch(cargoFingerProvider),
-                    child: PixelButton(
-                      key: Key('ship.upgrade.${def.id}'),
-                      primary: true,
-                      onPressed: maxed || !affordable
-                          ? null
-                          : () {
-                              if (def.id == 'cargo') markCargoFingerDone(ref);
-                              ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult));
-                            },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!maxed) ...[
-                            Opacity(
-                              opacity: affordable ? 1 : 0.5,
-                              child: const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
-                            ),
-                            const SizedBox(width: 4),
-                          ],
-                          if (maxed) Text(l10n.uiShipMaxed) else BigNumText(cost),
-                          // ×1이 아니면 실제로 오를 레벨 수.
-                          if (!maxed && mult != 1 && levels > 0) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              l10n.uiUpgradeLevels(levels),
-                              key: Key('ship.upgrade.levels.${def.id}'),
-                              style: Skin.text(12, color: Colors.white70),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // 다음 외형: 작은 배 그림(이 부위만 다음 단계) + '다음 외형 Lv N'.
-            if (next != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Row(
-                  children: [
-                    _NextLook(part: def.id, stage: nextStage!),
-                    const SizedBox(width: 6),
-                    Text(
-                      l10n.uiShipNextLook(next),
-                      key: Key('ship.next.${def.id}'),
-                      style: Skin.text(12, color: Skin.primaryEdge),
-                    ),
-                  ],
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

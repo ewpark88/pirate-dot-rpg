@@ -23,6 +23,7 @@ class GameState {
     this.rebirthShop = const {},
     this.bounty,
     this.tower,
+    this.achievements = const AchievementState(),
     this.rush,
     this.dungeon,
     this.tokens = 0,
@@ -77,6 +78,9 @@ class GameState {
     rebirthShop: (j['rebirthShop'] as Map?)?.cast<String, int>() ?? const {},
     bounty: j['bounty'] == null ? null : BountyState.fromJson(j['bounty'] as Json),
     tower: j['tower'] == null ? null : TowerState.fromJson(j['tower'] as Json),
+    achievements: j['achievements'] == null
+        ? const AchievementState()
+        : AchievementState.fromJson(j['achievements'] as Json),
     rush: j['rush'] == null ? null : RushState.fromJson(j['rush'] as Json),
     dungeon: j['dungeon'] == null ? null : DungeonState.fromJson(j['dungeon'] as Json),
     tokens: j['tokens'] as int,
@@ -122,6 +126,9 @@ class GameState {
 
   /// 심연의 탑(platform-content-v2 4절, 선택 키). null = 아직 없음(열리면 경제가 채운다).
   final TowerState? tower;
+
+  /// 업적: 받은 단계·엔진 누계(선택 키 achievements — 요청 ui-achievements.md).
+  final AchievementState achievements;
 
   /// 보스 러시(platform-boss-rush, 선택 키). null = 아직 없음.
   final RushState? rush;
@@ -180,6 +187,7 @@ class GameState {
     Map<String, int>? rebirthShop,
     BountyState? bounty,
     TowerState? tower,
+    AchievementState? achievements,
     RushState? rush,
     DungeonState? dungeon,
     int? tokens,
@@ -213,6 +221,7 @@ class GameState {
     rebirthShop: rebirthShop ?? this.rebirthShop,
     bounty: bounty ?? this.bounty,
     tower: tower ?? this.tower,
+    achievements: achievements ?? this.achievements,
     rush: rush ?? this.rush,
     dungeon: dungeon ?? this.dungeon,
     tokens: tokens ?? this.tokens,
@@ -247,6 +256,7 @@ class GameState {
     'rebirthShop': rebirthShop,
     'bounty': bounty?.toJson(),
     if (tower != null) 'tower': tower!.toJson(),
+    if (!achievements.isEmpty) 'achievements': achievements.toJson(),
     if (rush != null) 'rush': rush!.toJson(),
     if (dungeon != null) 'dungeon': dungeon!.toJson(),
     'tokens': tokens,

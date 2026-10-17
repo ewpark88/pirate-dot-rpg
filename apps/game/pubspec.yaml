@@ -56,6 +56,7 @@ flutter:
     - assets/ui/digits/  # 테두리 숫자 아틀라스(tools/art/gen_outline_digits.py)
     - assets/audio/sfx/
     - assets/audio/bgm/
+    - assets/audio/amb/
     - assets/fonts/Galmuri-OFL.txt
     - assets/fonts/Jua-OFL.txt
     - assets/fonts/GowunDodum-OFL.txt

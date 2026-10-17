@@ -250,12 +250,23 @@ void main() {
     expect(find.text('Title'), findsOneWidget);
     await tester.tap(find.byKey(const Key('title.chip')));
     await tester.pumpAndSettle();
-    expect(find.text('Rebirth ×5'), findsOneWidget);
+    // 잠긴 칭호는 진행(지금/필요) — 환생 3회면 '선장(5회)'은 3/5, 패스 칭호 줄도 있다.
+    expect(find.text('Rebirths 3/5'), findsOneWidget);
+    expect(find.byKey(const Key('title.passFlag')), findsOneWidget);
     await tester.tap(find.byKey(const Key('title.navigator')));
     await tester.pump();
     expect(log.sent.whereType<SelectTitle>().map((c) => c.toJson()), [const SelectTitle('navigator').toJson()]);
     await pumpGame(tester, _state(rebirths: 3, titles: ['deckhand', 'navigator'], title: 'navigator'));
     expect(find.text('Seasoned Navigator'), findsOneWidget);
+  });
+
+  testWidgets('골든: 칭호 목록(환생 3회 — 진행 막대·패스 칭호) ko', (tester) async {
+    await loadGoldenFonts();
+    await pumpGame(tester, _state(rebirths: 3, titles: ['deckhand', 'navigator']), locale: const Locale('ko'));
+    await tester.tap(find.byKey(const Key('title.chip')));
+    await tester.pumpAndSettle();
+    await precacheImages(tester);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_title_sheet.png'));
   });
 
   test('화면 스킨·칭호 목록 = 경제 meta.rebirth (id·회차)', () {

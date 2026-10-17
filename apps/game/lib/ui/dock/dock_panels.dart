@@ -51,10 +51,8 @@ class _DockPanelsState extends State<DockPanels> with SingleTickerProviderStateM
     animation: _slide,
     builder: (context, child) {
       final t = 1 - Curves.easeOutCubic.transform(_slide.value);
-      return Opacity(
-        opacity: 1 - 0.4 * t,
-        child: Transform.translate(offset: Offset(40 * t * _dir, 0), child: child),
-      );
+      // 미끄러짐만(시트 전체에 반투명을 걸면 0.2초 동안 화면 크기 텍스처를 만든다 — 그래픽 메모리 점검 2026-10-18).
+      return Transform.translate(offset: Offset(40 * t * _dir, 0), child: child);
     },
     // 지금 탭 하나만 짓는다 — 숨은 탭도 엔진 틱(50ms)마다 상태를 구독·재계산하면 전투가 버벅인다(사용자 버그 2026-10-16).
     // 스크롤 위치는 PageStorageKey로 탭마다 남는다.

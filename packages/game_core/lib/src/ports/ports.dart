@@ -134,3 +134,15 @@ abstract interface class AudioPort {
   /// 0~1. 설정의 효과음·배경음 끄기는 0.
   void setVolumes({required double sfx, required double bgm});
 }
+
+/// 오디오 선택 기능(S1·S4 2배속 칩 2026-10-18): 오디오 포트가 이것도 구현하면 쓴다(`if (audio is AudioMixPort)`) —
+/// 구현하지 않는 포트(테스트 가짜·무음)는 그대로 둔다.
+abstract interface class AudioMixPort {
+  /// 배경음 재생 속도 배율(1 = 원래, 2배속 칩 1.06). 지원 안 하는 기기면 무시된다.
+  void setBgmRate(double rate);
+
+  /// 배경음 위에 겹치는 환경음 층을 반복한다([id] — `amb/<id>.ogg`, 예 'wind'). 같은 id면 이어서, 파일이 없으면 무음.
+  void playAmbient(String id);
+
+  void stopAmbient();
+}
