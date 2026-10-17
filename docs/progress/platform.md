@@ -1,7 +1,7 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
 ## 2026-10-18 오후 · S5 · HD 몬스터 묶음 A 10종
-- **현재 위치**: review/hd-a d8808e0c(lane/render 95cc784e 위) — S3 검토·S1 머지 대기. review/k-windows-s5 7dcb0e53(창 개편 + 보상 연출)은 S4 UI run 대기.
+- **현재 위치**: review/hd-a 4bb6505a — S3 승인(검토 3건 반영: extent 1.2~1.3, 작은 얼음게 extent 같게, HdSpecies.muzzle + 원거리 7종 자리), S1 머지 중. review/k-windows-s5 7dcb0e53(창 개편 + 보상 연출)은 S4 UI run 대기.
 - 한 일
   - 설계 노트 docs/specs/platform-hd-monsters-a.md(S2 노트 B와 같은 형식·실루엣 규칙 같은 문구).
   - S3 HdKit 새 구조(옆모습·0.8초 고리·species/<kind>.dart)로 10종: 갈매기·폭풍갈매기·눈갈매기(공용 seabird), 성게, 날치, 복어, 얼음게·작은 얼음게(반 크기), 펭귄, 물범. 확인 골든 hd_trial_a.
