@@ -15,76 +15,51 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 
 // 업적 (S1 2026-10-18 업적·칭호 정리 — 계약 요청 docs/contracts/requests/ui-achievements.md, S2 구현 전):
 // 항해 탭 칭호 띠 옆 '업적' 버튼(받을 것 빨간 점) → 시트: 아이콘 · 이름 · 단계 별 · 진행 막대(값/다음 목표) · [받기 +n젬] / 완료.
-// 지금은 임시 어댑터 — 세이브에서 셀 수 있는 것만(최고 스테이지·환생·도감·탑 층·배 부위 레벨 합), 받은 단계는 0.
+// 값·단계·받기는 경제(achievementsView · ClaimAchievement), 받은 순간 보상 터짐은 RewardGate(AchievementClaimed).
 
-/// 업적 한 줄(경제 achievementsView와 같은 모양으로 맞출 예정).
-typedef AchievementView = ({
-  String id,
-  String icon,
-  int value,
-  int step,
-  int steps,
-  int? nextTarget,
-  int? nextGems,
-  bool claimable,
-});
-
-/// 임시 표: id → (아이콘, [(목표, 젬)]).
-const _fake = <String, (String, List<(int, int)>)>{
-  'stage': (UiSprites.flag, [(20, 10), (40, 20), (80, 40), (150, 80), (300, 150)]),
-  'rebirths': (UiSprites.rebirth, [(1, 20), (3, 40), (5, 60), (10, 100), (20, 200)]),
-  'collection': (UiSprites.book, [(10, 20), (20, 40), (30, 80), (40, 150)]),
-  'tower': (UiSprites.trophy, [(10, 20), (20, 40), (30, 80), (50, 150)]),
-  'shipLevel': (UiSprites.coin, [(100, 10), (500, 40), (2000, 100)]),
-};
-
-int _valueOf(GameState s, String id) => switch (id) {
-  'stage' => s.progress.bestStage,
-  'rebirths' => s.progress.rebirths,
-  'collection' => s.collection.length,
-  'tower' => s.tower?.best ?? 0,
-  _ => s.ship.parts.values.fold(0, (a, b) => a + b),
-};
-
-/// 업적 목록(계약 오면 경제 achievementsView로 바꾼다).
+/// 업적 목록(경제 achievementsView — S5 0dd77773).
 final achievementsProvider = Provider<List<AchievementView>>((ref) {
-  final s = ref.watch(gameStateProvider);
-  return [
-    for (final MapEntry(key: id, value: (icon, steps)) in _fake.entries)
-      () {
-        final value = _valueOf(s, id);
-        const step = 0; // 받은 단계 — 세이브 achievements(계약) 전엔 0
-        final next = step < steps.length ? steps[step] : null;
-        return (
-          id: id,
-          icon: icon,
-          value: value,
-          step: step,
-          steps: steps.length,
-          nextTarget: next?.$1,
-          nextGems: next?.$2,
-          claimable: next != null && value >= next.$1,
-        );
-      }(),
-  ];
+  final t = ref.watch(tablesProvider);
+  return achievementsView(ref.watch(gameStateProvider), t);
 });
 
 /// 받을 수 있는 업적 수(빨간 점).
-final achievementsClaimableProvider = Provider<int>(
-  (ref) => ref.watch(achievementsProvider).where((a) => a.claimable).length,
-);
+final achievementsClaimableProvider = Provider<int>((ref) {
+  final t = ref.watch(tablesProvider);
+  return ref.watch(gameStateProvider.select((s) => achievementsClaimable(s, t)));
+});
 
-/// 받기(계약 ClaimAchievement 자리 — 지금은 아무것도 안 함).
-final achievementClaimProvider = Provider<void Function(String id)>((_) => (_) {});
+/// 업적 이름(표 nameKey = platformAch*).
+String achievementName(AppLocalizations l, String nameKey) => switch (nameKey) {
+  'platformAchKills' => l.platformAchKills,
+  'platformAchBosses' => l.platformAchBosses,
+  'platformAchStage' => l.platformAchStage,
+  'platformAchRebirths' => l.platformAchRebirths,
+  'platformAchCollection' => l.platformAchCollection,
+  'platformAchMythic' => l.platformAchMythic,
+  'platformAchTower' => l.platformAchTower,
+  'platformAchRushClear' => l.platformAchRushClear,
+  'platformAchRushFast' => l.platformAchRushFast,
+  'platformAchFever' => l.platformAchFever,
+  'platformAchUltimate' => l.platformAchUltimate,
+  'platformAchDungeon' => l.platformAchDungeon,
+  'platformAchBounty' => l.platformAchBounty,
+  'platformAchSummons' => l.platformAchSummons,
+  _ => l.platformAchShipLevel,
+};
 
-String achievementName(AppLocalizations l, String id) => switch (id) {
-  'stage' => l.uiAchStage,
-  'rebirths' => l.uiAchRebirths,
-  'collection' => l.uiAchCollection,
-  'tower' => l.uiAchTower,
-  'shipLevel' => l.uiAchShipLevel,
-  'kills' => l.uiAchKills,
-  _ => l.uiAchBosses,
+/// 표 iconKey → 화면 아이콘.
+String achievementIcon(String key) => switch (key) {
+  'sword' => UiSprites.tabCrew,
+  'flag' || 'skull' || 'target' => UiSprites.flag,
+  'rebirth' => UiSprites.rebirth,
+  'book' => UiSprites.book,
+  'star' || 'fire' => UiSprites.star,
+  'trophy' || 'crown' => UiSprites.trophy,
+  'clock' || 'bolt' => UiSprites.tailwind,
+  'gate' => UiSprites.tabMap,
+  'chest' => UiSprites.chest,
+  _ => UiSprites.coin,
 };
 
 /// 항해 탭 '업적' 버튼(칭호 띠 옆).
@@ -175,7 +150,7 @@ class _Row extends ConsumerWidget {
       decoration: Skin.inset(radius: 14),
       child: Row(
         children: [
-          IconCell(color: partCellColors[0], size: 48, child: SkinIcon(a.icon, size: 32)),
+          IconCell(color: partCellColors[0], size: 48, child: SkinIcon(achievementIcon(a.iconKey), size: 32)),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -183,7 +158,7 @@ class _Row extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Flexible(child: Text(achievementName(l10n, a.id), style: Skin.bold(15))),
+                    Flexible(child: Text(achievementName(l10n, a.nameKey), style: Skin.bold(15))),
                     const SizedBox(width: 6),
                     // 단계 별(받은 단계 금빛).
                     for (var i = 0; i < a.steps; i++)
@@ -196,10 +171,19 @@ class _Row extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 if (target != null) ...[
-                  SkinBar(value: (a.value / target).clamp(0, 1).toDouble(), color: Skin.goldTop, height: 8),
+                  // 짧을수록 좋은 기록(러시 최고 초)은 '목표 n초 이하'로, 기록이 없으면 0.
+                  SkinBar(
+                    value: a.lowerIsBetter
+                        ? (a.value == 0 ? 0 : (target / a.value).clamp(0, 1).toDouble())
+                        : (a.value / target).clamp(0, 1).toDouble(),
+                    color: Skin.goldTop,
+                    height: 8,
+                  ),
                   const SizedBox(height: 2),
                   Text(
-                    l10n.uiAchProgress(BigNum.from(a.value).format(), BigNum.from(target).format()),
+                    a.lowerIsBetter
+                        ? (a.value == 0 ? l10n.uiAchNoRecord(target) : l10n.uiAchFast(a.value.toString(), target))
+                        : l10n.uiAchProgress(BigNum.from(a.value).format(), BigNum.from(target).format()),
                     style: Skin.text(12, color: Skin.sub),
                   ),
                 ],
@@ -214,7 +198,7 @@ class _Row extends ConsumerWidget {
               key: Key('ach.claim.${a.id}'),
               tone: a.claimable ? SkinTone.gold : SkinTone.plain,
               height: 44,
-              onPressed: a.claimable ? () => ref.read(achievementClaimProvider)(a.id) : null,
+              onPressed: a.claimable ? () => ref.read(commandSinkProvider).send(ClaimAchievement(a.id)) : null,
               child: Text(l10n.uiAchClaim(a.nextGems ?? 0)),
             ),
         ],

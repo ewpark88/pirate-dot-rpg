@@ -1747,13 +1747,6 @@
       }
     }
   },
-  "uiAchKills": "Monster Hunter",
-  "uiAchBosses": "Boss Hunter",
-  "uiAchStage": "Into the Deep",
-  "uiAchRebirths": "Set Sail Again",
-  "uiAchCollection": "Crew Collector",
-  "uiAchTower": "Abyss Conqueror",
-  "uiAchShipLevel": "Shipwright",
   "uiAchTitle": "Achievements",
   "uiAchClaim": "Claim +{gems}",
   "@uiAchClaim": {
@@ -1880,6 +1873,25 @@
     "placeholders": {
       "speed": {
         "type": "String"
+      }
+    }
+  },
+  "uiAchFast": "Best {value}s · target ≤ {target}s",
+  "@uiAchFast": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchNoRecord": "No record · target ≤ {target}s",
+  "@uiAchNoRecord": {
+    "placeholders": {
+      "target": {
+        "type": "int"
       }
     }
   }

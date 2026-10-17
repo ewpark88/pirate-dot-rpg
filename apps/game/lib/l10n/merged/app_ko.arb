@@ -2176,13 +2176,6 @@
       }
     }
   },
-  "uiAchKills": "몬스터 사냥꾼",
-  "uiAchBosses": "보스 사냥꾼",
-  "uiAchStage": "먼 바다로",
-  "uiAchRebirths": "다시 출항",
-  "uiAchCollection": "선원 수집가",
-  "uiAchTower": "심연 정복",
-  "uiAchShipLevel": "배 장인",
   "uiAchTitle": "업적",
   "uiAchClaim": "받기 +{gems}",
   "@uiAchClaim": {
@@ -2309,6 +2302,25 @@
     "placeholders": {
       "speed": {
         "type": "String"
+      }
+    }
+  },
+  "uiAchFast": "최고 {value}초 · 목표 {target}초 이하",
+  "@uiAchFast": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchNoRecord": "기록 없음 · 목표 {target}초 이하",
+  "@uiAchNoRecord": {
+    "placeholders": {
+      "target": {
+        "type": "int"
       }
     }
   }

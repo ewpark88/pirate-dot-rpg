@@ -96,6 +96,8 @@ class _RewardGateState extends ConsumerState<RewardGate> {
               source: UiSprites.shop,
               tier: RewardTier.gold,
             );
+          case AchievementClaimed(:final gems) when gems > 0:
+            _later(Duration.zero, [_gems(gems)], source: UiSprites.trophy, tier: RewardTier.gold);
           case TowerSwept(:final chestGems, :final chestCards):
             _later(
               Duration.zero,

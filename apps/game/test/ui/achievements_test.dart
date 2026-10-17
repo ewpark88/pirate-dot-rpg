@@ -19,7 +19,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('ach.sheet')), findsOneWidget);
     expect(tester.widget<SkinButton>(find.byKey(const Key('ach.claim.stage'))).onPressed, isNotNull);
-    expect(tester.widget<SkinButton>(find.byKey(const Key('ach.claim.tower'))).onPressed, isNull);
+    expect(tester.widget<SkinButton>(find.byKey(const Key('ach.claim.rebirths'))).onPressed, isNull);
   });
 
   group('골든', () {
