@@ -75,6 +75,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'dexFirstKill' => DexFirstKill(t, id: j['id'] as String, boss: j['boss'] as bool, gems: j['gems'] as int),
     'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' || 'shipResupplied' => _fastEventFromJson(t, j),
     'inkCloud' ||
+    'bossAttackMissed' ||
     'bossSwallowed' ||
     'bossSplit' ||
     'bomberBlast' ||

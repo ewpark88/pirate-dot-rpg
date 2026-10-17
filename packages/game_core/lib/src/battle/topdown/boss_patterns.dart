@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show spawnWave;
+import 'package:game_core/src/battle/topdown/boss_dodge.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -23,6 +24,13 @@ class BossPlan {
 
   BossPatternDef get current => patterns[index];
 
+  /// 보스 회피(boss_dodge.dart): 예고 시작 때 고정한 조준, 곧은 돌진 방향·남은 거리(null = 따라가는 돌진).
+  double? aimX;
+  double? aimY;
+  double dirX = 0;
+  double dirY = 0;
+  double? chargeLeft;
+
   /// 돌진·복귀 중: 보통 이동·standoff 돌기를 하지 않는다.
   bool get steering => phase == 'charge' || phase == 'back';
 
@@ -31,7 +39,7 @@ class BossPlan {
 }
 
 extension BossPatterns on Round {
-  /// 매 틱: 패턴이 있는 보스(살아 있는)마다 한 단계. 기절 중엔 멈추고, 예고 중 기절되면 그 패턴은 취소.
+  /// 매 틱: 패턴이 있는 보스(살아 있는)마다 한 단계. 기절·비틀 중엔 멈췄다 이어서, 예고 중 브레이크(쓰러짐)면 그 패턴은 취소.
   void tickBossPatterns() {
     final g = geo;
     if (g is! TopGeometry) return;
@@ -41,7 +49,9 @@ extension BossPatterns on Round {
       final plan = e.plan;
       if (plan == null) continue;
       if (e.stunned) {
-        if (plan.phase == 'warn') {
+        // 기절·비틀은 일시정지 — 끝나면 남은 예고부터 이어서(S2 2026-10-18: 취소면 비틀+선원 기절이 겹쳐 보스가 한 번도 못 쳤다).
+        // 브레이크(쓰러짐)만 그 패턴을 취소한다.
+        if (plan.phase == 'warn' && e.brokenUntil > 0) {
           _emit(e, plan.current, 'cancel', g);
           _next(plan);
         }
@@ -72,6 +82,7 @@ extension BossPatterns on Round {
             ..phase = 'warn'
             ..ticksLeft = math.max(1, (plan.current.warnSec / dt).round());
           _emit(e, plan.current, 'warn', g, warnTicks: plan.ticksLeft);
+          aimAt(plan, g); // 보스 회피: 조준 고정(표 키 없으면 판정에 안 씀)
           if (plan.current.type == 'volley' && _windupTicks > 0 && plan.ticksLeft < _windupTicks) {
             ctx.emit(EnemyWindup(ctx.tick, enemyId: e.id, atTicks: plan.ticksLeft, kind: 'volley'));
           }
@@ -94,9 +105,7 @@ extension BossPatterns on Round {
         final gap = math.max(0, g.hullGap(e.x, e.y) - g.top.radiusOf(e));
         final flight = math.max(1, (gap / p.speed / dt).round());
         for (var i = 0; i < p.count; i++) {
-          field.enemyShots.add(
-            EnemyShot(ticksLeft: flight + i, amount: e.attack.times(p.damageRatio), fromX: e.x, fromY: e.y),
-          );
+          field.enemyShots.add(bossShell(e, plan, p, flight + i));
           ctx.emit(
             EnemyFired(ctx.tick, enemyId: e.id, fromX: e.x, fromY: e.y, flightTicks: flight + i, kind: 'boss_shell'),
           );
@@ -104,6 +113,7 @@ extension BossPatterns on Round {
         _next(plan);
       case 'charge':
         plan.phase = 'charge';
+        lockCharge(e, plan, p);
       case 'summon':
         spawnWave(field, field.stage, ctx, count: p.count);
         _next(plan);
@@ -132,8 +142,8 @@ extension BossPatterns on Round {
         e.hp = hp > e.maxHp ? e.maxHp : hp;
         ctx.emit(BossSwallowed(ctx.tick, enemyId: e.id, eaten: [for (final m in eaten) m.id], healed: healed));
         _next(plan);
-      default: // blast: 예고한 배 둘레 원이 터진다
-        _hurt(e, p);
+      default: // blast: 예고한 배 둘레 원이 터진다(보스 회피면 조준 자리 원)
+        if (blastHits(e, plan, p, g)) _hurt(e, p);
         _next(plan);
     }
   }
@@ -141,7 +151,15 @@ extension BossPatterns on Round {
   /// 돌진: 배로 곧장(속도 × speedMul) — 몸통에 닿으면 큰 피해 한 번, 그다음 standoff로 돌아간다.
   void _charge(Foe e, BossPlan plan, TopGeometry g) {
     final p = plan.current;
-    _moveToward(e, g, e.speed * p.speedMul * dt * g.speedScale);
+    final step = e.speed * p.speedMul * dt * g.speedScale;
+    if (plan.chargeLeft != null) {
+      // 보스 회피: 조준 방향으로 곧게 — 닿으면 맞고, 다 가도 못 닿으면 빗나감 뒤 복귀
+      final hit = straightCharge(e, plan, step, g);
+      if (hit) _hurt(e, p);
+      if (hit || (plan.chargeLeft ?? 0) <= 0) plan.phase = 'back';
+      return;
+    }
+    _moveToward(e, g, step);
     if (g.hullGap(e.x, e.y) > g.top.radiusOf(e)) return;
     _hurt(e, p);
     plan.phase = 'back';
