@@ -5,6 +5,7 @@ import 'package:game_core/src/engine/state_parts.dart';
 import 'package:meta/meta.dart';
 
 part 'battle_view_items.dart';
+part 'battle_view_json.dart';
 
 /// 전장 좌표계: 논리 화면 320×180 중 전장 0~148(설계서 10장) — 렌더가 두 틱 사이로 보간해 그린다, 세이브에 안 들어감.
 @immutable
@@ -40,46 +41,12 @@ class BattleView {
     this.challenge,
     this.bounty,
     this.tower,
+    this.rush,
     this.fastSail,
     this.crewDamage = const {},
   });
 
-  factory BattleView.fromJson(Json j) => BattleView(
-    tick: j['tick'] as int,
-    shipHp: BigNum.parse(j['shipHp'] as String),
-    shipHpMax: BigNum.parse(j['shipHpMax'] as String),
-    bossActive: j['bossActive'] as bool,
-    bossTicksLeft: j['bossTicksLeft'] as int,
-    enemies: [for (final e in j['enemies'] as List) EnemyView.fromJson(e as Json)],
-    fleet: [for (final f in j['fleet'] as List) FleetSlot.fromJson(f as Json)],
-    captainId: j['captainId'] as String?,
-    hitStopTicks: j['hitStopTicks'] as int,
-    speed: j['speed'] as int? ?? 1,
-    stage: j['stage'] as int? ?? 1,
-    chest: j['chest'] == null ? null : ChestView.fromJson(j['chest'] as Json),
-    wave: j['wave'] as int? ?? 0,
-    gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
-    shipLook: {for (final e in (j['shipLook'] as Json? ?? const {}).entries) e.key: e.value as int},
-    mode: j['mode'] as String? ?? 'side',
-    shipX: (j['shipX'] as num?)?.toDouble(),
-    shipY: (j['shipY'] as num?)?.toDouble(),
-    shipHeading: (j['shipHeading'] as num?)?.toDouble() ?? 0,
-    shipTierLook: j['shipTierLook'] as String?,
-    shipSkin: j['shipSkin'] as String?,
-    treasureSea: j['treasureSea'] as int?,
-    shipShield: (j['shipShield'] as num?)?.toDouble() ?? 0,
-    fever: (j['fever'] as num?)?.toDouble() ?? 0,
-    feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
-    autoBossTicksLeft: j['autoBossTicksLeft'] as int? ?? 0,
-    seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
-    challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
-    bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
-    tower: j['tower'] == null ? null : TowerView.fromJson(j['tower'] as Json),
-    fastSail: j['fastSail'] == null ? null : FastSailView.fromJson(j['fastSail'] as Json),
-    crewDamage: {
-      for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),
-    },
-  );
+  factory BattleView.fromJson(Json j) => _viewFromJson(j);
 
   static const empty = BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one);
 
@@ -151,6 +118,9 @@ class BattleView {
   final BountyView? bounty;
   final TowerView? tower;
 
+  /// 보스 러시 중이면 몇 번째 보스·전체·지난 틱(platform-boss-rush).
+  final RushView? rush;
+
   /// 빠른 항해 돌파 중이면 구간·연속 격파(선택 키).
   final FastSailView? fastSail;
 
@@ -185,6 +155,8 @@ class BattleView {
     bool clearBounty = false,
     TowerView? tower,
     bool clearTower = false,
+    RushView? rush,
+    bool clearRush = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -213,6 +185,7 @@ class BattleView {
     challenge: clearChallenge ? null : challenge ?? this.challenge,
     bounty: clearBounty ? null : bounty ?? this.bounty,
     tower: clearTower ? null : tower ?? this.tower,
+    rush: clearRush ? null : rush ?? this.rush,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
@@ -258,6 +231,7 @@ class BattleView {
     if (challenge != null) 'challenge': challenge!.toJson(),
     if (bounty != null) 'bounty': bounty!.toJson(),
     if (tower != null) 'tower': tower!.toJson(),
+    if (rush != null) 'rush': rush!.toJson(),
     if (fastSail != null) 'fastSail': fastSail!.toJson(),
     if (crewDamage.isNotEmpty) 'crewDamage': {for (final e in crewDamage.entries) e.key: e.value.toJson()},
   };
@@ -294,6 +268,7 @@ class BattleView {
     challenge: challenge,
     bounty: bounty,
     tower: tower,
+    rush: rush,
     fastSail: fastSail,
     crewDamage: crewDamage,
   );

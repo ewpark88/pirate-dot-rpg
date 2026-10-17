@@ -57,6 +57,8 @@ sealed class Command {
       'startTower' => const StartTower(),
       'sweepTower' => const SweepTower(),
       'retreatTower' => const RetreatTower(),
+      'startRush' => const StartRush(),
+      'retreatRush' => const RetreatRush(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       'markHint' => MarkHint(j['id'] as String),
       'buySkin' => BuySkin(j['id'] as String),

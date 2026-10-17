@@ -15,6 +15,7 @@ const Map<String, String> rawTables = {
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
     { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
+    { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
     { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
@@ -2867,8 +2868,10 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "tower": {"unlockStage": 60, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.25, "maxCount": 200, "stageRatio": 0.8, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 10, "cardEvery": 5,
-    "chest": [{"floor": 1, "gems": 20}, {"floor": 10, "gems": 50, "cards": 1}, {"floor": 20, "gems": 100, "cards": 2}, {"floor": 30, "gems": 150, "cards": 3}]},
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 5,
+    "brackets": [{"sec": 300, "gems": 30}, {"sec": 180, "gems": 60, "pieces": 5}, {"sec": 120, "gems": 100, "pieces": 10}]},
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,

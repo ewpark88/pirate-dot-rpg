@@ -1,0 +1,41 @@
+part of 'battle_view.dart';
+
+// BattleView JSON 읽기(battle_view.dart 300줄 — 키가 늘어 따로 둔다).
+
+BattleView _viewFromJson(Json j) => BattleView(
+  tick: j['tick'] as int,
+  shipHp: BigNum.parse(j['shipHp'] as String),
+  shipHpMax: BigNum.parse(j['shipHpMax'] as String),
+  bossActive: j['bossActive'] as bool,
+  bossTicksLeft: j['bossTicksLeft'] as int,
+  enemies: [for (final e in j['enemies'] as List) EnemyView.fromJson(e as Json)],
+  fleet: [for (final f in j['fleet'] as List) FleetSlot.fromJson(f as Json)],
+  captainId: j['captainId'] as String?,
+  hitStopTicks: j['hitStopTicks'] as int,
+  speed: j['speed'] as int? ?? 1,
+  stage: j['stage'] as int? ?? 1,
+  chest: j['chest'] == null ? null : ChestView.fromJson(j['chest'] as Json),
+  wave: j['wave'] as int? ?? 0,
+  gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
+  shipLook: {for (final e in (j['shipLook'] as Json? ?? const {}).entries) e.key: e.value as int},
+  mode: j['mode'] as String? ?? 'side',
+  shipX: (j['shipX'] as num?)?.toDouble(),
+  shipY: (j['shipY'] as num?)?.toDouble(),
+  shipHeading: (j['shipHeading'] as num?)?.toDouble() ?? 0,
+  shipTierLook: j['shipTierLook'] as String?,
+  shipSkin: j['shipSkin'] as String?,
+  treasureSea: j['treasureSea'] as int?,
+  shipShield: (j['shipShield'] as num?)?.toDouble() ?? 0,
+  fever: (j['fever'] as num?)?.toDouble() ?? 0,
+  feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
+  autoBossTicksLeft: j['autoBossTicksLeft'] as int? ?? 0,
+  seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
+  challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
+  bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
+  tower: j['tower'] == null ? null : TowerView.fromJson(j['tower'] as Json),
+  rush: j['rush'] == null ? null : RushView.fromJson(j['rush'] as Json),
+  fastSail: j['fastSail'] == null ? null : FastSailView.fromJson(j['fastSail'] as Json),
+  crewDamage: {
+    for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),
+  },
+);

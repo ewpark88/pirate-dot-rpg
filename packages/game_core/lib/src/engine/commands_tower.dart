@@ -25,3 +25,19 @@ class RetreatTower extends Command {
   @override
   String get type => 'retreatTower';
 }
+
+/// 보스 러시 도전(platform-boss-rush): 열림(탑과 같음)·도전 ≥ 1·장면 모드 진행 중 아님. 도전 −1, 첫 보스부터.
+class StartRush extends Command {
+  const StartRush();
+
+  @override
+  String get type => 'startRush';
+}
+
+/// 보스 러시 도중 그만두기 — 잡은 수만큼 보상.
+class RetreatRush extends Command {
+  const RetreatRush();
+
+  @override
+  String get type => 'retreatRush';
+}
