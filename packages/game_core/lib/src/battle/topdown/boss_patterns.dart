@@ -59,18 +59,31 @@ extension BossPatterns on Round {
         if (d + step >= g.top.bossStandoff) _next(plan);
       } else {
         plan.ticksLeft -= 1;
+        // 일제 사격은 쏘기 직전(waves.top.windupSec) 예고 — 렌더가 포문을 밝힌다. 예고가 그보다 짧으면 예고 시작 때.
+        if (plan.phase == 'warn' &&
+            plan.current.type == 'volley' &&
+            _windupTicks > 0 &&
+            plan.ticksLeft == _windupTicks) {
+          ctx.emit(EnemyWindup(ctx.tick, enemyId: e.id, atTicks: plan.ticksLeft, kind: 'volley'));
+        }
         if (plan.ticksLeft > 0) continue;
         if (plan.phase == 'rest') {
           plan
             ..phase = 'warn'
             ..ticksLeft = math.max(1, (plan.current.warnSec / dt).round());
           _emit(e, plan.current, 'warn', g, warnTicks: plan.ticksLeft);
+          if (plan.current.type == 'volley' && _windupTicks > 0 && plan.ticksLeft < _windupTicks) {
+            ctx.emit(EnemyWindup(ctx.tick, enemyId: e.id, atTicks: plan.ticksLeft, kind: 'volley'));
+          }
         } else {
           _act(e, plan, g);
         }
       }
     }
   }
+
+  /// 쏘기 직전 예고 틱 수(0이면 없음).
+  int get _windupTicks => (w.raw.obj('top').numberOr('windupSec', 0) / dt).round();
 
   void _act(Foe e, BossPlan plan, TopGeometry g) {
     final p = plan.current;
