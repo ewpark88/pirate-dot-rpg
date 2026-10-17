@@ -102,7 +102,7 @@ const Map<String, String> rawTables = {
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 3.0989,
+        "powerScale": 2.9279,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -193,7 +193,7 @@ const Map<String, String> rawTables = {
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 1.1686,
+        "powerScale": 1.1149,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -223,6 +223,7 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "strongest",
         "intervalSec": 1.7,
+        "powerScale": 0.8559,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -262,7 +263,7 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.8985,
+        "powerScale": 1.0376,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -297,7 +298,7 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.9519,
+        "powerScale": 0.8596,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -329,7 +330,7 @@ const Map<String, String> rawTables = {
         "intervalSec": 1.4,
         "shape": "chain",
         "chains": 3,
-        "powerScale": 0.4896,
+        "powerScale": 0.5292,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -622,7 +623,7 @@ const Map<String, String> rawTables = {
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.0342,
+        "powerScale": 0.9874,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -862,7 +863,7 @@ const Map<String, String> rawTables = {
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 2.4846,
+        "powerScale": 2.8822,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -939,7 +940,7 @@ const Map<String, String> rawTables = {
           "delaySec": 0.4,
           "hitRadius": 22
         },
-        "powerScale": 0.6406,
+        "powerScale": 0.6111,
         "behavior": {
           "kind": "lightning"
         },
@@ -1043,7 +1044,7 @@ const Map<String, String> rawTables = {
         "targets": "nearest",
         "intervalSec": 2.0,
         "shape": "single",
-        "powerScale": 4.0451,
+        "powerScale": 4.4708,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -1101,7 +1102,7 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "strongest",
         "intervalSec": 5.2,
-        "powerScale": 0.8608,
+        "powerScale": 0.8884,
         "reach": 72,
         "rare": {
           "reach": 76
@@ -1129,7 +1130,7 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "cluster",
         "intervalSec": 3.5,
-        "powerScale": 0.9601,
+        "powerScale": 1.0334,
         "reach": 72,
         "rare": {
           "reach": 76
@@ -1159,7 +1160,7 @@ const Map<String, String> rawTables = {
         "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.7866,
+        "powerScale": 0.87,
         "reach": 78,
         "rare": {
           "reach": 82
@@ -1271,7 +1272,7 @@ const Map<String, String> rawTables = {
         "intervalSec": 1.7,
         "shape": "single",
         "targets": "nearest",
-        "powerScale": 5.31,
+        "powerScale": 5.04,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -1302,7 +1303,7 @@ const Map<String, String> rawTables = {
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.7377,
+        "powerScale": 0.48,
         "reach": 160,
         "rare": {
           "reach": 164
@@ -2841,10 +2842,10 @@ const Map<String, String> rawTables = {
 {
   "parts": [
     {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartCannon"},
-    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
+    {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
     {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 11, 30], "nameKey": "shipPartSail"},
     {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 12, 26, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 120, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.2, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -2879,10 +2880,11 @@ const Map<String, String> rawTables = {
   "maxSameFamilyInFleet": 2,
   "ultimateMultiplier": 5,
   "bossControlFactor": 0.5,
+  "bossBreak": {"stunPerSec": 0.7, "slowPerSec": 0.05, "vulnerablePerSec": 0.05, "pullPerPx": 0.03, "breakSec": 2, "damageMul": 2, "cooldownSec": 10},
   "critBurstDamage": 0.5,
   "rarityTempo": [1, 1, 1, 0.9, 0.8],
   "traitScale": [0.4, 0.6, 0.8],
-  "legends": {"octo": {"zone": {"radius": 20, "sec": 3, "slow": 0.3}, "mythic": {"zone": {"radius": 40, "sec": 3, "slow": 0.3}, "powerScale": 1.9139}, "powerScale": 1.116}, "starry": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "extraProjectiles": 1, "powerScale": 2.0147}, "powerScale": 1.0274}, "crabs": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2574}, "powerScale": 1.1326}, "uni": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 2.0166}, "powerScale": 1.2975}, "volke": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "extraProjectiles": 2, "powerScale": 2.2982}, "powerScale": 1.1115}, "pang": {"critBurst": 12, "mythic": {"critBurst": 24, "powerScale": 1.0144}, "powerScale": 0.9786}, "hippo": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.25, "vulnerableSec": 2}, "powerScale": 0.8603}, "powerScale": 0.987}, "bones": {"execute": {"below": 0.3, "mul": 2}, "mythic": {"execute": {"below": 0.4, "mul": 2.5}, "powerScale": 0.8387}, "powerScale": 0.8549}, "lion": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.6}, "powerScale": 0.7486}, "powerScale": 0.8779}, "volt": {"charge": {"every": 5, "mul": 2, "stunSec": 0.6}, "onHit": {"stunSec": 0.3}, "mythic": {"charge": {"every": 4, "mul": 2.5, "stunSec": 0.8}, "onHit": {"stunSec": 0.3}, "powerScale": 0.9526}, "powerScale": 0.879}, "sword": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4511}, "powerScale": 1.248}, "nar": {"noFalloff": true, "mythic": {"noFalloff": true, "zone": {"radius": 12, "sec": 2, "slow": 0.3}, "powerScale": 1.3143}, "powerScale": 1.1238}, "walrus": {"onHit": {"pull": 12}, "mythic": {"onHit": {"pull": 24}, "powerScale": 1.1342}, "powerScale": 0.9374}, "saw": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4289}, "powerScale": 1.2479}, "moby": {"onHit": {"pull": 16}, "mythic": {"onHit": {"pull": 20}, "critBurst": 20, "powerScale": 1.1689}, "powerScale": 1.105}, "otter": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 1.0237}, "powerScale": 1.0697}, "pingu": {"onHit": {"stunSec": 0.5}, "mythic": {"onHit": {"stunSec": 1.0}, "powerScale": 0.9487}, "powerScale": 0.9248}, "sheldon": {"critBurst": 14, "mythic": {"critBurst": 20, "powerScale": 0.9844}, "powerScale": 0.929}, "dolphy": {"onHit": {"pull": -6}, "mythic": {"onHit": {"pull": -12}, "powerScale": 0.9738}, "powerScale": 0.9204}, "orca": {"extraChains": 2, "mythic": {"extraChains": 4, "powerScale": 1.1865}, "powerScale": 1.1467}, "puffer": {"critBurst": 14, "mythic": {"critBurst": 28, "powerScale": 1.8032}, "powerScale": 1.1816}, "jelly": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "mythic": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "extraProjectiles": 1, "powerScale": 2.1597}, "powerScale": 1.3141}, "bara": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.8399}, "powerScale": 1.5312}, "moray": {"onHit": {"stunSec": 2}, "mythic": {"onHit": {"stunSec": 2}, "extraProjectiles": 1, "powerScale": 1.6474}, "powerScale": 1.3041}, "kraki": {"zone": {"radius": 20, "sec": 4, "stunEverySec": 1}, "mythic": {"zone": {"radius": 40, "sec": 4, "stunEverySec": 1}, "powerScale": 1.8288}, "powerScale": 1.2681}, "polly": {"noMiss": true, "mythic": {"noMiss": true, "powerScale": 0.9257}, "powerScale": 0.9903}, "gull": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 0.9267}, "powerScale": 1.232}, "pelly": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.1, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 0.921, "mythic": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.15, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 0.9349}}, "alba": {"critBurst": 16, "mythic": {"critBurst": 32, "powerScale": 0.9428}, "powerScale": 1.061}, "manta": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "mythic": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "extraProjectiles": 1, "powerScale": 1.3723}, "powerScale": 1.0418}, "shark": {"onHit": {"vulnerable": 0.1, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.2, "vulnerableSec": 2}, "powerScale": 1.2843}, "powerScale": 1.0904}, "crabby": {"onHit": {"pull": 20}, "mythic": {"onHit": {"pull": 20}, "extraProjectiles": 1, "powerScale": 1.2725}, "powerScale": 1.0465}, "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.1949}, "powerScale": 1.0048}, "lobster": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2471}, "powerScale": 1.0507}, "davy": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.2347}, "powerScale": 1.0553}, "turtle": {"shield": {"everySec": 8, "durationSec": 4, "hpRatio": 0.25}, "powerScale": 0.9972, "mythic": {"shield": {"everySec": 6, "durationSec": 4, "hpRatio": 0.35}, "powerScale": 1.2967}}, "pumpum": {"fever": {"chargeBonus": 0.5, "extraSec": 5}, "powerScale": 1.1663, "mythic": {"fever": {"chargeBonus": 0.8, "extraSec": 8}, "powerScale": 1.3436}}, "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 1.4827}, "powerScale": 1.2591}, "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 0.9424}, "powerScale": 1.1616}, "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 1.0278}, "powerScale": 0.879}}
+  "legends": {"octo": {"zone": {"radius": 20, "sec": 3, "slow": 0.3}, "mythic": {"zone": {"radius": 40, "sec": 3, "slow": 0.3}, "powerScale": 1.9139}, "powerScale": 1.116}, "starry": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "extraProjectiles": 1, "powerScale": 2.0147}, "powerScale": 1.0274}, "crabs": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.3309}, "powerScale": 1.1698}, "uni": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 2.0166}, "powerScale": 1.2975}, "volke": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "extraProjectiles": 2, "powerScale": 2.2982}, "powerScale": 1.1115}, "pang": {"critBurst": 12, "mythic": {"critBurst": 24, "powerScale": 0.9768}, "powerScale": 0.948}, "hippo": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.25, "vulnerableSec": 2}, "powerScale": 0.862}, "powerScale": 0.9281}, "bones": {"execute": {"below": 0.3, "mul": 2}, "mythic": {"execute": {"below": 0.4, "mul": 2.5}, "powerScale": 0.8856}, "powerScale": 0.9612}, "lion": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.6}, "powerScale": 0.7864}, "powerScale": 0.9011}, "volt": {"charge": {"every": 5, "mul": 2, "stunSec": 0.6}, "onHit": {"stunSec": 0.3}, "mythic": {"charge": {"every": 4, "mul": 2.5, "stunSec": 0.8}, "onHit": {"stunSec": 0.3}, "powerScale": 1.1773}, "powerScale": 0.9625}, "sword": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4511}, "powerScale": 1.248}, "nar": {"noFalloff": true, "mythic": {"noFalloff": true, "zone": {"radius": 12, "sec": 2, "slow": 0.3}, "powerScale": 1.3143}, "powerScale": 1.1238}, "walrus": {"onHit": {"pull": 12}, "mythic": {"onHit": {"pull": 24}, "powerScale": 1.1342}, "powerScale": 0.9374}, "saw": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.4289}, "powerScale": 1.2479}, "moby": {"onHit": {"pull": 16}, "mythic": {"onHit": {"pull": 20}, "critBurst": 20, "powerScale": 1.1689}, "powerScale": 1.105}, "otter": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 1.0237}, "powerScale": 1.0697}, "pingu": {"onHit": {"stunSec": 0.5}, "mythic": {"onHit": {"stunSec": 1.0}, "powerScale": 0.9708}, "powerScale": 0.9347}, "sheldon": {"critBurst": 14, "mythic": {"critBurst": 20, "powerScale": 0.9844}, "powerScale": 0.929}, "dolphy": {"onHit": {"pull": -6}, "mythic": {"onHit": {"pull": -12}, "powerScale": 0.9698}, "powerScale": 0.9353}, "orca": {"extraChains": 2, "mythic": {"extraChains": 4, "powerScale": 1.1188}, "powerScale": 1.151}, "puffer": {"critBurst": 14, "mythic": {"critBurst": 28, "powerScale": 1.8032}, "powerScale": 1.1816}, "jelly": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "mythic": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "extraProjectiles": 1, "powerScale": 2.1597}, "powerScale": 1.3141}, "bara": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.8399}, "powerScale": 1.5312}, "moray": {"onHit": {"stunSec": 2}, "mythic": {"onHit": {"stunSec": 2}, "extraProjectiles": 1, "powerScale": 1.6474}, "powerScale": 1.3041}, "kraki": {"zone": {"radius": 20, "sec": 4, "stunEverySec": 1}, "mythic": {"zone": {"radius": 40, "sec": 4, "stunEverySec": 1}, "powerScale": 1.8288}, "powerScale": 1.2681}, "polly": {"noMiss": true, "mythic": {"noMiss": true, "powerScale": 1.0425}, "powerScale": 1.0972}, "gull": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 0.9009}, "powerScale": 1.1771}, "pelly": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.1, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 0.9463, "mythic": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.15, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 1.0292}}, "alba": {"critBurst": 16, "mythic": {"critBurst": 32, "powerScale": 0.9428}, "powerScale": 1.061}, "manta": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "mythic": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "extraProjectiles": 1, "powerScale": 1.3723}, "powerScale": 1.0418}, "shark": {"onHit": {"vulnerable": 0.1, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.2, "vulnerableSec": 2}, "powerScale": 1.1709}, "powerScale": 1.0565}, "crabby": {"onHit": {"pull": 20}, "mythic": {"onHit": {"pull": 20}, "extraProjectiles": 1, "powerScale": 1.2725}, "powerScale": 1.0465}, "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.2261}, "powerScale": 1.0544}, "lobster": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.2208}, "powerScale": 1.039}, "davy": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 1.1785}, "powerScale": 1.0156}, "turtle": {"shield": {"everySec": 8, "durationSec": 4, "hpRatio": 0.25}, "powerScale": 1.059, "mythic": {"shield": {"everySec": 6, "durationSec": 4, "hpRatio": 0.35}, "powerScale": 1.2431}}, "pumpum": {"fever": {"chargeBonus": 0.5, "extraSec": 5}, "powerScale": 1.2624, "mythic": {"fever": {"chargeBonus": 0.8, "extraSec": 8}, "powerScale": 1.4419}}, "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 1.4827}, "powerScale": 1.2591}, "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 1.0701}, "powerScale": 1.2461}, "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 1.0382}, "powerScale": 0.8564}}
 }
 ''',
   'waves': r'''
@@ -2892,8 +2894,8 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
-  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 5, "attackGrowth": 1.24, "goldBase": 2.8, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 28, "wallEvery": 10, "wallHpMultiplier": 2.0, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 2, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.08 },
+  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 2.7, "goldGrowth": 1.13 },
+  "boss": { "hpMultiplier": 80, "wallEvery": 10, "wallHpMultiplier": 2.3, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 100, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.028, "earlyAttackMultiplier": 0.02 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
@@ -2918,7 +2920,7 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
-    "vanguard": { "count": 2, "hpMul": 4, "speedMul": 1.6, "attackMul": 1, "fromStage": 5 },
+    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "speed": 40 },
     "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
