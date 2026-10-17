@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
+import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 전장 위쪽 (선원 줄·시트를 가리지 않게, 전장 가운데 60%를 덮지 않게): 진행 게이지(+목표·파밍·피버) · 왼쪽 위 작은 알약들 · 보스 실패 안내. 튜토리얼·가이드 카드는 가이드 층(GuideLayer)이 그린다.
@@ -29,7 +30,7 @@ class BattleTopStrip extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     children: [
       // 진행 게이지 + 다음 목표 한 줄 (전투력은 상단 바 골드 옆).
-      const StageGauge(),
+      const _HudTopReporter(child: StageGauge()),
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
@@ -97,5 +98,32 @@ class _Pills extends ConsumerWidget {
         if (!ref.watch(sceneActiveProvider)) const FeverSlot(),
       ],
     );
+  }
+}
+
+/// 띠 아래 끝 + 8dp를 전장(BattleGame.hudTopDp)에 알린다 — S3 보스 카메라 안전 영역(fx_map topCam). 띠는 전장 상자 위에
+/// 붙어 있어 띠 높이 = 전장 위에서 잰 값. 태블릿(uiScale)·보스전(막대 2줄)에 따라 바뀌므로 그릴 때마다 잰다.
+class _HudTopReporter extends ConsumerStatefulWidget {
+  const _HudTopReporter({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_HudTopReporter> createState() => _HudTopReporterState();
+}
+
+class _HudTopReporterState extends ConsumerState<_HudTopReporter> {
+  double? _sent;
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !ref.read(hasBattleGameProvider)) return;
+      final h = context.size?.height;
+      if (h == null || h + 8 == _sent) return;
+      _sent = h + 8;
+      ref.read(battleGameProvider).hudTopDp = _sent!;
+    });
+    return widget.child;
   }
 }
