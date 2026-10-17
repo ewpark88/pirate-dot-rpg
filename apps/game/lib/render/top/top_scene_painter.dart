@@ -60,14 +60,14 @@ class TopScenePainter {
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0);
     _lastMs = clockMs;
     // 보스전 카메라(TopBossCam): 배를 아래로 당기고 거리 따라 역동 줌 + 펀치, 안전 영역을 벗어나는 프레임만 깎는다.
-    final (zoom, target) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
+    final (zoom, target, shiftX) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
     final y = _shipY ?? target;
     // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
     _maxBoxH = math.max(_maxBoxH, frame.box.height); // 시트가 가리면(가장 컸던 높이 75% 미만) 가벼운 연출
     scene.topHits.lite = scene.settings.powerSave || frame.box.height < _maxBoxH * 0.75;
     final dpr = frame.dpr;
-    final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
+    final sx = ((frame.shipScreen.dx + shiftX) * dpr).roundToDouble() / dpr;
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
     final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
     final dot = frame.dot * zoom;

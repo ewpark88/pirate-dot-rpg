@@ -91,6 +91,8 @@ class TopCrewFx {
 
   /// 빗나감 'MISS'(회색) · 막힘 'BLOCK'(파랑): 테 두른 도트 글자가 옆으로 튕기며 떠올라 사라진다.
   void miss(double x, double y, double now, {bool block = false}) {
+    // 같은 자리(24단위 안)는 0.6초에 하나만 — 보스 위에 'MISS MISS'가 세로로 뭉치던 것(S1 z02).
+    if (_misses.any((m) => now - m.$3 < 600 && now >= m.$3 && (m.$1 - x).abs() < 24 && (m.$2 - y).abs() < 24)) return;
     if (_misses.length >= 16) _misses.removeAt(0);
     _misses.add((x, y, now, block));
   }
