@@ -52,4 +52,10 @@ class LocalNotificationsSdk implements NotifySdk {
     if (!await _init()) return false;
     return await _android?.requestNotificationsPermission() ?? false;
   }
+
+  @override
+  Future<bool?> permissionGranted() async {
+    if (!await _init()) return null;
+    return _android?.areNotificationsEnabled();
+  }
 }

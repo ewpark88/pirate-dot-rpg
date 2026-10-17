@@ -39,6 +39,7 @@ import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/back_to_exit.dart' show exitSaveProvider;
+import 'package:pirate_dot/ui/offline/notify_ask.dart' show notifyPermissionProvider;
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/crash_context.dart' show crashKeyProvider;
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -101,7 +102,6 @@ Future<void> main() async {
     clock: clock,
     dir: supportDir,
     fullAfter: Duration(seconds: tables.meta.offlineMaxSec),
-    minAway: Duration(seconds: tables.meta.offlineMinSec),
     dailyMax: tables.meta.notificationsDailyMax,
     enabled: () => container.read(gameStateProvider).settings.notifications,
     lang: () => container.read(gameStateProvider).settings.lang,
@@ -174,6 +174,7 @@ Future<void> main() async {
       audioPortProvider.overrideWithValue(audio),
       analyticsPortProvider.overrideWithValue(analytics),
       notifierProvider.overrideWithValue(notifier),
+      notifyPermissionProvider.overrideWithValue(notifier.requestPermission), // 알림 권한은 화면이 좋은 때 묻는다(S4 notify_ask)
       saveFailureProvider.overrideWithValue(store.failure),
       // 운영자 빌드만: 샘플 불러오기 전 내 세이브 백업(지원 폴더/operator_backup) — 배포 빌드에선 상수로 빠진다
       if (kOperator)
