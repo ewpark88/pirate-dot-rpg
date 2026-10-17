@@ -1152,48 +1152,17 @@
   "uiStoryTapNext": "톡 하면 다음",
   "uiShopTitle": "상점",
   "uiShopNoAds": "광고 없음",
-  "uiShopSubLeft": "구독 {days}일 남음",
   "uiShopBuy": "{price}",
-  "uiShopPrice": "{n}원",
-  "uiShopOff": "{pct}% 할인",
   "uiShopBest": "인기",
-  "uiShopGemsS": "젬 한 줌",
-  "uiShopGemsM": "젬 상자",
-  "uiShopGemsL": "젬 보물함",
-  "uiShopStarter": "스타터 팩",
-  "uiShopNoAdsName": "광고 제거",
-  "uiShopSubName": "선장 구독 30일",
   "uiShopGemsN": "젬 {n}",
   "uiShopSummonN": "소환 {n}회",
   "uiShopDailyGems": "매일 젬 {n}",
   "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
   "uiShopLater": "나중에",
-  "uiShopOpen": "상점 (운영자)",
-  "@uiShopSubLeft": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "@uiShopBuy": {
     "placeholders": {
       "price": {
         "type": "String"
-      }
-    }
-  },
-  "@uiShopPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
-  "@uiShopOff": {
-    "placeholders": {
-      "pct": {
-        "type": "int"
       }
     }
   },
@@ -1433,5 +1402,250 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiShopSecStarter": "처음 한 번",
+  "uiShopSecConvenience": "편의",
+  "uiShopSecGems": "젬",
+  "uiShopSecMonthly": "월간 젬",
+  "uiShopSecPass": "항해 패스",
+  "uiShopSecSkins": "배 스킨",
+  "uiShopFirstDouble": "첫 구매 ×2",
+  "uiShopOwned": "보유 중",
+  "uiShopDaysLeft": "{n}일 남음",
+  "@uiShopDaysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopClaimToday": "오늘 젬 받기",
+  "uiShopClaimedToday": "오늘 받았어요",
+  "uiShopRightNoAds": "광고 없이 보상",
+  "uiShopRightSpeed": "언제나 2배속",
+  "uiShopRightOffline": "복귀 보상 {h}시간",
+  "@uiShopRightOffline": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopRightPass": "패스 유료 보상",
+  "uiShopDays": "{n}일",
+  "@uiShopDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopForever": "영구",
+  "uiShopHeroCards": "영웅 카드 {n}장",
+  "@uiShopHeroCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSkinN": "배 스킨 {n}종",
+  "@uiShopSkinN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEndsIn": "{d}일 {h}시간 남음",
+  "@uiShopEndsIn": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEmpty": "지금은 상점을 열 수 없어요",
+  "uiPurchasePending": "결제 처리 중이에요…",
+  "uiPurchaseFailed": "결제가 되지 않았어요",
+  "uiPurchaseUnavailable": "지금은 결제할 수 없어요",
+  "uiPurchaseOwned": "이미 가진 상품이에요",
+  "uiPurchaseDone": "구매 완료! {what}",
+  "@uiPurchaseDone": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWonSign": "₩",
+  "uiWonPrice": "{n}원",
+  "@uiWonPrice": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassTitle": "항해 패스",
+  "uiPassLevel": "{n}/{max}단계",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "다음 단계까지 {n}",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "퀘스트·출석 +{q} · 처음 깬 스테이지 +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "무료",
+  "uiPassPaid": "패스",
+  "uiPassClaimAll": "모두 받기",
+  "uiPassUnlock": "유료 줄 열기 · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "패스 {n}일 남음",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "{lv}단계 패스 보상",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "시즌1 깃발 배",
+  "uiTitlePassFlag": "시즌1 항해사",
+  "uiPassLegend": "전설 소환",
+  "uiDungeonTitle": "요일 던전",
+  "uiDungeonToday": "{day} · 오늘의 계열",
+  "@uiDungeonToday": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonAll": "모든 계열",
+  "uiDungeonStep": "{n}단계",
+  "@uiDungeonStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonStart": "{n}단계 도전",
+  "@uiDungeonStart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonSweep": "{n}단계 소탕",
+  "@uiDungeonSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonReward": "이 계열 선원 카드 {c}장 · 젬 {g}",
+  "@uiDungeonReward": {
+    "placeholders": {
+      "c": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonCrewNote": "출전은 이 계열 선원으로 잠시 바뀌어요",
+  "uiDungeonNoCrew": "이 계열 선원이 없어요 — 다른 요일에 도전해요",
+  "uiDungeonStrip": "요일 던전 {n}단계 · {wave}/{waves}파",
+  "@uiDungeonStrip": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonClear": "{n}단계 클리어!",
+  "@uiDungeonClear": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonFail": "{n}단계 실패",
+  "@uiDungeonFail": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonTicketBack": "도전권은 돌려받았어요",
+  "uiDungeonTimeout": "시간 초과",
+  "uiDungeonSwept": "{n}단계 소탕 · {reward}",
+  "@uiDungeonSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeekday1": "월요일",
+  "uiWeekday2": "화요일",
+  "uiWeekday3": "수요일",
+  "uiWeekday4": "목요일",
+  "uiWeekday5": "금요일",
+  "uiWeekday6": "토요일",
+  "uiWeekday7": "일요일"
 }

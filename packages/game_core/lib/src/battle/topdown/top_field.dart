@@ -39,6 +39,7 @@ class TopField {
     this.standoffGrow = 0,
     this.orbitMax = double.infinity,
     this.swayDeg = 0,
+    this.spawnFromView = false,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
        bossSpawnRadius = bossSpawnRadius ?? approachRadius,
@@ -69,6 +70,7 @@ class TopField {
       standoffGrow: j.has('bossScale') ? j.obj('bossScale').numberOr('standoffGrow', 0) : 0,
       orbitMax: j.has('bossScale') ? j.obj('bossScale').numberOr('orbitMax', double.infinity) : double.infinity,
       swayDeg: j.has('bossScale') ? j.obj('bossScale').numberOr('swayDeg', 0) : 0,
+      spawnFromView: j.raw['spawnFromView'] == true,
       reachScale: d.reachScale,
       bossSpawnRadius: j.numberOr('bossSpawnRadius', d.approachRadius),
       swarmSpacing: j.numberOr('swarmSpacing', w.field.spawnSpacing),
@@ -174,6 +176,10 @@ class TopField {
   /// (탐침 2026-10-18: 대보스 처치 53.8 → 20.7초). 0이면 제자리.
   final double swayDeg;
 
+  /// 평소 무리 출발점: true면 카메라(viewWidth × viewHeight) 테두리 바로 밖(+ spawnMargin), false면 필드 테두리·접근 원 중 먼 곳
+  /// (S2 화면 밀도 2026-10-18 — 옆 방향 무리가 화면에 들어오기까지 ~8초 걸리던 것).
+  final bool spawnFromView;
+
   /// 사거리 배율 (skills.json reach × 이 값).
   final double reachScale;
 
@@ -223,6 +229,7 @@ class TopField {
     standoffGrow: standoffGrow,
     orbitMax: orbitMax,
     swayDeg: swayDeg,
+    spawnFromView: spawnFromView,
     reachScale: reachScale,
     bossSpawnRadius: bossSpawnRadius,
     swarmSpacing: swarmSpacing,

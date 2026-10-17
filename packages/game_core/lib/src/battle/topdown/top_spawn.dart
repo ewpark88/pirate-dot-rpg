@@ -43,8 +43,9 @@ class TopSpawn {
   }
 
   /// 화면 밖 출발 거리: 테두리 바깥과 접근 원 중 먼 곳(어느 방향이든 원 안에서 걷는 거리가 같게).
-  double startDistance(Foe e, double angle) =>
-      math.max(toBorder(angle) + top.spawnMargin + top.radiusOf(e), top.approachRadius);
+  double startDistance(Foe e, double angle) => top.spawnFromView
+      ? toView(angle) + top.spawnMargin + top.radiusOf(e)
+      : math.max(toBorder(angle) + top.spawnMargin + top.radiusOf(e), top.approachRadius);
 
   /// 방향 하나: 가중(spawnWeights)이 있으면 위·오른쪽·아래·왼쪽 사분면을 가중대로 고른 뒤 그 안에서 고르게.
   double heading(Rng rng) {

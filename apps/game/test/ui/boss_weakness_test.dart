@@ -29,27 +29,20 @@ void main() {
     }
   });
 
-  testWidgets('기준 4: 소라게 보스 — 이름, 약점 칩 Lob·Air (테이블 순서)', (tester) async {
-    await pumpGame(tester, _bossFight('giant_hermit'));
-    final weak = find.byKey(const Key('boss.weak'));
-    expect(weak, findsOneWidget);
-    expect(find.descendant(of: weak, matching: find.text('Weak')), findsOneWidget);
-    // 칩은 테이블 순서대로 (lob → air), 글자는 계열 이름.
-    final chips = find.descendant(of: weak, matching: find.byWidgetPredicate((w) => '${w.key}'.contains('boss.weak.')));
-    final texts = [
-      for (final e in chips.evaluate())
-        tester.widget<Text>(find.descendant(of: find.byWidget(e.widget), matching: find.byType(Text))).data,
-    ];
-    expect(texts, ['Lob', 'Air']);
+  // 사용자 2026-10-18 '전투 중 띠 아래 안내 줄이 보스를 가린다' — 보스전엔 약점 줄·알약(화물칸 가득·모두 강화 등)이 없다.
+  // 약점은 보스 등장 이름표(BossIntro, 2초)가 보인다.
+  testWidgets('보스전: 띠 아래 약점 줄·알약 없음(화물칸이 가득이어도)', (tester) async {
+    final s = _bossFight('giant_hermit');
+    final full = s.copyWith(wallet: s.wallet.copyWith(gold: goldCapacity(s, tables)));
+    await pumpGame(tester, full, openTab: false);
+    expect(find.byKey(const Key('boss.weak')), findsNothing);
+    expect(find.byKey(const Key('cargo.full')), findsNothing);
   });
 
-  testWidgets('기준 4: 약점 없는 보스(enemy_ship)는 표시 없음', (tester) async {
-    await pumpGame(tester, _bossFight('enemy_ship'));
-    expect(find.byKey(const Key('boss.weak')), findsNothing);
-  });
-
-  testWidgets('기준 4: 보스전이 아니면 표시 없음', (tester) async {
-    await pumpGame(tester, _bossFight('giant_hermit', active: false));
-    expect(find.byKey(const Key('boss.weak')), findsNothing);
+  testWidgets('보스전이 아니면 화물칸 가득 알약이 보인다', (tester) async {
+    final s = _bossFight('giant_hermit', active: false);
+    final full = s.copyWith(wallet: s.wallet.copyWith(gold: goldCapacity(s, tables)));
+    await pumpGame(tester, full, openTab: false);
+    expect(find.byKey(const Key('cargo.full')), findsOneWidget);
   });
 }

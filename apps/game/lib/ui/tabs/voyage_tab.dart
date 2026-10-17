@@ -9,12 +9,14 @@ import 'package:pirate_dot/ui/dex/monster_dex.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/pass/pass_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
+import 'package:pirate_dot/ui/scene/dungeon_card.dart';
 import 'package:pirate_dot/ui/scene/rush_card.dart';
 import 'package:pirate_dot/ui/scene/tower_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -48,6 +50,9 @@ class VoyageTab extends ConsumerWidget {
         const SizedBox(height: 8),
         const PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
         const SizedBox(height: 8),
+        // 항해 패스(시즌 30단계 — 무료/유료 두 줄).
+        const PassCard(),
+        const SizedBox(height: 8),
         // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
         const BountyCard(),
         // 심연의 탑 · 보스 러시 (S5 — 환생 1 또는 스테이지 60에 열림, 열리기 전엔 자리 없음).
@@ -55,6 +60,8 @@ class VoyageTab extends ConsumerWidget {
         const TowerCard(),
         const SizedBox(height: 8),
         const RushCard(),
+        const SizedBox(height: 8),
+        const DungeonCard(),
         if (!ready) ...const [SizedBox(height: 8), RebirthCard()],
         // 바다 괴물 도감 (보물지도 옆, S1 2026-10-16 — 골격).
         const SizedBox(height: 8),

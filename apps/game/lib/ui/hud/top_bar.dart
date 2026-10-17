@@ -14,6 +14,8 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/settings/settings_screen.dart';
+import 'package:pirate_dot/ui/shop/shop_data.dart';
+import 'package:pirate_dot/ui/shop/shop_sheet.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
@@ -126,6 +128,16 @@ class TopBar extends ConsumerWidget {
               // 순풍 남은 시간은 위 막대에 그대로(줄이지 않음). 광고·자동 강화 칩은 게이지 아래 오른쪽(BuffChips — 크게).
               const TailwindBadge(),
               const Spacer(),
+              // 상점(결제가 되는 기기에서 가격을 받은 상품이 있을 때만).
+              if (ref.watch(shopOpenProvider)) ...[
+                PixelIconButton(
+                  key: const Key('hud.shop'),
+                  asset: UiSprites.shop,
+                  semanticLabel: l10n.uiShopTitle,
+                  onPressed: () => unawaited(showShop(context)),
+                ),
+                const SizedBox(width: 6),
+              ],
               PixelIconButton(
                 key: const Key('hud.settings'),
                 asset: UiSprites.gear,
