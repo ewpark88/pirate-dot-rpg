@@ -1,0 +1,902 @@
+{
+  "_doc": "도감 v2 보스 초안(S5 구조·데이터, 수치는 S2). regions.json에 덧대는 조각: wallEvery·regions[id].bossRotation/wallBoss·bosses 추가. 수치는 기존 보스 값을 복사한 자리표시 — hpMultiplier·패턴 값은 S2. id는 S3 그림(td_<id>) 이름과 맞춘다. 검사: packages/game_core/test/battle/topdown/bestiary_draft_test.dart",
+  "wallEvery": 10,
+  "regions": {
+    "coral": {
+      "bossRotation": [
+        "enemy_ship",
+        "hermit_conch",
+        "jelly_queen",
+        "hammer_shark"
+      ],
+      "wallBoss": "sea_croc"
+    },
+    "storm": {
+      "bossRotation": [
+        "storm_raider",
+        "thunder_ray_pup",
+        "great_serpent",
+        "twister_dolphin"
+      ],
+      "wallBoss": "monster_whale"
+    },
+    "glacier": {
+      "bossRotation": [
+        "frost_pirate",
+        "seal_chief",
+        "giant_squid",
+        "icecrab_chief"
+      ],
+      "wallBoss": "ice_slime"
+    },
+    "volcano": {
+      "bossRotation": [
+        "blaze_pirate",
+        "lava_tortoise",
+        "flame_eel",
+        "lava_slime"
+      ],
+      "wallBoss": "leviathan"
+    },
+    "abyss": {
+      "bossRotation": [
+        "hunter_sub",
+        "angler_king",
+        "deep_octopus",
+        "phantom_jelly"
+      ],
+      "wallBoss": "kraken_lord"
+    },
+    "phantom": {
+      "bossRotation": [
+        "wraith_ship",
+        "skeleton_captain",
+        "cursegull_leader",
+        "specter"
+      ],
+      "wallBoss": "poseidon"
+    }
+  },
+  "bosses": [
+    {
+      "id": "hermit_conch",
+      "nameKey": "battleBossHermitConch",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "jelly_queen",
+      "nameKey": "battleBossJellyQueen",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "hammer_shark",
+      "nameKey": "battleBossHammerShark",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "sea_croc",
+      "nameKey": "battleBossSeaCroc",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "swallow",
+          "warnSec": 0.8,
+          "radiusShipMul": 1.5,
+          "healRatio": 0.05
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "storm_raider",
+      "nameKey": "battleBossStormRaider",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "thunder_ray_pup",
+      "nameKey": "battleBossThunderRayPup",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "great_serpent",
+      "nameKey": "battleBossGreatSerpent",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 5,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 60
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "twister_dolphin",
+      "nameKey": "battleBossTwisterDolphin",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "monster_whale",
+      "nameKey": "battleBossMonsterWhale",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "swallow",
+          "warnSec": 0.8,
+          "radiusShipMul": 1.5,
+          "healRatio": 0.05
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "frost_pirate",
+      "nameKey": "battleBossFrostPirate",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "seal_chief",
+      "nameKey": "battleBossSealChief",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "giant_squid",
+      "nameKey": "battleBossGiantSquid",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "ink",
+          "warnSec": 0.6,
+          "radiusShipMul": 2,
+          "durationSec": 2.5
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "icecrab_chief",
+      "nameKey": "battleBossIcecrabChief",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "ice_slime",
+      "nameKey": "battleBossIceSlime",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        },
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6,
+      "splitAt": [
+        0.5,
+        0.25
+      ]
+    },
+    {
+      "id": "blaze_pirate",
+      "nameKey": "battleBossBlazePirate",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "lava_tortoise",
+      "nameKey": "battleBossLavaTortoise",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "flame_eel",
+      "nameKey": "battleBossFlameEel",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "lava_slime",
+      "nameKey": "battleBossLavaSlime",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6,
+      "splitAt": [
+        0.5
+      ]
+    },
+    {
+      "id": "leviathan",
+      "nameKey": "battleBossLeviathan",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 5,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 60
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "hunter_sub",
+      "nameKey": "battleBossHunterSub",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "angler_king",
+      "nameKey": "battleBossAnglerKing",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "deep_octopus",
+      "nameKey": "battleBossDeepOctopus",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "ink",
+          "warnSec": 0.6,
+          "radiusShipMul": 2,
+          "durationSec": 2.5
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "phantom_jelly",
+      "nameKey": "battleBossPhantomJelly",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "kraken_lord",
+      "nameKey": "battleBossKrakenLord",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "ink",
+          "warnSec": 0.6,
+          "radiusShipMul": 2,
+          "durationSec": 2.5
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "wraith_ship",
+      "nameKey": "battleBossWraithShip",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "skeleton_captain",
+      "nameKey": "battleBossSkeletonCaptain",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "cursegull_leader",
+      "nameKey": "battleBossCursegullLeader",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 5
+        },
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 3,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 40
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "specter",
+      "nameKey": "battleBossSpecter",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "blast",
+          "warnSec": 0.6,
+          "damageRatio": 0.8,
+          "radiusShipMul": 2
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    },
+    {
+      "id": "poseidon",
+      "nameKey": "battleBossPoseidon",
+      "hpMultiplier": 1.0,
+      "weakFamilies": [],
+      "patterns": [
+        {
+          "type": "volley",
+          "warnSec": 0.6,
+          "count": 7,
+          "speed": 200,
+          "damageRatio": 0.3,
+          "spreadDeg": 90
+        },
+        {
+          "type": "summon",
+          "warnSec": 0.6,
+          "count": 3
+        },
+        {
+          "type": "charge",
+          "warnSec": 0.6,
+          "speedMul": 4,
+          "damageRatio": 1.5,
+          "capMul": 2
+        }
+      ],
+      "restSec": 2.5,
+      "firstRestSec": 0.6
+    }
+  ],
+  "names": {
+    "battleBossHermitConch": {
+      "ko": "집게 소라게",
+      "en": "Hermit Conch"
+    },
+    "battleBossJellyQueen": {
+      "ko": "해파리 여왕",
+      "en": "Jelly Queen"
+    },
+    "battleBossHammerShark": {
+      "ko": "망치상어",
+      "en": "Hammerhead"
+    },
+    "battleBossSeaCroc": {
+      "ko": "바다 악어",
+      "en": "Sea Crocodile"
+    },
+    "battleBossStormRaider": {
+      "ko": "폭풍 해적선",
+      "en": "Storm Raider"
+    },
+    "battleBossThunderRayPup": {
+      "ko": "새끼 번개 가오리",
+      "en": "Thunder Ray Pup"
+    },
+    "battleBossGreatSerpent": {
+      "ko": "괴물 뱀",
+      "en": "Sea Serpent"
+    },
+    "battleBossTwisterDolphin": {
+      "ko": "회오리 돌고래",
+      "en": "Twister Dolphin"
+    },
+    "battleBossMonsterWhale": {
+      "ko": "괴물 고래",
+      "en": "Monster Whale"
+    },
+    "battleBossFrostPirate": {
+      "ko": "얼음 해적선",
+      "en": "Frost Pirate"
+    },
+    "battleBossSealChief": {
+      "ko": "바다표범 대장",
+      "en": "Seal Chief"
+    },
+    "battleBossGiantSquid": {
+      "ko": "대왕오징어",
+      "en": "Giant Squid"
+    },
+    "battleBossIcecrabChief": {
+      "ko": "얼음 게 무리장",
+      "en": "Ice Crab Chief"
+    },
+    "battleBossIceSlime": {
+      "ko": "거대 얼음 아메바",
+      "en": "Giant Ice Slime"
+    },
+    "battleBossBlazePirate": {
+      "ko": "불 해적선",
+      "en": "Blaze Pirate"
+    },
+    "battleBossLavaTortoise": {
+      "ko": "용암 거북",
+      "en": "Lava Tortoise"
+    },
+    "battleBossFlameEel": {
+      "ko": "불꽃 장어",
+      "en": "Flame Eel"
+    },
+    "battleBossLavaSlime": {
+      "ko": "거대 용암 아메바",
+      "en": "Giant Lava Slime"
+    },
+    "battleBossLeviathan": {
+      "ko": "레비아탄",
+      "en": "Leviathan"
+    },
+    "battleBossHunterSub": {
+      "ko": "사냥 잠수함",
+      "en": "Hunter Sub"
+    },
+    "battleBossAnglerKing": {
+      "ko": "아귀 왕",
+      "en": "Angler King"
+    },
+    "battleBossDeepOctopus": {
+      "ko": "심해 문어",
+      "en": "Deep Octopus"
+    },
+    "battleBossPhantomJelly": {
+      "ko": "유령 해파리",
+      "en": "Phantom Jelly"
+    },
+    "battleBossKrakenLord": {
+      "ko": "크라켄 문어",
+      "en": "Kraken Lord"
+    },
+    "battleBossWraithShip": {
+      "ko": "망령선",
+      "en": "Wraith Ship"
+    },
+    "battleBossSkeletonCaptain": {
+      "ko": "해골 선장",
+      "en": "Skeleton Captain"
+    },
+    "battleBossCursegullLeader": {
+      "ko": "저주 갈매기 떼장",
+      "en": "Cursed Gull Leader"
+    },
+    "battleBossSpecter": {
+      "ko": "망령",
+      "en": "Specter"
+    },
+    "battleBossPoseidon": {
+      "ko": "포세이돈",
+      "en": "Poseidon"
+    }
+  }
+}
