@@ -58,10 +58,11 @@ void main() {
     expect(tester.getTopLeft(face()).dy, closeTo(before.dy, 0.01));
   });
 
-  test('팔레트는 스킨 r1 값 (docs/specs/ui-skin-r1.md)', () {
-    expect(Skin.sky, const Color(0xFFDDF2FF));
-    expect(Skin.primaryBottom, const Color(0xFF1460C4));
-    expect(Skin.goldBottom, const Color(0xFFFFB31F));
+  test('팔레트는 스킨 k1 값 (디자인 개편 ① — 남보라 바탕·초록 주 버튼·노랑 보상·굵은 외곽선)', () {
+    expect(Skin.sky, const Color(0xFF30346B));
+    expect(Skin.primaryBottom, const Color(0xFF34A52A));
+    expect(Skin.goldBottom, const Color(0xFFFFB30F));
+    expect(Skin.cardEdge, Skin.outline);
     expect(PixelPalette.text, Skin.ink);
   });
 }

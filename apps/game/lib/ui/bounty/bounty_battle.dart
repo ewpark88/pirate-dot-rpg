@@ -97,8 +97,8 @@ class _BountyResultGateState extends ConsumerState<BountyResultGate> {
     ref.listenManual(bountyResultProvider, (_, result) {
       if (result == null || !mounted) return;
       unawaited(
-        showDialog<void>(
-          context: context,
+        showSkinDialog<void>(
+          context,
           builder: (_) => _ResultDialog(result: result),
         ).whenComplete(() => ref.read(bountyResultProvider.notifier).ack()),
       );

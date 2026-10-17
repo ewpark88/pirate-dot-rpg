@@ -182,7 +182,7 @@ class PbCardFront extends StatelessWidget {
 
 /// 카드 위 작은 둥근 배지 (레벨·카드 수).
 class PbBadge extends StatelessWidget {
-  const PbBadge(this.text, {this.color = const Color(0xCC2B3A55), this.ink = Colors.white, super.key});
+  const PbBadge(this.text, {this.color = Skin.navyPanel, this.ink = Colors.white, super.key});
 
   final String text;
   final Color color;
@@ -191,7 +191,12 @@ class PbBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 2),
-    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
-    child: Text(text, style: Skin.text(19, color: ink)),
+    // k2: 남색 배지 + 굵은 외곽선, 외곽선 글자.
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Skin.outline, width: 2.5),
+    ),
+    child: Text(text, style: Skin.outlined(19, color: ink)),
   );
 }

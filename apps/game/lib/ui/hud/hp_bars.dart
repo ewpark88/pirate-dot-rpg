@@ -16,14 +16,6 @@ import 'package:pirate_dot/ui/text/table_text.dart';
 Color hpColor(double ratio, {required Color full}) =>
     ratio < 0.15 ? Skin.danger : (ratio < 0.4 ? const Color(0xFFFFC53D) : full);
 
-/// 숫자 외곽선 (도트 바탕 위에서도 읽히게).
-const _outline = [
-  Shadow(color: Color(0xFF0B1730), offset: Offset(1, 1)),
-  Shadow(color: Color(0xFF0B1730), offset: Offset(-1, 1)),
-  Shadow(color: Color(0xFF0B1730), offset: Offset(1, -1)),
-  Shadow(color: Color(0xFF0B1730), offset: Offset(-1, -1)),
-];
-
 /// 배 체력 막대 자리 — 가이드 말풍선이 이 위에 앉는다(선원 줄·하단 글자를 가리지 않게).
 final GlobalKey shipHpAnchor = GlobalKey(debugLabel: 'shipHp');
 
@@ -87,7 +79,7 @@ class BossHpBar extends ConsumerWidget {
                     '$name · ${v.now} / ${v.max}',
                     key: const Key('hud.bossHp.text'),
                     maxLines: 1,
-                    style: Skin.text(13, color: Colors.white).copyWith(shadows: _outline),
+                    style: Skin.outlined(13),
                   ),
                 ),
               ),
@@ -137,8 +129,9 @@ class _ShipHpBarState extends ConsumerState<ShipHpBar> {
           height: 20,
           padding: const EdgeInsets.symmetric(horizontal: 6),
           decoration: BoxDecoration(
-            color: Color.lerp(const Color(0xCC0B1730), const Color(0xCCB3122E), calm ? 0 : hit),
+            color: Color.lerp(const Color(0xE6262A52), const Color(0xCCB3122E), calm ? 0 : hit),
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Skin.outline, width: 2),
           ),
           child: Row(
             children: [
@@ -168,7 +161,7 @@ class _ShipHpBarState extends ConsumerState<ShipHpBar> {
                   child: Text(
                     '${v.now} / ${v.max}',
                     key: const Key('hud.shipHp.text'),
-                    style: Skin.text(12, color: Colors.white).copyWith(shadows: _outline),
+                    style: Skin.outlined(12),
                   ),
                 ),
               ),

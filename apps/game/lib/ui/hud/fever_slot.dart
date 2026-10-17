@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -69,7 +70,7 @@ class _FeverRing extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(seconds.toString(), style: Skin.text(24, color: feverGold)),
-            Text(AppLocalizations.of(context).uiFever, style: Skin.text(10, color: Colors.white)),
+            OutlineText(AppLocalizations.of(context).uiFever, size: 10),
           ],
         ),
       ),

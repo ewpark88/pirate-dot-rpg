@@ -102,8 +102,8 @@ class RebirthCard extends ConsumerWidget {
                       onPressed: () {
                         markRebirthSeen(ref);
                         unawaited(
-                          showDialog<void>(
-                            context: context,
+                          showSkinDialog<void>(
+                            context,
                             builder: (_) => RebirthDialog(preview: preview),
                           ),
                         );
@@ -259,8 +259,8 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
           : chestFor(after.$1);
       final open = ref.read(rebirthChestOpenProvider.notifier)..opened();
       unawaited(
-        showDialog<void>(
-          context: context,
+        showSkinDialog<void>(
+          context,
           builder: (_) => RebirthChestDialog(
             chest: chest,
             pieces: e != null && e.rebirths == after.$1 ? e.gain : gain,

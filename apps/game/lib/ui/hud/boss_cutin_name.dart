@@ -8,9 +8,11 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 
 // 해역 보스 첫 등장 컷인(렌더 S3) 위 이름 얹기 — S3와 합의 2026-10-16: 컷인 동안은 이름만, 띠 아래 변 + 4dp,
 // 가로는 컷인과 같이 움직인다(fx_map cutIn: 들어옴 300ms 오른쪽에서 · 머묾 600ms · 빠짐 300ms 왼쪽으로).
@@ -92,9 +94,16 @@ class _BossCutInNameState extends ConsumerState<BossCutInName> with SingleTicker
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: feverGold, width: 2),
                     ),
-                    child: Text(
-                      bossName(AppLocalizations.of(context), ref, kind),
-                      style: Skin.text(20, color: Colors.white),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          bossName(AppLocalizations.of(context), ref, kind),
+                          style: Skin.outlined(20),
+                        ),
+                        if (ref.read(tablesProvider).regions.bosses[kind] case final def?)
+                          BossTraitLine(boss: def, tables: ref.read(tablesProvider), size: 14),
+                      ],
                     ),
                   ),
                 ),

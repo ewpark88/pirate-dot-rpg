@@ -1204,5 +1204,50 @@
         "type": "String"
       }
     }
+  },
+  "uiTraitEvade": "Evade {pct}%",
+  "uiTraitEvadeArea": "Dodges bombs {pct}%",
+  "uiTraitArmor": "Armor",
+  "uiTraitRegen": "Regen {pct}%/s",
+  "uiTraitReflect": "Reflect",
+  "uiTraitEnrage": "Enrage",
+  "uiTraitEscort": "Escort ×{n}",
+  "uiTraitDash": "Dash",
+  "uiTraitWeakTo": "Weak to {families}",
+  "uiCounterChip": "Boss counter",
+  "@uiTraitEvade": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitEvadeArea": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitRegen": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitEscort": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiTraitWeakTo": {
+    "placeholders": {
+      "families": {
+        "type": "String"
+      }
+    }
   }
 }

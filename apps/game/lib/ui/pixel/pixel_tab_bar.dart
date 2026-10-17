@@ -42,14 +42,21 @@ class PixelTabItem extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 고른 탭: 하늘색 알약 안에 그림.
+              // 고른 탭: 노란 네모 칸 안에 그림 (k1).
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOutBack,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
                 decoration: BoxDecoration(
-                  color: selected ? Skin.skyDeep : const Color(0x00000000),
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: selected
+                      ? const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Skin.ribbonTop, Skin.goldBottom],
+                        )
+                      : null,
+                  borderRadius: BorderRadius.circular(12),
+                  border: selected ? Border.all(color: Skin.outline, width: 2) : null,
                 ),
                 child: PixelDot(
                   show: badge,
@@ -62,7 +69,10 @@ class PixelTabItem extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Skin.text(13, color: selected ? Skin.primaryEdge : Skin.sub),
+                style: Skin.outlined(
+                  14,
+                  color: selected ? const Color(0xFFFFFFFF) : const Color(0xFFC9CAF0),
+                ),
               ),
             ],
           ),
@@ -72,7 +82,7 @@ class PixelTabItem extends StatelessWidget {
   );
 }
 
-/// 하단 탭 막대 (스킨 r1): 화면 아래 떠 있는 흰 둥근 판, 고른 탭은 하늘색 알약.
+/// 하단 탭 막대 (스킨 k1): 짙은 남색 판 + 굵은 외곽선, 고른 탭만 노란 칸.
 class PixelTabBar extends StatelessWidget {
   const PixelTabBar({required this.children, super.key});
 
@@ -83,11 +93,11 @@ class PixelTabBar extends StatelessWidget {
     top: false,
     child: Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 4),
-      // 화면 아래 떠 있는 흰 둥근 판 (스킨 r1).
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Skin.card,
-          borderRadius: BorderRadius.circular(22),
+          color: Skin.navyPanel,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
           boxShadow: const [BoxShadow(color: Skin.shadowColor, blurRadius: 12, offset: Offset(0, 4))],
         ),
         child: Padding(

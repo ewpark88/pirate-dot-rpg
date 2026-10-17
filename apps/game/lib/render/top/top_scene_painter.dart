@@ -102,7 +102,7 @@ class TopScenePainter {
           .wake // 스킨 항적 색(앞 프레임 값)
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
-      ..paint(c, viewRect, clockMs);
+      ..paint(c, viewRect, clockMs, region: scene.tables.regions.regionAt(view.stage).id);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere

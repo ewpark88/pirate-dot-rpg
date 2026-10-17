@@ -81,7 +81,7 @@ class RebirthWhy extends ConsumerWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F7FF),
+        color: Skin.insetFill,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Skin.cardEdge, width: 1.5),
       ),

@@ -6,7 +6,7 @@ import 'package:pirate_dot/ui/skin/skin_button.dart';
 const kMinTap = 48.0;
 
 /// 버튼 (스킨 r1의 통통한 버튼 `SkinButton`). 이름과 인자는 도트 시절 그대로.
-/// [primary] = 파란 주 버튼, 아니면 흰 보조 버튼. [compact] = 그림은 작은 원형, 누르는 영역은 48dp(카드 안 승급 등).
+/// [primary] = 초록 주 버튼, 아니면 흰 보조 버튼. [compact] = 그림은 작은 원형, 누르는 영역은 48dp(카드 안 승급 등).
 class PixelButton extends StatelessWidget {
   const PixelButton({
     required this.onPressed,
@@ -54,7 +54,7 @@ class PixelButton extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: enabled ? [Skin.primaryTop, Skin.primaryBottom] : [Skin.disabled, Skin.disabled],
                 ),
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: Skin.outline, width: 2),
                 boxShadow: Skin.shadowSmall,
               ),
               child: IconTheme.merge(
