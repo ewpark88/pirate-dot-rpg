@@ -1081,5 +1081,13 @@
         "type": "String"
       }
     }
+  },
+  "uiFeverIn": "피버까지 {kills}마리",
+  "@uiFeverIn": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      }
+    }
   }
 }

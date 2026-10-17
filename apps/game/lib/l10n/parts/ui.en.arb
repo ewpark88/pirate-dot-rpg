@@ -841,5 +841,13 @@
         "type": "String"
       }
     }
+  },
+  "uiFeverIn": "Fever in {kills}",
+  "@uiFeverIn": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      }
+    }
   }
 }
