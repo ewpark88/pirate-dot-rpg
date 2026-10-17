@@ -118,7 +118,9 @@ void shapeField(Field f, GameState s, GameTables t) {
   if (g is TopGeometry) {
     final on = feverOn(s) || f.fastSail != null; // 빠른 항해 돌파도 피버처럼 전진·좌우
     g
-      ..speedScale = seaEventSpeed(s, t)
+      ..speedScale =
+          seaEventSpeed(s, t) *
+          feverApproach(s, t) // 피버 무리는 빨리 조여 온다
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
       ..weaveTick = on ? g.weaveTick + 1 : 0;
     final free = feverPose(s, t, g.weaveTick, on: on);
@@ -146,4 +148,19 @@ double seaEventSpeed(GameState s, GameTables t) {
     if (e.str('id') == id) return e.numberOr('enemySpeed', 1);
   }
   return 1;
+}
+
+/// 피버 중 적 접근 배율(meta.fever.swarm.approachMul, 없으면 1) — 화면 밖 고리에서 피버 10초 안에 배까지 조여 오게.
+double feverApproach(GameState s, GameTables t) {
+  if (!feverOn(s)) return 1;
+  final f = t.meta.raw.obj('fever');
+  return f.has('swarm') ? f.obj('swarm').numberOr('approachMul', 1) : 1;
+}
+
+/// 카메라 안인가(탑다운 — 조준 TopAim.onScreen과 같은 사각형: 바다 가운데 배 자리 기준 viewWidth × viewHeight).
+/// 화면 밀도 탐침·UI가 '화면에 보이는 적'을 셀 때(S2 2026-10-18 — 화면 밖 대기 적을 빼고).
+bool inCamera(GameTables t, double x, double y) {
+  final top = t.waves.raw.obj('top');
+  return (x - top.number('shipX')).abs() <= top.number('viewWidth') * half &&
+      (y - top.number('shipY')).abs() <= top.number('viewHeight') * half;
 }

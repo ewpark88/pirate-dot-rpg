@@ -27,6 +27,15 @@ class TopSpawn {
     return math.min(tx, ty);
   }
 
+  /// 배 중심에서 [angle] 방향으로 카메라 사각형(viewWidth × viewHeight) 테두리까지의 거리.
+  double toView(double angle) {
+    final c = math.cos(angle).abs();
+    final s = math.sin(angle).abs();
+    final tx = c > 0 ? top.viewWidth * half / c : double.infinity;
+    final ty = s > 0 ? top.viewHeight * half / s : double.infinity;
+    return math.min(tx, ty);
+  }
+
   void place(Foe e, double angle, double distance) {
     e
       ..x = top.shipX + math.cos(angle) * distance
@@ -34,8 +43,9 @@ class TopSpawn {
   }
 
   /// 화면 밖 출발 거리: 테두리 바깥과 접근 원 중 먼 곳(어느 방향이든 원 안에서 걷는 거리가 같게).
-  double startDistance(Foe e, double angle) =>
-      math.max(toBorder(angle) + top.spawnMargin + top.radiusOf(e), top.approachRadius);
+  double startDistance(Foe e, double angle) => top.spawnFromView
+      ? toView(angle) + top.spawnMargin + top.radiusOf(e)
+      : math.max(toBorder(angle) + top.spawnMargin + top.radiusOf(e), top.approachRadius);
 
   /// 방향 하나: 가중(spawnWeights)이 있으면 위·오른쪽·아래·왼쪽 사분면을 가중대로 고른 뒤 그 안에서 고르게.
   double heading(Rng rng) {
@@ -93,16 +103,17 @@ class TopSpawn {
     }
   }
 
-  /// 포위(피버 무리): 사방에 고르게 한꺼번에, 한 바퀴에 다 못 들어가면 한 줄 더 바깥에.
+  /// 포위(피버 무리): 화면(카메라) 테두리 바로 밖에 사방으로 고르게 한꺼번에 — 필드 테두리·접근 원에서 나오면 배까지 10초 넘게 걸려
+  /// 피버(10초) 동안 가장자리에 몰려 있었다(S1 실기기 2026-10-18). 한 바퀴에 다 못 들어가면 한 줄 더 바깥에.
   void _ring(List<Foe> added, Rng rng) {
-    final out = startDistance(added.first, 0);
+    final out = toView(0) + top.spawnMargin + top.radiusOf(added.first);
     final perRow = math.max(1, (turn * out / (top.mobRadius / half)).floor());
     final offset = rng.nextDouble() * turn;
     for (var i = 0; i < added.length; i++) {
       final row = i ~/ perRow;
       final inRow = math.min(perRow, added.length - row * perRow);
       final angle = offset + (i % perRow) * turn / inRow + row * half * turn / perRow;
-      place(added[i], angle, startDistance(added[i], angle) + row * (top.mobRadius / half));
+      place(added[i], angle, toView(angle) + top.spawnMargin + top.radiusOf(added[i]) + row * (top.mobRadius / half));
     }
   }
 
