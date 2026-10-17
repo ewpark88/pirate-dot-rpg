@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/hd/hd_pass_decor.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/top/skin_decor.dart';
@@ -73,6 +74,7 @@ class TopShipPainter {
         tier: tierId,
       );
       if (decor != null) _decor.over(c, decor, size, now);
+      if (skin != null && HdPassDecor.ids.contains(skin)) _pass.over(c, skin, size, now); // 패스·상점 스킨 장식
       c.restore();
       return true;
     }
@@ -148,4 +150,5 @@ class TopShipPainter {
   }
 
   final _decor = SkinDecor();
+  final _pass = HdPassDecor();
 }
