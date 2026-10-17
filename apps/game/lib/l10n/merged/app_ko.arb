@@ -1037,5 +1037,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPreviewTitle": "공격 미리보기",
+  "uiPreviewNow": "지금"
 }

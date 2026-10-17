@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_growth_reasons.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/crew_pill.dart';
+import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/crew/crew_text.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -145,6 +146,7 @@ class CrewDetailDialog extends ConsumerWidget {
                 ),
               ],
             ),
+            CrewPreviewPanel(def: def), // 공격 미리보기(작은 전장 + 등급 탭)
             // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
             CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
             if (crew == null)

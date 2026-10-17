@@ -84,6 +84,9 @@ class BattleGame extends FlameGame with _UiLinks {
   bool get useSprites => _useSprites;
   set useSprites(bool v) => painter.useSprites = _useSprites = v;
 
+  /// 읽은 아트 팩 — 선원 공격 미리보기 창이 같은 그림을 다시 읽지 않고 빌려 쓴다. 아직 못 읽었으면 null.
+  SpriteBank? get spriteBank => _sprites;
+
   /// 읽은 스프라이트 수 (0이면 전부 플레이스홀더).
   int get spriteCount => _sprites?.length ?? 0;
 

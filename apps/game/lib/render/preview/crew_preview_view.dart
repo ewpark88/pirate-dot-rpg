@@ -20,6 +20,7 @@ class CrewPreviewView extends StatefulWidget {
     required this.level,
     this.sprites,
     this.lite = false,
+    this.play = true,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class CrewPreviewView extends StatefulWidget {
   final SpriteBank? sprites;
   final bool lite;
 
+  /// false면 첫 장면만 그리고 멈춘다(UI 시험·골든 — 끝없는 애니메이션이 pumpAndSettle을 막지 않게).
+  final bool play;
+
   @override
   State<CrewPreviewView> createState() => _CrewPreviewViewState();
 }
@@ -39,7 +43,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   late CrewPreview _engine;
   late BattleScene _scene;
   late ScenePainter _painter;
-  late final Ticker _ticker = createTicker(_onFrame);
+  Ticker? _ticker;
   final ValueNotifier<int> _repaint = ValueNotifier(0);
   Duration _last = Duration.zero;
   var _tickAccum = 0.0;
@@ -51,7 +55,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   void initState() {
     super.initState();
     _restart();
-    unawaited(_ticker.start());
+    if (widget.play) unawaited((_ticker = createTicker(_onFrame)).start());
   }
 
   void _restart() {
@@ -64,6 +68,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
     for (var i = 0; i <= _scene.juice.lookaheadTicks; i++) {
       _scene.push(_engine.step());
     }
+    _scene.update(0);
   }
 
   @override
@@ -98,7 +103,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
 
   @override
   void dispose() {
-    _ticker.dispose();
+    _ticker?.dispose();
     _repaint.dispose();
     super.dispose();
   }

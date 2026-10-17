@@ -797,5 +797,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPreviewTitle": "Attack preview",
+  "uiPreviewNow": "Now"
 }
