@@ -113,7 +113,8 @@ class TopBossLoot {
     for (final b in _bursts) {
       final age = now - b.ms;
       if (age < 0) continue;
-      if (b.style != LootStyle.boss) _bits.pillar(c, b.at, age, wide: b.style == LootStyle.reward);
+      if (b.style == LootStyle.chest) _bits.vBeams(c, b.at, age, sprites);
+      if (b.style == LootStyle.reward) _bits.pillar(c, b.at, age, wide: true);
       if (b.style == LootStyle.reward) _bits.stars(c, b.at, age);
       _rays(c, b, age);
       if (flash && age < 160) {
