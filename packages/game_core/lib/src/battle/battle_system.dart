@@ -6,6 +6,7 @@ import 'package:game_core/src/battle/fever_strike.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
+import 'package:game_core/src/battle/refill_wave.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/tailwind_speed.dart';
@@ -216,6 +217,8 @@ class BattleSystem implements GameSystem {
         hitStopTicks: old.hitStopTicks,
         speed: old.speed,
         chest: old.chest,
+        fever: old.fever, // 피버 중 보스를 잡아도 피버가 이어진다(전엔 여기서 조용히 끊겨 FeverEnded가 없었다)
+        feverTicksLeft: old.feverTicksLeft,
       ),
     );
     final nf = _sync(next, ctx)

@@ -12,6 +12,15 @@ import 'package:game_data/game_data.dart';
 /// 피버 중인가 (BattleView.feverTicksLeft > 0).
 bool feverOn(GameState s) => (s.battle?.feverTicksLeft ?? 0) > 0;
 
+/// 피버가 켜진 첫 틱(남은 틱이 아직 꽉 찬 틱)인가 — 전투가 피버를 처음 보는 틱. 첫 일격·피버 무리 즉시 소환이 쓴다.
+bool feverJustStarted(GameState s, GameTables t) {
+  if (!feverOn(s)) return false;
+  final f = t.meta.raw.obj('fever');
+  final full = ((f.number('durationSec') + feverSupport(s, t).extraSec) / (t.waves.tickMs * secondsPerMillisecond))
+      .round();
+  return s.battle!.feverTicksLeft == full;
+}
+
 /// 피버 중 피해 % 합에 더하는 값 (damageMultiplier − 1 — 설계서 4.8: 새 보너스는 마지막 % 합에만).
 double feverDamageBonus(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('damageMultiplier') - 1 : 0;

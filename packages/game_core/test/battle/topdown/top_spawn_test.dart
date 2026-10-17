@@ -35,6 +35,7 @@ void main() {
     viewWidth: base.viewWidth,
     viewHeight: base.viewHeight,
     mobSpeedScale: base.mobSpeedScale,
+    spawnFromView: base.spawnFromView, // 표 값 그대로(S2 밀도 — 켜면 카메라 테두리 밖 출발)
     spawnPatterns: p,
     scatterGapMin: 0.3,
     scatterGapMax: 1.2,
@@ -170,5 +171,49 @@ void main() {
       ..pull(ship, base.shipX, base.shipY, 30);
     expect((ship.x, ship.y), (x0 + 5, y0), reason: '밀기·끌기 무시');
     expect(g.heading(ship), 0, reason: '오른쪽으로 지나감');
+  });
+
+  test('scatterSpanSec: 흩뿌림 누적 대기를 상한까지 줄인다(간격 비율 그대로) — 0이면 그대로', () {
+    double lastHold(double span) {
+      final raw = {
+        ...w.raw.raw,
+        'top': {...w.raw.obj('top').raw, 'scatterSpanSec': span},
+      };
+      final g = TopGeometry(w, TopField.of(WavesTable.fromJson(JsonReader(raw, 'test'))));
+      final p = withPatterns({'scatter': 1});
+      final f = field();
+      TopGeometry(
+        w,
+        TopField(
+          width: p.width,
+          height: p.height,
+          shipX: p.shipX,
+          shipY: p.shipY,
+          shipRadius: p.shipRadius,
+          mobRadius: p.mobRadius,
+          bossRadius: p.bossRadius,
+          spawnMargin: p.spawnMargin,
+          approachRadius: p.approachRadius,
+          approachBoost: p.approachBoost,
+          swarmGroupsMin: p.swarmGroupsMin,
+          swarmGroupsMax: p.swarmGroupsMax,
+          swarmSpreadDeg: p.swarmSpreadDeg,
+          separation: p.separation,
+          bossStandoff: p.bossStandoff,
+          bossOrbitDegPerSec: p.bossOrbitDegPerSec,
+          reachScale: p.reachScale,
+          viewWidth: p.viewWidth,
+          viewHeight: p.viewHeight,
+          spawnPatterns: p.spawnPatterns,
+          scatterGapMin: p.scatterGapMin,
+          scatterGapMax: p.scatterGapMax,
+          scatterSpanSec: g.top.scatterSpanSec,
+        ),
+      ).spawnWave(f, 30, ctx(7), count: 40);
+      return f.foes.map((e) => e.holdSec).reduce(math.max);
+    }
+
+    expect(lastHold(0), greaterThan(4), reason: '상한 없음: 40마리면 길게 이어진다');
+    expect(lastHold(4), closeTo(4, 1e-9));
   });
 }

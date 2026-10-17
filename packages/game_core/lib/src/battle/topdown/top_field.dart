@@ -34,6 +34,7 @@ class TopField {
     this.spawnPatterns,
     this.scatterGapMin = 0,
     this.scatterGapMax = 0,
+    this.scatterSpanSec = 0,
     this.arcSpreadDeg = 0,
     this.nearSpawn,
     this.standoffGrow = 0,
@@ -89,6 +90,7 @@ class TopField {
           : null,
       scatterGapMin: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).first as num).toDouble() : 0,
       scatterGapMax: j.has('scatterGapSec') ? ((j.raw['scatterGapSec'] as List).last as num).toDouble() : 0,
+      scatterSpanSec: j.numberOr('scatterSpanSec', 0),
       arcSpreadDeg: j.numberOr('arcSpreadDeg', 0),
       nearSpawn: j.has('nearSpawn')
           ? (
@@ -123,6 +125,9 @@ class TopField {
   /// scatter 패턴: 1~2마리씩 나오는 간격(초) 범위.
   final double scatterGapMin;
   final double scatterGapMax;
+
+  /// 흩뿌림 전체 길이 상한(초) — 누적 대기가 넘으면 간격을 같은 비율로 줄인다(마리가 많으면 마지막이 10초 넘게 기다리던 것, S2 밀도). 0이면 상한 없음.
+  final double scatterSpanSec;
 
   /// arc 패턴: 반원 대열의 퍼짐(도).
   final double arcSpreadDeg;
@@ -243,6 +248,7 @@ class TopField {
     spawnPatterns: spawnPatterns,
     scatterGapMin: scatterGapMin,
     scatterGapMax: scatterGapMax,
+    scatterSpanSec: scatterSpanSec,
     arcSpreadDeg: arcSpreadDeg,
     nearSpawn: nearSpawn,
   );

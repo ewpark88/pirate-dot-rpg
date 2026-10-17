@@ -131,6 +131,12 @@ class TopSpawn {
       }
       wait += top.scatterGapMin + rng.nextDouble() * (top.scatterGapMax - top.scatterGapMin);
     }
+    final last = added.last.holdSec;
+    if (top.scatterSpanSec > 0 && last > top.scatterSpanSec) {
+      for (final e in added) {
+        e.holdSec *= top.scatterSpanSec / last; // 간격 비율은 그대로, 전체 길이만 상한까지
+      }
+    }
   }
 
   /// 반원 대열: 한 방향에서 넓게(arcSpreadDeg) 줄지어, 칸이 모자라면 한 줄 더 바깥에.
