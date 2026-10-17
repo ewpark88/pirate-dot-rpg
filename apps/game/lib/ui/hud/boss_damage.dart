@@ -167,7 +167,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('MVP', style: Skin.text(16, color: Skin.goldTop)),
+                            Text(l10n.uiBossDamageMvp, style: Skin.text(16, color: Skin.goldTop)),
                             Text(shortCrewName(l10n, mvp), style: Skin.text(20, color: Colors.white)),
                             Text(
                               l10n.uiBossDamageLine(widget.damage[mvp.id]!.format(), pct(widget.damage[mvp.id]!)),

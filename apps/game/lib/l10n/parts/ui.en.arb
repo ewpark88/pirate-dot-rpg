@@ -627,5 +627,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiBossDamageMvp": "MVP"
 }
