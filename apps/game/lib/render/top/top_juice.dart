@@ -137,6 +137,26 @@ class TopJuice {
     _stars.clear();
   }
 
+  /// 카툰 연기 구름(HD 처치 '펑'): 뭉게 4개가 부풀며 잉크 테와 함께 옅어진다.
+  void _puff(Canvas c, double x, double y, double size, double k) {
+    final grow = 1 - (1 - k) * (1 - k);
+    final a = 1 - k;
+    for (var j = 0; j < 4; j++) {
+      final ang = j * math.pi / 2 + x * 0.07;
+      final o = Offset(x + math.cos(ang) * size * 0.55 * grow, y + math.sin(ang) * size * 0.45 * grow - 3 * grow);
+      final r = size * (0.45 + 0.55 * grow) * (j.isEven ? 1 : 0.8);
+      _fill
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.6
+        ..color = Color.fromRGBO(26, 20, 36, 0.55 * a);
+      c.drawCircle(o, r, _fill);
+      _fill
+        ..style = PaintingStyle.fill
+        ..color = Color.fromRGBO(255, 255, 255, 0.85 * a);
+      c.drawCircle(o, r, _fill);
+    }
+  }
+
   static const _popMs = 560.0;
   static const _pastel = [0xFFFF6FB5, 0xFF5FD8FF, 0xFFFFD23A, 0xFF7CF06A, 0xFFB98CFF, 0xFFFF9A3C];
   final _star = Path();
@@ -161,6 +181,7 @@ class TopJuice {
         _fill.color = const Color(0xE6FFFFFF);
         c.drawCircle(Offset(x, y), size * 0.9, _fill);
       }
+      if (!lite && t < 0.42) _puff(c, x, y, size.toDouble(), t / 0.42);
       if (t < 0.3) {
         final k = t / 0.3;
         _fill
