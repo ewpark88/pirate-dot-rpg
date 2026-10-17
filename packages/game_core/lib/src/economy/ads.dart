@@ -42,7 +42,8 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
           : openChest(s, ctx, gold: chestReward(s, t).times(reward.number('value'))),
     AdPlacement.tailwind => _saved(addTailwind(s, t, now, Duration(seconds: reward.integer('durationSec'))), ctx),
     AdPlacement.offline => _saved(
-      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!), // 광고 ×2도 화물칸 용량까지
+      // 광고 ×2도 복귀 보상과 같은 한도(화물칸 × offline.capMultiplier)
+      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!, capScale: offlineCapScale(ctx.tables)),
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),

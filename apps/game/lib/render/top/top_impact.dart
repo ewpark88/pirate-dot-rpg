@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/painting.dart' show HSVColor;
+import 'package:pirate_dot/render/hd/hd_impact.dart';
 
 /// 탑다운 범위 공격 임팩트 v2 (사용자 '모레이 같은 범위 스킬 임팩트가 허접하다', S1):
 /// 흰 번쩍 코어 → 등급 색 충격파 고리 2겹(빠르게 퍼짐) → 파편(수중은 거품) 입자 → 바닥 잔흔(0.6초에 사라짐).
@@ -19,6 +20,12 @@ class TopImpact {
     _hits.add(_Hit(x, y, radius, color, atMs, water: water, rainbow: rainbow));
   }
 
+  /// 계열별 HD 착탄(사용자 '임팩트를 다 다르게') — 선원 범위·스플래시는 이쪽으로.
+  final hd = HdImpact();
+
+  void addFamily(String family, double x, double y, double radius, int color, int rarity, double atMs) =>
+      hd.add(family, x, y, radius, color, rarity, atMs);
+
   double _chainNow = -1;
   int _chainN = 0;
 
@@ -34,6 +41,7 @@ class TopImpact {
   }
 
   void clear() {
+    hd.clear();
     _hits.clear();
     _chainN = 0;
   }
@@ -42,6 +50,7 @@ class TopImpact {
 
   /// 전장 좌표. [flash] 꺼짐이면 흰 번쩍 코어를 뺀다, [lite](절전·폭발 많음)면 입자를 반.
   void paint(Canvas c, double now, {required bool flash, required bool lite}) {
+    hd.paint(c, now, lite: lite);
     _hits.removeWhere((h) => now - h.ms >= _lifeMs);
     for (final h in _hits) {
       final age = now - h.ms;

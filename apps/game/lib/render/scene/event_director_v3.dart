@@ -61,14 +61,7 @@ extension _FamilyEvents on EventDirector {
     final colors = scene.tables.rarities.rarities;
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final delayMs = math.max<double>(0, (impact - _player.position) * _player.tickMs / math.max(1, frame.speed));
-    scene.topHits.impact.add(
-      e.x,
-      e.y,
-      e.splashRadius!,
-      color,
-      scene.clockMs + delayMs,
-      rainbow: rarity >= colors.length - 1,
-    );
+    scene.topHits.impact.addFamily(e.family, e.x, e.y, e.splashRadius!, color, rarity, scene.clockMs + delayMs);
   }
 
   bool _vanguardAt(double x, double y) {
