@@ -258,7 +258,8 @@ class BattleSystem implements GameSystem {
     final ratio = view.shipHpMax.isZero ? 1.0 : (view.shipHp / view.shipHpMax).toDouble();
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
-      ..enemyHpScale = treasureHpMultiplier(s, ctx.tables);
+      ..enemyHpScale = treasureHpMultiplier(s, ctx.tables)
+      ..rebirths = s.progress.rebirths;
     shapeField(nf, s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

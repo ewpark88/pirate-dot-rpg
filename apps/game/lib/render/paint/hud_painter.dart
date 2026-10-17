@@ -182,6 +182,9 @@ class HudPainter {
   void _comboAt(Canvas c, double y) {
     final v = scene.layout.viewDots;
     final now = scene.clockMs;
+    final fever = scene.frame.feverTicksLeft > 0;
+    // 사용자 2026-10-17 '콤보는 피버 타임에만': fx_map combo.feverOnly면 일반 전투에선 배너를 숨긴다(처치 숫자·POP은 그대로).
+    if (!fever && _fx.combo.raw['feverOnly'] == true) return;
     _banner.paint(
       c,
       (v.left + v.width / 2).floorToDouble(),
@@ -191,7 +194,7 @@ class HudPainter {
       scene.combo.lastAddMs,
       minKills: _fx.combo.integer('minKills'),
       baseColor: _comboColor,
-      fever: scene.frame.feverTicksLeft > 0,
+      fever: fever,
       onMilestone: (_) {
         scene.shake.trigger(scene.juice.shake['aoe']!);
         scene.sound.sfx('multiKill', clockMs: now);

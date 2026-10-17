@@ -24,14 +24,14 @@ void spawnWave(Field f, int stage, SystemContext ctx, {int? count, String? kind}
 void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? kind}) {
   final t = ctx.tables;
   final w = t.waves;
-  final region = t.regions.regionAt(stage);
+  final species = t.regions.enemiesAt(stage, rebirths: f.rebirths); // 초반엔 1~2종, 진행·환생으로 늘어난다
   final n = count ?? (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
   final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
   final gold = stageCurve(w.goldBase, w.goldGrowth, stage).times(share);
   for (var i = 0; i < n; i++) {
-    final id = kind ?? region.enemies[ctx.rng.nextInt(region.enemies.length)];
+    final id = kind ?? species[ctx.rng.nextInt(species.length)];
     final def = t.regions.enemies[id] ?? t.regions.enemies.values.first;
     final k = def.swarmCount > 0 ? def.swarmCount : 1; // 떼(도감 v2): 한 자리에 k마리, 몫 ÷ k
     for (var j = 0; j < k; j++) {

@@ -6,16 +6,22 @@ import 'package:pirate_dot/render/hd/hd_species.dart';
 
 /// 굽힌 HD 시트: 칸 [cell]px 정사각 × 8열(고리 0.1초씩) × 2행(0 = 왼쪽 봄 그대로, 1 = 좌우 뒤집어 오른쪽 봄).
 /// 전장 크기 [world]단위(지금 도트 칸과 같은 자리 크기)로 그린다 — 배율 = world / cell.
+/// HD v2 표정 보스([hdMoodSpecies])는 2행을 더 굽는다: 2·3행(왼·오른) = 0~3열 공격 예고 4장 + 4~7열 쓰러짐 4장(0.2초씩).
 class HdSheet {
-  HdSheet(this.image, this.cell, this.world);
+  HdSheet(this.image, this.cell, this.world, {this.moods = false});
 
   final Image image;
   final double cell;
   final double world;
+  final bool moods;
 
   double get scale => world / cell;
 
-  Rect src(int frame, {required bool right}) => Rect.fromLTWH(frame * cell, right ? cell : 0, cell, cell);
+  Rect src(int frame, {required bool right, HdMood mood = HdMood.idle}) {
+    if (!moods || mood == HdMood.idle) return Rect.fromLTWH(frame * cell, right ? cell : 0, cell, cell);
+    final col = (mood == HdMood.down ? 4 : 0) + (frame >> 1);
+    return Rect.fromLTWH(col * cell, (right ? 3 : 2) * cell, cell, cell);
+  }
 }
 
 /// HD 카툰 굽기(docs/specs/render-hd-style.md 5절): 코드 벡터 종을 처음 보일 때 기기 해상도로 한 장에 굽는다(toImageSync —
@@ -108,7 +114,7 @@ class HdSheets {
     _used[key] = ++_tick;
     final have = _ready[key];
     if (have != null) return have;
-    final sheet = bake(sp, world, _density, cap: _cap);
+    final sheet = bake(sp, world, _density, cap: _cap, moods: boss && hdMoodSpecies.contains(kind));
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
@@ -141,29 +147,32 @@ class HdSheets {
   }
 
   /// 한 종을 8장 × 2방향으로 굽는다(각 칸은 잘라 옆 칸에 번지지 않게).
-  static HdSheet bake(HdSpecies sp, double world, double density, {double cap = maxCell}) {
-    final cell = (world * density).clamp(16.0, cap).roundToDouble();
+  static HdSheet bake(HdSpecies sp, double world, double density, {double cap = maxCell, bool moods = false}) {
+    final rows = moods ? 4 : 2;
+    // 표정 보스는 4행이라 칸 상한을 한 단계 낮춘다(메모리 2배 → 약 1.1배).
+    final cell = (world * density).clamp(16.0, moods ? cap * 0.75 : cap).roundToDouble();
     final r = cell / (2 * sp.extent);
     final rec = PictureRecorder();
     final c = Canvas(rec);
     final k = HdKit();
     for (var f = 0; f < HdKit.frames; f++) {
-      for (var row = 0; row < 2; row++) {
+      for (var row = 0; row < rows; row++) {
         c
           ..save()
           ..clipRect(Rect.fromLTWH(f * cell, row * cell, cell, cell))
           ..translate(f * cell + cell / 2, row * cell + cell / 2);
-        if (row == 1) c.scale(-1, 1);
+        if (row.isOdd) c.scale(-1, 1);
         k
+          ..mood = row < 2 ? HdMood.idle : (f < 4 ? HdMood.windup : HdMood.down)
           ..begin(r)
           ..shadow(c, r, sp.ground);
-        sp.draw(k, c, r, f * HdKit.loopMs / HdKit.frames);
+        sp.draw(k, c, r, row < 2 ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4);
         c.restore();
       }
     }
     final pic = rec.endRecording();
-    final img = pic.toImageSync((cell * HdKit.frames).toInt(), (cell * 2).toInt());
+    final img = pic.toImageSync((cell * HdKit.frames).toInt(), (cell * rows).toInt());
     pic.dispose();
-    return HdSheet(img, cell, world);
+    return HdSheet(img, cell, world, moods: moods);
   }
 }

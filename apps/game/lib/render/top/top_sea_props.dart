@@ -19,8 +19,12 @@ import 'package:game_data/game_data.dart';
 class TopSeaProps {
   TopSeaProps(this.cfg);
 
-  /// fx_map `topSea`에 `props`가 없으면 null(소품 없음).
-  static TopSeaProps? of(JsonReader topSea) => topSea.has('props') ? TopSeaProps(topSea.obj('props')) : null;
+  /// fx_map `topSea`에 `props`가 없거나 `enabled: false`면 null(소품 없음 — 사용자 2026-10-18 '떠내려가는 것들이 꼭
+  /// 필요한가?': 전투 시야를 가려 끔. 표 키로 다시 켤 수 있게 코드는 남긴다).
+  static TopSeaProps? of(JsonReader topSea) =>
+      topSea.has('props') && (!topSea.obj('props').has('enabled') || topSea.obj('props').boolean('enabled'))
+      ? TopSeaProps(topSea.obj('props'))
+      : null;
 
   final JsonReader cfg;
   late final double _spacing = cfg.number('spacing');
