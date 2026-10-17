@@ -3508,7 +3508,7 @@ const Map<String, String> rawTables = {
     "stackRows": 3
   },
   "bossKill": {
-    "slowMoMs": 300,
+    "slowMoMs": 400,
     "slowMoRate": 0.3,
     "flash": true,
     "coinRain": 16

@@ -164,6 +164,7 @@ class ProductCard extends ConsumerWidget {
               else
                 SkinButton(
                   key: Key('shop.buy.${p.id}'),
+                  weight: PressWeight.heavy,
                   tone: SkinTone.gold,
                   height: 44,
                   onPressed: () => buyProduct(ref, p.id),

@@ -61,6 +61,7 @@ class StarterOffer extends ConsumerWidget {
           else
             SkinButton(
               key: const Key('shop.buy.starter_pack'),
+              weight: PressWeight.heavy,
               tone: SkinTone.gold,
               onPressed: () => buyProduct(ref, offer.product.id),
               child: Text(l10n.uiShopBuy(offer.price)),
@@ -178,6 +179,7 @@ class StarterPackDialog extends ConsumerWidget {
               width: double.infinity,
               child: SkinButton(
                 key: const Key('shop.buy.starter_pack'),
+                weight: PressWeight.heavy,
                 tone: SkinTone.gold,
                 height: 56,
                 onPressed: offer.owned ? null : () => buyProduct(ref, offer.product.id),

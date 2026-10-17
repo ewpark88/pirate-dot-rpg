@@ -22,6 +22,7 @@ class EnemyPose {
   bool slowed = false;
   bool burning = false;
   bool vulnerable = false;
+  int bossBars = 1; // 보스 체력 층 수(S2 boss-feel — 1이면 층 없음)
   double x = 0;
   double y = 0;
 
@@ -58,6 +59,7 @@ class EnemyPose {
     slowed = v.slowed;
     burning = v.burning;
     vulnerable = v.vulnerable;
+    bossBars = v.bossBars;
     heading = nh;
     emerging = v.emerging;
     vanguard = v.vanguard;

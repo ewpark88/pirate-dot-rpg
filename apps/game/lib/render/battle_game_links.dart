@@ -70,6 +70,9 @@ mixin _UiLinks on FlameGame {
   /// 보스 등장 연출 남은 ms — UI 보스 대화창은 이게 0이 된 뒤에 띄운다(S1 '대화창과 겹치지 않게').
   double get bossEntryMs => scene.moments.entryMs;
 
+  /// 보스 처치 피니시(BOSS DOWN!/VICTORY! 1.4초) 남은 ms — UI MVP 창은 이게 0이 된 뒤에.
+  double get bossFinishMs => (1400 - (scene.clockMs - scene.moments.finishAt)).clamp(0.0, 1400.0);
+
   /// 운영자: 컷인 다시 보기.
   void resetSeenBosses() => scene.moments.resetSeenBosses();
 

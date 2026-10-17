@@ -193,6 +193,7 @@ class RebirthDialog extends ConsumerWidget {
         PixelButton(
           key: const Key('rebirth.confirm'),
           primary: true,
+          weight: PressWeight.heavy,
           onPressed: () {
             ref.read(commandSinkProvider).send(const Rebirth());
             Navigator.of(context).pop();

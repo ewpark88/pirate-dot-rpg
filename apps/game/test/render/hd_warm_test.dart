@@ -14,8 +14,12 @@ void main() {
     final hd = HdSheets()..plan(stage, regions, (k, {required boss}) => boss ? 56 : 16);
     final n = hd.queued;
     expect(n, greaterThan(0));
+    hd
+      ..step(2) // 첫 프레임: 콜드 스타트라 굽지 않음
+      ..step(2); // 둘째 프레임: 아직(화면 몫만)
+    expect(hd.queued, n, reason: '첫 두 프레임은 미리 굽기 없음(콜드 스타트)');
     hd.step(2);
-    expect(hd.queued, n - 1, reason: '프레임당 한 종');
+    expect(hd.queued, n - 1, reason: '그 뒤 프레임당 한 종');
     expect(hd.bytes, greaterThan(0));
     hd.plan(stage, regions, (k, {required boss}) => 16);
     expect(hd.queued, n - 1, reason: '같은 스테이지면 다시 세우지 않는다');
