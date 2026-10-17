@@ -131,7 +131,7 @@ void main() {
     expect(sdk.bgm, ['bgm/sea1.ogg', 'bgm/sea2.ogg']);
     a.setVolumes(sfx: 1, bgm: 0.5);
     await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 250)); // 진행 중인 페이드가 끝난 뒤
-    expect(sdk.bgmVolume, 0.5);
+    expect(sdk.bgmVolume, closeTo(0.5 * AudioAdapter.bgmMix, 1e-9)); // 설정 음량 × 기본 믹스(효과음 대비 0.7)
   });
 
   test('배경음 볼륨 0에서 고른 곡은 켜질 때 시작', () async {
@@ -186,7 +186,7 @@ void main() {
     expect(sdk.bgm, ['bgm/sea.ogg', 'bgm/bgm_fever.ogg']);
     expect(sdk.bgmStartVolume, 0, reason: '새 곡은 0에서 시작'); // 시간에 기대지 않게
     await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 250));
-    expect(sdk.bgmVolume, closeTo(0.8, 1e-9));
+    expect(sdk.bgmVolume, closeTo(0.8 * AudioAdapter.bgmMix, 1e-9));
     a
       ..playBgm('sea')
       ..playBgm('bgm_fever'); // 같은 곡으로 바로 돌아오면 그대로(이미 울리는 곡)

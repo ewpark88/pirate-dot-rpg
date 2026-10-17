@@ -56,6 +56,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'bountySwept' ||
     'bountyTicketsRefilled' => _bountyEventFromJson(t, j),
     'enemyFired' ||
+    'enemyWindup' ||
     'enemyEmerging' ||
     'attackMissed' ||
     'shieldUp' ||

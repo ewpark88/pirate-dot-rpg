@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_damage_line.dart';
 import 'package:pirate_dot/ui/crew/crew_growth_reasons.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/crew_pill.dart';
@@ -27,8 +28,7 @@ import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
-/// 상세 카드 폭(dp).
-const _cardWidth = 132.0;
+const _cardWidth = 132.0; // 상세 카드 폭(dp)
 
 /// 승급 버튼을 보이는 상태 = 승급 문 앞.
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
@@ -146,12 +146,12 @@ class CrewDetailDialog extends ConsumerWidget {
             ),
             // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
             CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
-            // 공격 미리보기(작은 전장 + 등급 탭) — 특색 아래(S4: 360 첫 화면에 '키울지·쓸지' 정보가 밀리지 않게).
-            CrewPreviewPanel(def: def),
+            CrewPreviewPanel(def: def), // 공격 미리보기 — 특색 아래(S4: 360 첫 화면에 '키울지·쓸지'가 밀리지 않게)
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
               _Growth(
+                id: def.id,
                 crew: crew,
                 rarity: rarity,
                 tables: tables,
@@ -233,6 +233,7 @@ class CrewDetailDialog extends ConsumerWidget {
 /// 레벨 / 등급 최대 · 경험치 막대(문 앞이면 안내) · 카드 수 · 파워.
 class _Growth extends StatelessWidget {
   const _Growth({
+    required this.id,
     required this.crew,
     required this.rarity,
     required this.tables,
@@ -240,10 +241,10 @@ class _Growth extends StatelessWidget {
     required this.dps,
   });
 
+  final String id;
   final CrewState crew;
 
-  /// 이 선원의 초당 공격력 (표시 글).
-  final String dps;
+  final String dps; // 이 선원의 초당 공격력(표시 글)
   final RarityDef rarity;
   final GameTables tables;
   final bool atGate;
@@ -266,6 +267,7 @@ class _Growth extends StatelessWidget {
               Text(l10n.uiCrewDps(dps), key: const Key('crew.detail.power')),
             ],
           ),
+          CrewDamageLine(crewId: id), // 이번 스테이지·지난 보스 피해(#13) — '얼마나 잘 싸우나'라 파워 줄 바로 아래(S4)
           const SizedBox(height: 4),
           if (atGate || need <= 0)
             Text(l10n.uiCrewAtGate, style: dim)
