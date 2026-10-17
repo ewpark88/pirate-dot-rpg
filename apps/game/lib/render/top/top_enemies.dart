@@ -53,7 +53,8 @@ class TopEnemies {
       final huge = e.boss && sheet.frameW >= _hugeW;
       // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
       final frame = ((scene.clockMs / (huge ? 350 : (e.boss ? 300 : 220))).floor() + e.id) % sheet.frames;
-      final breathe = e.boss ? 1 + 0.03 * math.sin(clock / 420 + e.id) : 1.0;
+      final angry = e.boss && (scene.topHits.traits?.bossFx.enraged(e.id) ?? false); // 분노: 8% 크게
+      final breathe = e.boss ? (1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       final rotation =

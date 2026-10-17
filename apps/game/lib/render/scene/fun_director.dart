@@ -108,8 +108,12 @@ bool funEvent(BattleScene s, GameEvent e) {
       _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
-    case AttackMissed(:final x, :final y):
+    case AttackMissed(:final x, :final y, :final reason):
       s.topHits.crew.miss(x, y, s.clockMs);
+      if (reason == 'evade') s.topHits.traits?.bossFx.evade(x, y, s.clockMs);
+    case BossTraitFired() when s.isTop:
+      s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);
+      if (e.trait == 'enrage' || e.trait == 'dash') s.shake.trigger(s.juice.shake['aoe']!);
     case FeverStarted():
       // 화면 흔들기 없음(사용자 '화면이 좌우로 움직이면 조잡하다') — 시작 임팩트는 금빛 번쩍·충격파·'쑥' 가속(세로).
       s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');

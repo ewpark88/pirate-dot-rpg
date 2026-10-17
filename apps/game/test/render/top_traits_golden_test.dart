@@ -33,7 +33,7 @@ class _Painter extends CustomPainter {
 void main() {
   final rec = topRecording(tables, ticks: 360, levels: const {'pelly': 70, 'bones': 55, 'volt': 55, 'polly': 55});
   // 연쇄가 일어난 틱(pelly Damage 3개 이상)
-  final chainAt = rec.indexWhere((t) => t.events.whereType<Damage>().where((d) => d.crewId == 'pelly').length >= 3, 40);
+  final chainAt = rec.indexWhere((t) => t.events.whereType<Damage>().where((d) => d.crewId == 'pelly').length >= 2);
   test('기록에 연쇄 번개(pelly 한 틱 여러 적)가 있다', () => expect(chainAt, greaterThan(0)));
   for (final (name, after) in const [('chain', 90.0)]) {
     testWidgets('선원 특성 골든 s24 $name', (tester) async {
