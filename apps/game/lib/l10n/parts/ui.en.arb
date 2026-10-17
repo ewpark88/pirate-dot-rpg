@@ -183,7 +183,7 @@
   "uiRebirthChestSummons": "Hero+ summon ×{count}",
   "uiRebirthChestSkin": "New ship skin: {name}",
   "uiRebirthChestTitle": "New title: {name}",
-  "uiRebirthSail": "Set Sail",
+  "uiRebirthSail": "Set sail!",
   "uiRebirthRowLocked": "Spend {count} more pieces to unlock",
   "uiRebirthRow": "Row {row}",
   "uiRebirthShopPieces": "{count} pieces to spend",
@@ -492,6 +492,7 @@
   },
   "uiBossFailShip": "Upgrade ship",
   "uiBossFailCrew": "Level up crew",
+<<<<<<< HEAD
   "uiDexNew": "New in the Monster Log! {name}",
   "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
   "uiDexTitleShort": "Log",
@@ -508,10 +509,21 @@
         "type": "String"
       },
       "gems": {
+=======
+  "uiSailHint": "Your map is ready! Set sail to start fast sailing",
+  "uiFastSailProgress": "Fast sail {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+>>>>>>> review/sail-ui
         "type": "int"
       }
     }
   },
+<<<<<<< HEAD
   "uiSettingsFlashOff": "Off",
   "uiSettingsFlashSoft": "Soft",
   "uiSettingsFlashFull": "Full",
@@ -540,4 +552,14 @@
     }
   },
   "uiBossDamageTap": "Tap to close"
+=======
+  "uiFastSailStreak": "Boss streak {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+>>>>>>> review/sail-ui
 }
