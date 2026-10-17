@@ -61,8 +61,8 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
     final preview = ref.read(offlinePreviewProvider)(ref.read(gameStateProvider), ref.read(clockProvider).now());
     if (preview == null) return;
     _open = true;
-    await showDialog<void>(
-      context: context,
+    await showSkinDialog<void>(
+      context,
       barrierDismissible: false,
       builder: (_) => OfflineRewardDialog(preview: preview),
     );
@@ -111,6 +111,8 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
     final cut = preview.gold > got ? preview.gold - got : BigNum.zero;
     return PixelDialog(
       title: l10n.uiOfflineTitle,
+      // 받기 버튼으로만 닫는다(바깥 눌러도 안 닫힘).
+      showClose: false,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

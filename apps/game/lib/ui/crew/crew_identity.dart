@@ -190,11 +190,7 @@ class CrewIdentityPanel extends ConsumerWidget {
       key: Key('crew.identity.panel.$crewId'),
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F7FF),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Skin.cardEdge, width: 1.5),
-      ),
+      decoration: Skin.inset(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

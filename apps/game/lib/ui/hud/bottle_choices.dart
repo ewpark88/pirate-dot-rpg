@@ -97,7 +97,7 @@ class _Bubble extends StatelessWidget {
             colors: [Color(0xFFFFFDF5), Color(0xFFF3E7C6)],
           ),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.white, width: 2.5),
+          border: Border.all(color: Skin.outline, width: 2.5),
           boxShadow: Skin.shadow,
         ),
         child: Column(

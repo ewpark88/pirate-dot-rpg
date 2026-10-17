@@ -3,12 +3,26 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/user-feedback-2026-10-17.md`(S1 재배정) · 가이드 v2 `docs/specs/ui-guide-v2.md`(승인·구현됨) |
-| 상태 | lane/ui 02a85945 — S1 머지 대기(test/ui 전체 + --full은 slot 순번 S2 → S3 → S4) |
-| 다음 | slot 받으면 최신 main 머지 → test/ui 전체·--full → 해시 보고. S2 crew-traits 문구 review 검토. S5 hud-layout(#9)이 stage_gauge·fun_strips·battle_top_strip을 내 커밋 뒤에 손댐 |
-| 기다리는 것 | slot · S5 '지금 합치기'(MergeAllCards 전체 합치기) 문구/명령 결정 |
+| 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
+| 상태 | k1 시안 92b0c2c4 S1 승인 대기(design_k1_* 골든·docs/specs/ui-design-k1/k1_vs_ref_384.png, Skin 바꿈 → test/ui 골든 대부분 깨짐 = 정상, 승인 뒤 slot 일괄) · 이전: 수집의 재미 94c51a99 · 피버까지 n마리 f1561459 · 팝업 크기 c73b6ae4(--full 전, slot 때 머지) · 보스 특성 UI 1차(이 커밋, 멈춤) |
+| 다음 | 디자인 개편: 참고 이미지 8장 → Skin 토큰(ui/skin·ui/pixel) → 대표 화면 3장(전투 HUD·배 탭·창 하나) 4기기 시안 → S1 승인 → 일괄 |
+| 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
+
+### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
+- 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
+- 끝난 것: `apps/game/lib/ui/hud/boss_traits.dart`(traitIcon·traitName·bossCounters·traitSummary·BossTraitLine·bossCounterFamiliesProvider·CounterChip), 이름표(boss_intro)·컷인 이름(boss_cutin_name)·약점 띠(boss_weakness: 특성 + 약점 = 표 약점 ∪ 카운터)·항해 탭 해역 보스 줄·편성 후보 줄 '보스 약점' 칩(fleet_sheet). ARB uiTrait*·uiCounterChip. 단위 테스트 boss_traits_test.
+- 남은 단계: ① 특성 보스(storm_pirate 등) 이름표·약점 띠 골든 4기기 ko/en(기존 boss_intro 골든은 특성 없는 대보스) ② 편성 칩 위젯 테스트(fleet.counter.<id>) ③ 크루 탭 카드에도 카운터 표시할지 S1 확인 ④ 컷인 줄 실기기 확인(S3 컷인 띠 높이).
+- 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 저녁 · S4 · 수집의 재미 · 피버까지 n마리 · 팝업 크기 · 보스 특성 1차
+- 94c51a99 새 동료 카드(CardGranted isNew, 연출 뒤 2.6초 · 역할 배지 임시 어댑터 crewRoleOf · 이렇게 싸워요 · 도감 n/40 · [출전시키기]).
+- f1561459 '피버까지 n마리' 14sp(게이지 × feverKillsAt), 80%+ 금빛 — S5 #9 E 대체.
+- c73b6ae4 팝업 크기: popupWidth(폰 85%·태블릿 480) · popupInset · showSkinDialog(200ms 커지며 페이드) 12곳. 관련 12파일 골든만 갱신 — --full 필요.
+- 보스 특성 UI 1차(위 재개 지점). 검토: S5 swap-compare·crew-preview 머지 OK 회신.
+- 교훈: 남이 slot을 쓰는 동안 빠른 check는 커밋 직전 1회만.
+- 개편 ① k1 시안: Skin 토큰(남보라·연보라·외곽선·초록/노랑 입체·Skin.outlined), PixelDialog 리본+X(RibbonHeader·CloseX·showClose), 도크·탭 막대 네모 칸, 위 막대·게이지·HP·토스트 외곽선. PB 키트는 색이 안 맞아 painter. S5 hd-icons 머지.
 
 ### 2026-10-17 오후 · S4 · 가이드 v2 · 브레이크 v2 · 모두 강화 · #5 · 피버 v2 UI · 새 화면 점검
 - 0a9836e4·44cca20d·d213ab80 보스 브레이크: 궁극기 제거 → 막대 v2(12dp·외곽선·하늘→노랑·⚡칩·반짝·80% 흔들림·쓰러짐 금빛) → 쿨다운(EnemyView.breakCooldown) 회색+자물쇠+시계.

@@ -10,13 +10,13 @@ abstract final class PixelPalette {
   static const Color navy = Skin.card;
 
   /// 판 테두리·구분선 — 옅은 하늘 회색.
-  static const border = Color(0xFFD5E2F2);
+  static const border = Color(0xFF8E90C8);
 
   /// 하이라이트(흰).
   static const highlight = Color(0xFFFFFFFF);
 
   /// 작은 띠·칩 바탕 — 아주 옅은 하늘.
-  static const outline = Color(0xFFEEF5FC);
+  static const outline = Color(0xFFE6E5FF);
 
   /// 눌린·비활성 바탕.
   static const Color navyPressed = Skin.plainBottom;
@@ -28,16 +28,16 @@ abstract final class PixelPalette {
   static const Color textDim = Skin.sub;
 
   /// 골드 숫자(흰 바탕에서 읽히게 진하게).
-  static const gold = Color(0xFF8A5A00);
+  static const gold = Color(0xFF7A4A00);
 
   /// 위험·빨간 점.
   static const Color danger = Skin.danger;
 
   /// 강조.
-  static const accent = Color(0xFFA34D00);
+  static const accent = Color(0xFF8E3A00);
 
   /// 선원 슬롯 바탕.
-  static const slot = Color(0xFFB9E3FF);
+  static const slot = Color(0xFFC6C7EF);
 
   /// 주 버튼 바탕.
   static const Color action = Skin.primaryBottom;
@@ -49,7 +49,7 @@ abstract final class PixelPalette {
   static const Color actionDark = Skin.primaryEdge;
 
   /// 막대 바탕(상단 바·탭 바 아래 판).
-  static const navyDark = Color(0xFFF4FAFF);
+  static const navyDark = Color(0xFFE9E7FC);
 }
 
 /// 기준 화면의 논리 폭 (320×180, 기기에 맞춰 정수배 확대).

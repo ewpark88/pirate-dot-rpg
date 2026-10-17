@@ -17,6 +17,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
@@ -33,8 +34,8 @@ const _cardWidth = 132.0;
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
 
 /// 선원 카드를 누르면 상세 창 (사용자 요청 A).
-Future<void> showCrewDetail(BuildContext context, CrewDef def) => showDialog<void>(
-  context: context,
+Future<void> showCrewDetail(BuildContext context, CrewDef def) => showSkinDialog<void>(
+  context,
   builder: (_) => CrewDetailDialog(def: def),
 );
 
@@ -68,7 +69,6 @@ class CrewDetailDialog extends ConsumerWidget {
         : null;
     final color = rarityColor(rarity);
     const dim = TextStyle(color: PixelPalette.textDim);
-    final title = Theme.of(context).textTheme.titleSmall;
 
     // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본.
     // 아이콘: 그림 경로(String) 또는 머티리얼 아이콘(IconData). 별은 등급만 뜻하므로 여기 쓰지 않는다.
@@ -77,19 +77,16 @@ class CrewDetailDialog extends ConsumerWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-        decoration: BoxDecoration(
-          color: fill ?? const Color(0xFFF1F7FF),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: border ?? Skin.cardEdge, width: 1.5),
-        ),
+        // k2: 안쪽 판(연보라 + 굵은 외곽선), 제목은 작은 리본.
+        decoration: Skin.inset(fill: fill ?? Skin.insetFill, border: border ?? Skin.outline),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                if (icon is String) ...[SkinIcon(icon, size: 16), const SizedBox(width: 4)],
+                if (icon is String) ...[SkinIcon(icon), const SizedBox(width: 4)],
                 if (icon is IconData) ...[Icon(icon, size: 18, color: Skin.goldInk), const SizedBox(width: 4)],
-                Flexible(child: Text(head, style: title)),
+                Flexible(child: SubRibbon(head)),
               ],
             ),
             const SizedBox(height: 2),
@@ -101,6 +98,8 @@ class CrewDetailDialog extends ConsumerWidget {
 
     return PixelDialog(
       key: Key('crew.detail.${def.id}'),
+      // k1: 이름은 노란 리본 제목으로.
+      title: shortCrewName(l10n, def),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,8 +113,7 @@ class CrewDetailDialog extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(shortCrewName(l10n, def), style: Theme.of(context).textTheme.titleMedium),
-                      Text(tableText(l10n, def.nameKey), style: dim),
+                      Text(tableText(l10n, def.nameKey), style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 4),
                       // 등급 알약(등급 색 테두리·옅은 바탕·진한 글 — 일반의 회색도 읽힌다) · 출전 알약.
                       Wrap(

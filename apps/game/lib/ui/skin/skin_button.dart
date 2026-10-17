@@ -12,7 +12,7 @@ const _shineFor = Duration(milliseconds: 700);
 
 /// 버튼 색 종류.
 enum SkinTone {
-  /// 누르면 이득인 주 버튼 — 파랑.
+  /// 누르면 이득인 주 버튼 — 초록(k1).
   primary,
 
   /// 받기·광고 보상·일괄 합치기 — 금색.
@@ -140,6 +140,8 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       color: edge,
                       borderRadius: BorderRadius.circular(Skin.radiusButton),
+                      // k1: 굵은 검정 외곽선.
+                      border: Border.all(color: Skin.outline, width: 2),
                       boxShadow: p > 0.5 ? null : Skin.shadowSmall,
                     ),
                     child: Padding(
@@ -160,7 +162,7 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
                     colors: [top, bottom],
                   ),
                   borderRadius: BorderRadius.circular(Skin.radiusButton),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 1.5),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -168,7 +170,9 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
                     widthFactor: 1,
                     heightFactor: 1,
                     child: DefaultTextStyle.merge(
-                      style: Skin.text(17, color: ink, weight: FontWeight.bold),
+                      // 초록·회색 버튼은 흰 외곽선 글자(k1), 금색·보조는 진한 글자.
+                      // k2: 굵은 글자 17sp (초록은 두꺼운 테).
+                      style: ink == Colors.white ? Skin.outlined(17) : Skin.bold(17, color: ink),
                       textAlign: TextAlign.center,
                       child: IconTheme.merge(
                         data: IconThemeData(color: ink),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
 /// 그림 아이콘 크기 목표(dp) — 실기기에서 24~28dp (layout-v2-brief 1).
@@ -40,7 +41,9 @@ class _PixelIconButtonState extends State<PixelIconButton> {
   @override
   Widget build(BuildContext context) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final size = pixelIconSize(dpr);
+    // HD 아이콘은 칸(44)의 약 80%, 부드럽게 (S5 합의). 도트 그림은 정수배 그대로.
+    final hd = widget.asset.startsWith(UiSprites.hdDir);
+    final size = hd ? 36.0 : pixelIconSize(dpr);
     final enabled = widget.onPressed != null;
     return Tooltip(
       message: widget.semanticLabel,
@@ -63,14 +66,19 @@ class _PixelIconButtonState extends State<PixelIconButton> {
                 offset: Offset(0, _down ? pixelUnit(context) : 0),
                 child: Opacity(
                   opacity: !enabled ? 0.4 : (_down ? 0.75 : 1),
-                  // 흰 동그라미 뱃지 (글자가 붙으면 알약).
+                  // k1: 짙은 남색 네모 칸 + 굵은 외곽선 (글자가 붙으면 알약).
                   child: Container(
                     height: 44,
                     constraints: const BoxConstraints(minWidth: 44),
                     padding: EdgeInsets.symmetric(horizontal: widget.trailing == null ? 0 : 8),
                     decoration: BoxDecoration(
-                      color: Skin.card,
-                      borderRadius: BorderRadius.circular(22),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Skin.navyPanelTop, Skin.navyPanel],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Skin.outline, width: 2),
                       boxShadow: Skin.shadowSmall,
                     ),
                     alignment: Alignment.center,
@@ -82,12 +90,12 @@ class _PixelIconButtonState extends State<PixelIconButton> {
                           width: size,
                           height: size,
                           fit: BoxFit.fill,
-                          filterQuality: FilterQuality.none,
+                          filterQuality: hd ? FilterQuality.medium : FilterQuality.none,
                         ),
                         if (widget.trailing case final t?) ...[
                           const SizedBox(width: 2),
                           DefaultTextStyle.merge(
-                            style: Skin.text(15, color: Skin.goldInk),
+                            style: Skin.outlined(15, color: const Color(0xFFFFD84A)),
                             child: t,
                           ),
                         ],

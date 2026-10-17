@@ -8,6 +8,7 @@ import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/render/battle_game.dart' show BattleGame;
 import 'package:pirate_dot/render/preview/crew_preview_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -93,21 +94,29 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.uiPreviewTitle, style: Theme.of(context).textTheme.titleSmall),
+          // k2: 작은 리본 제목 + 굵은 외곽선 틀.
+          SubRibbon(l10n.uiPreviewTitle),
           const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: AspectRatio(
-              aspectRatio: widget.aspectRatio,
-              child: CrewPreviewView(
-                key: Key('crew.preview.${widget.def.id}'),
-                tables: tables,
-                crewId: widget.def.id,
-                level: pick.$2,
-                sprites: sprites,
-                lite: lite,
-                // 방치(1분 입력 없음)면 멈춘다(S4 — 발열). 시험 하네스가 끈 경우엔 방치 상태를 구독하지 않는다.
-                play: ref.watch(crewPreviewPlayProvider) && ref.watch(idleLevelProvider) == IdleLevel.active,
+          Container(
+            // 테두리를 장면 위에 그린다(장면이 가리지 않게).
+            foregroundDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Skin.outline, width: 2.5),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: AspectRatio(
+                aspectRatio: widget.aspectRatio,
+                child: CrewPreviewView(
+                  key: Key('crew.preview.${widget.def.id}'),
+                  tables: tables,
+                  crewId: widget.def.id,
+                  level: pick.$2,
+                  sprites: sprites,
+                  lite: lite,
+                  // 방치(1분 입력 없음)면 멈춘다(S4 — 발열). 시험 하네스가 끈 경우엔 방치 상태를 구독하지 않는다.
+                  play: ref.watch(crewPreviewPlayProvider) && ref.watch(idleLevelProvider) == IdleLevel.active,
+                ),
               ),
             ),
           ),

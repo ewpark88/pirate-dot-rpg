@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
@@ -48,8 +50,8 @@ class _BossDamageGateState extends ConsumerState<BossDamageGate> {
   void _show(BossCleared e) {
     if (!mounted) return;
     unawaited(
-      showDialog<void>(
-        context: context,
+      showSkinDialog<void>(
+        context,
         barrierColor: const Color(0x66000000),
         builder: (_) => BossDamageDialog(damage: e.crewDamage, mvp: e.mvp),
       ),
@@ -113,9 +115,9 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
       onTap: _pop,
       child: Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(20),
+        insetPadding: popupInset,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
+          constraints: popupConstraints(context),
           child: Container(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
             decoration: BoxDecoration(
@@ -168,7 +170,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(l10n.uiBossDamageMvp, style: Skin.text(16, color: Skin.goldTop)),
-                            Text(shortCrewName(l10n, mvp), style: Skin.text(20, color: Colors.white)),
+                            OutlineText(shortCrewName(l10n, mvp), size: 20),
                             Text(
                               l10n.uiBossDamageLine(widget.damage[mvp.id]!.format(), pct(widget.damage[mvp.id]!)),
                               style: Skin.text(16, color: Colors.white70),
@@ -199,12 +201,12 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                                       shortCrewName(l10n, crews.byId(id)),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: Skin.text(15, color: Colors.white),
+                                      style: Skin.outlined(15),
                                     ),
                                   ),
                                   Text(
                                     l10n.uiBossDamageLine(v.format(), pct(v)),
-                                    style: Skin.text(15, color: Colors.white),
+                                    style: Skin.outlined(15),
                                   ),
                                 ],
                               ),
