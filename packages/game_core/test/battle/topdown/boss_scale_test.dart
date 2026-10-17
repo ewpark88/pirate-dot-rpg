@@ -48,7 +48,7 @@ void main() {
     return out;
   }
 
-  test('대보스: 더 먼 standoff에 서고 원을 돌지 않는다 — 결투 중에도 배 위쪽(화면 안)', () {
+  test('대보스: 더 먼 standoff에 서고 원 대신 배 위 ±swayDeg 호를 오간다 — 결투 중에도 화면 안', () {
     final stage = t.regions.wallEvery; // 10 = 해역 대보스
     final wall = t.regions.bossAt(stage).id;
     expect(t.regions.bossClassOf(wall), 'wall');
@@ -56,8 +56,15 @@ void main() {
     final path = fight(stage, 20);
     final settled = path.where((p) => (math.sqrt(p.dx * p.dx + p.dy * p.dy) - r).abs() < 1).toList();
     expect(settled, isNotEmpty, reason: '대보스가 standoff $r에 섰다');
-    final angles = {for (final p in settled) (math.atan2(p.dy, p.dx) * 100).round()};
-    expect(angles.length, lessThanOrEqualTo(2), reason: '돌지 않는다(같은 자리)');
+    const up = -math.pi / 2;
+    final arc = top.obj('bossScale').number('swayDeg') * math.pi / 180;
+    final angles = [for (final p in settled) math.atan2(p.dy, p.dx)];
+    expect(angles.every((a) => (a - up).abs() <= arc + 1e-6), isTrue, reason: '호 밖으로 돌지 않는다');
+    expect(
+      angles.map((a) => (a * 100).round()).toSet().length,
+      greaterThan(5),
+      reason: '가만히 서지 않는다(서면 탄이 다 맞아 보스전이 짧아짐)',
+    );
     // 화면 안: 보스 중심이 배 위쪽, 옆으로 화면 반폭(viewWidth/2)을 넘지 않는다.
     for (final p in settled) {
       expect(p.dy, lessThan(0));
