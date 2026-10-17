@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:pirate_dot/ui/app.dart' show uiScaleFor;
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -10,7 +11,12 @@ const _dialogMaxWidth = 480.0;
 const _sheetMaxWidth = 640.0;
 
 /// 창 폭 (팝업 기준, S1 2026-10-17 '창이 작고 여백이 많다'): 폰은 화면 폭의 85%, 태블릿은 480dp 상한.
-double popupWidth(BuildContext context) => math.min(MediaQuery.sizeOf(context).width * 0.85, _dialogMaxWidth);
+/// 480dp는 화면(실제) 기준 — 태블릿은 앱이 UI 배율로 키워 그리므로 논리 폭에선 480 ÷ 배율.
+double popupWidth(BuildContext context) {
+  final view = View.of(context);
+  final scale = uiScaleFor(view.physicalSize / view.devicePixelRatio);
+  return math.min(MediaQuery.sizeOf(context).width * 0.85, _dialogMaxWidth / scale);
+}
 
 /// 창 크기: 폭을 [popupWidth]로 고정한다. Dialog의 `constraints`나 창 안 ConstrainedBox에 쓴다.
 BoxConstraints popupConstraints(BuildContext context) => BoxConstraints.tightFor(width: popupWidth(context));

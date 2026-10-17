@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | k1 시안 92b0c2c4 S1 승인 대기(design_k1_* 골든·docs/specs/ui-design-k1/k1_vs_ref_384.png, Skin 바꿈 → test/ui 골든 대부분 깨짐 = 정상, 승인 뒤 slot 일괄) · 이전: 수집의 재미 94c51a99 · 피버까지 n마리 f1561459 · 팝업 크기 c73b6ae4(--full 전, slot 때 머지) · 보스 특성 UI 1차(이 커밋, 멈춤) |
-| 다음 | 디자인 개편: 참고 이미지 8장 → Skin 토큰(ui/skin·ui/pixel) → 대표 화면 3장(전투 HUD·배 탭·창 하나) 4기기 시안 → S1 승인 → 일괄 |
+| 상태 | 개편 ① k2 일괄 a557a0d0 — check --full 초록, S1 머지 대기(팝업 크기·HD 아이콘·역할 배지·OutlineText 포함)
+| 다음 | 창·시트 단계(상자 선택 창·새 동료 카드 리본 — S5와 나눔) · S5 review/reward-fx-wire 검토 · 보스 특성 UI 재개(아래 재개 지점)
 | 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -22,6 +22,8 @@
 - c73b6ae4 팝업 크기: popupWidth(폰 85%·태블릿 480) · popupInset · showSkinDialog(200ms 커지며 페이드) 12곳. 관련 12파일 골든만 갱신 — --full 필요.
 - 보스 특성 UI 1차(위 재개 지점). 검토: S5 swap-compare·crew-preview 머지 OK 회신.
 - 교훈: 남이 slot을 쓰는 동안 빠른 check는 커밋 직전 1회만.
+- a557a0d0 k2 일괄: 외곽선 글자 굵게(Skin.outlined 크기 비례 테 + Skin.bold), 리본 입체·SubRibbon, Skin.inset, 버튼 띠 6, IconCell(배 부위 칸 + Lv 배지), OutlineText 11곳(테 층 RichText로 고쳐 find.text 하나), 흰 글자/테 일괄, 게이지 16dp. test/ui 골든 일괄 118장 + --full 초록.
+- 교훈: 두 겹 글자 위젯은 테 층을 RichText로 — 아니면 find.text가 2개를 찾아 테스트 대량 실패.
 - 개편 ① k1 시안: Skin 토큰(남보라·연보라·외곽선·초록/노랑 입체·Skin.outlined), PixelDialog 리본+X(RibbonHeader·CloseX·showClose), 도크·탭 막대 네모 칸, 위 막대·게이지·HP·토스트 외곽선. PB 키트는 색이 안 맞아 painter. S5 hd-icons 머지.
 
 ### 2026-10-17 오후 · S4 · 가이드 v2 · 브레이크 v2 · 모두 강화 · #5 · 피버 v2 UI · 새 화면 점검

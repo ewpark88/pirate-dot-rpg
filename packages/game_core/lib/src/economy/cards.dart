@@ -163,8 +163,21 @@ GameState receiveCard(GameState state, GameTables t, String crewId, String rarit
   );
 }
 
+/// 첫 전설 유예(BALANCE.md '첫 전설 최소 1일', 2026-10-17): 첫 회차에 최고 스테이지가 meta.firstLegend.untilStage 아래면
+/// 전설 이상 카드(소환·보스·오프라인·이벤트·현상금 모두)를 downgradeTo로 낮춘다. 표가 없으면 그대로.
+String gateFirstLegend(GameState s, GameTables t, String rarity) {
+  final meta = t.meta.raw;
+  if (!meta.has('firstLegend') || s.progress.rebirths > 0) return rarity;
+  final g = meta.obj('firstLegend');
+  if (s.progress.bestStage >= g.integer('untilStage')) return rarity;
+  final order = t.rarities.rarities;
+  final legend = order.indexWhere((r) => r.id == 'legend');
+  return order.indexWhere((r) => r.id == rarity) >= legend ? g.str('downgradeTo') : rarity;
+}
+
 /// [receiveCard] + CardGranted 이벤트 (렌더가 카드가 날아와 모이는 연출, S3 요청). [source]는 CardGranted 참고.
-GameState grantCard(GameState state, SystemContext ctx, String crewId, String rarity, String source) {
+GameState grantCard(GameState state, SystemContext ctx, String crewId, String cardRarity, String source) {
+  final rarity = gateFirstLegend(state, ctx.tables, cardRarity);
   ctx.emit(
     CardGranted(ctx.tick, crewId: crewId, rarity: rarity, source: source, isNew: !state.crews.containsKey(crewId)),
   );

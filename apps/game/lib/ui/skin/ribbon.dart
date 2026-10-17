@@ -42,7 +42,7 @@ class RibbonHeader extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.fromLTRB(padRight, 10, padRight, 8),
-          child: OutlineText(title, maxLines: 2, size: 22),
+          child: Center(child: OutlineText(title, maxLines: 2, size: 22)),
         ),
       ),
     ),

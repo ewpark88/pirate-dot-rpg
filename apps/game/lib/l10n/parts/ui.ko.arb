@@ -993,5 +993,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiLevelUpFx": "LEVEL UP!"
 }

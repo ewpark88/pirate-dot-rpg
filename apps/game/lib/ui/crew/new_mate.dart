@@ -9,6 +9,7 @@ import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
@@ -128,105 +129,95 @@ class NewMateDialog extends ConsumerWidget {
     final dex = collectionBonus(s, t);
     final empty = ref.read(fleetSlotsProvider).indexOf(null);
     final name = shortCrewName(l10n, def);
-    return Dialog(
-      insetPadding: popupInset,
-      backgroundColor: Colors.transparent,
-      child: ConstrainedBox(
-        constraints: popupConstraints(context),
-        child: Container(
-          key: const Key('newMate'),
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-          decoration: BoxDecoration(
-            color: Skin.card,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: rarityColor(rarity), width: 3),
-            boxShadow: Skin.shadow,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.uiNewCrew, style: Skin.text(22, color: Skin.goldInk)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: CrewPortrait(crew: def, size: 64),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(name, style: Skin.text(20)),
-                        Text(tableText(l10n, rarity.nameKey), style: Skin.text(14, color: rarityColor(rarity))),
-                        const SizedBox(height: 4),
-                        Container(
-                          key: Key('newMate.role.${role.name}'),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(color: Skin.ink, borderRadius: BorderRadius.circular(10)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(roleIcon(role), size: 14, color: const Color(0xFFFFD84A)),
-                              const SizedBox(width: 4),
-                              OutlineText(roleText(l10n, role), size: 13),
-                            ],
-                          ),
+    // k2: 노란 리본 '새 동료!' + X + 연보라 판 (공용 PixelDialog).
+    return PixelDialog(
+      key: const Key('newMate'),
+      title: l10n.uiNewCrew,
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                // k2: 등급색 네모 칸.
+                IconCell(
+                  color: rarityColor(rarity),
+                  size: 72,
+                  child: CrewPortrait(crew: def, size: 56),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name, style: Skin.bold(20)),
+                      Text(tableText(l10n, rarity.nameKey), style: Skin.text(14, color: rarityColor(rarity))),
+                      const SizedBox(height: 4),
+                      Container(
+                        key: Key('newMate.role.${role.name}'),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(color: Skin.ink, borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(roleIcon(role), size: 14, color: const Color(0xFFFFD84A)),
+                            const SizedBox(width: 4),
+                            OutlineText(roleText(l10n, role), size: 13),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(l10n.uiNewMateHow(how), key: const Key('newMate.how'), style: Skin.text(16)),
-              const SizedBox(height: 6),
-              CrewIdentityPanel(crewId: crewId, rarity: t.rarities.rarities.indexOf(rarity)),
-              const SizedBox(height: 8),
-              Text(
-                dex.nextAt == null
-                    ? l10n.uiNewMateDexAll(dex.owned, dex.total)
-                    : l10n.uiNewMateDex(dex.owned, dex.total, dex.nextAt! - dex.owned),
-                key: const Key('newMate.dex'),
-                style: Skin.text(14, color: Skin.sub),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: SkinButton(
-                      key: const Key('newMate.later'),
-                      tone: SkinTone.plain,
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l10n.uiNewMateLater),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SkinButton(
-                      key: const Key('newMate.deploy'),
-                      tone: SkinTone.gold,
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        if (empty >= 0) {
-                          ref.read(commandSinkProvider).send(SetFleetSlot(empty, crewId));
-                          showSkinToast(context, l10n.uiNewMateDeployed(name));
-                        } else {
-                          // 칸이 가득이면 상세 창의 '출전 → 바꿀 선원'으로.
-                          unawaited(showCrewDetail(context, def));
-                        }
-                      },
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(empty >= 0 ? l10n.uiNewMateDeploy : l10n.uiNewMateDetail),
                       ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.uiNewMateHow(how), key: const Key('newMate.how'), style: Skin.text(16)),
+            const SizedBox(height: 6),
+            CrewIdentityPanel(crewId: crewId, rarity: t.rarities.rarities.indexOf(rarity)),
+            const SizedBox(height: 8),
+            Text(
+              dex.nextAt == null
+                  ? l10n.uiNewMateDexAll(dex.owned, dex.total)
+                  : l10n.uiNewMateDex(dex.owned, dex.total, dex.nextAt! - dex.owned),
+              key: const Key('newMate.dex'),
+              style: Skin.text(14, color: Skin.sub),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: SkinButton(
+                    key: const Key('newMate.later'),
+                    tone: SkinTone.plain,
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(l10n.uiNewMateLater),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SkinButton(
+                    key: const Key('newMate.deploy'),
+                    tone: SkinTone.gold,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (empty >= 0) {
+                        ref.read(commandSinkProvider).send(SetFleetSlot(empty, crewId));
+                        showSkinToast(context, l10n.uiNewMateDeployed(name));
+                      } else {
+                        // 칸이 가득이면 상세 창의 '출전 → 바꿀 선원'으로.
+                        unawaited(showCrewDetail(context, def));
+                      }
+                    },
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(empty >= 0 ? l10n.uiNewMateDeploy : l10n.uiNewMateDetail),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
