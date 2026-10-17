@@ -6,7 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart' show BossPortrait, bossName;
-import 'package:pirate_dot/ui/guide/guide_cards.dart' show guideHoldProvider;
+import 'package:pirate_dot/ui/guide/guide_cards.dart' show GuideHold, guideHoldProvider;
 import 'package:pirate_dot/ui/guide/guide_talk.dart' show talkBottom;
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
@@ -36,12 +36,17 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
   /// 지금 대화 (보스 id, 줄들, 몇째 줄). null이면 없음.
   (String, List<StoryLine>, int)? _talk;
 
+  // dispose에서 ref를 쓸 수 없어 미리 잡아 둔다.
+  late final GuideHold _hold;
+
   @override
   void initState() {
     super.initState();
+    _hold = ref.read(guideHoldProvider.notifier);
     if (!ref.read(storyEnabledProvider)) return;
-    final seen = ref.read(gameStateProvider).settings.hints;
-    if (!seen.contains(storyOpeningHint)) {
+    final st = ref.read(gameStateProvider);
+    // 오프닝은 막 시작한 게임에서만(최고 스테이지 1 이하) — 이미 하던 세이브(업데이트)엔 띄우지 않는다.
+    if (!st.settings.hints.contains(storyOpeningHint) && st.progress.bestStage <= 1) {
       WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_opening()));
     }
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
@@ -71,7 +76,7 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
     final lines = ref.read(storyScriptProvider).bossIntro(AppLocalizations.of(context), bossId);
     if (lines.isEmpty) return;
     ref.read(commandSinkProvider).send(MarkHint(hint));
-    ref.read(guideHoldProvider.notifier).hold(storyLineFor * lines.length);
+    _hold.hold(storyLineFor * lines.length);
     setState(() => _talk = (bossId, lines, 0));
     _schedule();
   }
@@ -100,6 +105,7 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
 
   @override
   void dispose() {
+    _hold.release();
     _next?.cancel();
     unawaited(_sub?.cancel());
     super.dispose();

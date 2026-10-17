@@ -10,7 +10,7 @@ import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
-import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart' show GuideHold, guideHoldProvider;
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
@@ -68,15 +68,19 @@ class _NewMateGateState extends ConsumerState<NewMateGate> {
   Timer? _wait;
   bool _open = false;
 
+  // dispose에서 ref를 쓸 수 없어 미리 잡아 둔다(환영 카드 때 가이드 접기).
+  late final GuideHold _hold;
+
   @override
   void initState() {
     super.initState();
+    _hold = ref.read(guideHoldProvider.notifier);
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       for (final e in tick.events) {
         // 환영 카드(튜토리얼): 시트를 닫고 가이드 말을 접어 전장 가운데 카드 연출이 보이게(S3 c12ced0a).
         if (e is CardGranted && e.source == 'starter') {
           ref.read(dockTabRequestProvider.notifier).close();
-          ref.read(guideHoldProvider.notifier).hold(newMateDelay);
+          _hold.hold(newMateDelay);
         }
         if (e is CardGranted && e.isNew && !_queue.any((q) => q.$1 == e.crewId)) {
           _queue.add((e.crewId, e.rarity));
@@ -101,6 +105,7 @@ class _NewMateGateState extends ConsumerState<NewMateGate> {
 
   @override
   void dispose() {
+    _hold.release();
     _wait?.cancel();
     unawaited(_sub?.cancel());
     super.dispose();

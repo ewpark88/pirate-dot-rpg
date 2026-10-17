@@ -23,10 +23,8 @@ const talkMotion = Duration(milliseconds: 200);
 double talkBottom(BuildContext context, Size box, Rect? hole, {required RenderBox? layer}) {
   final pad = MediaQuery.paddingOf(context);
   var bottom = kDockHeight + pad.bottom + 8;
-  final anchor = shipHpAnchor.currentContext?.findRenderObject();
-  if (layer != null && anchor is RenderBox && anchor.attached && anchor.hasSize) {
-    final top = layer.globalToLocal(anchor.localToGlobal(Offset.zero)).dy;
-    if (top > box.height * 0.4 && top < box.height) bottom = box.height - top + 6;
+  if (_rectOf(shipHpAnchor, layer) case final hp?) {
+    if (hp.top > box.height * 0.4 && hp.top < box.height) bottom = box.height - hp.top + 6;
   }
   // 누를 곳과 보스 도전 버튼(S5 실기기 ④)이 말풍선 자리와 겹치면 그 위로 올린다(가장 높은 것 위로).
   for (final r in [?hole, ?_rectOf(bossChallengeAnchor, layer)]) {
@@ -38,7 +36,9 @@ double talkBottom(BuildContext context, Size box, Rect? hole, {required RenderBo
 
 /// [key] 위젯의 층 좌표 사각형 (없거나 아직 크기가 없으면 null).
 Rect? _rectOf(GlobalKey key, RenderBox? layer) {
-  final box = key.currentContext?.findRenderObject();
+  // 화면에서 빠지는 중(비활성)인 위젯은 findRenderObject가 오류를 낸다 — 요소의 렌더 객체를 바로 읽는다.
+  final ctx = key.currentContext;
+  final box = ctx is Element ? ctx.renderObject : null;
   if (layer == null || box is! RenderBox || !box.attached || !box.hasSize) return null;
   return layer.globalToLocal(box.localToGlobal(Offset.zero)) & box.size;
 }
