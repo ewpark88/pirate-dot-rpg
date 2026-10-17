@@ -7,6 +7,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/story/story_data.dart';
+import 'package:pirate_dot/ui/story/story_layer.dart' show bossEntryWait;
 
 import 'ui_harness.dart';
 
@@ -88,7 +89,7 @@ void main() {
     final feed = await _pump(tester, s);
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [BossSpawned(1, kind: 'sea_croc', timeLimitTicks: 600)]));
-    await tester.pump();
+    await tester.pump(bossEntryWait);
     // 대본은 story.json(S2): 고유 대사가 없으면 첫 특성의 공용 대사.
     final l = await AppLocalizations.delegate.load(const Locale('en'));
     final lines = TableStoryScript(_t).bossIntro(l, 'sea_croc', s.progress.stage);
@@ -115,7 +116,7 @@ void main() {
       final feed = await _pump(tester, s, size: size, dpr: dpr, locale: const Locale('ko'));
       await tester.pumpAndSettle();
       feed.add(RecordedTick(s.battle!, const [BossSpawned(1, kind: 'sea_croc', timeLimitTicks: 600)]));
-      await tester.pump();
+      await tester.pump(bossEntryWait);
       await tester.pump(const Duration(milliseconds: 300));
       await precacheImages(tester);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_story_boss_$name.png'));

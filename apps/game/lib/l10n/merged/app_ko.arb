@@ -2378,5 +2378,31 @@
         "type": "int"
       }
     }
+  },
+  "uiRebirthCineMap": "보물지도 +{n}",
+  "@uiRebirthCineMap": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSail": "다시 출항!",
+  "uiRebirthCineTap": "탭하면 넘김",
+  "uiRebirthCineGems": "젬 +{n}",
+  "@uiRebirthCineGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSummons": "영웅 소환 {n}회",
+  "@uiRebirthCineSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
