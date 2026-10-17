@@ -16,11 +16,10 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
-import 'package:game_core/src/economy/fever.dart' show feverOn, feverStep;
+import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
-import 'package:game_core/src/economy/rebirth_shop.dart'
-    show ShipDressCache, beyondHonor, fastSailFraction, treasureHpMultiplier;
+import 'package:game_core/src/economy/rebirth_shop.dart' show ShipDressCache, beyondHonor, treasureHpMultiplier;
 import 'package:game_core/src/economy/sea_events.dart' show startSeaEvent, tapGoldfish;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -120,7 +119,7 @@ class BattleSystem implements GameSystem {
       r.feverStrike(state); // 피버가 시작되는 틱의 첫 일격(궁극기 효과)
       if (f.waveFoes.isEmpty && !f.bossActive && !f.inScene) {
         f.travelLeft -= r.dt;
-        if (f.travelLeft <= 0) _nextEncounter(f, state, ctx);
+        if (f.travelLeft <= 0) nextEncounter(f, state, ctx);
       }
       r
         ..moveFoes()
@@ -137,7 +136,7 @@ class BattleSystem implements GameSystem {
       return _project(sceneResolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
     final resolved = autoBossTick(
-      refillWave(_resolve(next, _field!, ctx), _field!, ctx, fast: _fast(next, ctx)),
+      refillWave(_resolve(next, _field!, ctx), _field!, ctx, fast: fastSailing(next, ctx)),
       _field!,
       ctx.tables,
     );
@@ -147,24 +146,6 @@ class BattleSystem implements GameSystem {
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
     return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
-  }
-
-  bool _fast(GameState s, SystemContext ctx) =>
-      s.progress.rebirths > 0 && s.progress.stage <= (s.progress.bestStage * fastSailFraction(s, ctx.tables)).ceil();
-
-  /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
-  void _nextEncounter(Field f, GameState s, SystemContext ctx) {
-    final p = s.progress;
-    if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
-    final w = ctx.tables.waves;
-    final fast = _fast(s, ctx);
-    if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
-    } else {
-      f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
-      spawnWave(f, p.stage, ctx);
-      f.feverSwarm = null;
-    }
   }
 
   GameState _resolve(GameState s, Field f, SystemContext ctx) {

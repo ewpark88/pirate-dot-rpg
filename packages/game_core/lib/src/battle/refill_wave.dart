@@ -1,8 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/spawner.dart' show feverSwarmPattern, spawnWave;
+import 'package:game_core/src/battle/spawner.dart' show feverSwarmPattern, spawnWave, startBoss, tutorialBossScale;
 import 'package:game_core/src/economy/fever.dart' show feverJustStarted, feverOn;
+import 'package:game_core/src/economy/rebirth_shop.dart' show fastSailFraction;
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -51,4 +52,23 @@ GameState refillWave(GameState s, Field f, SystemContext ctx, {required bool fas
   final wave = p.wave < per ? p.wave + 1 : p.wave;
   ctx.emit(WaveCleared(ctx.tick, wave: wave));
   return s.copyWith(progress: p.copyWith(wave: wave));
+}
+
+/// 빠른 항해 구간(환생 뒤 bestStage × fastSailFraction 이하) — battle_system에서 옮김(300줄).
+bool fastSailing(GameState s, SystemContext ctx) =>
+    s.progress.rebirths > 0 && s.progress.stage <= (s.progress.bestStage * fastSailFraction(s, ctx.tables)).ceil();
+
+/// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
+void nextEncounter(Field f, GameState s, SystemContext ctx) {
+  final p = s.progress;
+  if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
+  final w = ctx.tables.waves;
+  final fast = fastSailing(s, ctx);
+  if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
+    startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
+  } else {
+    f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
+    spawnWave(f, p.stage, ctx);
+    f.feverSwarm = null;
+  }
 }
