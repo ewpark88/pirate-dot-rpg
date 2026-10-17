@@ -16,6 +16,7 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_traits.dart';
 
 part 'event_director_top.dart';
+part 'event_director_zero.dart';
 part 'event_director_v3.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, juice·fx_map): onAhead = 발사체·슬롯 번쩍, onNow = 피격·숫자·이펙트·흔들림·코인.
@@ -163,7 +164,6 @@ class EventDirector implements ReplayListener {
       ..detectShieldBreak(tick, index);
   }
 
-  /// 이벤트 → fx_map 효과음 키.
   void _sound(GameEvent e) {
     final key = switch (e) {
       Damage(:final crit) => crit ? 'critHit' : 'damage',
@@ -196,7 +196,7 @@ class EventDirector implements ReplayListener {
     if (target == null) return;
     final tx = target.boss ? scene.layout.clampBossX(target.x) : target.x;
     final down = target.boss && scene.topHits.breaks.isDown(e.targetId, scene.clockMs);
-    if (number || down) {
+    if ((number || down) && !_missed(e, tx, target)) {
       scene.numbers.add(
         e.amount,
         tx,
