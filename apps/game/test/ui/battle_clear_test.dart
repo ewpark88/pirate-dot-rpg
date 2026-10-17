@@ -90,7 +90,7 @@ void main() {
     });
   }
 
-  testWidgets('피버: 시작 때 큰 FEVER! → 0.8초 뒤 빠짐, 동안 가장자리 빛·큰 원형 게이지, 끝나면 +골드', (tester) async {
+  testWidgets('피버: 시작 때 큰 FEVER! → 0.8초 뒤 빠짐, 동안 가장자리 빛·큰 원형 게이지·남은 시간 막대·FEVER ×n, 끝나면 n마리 · +골드', (tester) async {
     final feed = StreamController<RecordedTick>.broadcast(sync: true);
     addTearDown(feed.close);
     final s = loadFixture('stage37_midgame');
@@ -104,6 +104,16 @@ void main() {
     expect(find.byKey(const Key('fun.fever.big')), findsOneWidget);
     expect(find.byKey(const Key('fun.fever.glow')), findsOneWidget);
     expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
+    // 피버 v2: 게이지 안 막대는 '남은 시간'(가득에서 줄어듦) + 'FEVER ×2' 칩.
+    expect(find.byKey(const Key('fun.fever.chip')), findsOneWidget);
+    expect(find.text('FEVER ×2'), findsWidgets);
+    feed
+      ..add(RecordedTick(on.battle!, const [Kill(2, targetId: 1, gold: BigNum.zero, x: 0, y: 0)]))
+      ..add(RecordedTick(on.battle!, const [Kill(3, targetId: 2, gold: BigNum.zero, x: 0, y: 0)]));
+    c.read(gameStateProvider.notifier).replace(on.copyWith(battle: on.battle!.copyWith(feverTicksLeft: 100)));
+    await tester.pump();
+    final time = tester.widget<LinearProgressIndicator>(find.byKey(const Key('fun.fever.time')));
+    expect(time.value, closeTo(0.5, 0.01));
     await tester.pump(const Duration(milliseconds: 1300));
     expect(find.byKey(const Key('fun.fever.big')), findsNothing);
 
@@ -116,6 +126,7 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('fun.fever.end')), findsOneWidget);
     expect(find.textContaining('+${BigNum.from(5000).format()}'), findsOneWidget);
+    expect(find.textContaining('2 defeated'), findsOneWidget); // 끝 요약: 처치 수 · 골드
     expect(find.byKey(const Key('fun.fever.glow')), findsNothing);
     await tester.pump(const Duration(seconds: 2));
     expect(find.byKey(const Key('fun.fever.end')), findsNothing);

@@ -43,10 +43,12 @@ String skillDesc(AppLocalizations l10n, SkillDef s) {
   return l10n.uiSkillStats(s.area.count, shortDecimal(s.cooldownSec));
 }
 
-/// 전설 능력 → 줄 목록 (있는 것만).
-List<String> legendLines(AppLocalizations l10n, LegendDef d) {
+/// 전설 능력 → 줄 목록 (있는 것만). [rarity] = 등급 번호(0 일반 … 4 신화) — 연쇄 번개 마리 수가 등급마다 다르다.
+List<String> legendLines(AppLocalizations l10n, LegendDef d, {int rarity = 0}) {
   final hit = d.onHit;
   final zone = d.zone;
+  final counts = d.arc?.counts;
+  final chain = counts == null || counts.isEmpty ? 0 : counts[rarity.clamp(0, counts.length - 1)];
   return [
     if (d.extraProjectiles > 0) l10n.uiLegendExtraProjectiles(d.extraProjectiles),
     // 특징(전설 미만, 개성 v2): 개수형 남은 몫은 발마다 확률.
@@ -68,8 +70,14 @@ List<String> legendLines(AppLocalizations l10n, LegendDef d) {
     // 개성 v2 3단계: 보호막(turtle) · 낙뢰 연쇄(pelly) · 피버 서포트(pumpum).
     if (d.shield case final sh?)
       l10n.uiLegendShield(shortDecimal(sh.everySec), percentText(l10n, sh.hpRatio), shortDecimal(sh.durationSec)),
+    // 연쇄 번개(pelly, 2026-10-17): 등급별 이어지는 수 · 튈 때마다 × falloff.
+    if (chain > 0) l10n.uiLegendChainLightning(chain, percentText(l10n, d.arc!.falloff)),
     if (d.arc case final a? when a.count > 0) l10n.uiLegendArc(a.count),
     if (d.arc case final a? when a.chance > 0) l10n.uiLegendArcChance(percentText(l10n, a.chance)),
+    if (d.execute case final e?) l10n.uiLegendExecute(percentText(l10n, e.below), shortDecimal(e.mul)),
+    if (d.charge case final c?) l10n.uiLegendCharge(c.every, shortDecimal(c.mul), shortDecimal(c.stunSec)),
+    if (d.noMiss) l10n.uiLegendNoMiss,
+    if (!d.noMiss && d.noMissChance > 0) l10n.uiLegendNoMissChance(percentText(l10n, d.noMissChance)),
     if (d.fever case final f?) l10n.uiLegendFever(percentText(l10n, f.chargeBonus), shortDecimal(f.extraSec)),
   ];
 }
