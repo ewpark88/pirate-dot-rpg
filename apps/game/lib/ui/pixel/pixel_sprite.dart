@@ -76,6 +76,8 @@ abstract final class UiSprites {
 
   /// 새 HD 아이콘: 보물상자 · 지도 조각 · 트로피 · 상점 · 우편.
   static const chest = '${hdDir}chest.png';
+  static const chestOpen = '${hdDir}chest_open.png';
+  static const book = '${hdDir}book.png';
   static const shard = '${hdDir}shard.png';
   static const trophy = '${hdDir}trophy.png';
   static const shop = '${hdDir}shop.png';

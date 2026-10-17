@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -79,26 +81,31 @@ class SwapCompareDialog extends ConsumerWidget {
       SwapVerdict.similar => (l10n.uiSwapSimilar, Skin.goldInk),
       SwapVerdict.worse => (l10n.uiSwapWorse, Skin.danger),
     };
-    final width = MediaQuery.sizeOf(context).width;
     return Dialog(
       key: const Key('swap.compare'),
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: popupInset,
       backgroundColor: Colors.transparent,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: (width * 0.85).clamp(0, 340)),
+        constraints: popupConstraints(context),
         child: Container(
           key: const Key('swap.compare.box'),
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          // k2: 연보라 판 + 굵은 외곽선, 제목은 작은 리본.
           decoration: BoxDecoration(
-            color: Skin.card,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: Skin.shadow,
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Skin.card, Skin.cardBottom],
+            ),
+            borderRadius: BorderRadius.circular(Skin.radiusCard),
+            border: Border.all(color: Skin.outline, width: 3),
+            boxShadow: Skin.shadowDepth,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.uiSwapTitle, textAlign: TextAlign.center, style: Skin.text(18)),
+              SubRibbon(l10n.uiSwapTitle),
               const SizedBox(height: 8),
               Row(
                 children: [

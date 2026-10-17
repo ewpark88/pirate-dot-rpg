@@ -10,12 +10,14 @@ import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/icon_cell.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/big_num_text.dart';
 
 /// 상태·지금 시각 → 복귀 보상 미리보기 (경제 `offlinePreview`, ClaimOffline과 같은 계산). null이면 팝업 없음(최소 시간 미만).
 final offlinePreviewProvider = Provider<OfflinePreview? Function(GameState state, DateTime now)>((ref) {
@@ -113,18 +115,31 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
       title: l10n.uiOfflineTitle,
       // 받기 버튼으로만 닫는다(바깥 눌러도 안 닫힘).
       showClose: false,
+      icon: const SkinIcon(UiSprites.moon, size: 56),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(l10n.uiOfflineElapsed(away.inHours, away.inMinutes % Duration.minutesPerHour)),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const PixelSprite(UiSprites.coin, dots: 16, scale: 1),
-              const SizedBox(width: 6),
-              RewardSparkle(child: BigNumText(got, style: Theme.of(context).textTheme.headlineSmall)),
-            ],
+          Text(
+            l10n.uiOfflineElapsed(away.inHours, away.inMinutes % Duration.minutesPerHour),
+            textAlign: TextAlign.center,
+            style: Skin.bold(16),
+          ),
+          const SizedBox(height: 10),
+          // k2: 안쪽 판 + 금화 칸 + 금빛 테두리 숫자.
+          Container(
+            key: const Key('offline.gold'),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: Skin.inset(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const IconCell(color: Color(0xFFE0A83D), size: 52, child: SkinIcon(UiSprites.coin, size: 38)),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: RewardSparkle(child: OutlineText(got.format(), size: 30, tone: OutlineTone.gold, fit: true)),
+                ),
+              ],
+            ),
           ),
           if (!cut.isZero) ...[
             const SizedBox(height: 6),

@@ -74,101 +74,93 @@ class _RebirthChestDialogState extends State<RebirthChestDialog> with TickerProv
     final l10n = AppLocalizations.of(context);
     final rewards = _rewards(l10n);
     final skin = skinDefs.where((s) => s.id == widget.chest.skin).firstOrNull;
-    return Dialog(
+    // k2: 노란 리본 제목 + 연보라 판(공용 PixelDialog), 상자 무대는 남색 안쪽 판. 출항으로만 닫는다(X 없음).
+    return PixelDialog(
       key: const Key('rebirth.chest'),
-      backgroundColor: Colors.transparent,
-      insetPadding: popupInset,
-      child: ConstrainedBox(
-        constraints: popupConstraints(context),
-        child: AnimatedBuilder(
-          animation: Listenable.merge([_lid, _items]),
-          builder: (context, _) {
-            final lid = Curves.easeOutBack.transform(_lid.value);
-            final opened = _lid.value >= 1;
-            return Container(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF243565), Skin.night],
-                ),
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: Skin.goldBottom, width: 3),
-                boxShadow: Skin.shadow,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l10n.uiRebirthChest, style: Skin.text(22, color: Skin.goldTop)),
-                  const SizedBox(height: 8),
-                  // 상자 (누르면 열림) + 빛줄기·불꽃.
-                  GestureDetector(
-                    key: const Key('rebirth.chest.box'),
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => _openChest(rewards.length),
-                    child: SizedBox(
-                      height: 150,
-                      width: double.infinity,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          if (_lid.value > 0)
-                            Opacity(
-                              opacity: _lid.value.clamp(0, 1).toDouble(),
-                              child: Transform.rotate(
-                                angle: _items.value * math.pi * 0.25,
-                                child: const CustomPaint(size: Size(240, 240), painter: RaysPainter()),
-                              ),
-                            ),
-                          if (_lid.value > 0) Positioned.fill(child: SparkBurst(t: _lid.value, rainbow: false)),
-                          CustomPaint(
-                            size: const Size(120, 100),
-                            painter: ChestPainter(lid: lid),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (!opened && _lid.value == 0)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(l10n.uiRebirthChestTap, style: Skin.text(15, color: Colors.white70)),
-                    ),
-                  // 보상 줄: 차례로 튀어나온다.
-                  for (final (i, (icon, text)) in rewards.indexed)
-                    _RewardLine(
-                      key: Key('rebirth.chest.item.$i'),
-                      t: opened ? ((_items.value * rewards.length) - i).clamp(0, 1).toDouble() : 0,
-                      icon: icon,
-                      text: text,
-                    ),
-                  if (skin != null && _items.isCompleted) ...[
-                    const SizedBox(height: 6),
-                    ShipLookPreview(key: const Key('rebirth.chest.skin'), useSkin: true, skin: skin.id, size: 140),
-                  ],
-                  const SizedBox(height: 12),
-                  SizedBox(
+      title: l10n.uiRebirthChest,
+      showClose: false,
+      content: AnimatedBuilder(
+        animation: Listenable.merge([_lid, _items]),
+        builder: (context, _) {
+          final lid = Curves.easeOutBack.transform(_lid.value);
+          final opened = _lid.value >= 1;
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 상자 (누르면 열림) + 빛줄기·불꽃.
+                GestureDetector(
+                  key: const Key('rebirth.chest.box'),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _openChest(rewards.length),
+                  child: Container(
+                    height: 150,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: Skin.inset(fill: Skin.navyPanel),
                     width: double.infinity,
-                    child: SkinButton(
-                      key: Key(opened ? 'rebirth.chest.sail' : 'rebirth.chest.open'),
-                      tone: SkinTone.gold,
-                      height: 54,
-                      onPressed: opened
-                          ? () {
-                              widget.onSail?.call();
-                              Navigator.of(context).pop();
-                            }
-                          : () => _openChest(rewards.length),
-                      child: Text(opened ? l10n.uiRebirthSail : l10n.uiRebirthChestOpen),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
+                      children: [
+                        if (_lid.value > 0)
+                          Opacity(
+                            opacity: _lid.value.clamp(0, 1).toDouble(),
+                            child: Transform.rotate(
+                              angle: _items.value * math.pi * 0.25,
+                              child: const CustomPaint(size: Size(240, 240), painter: RaysPainter()),
+                            ),
+                          ),
+                        if (_lid.value > 0) Positioned.fill(child: SparkBurst(t: _lid.value, rainbow: false)),
+                        CustomPaint(
+                          size: const Size(120, 100),
+                          painter: ChestPainter(lid: lid),
+                        ),
+                      ],
                     ),
                   ),
+                ),
+                if (!opened && _lid.value == 0)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
+                      l10n.uiRebirthChestTap,
+                      textAlign: TextAlign.center,
+                      style: Skin.text(15, color: Skin.sub),
+                    ),
+                  ),
+                // 보상 줄: 차례로 튀어나온다.
+                for (final (i, (icon, text)) in rewards.indexed)
+                  _RewardLine(
+                    key: Key('rebirth.chest.item.$i'),
+                    t: opened ? ((_items.value * rewards.length) - i).clamp(0, 1).toDouble() : 0,
+                    icon: icon,
+                    text: text,
+                  ),
+                if (skin != null && _items.isCompleted) ...[
+                  const SizedBox(height: 6),
+                  ShipLookPreview(key: const Key('rebirth.chest.skin'), useSkin: true, skin: skin.id, size: 140),
                 ],
-              ),
-            );
-          },
-        ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: SkinButton(
+                    key: Key(opened ? 'rebirth.chest.sail' : 'rebirth.chest.open'),
+                    tone: SkinTone.gold,
+                    height: 54,
+                    onPressed: opened
+                        ? () {
+                            widget.onSail?.call();
+                            Navigator.of(context).pop();
+                          }
+                        : () => _openChest(rewards.length),
+                    child: Text(opened ? l10n.uiRebirthSail : l10n.uiRebirthChestOpen),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -194,10 +186,7 @@ class _RewardLine extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 6),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.95),
-              borderRadius: BorderRadius.circular(14),
-            ),
+            decoration: Skin.inset(),
             child: Row(
               children: [
                 SizedBox(width: 40, child: Center(child: icon)),

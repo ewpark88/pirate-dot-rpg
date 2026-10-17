@@ -117,7 +117,7 @@ class MonsterDexSheet extends ConsumerWidget {
       key: const Key('dex.sheet'),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
       children: [
-        Text(l10n.uiDexTitle, style: Theme.of(context).textTheme.titleLarge),
+        SubRibbon(l10n.uiDexTitle),
         Text(l10n.uiDexHint, style: Skin.text(13, color: Skin.sub)),
         for (final r in dex) ...[
           const SizedBox(height: 12),

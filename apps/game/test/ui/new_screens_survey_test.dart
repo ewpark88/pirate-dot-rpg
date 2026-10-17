@@ -163,6 +163,10 @@ void main() {
         );
         await tester.pump(bossDamageDelay);
         await tester.pump(const Duration(milliseconds: 600));
+        // 처치 창 전에 보상 터짐(젬) — 탭하면 바로 창(S5 reward-fx-wire).
+        await tester.tap(find.byKey(const Key('reward.burst')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 600));
         expect(find.byKey(const Key('bossDamage')), findsOneWidget);
         expect(tester.takeException(), isNull);
         Navigator.of(tester.element(find.byKey(const Key('bossDamage')))).pop();
