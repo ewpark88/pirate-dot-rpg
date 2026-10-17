@@ -190,7 +190,7 @@ class Settings {
   );
 
   /// 자동 절전 화면 기본(초) — S4 '발열·배터리·OLED'.
-  static const defaultSleepAfterSec = 180;
+  static const defaultSleepAfterSec = 600;
 
   /// `system` | `ko` | `en`.
   final String lang;
@@ -249,6 +249,15 @@ class Settings {
   Settings withHint(String id) => Settings.fromJson({
     ..._full(),
     'hints': [...hints, id],
+  });
+
+  /// [prefix]로 시작하는 안내 id를 지운다 (ClearHints, 빈 prefix = 전부).
+  Settings withoutHints(String prefix) => Settings.fromJson({
+    ..._full(),
+    'hints': [
+      for (final h in hints)
+        if (!h.startsWith(prefix)) h,
+    ],
   });
 
   Settings withTitle(String? id) => Settings.fromJson({..._full(), 'title': id});

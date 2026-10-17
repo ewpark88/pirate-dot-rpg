@@ -1407,6 +1407,18 @@ const Map<String, String> rawTables = {
     "seaEventStarted": {
       "fx": null,
       "sfx": "combo"
+    },
+    "chestOpened": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "adReward": {
+      "fx": null,
+      "sfx": "promote"
+    },
+    "bossBroken": {
+      "fx": null,
+      "sfx": "ultimate"
     }
   },
   "projectiles": {
@@ -2058,11 +2070,9 @@ const Map<String, String> rawTables = {
     "shock": "#6EBE5A"
   },
   "combo": {
-    "minKills": 4,
-    "windowMs": 600,
-    "x": 150,
+    "minKills": 5,
+    "windowMs": 1000,
     "y": 34,
-    "scale": 2,
     "color": "#FFD23F"
   },
   "hud": {
@@ -2188,6 +2198,9 @@ const Map<String, String> rawTables = {
       "#D7263D"
     ],
     "mythicInner": "#FFD447"
+  },
+  "cardFx": {
+    "minRarity": "hero"
   },
   "coinFx": {
     "sizeDp": 18,
@@ -2662,9 +2675,10 @@ const Map<String, String> rawTables = {
   },
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
-  "fever": { "weave": {"mode": "zigzag", "amp": 70, "legSec": 2.0, "turnSec": 0.45, "surge": 8, "tiltDeg": 25},
+  "fever": { "weave": {"mode": "flow", "amp": 58, "ampY": 22, "periodSec": 4.0, "tiltDeg": 32, "drift": 1.3, "loopEvery": 2, "loopRadius": 20, "loopSec": 1.6},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
+    "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring" },
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
   "startingCrews": ["octo"],
@@ -2695,6 +2709,7 @@ const Map<String, String> rawTables = {
     "firstTenSummonFree": true,
     "firstTenCount": 10,
     "firstTenGuarantee": "hero",
+    "firstTenMaxRarity": "rare",
     "welcomeCrew": { "crewId": "bones", "rarity": "rare" },
     "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 1 }, "boss": 3, "merge": 5, "last": 6 }
   },
@@ -2758,15 +2773,16 @@ const Map<String, String> rawTables = {
 {
   "stagesPerRegion": 50,
   "midBossEvery": 25,
+  "wallEvery": 10,
   "loopStages": 300,
   "maxLoopTier": 3,
   "regions": [
-    {"id": "coral", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
-    {"id": "storm", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
-    {"id": "glacier", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
-    {"id": "volcano", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
-    {"id": "abyss", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
-    {"id": "phantom", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
+    {"id": "coral", "wallBoss": "sea_croc", "fromStage": 1, "background": "bg_coral", "bgm": "bgm_coral", "enemies": ["crab", "piranha", "jelly", "gull"], "boss": "enemy_ship", "nameKey": "battleRegionCoral", "midBoss": "raider_ship", "regionBoss": "giant_hermit"},
+    {"id": "storm", "wallBoss": "monster_whale", "fromStage": 51, "background": "bg_storm", "bgm": "bgm_storm", "enemies": ["crab", "urchin", "flyingfish", "stormgull", "puffer"], "boss": "enemy_ship", "nameKey": "battleRegionStorm", "midBoss": "storm_pirate", "regionBoss": "thunder_ray"},
+    {"id": "glacier", "wallBoss": "ice_slime", "fromStage": 101, "background": "bg_glacier", "bgm": "bgm_glacier", "enemies": ["icecrab", "penguin", "seal", "snowgull"], "boss": "enemy_ship", "nameKey": "battleRegionGlacier", "midBoss": "icebreaker", "regionBoss": "iceberg_walrus"},
+    {"id": "volcano", "wallBoss": "leviathan", "fromStage": 151, "background": "bg_volcano", "bgm": "bgm_volcano", "enemies": ["lavacrab", "starfish", "lavaturtle", "firebird"], "boss": "enemy_ship", "nameKey": "battleRegionVolcano", "midBoss": "fire_pirate", "regionBoss": "lava_whale"},
+    {"id": "abyss", "wallBoss": "kraken_titan", "fromStage": 201, "background": "bg_abyss", "bgm": "bgm_abyss", "enemies": ["angler", "squid", "siphon", "eel"], "boss": "enemy_ship", "nameKey": "battleRegionAbyss", "midBoss": "deep_sub", "regionBoss": "kraken"},
+    {"id": "phantom", "wallBoss": "poseidon", "fromStage": 251, "background": "bg_phantom", "bgm": "bgm_phantom", "enemies": ["skeleton", "ghostjelly", "cursegull", "wraith"], "boss": "enemy_ship", "nameKey": "battleRegionPhantom", "midBoss": "ghost_ship", "regionBoss": "ghost_admiral"}
   ],
   "bosses": [
     {"id": "enemy_ship", "nameKey": "battleBossEnemyShip", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 3, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 0.6},
@@ -2781,7 +2797,13 @@ const Map<String, String> rawTables = {
     {"id": "iceberg_walrus", "nameKey": "battleBossIcebergWalrus", "hpMultiplier": 2.5, "weakFamilies": ["shock"], "mechanic": {"type": "shield", "intervalSec": 12, "factor": 0.25, "breakerFamilies": ["shock"]}, "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}, {"type": "blast", "warnSec": 0.6, "damageRatio": 1.0, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 1.0},
     {"id": "lava_whale", "nameKey": "battleBossLavaWhale", "hpMultiplier": 2.5, "weakFamilies": ["direct", "lob"], "mechanic": {"type": "lava", "intervalSec": 5, "shipDamageMultiplier": 1.0}, "patterns": [{"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 60}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 1.0},
     {"id": "kraken", "nameKey": "battleBossKraken", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "skip"], "mechanic": {"type": "tentacles", "count": 4, "hpRatio": 0.15}, "patterns": [{"type": "summon", "warnSec": 0.6, "count": 3}, {"type": "blast", "warnSec": 0.6, "damageRatio": 1.0, "radiusShipMul": 2}], "restSec": 2.5, "firstRestSec": 1.0},
-    {"id": "ghost_admiral", "nameKey": "battleBossGhostAdmiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}, "patterns": [{"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 60}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 1.0}
+    {"id": "ghost_admiral", "nameKey": "battleBossGhostAdmiral", "hpMultiplier": 2.5, "weakFamilies": ["lob", "underwater", "air", "assault", "shock"], "mechanic": {"type": "summoner", "intervalSec": 6, "count": 3}, "patterns": [{"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 60}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.5, "capMul": 2}], "restSec": 2.5, "firstRestSec": 1.0},
+    {"id": "sea_croc", "nameKey": "battleBossSeaCroc", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.8, "capMul": 2}, {"type": "swallow", "warnSec": 0.8, "radiusShipMul": 1.5, "healRatio": 0.04}, {"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.2, "firstRestSec": 0.6},
+    {"id": "monster_whale", "nameKey": "battleBossMonsterWhale", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "summon", "warnSec": 0.6, "count": 5}, {"type": "swallow", "warnSec": 0.8, "radiusShipMul": 1.5, "healRatio": 0.04}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.8, "capMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.2, "firstRestSec": 0.6},
+    {"id": "ice_slime", "nameKey": "battleBossIceSlime", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}, {"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}], "restSec": 2.2, "firstRestSec": 0.6, "splitAt": [0.5, 0.25]},
+    {"id": "leviathan", "nameKey": "battleBossLeviathan", "hpMultiplier": 1.0, "weakFamilies": [], "patterns": [{"type": "blast", "warnSec": 0.6, "damageRatio": 0.8, "radiusShipMul": 2}, {"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 60}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.8, "capMul": 2}], "restSec": 2.2, "firstRestSec": 0.6},
+    {"id": "kraken_titan", "nameKey": "battleBossKrakenTitan", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "ink", "warnSec": 0.6, "radiusShipMul": 2, "durationSec": 2.0}, {"type": "summon", "warnSec": 0.6, "count": 5}, {"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 40}], "restSec": 2.2, "firstRestSec": 0.6},
+    {"id": "poseidon", "nameKey": "battleBossPoseidon", "hpMultiplier": 0.9, "weakFamilies": [], "patterns": [{"type": "volley", "warnSec": 0.6, "count": 5, "speed": 200, "damageRatio": 0.3, "spreadDeg": 90}, {"type": "summon", "warnSec": 0.6, "count": 5}, {"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.8, "capMul": 2}], "restSec": 2.2, "firstRestSec": 0.6}
   ],
   "enemies": [
     {"id": "crab", "layer": "surface", "hpScale": 1.0, "speed": 14, "role": "basic"},
@@ -2817,11 +2839,11 @@ const Map<String, String> rawTables = {
   'ship_parts': r'''
 {
   "parts": [
-    {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartCannon"},
-    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
-    {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail"},
-    {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
+    {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartCannon"},
+    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
+    {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 11, 30], "nameKey": "shipPartSail"},
+    {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 12, 26, 45], "nameKey": "shipPartCrowsnest"},
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -2874,7 +2896,7 @@ const Map<String, String> rawTables = {
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
-    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
+    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150, "earlyExtra": 28, "earlyStages": 20 },
     "swarmSpacing": 3,
     "bossSpawnRadius": 152,
     "chestMargin": 12,
@@ -2895,7 +2917,7 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
-    "vanguard": { "count": 2, "hpMul": 4, "speedMul": 1.6, "fromStage": 5 },
+    "vanguard": { "count": 2, "hpMul": 4, "speedMul": 1.6, "attackMul": 1, "fromStage": 5 },
     "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,

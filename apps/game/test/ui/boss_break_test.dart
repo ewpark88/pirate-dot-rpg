@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
 
@@ -42,10 +45,24 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('쓰러진 동안은 금빛으로 가득', (tester) async {
+  testWidgets('폰 피드백 v2: 막대 두께 ≥ 10dp, 80% 넘으면 hot(흔들림·빛), 쓰러진 동안 금빛 가득, 일어난 뒤 0이면 회색 + 자물쇠', (tester) async {
+    await pumpGame(tester, _boss(ratio: 0.5), openTab: false);
+    final bar = find.descendant(of: find.byKey(const Key('hud.break')), matching: find.byType(Container)).last;
+    expect(tester.getSize(bar).height, greaterThanOrEqualTo(10));
+    expect(find.byKey(const Key('hud.break.hot')), findsNothing);
+    await pumpGame(tester, _boss(ratio: 0.85), openTab: false);
+    expect(find.byKey(const Key('hud.break.hot')), findsOneWidget);
     await pumpGame(tester, _boss(broken: true), openTab: false);
     final full = tester.widget<FractionallySizedBox>(find.byKey(const Key('hud.break.full')));
     expect(full.widthFactor, 1);
+    expect(find.byKey(const Key('hud.break.lock')), findsNothing);
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    c.read(gameStateProvider.notifier).replace(_boss());
+    await tester.pump();
+    expect(find.byKey(const Key('hud.break.lock')), findsOneWidget);
+    c.read(gameStateProvider.notifier).replace(_boss(ratio: 0.1));
+    await tester.pump();
+    expect(find.byKey(const Key('hud.break.lock')), findsNothing);
     await tester.pump(const Duration(seconds: 5));
   });
 
@@ -69,6 +86,29 @@ void main() {
     expect(area.contains(tester.getCenter(find.byKey(const Key('hud.break.burst')))), isTrue);
     await tester.pump(const Duration(milliseconds: 1200));
     expect(find.byKey(const Key('hud.break.burst')), findsNothing);
+    await tester.pump(const Duration(seconds: 5));
+  });
+
+  for (final (name, size, dpr) in [
+    ('360', const Size(360, 640), 3.0),
+    ('s24', s24Size, s24Dpr),
+    ('411', const Size(411, 891), 2.625),
+    ('tablet', const Size(800, 1280), 2.0),
+  ]) {
+    testWidgets('골든 4기기: 브레이크 막대 85%(hot) $name', (tester) async {
+      await loadGoldenFonts();
+      await pumpGame(tester, _boss(ratio: 0.85), openTab: false, size: size, dpr: dpr, locale: const Locale('ko'));
+      await precacheImages(tester);
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_boss_break_$name.png'));
+      await tester.pump(const Duration(seconds: 5));
+    });
+  }
+
+  testWidgets('골든: 쓰러진 동안 금빛 BREAK! (s24)', (tester) async {
+    await loadGoldenFonts();
+    await pumpGame(tester, _boss(broken: true), openTab: false, locale: const Locale('ko'));
+    await precacheImages(tester);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_boss_break_broken_s24.png'));
     await tester.pump(const Duration(seconds: 5));
   });
 

@@ -2,6 +2,9 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
+import 'package:pirate_dot/render/top/top_loot_bits.dart';
+import 'package:pirate_dot/render/top/top_loot_card.dart';
 
 /// 보스 처치 보상 연출 (사용자 피드백 #18 '보스 처치 보상이 확실히 보이게', 2026-10-17):
 /// 보스 자리에서 연쇄 폭발·빛줄기·충격파 → 금화·젬·카드가 크게 튀어나와 잠깐 떠 있다가 배로 빨려 들어간다(도착마다 배 둘레 반짝).
@@ -17,14 +20,28 @@ class TopBossLoot {
   static const _holdUntilMs = 1050.0;
   static const _flyMs = 420.0;
   static const _maxBursts = 3;
+  static const _maxCards = 4;
 
   /// 끝까지 걸리는 시간(ms) — 테스트·정리용.
-  static const totalMs = 2600.0;
+  static const totalMs = 3600.0;
 
   /// 보스가 ([at])에서 쓰러졌다. [lite]면 조각 절반(절전·시트가 가림).
-  void burst(double now, Offset at, {required bool lite, double size = 1.7}) {
+  void burst(double now, Offset at, {required bool lite, double size = 1.7}) =>
+      _add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+
+  /// 보물상자가 열렸다(피드백 #15, 탭·광고 둘 다 ChestOpened): 폭발 대신 하늘로 솟는 금빛 기둥 + 금화(또는 젬) 분수.
+  void chest(double now, Offset at, {required bool lite, bool gems = false}) {
+    final b = _Burst(now, at, gems ? 0 : (lite ? 10 : 20), 0, 1.3, style: LootStyle.chest);
+    if (gems) b.gems = 5;
+    _add(b);
+  }
+
+  /// 광고 보상을 받았다(순풍·자동 강화·오프라인 ×2 등 — 배에 버프): 배에서 금빛 고리·별가루가 솟는다.
+  void reward(double now, Offset ship) => _add(_Burst(now, ship, 0, 0, 1.2, style: LootStyle.reward));
+
+  void _add(_Burst b) {
     if (_bursts.length >= _maxBursts) _bursts.removeAt(0);
-    _bursts.add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+    _bursts.add(b);
   }
 
   /// 젬 [n]개를 가장 최근 터짐에 더한다(BossCleared·DexFirstKill). 터짐이 없으면 무시.
@@ -34,12 +51,50 @@ class TopBossLoot {
     b.gems = math.min(7, b.gems + math.max(3, (n / 3).ceil()));
   }
 
-  /// 카드(선원 초상·등급 색)를 가장 최근 터짐에 더한다 — 피드백 #17, 카드 이벤트가 오면 연결.
-  void card(String crewId, int color) {
-    if (_bursts.isEmpty) return;
+  /// 카드 획득(피드백 #17, CardGranted): 방금 터진 보스 보상(0.5초 안)에 붙고, 없으면 [fallback](배 앞)에서 금빛 기둥과 함께 솟는다.
+  /// [isNew](처음 얻은 동료)면 크게·오래 떠서 [newCrewText]를 띄우고, [special](첫 희귀 선원 환영)이면 더 크게.
+  /// [stars] = 등급 칸 + 1, [reveal]이면 앞면 공개 연출(피드백 #22 — 기준 등급 이상).
+  void card(
+    double now,
+    Offset fallback,
+    String crewId,
+    int color, {
+    bool isNew = false,
+    bool special = false,
+    int stars = 0,
+    bool reveal = false,
+  }) {
+    if (_bursts.isEmpty || now - _bursts.last.ms > 500) _add(_Burst(now, fallback, 0, 0, 1.2, style: LootStyle.chest));
     final b = _bursts.last;
-    if (b.cards.length < 5) b.cards.add((crewId, color));
+    final big = special ? 2 : (isNew ? 1 : 0);
+    // 한 번에 여러 장(현상금 소탕은 한 틱에 수십 장): 같은 선원 보통 카드는 '×n' 한 장으로, 보통 카드는 4장까지 날리고 나머지는 '+n'.
+    // 새 동료·환영은 묶지 않고 따로 크게.
+    if (big == 0 && !reveal) {
+      for (final k in b.cards) {
+        if (k.crewId == crewId && k.big == 0 && !k.reveal) {
+          k.count++;
+          return;
+        }
+      }
+      if (b.cards.where((k) => k.big == 0).length >= _maxCards) {
+        b.extraCards++;
+        return;
+      }
+    }
+    if (b.cards.length >= _maxCards + 3) return;
+    b.cards.add(LootCard(crewId, color, big, stars: stars, reveal: reveal || big > 0));
   }
+
+  /// 새 동료 문구(UI가 TopTexts.newCrew로 채운다).
+  String newCrewText = 'NEW CREW!';
+  late final _cardPainter = LootCardPainter(_bits, TopLabel());
+
+  /// 선원 이름(UI가 TopTexts.crewName으로 채운다, 비면 이름 없음).
+  String Function(String crewId) crewName = _noName;
+  static String _noName(String _) => '';
+
+  /// 앞면 공개 기준 등급 칸(fx_map cardFx.minRarity, 운영자·설정이 BattleGame.cardFxMinRarity로 바꾼다). null = 아직 안 읽음.
+  int? revealFrom;
 
   bool get active => _bursts.isNotEmpty;
 
@@ -50,6 +105,7 @@ class TopBossLoot {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
   final _ray = Path();
+  final _bits = LootBits();
 
   /// 전장 좌표로 그린다(적 위 층). [ship] = 배 중심.
   void paint(Canvas c, double now, Offset ship, SpriteDraw? sprites, {required bool flash}) {
@@ -57,6 +113,8 @@ class TopBossLoot {
     for (final b in _bursts) {
       final age = now - b.ms;
       if (age < 0) continue;
+      if (b.style != LootStyle.boss) _bits.pillar(c, b.at, age, wide: b.style == LootStyle.reward);
+      if (b.style == LootStyle.reward) _bits.stars(c, b.at, age);
       _rays(c, b, age);
       if (flash && age < 160) {
         _paint.color = Color.fromRGBO(255, 248, 210, 0.85 * (1 - age / 160));
@@ -76,7 +134,7 @@ class TopBossLoot {
       for (var i = 0; i < b.cards.length; i++) {
         arrivals += _piece(c, b, i, age, ship, sprites, kind: 2);
       }
-      if (arrivals > 0) _absorb(c, ship, arrivals);
+      if (arrivals > 0) _bits.absorb(c, ship, arrivals);
     }
   }
 
@@ -150,11 +208,14 @@ class TopBossLoot {
     final order = kind == 0 ? i : (kind == 1 ? b.coins ~/ 2 + i * 3 : b.coins + i * 4);
     final pop = age - _popAtMs - order * 8 - kind * 120;
     if (pop < 0) return 0;
-    const golden = 2.39996;
-    final ang = kind == 0 ? i * golden : -math.pi / 2 + (i - (kind == 1 ? b.gems : b.cards.length) / 2 + 0.5) * 0.55;
+    final fan = (i - (kind == 1 ? b.gems : b.cards.length) / 2 + 0.5) * (kind == 2 ? 0.95 : 0.55);
+    final ang = kind == 0 ? i * 2.39996 : -math.pi / 2 + fan;
     final dist = (kind == 0 ? 18 + (i * 13) % 30 : 30.0 + kind * 6) * b.size;
     final land = b.at + Offset(math.cos(ang) * dist, math.sin(ang) * dist);
-    final hold = _holdUntilMs + order * 22 + kind * 160;
+    final big = kind == 2 ? b.cards[i].big : 0;
+    // 앞면 공개 카드는 뒤집혀 읽힐 만큼 더 머물고(+700ms), 기준 미만 카드는 빨리 들어간다(−250ms).
+    final reveal = kind == 2 && b.cards[i].reveal;
+    final hold = _holdUntilMs + order * 22 + kind * 160 + big * 600 + (reveal ? 700 : (kind == 2 ? -250 : 0));
     final flyT = (age - hold) / _flyMs;
     if (flyT >= 1) return flyT < 1 + 34 / _flyMs ? 1 : 0;
     Offset at;
@@ -196,67 +257,43 @@ class TopBossLoot {
           ..save()
           ..translate(p.dx, p.dy)
           ..scale(1.6);
-        _gem(c, Offset.zero, age);
+        _bits.gem(c, Offset.zero, age);
         c.restore();
       default:
-        _card(c, p, b.cards[i], age, sprites);
+        final card = b.cards[i];
+        final last = b.extraCards > 0 && !card.reveal && i == b.cards.lastIndexWhere((k) => !k.reveal);
+        _cardPainter.draw(
+          c,
+          card,
+          p,
+          age,
+          pop,
+          flyT,
+          _popMs,
+          sprites,
+          name: crewName(card.crewId),
+          newCrew: newCrewText,
+          extra: last ? '+${b.extraCards}' : null,
+        );
     }
     return 0;
   }
-
-  /// 젬: 분홍·하늘 마름모(테두리·하이라이트) + 반짝.
-  void _gem(Canvas c, Offset p, double age) {
-    final x = p.dx.roundToDouble();
-    final y = p.dy.roundToDouble();
-    _ray
-      ..reset()
-      ..moveTo(x, y - 7)
-      ..lineTo(x + 5, y - 1)
-      ..lineTo(x, y + 6)
-      ..lineTo(x - 5, y - 1)
-      ..close();
-    _paint.color = const Color(0xFF1B1726);
-    c.drawPath(_ray.shift(const Offset(0, 1)), _paint);
-    _paint.color = const Color(0xFFE0479E);
-    c.drawPath(_ray, _paint);
-    _paint.color = const Color(0xFFFF9AD5);
-    c.drawRect(Rect.fromLTWH(x - 3, y - 2, 3, 2), _paint);
-    _paint.color = const Color(0xFFFFFFFF);
-    c.drawRect(Rect.fromLTWH(x - 2, y - 4, 1, 2), _paint);
-    if ((age / 120).floor().isEven) c.drawRect(Rect.fromLTWH(x + 3, y - 7, 1, 1), _paint);
-  }
-
-  /// 카드: 등급 색 테두리 + 선원 초상, 가로로 뒤집히며 돈다.
-  void _card(Canvas c, Offset p, (String, int) card, double age, SpriteDraw? sprites) {
-    final flip = math.cos(age / 140).abs().clamp(0.25, 1.0);
-    final w = 12 * flip;
-    const h = 16.0;
-    final r = Rect.fromCenter(center: p, width: w + 2, height: h + 2);
-    _paint.color = const Color(0xFF1B1726);
-    c.drawRect(r, _paint);
-    _paint.color = Color(card.$2);
-    c.drawRect(r.deflate(1), _paint);
-    _paint.color = const Color(0xFFF6EBD0);
-    c.drawRect(r.deflate(2.5), _paint);
-    sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy, w - 3, w - 3);
-  }
-
-  /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
-  void _absorb(Canvas c, Offset ship, int n) {
-    _ring
-      ..strokeWidth = math.min(4, 1 + n * 0.5)
-      ..color = const Color(0xCCFFE27A);
-    c.drawCircle(ship, 14 + math.min(8, n * 1.0), _ring);
-  }
 }
 
+/// 터짐 종류: 보스 처치(연쇄 폭발) · 보물상자(금빛 기둥) · 광고 보상(배에서 고리·별가루).
+enum LootStyle { boss, chest, reward }
+
 class _Burst {
-  _Burst(this.ms, this.at, this.coins, this.blasts, this.size);
+  _Burst(this.ms, this.at, this.coins, this.blasts, this.size, {this.style = LootStyle.boss});
+  final LootStyle style;
   final double ms;
   final Offset at;
   final int coins;
   final int blasts;
   final double size;
   int gems = 0;
-  final List<(String, int)> cards = [];
+  final List<LootCard> cards = [];
+
+  /// 날리지 않고 숫자로만 보인 카드 수('+n').
+  int extraCards = 0;
 }

@@ -6,11 +6,14 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
+import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 설정 화면 (설계서 4.12). 바꾸면 SetSetting만 보낸다 — 화면은 엔진이 돌려준 상태로 다시 그린다.
@@ -105,26 +108,24 @@ class SettingsScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           for (final (key, label, value) in switches.where((e) => keys.contains(e.$1)))
-                            PixelListRow(
-                              onTap: () => set(key, !value),
-                              // 줄마다 아이콘 (설정 r2 최종 다듬기).
-                              leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
-                              title: key == 'flash'
-                                  ? Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(label),
-                                        Text(l10n.uiSettingsFlashSub, style: Skin.text(12, color: Skin.sub)),
-                                      ],
-                                    )
-                                  : Text(label),
-                              trailing: PixelToggle(
-                                key: Key('settings.$key'),
-                                value: value,
-                                semanticLabel: label,
-                                onChanged: (v) => set(key, v),
+                            if (key == 'flash')
+                              const FlashLevelRow()
+                            else ...[
+                              PixelListRow(
+                                onTap: () => set(key, !value),
+                                // 줄마다 아이콘 (설정 r2 최종 다듬기).
+                                leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
+                                title: Text(label),
+                                trailing: PixelToggle(
+                                  key: Key('settings.$key'),
+                                  value: value,
+                                  semanticLabel: label,
+                                  onChanged: (v) => set(key, v),
+                                ),
                               ),
-                            ),
+                              // 절전 모드 바로 아래: 절전 화면까지 시간.
+                              if (key == 'powerSave') const SleepAfterRow(),
+                            ],
                         ],
                       ),
                     ),
@@ -136,6 +137,17 @@ class SettingsScreen extends ConsumerWidget {
                       trailing: const PixelBitmap(PixelBitmaps.chevron),
                       onTap: () => unawaited(ads.showPrivacyOptions()),
                     ),
+                  // 가이드 v2: 처음 만나는 시스템 안내를 다시 켠다(ClearHints 'guide.').
+                  PixelListRow(
+                    key: const Key('settings.guideReplay'),
+                    leading: const Icon(Icons.lightbulb_rounded, size: 22, color: Skin.primaryEdge),
+                    title: Text(l10n.uiSettingsGuideReplay),
+                    trailing: const PixelBitmap(PixelBitmaps.chevron),
+                    onTap: () {
+                      ref.read(guideQueueProvider.notifier).replay();
+                      showSkinToast(context, l10n.uiSettingsGuideReplayDone);
+                    },
+                  ),
                   // 도움말: 큰 수 단위 (계획 E11).
                   _Group(
                     key: const Key('settings.help'),
@@ -161,7 +173,6 @@ IconData _settingIcon(String key) => switch (key) {
   'sfx' => Icons.volume_up_rounded,
   'vibration' => Icons.vibration_rounded,
   'shake' => Icons.waves_rounded,
-  'flash' => Icons.flash_on_rounded,
   'powerSave' => Icons.battery_saver_rounded,
   'autoBoss' => Icons.military_tech_rounded,
   _ => Icons.notifications_rounded,

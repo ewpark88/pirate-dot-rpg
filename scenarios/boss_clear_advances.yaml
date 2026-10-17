@@ -10,4 +10,4 @@ steps:
   - input: op.spawnBoss
   - expect: { bossActive: true, stage: 5, gems: 140 }
   - advance: 6s
-  - expect: { farming: false, stage: 6, gems: 165 }  # 처치 후 다음 스테이지 무리가 이미 진행 중일 수 있다. 보스 젬은 없고 +25 = 도감 첫 처치(픽스처 도감이 비어 있음, 잡몹 4 + 보스 1) × 5
+  - expect: { farming: false, stage: 6, gems: 160 }  # 처치 후 다음 스테이지 무리가 이미 진행 중일 수 있다. 보스 젬은 없고 +20 = 도감 첫 처치(픽스처 도감이 비어 있음, 잡몹 3 + 보스 1) × 5 — 초반 무리가 커져(피드백 #4) 6초 안 첫 처치 종류가 하나 줄었다

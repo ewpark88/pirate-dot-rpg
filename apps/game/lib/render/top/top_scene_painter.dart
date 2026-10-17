@@ -210,8 +210,7 @@ class TopScenePainter {
     fever
       ..rushers(c, frame.box)
       ..speedLines(c, frame.box);
-    scene.topHits.fast.paintScreen(c, frame.box, clockMs, flash: scene.settings.flash);
-    scene.topHits.bounty.paintScreen(c, frame.box, clockMs, sprites);
+    scene.topHits.paintScreen(c, frame.box, clockMs, sprites, flash: scene.settings.flash);
     _marks.screenFlash(c, Offset.zero & frame.box);
   }
 

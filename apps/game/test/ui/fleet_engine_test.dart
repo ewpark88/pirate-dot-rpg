@@ -22,7 +22,7 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
   addTearDown(tester.view.reset);
   final tables = GameTables.load();
   final clock = FixedClock(initial.savedAt);
-  final host = EngineHost(tables: tables, initial: initial, clock: clock);
+  final host = EngineHost(tables: tables, initial: withGuidesSeen(initial), clock: clock);
   final ticks = <RecordedTick>[];
   final sub = host.ticks.listen(ticks.add);
   addTearDown(sub.cancel);
@@ -100,6 +100,7 @@ void main() {
     await _run(tester, host, 400);
     expect(_attackers(ticks), contains('starry'));
     expect(_attackers(ticks), isNot(contains(out)));
+    await tester.pump(const Duration(seconds: 5)); // 실제 엔진의 도감 첫 처치 토스트(4초)가 닫히게
   });
 
   testWidgets('열린 빈 칸 → 후보 고르기 → 엔진 fleet에 들어가고 공격한다', (tester) async {
@@ -121,6 +122,7 @@ void main() {
     ticks.clear();
     await _run(tester, host, 400);
     expect(_attackers(ticks), contains(removed));
+    await tester.pump(const Duration(seconds: 5)); // 실제 엔진의 도감 첫 처치 토스트(4초)가 닫히게
   });
 
   for (final init in [true, false]) {
@@ -155,6 +157,7 @@ void main() {
       await _run(tester, host, 400);
       expect(_attackers(ticks), contains('starry'));
       expect(_attackers(ticks), isNot(contains(first)));
+      await tester.pump(const Duration(seconds: 5)); // 실제 엔진의 도감 첫 처치 토스트(4초)가 닫히게
     });
   }
 
@@ -172,6 +175,7 @@ void main() {
     await _run(tester, host, 20);
     await _run(tester, host, 2400); // 약 2분 (자동 강화·보스·카드 드롭 포함)
     expect(host.state.fleet.whereType<String>().toList(), before.whereType<String>().toList());
+    await tester.pump(const Duration(seconds: 5)); // 실제 엔진의 도감 첫 처치 토스트(4초)가 닫히게
   });
 
   testWidgets('내리면 4초 동안 되돌리기', (tester) async {

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart' show parseArgb;
 import 'package:pirate_dot/render/fx/transients.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -38,6 +39,42 @@ bool funEvent(BattleScene s, GameEvent e) {
       _sfx(s, 'bossFailed', e);
     case BombletBurst(:final x, :final y, :final radius):
       s.topHits.impact.add(x, y, radius, 0xFFFF8A2A, s.clockMs);
+    // 보물상자 열림·광고 보상(피드백 #15): 전장에서 보상이 튀어나오는 임팩트.
+    case ChestOpened(:final gold) when s.isTop:
+      final at = Offset(s.chest.x, s.chest.y);
+      s.topHits.loot.chest(s.clockMs, at, lite: s.topHits.lite || s.settings.powerSave, gems: gold.isZero);
+      if (!gold.isZero) s.numbers.add(gold, at.dx, at.dy - 16, DamageKind.crit);
+      s.haptic(HapticLevel.light);
+      _sfx(s, 'chestOpened', e);
+    case SaveRequested(reason: 'adReward') when s.isTop:
+      s.topHits.loot.reward(s.clockMs, s.topShip);
+      _sfx(s, 'adReward', e);
+    // 보스 브레이크(사용자 '잘 안 보여'): 충격파·조각·'BREAK!' 도장·기우뚱·별, 짧은 슬로모션·흔들림.
+    case BossBroken(:final enemyId, :final ticks, :final x, :final y) when s.isTop:
+      s.topHits.breaks.broken(enemyId, x, y, ticks * s.player.tickMs, s.clockMs);
+      s.shake.trigger(s.juice.shake['bossKill']!);
+      if (s.slowMoMs <= 0) s.slowMoMs = 250;
+      s.haptic(HapticLevel.medium);
+      _sfx(s, 'bossBroken', e);
+    // 카드 획득(피드백 #17): 보스 보상 터짐에 붙거나 배 앞에서 솟아 배로. 첫 동료는 크게 '새 동료!', 환영(starter)은 더 크게.
+    case CardGranted(:final crewId, :final rarity, :final source, :final isNew) when s.isTop:
+      final rs = s.tables.rarities.rarities;
+      final r = rs.firstWhere((x) => x.id == rarity, orElse: () => rs.first);
+      final loot = s.topHits.loot;
+      final from = loot.revealFrom ??= rs.indexWhere((x) => x.id == s.fx.raw.obj('cardFx').str('minRarity'));
+      final special = source == 'starter';
+      s.topHits.loot.card(
+        s.clockMs,
+        s.topShip - const Offset(0, 52),
+        crewId,
+        parseArgb(r.color, 'rarities.color'),
+        isNew: isNew,
+        special: special,
+        stars: rs.indexOf(r) + 1,
+        reveal: from >= 0 && rs.indexOf(r) >= from,
+      );
+      if (isNew || special) s.haptic(HapticLevel.medium);
+      _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):

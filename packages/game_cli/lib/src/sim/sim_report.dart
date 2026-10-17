@@ -1,54 +1,12 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
+import 'package:game_cli/src/sim/sim_check.dart';
+import 'package:game_cli/src/sim/sim_early.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
-/// 지표 하나의 판정. [value]가 null이면 시뮬 시간 안에 도달하지 못함.
-class SimCheck {
-  SimCheck(
-    this.key,
-    this.label,
-    this.value,
-    this.min,
-    this.max, {
-    required this.unit,
-    this.requiredWithin,
-    this.applies = true,
-    this.onlyIfReached = false,
-  });
-
-  final String key;
-  final String label;
-  final double? value;
-  final double min;
-  final double max;
-  final String unit;
-
-  /// 이 지표를 판정하려면 시뮬이 이만큼은 돌아야 한다. 더 짧으면 미도달을 ‘판정 안 함’으로 본다.
-  final Duration? requiredWithin;
-
-  /// 목표가 이 접속 일정용인가 (`schedule` 키, 없으면 모든 일정).
-  final bool applies;
-
-  /// 값이 없으면(그 일이 일어나지 않았으면) 판정하지 않는다.
-  final bool onlyIfReached;
-
-  bool judged(Duration played) =>
-      applies && (value != null || (!onlyIfReached && (requiredWithin == null || played >= requiredWithin!)));
-  bool ok(Duration played) => !judged(played) || (value != null && value! >= min && value! <= max);
-
-  Map<String, Object?> toJson(Duration played) => {
-    'key': key,
-    'value': value,
-    'min': min,
-    'max': max,
-    'unit': unit,
-    'applies': applies,
-    'judged': judged(played),
-    'ok': ok(played),
-  };
-}
+export 'package:game_cli/src/sim/sim_check.dart';
 
 double? _min(Duration? d) => d == null ? null : d.inMilliseconds / Duration.millisecondsPerMinute;
 double? _hours(Duration? d) => d == null ? null : d.inMilliseconds / Duration.millisecondsPerHour;
@@ -198,6 +156,12 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '${_fmt(m((r) => r.rebirthForecastMin == null || r.rebirthBeatBest == null ? null : r.rebirthForecastMin! / _min(r.rebirthBeatBest)!))} |',
     )
     ..writeln('| 첫 보스 실패 스테이지 | ${_fmt(m((r) => r.firstBossFailStage?.toDouble()))} |')
+    ..writeln(
+      '| 금고가 가득 차는 분(스테이지 ${SimEarly.cargoStages.join('·')}) | '
+      '${[for (final st in SimEarly.cargoStages) _fmt(m((r) => r.cargoFillMin[st]))].join(' · ')} |\n'
+      '| 초반: 첫 외형 변화 / 첫 피버 / 10분 안 외형 변화·피버 수 | ${_fmt(m((r) => _min(r.firstLookChange)), '분')} / '
+      '${_fmt(m((r) => _min(r.firstFever)), '분')} / ${_fmt(m((r) => r.lookChanges10Min.toDouble()))} · ${_fmt(m((r) => r.fevers10Min.toDouble()))} |',
+    )
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
     ..writeln(

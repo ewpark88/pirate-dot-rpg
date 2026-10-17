@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,54 +17,145 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 /// 'BREAK!' 글자가 떠 있는 시간.
 const _burst = Duration(milliseconds: 1400);
 
-/// 보스 시간 막대 아래 얇은 브레이크 막대. 쓰러진 동안은 금빛으로 가득 + 'BREAK!'.
-/// 보스가 없거나 표가 꺼져(게이지가 한 번도 안 참) 0이면 자리만 지킨다 — 게이지 높이가 흔들리지 않게.
-class BossBreakBar extends ConsumerWidget {
+/// 막대 두께(dp) — 사용자 폰 피드백 '브레이크 막대가 잘 안 보여' → 최소 10.
+const _barHeight = 12.0;
+
+/// 브레이크 색: 밝은 하늘 → 노랑 (보스 시간 막대의 주황·빨강과 확실히 다르게) + 어두운 외곽선.
+const _breakFrom = Color(0xFF5FE1FF);
+const _breakTo = Color(0xFFFFE14A);
+const _outline = Color(0xFF0B1730);
+const _locked = Color(0xFF8A93A6);
+
+/// 반짝임이 남는 틱 수(오를 때마다) · 흔들림이 시작되는 비율.
+const _shineTicks = 8;
+const _hotRatio = 0.8;
+
+/// 보스 시간 막대 아래 브레이크 막대 (사용자 결정 2026-10-17, 폰 피드백으로 v2): 왼쪽 ⚡BREAK 칩 + 두꺼운 막대.
+/// 오르면 잠깐 반짝, 80% 넘으면 살짝 흔들림(전투 틱으로 — 반복 애니메이션 없음), 쓰러진 동안은 금빛 가득 + 'BREAK!'.
+/// 일어난 뒤 게이지가 0인 동안은 회색 + 자물쇠(엔진 쿨다운 — 계약에 없어 '쓰러졌다 일어난 뒤 0'으로 본다, S1 2026-10-17.
+/// S2 EnemyView.breakCooldown이 오면 그 값으로 차오르는 시계를 그린다).
+/// 번쩍임 끔·동작 줄이기면 반짝·흔들림 없이 색만.
+class BossBreakBar extends ConsumerStatefulWidget {
   const BossBreakBar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final (ratio, broken) = ref.watch(
+  ConsumerState<BossBreakBar> createState() => _BossBreakBarState();
+}
+
+class _BossBreakBarState extends ConsumerState<BossBreakBar> {
+  double _last = 0;
+  int _rose = -_shineTicks;
+
+  /// 쓰러졌다 일어난 뒤 아직 다시 오르지 않았다(쿨다운으로 보임).
+  bool _cooling = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final (ratio, broken, tick, flash) = ref.watch(
       gameStateProvider.select((s) {
+        final t = s.battle?.tick ?? 0;
         for (final e in s.battle?.enemies ?? const <EnemyView>[]) {
-          if (e.boss) return ((e.breakRatio * 20).round() / 20, e.broken);
+          if (e.boss) return ((e.breakRatio * 50).round() / 50, e.broken, t, s.settings.flash);
         }
-        return (0.0, false);
+        return (0.0, false, t, s.settings.flash);
       }),
     );
+    if (ratio > _last + 0.001) _rose = tick;
+    _last = ratio;
+    if (broken) _cooling = true;
+    if (ratio > 0) _cooling = false;
+    final locked = _cooling && !broken;
+    final calm = !flash || MediaQuery.disableAnimationsOf(context);
+    final shine = calm ? 0.0 : (1 - (tick - _rose) / _shineTicks).clamp(0.0, 1.0);
+    final hot = broken || ratio >= _hotRatio;
+    final shake = hot && !broken && !calm ? 1.5 * math.sin(tick * 2.1) : 0.0;
     final l10n = AppLocalizations.of(context);
     return Semantics(
       label: broken ? l10n.uiBossBreak : l10n.uiBossBreakGauge((ratio * 100).round()),
       excludeSemantics: true,
-      child: Row(
-        key: const Key('hud.break'),
-        children: [
-          Text(l10n.uiBossBreakTag, style: Skin.text(10, color: broken ? const Color(0xFFFFD84A) : Colors.white70)),
-          const SizedBox(width: 4),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: SizedBox(
-                height: 4,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    const ColoredBox(color: Colors.white24),
-                    FractionallySizedBox(
-                      key: Key(broken ? 'hud.break.full' : 'hud.break.fill'),
-                      alignment: Alignment.centerLeft,
-                      widthFactor: broken ? 1 : ratio.clamp(0.0, 1.0),
-                      child: ColoredBox(color: broken ? const Color(0xFFFFD84A) : const Color(0xFF7FD6FF)),
-                    ),
+      child: Transform.translate(
+        offset: Offset(shake, 0),
+        child: Row(
+          key: Key(hot ? 'hud.break.hot' : 'hud.break'),
+          children: [
+            _Chip(label: broken ? l10n.uiBossBreak : l10n.uiBossBreakTag, locked: locked),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Container(
+                height: _barHeight,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF243552),
+                  borderRadius: BorderRadius.circular(_barHeight / 2),
+                  border: Border.all(color: _outline, width: 2),
+                  boxShadow: [
+                    if (shine > 0 || hot)
+                      BoxShadow(
+                        color: _breakTo.withValues(alpha: 0.6 * (hot ? 1 : shine)),
+                        blurRadius: 6 + 4 * shine,
+                      ),
                   ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(_barHeight / 2),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      FractionallySizedBox(
+                        key: Key(broken ? 'hud.break.full' : (locked ? 'hud.break.locked' : 'hud.break.fill')),
+                        alignment: Alignment.centerLeft,
+                        widthFactor: broken || locked ? 1 : ratio.clamp(0.0, 1.0),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: locked
+                                ? null
+                                : LinearGradient(
+                                    colors: broken ? const [_breakTo, _breakTo] : const [_breakFrom, _breakTo],
+                                  ),
+                            color: locked ? _locked.withValues(alpha: 0.55) : null,
+                          ),
+                        ),
+                      ),
+                      // 오를 때 흰 빛이 잠깐 덮인다.
+                      if (shine > 0) ColoredBox(color: Colors.white.withValues(alpha: 0.35 * shine)),
+                      if (locked)
+                        const Center(
+                          child: Icon(Icons.lock_rounded, key: Key('hud.break.lock'), size: 9, color: Colors.white),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+/// 막대 왼쪽 '⚡BREAK' 칩 (쓰러진 동안 'BREAK!', 쿨다운이면 회색 + 자물쇠).
+class _Chip extends StatelessWidget {
+  const _Chip({required this.label, required this.locked});
+
+  final String label;
+  final bool locked;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.fromLTRB(3, 1, 6, 1),
+    decoration: BoxDecoration(
+      color: locked ? _locked : _breakTo,
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: _outline, width: 1.5),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(locked ? Icons.lock_rounded : Icons.bolt_rounded, size: 13, color: _outline),
+        Text(label, style: Skin.text(11, color: _outline)),
+      ],
+    ),
+  );
 }
 
 /// 보스가 쓰러지는 순간(BossBroken) 보스 자리에 'BREAK!' — 누름 통과. 전장 좌표는 ChestLayer와 같은 카메라로 dp에 놓는다.

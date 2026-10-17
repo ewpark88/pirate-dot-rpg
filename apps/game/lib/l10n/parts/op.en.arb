@@ -40,7 +40,14 @@
   "opLabTapHint": "Pick a rarity, tap a crew: own + fleet slot 1",
   "opLabCollectAll": "Get every crew (keep save)",
   "opLabSwarm": "Swarm of {count}",
-  "@opLabSwarm": {"placeholders": {"count": {"type": "int"}}},
+  "@opLabSwarm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "opLabWave": "Normal wave (with vanguard)",
-  "opGroupLab": "Crew lab"
+  "opGroupLab": "Crew lab",
+  "opCardFxMin": "Card reveal from"
 }

@@ -201,10 +201,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                     GameWidget(game: withTopTexts(ref.watch(battleGameProvider), context)),
                 const ChestLayer(),
                 const BattleButtons(),
-                // 피버 연출 (큰 글자·가장자리 빛·큰 원형 게이지 — 누름 통과).
+                // 피버 연출(큰 글자·가장자리 빛·원형 게이지, 누름 통과) · 유리병 쪽지 3장 · 출항 대기면 가운데 '출항!'(#19).
                 const FeverDrama(),
-                // 유리병 쪽지 3장 (전장 안 말풍선).
                 const BottleChoices(),
+                const SailStartButton(),
                 // 코인 도착: 골드 아이콘 자리를 렌더에 알린다(그림·누름 없음).
                 const IgnorePointer(child: CoinLink()),
               ],

@@ -245,17 +245,20 @@ class TopFever {
     // 시작 0.6초는 속도선 폭발(더 많고 진하게).
     final age = ms - _startMs;
     final burst = age >= 0 && age < 600 ? 1 - age / 600 : 0.0;
-    final rush = (scene.frame.fastSail?.speed ?? 1) / 8;
-    final n = 22 + (18 * burst).round() + (20 * rush).round();
+    // 빠른 항해(피드백 #20 '화려하되 조잡하지 않게'): 흰 줄만, 가늘고 옅게, 개수 고정 — 속도감은 바다 흐름과 격파가 맡는다.
+    final fast = scene.frame.fastSail != null;
+    final n = fast ? 16 : 22 + (18 * burst).round();
     for (var i = 0; i < n; i++) {
       final left = i.isEven;
       final edge = box.width * (0.04 + (i * 37 % 9) / 100);
       final x = left ? edge : box.width - edge;
       final len = 60.0 + (i * 53 % 70);
       final y = (ms * (1.6 + (i % 4) * 0.35) + i * 211) % (box.height + len) - len;
-      final col = i % 3 == 0 ? _orange : (i % 3 == 1 ? _gold : const Color(0xFFFFFFFF));
-      _paint.color = col.withValues(alpha: math.min(1, (0.75 + 0.25 * burst) * level));
-      c.drawRect(Rect.fromLTWH(x, y, 3, len), _paint);
+      final col = fast
+          ? const Color(0xFFFFFFFF)
+          : (i % 3 == 0 ? _orange : (i % 3 == 1 ? _gold : const Color(0xFFFFFFFF)));
+      _paint.color = col.withValues(alpha: math.min(1, (fast ? 0.45 : 0.75 + 0.25 * burst) * level));
+      c.drawRect(Rect.fromLTWH(x, y, fast ? 2 : 3, len), _paint);
     }
   }
 }

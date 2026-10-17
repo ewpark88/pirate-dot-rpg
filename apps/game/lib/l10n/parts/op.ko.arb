@@ -41,5 +41,6 @@
   "opLabCollectAll": "모든 선원 받기 (지금 세이브 유지)",
   "opLabSwarm": "무리 {count}마리",
   "opLabWave": "기본 파 (돌격대 포함)",
-  "opGroupLab": "선원 시험"
+  "opGroupLab": "선원 시험",
+  "opCardFxMin": "카드 연출 시작 등급"
 }

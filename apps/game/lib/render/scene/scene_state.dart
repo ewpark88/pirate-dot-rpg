@@ -53,29 +53,28 @@ class ChestPose {
   }
 }
 
-/// 최근 처치 시각 고리 버퍼 — `xN COMBO` 배너(render-quality-v1 규칙 5). 할당 없이 [capacity]개까지 기억.
+/// 처치 연쇄(피드백 #4 핵앤슬래시): 직전 처치에서 [windowMs] 안에 다음 처치가 오면 이어지고, 끊기면 0부터.
+/// 화면에는 마지막 처치 뒤 [windowMs] × 1.5까지 남는다. 할당 없음.
 class ComboTracker {
-  ComboTracker({required this.windowMs, this.capacity = 64})
-    : _times = List<double>.filled(capacity, double.negativeInfinity);
+  ComboTracker({required this.windowMs});
 
   final double windowMs;
-  final int capacity;
-  final List<double> _times;
-  int _next = 0;
+  int _count = 0;
+  double _last = double.negativeInfinity;
+
+  /// 마지막으로 늘어난 시각(배너 '쿵' 확대용).
+  double get lastAddMs => _last;
 
   void add(double clockMs) {
-    _times[_next] = clockMs;
-    _next = (_next + 1) % capacity;
+    _count = clockMs - _last <= windowMs ? _count + 1 : 1;
+    _last = clockMs;
   }
 
-  /// [nowMs]에서 [windowMs] 안에 들어온 처치 수.
-  int count(double nowMs) {
-    var n = 0;
-    for (final t in _times) {
-      if (nowMs - t < windowMs) n++;
-    }
-    return n;
-  }
+  /// [nowMs]에서 보이는 연쇄 수 (끊긴 지 오래면 0).
+  int count(double nowMs) => nowMs - _last <= windowMs * 1.5 ? _count : 0;
 
-  void clear() => _times.fillRange(0, capacity, double.negativeInfinity);
+  void clear() {
+    _count = 0;
+    _last = double.negativeInfinity;
+  }
 }

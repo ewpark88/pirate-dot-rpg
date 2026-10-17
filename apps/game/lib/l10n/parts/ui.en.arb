@@ -46,12 +46,6 @@
   "uiGoalRebirth": "Rebirth unlocks in {count} stages",
   "uiCollectionBonus": "Attack +{percent}",
   "uiCollectionNext": "Next bonus in {count}",
-  "uiTutStep1": "Sea monsters incoming! Your ship fights on its own.",
-  "uiTutStep2": "Try upgrading the Cannon.",
-  "uiTutStep3": "The boss is tough. Upgrade your ship a bit more?",
-  "uiTutStep4": "Use gems to summon crew.",
-  "uiTutStep5": "Merge cards of the same crew to make them stronger.",
-  "uiTutStep6": "Your ship fights by itself now. Gold piles up even when the app is closed!",
   "uiTutSkip": "Skip",
   "uiTutOk": "Got it",
   "uiQuestTitle": "Daily Quests",
@@ -183,7 +177,7 @@
   "uiRebirthChestSummons": "Hero+ summon ×{count}",
   "uiRebirthChestSkin": "New ship skin: {name}",
   "uiRebirthChestTitle": "New title: {name}",
-  "uiRebirthSail": "Set Sail",
+  "uiRebirthSail": "Set sail!",
   "uiRebirthRowLocked": "Spend {count} more pieces to unlock",
   "uiRebirthRow": "Row {row}",
   "uiRebirthShopPieces": "{count} pieces to spend",
@@ -474,7 +468,7 @@
   "uiMonsterGhostjelly": "Ghost Jelly",
   "uiMonsterCursegull": "Curse Gull",
   "uiMonsterWraith": "Wraith",
-  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft",
+  "uiSettingsFlashSub": "Turn off or soften if it hurts your eyes",
   "uiSleepTouch": "Touch the screen to return",
   "uiSleepStage": "Stage {stage} · sailing",
   "uiSleepTitle": "Power saving",
@@ -491,5 +485,193 @@
     }
   },
   "uiBossFailShip": "Upgrade ship",
-  "uiBossFailCrew": "Level up crew"
+  "uiBossFailCrew": "Level up crew",
+  "uiDexNew": "New in the Monster Log! {name}",
+  "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
+  "uiDexTitleShort": "Log",
+  "@uiDexNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiDexNewGems": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSettingsFlashOff": "Off",
+  "uiSettingsFlashSoft": "Soft",
+  "uiSettingsFlashFull": "Full",
+  "uiSettingsSleepAfter": "Sleep screen after",
+  "uiSettingsSleepAfterSub": "Dims when untouched · your ship keeps fighting",
+  "uiSettingsSleepMin": "{min} min",
+  "@uiSettingsSleepMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "uiNewCrew": "New mate!",
+  "uiBossDamageTitle": "Boss down! Damage by crew",
+  "uiBossDamageLine": "{damage} · {percent}",
+  "@uiBossDamageLine": {
+    "placeholders": {
+      "damage": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDamageTap": "Tap to close",
+  "uiSailHint": "Your map is ready! Set sail to start fast sailing",
+  "uiFastSailProgress": "Fast sail {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFastSailStreak": "Boss streak {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewUpLevels": "+{count}",
+  "@uiCrewUpLevels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewMergeAllCount": "Merge all · {count}",
+  "@uiCrewMergeAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewWhyLevel": "Level up: attack +{percent} ({now} → {next}/s)",
+  "@uiCrewWhyLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewCardsToLevel": "{count} common cards to the next level",
+  "@uiCrewCardsToLevel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewPromoteIn": "{count} levels to promotion — promotion gives attack +{percent}",
+  "@uiCrewPromoteIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewPromoteGain": "Promotion gives attack +{percent}!",
+  "@uiCrewPromoteGain": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewMergeNow": "Merge now · Lv {from} → {to}",
+  "@uiCrewMergeNow": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDamageMvp": "MVP",
+  "uiGuideStep1Title": "Your ship fights on its own",
+  "uiGuideStep1Why": "It defeats monsters and collects gold even while you rest.",
+  "uiGuideStep2Title": "Upgrade your ship",
+  "uiGuideStep2Why": "A stronger cannon defeats monsters faster and earns more gold.",
+  "uiGuideStep3Title": "Beat the boss",
+  "uiGuideStep3Why": "Defeat the boss to reach the next sea. If you lose, upgrade and try again!",
+  "uiGuideStep4Title": "Call your crew",
+  "uiGuideStep4Why": "Crew fight with you and make you much stronger. Use gems to call 10.",
+  "uiGuideStep5Title": "Merge the same crew",
+  "uiGuideStep5Why": "Matching cards raise stars and attack.",
+  "uiGuideStep6Title": "You're all set!",
+  "uiGuideStep6Why": "Gold piles up even when the app is closed. Follow the goal at the top.",
+  "uiGuideBossTitle": "Boss fight",
+  "uiGuideBossWhy": "Orange bar = time left. Fill the BREAK bar below to knock the boss down for big damage!",
+  "uiGuideFeverTitle": "Fever!",
+  "uiGuideFeverWhy": "Enough defeats power everyone up for a moment, and the first strike sweeps the screen.",
+  "uiGuideChestTitle": "Treasure chest",
+  "uiGuideChestWhy": "Tap to open it. Watch an ad for a better reward.",
+  "uiGuideNewCrewTitle": "New mate!",
+  "uiGuideNewCrewWhy": "A new crew member joined. Check the Crew tab.",
+  "uiGuideCargoTitle": "Cargo is filling up",
+  "uiGuideCargoWhy": "When it's full you can't collect more gold. Upgrade the cargo hold in the Ship tab.",
+  "uiGuideMergeTitle": "Ready to merge",
+  "uiGuideMergeWhy": "You have matching crew. Merge them to get stronger.",
+  "uiGuidePromoteTitle": "Ready to promote",
+  "uiGuidePromoteWhy": "Promotion changes your crew's attack and makes it much stronger.",
+  "uiGuideSummonTitle": "Call more crew",
+  "uiGuideSummonWhy": "You have enough gems. A new crew member may appear.",
+  "uiGuideOk": "Got it",
+  "uiGuideSkip": "Skip",
+  "uiGuideSkipAsk": "Turn off the guide?",
+  "uiGuideSkipOff": "Turn off",
+  "uiGuideSkipKeep": "Keep it",
+  "uiGuideTapHere": "Tap here",
+  "uiSettingsGuideReplay": "Show tips again",
+  "uiSettingsGuideReplayDone": "First-time tips will show again",
+  "uiSummonFirstTenFirst": "Claim your free 10-pull ({rarity} guaranteed) first",
+  "uiSummonFirstTenLater": "Beat the tutorial boss for a free 10-pull ({rarity} guaranteed)!",
+  "@uiSummonFirstTenFirst": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSummonFirstTenLater": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  }
 }

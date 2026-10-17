@@ -16,7 +16,7 @@ void main() {
   final start = DateTime.utc(2026, 11);
   const stage = 20;
 
-  GameTables tables({bool on = true}) {
+  GameTables tables({bool on = true, num? cooldownSec}) {
     final raw = Map<String, String>.of(rawTables);
     final skills = jsonDecode(raw['skills']!) as Map<String, dynamic>;
     if (on) {
@@ -27,6 +27,7 @@ void main() {
         'pullPerPx': 0.01,
         'breakSec': 3,
         'damageMul': 3,
+        'cooldownSec': ?cooldownSec,
       };
     } else {
       skills.remove('bossBreak');
@@ -87,6 +88,60 @@ void main() {
     final hp1 = a.boss.hp.toDouble();
     a.r.strike(hit, BigNum.from(100));
     expect(hp1 - a.boss.hp.toDouble(), closeTo(normal * 3, normal * 1e-9));
+  });
+
+  /// 가득 채워 쓰러뜨리고 일어나는 틱까지 돌린 뒤 ([cooldownSec]초 쿨다운 표).
+  ({Round r, Foe boss, List<GameEvent> events, SystemContext ctx, GameState s}) stoodUp({num? cooldownSec}) {
+    final a = arena(tables(cooldownSec: cooldownSec));
+    a.boss.stunTimer = 2; // 1.0 → 쓰러짐
+    a.r.tickBossBreak();
+    final broken = a.events.whereType<BossBroken>().single;
+    a.ctx.tick = broken.tick + broken.ticks;
+    a.r.tickBossBreak(); // 일어남
+    return a;
+  }
+
+  test('cooldownSec: 일어난 뒤 그 초 동안은 안 쌓이고, 지나면 다시 쌓인다', () {
+    final a = stoodUp(cooldownSec: 5);
+    final dt = a.ctx.tables.waves.tickMs / 1000;
+    final until = a.ctx.tick + (5 / dt).round();
+    a.ctx.tick += 1;
+    a.boss.stunTimer = a.boss.stunTimer + 1;
+    a.r.tickBossBreak();
+    expect(a.boss.breakGauge, 0, reason: '쿨다운 중');
+    a.ctx.tick = until;
+    a.boss.stunTimer = a.boss.stunTimer + 1; // 기절 1초 = 0.5
+    a.r.tickBossBreak();
+    expect(a.boss.breakGauge, closeTo(0.5, 1e-9));
+  });
+
+  test('EnemyView.breakCooldown: 일어난 순간 1 → 줄어 0, 0이면 JSON에 없다', () {
+    final a = stoodUp(cooldownSec: 5);
+    final dt = a.ctx.tables.waves.tickMs / 1000;
+    final ticks = (5 / dt).round();
+    a.ctx.tick += ticks ~/ 2;
+    a.r.tickBossBreak();
+    expect(a.boss.view().breakCooldown, closeTo(0.5, 1 / ticks));
+    expect(a.boss.view().toJson()['breakCooldown'], isNotNull);
+    expect(EnemyView.fromJson(a.boss.view().toJson()).breakCooldown, a.boss.view().breakCooldown);
+    a.ctx.tick += ticks;
+    a.r.tickBossBreak();
+    expect(a.boss.view().breakCooldown, 0);
+    expect(a.boss.view().toJson().containsKey('breakCooldown'), isFalse);
+  });
+
+  test('cooldownSec가 없으면(또는 0이면) 지금 그대로 — 일어난 바로 다음 틱부터 쌓인다, 이벤트도 같다', () {
+    List<String> run({num? cooldownSec}) {
+      final a = stoodUp(cooldownSec: cooldownSec);
+      a.ctx.tick += 1;
+      a.boss.stunTimer = a.boss.stunTimer + 1;
+      a.r.tickBossBreak();
+      return [...a.events.map((e) => jsonEncode(e.toJson())), '${a.boss.breakGauge}'];
+    }
+
+    final none = run();
+    expect(none.last, '0.5');
+    expect(run(cooldownSec: 0), none);
   });
 
   test('둔화·취약도 쌓이고, 표에 bossBreak가 없으면 꺼짐(잡몹은 무관)', () {

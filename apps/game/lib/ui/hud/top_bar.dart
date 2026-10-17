@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
@@ -19,6 +20,7 @@ import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 상단 바 (전장 밖, layout-v2-brief 1): 왼쪽 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원),
 /// 오른쪽 퀘스트·설정 그림 버튼. 누르는 영역이 48dp라 바 높이도 48dp.
@@ -30,6 +32,8 @@ class TopBar extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     // 골드·젬은 지갑 값 그대로 실시간 (사용자 지시: 따로 움직이는 연출 없음).
     final (gold, gems) = ref.watch(gameStateProvider.select((s) => (s.wallet.gold, s.wallet.gems)));
+    final tables = ref.watch(tablesProvider);
+    final cap = ref.watch(gameStateProvider.select((s) => goldCapacity(s, tables).format()));
     final money = Container(
       padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
       decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(18), boxShadow: Skin.shadowSmall),
@@ -45,12 +49,25 @@ class TopBar extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BigNumText(
-                gold,
-                key: const Key('top.gold'),
-                style: const TextStyle(color: PixelPalette.gold),
+              // 골드 = 현재 / 최대(화물칸 상한, 사용자 피드백 #7) — 최대는 작고 흐리게.
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  BigNumText(
+                    gold,
+                    key: const Key('top.gold'),
+                    style: const TextStyle(color: PixelPalette.gold),
+                  ),
+                  Text(
+                    ' / $cap',
+                    key: const Key('top.goldCap'),
+                    style: Skin.text(11, color: Skin.sub),
+                  ),
+                ],
               ),
-              const GoldCapBar(),
+              const TutorialSpot(id: 'cargo.bar', child: GoldCapBar()),
             ],
           ),
           const SizedBox(width: 10),

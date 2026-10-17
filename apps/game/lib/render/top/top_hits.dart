@@ -7,9 +7,11 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_boss_loot.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_bounty.dart';
+import 'package:pirate_dot/render/top/top_break.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
 import 'package:pirate_dot/render/top/top_family_v3.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
+import 'package:pirate_dot/render/top/top_fever_strike.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_juice.dart';
 import 'package:pirate_dot/render/top/top_muzzle.dart';
@@ -27,6 +29,12 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 피버 첫 일격(UltimateCast).
+  final feverStrike = TopFeverStrike();
+
+  /// 보스 브레이크 쓰러짐(BossBroken).
+  final breaks = TopBreak();
 
   /// 보스 처치 보상 터짐(피드백 #18).
   final loot = TopBossLoot();
@@ -237,6 +245,14 @@ class TopHits {
       ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: now)
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
     loot.paint(c, now, ship, sprites, flash: flash);
+    feverStrike.paintWorld(c, now, lite: lite);
+  }
+
+  /// 화면 좌표 덮개: 빠른 항해 띠·현상금 포스터·피버 첫 일격 컷인.
+  void paintScreen(Canvas c, Size box, double now, SpriteDraw sprites, {required bool flash}) {
+    fast.paintScreen(c, box, now, flash: flash);
+    bounty.paintScreen(c, box, now, sprites);
+    feverStrike.paintScreen(c, box, now, sprites);
   }
 
   void clear() {
@@ -249,6 +265,8 @@ class TopHits {
     impact.clear();
     boss.clear();
     loot.clear();
+    breaks.clear();
+    feverStrike.clear();
     slash.clear();
     _emerges.clear();
     upgradeAt = -1000000000;

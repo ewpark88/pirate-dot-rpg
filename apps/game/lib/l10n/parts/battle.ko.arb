@@ -29,5 +29,11 @@
   "battleBossIcebergWalrus": "빙산 바다코끼리",
   "battleBossLavaWhale": "용암 고래",
   "battleBossKraken": "크라켄",
-  "battleBossGhostAdmiral": "유령 함대 제독"
+  "battleBossGhostAdmiral": "유령 함대 제독",
+  "battleBossSeaCroc": "바다 악어",
+  "battleBossMonsterWhale": "괴물 고래",
+  "battleBossIceSlime": "거대 얼음 아메바",
+  "battleBossLeviathan": "레비아탄",
+  "battleBossKrakenTitan": "크라켄 문어",
+  "battleBossPoseidon": "포세이돈"
 }

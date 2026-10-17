@@ -16,6 +16,13 @@ GameEvent _metaEventFromJson(int t, Json j) {
         for (final r in j['results'] as List) (crewId: (r as Json)['crewId'] as String, rarity: r['rarity'] as String),
       ],
     ),
+    'cardGranted' => CardGranted(
+      t,
+      crewId: j['crewId'] as String,
+      rarity: j['rarity'] as String,
+      source: j['source'] as String,
+      isNew: j['isNew'] as bool? ?? false,
+    ),
     'crewPromoted' => CrewPromoted(t, crewId: j['crewId'] as String, rarity: j['rarity'] as String),
     'chestSpawned' => ChestSpawned(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'chestOpened' => ChestOpened(t, gold: big('gold')),
@@ -140,6 +147,24 @@ class CrewSummoned extends GameEvent {
       for (final r in results) {'crewId': r.crewId, 'rarity': r.rarity},
     ],
   };
+}
+
+/// 카드 한 장을 받았다 (S3 요청 render-card-granted, 피드백 #17 '언제 선원을 얻는지 보여야').
+/// [source] 'boss'·'offline'·'starter'·'event'·'bounty'. [isNew]면 처음 얻은 선원(도감에 추가). 소환은 CrewSummoned가 따로 있어 안 낸다.
+/// 보스 카드는 같은 틱 BossCleared 다음에 나온다.
+class CardGranted extends GameEvent {
+  const CardGranted(super.tick, {required this.crewId, required this.rarity, required this.source, this.isNew = false});
+
+  final String crewId;
+  final String rarity;
+  final String source;
+  final bool isNew;
+
+  @override
+  String get type => 'cardGranted';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'rarity': rarity, 'source': source, if (isNew) 'isNew': true};
 }
 
 class CrewPromoted extends GameEvent {

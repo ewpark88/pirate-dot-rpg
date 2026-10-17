@@ -6,7 +6,7 @@ import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
-import 'package:game_data/game_data.dart' show BossDef, WavesTable;
+import 'package:game_data/game_data.dart' show BossDef, GameTables, WavesTable;
 
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
@@ -25,7 +25,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final t = ctx.tables;
   final w = t.waves;
   final region = t.regions.regionAt(stage);
-  final n = count ?? w.topMobCountAt(stage);
+  final n = count ?? (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
   final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
@@ -52,6 +52,23 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
       f.foes.add(e);
     }
   }
+}
+
+/// 피버 중 한 파 마리 수 = 평소 × countMul, 상한 max(평소 상한 150보다 크게). 표에 swarm이 없으면 평소 그대로.
+/// 몫(pool ÷ 마리 수)은 그대로 나뉘어 한 마리는 약해지고 파 총량(HP·골드·공격)은 변하지 않는다.
+/// 피버 중 무리 파의 자리 패턴(표 swarm.pattern). 피버가 아니거나 표에 swarm이 없으면 null.
+String? feverSwarmPattern(GameTables t, {required bool fever}) {
+  final f = t.meta.raw.obj('fever');
+  return fever && f.has('swarm') ? f.obj('swarm').str('pattern') : null;
+}
+
+int feverSwarmCount(GameTables t, int stage) {
+  final n = t.waves.topMobCountAt(stage);
+  final fever = t.meta.raw.obj('fever');
+  if (!fever.has('swarm')) return n;
+  final sw = fever.obj('swarm');
+  final m = (n * sw.number('countMul')).round();
+  return m < sw.integer('max') ? m : sw.integer('max');
 }
 
 /// 보스 등장 (규칙 8, battle-m3-bosses). HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율, 타이머 `boss.timeLimitSec`.
@@ -81,15 +98,9 @@ void startBoss(
     layer: 'surface',
     x: x ?? 0,
     y: y ?? 0,
-    maxHp:
-        maxHp ??
-        stageCurve(
-          w.hpBase,
-          w.hpGrowth,
-          stage,
-        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale * wallBossScale(w, stage)),
+    maxHp: maxHp ?? bossMaxHp(t, stage, def: def, hpScale: hpScale * f.enemyHpScale),
     speed: w.bossSpeed,
-    attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
+    attack: bossAttack(w, stage),
     gold: gold ? stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier) : BigNum.zero,
     boss: true,
     bossDef: def,
@@ -128,9 +139,25 @@ void startBoss(
   f
     ..bossActive = true
     ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)
+    ..bossDamage.clear()
     ..travelLeft = 0;
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }
+
+/// 보스 최대 HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율 × 벽 배율 × [hpScale](튜토리얼·보물 바다). 전투와 bossPreview(UI)가 같이 쓴다.
+BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
+  final w = t.waves;
+  final d = def ?? t.regions.bossAt(stage);
+  return stageCurve(
+    w.hpBase,
+    w.hpGrowth,
+    stage,
+  ).times(w.bossHpMultiplier * d.hpMultiplier * hpScale * wallBossScale(w, stage));
+}
+
+/// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`.
+BigNum bossAttack(WavesTable w, int stage) =>
+    stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier);
 
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.
@@ -138,8 +165,8 @@ int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0}) =>
     ((ctx.tables.waves.bossTimeLimitSec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
 
 /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
-double tutorialBossScale(GameState s, SystemContext ctx) {
-  final w = ctx.tables.waves;
+double tutorialBossScale(GameState s, GameTables t) {
+  final w = t.waves;
   final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
   final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
       ? w.tutorialFailHpMultiplier

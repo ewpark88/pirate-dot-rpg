@@ -58,7 +58,7 @@ extension FastSailRound on Round {
   void breakthrough(GameState s) {
     final rs = w.rebirthSkip;
     final end = fastSailEnd(s, t);
-    if (rs.breakSec <= 0 || field.bounty != null || end == null) return;
+    if (rs.breakSec <= 0 || field.bounty != null || end == null || s.progress.sailHold) return;
     final p = s.progress;
     var run = field.fastSail;
     if (run == null) {
