@@ -11,9 +11,15 @@ class DockTabRequest extends Notifier<int?> {
   // ignore: use_setters_to_change_properties
   void open(int tab) => state = tab;
 
+  /// 열린 시트를 닫아 달라 (환영 카드 순간 — 전장 가운데 카드 연출이 보이게, S3 c12ced0a).
+  void close() => state = dockCloseRequest;
+
   /// 홈 화면이 처리한 뒤 비운다.
   void done() => state = null;
 }
+
+/// [DockTabRequest.close]의 값 (탭 번호가 아님).
+const dockCloseRequest = -1;
 
 /// 항해 탭 번호 (환생 카드가 있는 곳).
 const voyageTab = 0;

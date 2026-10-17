@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
@@ -119,6 +120,9 @@ class CrewTab extends ConsumerWidget {
                   ],
                 ],
               ),
+              // 도감 수집 보상 (받을 칸이 있으면 금빛 [보상 받기]).
+              const SizedBox(height: 6),
+              const CollectionRewardRow(),
               const SizedBox(height: 10),
               Row(
                 children: [

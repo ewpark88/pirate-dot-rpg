@@ -98,7 +98,10 @@ class WeakChips extends ConsumerWidget {
             highlight: null,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: Text(tableText(l10n, tables.skills.byId(f).nameKey), style: labelStyle),
+              child: Text(
+                tableText(l10n, tables.skills.byId(f).nameKey),
+                style: labelStyle?.copyWith(color: Skin.ink) ?? Skin.text(13),
+              ),
             ),
           ),
         ],

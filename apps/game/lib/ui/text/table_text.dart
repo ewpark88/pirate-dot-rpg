@@ -9,6 +9,14 @@ String tableText(AppLocalizations l10n, String key) {
 }
 
 final Map<String, String Function(AppLocalizations)> _getters = {
+  // 배 스킨 7종 (meta.shipSkins nameKey).
+  'shipSkinKing': (l) => l.shipSkinKing,
+  'shipSkinFairy': (l) => l.shipSkinFairy,
+  'shipSkinFrost': (l) => l.shipSkinFrost,
+  'shipSkinLava': (l) => l.shipSkinLava,
+  'shipSkinGhostship': (l) => l.shipSkinGhostship,
+  'shipSkinFestival': (l) => l.shipSkinFestival,
+  'shipSkinAbyss': (l) => l.shipSkinAbyss,
   'crewOctoName': (l) => l.crewOctoName,
   'crewStarryName': (l) => l.crewStarryName,
   'crewCrabsName': (l) => l.crewCrabsName,
