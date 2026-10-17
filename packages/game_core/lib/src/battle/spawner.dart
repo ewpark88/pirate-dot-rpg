@@ -84,6 +84,7 @@ void startBoss(
   double? y,
   double hpScale = 1,
   double extraSec = 0,
+  double? limitSec,
   BossDef? bossDef,
   BigNum? maxHp,
   bool gold = true,
@@ -138,7 +139,7 @@ void startBoss(
   f.geometryOr(w).placeBoss(f, x: x, y: y);
   f
     ..bossActive = true
-    ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)
+    ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec, limitSec: limitSec)
     ..bossDamage.clear()
     ..travelLeft = 0;
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
@@ -164,8 +165,13 @@ BigNum bossAttack(WavesTable w, int stage) => stageCurve(
 
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.
-int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0}) =>
-    ((ctx.tables.waves.bossTimeLimitSec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
+/// 제한이 0이면(사용자 결정 2026-10-17 '보스 시간을 없애라 — 체력이 떨어질 때까지') 0 = 타이머 없음, 실패는 침몰뿐.
+/// [limitSec]은 현상금처럼 따로 시간을 두는 전투(없으면 waves.boss.timeLimitSec).
+int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0, double? limitSec}) {
+  final sec = limitSec ?? ctx.tables.waves.bossTimeLimitSec;
+  if (sec <= 0) return 0;
+  return ((sec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
+}
 
 /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
 double tutorialBossScale(GameState s, GameTables t) {

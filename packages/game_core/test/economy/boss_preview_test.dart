@@ -26,7 +26,7 @@ void main() {
       expect(p.bossId, boss.kind);
       expect(p.maxHp.closeTo(boss.maxHp), isTrue, reason: '${p.maxHp} vs ${boss.maxHp}');
       expect(p.attack.closeTo(boss.attack), isTrue);
-      expect(p.timeLimitSec, closeTo(f.bossTicksLeft * t.waves.tickMs / 1000, 1e-9));
+      expect((p.timeLimitSec, f.bossTicksLeft), (null, 0), reason: '보스 시간 제한 없음(2026-10-17)');
     });
   }
 

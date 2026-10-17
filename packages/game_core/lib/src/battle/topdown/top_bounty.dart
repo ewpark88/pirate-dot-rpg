@@ -65,6 +65,7 @@ abstract final class TopBounty {
       maxHp: bountyBossHp(t, a.bossId, a.tier),
       gold: false,
       extraSec: bossExtraSec(s, t),
+      limitSec: t.meta.raw.obj('bounty').number('timeLimitSec'), // 현상금은 시간 도전 그대로(보통 보스는 무제한)
     );
     f.bounty = (bossId: a.bossId, tier: a.tier);
     ctx.emit(BountyStarted(ctx.tick, bossId: a.bossId, tier: a.tier, timeLimitTicks: f.bossTicksLeft));
