@@ -20,6 +20,9 @@ import 'package:pirate_dot/ui/text/crew_name.dart';
 // 보스·옥토 초상 + 리본 이름표 + 글, 2.8초마다 저절로 넘어가고 톡 하면 바로 다음, [건너뛰기]. 전투는 그동안 계속(누름은
 // 대화창 밖으로 통과). 가이드 말과 겹치지 않게 대화 동안 가이드를 접는다. 본 기록은 세이브 hints(story.*).
 
+/// 보스 대화창을 BossSpawned 뒤 이만큼 늦춘다(렌더 대보스 등장 연출 길이).
+const bossEntryWait = Duration(milliseconds: 1200);
+
 class StoryLayer extends ConsumerStatefulWidget {
   const StoryLayer({required this.child, super.key});
 
@@ -53,7 +56,11 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       if (tick.frame.fastSail != null || tick.frame.bounty != null) return;
       for (final e in tick.events) {
-        if (e is BossSpawned) _bossIntro(e.kind);
+        // 보스 등장 연출(렌더 솟아오름·WARNING 띠, 대보스 1.2초)이 끝난 뒤 띄운다 — 겹치지 않게(S3 2026-10-18).
+        if (e is BossSpawned) {
+          _introWait?.cancel();
+          _introWait = Timer(bossEntryWait, () => _bossIntro(e.kind));
+        }
       }
     });
   }
@@ -69,6 +76,8 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
       ),
     );
   }
+
+  Timer? _introWait;
 
   void _bossIntro(String bossId) {
     if (!mounted || _talk != null) return;
@@ -108,6 +117,7 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
 
   @override
   void dispose() {
+    _introWait?.cancel();
     _hold.release();
     _next?.cancel();
     unawaited(_sub?.cancel());

@@ -35,6 +35,7 @@ void main() {
     final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab);
     await tester.tap(find.byKey(const Key('crew.mergeAll')));
     expect(log.sent, [isA<MergeAllCards>()]);
+    await tester.pump(const Duration(milliseconds: 300)); // 결과 비교 타이머(바뀐 게 없으면 창 없음)
   });
 
   testWidgets('기준 8: 승급 문 앞이지만 카드가 모자라면 버튼 비활성, 빨간 점 없음', (tester) async {

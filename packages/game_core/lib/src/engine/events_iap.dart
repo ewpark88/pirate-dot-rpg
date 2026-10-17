@@ -18,6 +18,7 @@ GameEvent _iapEventFromJson(int t, Json j) => switch (j['type'] as String) {
     paid: j['paid'] as bool,
     gems: j['gems'] as int? ?? 0,
   ),
+  'achievementClaimed' => AchievementClaimed(t, id: j['id'] as String, step: j['step'] as int, gems: j['gems'] as int),
   _ => EntitlementChanged(t, id: j['id'] as String, active: j['active'] as bool),
 };
 
@@ -81,4 +82,19 @@ class PassRewardClaimed extends GameEvent {
 
   @override
   Json _fields() => {'level': level, 'paid': paid, if (gems != 0) 'gems': gems};
+}
+
+/// 업적 단계 보상을 받았다(UI 보상 연출·토스트): [step]은 이번에 받은 단계(1부터), [gems]는 준 젬.
+class AchievementClaimed extends GameEvent {
+  const AchievementClaimed(super.tick, {required this.id, required this.step, required this.gems});
+
+  final String id;
+  final int step;
+  final int gems;
+
+  @override
+  String get type => 'achievementClaimed';
+
+  @override
+  Json _fields() => {'id': id, 'step': step, 'gems': gems};
 }

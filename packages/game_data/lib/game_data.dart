@@ -2,6 +2,7 @@
 library;
 
 export 'src/game_tables.dart';
+export 'src/models/achievement_tables.dart';
 export 'src/models/battle_tables.dart';
 export 'src/models/common.dart' show JsonReader, TableFormatException, TableValidationException;
 export 'src/models/crew_tables.dart';

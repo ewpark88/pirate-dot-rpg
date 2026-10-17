@@ -135,7 +135,10 @@ class ProductCard extends ConsumerWidget {
           decoration: Skin.inset(radius: Skin.radiusCard),
           child: Column(
             children: [
-              IconCell(color: color, size: 60, child: SkinIcon(icon, size: 40)),
+              if (p.entitlements.map((e) => e.id).toSet().difference({'speed'}).isEmpty && p.entitlements.isNotEmpty)
+                const SpeedCompare()
+              else
+                IconCell(color: color, size: 60, child: SkinIcon(icon, size: 40)),
               const SizedBox(height: 6),
               Text(
                 iapName(l10n, p.nameKey),
@@ -199,4 +202,50 @@ class _Corner extends StatelessWidget {
       child: OutlineText(text, size: 13),
     ),
   );
+}
+
+/// 2배속 상품: 같은 장면 꺼짐/켜짐 비교 그림 두 칸(S3 assets/ui/speed_off·on, 사용자 2026-10-18 '사서 쓰고 싶게').
+class SpeedCompare extends StatelessWidget {
+  const SpeedCompare({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    Widget panel(String asset, String label, {required bool on}) => Expanded(
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: on ? const Color(0xFFFFC83A) : Skin.cardEdge, width: on ? 2.5 : 1.5),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(asset, fit: BoxFit.cover),
+              ),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(label, style: Skin.bold(13, color: on ? Skin.goldInk : Skin.sub)),
+        ],
+      ),
+    );
+    return SizedBox(
+      key: const Key('shop.speedCompare'),
+      width: 150,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          panel('assets/ui/speed_off.png', l10n.uiShopSpeedOff, on: false),
+          const Padding(
+            padding: EdgeInsets.only(top: 22),
+            child: Icon(Icons.arrow_forward_rounded, size: 16, color: Skin.sub),
+          ),
+          panel('assets/ui/speed_on.png', l10n.uiShopSpeedOn, on: true),
+        ],
+      ),
+    );
+  }
 }

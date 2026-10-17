@@ -28,19 +28,19 @@ class TopBreak {
   static const _ringMs = 520.0;
   static const _stampMs = 1300.0;
 
-  /// 보스 체력 층(S1 '체력바 여러 줄' — S2 BossBarBroken 전엔 렌더가 체력을 [layers]칸으로 나눠 본다).
+  /// 보스 체력 층 수 기본값(n을 안 주면) — 실제 값은 적 bossBars(S2 waves.boss.bars, 스테이지별 3~5).
   int layers = 3;
   final Map<int, (int, double)> _layer = {}; // 보스 id → (지금 층, 깨진 시각)
 
   /// 체력 [ratio]의 층(1 ~ [layers]) — 위 층부터 깎인다.
-  int layerOf(double ratio) => (ratio * layers).ceil().clamp(1, layers);
+  int layerOf(double ratio, [int? n]) => (ratio * (n ?? layers)).ceil().clamp(1, n ?? layers);
 
   /// 층 안 남은 비율 0~1(막대에 그 층만 찬다).
-  double withinLayer(double ratio) => (ratio * layers - (layerOf(ratio) - 1)).clamp(0.0, 1.0);
+  double withinLayer(double ratio, [int? n]) => (ratio * (n ?? layers) - (layerOf(ratio, n) - 1)).clamp(0.0, 1.0);
 
   /// 보스 [id]의 층을 갱신 — 층이 줄었으면(깨짐) 시각을 기록하고 true.
-  bool track(int id, double ratio, double now) {
-    final l = layerOf(ratio);
+  bool track(int id, double ratio, double now, [int? n]) {
+    final l = layerOf(ratio, n);
     final prev = _layer[id];
     if (_layer.length > 8 && prev == null) _layer.clear();
     if (prev != null && l < prev.$1 && ratio > 0) {

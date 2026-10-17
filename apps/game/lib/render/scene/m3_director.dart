@@ -96,6 +96,8 @@ class M3Director {
         if (_onScreen(scene.poses[k].x)) Offset(scene.poses[k].drawX, scene.poses[k].drawY),
     ]..sort((a, b) => (a - ship).distanceSquared.compareTo((b - ship).distanceSquared));
     scene.topHits.feverStrike
+      ..manual = e
+          .manual // 선장이 손으로 쓴 필살기(S2 boss-feel)면 컷인 띠 크게
       ..start(scene.clockMs, e.crewId, ship, near)
       ..ultimate.start(_familyOf(e.crewId), ship, scene.clockMs, rarity: _rarityOf(e.crewId)); // 계열별 고유 필살기
     scene.shake.triggerPx(6, 450); // ④ 흔들림(멈춤은 아래 슬로모션 0.3초)

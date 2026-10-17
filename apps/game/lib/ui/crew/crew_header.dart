@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
+import 'package:pirate_dot/ui/crew/fleet_swap_fx.dart';
+import 'package:pirate_dot/ui/crew/merge_result.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
-import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -128,7 +129,7 @@ class CrewHeader extends ConsumerWidget {
             SkinButton(
               key: const Key('fleet.auto'),
               height: 44,
-              onPressed: () => ref.read(fleetCommandsProvider).auto(),
+              onPressed: () => autoFleetWithFeedback(context, ref),
               child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiFleetAuto)),
             ),
           ),
@@ -143,7 +144,7 @@ class CrewHeader extends ConsumerWidget {
                   key: const Key('crew.mergeAll'),
                   tone: SkinTone.gold,
                   height: 44,
-                  onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                  onPressed: () => mergeAllWithResult(context, ref),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Row(

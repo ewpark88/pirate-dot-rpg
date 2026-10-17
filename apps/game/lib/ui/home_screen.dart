@@ -27,13 +27,13 @@ import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
+import 'package:pirate_dot/ui/state/crash_context.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/summon/summon_gate.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// 한 화면 (사용자 결정 2026-10-15 ‘도크 + 끌어올리는 시트’): 평소엔 전투가 상단 바 아래 화면 전체,
-/// 아래 엄지 자리에 도크(아이콘 4개 + 빠른 강화). 아이콘 = 그 패널이 올라와 화면 절반(끌면 거의 전체). 같은 아이콘·아래로 끌기·
-/// 전투 영역 탭·뒤로 = 닫기(닫을 게 없으면 두 번 눌러 종료), 다른 아이콘 = 패널만 교체. 탭 4개 고정(설계서 4.9).
+/// 한 화면 (사용자 2026-10-15 ‘도크 + 끌어올리는 시트’): 전투가 상단 바 아래 전체, 아래 도크(아이콘 4개 + 빠른 강화). 아이콘 = 그 패널이
+/// 화면 절반(끌면 거의 전체), 같은 아이콘·아래로 끌기·전투 탭·뒤로 = 닫기(없으면 두 번 눌러 종료), 다른 아이콘 = 교체. 탭 4개(설계서 4.9).
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -137,35 +137,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     final tutorial = ref.watch(tutorialStepProvider) != null;
     return OfflineRewardGate(
-      child: SummonResultGate(
-        child: RebirthDoneGate(
-          child: BountyResultGate(
-            child: FastSailEndGate(
-              child: ShipLookCelebrationGate(
-                child: FleetRejectedToast(
-                  child: PopScope(
-                    canPop: false, // 뒤로 가기 = 시트 닫기 (열려 있을 때), 아니면 두 번 눌러 종료
-                    onPopInvokedWithResult: (didPop, _) {
-                      if (!didPop) _open ? _close() : backToExit(context, ref);
-                    },
-                    child: Scaffold(
-                      body: SafeArea(
-                        child: Column(
-                          children: [
-                            const SaveFailureBanner(),
-                            const TopBar(),
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, body) {
-                                  _bodyHeight = body.maxHeight;
-                                  return AnimatedBuilder(
-                                    animation: _sheet,
-                                    builder: (context, _) => _layout(context, body, tutorial: tutorial),
-                                  );
-                                },
+      child: CrashContextGate(
+        child: SummonResultGate(
+          child: RebirthDoneGate(
+            child: BountyResultGate(
+              child: FastSailEndGate(
+                child: ShipLookCelebrationGate(
+                  child: FleetRejectedToast(
+                    child: PopScope(
+                      canPop: false, // 뒤로 가기 = 시트 닫기 (열려 있을 때), 아니면 두 번 눌러 종료
+                      onPopInvokedWithResult: (didPop, _) {
+                        if (!didPop) _open ? _close() : backToExit(context, ref);
+                      },
+                      child: Scaffold(
+                        body: SafeArea(
+                          child: Column(
+                            children: [
+                              const SaveFailureBanner(),
+                              const TopBar(),
+                              Expanded(
+                                child: LayoutBuilder(
+                                  builder: (context, body) {
+                                    _bodyHeight = body.maxHeight;
+                                    return AnimatedBuilder(
+                                      animation: _sheet,
+                                      builder: (context, _) => _layout(context, body, tutorial: tutorial),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

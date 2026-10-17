@@ -159,7 +159,7 @@
   "uiFleetRejectedFamily": "같은 계열은 {max}명까지만 함께 출전할 수 있어요",
   "uiFleetSlotStage": "스테이지 {stage}",
   "uiCrewReplace": "바꾸기",
-  "uiFleetSwapped": "출전 중인 선원과 자리를 바꿨어요",
+  "uiFleetSwapped": "교체!",
   "uiQuickUpgrade": "빠른 강화: {part} (길게 누르면 계속)",
   "uiQuickUpgradeNone": "강화할 골드가 모자라요",
   "uiPanelHandle": "끌어서 크기 조절 · 전투를 누르면 닫혀요",
@@ -199,7 +199,6 @@
   "uiSkinEquipped": "장착 중",
   "uiTitle": "칭호",
   "uiTitleNone": "칭호 없음",
-  "uiTitleLocked": "환생 {count}회",
   "uiShopFxLevels": "+{n}레벨",
   "uiShopFxDown": "-{n}%",
   "uiShopFxSec": "+{n}초",
@@ -1320,17 +1319,6 @@
       }
     }
   },
-  "uiTowerSwept": "{n}층 소탕 · {reward}",
-  "@uiTowerSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiRushTitle": "보스 러시",
   "uiRushWeek": "이번 주 보스 5마리를 빨리 잡아라",
   "uiRushBest": "최고 {time}",
@@ -1621,17 +1609,6 @@
   },
   "uiDungeonTicketBack": "도전권은 돌려받았어요",
   "uiDungeonTimeout": "시간 초과",
-  "uiDungeonSwept": "{n}단계 소탕 · {reward}",
-  "@uiDungeonSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiWeekday1": "월요일",
   "uiWeekday2": "화요일",
   "uiWeekday3": "수요일",
@@ -1747,5 +1724,258 @@
     }
   },
   "uiLinkCopied": "주소를 복사했어요 — 브라우저나 메일 앱에 붙여 넣어 주세요",
-  "uiContactSubject": "게임 문의"
+  "uiContactSubject": "게임 문의",
+  "uiTitleProgressRebirth": "환생 {now}/{need}회",
+  "@uiTitleProgressRebirth": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTitleProgressPass": "항해 패스 {now}/{need}단계",
+  "@uiTitleProgressPass": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchTitle": "업적",
+  "uiAchClaim": "받기 +{gems}",
+  "@uiAchClaim": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchDone": "완료",
+  "uiAchProgress": "{value} / {target}",
+  "@uiAchProgress": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassLevelUp": "항해 패스 {n}단계!",
+  "@uiPassLevelUp": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFleetAlreadyBest": "이미 최강 편성이에요",
+  "uiMergeResultTitle": "합치기 결과",
+  "uiMergeLv": "Lv {a} → {b}",
+  "@uiMergeLv": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeAtk": "공격력 {a} → {b}",
+  "@uiMergeAtk": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeGain": "+{p}%",
+  "@uiMergeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeRarity": "{a} → {b}",
+  "@uiMergeRarity": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeMore": "외 {n}명",
+  "@uiMergeMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeFleet": "함대 전투력 {a} → {b}",
+  "@uiMergeFleet": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiUpgradeCombo": "연속 강화!",
+  "uiUpgradeLook": "외형 변경!",
+  "uiUpgradeGain": "+{p}%",
+  "@uiUpgradeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiUpgradeMilestone": "×2!",
+  "uiUpgradeSpent": "-{gold}",
+  "@uiUpgradeSpent": {
+    "placeholders": {
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnTailwind": "순풍! 속도 ×{speed} · 골드 ×{gold}",
+  "@uiSpeedOnTailwind": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      },
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnPaid": "2배속! 속도 ×{speed}",
+  "@uiSpeedOnPaid": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "uiAchFast": "최고 {value}초 · 목표 {target}초 이하",
+  "@uiAchFast": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchNoRecord": "기록 없음 · 목표 {target}초 이하",
+  "@uiAchNoRecord": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPatternVolley": "포탄 연사",
+  "uiPatternBlast": "광역 폭발",
+  "uiPatternCharge": "돌진",
+  "uiPatternInk": "먹물 뿌리기",
+  "uiPatternSummon": "부하 부르기",
+  "uiPatternSwallow": "삼키기",
+  "uiBossDexHp": "체력 {v}",
+  "@uiBossDexHp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtk": "공격 {v}",
+  "@uiBossDexAtk": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtStage": "스테이지 {n} 기준",
+  "@uiBossDexAtStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexPatterns": "공격 패턴",
+  "uiBossDexFirst": "처음 등장 스테이지 {n}",
+  "@uiBossDexFirst": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexNext": "다음 등장 스테이지 {n}",
+  "@uiBossDexNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexUnmet": "스테이지 {n}에서 등장",
+  "@uiBossDexUnmet": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineMap": "보물지도 +{n}",
+  "@uiRebirthCineMap": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSail": "다시 출항!",
+  "uiRebirthCineTap": "탭하면 넘김",
+  "uiRebirthCineGems": "젬 +{n}",
+  "@uiRebirthCineGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSummons": "영웅 소환 {n}회",
+  "@uiRebirthCineSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSpeedOff": "보통",
+  "uiShopSpeedOn": "×2"
 }

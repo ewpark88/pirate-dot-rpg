@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/captain_skill.dart' show bossBarsAt, bossBarsLeftAt;
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
@@ -70,7 +71,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
         gold: gold.times(1 / k),
         def: def,
         tier: t.regions.tierAt(stage),
-      );
+      )..feverMob = f.feverSwarm != null && f.hordeCount == 0; // 피버 고리(대군 습격 고리는 아님)
       if (def.bomber != null) e.contactTimer = double.infinity; // 자폭: 접촉 공격 대신 박아 터진다(bestiary.dart)
       f.foes.add(e);
     }
@@ -139,9 +140,12 @@ void startBoss(
     bossDef: def,
     tier: t.regions.tierAt(stage),
   );
+  final bars = bossBarsAt(t, stage); // 체력 층(boss-feel) — 불러오기면 남은 HP로 남은 층
   boss
     ..hp = boss.maxHp.times(hpRatio)
-    ..scale = bossScaleOf(t, def.id);
+    ..scale = bossScaleOf(t, def.id)
+    ..bossBars = bars
+    ..bossBarsLeft = bossBarsLeftAt(bars, hpRatio);
   if (def.patterns.isNotEmpty) {
     int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
     final first = def.firstRestSec;

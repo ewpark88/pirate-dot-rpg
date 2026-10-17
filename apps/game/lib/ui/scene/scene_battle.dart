@@ -14,7 +14,6 @@ import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
-import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 // 탑·러시 전투 중 UI (S5 계약): 위쪽 띠('심연 12층 · 2/3파' / '보스 3/5 · 1:42'), 후퇴(보스 도전 자리), 끝나면 결과 창,
@@ -125,13 +124,9 @@ class _SceneGateState extends ConsumerState<SceneGate> {
     switch (e) {
       case TowerStarted() || RushStarted() || DungeonStarted():
         ref.read(dockTabRequestProvider.notifier).close();
-      case TowerSwept(:final floor, :final chestGems, :final chestCards):
-        showSkinToast(
-          context,
-          l10n.uiTowerSwept(floor, sceneReward(l10n, gems: chestGems, cards: chestCards)),
-        );
-      case DungeonCleared(swept: true, :final step, :final gems, :final cards):
-        showSkinToast(context, l10n.uiDungeonSwept(step, sceneReward(l10n, gems: gems, cards: cards.length)));
+      // 탑·던전 소탕은 보상 터짐(RewardGate)이 보여 준다(모든 받기 같은 연출 — S1 2026-10-18).
+      case TowerSwept() || DungeonCleared(swept: true):
+        break;
       case DungeonCleared(:final step, :final gems, :final cards):
         unawaited(
           showSkinDialog<void>(

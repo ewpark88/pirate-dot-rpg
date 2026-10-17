@@ -47,5 +47,8 @@ class SdkAnalytics implements AppAnalytics {
   @override
   void setCollection({required bool enabled}) => _fire(_sdk.setCollection(enabled: enabled));
 
+  @override
+  void setCrashKey(String key, Object value) => _fire(_sdk.setCrashKey(key, value));
+
   static void _fire(Future<void> f) => unawaited(f.catchError((Object e) => debugPrint('analytics: $e')));
 }

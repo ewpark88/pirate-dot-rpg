@@ -150,6 +150,7 @@ void main() {
     final fleet = await _pump(tester);
     await tester.tap(find.byKey(const Key('fleet.auto')));
     expect(fleet.calls, ['auto']);
+    await tester.pump(const Duration(seconds: 4)); // '이미 최강 편성' 확인·토스트가 끝나게
   });
 
   testWidgets('B: 기본 포트는 계약 명령을 보낸다 (AutoFleet · SetFleetSlot)', (tester) async {

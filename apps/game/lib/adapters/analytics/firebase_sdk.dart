@@ -44,4 +44,8 @@ class FirebaseAnalyticsSdk implements AnalyticsSdk {
 
   @override
   Future<void> setCollection({required bool enabled}) => _analytics.setAnalyticsCollectionEnabled(enabled);
+
+  @override
+  Future<void> recordNonFatal(Object error, StackTrace? stack, {required String reason}) =>
+      _crash.recordError(error, stack, reason: reason);
 }

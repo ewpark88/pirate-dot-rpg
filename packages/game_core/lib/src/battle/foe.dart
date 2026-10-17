@@ -79,6 +79,11 @@ class Foe {
   double breakGauge = 0;
   int brokenUntil = 0;
 
+  /// 보스 체력 층(captain_skill.dart, waves.boss.bars): 전체 층 수 · 남은 층 · 비틀 끝 틱(그동안 브레이크 게이지 안 쌓임).
+  int bossBars = 1;
+  int bossBarsLeft = 1;
+  int staggerUntil = 0;
+
   /// 보스 특성 타이머(boss_traits.dart): reflectAt·reflectUntil·dashAt·dashUntil·escorts(소환한 차례 수) 틱/횟수, 분노했나.
   final traitTicks = <String, int>{};
   bool enraged = false;
@@ -88,6 +93,9 @@ class Foe {
 
   /// 돌격대(waves.top.vanguard, S1·S2): 넉백·기절·끌기 면역, 무리 사이를 뚫고 배로 곧장 — EnemyView.vanguard.
   bool vanguard = false;
+
+  /// 피버 고리 적(spawnWaveFoes — 피버 중 무리): 잡아도 다음 피버 게이지에 안 센다(피버 뒤 남은 고리로 피버가 연달아 오던 것).
+  bool feverMob = false;
 
   /// 도감 v2: 분열한 횟수(BossDef.splitAt 중 쓴 수) · 자폭 적이 이미 터졌나.
   int splits = 0;
@@ -161,6 +169,8 @@ class Foe {
     breakRatio: boss ? breakGauge : 0,
     broken: brokenUntil > 0,
     breakCooldown: boss ? breakCooldownRatio : 0,
+    bossBars: boss ? bossBars : 1,
+    bossBarsLeft: boss ? bossBarsLeft : 1,
     rooted: rootTimer > 0,
     eventKind: eventKind,
   );
