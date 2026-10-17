@@ -32,7 +32,6 @@ void main() {
     f,
     SystemContext(tables: tables, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: (_) {}),
     CombatStats.of(GameState.newGame(playerId: 'c', seed: 1, now: start), tables),
-    rage: 0,
   );
 
   test('넘친 피해는 남은 HP까지만, crewId 없는 피해(피버 오라·자폭)는 세지 않는다, 보스전은 보스·촉수만', () {
