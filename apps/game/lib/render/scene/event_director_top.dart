@@ -122,8 +122,17 @@ extension _TopEvents on EventDirector {
     final targets = e.targetIds.isEmpty ? const [-1] : e.targetIds;
     for (final id in targets.take(6)) {
       final t = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
-      scene.topHits.slash.swing(ship.dx, ship.dy, t?.x ?? e.x, t?.y ?? e.y, scene.clockMs + delayMs, color);
+      scene.topHits.slash.swing(
+        ship.dx,
+        ship.dy,
+        t?.x ?? e.x,
+        t?.y ?? e.y,
+        scene.clockMs + delayMs,
+        color,
+        rarity: rarity,
+      );
     }
+    if (rarity >= 4) scene.shake.trigger(_juice.shake['aoe']!); // 신화 회전 베기: 화면 미세 흔들림
     _flashSlot(frame, e.crewId);
   }
 
