@@ -48,7 +48,10 @@ class TopSeaProps {
   /// [seaFlowY] = 바다가 흐른 거리(아래로 쌓임), [view] = 보이는 영역(단위), [region] = 해역 id.
   void paint(Canvas c, Rect view, double seaFlowY, String region, {double alpha = 1}) {
     drawn = 0;
-    if (alpha <= 0.02) return;
+    // 피버(황금 바다·질주)가 반 넘게 차면 그리지 않는다 — 속도감은 속도선·항적이 맡는다(S3). 그 위는 레이어 하나로 묶어 흐리게.
+    if (alpha < 0.5) return;
+    final fade = alpha < 1;
+    if (fade) c.saveLayer(view, Paint()..color = Color.fromRGBO(0, 0, 0, alpha));
     final flowY = seaFlowY * _flowMul;
     final kinds = _kinds(region);
     final margin = _size * 2;
@@ -72,18 +75,12 @@ class TopSeaProps {
         ..save()
         ..translate(x, y)
         ..rotate(kind == 'buoy' || kind == 'barrel' ? turn * 0.15 : turn)
-        ..scale(scale * _size / _unit);
-      if (alpha < 1) {
-        c
-          ..saveLayer(null, Paint()..color = Color.fromRGBO(0, 0, 0, alpha))
-          ..drawPicture(_picture(kind))
-          ..restore();
-      } else {
-        c.drawPicture(_picture(kind));
-      }
-      c.restore();
+        ..scale(scale * _size / _unit)
+        ..drawPicture(_picture(kind))
+        ..restore();
       drawn++;
     }
+    if (fade) c.restore();
   }
 
   /// 그림 한 변(그리기 단위) — [_size]로 줄여 쓴다.

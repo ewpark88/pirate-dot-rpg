@@ -2492,7 +2492,7 @@ const Map<String, String> rawTables = {
     },
     "props": {
       "spacing": 70,
-      "maxOnScreen": 6,
+      "maxOnScreen": 4,
       "laneHalf": 34,
       "size": 36,
       "flowMul": 1.4,
