@@ -42,8 +42,16 @@ void main() {
     );
     expect(promoteStatus(withOcto(const CrewState(level: 15, cards: 3), gold: 1e30), t, 'octo'), PromoteStatus.ok);
     expect(canPromote(withOcto(const CrewState(level: 15, cards: 3), gold: 1e30), t, 'octo'), isTrue);
+    const past = Progress(stage: 45, bestStage: 45); // 첫 전설 유예(meta.firstLegend) 뒤
+    final legendGate = withOcto(const CrewState(level: 45, cards: 99), gold: 1e60, tokens: 99);
+    expect(promoteStatus(legendGate, t, 'octo'), PromoteStatus.stageLocked, reason: '유예 중 전설 승급은 막힌다');
+    expect(promoteStatus(legendGate.copyWith(progress: past), t, 'octo'), PromoteStatus.ok);
     expect(
-      promoteStatus(withOcto(const CrewState(level: 60, cards: 99), gold: 1e60, tokens: 49), t, 'octo'),
+      promoteStatus(
+        withOcto(const CrewState(level: 60, cards: 99), gold: 1e60, tokens: 49).copyWith(progress: past),
+        t,
+        'octo',
+      ),
       PromoteStatus.tokens,
     );
     expect(promoteStatus(withOcto(const CrewState(level: 75), gold: 1e60), t, 'octo'), PromoteStatus.maxRarity);
