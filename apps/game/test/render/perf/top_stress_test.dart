@@ -83,6 +83,11 @@ void main() {
     '탑다운 피버 260마리(최악 효과)',
     (tester) => _measure(tester, 'top fever 260', _worst(count: 260), maxCalls: 1800),
   );
+  // 피버 ×1.5(S1 — 최대 390마리) + 최악 효과: 붐빔 모드로도 그리기·시간이 버티는지.
+  testWidgets(
+    '탑다운 피버 390마리(최악 효과)',
+    (tester) => _measure(tester, 'top fever 390', _worst(count: 390), maxCalls: 1800),
+  );
   testWidgets(
     '탑다운 최악 장면 + 시트 열림(가벼운 연출)',
     (tester) => _measure(tester, 'top worst covered', _worst(), coverAt: 0.5),
