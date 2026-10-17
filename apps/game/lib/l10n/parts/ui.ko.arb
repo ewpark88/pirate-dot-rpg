@@ -1711,5 +1711,36 @@
   "uiRebirthGo": "항해 탭",
   "uiCaptainSkill": "선장 필살기",
   "uiCaptainSkillShort": "필살기",
-  "uiBackToExit": "한 번 더 누르면 종료돼요"
+  "uiBackToExit": "한 번 더 누르면 종료돼요",
+  "uiBossHpLine": "{name} · {now} / {max}",
+  "@uiBossHpLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossHpBars": "{name} · {now} / {max}  ×{bars}",
+  "@uiBossHpBars": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  }
 }
