@@ -15,7 +15,12 @@ void main() {
     final game = c.read(battleGameProvider);
     final id = s.crews.keys.first;
     expect(game.scene.crewLevels[id], s.crews[id]!.level);
-    final up = s.copyWith(crews: {...s.crews, id: s.crews[id]!.copyWith(level: s.crews[id]!.level + 1)});
+    final up = s.copyWith(
+      crews: {
+        ...s.crews,
+        id: s.crews[id]!.copyWith(level: s.crews[id]!.level + 1),
+      },
+    );
     c.read(gameStateProvider.notifier).replace(up);
     expect(game.scene.crewLevels[id], s.crews[id]!.level + 1);
   });
