@@ -12,6 +12,7 @@ import 'package:pirate_dot/render/hd/species/boss_rays.dart';
 import 'package:pirate_dot/render/hd/species/boss_serpents.dart';
 import 'package:pirate_dot/render/hd/species/boss_storm2.dart';
 import 'package:pirate_dot/render/hd/species/boss_undead.dart';
+import 'package:pirate_dot/render/hd/species/boss_volcano2.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
 import 'package:pirate_dot/render/hd/species/cursegull.dart';
 import 'package:pirate_dot/render/hd/species/deep_sub.dart';
@@ -119,6 +120,9 @@ const Map<String, HdSpecies> hdBosses = {
   'frost_yeti': frostYeti,
   'ice_narwhal': iceNarwhal,
   'snow_owl_ship': snowOwlShip,
+  'magma_golem': magmaGolem,
+  'fire_salamander': fireSalamander,
+  'ash_dragon': ashDragon,
   'ghost_admiral': ghostAdmiral,
   'kraken': kraken,
   // 대보스 6(S3)
