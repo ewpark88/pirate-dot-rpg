@@ -2558,6 +2558,7 @@ const Map<String, String> rawTables = {
       "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
     },
     "props": {
+      "enabled": false,
       "spacing": 70,
       "maxOnScreen": 4,
       "laneHalf": 34,
@@ -2638,12 +2639,12 @@ const Map<String, String> rawTables = {
     },
     "landmarks": {
       "intervalSec": [
-        40,
-        90
+        90,
+        180
       ],
-      "maxOnScreen": 2,
+      "maxOnScreen": 1,
       "ahead": 260,
-      "lateral": 70,
+      "lateral": 105,
       "despawn": 420,
       "byRegion": {
         "coral": [
