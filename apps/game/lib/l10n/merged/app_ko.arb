@@ -1852,5 +1852,66 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPassTitle": "항해 패스",
+  "uiPassLevel": "{n}/{max}단계",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "다음 단계까지 {n}",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "퀘스트·출석 +{q} · 처음 깬 스테이지 +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "무료",
+  "uiPassPaid": "패스",
+  "uiPassClaimAll": "모두 받기",
+  "uiPassUnlock": "유료 줄 열기 · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "패스 {n}일 남음",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "{lv}단계 패스 보상",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "시즌1 깃발 배",
+  "uiTitlePassFlag": "시즌1 항해사",
+  "uiPassLegend": "전설 소환"
 }

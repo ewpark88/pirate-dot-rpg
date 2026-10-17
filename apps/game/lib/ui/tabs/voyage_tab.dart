@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/dex/monster_dex.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/pass/pass_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
@@ -47,6 +48,9 @@ class VoyageTab extends ConsumerWidget {
         const _RegionCard(),
         const SizedBox(height: 8),
         const PixelFrame(key: Key('voyage.status'), padding: 5, child: _StatusLines()),
+        const SizedBox(height: 8),
+        // 항해 패스(시즌 30단계 — 무료/유료 두 줄).
+        const PassCard(),
         const SizedBox(height: 8),
         // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
         const BountyCard(),

@@ -1859,5 +1859,66 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPassTitle": "Voyage Pass",
+  "uiPassLevel": "Level {n}/{max}",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "{n} XP to next",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "Quests/check-in +{q} · New stage +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "Free",
+  "uiPassPaid": "Pass",
+  "uiPassClaimAll": "Claim all",
+  "uiPassUnlock": "Unlock pass · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "Pass: {n} days left",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "Pass reward at level {lv}",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "Season 1 Flagship",
+  "uiTitlePassFlag": "Season 1 Voyager",
+  "uiPassLegend": "Legend summon"
 }
