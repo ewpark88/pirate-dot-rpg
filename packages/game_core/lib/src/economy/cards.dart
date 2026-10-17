@@ -176,9 +176,22 @@ String gateFirstLegend(GameState s, GameTables t, String rarity) {
   return order.indexWhere((r) => r.id == rarity) >= legend ? g.str('downgradeTo') : rarity;
 }
 
+/// 시작 선원 보호(설계서 4.3 '처음 14장의 보스 카드는 옥토에게, 항상 일반' — 첫 승급 30~40분, sim 검진 2026-10-17):
+/// 첫 회차에 시작 선원 카드 구간(starterFirstStage + starterCount × starterEvery) 전엔 그 선원 카드가 무엇이든 일반으로.
+/// 초반 보스 카드(출전이 옥토·bones뿐)·오프라인·이벤트가 희귀 이상으로 와 첫 승급이 1~3분에 일어나던 것을 막는다.
+bool starterGuarded(GameState s, GameTables t, String crewId) {
+  final b = t.growth.bossCards;
+  return s.progress.rebirths == 0 &&
+      crewId == b.starterCrew &&
+      s.progress.bestStage < b.starterFirstStage + b.starterCount * b.starterEvery;
+}
+
 /// [receiveCard] + CardGranted 이벤트 (렌더가 카드가 날아와 모이는 연출, S3 요청). [source]는 CardGranted 참고.
 GameState grantCard(GameState state, SystemContext ctx, String crewId, String cardRarity, String source) {
-  final rarity = gateFirstLegend(state, ctx.tables, cardRarity);
+  final t = ctx.tables;
+  final rarity = starterGuarded(state, t, crewId)
+      ? t.rarities.rarities.first.id
+      : gateFirstLegend(state, t, cardRarity);
   ctx.emit(
     CardGranted(ctx.tick, crewId: crewId, rarity: rarity, source: source, isNew: !state.crews.containsKey(crewId)),
   );

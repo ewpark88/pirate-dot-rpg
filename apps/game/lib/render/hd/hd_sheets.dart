@@ -26,7 +26,7 @@ class HdSheet {
 
 /// HD 카툰 굽기(docs/specs/render-hd-style.md 5절): 코드 벡터 종을 처음 보일 때 기기 해상도로 한 장에 굽는다(toImageSync —
 /// 비동기 없음, 골든도 같은 그림). 해상도가 15% 넘게 바뀌면(회전·창 크기) 다시 굽는다.
-/// 캐시 상한은 장 수가 아니라 텍스처 바이트([budgetBytes]) — 보스 시트는 잡몹의 10~30배라(밀도 6에서 보스 7MB·잡몹 0.56MB,
+/// 캐시 상한은 장 수가 아니라 텍스처 바이트([budget]) — 보스 시트는 잡몹의 10~30배라(밀도 6에서 보스 7MB·잡몹 0.56MB,
 /// S5 측정 test/render/hd_bake_perf_test) 장 수로 막으면 큰 보스가 쌓여 수십 MB가 된다. 넘으면 오래 안 쓴 것부터 버린다.
 class HdSheets {
   final Map<String, HdSheet> _ready = {};
@@ -34,8 +34,19 @@ class HdSheets {
   double _density = 0;
   int _tick = 0;
 
-  /// 텍스처 캐시 상한(바이트) — 한 해역(잡몹 5 + 보스 몇)을 넉넉히 담고 저사양 폰에서도 부담 없는 크기.
+  /// 폰(밀도 [phoneDensity]) 텍스처 캐시 상한(바이트) — 한 해역(잡몹 5 + 보스 몇)을 넉넉히 담고 저사양 폰에서도 부담 없는 크기.
   static const int budgetBytes = 48 * 1024 * 1024;
+
+  /// 태블릿 상한 — 텍스처는 밀도²로 커져 밀도 6(태블릿)에서 한 해역이 약 84MB라 48MB면 해역 안에서도 버렸다 다시 굽는다(S1).
+  static const int maxBudgetBytes = 96 * 1024 * 1024;
+  static const double phoneDensity = 4;
+
+  /// 지금 밀도의 상한: 폰 48MB × (밀도/4)², 48~96MB(화면이 클수록 같은 종도 텍스처가 커지니 같은 장 수를 담게).
+  int get budget {
+    final scale = _density / phoneDensity;
+    return (budgetBytes * scale * scale).clamp(budgetBytes, maxBudgetBytes).toInt();
+  }
+
   int _bytes = 0;
 
   /// 지금 캐시에 든 텍스처 바이트(측정·시험용).
@@ -107,7 +118,7 @@ class HdSheets {
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
-    while (_bytes > budgetBytes && _ready.length > 1) {
+    while (_bytes > budget && _ready.length > 1) {
       _evict(except: key);
     }
     return sheet;
