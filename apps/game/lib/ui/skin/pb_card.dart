@@ -234,7 +234,7 @@ class LvBadge extends StatelessWidget {
             children: [
               Text(l10n.uiLvLabel, style: Skin.outlined(20, color: const Color(0xFFFFD84A))),
               const SizedBox(width: 3),
-              Text('$level', style: Skin.outlined(40)),
+              Text(level.toString(), style: Skin.outlined(40)),
             ],
           ),
         ),
