@@ -26,6 +26,7 @@ import 'package:pirate_dot/adapters/purchase/play_purchases.dart';
 import 'package:pirate_dot/adapters/purchase/purchase_bridge.dart';
 import 'package:pirate_dot/adapters/purchase/purchase_providers.dart';
 import 'package:pirate_dot/adapters/purchase/sim_billing_sdk.dart';
+import 'package:pirate_dot/adapters/save_transfer.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart' show operatorBackupProvider;
@@ -164,6 +165,7 @@ Future<void> main() async {
       if (shop != null) purchaseServiceProvider.overrideWithValue(shop),
       purchaseBridgeProvider.overrideWithValue(bridge),
       simBillingProvider.overrideWithValue(sim),
+      saveImportProvider.overrideWithValue(host.replace), // 설정 '세이브 옮기기'(코드 가져오기)
       audioPortProvider.overrideWithValue(audio),
       analyticsPortProvider.overrideWithValue(analytics),
       notifierProvider.overrideWithValue(notifier),
