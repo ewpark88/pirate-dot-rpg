@@ -6,6 +6,7 @@ import 'package:pirate_dot/render/paint/hp_pill.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/top/top_chest.dart';
 import 'package:pirate_dot/render/top/top_status.dart';
 
 /// 탑다운 표시들 (T4-3 — 옆모습 화가만 그리던 것을 옮김): 수중 구역, 적 상태 아이콘·보호막·정예 테두리,
@@ -137,18 +138,9 @@ class TopMarks {
   }
 
   /// 떠내려온 보물상자(전장 좌표). 가라앉을수록 흐려진다 — 누를 곳·남은 시간 링·금액은 UI(ChestLayer).
-  void chest(Canvas c, double clockMs) {
-    final ch = scene.chest;
-    if (!ch.visible) return;
-    sprites.draw(
-      c,
-      'td_event:chest',
-      ch.x.roundToDouble(),
-      ch.y.roundToDouble(),
-      frame: (clockMs / 450).floor() % 2,
-      alpha: 1 - 0.7 * ch.sink,
-    );
-  }
+  void chest(Canvas c, double clockMs) =>
+      _chest.paint(c, sprites, scene.chest, clockMs, lite: scene.topHits.lite || scene.settings.powerSave);
+  final _chest = TopChest();
 
   /// 배 회복(초록 덮개)·강화(테) 빛 — 배 상자 [box](배 중심 원점).
   void shipAura(Canvas c, Rect box) {
