@@ -91,7 +91,7 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
     state.copyWith(savedAt: now),
     t,
     p.gold,
-    capScale: offlineCapScale(t),
+    capScale: offlineCapScale(t, state),
   );
   if (!paid.lost.isZero) ctx.emit(GoldOverflow(ctx.tick, lost: paid.lost));
   var s = paid.state.copyWith(lastOfflineGold: paid.added);

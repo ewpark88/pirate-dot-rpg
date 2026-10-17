@@ -8,6 +8,7 @@ import 'package:game_core/src/battle/topdown/top_duel.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverPose;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/fever.dart' show feverOn;
+import 'package:game_core/src/economy/formation.dart' show fleetSlots;
 import 'package:game_core/src/economy/rebirth_shop.dart' show bossGuard;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/game_engine.dart';
@@ -99,7 +100,10 @@ BattleGeometry geometryFor(GameTables t, int stage, {int hullStage = 1}) {
 /// [f]에 지금 배(등급·선체 강화 단계)에 맞는 모양을 둔다. 배 상태가 바뀔 때만 다시 만든다 — 강화해도 무리는 그대로.
 /// 돌발 이벤트 '폭풍'이면 적 이동 배율(meta.seaEvents 폭풍 enemySpeed)도 매번 맞춘다.
 void shapeField(Field f, GameState s, GameTables t) {
-  f.bossGuard = bossGuard(s, t); // 보물지도 상점 철갑판(보스전·현상금 배 피해 감소)
+  f
+    ..bossGuard =
+        bossGuard(s, t) // 보물지도 상점 철갑판(보스전·현상금 배 피해 감소)
+    ..slotsOpen = fleetSlots(s, t); // 열린 칸(평생 최고 스테이지 기준) — 렌더 잠금 칸
   if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
     if (f.shipSeen != null) _refreshHull(f, s, t); // 배를 강화했다(전장을 처음 만들 때는 이미 맞다)
     final old = f.geometry;

@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui 734c1afa — test/ui 669·test/render 293 초록, 보스전 띠 아래 비움, main 8120b03d 위 |
-| 다음 | 실기기 확인 뒤 다듬기(상점 가격 글꼴 '₩'·패스 스킨 미리보기 장식) · trialsReady export 오면 UI 어댑터 지우기 |
+| 상태 | lane/ui e7b31830 — 필살기 버튼(임시)·실기기 묶음·뒤로 두 번 종료까지, test/ui 696 초록 |
+| 다음 | S2 필살기 계약(captainGauge·TriggerUltimate·autoUltimate) main 반영 → 어댑터·설정 토글 · bossBars 층 표시(S3와) · main.dart exitSaveProvider 연결(S1) · trialsReady export |
 | 기다리는 것 | S2 trialsReady export · S5 결제 어댑터 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -16,7 +16,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-18 밤 · S4 · 사용자 요청 묶음
+- 15a04ba3 후퇴 띠 안·시트 자동 접기·환생 안내(띠 '환생까지 n'·알약 우선·두 번째 회차 토스트)·세이브 옮기기·외곽선 굵히기 뺌.
+- 46b506d3 필살기 버튼(임시 어댑터). e7b31830 빈 러시 결과 창·창 하나 규칙·칸 자동 출전·손가락 위치·뒤로 두 번 종료.
+- 교훈: dart fix --apply가 pubspec에 의존성을 넣을 수 있다 — 커밋 전 pubspec diff 확인.
+
 ### 2026-10-18 · S4 · 보스전 띠 아래 비우기 · test/ui 복구
+- 5f35b157 보스전·장면 중 광고 칩 → 오른쪽 24dp 탭(펼침), 처음 열림 안내 guide.scenes·guide.pass + 카드 OnceTip.
 - 734c1afa 보스전·장면 모드 중 띠 아래 알약·약점 줄 없앰, 장면 글은 띠 안. 항해 탭 길어져 깨진 시험 → showInSheet. 전장 안전 영역(위 82dp × uiScale, 아래 선원 줄 − 24dp) S3에 전달.
 - 교훈: 빠른 check엔 test/ui가 없다 — 화면을 넓게 바꾼 날엔 해시 전에 test/ui 전부.
 

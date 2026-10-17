@@ -6,15 +6,14 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/slot_states.dart';
-import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
+import 'package:pirate_dot/ui/hud/captain_skill_button.dart';
 import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
-import 'package:pirate_dot/ui/scene/scene_battle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
@@ -65,15 +64,17 @@ class BattleButtons extends ConsumerWidget {
               ),
             // 보스 도전(사용자 피드백 #9 D·#26): 원형 56dp를 화면 오른쪽 가장자리에 붙이고 배 체력 막대 바로 위에 띄운다(엄지 자리,
             // 막대와 겹치지 않게 — S1 2026-10-17).
+            // 선장 필살기(오른쪽 끝 엄지 자리, 배 체력 막대 바로 위) — 있으면 보스 도전은 그 왼쪽으로.
             Positioned(
               right: bossChallengeEdge,
+              top: f.slotBand.top - _hpBarAbove - bossChallengeGap - captainSkillSize,
+              child: const CaptainSkillButton(),
+            ),
+            Positioned(
+              right: bossChallengeEdge + (ref.watch(captainSkillProvider) == null ? 0 : captainSkillSize + 8),
               top: f.slotBand.top - _hpBarAbove - bossChallengeGap - bossChallengeHeight,
               child: const BossChallengeButton(),
             ),
-            // 현상금 전투 중에는 같은 자리에 후퇴 버튼 (보스 도전은 파밍 중에만이라 겹치지 않는다).
-            Positioned.fromRect(rect: hit(f.bossRect), child: const BountyRetreatButton()),
-            // 탑·러시 중에도 같은 자리에 후퇴.
-            Positioned.fromRect(rect: hit(f.bossRect), child: const SceneRetreatButton()),
           ],
         );
       },

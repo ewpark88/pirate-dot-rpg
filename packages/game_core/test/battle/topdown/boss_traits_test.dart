@@ -93,6 +93,23 @@ void main() {
     expect((a.boss.hp / a.boss.maxHp).toDouble(), closeTo(0.5 + perTick, 1e-9));
   });
 
+  test('재생은 fadeSec 동안 1 → 0으로 줄어 끝나지 않는 보스전이 없다(실기기 6-2 해파리 여왕)', () {
+    final a = arena(const ['regen']);
+    final fade = a.boss.bossDef!.trait('regen')!.cfg.numberOr('fadeSec', 0);
+    expect(fade, greaterThan(0), reason: '표에 fadeSec');
+    a.boss.hp = a.boss.maxHp.times(0.5);
+    a.r.tickBossTraits(); // 시작 틱 — 아직 전부
+    final half = a.ctx.tick + (fade / 2 / a.r.dt).round();
+    a.ctx.tick = half;
+    final before = (a.boss.hp / a.boss.maxHp).toDouble();
+    a.r.tickBossTraits();
+    expect((a.boss.hp / a.boss.maxHp).toDouble() - before, closeTo(0.015 * a.r.dt * 0.5, 1e-9), reason: '절반 지나면 절반');
+    a.ctx.tick += (fade / a.r.dt).round();
+    final late = (a.boss.hp / a.boss.maxHp).toDouble();
+    a.r.tickBossTraits();
+    expect((a.boss.hp / a.boss.maxHp).toDouble(), late, reason: 'fadeSec 뒤엔 재생 0');
+  });
+
   test('반사막: everySec마다 예고(BossTraitFired) 뒤 sec 동안 피해 0 + 배에 반사, 수중은 통과', () {
     final a = arena(const ['reflect']);
     a.r.tickBossTraits(); // 첫 주기 예약
@@ -104,6 +121,22 @@ void main() {
     expect(a.r.traitHit(a.boss, hit, crewId: crewOf('direct')), isNull);
     expect(a.events.whereType<ShipDamaged>(), hasLength(1));
     expect(a.r.traitHit(a.boss, hit, crewId: crewOf('underwater')), hit);
+  });
+
+  test('반사 상한 maxShipHpPerSec: 한 틱에 아무리 많이 때려도 반사 피해 합은 배 최대 체력 × 비율 × 한 틱 초(S2 — 8%×7 몰림)', () {
+    final a = arena(const ['reflect']);
+    a.boss.traitTicks['reflectUntil'] = a.ctx.tick + 100;
+    final big = a.r.field.shipHpMax; // 한 번에 배 최대 체력만큼 — 반사(× ratio)만으로도 상한을 넘는다
+    for (var i = 0; i < 7; i++) {
+      expect(a.r.traitHit(a.boss, big, crewId: crewOf('direct')), isNull);
+    }
+    final cap = defaults['reflect'] as Map<String, dynamic>;
+    final perTick = (cap['maxShipHpPerSec'] as num) * a.r.dt;
+    final lost = (a.r.field.shipHpMax - a.r.field.shipHp) / a.r.field.shipHpMax;
+    expect(lost.toDouble(), closeTo(perTick, 1e-9));
+    a.ctx.tick++; // 다음 틱엔 다시 그만큼
+    a.r.traitHit(a.boss, big, crewId: crewOf('direct'));
+    expect(((a.r.field.shipHpMax - a.r.field.shipHp) / a.r.field.shipHpMax).toDouble(), closeTo(perTick * 2, 1e-9));
   });
 
   test('분노: HP 30% 아래로 한 번 — 공격 × 1.3, 쉼 × 0.6', () {

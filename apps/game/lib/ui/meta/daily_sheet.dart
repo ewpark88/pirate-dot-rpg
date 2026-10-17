@@ -69,12 +69,35 @@ class DailyIcon extends ConsumerWidget {
   }
 }
 
-/// 하단 시트: 위 칸 일일 퀘스트 4줄(줄마다 받기), 아래 칸 출석 7칸.
-class DailySheet extends ConsumerWidget {
+/// 하단 시트: 위 칸 일일 퀘스트 4줄(줄마다 받기), 아래 칸 출석 7칸. 받을 것을 다 받으면(빨간 점 0) 잠깐 뒤 저절로 닫힌다
+/// (사용자 2026-10-18 '할 일이 끝나면 내려가서 전투를 볼 수 있게').
+class DailySheet extends ConsumerStatefulWidget {
   const DailySheet({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DailySheet> createState() => _DailySheetState();
+}
+
+class _DailySheetState extends ConsumerState<DailySheet> {
+  int? _was;
+  Timer? _close;
+
+  @override
+  void dispose() {
+    _close?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final count = dailyClaimCount(ref);
+    if ((_was ?? 0) > 0 && count == 0) {
+      _close?.cancel();
+      _close = Timer(const Duration(milliseconds: 700), () {
+        if (mounted) unawaited(Navigator.of(context).maybePop());
+      });
+    }
+    _was = count;
     final (quests, attendance) = _daily(ref);
     return ListView(
       padding: const EdgeInsets.all(16),

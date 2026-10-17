@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -88,6 +89,39 @@ void main() {
     // r2: 받은 줄은 초록 체크 알약, 줄마다 진행 막대.
     expect(find.byKey(const Key('daily.claimed.q1')), findsOneWidget);
     expect(tester.widget<LinearProgressIndicator>(find.byKey(const Key('daily.bar.q3'))).value, 0);
+  });
+
+  testWidgets('다 받으면(빨간 점 0) 시트가 저절로 닫힌다', (tester) async {
+    var quests = _quests(done: 2, claimed: 1);
+    tester.view
+      ..physicalSize = const Size(400, 800)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final state = loadFixture('stage37_midgame');
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          trialsEnabledProvider.overrideWithValue(false),
+          initialGameStateProvider.overrideWithValue(state),
+          commandSinkProvider.overrideWithValue(CommandLog()),
+          battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),
+          clockProvider.overrideWithValue(FixedClock(state.savedAt)),
+          dailyQuestsProvider.overrideWithValue((_) => quests),
+          attendanceProvider.overrideWithValue((_, _) => _attendance(claimedToday: true)),
+        ],
+        child: const PirateDotApp(locale: Locale('en')),
+      ),
+    );
+    await tester.pump();
+    await _openSheet(tester);
+    expect(find.byType(DailySheet), findsOneWidget);
+    // 엔진이 받기를 처리한 것처럼: 마지막 하나도 받음 → 상태가 바뀌어 다시 센다.
+    quests = _quests(done: 2, claimed: 2);
+    replaceState(tester, state.copyWith(wallet: state.wallet.copyWith(gems: state.wallet.gems + 10)));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(find.byType(DailySheet), findsNothing);
   });
 
   testWidgets('기준 5: 달성·미수령 줄이 있으면 빨간 점, 그 줄 받기 → ClaimDaily(id)', (tester) async {

@@ -165,4 +165,35 @@ void main() {
     const e = FleetRejected(4, slot: 2, crewId: 'manta', reason: 'family');
     expect(GameEvent.fromJson(e.toJson()).toJson(), e.toJson());
   });
+
+  test('한 번 연 칸은 영구 — 스테이지 30 도달 → 환생 → 4번째 칸·그 선원 출전 유지(사용자 버그 2026-10-17)', () {
+    const crews = {'octo': CrewState(), 'manta': CrewState(), 'pang': CrewState(), 'turtle': CrewState(level: 17)};
+    final s0 = formed(crews, const ['octo', 'manta', 'pang', 'turtle'], stage: wide);
+    expect(fleetSlots(s0, t), 4);
+    final e = CoreEngine(tables: t, clock: ManualClock(DateTime.utc(2026, 11)), initial: s0)
+      ..enqueue(const OpRebirthNow())
+      ..tick();
+    expect(e.state.progress.stage, lessThan(wide), reason: '환생하면 스테이지는 처음으로');
+    expect(fleetSlots(e.state, t), 4);
+    expect(activeFleet(e.state, t), contains('turtle'));
+    expect(e.state.battle!.slotsOpen, 4, reason: '화면 잠금 칸도 같은 기준');
+  });
+
+  test('실제 Rebirth 명령 경로 — 스테이지 40에서 환생 → 4칸·그 선원 유지, bestStage가 어긋난 옛 세이브도 환생 기록으로 4칸', () {
+    const crews = {'octo': CrewState(), 'manta': CrewState(), 'pang': CrewState(), 'turtle': CrewState(level: 17)};
+    final s0 = formed(crews, const ['octo', 'manta', 'pang', 'turtle'], stage: 40);
+    final e = CoreEngine(tables: t, clock: ManualClock(DateTime.utc(2026, 11)), initial: s0)
+      ..enqueue(const Rebirth())
+      ..tick();
+    expect(e.state.progress.rebirths, 1, reason: '실제 환생 명령이 통과');
+    expect(e.state.progress.bestStage, 40);
+    expect(fleetSlots(e.state, t), 4);
+    expect(activeFleet(e.state, t), contains('turtle'));
+    for (var i = 0; i < 40; i++) {
+      e.tick();
+    }
+    expect(e.state.battle!.slotsOpen, 4);
+    final odd = e.state.copyWith(progress: e.state.progress.copyWith(bestStage: 5));
+    expect(fleetSlots(odd, t), 4, reason: '환생 1번 이상이면 minStage(40) 등급이 바닥');
+  });
 }

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
+import 'package:pirate_dot/ui/dock/sheet_auto_close.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
-import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -16,6 +15,9 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 도크 높이(dp) — 전장 상자는 이 위에서 끝난다(시트가 닫혔을 때).
+/// 시트 최대 폭(dp) — 태블릿에서 가운데.
+const sheetMaxWidth = 720.0;
+
 const double kDockHeight = 58; // 얇은 도크(사용자 2026-10-17 배치 확정 — 고른 탭만 이름)
 
 /// 아래 엄지 자리 도크 (사용자 결정: 도크 + 끌어올리는 시트): 동그란 아이콘 5개 + 빠른 강화.
@@ -37,15 +39,12 @@ class HomeDock extends ConsumerWidget {
         UiSprites.tabMap,
         l10n.uiTabVoyage,
         'tab.voyage',
-        // 상점에서 살 수 있는 칸, 또는 현상금 티켓이 상한(9)일 때만 (넘치기 직전 = 지금 쓰면 이득).
-        // 환생할 수 있게 되면 점(사용자 지시 2026-10-16).
-        ref.watch(rebirthReadyProvider) ||
-            ref.watch(rebirthShopProvider.select((s) => s.anyAffordable)) ||
-            ref.watch(bountyProvider.select((v) => v.tickets)) >= ref.watch(bountyLimitsProvider).ticketCap,
+        // 환생 가능 · 상점에서 살 칸 · 현상금 티켓 상한(tabWorkProvider — 시트 자동 접기와 같은 판정).
+        ref.watch(tabWorkProvider(0)),
       ),
-      (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(shipBadgeProvider)),
-      (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(crewBadgeProvider)),
-      (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(summonBadgeProvider)),
+      (UiSprites.tabShip, l10n.uiTabShip, 'tab.ship', ref.watch(tabWorkProvider(1))),
+      (UiSprites.tabCrew, l10n.uiTabCrew, 'tab.crew', ref.watch(tabWorkProvider(2))),
+      (UiSprites.tabSummon, l10n.uiTabSummon, 'tab.summon', ref.watch(tabWorkProvider(3))),
     ];
     final daily = dailyClaimCount(ref);
     final guide = ref.watch(rebirthGuideProvider);

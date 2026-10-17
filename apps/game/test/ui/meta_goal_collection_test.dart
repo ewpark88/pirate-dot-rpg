@@ -12,12 +12,18 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'ui_harness.dart';
 
 /// 경제 함수(B1·B9)가 오기 전이라 provider를 가짜로 덮어 화면만 시험한다.
+GameState _at25() {
+  final s = loadFixture('stage37_midgame');
+  return s.copyWith(progress: s.progress.copyWith(stage: 25));
+}
+
 Future<void> _pump(WidgetTester tester, {NextGoal? goal, CollectionBonus? bonus, int tab = 0}) async {
   tester.view
     ..physicalSize = const Size(400, 800)
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final state = loadFixture('stage37_midgame');
+  // 스테이지 37은 '환생까지 n'이 목표 자리를 쓰므로(해금 10스테이지 전) 25로.
+  final state = _at25();
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -64,7 +70,7 @@ void main() {
   });
 
   testWidgets('기본값은 경제 nextGoal — 샘플에 목표 막대가 보인다', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'));
+    await pumpGame(tester, _at25());
     expect(find.byKey(const Key('goal')), findsOneWidget);
   });
 

@@ -118,6 +118,18 @@ class EngineHost implements CommandSink {
     onState?.call(engine.state);
   }
 
+  /// 세이브 가져오기(설정 '세이브 옮기기' — save_transfer.dart): 엔진을 [state]로 바꾸고 바로 저장한다(savedAt = 지금 — 옮기는 동안
+  /// 오프라인 보상이 쌓이지 않게). 장면 모드(현상금·탑 등) 진행 중이던 세이브여도 새 엔진 첫 틱이 '중단'으로 정리한다.
+  Future<void> replace(GameState state) {
+    engine = CoreEngine(
+      tables: _tables,
+      clock: clock,
+      initial: state.copyWith(savedAt: clock.now()),
+    );
+    onState?.call(engine.state);
+    return save();
+  }
+
   DateTime? _pausedAt;
 
   Future<void> dispose() async {

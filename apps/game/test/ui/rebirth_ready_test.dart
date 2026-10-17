@@ -73,6 +73,30 @@ void main() {
     expect(find.byKey(const Key('tutorial.spot.tab.voyage')), findsNothing);
   });
 
+  testWidgets('해금 10스테이지 전부터 띠 안 "환생까지 n"(37 → 3) · 보스전에도 띠 안', (tester) async {
+    await pumpGame(tester, _ready(stage: 37), openTab: false);
+    expect(
+      find.descendant(of: find.byKey(const Key('hud.gauge')), matching: find.text('Rebirth in 3 stages')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('환생 가능 + 화물칸 가득이면 환생 알약이 먼저(사용자 "환생이 안 나온다")', (tester) async {
+    final s = _ready(rebirths: 1);
+    await pumpGame(tester, s.copyWith(wallet: s.wallet.copyWith(gold: goldCapacity(s, t))), openTab: false);
+    expect(find.byKey(const Key('rebirth.ready.pill')), findsOneWidget);
+    expect(find.byKey(const Key('cargo.full')), findsNothing);
+  });
+
+  testWidgets('두 번째 회차: 환생 가능이 되는 순간 토스트 + 항해 탭', (tester) async {
+    await pumpGame(tester, _ready(rebirths: 1, stage: 39), openTab: false);
+    replaceState(tester, _ready(rebirths: 1));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('You can rebirth now! Any time from the Voyage tab.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+  });
+
   testWidgets('해금 전: 알약 없음, 카드에 환생이 뭔지 한 줄', (tester) async {
     await pumpGame(tester, _ready(stage: 37));
     expect(find.byKey(const Key('rebirth.ready.pill')), findsNothing);

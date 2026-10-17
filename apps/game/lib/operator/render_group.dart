@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/ui/hud/boss_bars.dart';
+import 'package:pirate_dot/ui/hud/captain_skill_button.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -67,6 +69,19 @@ class _RenderGroupState extends ConsumerState<RenderGroup> {
           label: Text(l10n.opHitboxes),
           selected: game?.showHitboxes ?? false,
           onSelected: game == null ? null : (on) => apply((g) => g.showHitboxes = on),
+        ),
+        // 선장 필살기 버튼 화면 확인(S2 계약 전 — 피버 게이지를 빌린다).
+        FilterChip(
+          key: const Key('op.captainSkillFake'),
+          label: Text(l10n.opCaptainSkillFake),
+          selected: ref.watch(captainSkillFakeProvider),
+          onSelected: (_) => ref.read(captainSkillFakeProvider.notifier).toggle(),
+        ),
+        FilterChip(
+          key: const Key('op.bossBarsFake'),
+          label: Text(l10n.opBossBarsFake),
+          selected: ref.watch(bossBarsFakeProvider),
+          onSelected: (_) => ref.read(bossBarsFakeProvider.notifier).toggle(),
         ),
         Text(l10n.opCardFxMin),
         SegmentedButton<String>(

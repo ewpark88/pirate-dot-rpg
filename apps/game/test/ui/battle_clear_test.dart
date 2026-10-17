@@ -84,11 +84,9 @@ void main() {
       await tester.pump();
       final strip = tester.getRect(find.byKey(const Key('bounty.strip')));
       expect(strip.overlaps(center), isFalse, reason: 'bounty.strip $strip / $center');
-      // 돌발 이벤트는 알약이 아니라 띠 안 작은 아이콘(실기기 ④).
-      expect(
-        find.descendant(of: find.byKey(const Key('hud.gauge')), matching: find.byKey(const Key('fun.sea.goldfish'))),
-        findsOneWidget,
-      );
+      // 현상금 중엔 띠 안 꼬리표(돌발 이벤트 등)를 빼고 현상금 글 + 후퇴만(사용자 2026-10-18).
+      expect(find.byKey(const Key('fun.sea.goldfish')), findsNothing);
+      expect(find.byKey(const Key('scene.retreat')), findsOneWidget);
     });
   }
 

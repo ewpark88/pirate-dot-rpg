@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/ui/back_to_exit.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/dock/dock_panels.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
@@ -31,8 +32,8 @@ import 'package:pirate_dot/ui/summon/summon_gate.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 한 화면 (사용자 결정 2026-10-15 ‘도크 + 끌어올리는 시트’): 평소엔 전투가 상단 바 아래 화면 전체,
-/// 아래 엄지 자리에 도크(아이콘 4개 + 빠른 강화). 아이콘을 누르면 그 패널이 아래에서 올라와 화면 절반(끌면 거의 전체).
-/// 같은 아이콘·아래로 끌기·전투 영역 탭·뒤로 가기 = 닫기, 다른 아이콘 = 패널만 교체. 탭 4개 고정(설계서 4.9).
+/// 아래 엄지 자리에 도크(아이콘 4개 + 빠른 강화). 아이콘 = 그 패널이 올라와 화면 절반(끌면 거의 전체). 같은 아이콘·아래로 끌기·
+/// 전투 영역 탭·뒤로 = 닫기(닫을 게 없으면 두 번 눌러 종료), 다른 아이콘 = 패널만 교체. 탭 4개 고정(설계서 4.9).
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -143,9 +144,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               child: ShipLookCelebrationGate(
                 child: FleetRejectedToast(
                   child: PopScope(
-                    canPop: false, // 뒤로 가기 = 시트 닫기 (열려 있을 때)
+                    canPop: false, // 뒤로 가기 = 시트 닫기 (열려 있을 때), 아니면 두 번 눌러 종료
                     onPopInvokedWithResult: (didPop, _) {
-                      if (!didPop && _open) _close();
+                      if (!didPop) _open ? _close() : backToExit(context, ref);
                     },
                     child: Scaffold(
                       body: SafeArea(
@@ -182,7 +183,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     final sheetH = _sheet.value * body.maxHeight;
     // 전장 상자는 시트(열림)나 도크(닫힘) 위에서 끝난다 — 렌더가 받은 상자를 채우므로 선원 줄·궁극기가 늘 그 바로 위에 붙는다.
     final battleBottom = math.max(sheetH, kDockHeight);
-    final top = BattleTopStrip(tutorial: tutorial, sheetOpen: _open);
+    final top = BattleTopStrip(tutorial: tutorial, sheetOpen: _open, sheetTab: _tab);
     return Stack(
       children: [
         Positioned(
@@ -243,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   Widget _sheetPanel(BuildContext context) => Align(
     alignment: Alignment.bottomCenter,
     child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: _sheetMaxWidth),
+      constraints: const BoxConstraints(maxWidth: sheetMaxWidth),
       child: DecoratedBox(
         decoration: const BoxDecoration(
           color: Skin.sky,
@@ -295,6 +296,3 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
 
 /// 시트 내용이 넘치지 않는 최소 높이(dp): 손잡이 + 도크 + 탭 내용 조금.
 const double _sheetMinContent = 6 + 5 + kDockHeight + 48;
-
-/// 시트 최대 폭(dp) — 태블릿에서 가운데.
-const _sheetMaxWidth = 720.0;

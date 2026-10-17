@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
+import 'package:pirate_dot/adapters/save_transfer.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
@@ -11,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
+import 'package:pirate_dot/ui/settings/save_transfer_section.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -152,6 +154,13 @@ class SettingsScreen extends ConsumerWidget {
                       showSkinToast(context, l10n.uiSettingsGuideReplayDone);
                     },
                   ),
+                  // 세이브 옮기기(기기 교체 — 가져오기가 되는 빌드만).
+                  if (ref.watch(saveImportProvider) != null)
+                    _Group(
+                      key: const Key('settings.save'),
+                      title: l10n.uiSaveTitle,
+                      child: const SaveTransferSection(),
+                    ),
                   // 도움말: 큰 수 단위 (계획 E11).
                   _Group(
                     key: const Key('settings.help'),
