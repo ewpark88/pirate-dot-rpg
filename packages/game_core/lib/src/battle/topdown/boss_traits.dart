@@ -33,8 +33,20 @@ extension BossTraits on Round {
     }
     final rf = def.trait('reflect');
     if (rf != null && ctx.tick < (e.traitTicks['reflectUntil'] ?? 0) && !rf.cfg.strs('bypass').contains(family)) {
-      if (!invincible) {
-        final hurt = field.hurtShip(amount.times(rf.cfg.number('ratio')), w.raw.number('shipHitCap'));
+      // 상한(maxShipHpPerSec, S2 2026-10-17): 초당 배 최대 체력의 그 비율까지 — 강한 함대가 한 틱에 여러 번 때려 8%씩 몰리던 것.
+      var dmg = amount.times(rf.cfg.number('ratio'));
+      final cap = rf.cfg.numberOr('maxShipHpPerSec', 0);
+      if (cap > 0) {
+        if (field.reflectTick != ctx.tick) {
+          field
+            ..reflectTick = ctx.tick
+            ..reflected = BigNum.zero;
+        }
+        dmg = BigNum.min(dmg, BigNum.max(BigNum.zero, field.shipHpMax.times(cap * dt) - field.reflected));
+        field.reflected = field.reflected + dmg;
+      }
+      if (!invincible && !dmg.isZero) {
+        final hurt = field.hurtShip(dmg, w.raw.number('shipHitCap'));
         ctx.emit(
           ShipDamaged(
             ctx.tick,
@@ -71,7 +83,12 @@ extension BossTraits on Round {
       final t = e.traitTicks;
       final rg = def.trait('regen');
       if (rg != null && !e.stunned && e.brokenUntil == 0 && e.burnTicks <= 0 && e.hp < e.maxHp) {
-        final hp = e.hp + e.maxHp.times(rg.cfg.number('perSec') * dt);
+        // fadeSec(선택): 보스전이 길어질수록 재생이 1 → 0으로 줄어든다 — 약한 함대(환생 직후 등)의 피해가 재생보다 작으면
+        // 시간 제한이 없어 끝나지 않던 보스전(실기기 6-2 해파리 여왕 9.97K/10.3K, 2026-10-17). 회복 총량은 perSec × fadeSec / 2.
+        final from = t['regenFrom'] ??= ctx.tick;
+        final fade = rg.cfg.numberOr('fadeSec', 0);
+        final k = fade <= 0 ? 1.0 : math.max(0, 1 - (ctx.tick - from) * dt / fade);
+        final hp = e.hp + e.maxHp.times(rg.cfg.number('perSec') * dt * k);
         e.hp = hp > e.maxHp ? e.maxHp : hp;
       }
       final rf = def.trait('reflect');

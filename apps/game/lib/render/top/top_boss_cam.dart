@@ -21,14 +21,15 @@ class TopBossCam {
   double _zoom = 1;
   double _cap = maxZoom;
   double _y = 0; // 보스전 배 화면 y(dp)
+  double _mx = 0; // 보스전 가로 가운데(카메라 점 기준 단위)
   bool _was = false;
   double _punchAt = -1000000000;
 
   /// 지금 줌(시험 — 역동성 회귀).
   double zoom = 1;
 
-  /// 이번 프레임 (줌, 배 화면 y 목표). [bossR] = 보스 그림 반지름(단위, TopEnemies.radiusOf).
-  (double, double) update(
+  /// 이번 프레임 (줌, 배 화면 y 목표, 화면 가로 기준점 옮김 dp). [bossR] = 보스 그림 반지름(단위, TopEnemies.radiusOf).
+  (double, double, double) update(
     BattleScene scene,
     TopFrame frame,
     double now,
@@ -46,7 +47,8 @@ class TopBossCam {
     var span = 0.0;
     var up = cam.dy - ship.dy + _shipR;
     var down = ship.dy - cam.dy + _shipR;
-    var side = (ship.dx - cam.dx).abs() + _shipR;
+    var left = ship.dx - cam.dx - _shipR; // 카메라 점 기준 배·보스 가로 끝
+    var right = ship.dx - cam.dx + _shipR;
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
       if (!e.boss) continue;
@@ -54,7 +56,8 @@ class TopBossCam {
       span = math.max(span, (ship.dy - e.drawY).abs() + r + 30);
       up = math.max(up, cam.dy - e.drawY + r + topPad);
       down = math.max(down, e.drawY - cam.dy + r);
-      side = math.max(side, (e.drawX - cam.dx).abs() + r + _sidePad);
+      left = math.min(left, e.drawX - cam.dx - r - _sidePad);
+      right = math.max(right, e.drawX - cam.dx + r + _sidePad);
     }
     final field = frame.fieldDp;
     final d = frame.dot;
@@ -72,12 +75,15 @@ class TopBossCam {
         0.05 * pulse(scene.topHits.muzzle.bossShotAt, 260) +
         0.12 * pulse(scene.topHits.breaks.brokenAt, 350);
     // 2. 상한: 안전 영역을 벗어나지 않는 최대 줌(줄일 땐 빠르게, 풀릴 땐 천천히)
-    // 배 화면 높이도 움직인다: 배·보스 쌍이 안전 영역 세로 가운데에 오게(배 55~82%) — 줌할 여유가 생기고 카메라가 산다.
+    // 배 화면 높이도 움직인다: 배·보스 쌍이 안전 영역 세로 가운데에 오게(배 50~86%) — 줌할 여유가 생기고 카메라가 산다.
     final safe = safeRect(scene, frame).deflate(6); // 돌진 출렁임·따라가기 지연 여유
-    final half = math.min(field.center.dx - safe.left, safe.right - field.center.dx);
+    // 가로도 배·보스 쌍의 가운데를 안전 영역 가운데로(S1 z02 '배·보스가 멀어 둘 다 작다') — 한쪽으로 몰려 줌을 못 쓰던 것.
+    if (dt > 0) _mx += ((left + right) / 2 - _mx) * math.min(1, dt / 350);
+    final side = math.max(right - _mx, _mx - left);
+    final half = safe.width / 2;
     final zv = safe.height / ((up + down) * d);
     final centred = safe.center.dy + (up - down) / 2 * d * zv;
-    final wantY = centred.clamp(field.top + field.height * 0.55, field.top + field.height * 0.82);
+    final wantY = centred.clamp(field.top + field.height * 0.5, field.top + field.height * 0.86);
     if (dt > 0) _y += (wantY - _y) * math.min(1, dt / 350);
     if (_y == 0) _y = wantY;
     var fit = maxZoom + 0.2;
@@ -87,10 +93,11 @@ class TopBossCam {
     if (dt > 0) _cap += (fit - _cap) * math.min(1, dt / (fit < _cap ? 40 : 300));
     final cap = math.min(_cap, fit + 0.02);
     // 보스전 줌 = 역동 줌 + 펀치, 상한(cap)으로 깎은 뒤 평소 ↔ 보스전 사이를 blend로 부드럽게(시작 때 툭 튀지 않게).
-    final target = math.min(_zoom + punch, math.max(cap, 0.6));
+    final target = math.min(_zoom + punch, math.max(cap, 0.45)); // 작은 폰·큰 띠에서도 잘리지 않게 0.45까지
     zoom = 1 + (target - 1) * blend;
     final y = frame.shipScreen.dy + (_y - frame.shipScreen.dy) * blend;
-    return (zoom, y);
+    final x = ((safe.center.dx - field.center.dx) - _mx * d * zoom) * blend; // 화면 가로 기준점 옮김(dp)
+    return (zoom, y, x);
   }
 
   /// 보스전 안전 영역(dp, 전장 상자 기준): 위 = UI가 잰 HUD 띠 아래 끝(BattleGame.hudTopDp) 또는 fx_map topCam.hudTopDp.

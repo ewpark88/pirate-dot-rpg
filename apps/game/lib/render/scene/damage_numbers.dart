@@ -54,6 +54,7 @@ class DamageNumbers {
   final int stackRows;
 
   final DamageNumberSpec spec;
+  final Map<int, BigNum> _bossMax = {};
   final Pool<DamageNumber> pool;
 
   List<DamageNumber> get active => pool.active;
@@ -64,6 +65,12 @@ class DamageNumbers {
   /// 3. 동시 상한을 넘으면 가장 오래된 둘을 하나로 합친다 → 합계 보존.
   /// [on] = 맞은 적의 지금 그림 자리 — 주면 숫자가 그 적을 따라간다.
   void add(BigNum amount, double x, double y, DamageKind kind, {int key = -1, EnemyPose? on}) {
+    // 보스에 뜬 작은 숫자(그 보스가 받은 가장 큰 타격의 1% 미만)는 생략 — 보스 위 잔숫자 뭉침(S1 z02). TOTAL엔 그대로 들어간다.
+    if (on != null && on.boss) {
+      final top = _bossMax[on.id];
+      if (top == null || amount > top) _bossMax[on.id] = amount;
+      if (top != null && amount < top.times(0.01)) return;
+    }
     final list = pool.active;
     if (key >= 0) {
       for (final n in list) {
@@ -233,5 +240,8 @@ class DamageNumbers {
 
   static const _shipColor = 0xFFFF5A5A;
 
-  void clear() => pool.clear();
+  void clear() {
+    pool.clear();
+    _bossMax.clear();
+  }
 }

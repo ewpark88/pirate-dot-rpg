@@ -41,6 +41,31 @@ class CrashTest(unittest.TestCase):
         self.assertEqual(dw.crash_lines(log), ["E AndroidRuntime: Process: repo.dot.pirate, PID 1"])
 
 
+MEMINFO = """
+ App Summary
+                       Pss(KB)                        Rss(KB)
+                        ------                         ------
+           Java Heap:    20480                          30000
+         Native Heap:   307200                         310000
+                Code:    51200                          90000
+               Stack:     1024                           1024
+            Graphics:   409600                         409600
+           TOTAL PSS:   800000            TOTAL RSS:   900000
+"""
+
+
+class MemTest(unittest.TestCase):
+    def test_parts(self):
+        self.assertEqual(dw.mem_parts(MEMINFO), {"java": 20.0, "native": 300.0, "gfx": 400.0, "code": 50.0})
+
+    def test_growth_warning(self):
+        base = {"front": True, "fps": 60, "p50": 16.7, "p95": 17.0, "max": 20.0, "over": 0.0, "hz": 60.0, "crash": []}
+        rows = [{**base, "time": "a", "pss": 600.0}, {**base, "time": "b", "pss": 12.0}, {**base, "time": "c", "pss": 950.0}]
+        self.assertIn("누수 의심", dw.report(rows, "x").split("| 시각")[0])
+        rows[-1]["pss"] = 700.0
+        self.assertNotIn("누수 의심", dw.report(rows, "x"))
+
+
 class ReportTest(unittest.TestCase):
     def test_warnings_on_top(self):
         rows = [
