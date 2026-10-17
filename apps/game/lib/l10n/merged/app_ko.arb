@@ -2467,5 +2467,17 @@
         "type": "String"
       }
     }
+  },
+  "uiWeakFleet": "약점 편성",
+  "uiWeakFleetSame": "이미 약점 편성이에요",
+  "uiWeakFleetDone": "약점 계열로 편성했어요!",
+  "uiWeakBadge": "약점!",
+  "uiNextBoss": "다음 보스: {name}",
+  "@uiNextBoss": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

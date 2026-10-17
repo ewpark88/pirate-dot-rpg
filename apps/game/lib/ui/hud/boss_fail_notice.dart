@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/crew/weak_fleet.dart' show weakFleetWithFeedback;
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -133,6 +134,20 @@ class _Card extends ConsumerWidget {
     );
     final ship = go('bossFail.ship', l10n.uiBossFailShip, shipTabIndex, SkinTone.gold);
     final crew = go('bossFail.crew', l10n.uiBossFailCrew, crewTabIndex, SkinTone.gold);
+    // 약점 계열 우선 편성을 바로(S1 2026-10-18) — 선원 탭을 열어 바뀐 편성을 보여 준다.
+    final weak = Expanded(
+      child: SkinButton(
+        key: const Key('bossFail.weak'),
+        tone: SkinTone.gold,
+        height: 44,
+        onPressed: () {
+          weakFleetWithFeedback(context, ref);
+          ref.read(dockTabRequestProvider.notifier).open(crewTabIndex);
+          onClose();
+        },
+        child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiWeakFleet, maxLines: 1)),
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 0),
       child: Align(
@@ -175,13 +190,19 @@ class _Card extends ConsumerWidget {
                 if (detailed) ...[
                   Row(children: [ship, const SizedBox(width: 8), crew]),
                   const SizedBox(height: 8),
-                  SizedBox(width: double.infinity, child: challenge),
+                  Row(
+                    children: [
+                      weak,
+                      const SizedBox(width: 8),
+                      Expanded(child: challenge),
+                    ],
+                  ),
                 ] else
                   Row(
                     children: [
                       ship,
                       const SizedBox(width: 6),
-                      crew,
+                      weak,
                       const SizedBox(width: 6),
                       Expanded(child: challenge),
                     ],

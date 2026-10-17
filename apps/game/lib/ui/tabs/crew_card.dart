@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/level_up_fx.dart';
+import 'package:pirate_dot/ui/crew/weak_fleet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -114,6 +115,9 @@ class CrewCard extends ConsumerWidget {
                       ),
                     ),
                   ),
+                // 다음 보스 약점 계열이면 '약점!' 금빛 배지(카드 배지 아래 오른쪽).
+                if (owned && ref.watch(weakFamiliesProvider).contains(def.family))
+                  Positioned(right: -4, top: 26, child: WeakBadge(key: Key('crew.weak.${def.id}'))),
                 if (_atGate.contains(status))
                   Positioned(
                     right: -4,
