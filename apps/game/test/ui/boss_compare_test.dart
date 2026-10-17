@@ -17,7 +17,6 @@ void main() {
     final v = bossCompareOf(farming, t)!;
     final p = bossPreview(farming, t);
     expect(v.killSec, (p.maxHp / fleetPower(farming, t).dps).toDouble().ceil());
-    expect(v.limitSec, p.timeLimitSec.ceil());
     final cap = t.waves.raw.number('shipHitCap');
     final raw = (p.attack / farming.battle!.shipHpMax).toDouble();
     expect(v.hitPct, ((raw < cap ? raw : cap) * 100).ceil(), reason: '한 대 상한(shipHitCap) 넘게 보이지 않는다');
@@ -29,7 +28,7 @@ void main() {
     await pumpGame(tester, s, openTab: false);
     final v = bossCompareOf(s.copyWith(clearTutorial: true), t)!;
     expect(find.byKey(Key('boss.compare.${v.level}')), findsOneWidget);
-    expect(find.textContaining('Boss HP'), findsOneWidget);
+    expect(find.textContaining('Down in'), findsOneWidget);
     // 게이지 안(다음 목표 자리) — 높이를 늘리지 않는다.
     final gauge = tester.getRect(find.byKey(const Key('hud.gauge')));
     expect(gauge.contains(tester.getCenter(find.byKey(Key('boss.compare.${v.level}')))), isTrue);

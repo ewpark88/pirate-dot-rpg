@@ -28,7 +28,7 @@ const guideIds = [
 /// 카드마다 가리킬 곳(TutorialSpot id).
 const guideSpots = {
   'guide.sail': ['sail.start'],
-  'guide.boss': ['boss.gauge', 'boss.timer'],
+  'guide.boss': ['boss.gauge', 'boss.hp'],
   'guide.fever': ['fever.meter'],
   'guide.chest': ['chest'],
   'guide.newCrew': ['tab.crew'],

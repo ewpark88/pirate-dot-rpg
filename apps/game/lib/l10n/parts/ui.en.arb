@@ -214,7 +214,6 @@
   "uiFarmingRetry": "Farming · boss retry ready",
   "uiPower": "Attack / sec",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}s",
   "uiMult": "×{n}",
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
@@ -634,7 +633,7 @@
   "uiGuideStep6Title": "You're all set!",
   "uiGuideStep6Why": "Gold piles up even when the app is closed. Follow the goal at the top.",
   "uiGuideBossTitle": "Boss fight",
-  "uiGuideBossWhy": "Orange bar = time left. Fill the BREAK bar below to knock the boss down for big damage!",
+  "uiGuideBossWhy": "Red bar = boss HP. Fill the BREAK bar below to knock the boss down for big damage!",
   "uiGuideFeverTitle": "Fever!",
   "uiGuideFeverWhy": "Enough defeats power everyone up for a moment, and the first strike sweeps the screen.",
   "uiGuideChestTitle": "Treasure chest",
@@ -687,19 +686,13 @@
   },
   "uiGuideSailTitle": "Set sail!",
   "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared.",
-  "uiBossCompare": "Boss HP {hp} · ~{kill}s / {limit}s · hit {hit}%",
+  "uiBossCompare": "Down in ~{kill}s · hit {hit}%",
   "uiBossCompareEasy": "Easy",
   "uiBossCompareTight": "Close",
   "uiBossCompareHard": "Tough",
   "@uiBossCompare": {
     "placeholders": {
-      "hp": {
-        "type": "String"
-      },
       "kill": {
-        "type": "int"
-      },
-      "limit": {
         "type": "int"
       },
       "hit": {
