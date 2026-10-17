@@ -578,3 +578,10 @@
 
 - 6148b32c 보스 공격 예고 다듬기(boss-dodge 선합침 위: 부채꼴·장판·화살 띠·시간 막대·homing 조준·MISS!). 골든 5장은 다음 A줄.
 - f7877a56 피버 진입·끝 연출(FEVER! 날아감·FEVER END·바다 복귀 0.6초). 골든 3장은 A줄.
+- ef572604 A줄 골든 일괄(main 보스 18종 + boss-dodge 위, 17장). 남은 문제: 빠른 check는 boss-dodge main 전이라 소유권만 걸림.
+- 47beafc4 선원 발사체 몸통 HD v2(TopShotBody, 계열 11 × 등급). 계열 골든은 다음 A줄.
+- f57711df 잡몹 종류별 처치 연출(7유형). 장면 골든은 다음 A줄.
+- d7dc0b00 새 보스 18종 특성 표식(TopBossSignature). 특성 골든 3장은 A줄(발사체 몸통 차이).
+- c4bfc8f8 폰트 서브셋(9.7→2.9MB, 원본 tools/art/fonts_src). Jua 힌팅 제거는 보류.
+- fc28af91 배 스킨 12종 HD v2 고유 장식 + 유료 반짝.
+- ea0874d0 배 피격·위기 연출(파편·연기·불꽃·붉은 맥박·회복 반짝).

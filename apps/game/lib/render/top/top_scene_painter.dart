@@ -220,7 +220,7 @@ class TopScenePainter {
       c.restore();
     }
     atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
-    if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
+    _overlays.world(c, viewRect, clockMs, _shipR, fever: view.feverTicksLeft > 0); // 피버 금화 비·배 피격·위기
     c.restore();
     _overlays.paint(c, frame.box, clockMs);
     fever

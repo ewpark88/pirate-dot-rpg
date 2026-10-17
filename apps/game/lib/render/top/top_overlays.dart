@@ -5,9 +5,11 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
+import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
+import 'package:pirate_dot/render/top/top_ship_damage.dart';
 
 /// 탑다운 피버·폭풍 덮개 (지루함 해소 3종): 피버 금화 비(전장 좌표)와 상자 dp 위 시작 번쩍·번개(테두리는 UI).
 class TopOverlays {
@@ -19,6 +21,22 @@ class TopOverlays {
 
   late final JsonReader _fever = scene.fx.raw.obj('topEvents').obj('fever');
   late final Color _feverColor = Color(parseArgb(_fever.str('border'), 'topEvents.fever.border'));
+
+  final _damage = TopShipDamage();
+
+  /// 전장 좌표 덮개(배 위): 피버 금화 비 + 배 피격 파편·위기 연기·불꽃·회복 반짝(침몰 중엔 침몰 연출만). [shipR] = 선체 반폭.
+  void world(Canvas c, Rect view, double ms, double shipR, {required bool fever}) {
+    if (fever) feverCoins(c, view, ms);
+    if (scene.moments.sinkMs > 0) return;
+    _damage.paint(
+      c,
+      scene.topShip,
+      shipR * 0.6,
+      scene.shipHpRatio,
+      ms,
+      lite: scene.topHits.lite || scene.settings.powerSave,
+    );
+  }
 
   /// 피버 금화 비: 보이는 영역 위에서 결정론적 자리로 떨어지며 회전(절전이면 반).
   void feverCoins(Canvas c, Rect view, double ms) {
@@ -140,6 +158,11 @@ class TopOverlays {
       edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
     _feverWord(c, box);
+    // 배 체력 25% 아래: 화면 가장자리 붉은 맥박(가볍게 — 가운데는 비움).
+    final red = TopShipDamage.edge(scene.shipHpRatio, ms);
+    if (red > 0 && scene.moments.sinkMs <= 0) {
+      edgeVignette(c, Offset.zero & box, const Color(0xFFFF2A1E), 0.1 + 0.08 * red);
+    }
     _entryDim(c, box);
     _tower(c, box);
     _bossTotal(c, box);

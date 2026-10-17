@@ -55,7 +55,7 @@ extension _EnemyTransitions on TopEnemies {
     if (!lite) {
       for (final MapEntry(:key, :value) in last.entries) {
         if (_seen.containsKey(key) || _dying.length >= 24) continue;
-        _dying.add((value.$1, value.$2, value.$3, value.$4, clock));
+        _dying.add((value.$1, value.$2, value.$3, value.$4, clock, value.$5));
       }
     }
     last
@@ -66,16 +66,24 @@ extension _EnemyTransitions on TopEnemies {
       _right.removeWhere((id, _) => !_born.containsKey(id));
     }
     if (under) return;
-    _dying.removeWhere((d) => clock - d.$5 > TopEnemies._dieMs);
-    for (final (spr, tx, ty, rot, at) in _dying) {
-      final t = (clock - at) / TopEnemies._dieMs;
-      c
-        ..save()
-        ..translate(tx, ty)
-        ..rotate(rot)
-        ..scale(1.25 + 0.35 * t, math.max(0.05, 0.65 * (1 - t)));
-      _draw(c, spr, t < 0.45 ? _flashPaint : _atlasPaint);
-      c.restore();
+    _dying.removeWhere((d) => clock - d.$5 > TopEnemyDeath.ms);
+    // 종류별 처치 연출(S1, TopEnemyDeath) — 붐빔이면 공용 펑(찌그러짐).
+    final crowd = scene.topHits.juice.crowd;
+    for (final (spr, tx, ty, rot, at, kind) in _dying) {
+      final t = (clock - at) / TopEnemyDeath.ms;
+      final type = crowd ? DeathType.pop : TopEnemyDeath.typeOf(kind);
+      final size = spr.src.width * spr.scale;
+      final (dx, dy, sx, sy, turn, alpha) = TopEnemyDeath.pose(type, t);
+      if (alpha > 0) {
+        c
+          ..save()
+          ..translate(tx + dx * size, ty + dy * size)
+          ..rotate(rot + turn)
+          ..scale(sx, sy);
+        _draw(c, spr, t < 0.15 ? _flashPaint : (_death.fade..color = Color.fromRGBO(255, 255, 255, alpha.clamp(0, 1))));
+        c.restore();
+      }
+      if (!crowd) _death.particles(c, type, Offset(tx, ty), t, size, at.toInt() ^ tx.toInt());
     }
     _rings.removeWhere((r) => clock - r.$3 > 300);
     for (final (x, y, at) in _rings) {
