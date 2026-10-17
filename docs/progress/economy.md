@@ -13,6 +13,7 @@
 ### 2026-10-17 밤 전 · S2 · 개편 지원·남은 경제
 - main에 들어감: PB UI 키트(075fec44 — SVG를 직접 그리는 tools/art/gen_ui_kit.py), 화면 목록표(→ design-kungfu-screens.md), 테두리 숫자 아틀라스·로더(f5539bf9), OutlineText(5f52acd1 — S4가 테 층 RichText로 고침), crew-role-2(0ee0344e), 첫 전설 유예 스테이지 45(bb2d23c0), 설계서 동기화(84f27f57).
 - 대기: review/ship-skins f896091a(S3 v3 그림과 한 run으로).
+- k2 창 3개(설정·현상금·빠른 항해 끝) review/k-windows-s2 6e41a306(S4 검토) · HD 몬스터 설계 노트 B 7bc163de(화산·심연·유령 14장, S3 도구 오면 그림).
 - 실수 기록: 겹쳐 그린 Text 두 개가 find.text를 2개로 만들어 UI 시험을 깨뜨림 → 테 층은 RichText, 그림 숫자엔 투명 Text(메모리 layered-text-widgets).
 
 ### 2026-10-17 저녁 · S2 · 재개 지점(디자인 개편으로 멈춤)
