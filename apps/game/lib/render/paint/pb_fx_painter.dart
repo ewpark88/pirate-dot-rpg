@@ -9,6 +9,7 @@ import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/paint/trail_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/motion.dart';
+import 'package:pirate_dot/render/top/top_shot_body.dart';
 
 /// Pirate Busters 그림으로 그리는 발사체·폭발 (사용자 지시 '폭탄 퀄리티', fx_map `pbFx`).
 /// - 발사체: 선원별 무기 그림(`weapon:<crewId>`). 투척·물수제비·낙하는 돌며 날고, 직선은 진행 방향을 보며 꼬리 잔상.
@@ -91,11 +92,32 @@ class PbFxPainter {
     // 타격감 v3: 폭탄 15% 크게 + 착탄 직전(마지막 15%) 원근으로 15% 더 커짐.
     final near = p.progress > 0.85 ? (p.progress - 0.85) / 0.15 : 0.0;
     final grow = (1 + 0.45 * lift) * (1 + 0.35 * fever) * 1.15 * (1 + 0.15 * near);
-    // 등급 꼬리(영웅·전설·신화) 먼저, 피버면 불 꼬리를 더한다(S1).
-    _trails.paint(c, p, size);
-    if (fever > 0) _fireTail(c, p, size, height);
+    // 등급 꼬리(영웅·전설·신화) 먼저, 피버면 불 꼬리를 더한다(S1). 붐빔(lite)이면 꼬리 생략(부하, S1 발사체 v2).
+    final crowd = scene.topHits.lite;
+    if (!crowd) _trails.paint(c, p, size);
+    if (fever > 0 && !crowd) _fireTail(c, p, size, height);
     final turn = p.progress * _spinTurns * 2 * math.pi;
-    final angle = p.style.path == ProjectilePath.line ? math.atan2(p.toY - p.fromY, p.toX - p.fromX) : turn;
+    final heading = math.atan2(p.toY - p.fromY, p.toX - p.fromX);
+    final angle = p.style.path == ProjectilePath.line ? heading : turn;
+    if (TopShotBody.has(p.family)) {
+      // 발사체 몸통 HD v2(S1): 계열별 벡터 몸통, 등급이 높을수록 크고 빛 무리. 곡사(포탄·집속)는 연기 꼬리.
+      final rarity = _trails.rarityOf(p.crewId);
+      final at = Offset(p.x, p.y - height * 0.35);
+      if (!crowd && (p.family == 'lob' || p.family == 'cluster')) _smoke(c, p, size);
+      _body.paint(
+        c,
+        p.family,
+        at,
+        size * grow * 0.5 * TopShotBody.scaleOf(rarity),
+        heading,
+        turn * (p.toX >= p.fromX ? 1 : -1),
+        p.progress,
+        scene.clockMs,
+        rarity,
+        lite: crowd || scene.settings.powerSave,
+      );
+      return true;
+    }
     // 굵은 윤곽: 폭탄 뒤 진한 그림자 원(바다·폭발 위에서도 형태가 읽히게).
     _fire.color = const Color(0x881E1A26);
     c.drawCircle(Offset(p.x, p.y - height * 0.35), size * grow * 0.5, _fire);
@@ -104,6 +126,18 @@ class PbFxPainter {
   }
 
   final _fire = Paint()..isAntiAlias = false;
+  final _body = TopShotBody();
+
+  /// 곡사 연기 꼬리: 지나온 자리에 회색 연기 셋이 커지며 옅어진다.
+  void _smoke(Canvas c, Projectile p, double size) {
+    for (var k = 1; k <= 3; k++) {
+      final t = p.progress - k * 0.06;
+      if (t <= 0) continue;
+      final (x, gy) = positionAt(p, t);
+      _fire.color = Color.fromRGBO(230, 230, 236, 0.5 - k * 0.13);
+      c.drawCircle(Offset(x, gy - heightAt(p, t) * 0.35), size * (0.25 + 0.12 * k), _fire);
+    }
+  }
 
   /// 피버 불 꼬리: 날아온 쪽으로 주황·노랑 불덩이 4개가 작아지며 흐려진다.
   void _fireTail(Canvas c, Projectile p, double size, double height) {
