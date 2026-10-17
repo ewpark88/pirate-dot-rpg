@@ -113,10 +113,19 @@ class HdSheets {
   void step(double density) {
     _frame++;
     _reap();
-    if (_queue.isEmpty || density <= 0) return;
+    // 콜드 스타트(S5 첫 프레임 2초): 첫 프레임은 굽지 않고(도트로), 그 뒤 프레임마다 한 종씩만 — 굽기가 첫 프레임에 몰리지 않게.
+    _paced = true;
+    _bakeBudget = _frame <= 1 ? 0 : 1;
+    // 미리 굽기 줄은 둘째 프레임부터 프레임당 한 종(화면에 보이는 종 몫 1과 따로).
+    if (_frame <= 2 || _queue.isEmpty || density <= 0) return;
     final (kind, boss, world) = _queue.removeAt(0);
+    _bakeBudget++;
     sheet(kind, boss: boss, world: world, density: density);
   }
+
+  // 프레임 단위 굽기 상한: step()이 한 번이라도 불리면(전장) 켜진다 — 도구·시험이 바로 부를 땐 제한 없음.
+  bool _paced = false;
+  int _bakeBudget = 0;
 
   /// 남은 미리 굽기 수(시험).
   int get queued => _queue.length;
@@ -131,6 +140,8 @@ class HdSheets {
     _used[key] = ++_tick;
     final have = _ready[key];
     if (have != null) return have;
+    if (_paced && _bakeBudget <= 0) return null; // 이번 프레임 굽기 다 씀 — 다음 프레임에(그동안 도트)
+    _bakeBudget--;
     final sheet = bake(
       sp,
       world,

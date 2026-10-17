@@ -16,7 +16,7 @@ extension _EnemyTransitions on TopEnemies {
   /// 보스 체력 층이 깨지면(TopBreak.track — 기본 3층) '부서짐': 조각 터짐·흔들림. 깨진 뒤 지난 ms(없으면 큰 값).
   double _crack(EnemyPose e, double clock) {
     final breaks = scene.topHits.breaks;
-    if (breaks.track(e.id, e.hpRatio, clock)) {
+    if (breaks.track(e.id, e.hpRatio, clock, e.bossBars)) {
       scene.topHits.shatter.burst(
         clock,
         Offset(e.drawX, e.drawY),

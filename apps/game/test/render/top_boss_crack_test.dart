@@ -17,8 +17,8 @@ void main() {
   testWidgets('보스 체력 층이 깨질 때마다 부서짐', (tester) async {
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     final base = topRecording(tables, ticks: 200, stage: 120, bossAt: 5);
-    // 보스 체력을 틱 60에 0.8, 100에 0.6(3층 → 2층)으로
-    double hp(int i) => i < 60 ? 1.0 : (i < 100 ? 0.8 : 0.6); // 3층: 1.0·0.8은 3층, 0.6은 2층
+    // 보스 체력을 틱 60에 0.8, 100에 0.6(5층 → 4층)으로
+    double hp(int i) => i < 60 ? 1.0 : (i < 100 ? 0.85 : 0.7); // 5층(스테이지 120): 1.0·0.85는 5층, 0.7은 4층
     final rec = [
       for (final (i, t) in base.indexed)
         RecordedTick(

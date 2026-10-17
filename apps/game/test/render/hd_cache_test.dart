@@ -69,4 +69,16 @@ void main() {
     expect(s.sheet('crab', boss: false, world: 31, density: 4)!.hits, isFalse);
     s.dispose();
   });
+
+  test('콜드 스타트: 전장(step)에선 첫 프레임 굽기 0·그 뒤 프레임당 한 종(그동안 null → 도트)', () {
+    final s = HdSheets()..step(4); // 첫 프레임
+    expect(s.sheet('crab', boss: false, world: 31, density: 4), isNull);
+    s.step(4); // 둘째 프레임: 한 종만
+    expect(s.sheet('crab', boss: false, world: 31, density: 4), isNotNull);
+    expect(s.sheet('jelly', boss: false, world: 31, density: 4), isNull);
+    s.step(4);
+    expect(s.sheet('jelly', boss: false, world: 31, density: 4), isNotNull);
+    expect(s.sheet('crab', boss: false, world: 31, density: 4), isNotNull, reason: '구운 것은 그대로');
+    s.dispose();
+  });
 }
