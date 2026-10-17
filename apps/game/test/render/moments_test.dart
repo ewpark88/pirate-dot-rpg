@@ -90,4 +90,14 @@ void main() {
     expect(s.numbers.active, isEmpty);
     expect(_play([for (var t = 0; t < 10; t++) _at(t, 50)], tickMs * 3).effects.active, isEmpty);
   });
+
+  test('보스 러시 띠: 시작 BOSS RUSH 1/5 → 다음 번호 짧게 → 마지막 앞 붉은 LAST BOSS!', () {
+    final m = BattleScene(tables, null).moments..onRushStarted(5); // 라이브 모드(기록 없음)
+    expect((m.bannerText, m.bannerSub), ('BOSS RUSH', '1/5'));
+    m.onRushBossDown(0);
+    expect((m.bannerText, m.bannerSub, m.bannerHot), ('2/5', 'NEXT!', false));
+    m.onRushBossDown(3);
+    expect((m.bannerText, m.bannerSub, m.bannerHot), ('LAST BOSS!', '5/5', true));
+    expect(m.bannerTotal, greaterThan(2000), reason: '마지막 보스 띠는 길게');
+  });
 }

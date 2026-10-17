@@ -271,3 +271,17 @@ class TowerView {
 
   Json toJson() => {'floor': floor, 'wave': wave, 'waves': waves};
 }
+
+/// 보스 러시 진행(HUD '보스 3/5 · 1:42'): 지금 보스(0부터)·전체 수·지난 틱.
+class RushView {
+  const RushView({required this.index, required this.total, required this.ticks});
+
+  factory RushView.fromJson(Json j) =>
+      RushView(index: j['index'] as int, total: j['total'] as int, ticks: j['ticks'] as int);
+
+  final int index;
+  final int total;
+  final int ticks;
+
+  Json toJson() => {'index': index, 'total': total, 'ticks': ticks};
+}

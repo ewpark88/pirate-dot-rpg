@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
-import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
@@ -33,22 +32,20 @@ class TopOverlays {
   final _flashPaint = Paint();
   final _label = TopLabel();
 
-  /// 심연의 탑 층 띠: 화면 가운데 보라 띠가 펼쳐졌다 접히며 큰 '12F'(클리어면 위에 작은 CLEAR!).
+  /// 큰 띠(심연의 탑 '12F'·보스 러시): 화면 가운데 보라(마지막 보스면 붉은) 띠가 펼쳐졌다 접히며 큰 글자 + 위 작은 글자.
   void _tower(Canvas c, Size box) {
     final m = scene.moments;
-    if (m.towerMs <= 0) return;
-    final t = 1 - m.towerMs / Moments.towerShowMs;
+    if (m.bannerMs <= 0) return;
+    final t = 1 - m.bannerMs / m.bannerTotal;
     final open = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1.0);
     final h = box.height * 0.085 * open;
     final cy = box.height * 0.36;
     _flashPaint.shader = Gradient.linear(
       Offset(0, cy - h),
       Offset(0, cy + h),
-      const [
-        Color(0xEE2A1450),
-        Color(0xEE5A2A8A),
-        Color(0xEE2A1450),
-      ],
+      m.bannerHot
+          ? const [Color(0xEE5A0A14), Color(0xEEB02A2A), Color(0xEE5A0A14)]
+          : const [Color(0xEE2A1450), Color(0xEE5A2A8A), Color(0xEE2A1450)],
       const [0, 0.5, 1],
     );
     c.drawRect(Rect.fromLTRB(0, cy - h, box.width, cy + h), _flashPaint);
@@ -59,11 +56,12 @@ class TopOverlays {
       ..drawRect(Rect.fromLTRB(0, cy + h - 2, box.width, cy + h), _flashPaint);
     if (open < 0.6) return;
     final pop = t < 0.25 ? 0.6 + 0.4 * (t - 0.15) / 0.1 : 1.0;
-    _label.draw(c, '${m.towerFloor}F', Offset(box.width / 2, cy + box.height * 0.01), box.height * 0.1 * pop);
-    if (m.towerClear) {
+    final big = m.bannerText.length > 5 ? 0.065 : 0.1; // 긴 글자(BOSS RUSH)는 작게
+    _label.draw(c, m.bannerText, Offset(box.width / 2, cy + box.height * 0.01), box.height * big * pop);
+    if (m.bannerSub.isNotEmpty) {
       _label.draw(
         c,
-        'CLEAR!',
+        m.bannerSub,
         Offset(box.width / 2, cy - h * 1.25),
         box.height * 0.035,
         color: const Color(0xFF7AFFB0),
