@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
+import 'package:pirate_dot/render/top/top_boss_traits.dart';
 
 /// 선원 특성 연출 (S2 crew-traits, 사용자 2026-10-17): 엔진은 새 이벤트 없이 같은 선원의 Damage를 순서대로 낸다.
 /// - 연쇄 번개(arc.counts, pelly): 한 틱 그 선원의 맞은 적들을 순서대로 지그재그 번개가 50ms씩 튐 — 등급별 색·굵기, 마지막 적 작은 폭발.
@@ -19,6 +20,9 @@ class TopTraits {
 
   LegendDef? legendOf(String crewId, int rarity) =>
       _cache.putIfAbsent((crewId, rarity), () => _t.skills.legendFor(crewId, rarity, _legendRarity));
+
+  /// 보스 특성(회피·장갑·재생·반사막·분노·호위·가속).
+  late final bossFx = TopBossTraits(_t);
 
   final List<_Chain> _chains = [];
   final List<(Offset, double, bool)> _bursts = []; // 자리, ms, 처형(아니면 충전)
@@ -43,6 +47,7 @@ class TopTraits {
 
   /// 한 틱의 Damage들을 보고 연쇄·처형·충전을 찾는다.
   void onTick(RecordedTick tick, int index, RecordingPlayer player, double now) {
+    bossFx.onTick(tick, index, player, now);
     final byCrew = <String, List<Damage>>{};
     for (final e in tick.events) {
       if (e is Damage && e.crewId != null) (byCrew[e.crewId!] ??= []).add(e);
@@ -84,6 +89,7 @@ class TopTraits {
   }
 
   void clear() {
+    bossFx.clear();
     _chains.clear();
     _bursts.clear();
   }
