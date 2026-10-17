@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/press_feel.dart' show PressWeight;
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -179,6 +180,7 @@ class _SummonButton extends StatelessWidget {
     child: PixelButton(
       key: buttonKey,
       primary: true,
+      weight: PressWeight.heavy,
       onPressed: onPressed,
       child: Column(
         mainAxisSize: MainAxisSize.min,

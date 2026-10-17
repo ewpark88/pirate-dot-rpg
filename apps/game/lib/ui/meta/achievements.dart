@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart' show TutorialSpot;
 
 // 업적 (S1 2026-10-18 업적·칭호 정리 — 계약 요청 docs/contracts/requests/ui-achievements.md, S2 구현 전):
 // 항해 탭 칭호 띠 옆 '업적' 버튼(받을 것 빨간 점) → 시트: 아이콘 · 이름 · 단계 별 · 진행 막대(값/다음 목표) · [받기 +n젬] / 완료.
@@ -69,37 +70,40 @@ class AchievementsButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final n = ref.watch(achievementsClaimableProvider);
-    return PixelDot(
-      dotKey: const Key('ach.dot'),
-      show: n > 0,
-      count: n,
-      // 작은 알약(칭호 띠 옆 한 줄) — 누르는 칸은 48dp.
-      child: Semantics(
-        button: true,
-        label: AppLocalizations.of(context).uiAchTitle,
-        excludeSemantics: true,
-        child: GestureDetector(
-          key: const Key('ach.open'),
-          behavior: HitTestBehavior.opaque,
-          onTap: () =>
-              unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const AchievementsSheet())),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 48),
-            alignment: Alignment.center,
+    return TutorialSpot(
+      id: 'ach.open',
+      child: PixelDot(
+        dotKey: const Key('ach.dot'),
+        show: n > 0,
+        count: n,
+        // 작은 알약(칭호 띠 옆 한 줄) — 누르는 칸은 48dp.
+        child: Semantics(
+          button: true,
+          label: AppLocalizations.of(context).uiAchTitle,
+          excludeSemantics: true,
+          child: GestureDetector(
+            key: const Key('ach.open'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () =>
+                unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const AchievementsSheet())),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Skin.cream,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SkinIcon(UiSprites.trophy, size: 20),
-                  const SizedBox(width: 4),
-                  Text(AppLocalizations.of(context).uiAchTitle, style: Skin.bold(13)),
-                ],
+              constraints: const BoxConstraints(minHeight: 48),
+              alignment: Alignment.center,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Skin.cream,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SkinIcon(UiSprites.trophy, size: 20),
+                    const SizedBox(width: 4),
+                    Text(AppLocalizations.of(context).uiAchTitle, style: Skin.bold(13)),
+                  ],
+                ),
               ),
             ),
           ),

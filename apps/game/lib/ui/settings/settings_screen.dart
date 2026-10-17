@@ -10,11 +10,11 @@ import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
 import 'package:pirate_dot/ui/settings/about_section.dart';
+import 'package:pirate_dot/ui/settings/help_section.dart';
 import 'package:pirate_dot/ui/settings/save_transfer_section.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
@@ -176,15 +176,8 @@ class SettingsScreen extends ConsumerWidget {
                         child: Text(l10n.opOpenPanel),
                       ),
                     ),
-                  // 도움말: 큰 수 단위 (계획 E11).
-                  _Group(
-                    key: const Key('settings.help'),
-                    title: l10n.uiSettingsHelp,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(l10n.uiNumberUnits, style: const TextStyle(color: PixelPalette.textDim)),
-                    ),
-                  ),
+                  // 도움말: 새 시스템 짧은 설명(S1 2026-10-18) + 큰 수 단위(계획 E11).
+                  _Group(key: const Key('settings.help'), title: l10n.uiSettingsHelp, child: const HelpSection()),
                 ],
               ),
             ),
