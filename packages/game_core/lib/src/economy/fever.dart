@@ -29,7 +29,8 @@ double feverDamageBonus(GameState s, GameTables t) =>
 double feverGoldMultiplier(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('goldMultiplier') : 1;
 
-/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16 처치 수 기준, 피드백 #2 2026-10-17 '초반 200 → 점점 늘려 최대 1000').
+/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16 처치 수 기준, 피드백 #2 2026-10-17 '초반 200 → 점점 늘려 최대 1000',
+/// 같은 날 사용자 변경: 몬스터 ×1.3에 맞춰 260 → 1300).
 /// 스테이지 1에서 killsStart, killsRampStage까지 곧게 늘어 killsMax. 환생하면 스테이지를 따라 다시 짧아진다.
 int feverKillsAt(GameTables t, int stage) {
   final f = t.meta.raw.obj('fever');

@@ -25,16 +25,22 @@ GameState refillWave(GameState s, Field f, SystemContext ctx, {required bool fas
     f.feverSwarm = null;
     return s;
   }
-  if (left == 0 || f.bossActive) return s;
+  if (f.bossActive) return s;
   final sw = t.meta.raw.obj('fever').obj('swarm');
+  // 피버는 다 녹아 0마리여도 바로 다음 고리(평소처럼 이동 시간을 기다리면 피버 중 빈 바다 — 실기기 7-2 2026-10-17).
   if (feverOn(s)) {
     // 피버 고리 보충은 덤 — 파로 세지 않는다(세면 마지막 파에 금방 닿아 보스 차례라 멈추고, 진행만 빨라진다).
     if (left > (sw.intOrNull('refillBelow') ?? 0)) return s;
-    f.feverSwarm = feverSwarmPattern(t, fever: true);
+    f
+      ..feverSwarm = feverSwarmPattern(t, fever: true)
+      ..poolScale = sw.numberOr('refillPool', 1); // 보충 고리는 한 파 몫의 일부(HP·골드·공격)
     spawnWave(f, p.stage, ctx);
-    f.feverSwarm = null;
+    f
+      ..feverSwarm = null
+      ..poolScale = 1;
     return s;
   }
+  if (left == 0) return s;
   final per = fast ? w.rebirthSkip.waves : w.wavesPerStage;
   if (!p.farming && p.wave + 1 >= per) return s; // 이 파가 마지막 — 다 잡으면 보스
   final r = w.raw.obj('top').obj('refill');

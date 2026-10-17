@@ -36,6 +36,12 @@ void main() {
     }
     expect(started, isTrue);
     expect(t.meta.raw.obj('fever').obj('swarm').integer('min'), greaterThanOrEqualTo(60));
+    final empty = counts.where((n) => n == 0).length;
+    expect(
+      empty * t.waves.tickMs / 1000,
+      lessThanOrEqualTo(0.5),
+      reason: '피버 중 화면 0마리 시간(초) — 고리가 다 녹으면 바로 다음 고리(실기기 7-2)',
+    );
     counts.sort();
     expect(counts[counts.length ~/ 2], greaterThanOrEqualTo(30), reason: '피버 화면 적 중앙값 (${counts.length}틱)');
     expect(counts[counts.length ~/ 5], greaterThanOrEqualTo(10), reason: '빈 바다 시간이 길지 않게(하위 20%)');

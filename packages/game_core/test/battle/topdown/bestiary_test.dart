@@ -157,7 +157,7 @@ void main() {
       ),
     )..enqueue(const OpSpawnBoss());
     final events = <GameEvent>[];
-    for (var i = 0; i < 4800 && events.whereType<BossCleared>().isEmpty; i++) {
+    for (var i = 0; i < 12000 && events.whereType<BossCleared>().isEmpty; i++) {
       e.tick();
       events.addAll(e.drainEvents());
     }
