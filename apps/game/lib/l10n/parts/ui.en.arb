@@ -1237,5 +1237,13 @@
         "type": "int"
       }
     }
+  },
+  "uiPromoteStageLocked": "Opens at stage {n}",
+  "@uiPromoteStageLocked": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

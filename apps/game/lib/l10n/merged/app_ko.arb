@@ -1563,5 +1563,13 @@
         "type": "int"
       }
     }
+  },
+  "uiPromoteStageLocked": "스테이지 {n}에서 열림",
+  "@uiPromoteStageLocked": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
