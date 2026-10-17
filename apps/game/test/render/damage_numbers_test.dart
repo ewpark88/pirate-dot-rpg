@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
@@ -28,10 +30,10 @@ void main() {
     expect(n.active.single.ageMs, 0);
   });
 
-  test('mergeMs가 지나면 같은 적이어도 새 숫자', () {
+  test('합치기 시간(mergeMs, 최소 300ms — 디자인 개편)이 지나면 같은 적이어도 새 숫자', () {
     final n = fresh()
       ..add(BigNum.from(10), 100, 80, DamageKind.normal, key: 7)
-      ..update(mergeMs + 1)
+      ..update(math.max(mergeMs, 300) + 1)
       ..add(BigNum.from(15), 100, 80, DamageKind.normal, key: 7);
     expect(n.active, hasLength(2));
   });

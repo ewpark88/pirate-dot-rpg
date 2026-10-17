@@ -21,7 +21,8 @@ extension _TopEvents on EventDirector {
       if (s.crewId == e.crewId) rarity = s.rarity;
     }
     final colors = scene.tables.rarities.rarities;
-    final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
+    final color =
+        scene.topHits.skinMuzzle ?? parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final delayMs = math.max<double>(0, (start - _player.position) * _player.tickMs / math.max(1, frame.speed));
     // 추적 깃털: 방금 띄운 이 선원 발사체를 옆으로 휘게(좌우 번갈아).
     final curve = scene.topHits.traits?.curveFor(e.crewId, rarity, e.tick) ?? 0;

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -99,6 +98,9 @@ class TopScenePainter {
     _sea
       ..fever = fever.sea
       ..boost = fever.level
+      ..wakeTint = skins
+          .wake // 스킨 항적 색(앞 프레임 값)
+      ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
       ..paint(c, viewRect, clockMs, region: scene.tables.regions.regionAt(view.stage).id);
     fever.rays(c, viewRect);
@@ -148,7 +150,9 @@ class TopScenePainter {
         }
       }
       final sinking = _sink(c, m.sinkMs);
-      final skinGlow = skinId != null && _skinGlow(skinId);
+      final skinGlow = skins.frame(skinId, _skinCfg, sprites.bank, _shipKeys);
+      scene.topHits.skinMuzzle = skins.muzzle; // 스킨별 포구 화염 색(배 스킨 v2)
+      if (skins.changed) scene.topHits.loot.reward(clockMs, ship); // 새 배 스킨! 빛기둥·고리·별가루
       final celebrate = m.glowMs > 0;
       _ship.paint(
         c,
@@ -261,21 +265,10 @@ class TopScenePainter {
   final skins = ShipSkins();
   late final JsonReader _skinCfg = scene.fx.raw.obj('topShip').obj('skinPreview');
 
-  /// 스킨 사본이 없으면 비동기로 만들기 시작한다. glow 스킨(phantom)이고 준비됐으면 true.
-  bool _skinGlow(String id) {
-    if (!_skinCfg.has(id)) return false;
-    final cfg = _skinCfg.obj(id);
-    final bank = sprites.bank;
-    if (!skins.ready(id) && bank != null) {
-      unawaited(
-        skins.prepare(id, cfg, bank, [
-          for (final t in scene.tables.shipTiers.tiers)
-            for (final l in TopShipPainter.layers) 'td:${t.id}:$l',
-        ]),
-      );
-    }
-    return cfg.raw['glow'] == true && skins.ready(id);
-  }
+  late final List<String> _shipKeys = [
+    for (final t in scene.tables.shipTiers.tiers)
+      for (final l in TopShipPainter.layers) 'td:${t.id}:$l',
+  ];
 
   /// 탑다운 침몰(무리전 HP 0): 앞 절반 작아지며 물에 잠기고(어두워짐) 거품, 뒤 절반 원래 크기로 떠오름. 레이어를 열었으면 true.
   bool _sink(Canvas c, double left) {

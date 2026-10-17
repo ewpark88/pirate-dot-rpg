@@ -80,6 +80,7 @@ class Moments {
 
   /// 해역 보스 첫 등장이면 컷인.
   void onBossSpawned(String kind, int stage) {
+    scene.topHits.glow.bossRiseAt = scene.clockMs; // 개편 ③ 보스 등장 빛기둥(모든 보스)
     if (kind != scene.tables.regions.regionAt(stage).regionBoss || !_seenBosses.add(kind)) return;
     final c = scene.fx.cutIn;
     cutIn

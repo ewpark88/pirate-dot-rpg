@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -19,6 +20,39 @@ class ShipSkins {
 
   final Set<String> _made = {};
   String? _loading;
+
+  /// 지금 스킨의 항적·포구 색(fx_map skinPreview wake·muzzle — 'rainbow'면 무지개). 스킨 없으면 null.
+  int? wake;
+
+  /// 이번 프레임에 스킨이 바뀌었나(변신 연출).
+  bool changed = false;
+  String? _last;
+  int? muzzle;
+  bool wakeRainbow = false;
+
+  /// 프레임마다(TopScenePainter): 스킨 [id] 사본이 없으면 비동기로 만들기 시작하고, 항적·포구 색을 고른다.
+  /// glow 스킨(phantom·ghostship·abyss)이고 준비됐으면 true.
+  bool frame(String? id, JsonReader all, SpriteBank? bank, List<String> keys) {
+    // 새 배 스킨!(사용자 #8): 스킨이 다른 스킨으로 바뀐 첫 프레임(처음 켤 때는 아님) — 변신 연출 신호.
+    changed = _last != null && id != null && id != _last;
+    _last = id;
+    if (id == null || !all.has(id)) {
+      wake = muzzle = null;
+      wakeRainbow = false;
+      return false;
+    }
+    final cfg = all.obj(id);
+    if (!ready(id) && bank != null) unawaited(prepare(id, cfg, bank, keys));
+    int? col(String k) {
+      final v = cfg.raw[k];
+      return v is String && v != 'rainbow' ? parseArgb(v, 'skin.$k') : null;
+    }
+
+    wake = col('wake');
+    muzzle = col('muzzle') ?? (cfg.raw['muzzle'] == 'rainbow' ? 0xFFFF5AC8 : null);
+    wakeRainbow = cfg.raw['wake'] == 'rainbow';
+    return cfg.raw['glow'] == true && ready(id);
+  }
 
   /// 스킨 사본이 준비됐는가 — 준비되면 스프라이트 키 `<key>@<skinId>`로 은행에 들어 있다.
   bool ready(String skinId) => _made.contains(skinId);
