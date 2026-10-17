@@ -108,9 +108,10 @@ Future<_Outcome> _harnessRules() async {
   return v.isEmpty ? const _Outcome(ok: true) : _Outcome(ok: false, output: v.join('\n'));
 }
 
-/// 가상 플레이어 1명 × 2시간. 경제 레인이 sim을 구현하기 전(M1)에는 건너뛴다(game_cli 종료 코드 2 = 미구현).
+/// 가상 플레이어 3명 × 2시간 + 3자 균형 경계. 경제 레인이 sim을 구현하기 전(M1)에는 건너뛴다(game_cli 종료 코드 2 = 미구현).
 Future<_Outcome> _balanceSmoke() async {
-  final r = await _run('dart', ['run', 'game_cli', 'sim', '--smoke', '--hours', '2']);
+  // 3시드 중앙값 + 3자 균형 경계(meta.sim.guard) — 벗어나면 빨강(사용자 상시 지시 '밸런스는 계속 체크').
+  final r = await _run('dart', ['run', 'game_cli', 'sim', '--smoke', '--guard', '--players', '3', '--hours', '2']);
   if (r.exitCode == 2) {
     return const _Outcome(ok: true, note: '건너뜀: game_cli sim 미구현 (economy 레인 M1)');
   }
