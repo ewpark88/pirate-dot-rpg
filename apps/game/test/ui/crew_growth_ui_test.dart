@@ -17,10 +17,10 @@ void main() {
     (w) => w.key is ValueKey<String> && (w.key! as ValueKey<String>).value.startsWith('crew.up.'),
   );
 
-  testWidgets('일괄 합치기는 56dp에 합칠 선원 수, 합칠 수 있는 카드엔 ↑ +n 배지', (tester) async {
+  testWidgets('일괄 합치기는 48dp 이상(선원 탭 머리 한 줄 — 실기기 2026-10-17)에 합칠 선원 수, 합칠 수 있는 카드엔 ↑ +n 배지', (tester) async {
     await pumpGame(tester, _mergeable(), tab: crewTab);
     await tester.pumpAndSettle();
-    expect(tester.getSize(find.byKey(const Key('crew.mergeAll'))).height, greaterThanOrEqualTo(56));
+    expect(tester.getSize(find.byKey(const Key('crew.mergeAll'))).height, greaterThanOrEqualTo(48));
     expect(find.textContaining('Merge all · '), findsOneWidget);
     // 도감 카드(수집 보상 줄)가 위에 있어 격자는 굴려서 본다.
     await tester.scrollUntilVisible(
@@ -48,7 +48,7 @@ void main() {
     final merge = find.byKey(const Key('crew.detail.merge.pang'));
     await tester.ensureVisible(merge);
     await tester.pumpAndSettle();
-    expect(tester.getSize(merge).height, greaterThanOrEqualTo(56));
+    expect(tester.getSize(merge).height, greaterThanOrEqualTo(48));
     await tester.tap(merge);
     expect(log.sent.whereType<MergeAllCards>().single.crewId, 'pang', reason: '이 선원만');
   });

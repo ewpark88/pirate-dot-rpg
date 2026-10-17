@@ -1,3 +1,5 @@
+import 'package:game_cli/src/sim/sim_content.dart';
+import 'package:game_cli/src/sim/sim_result.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
@@ -7,6 +9,9 @@ class SimFun {
   SimFun(this.t);
 
   final GameTables t;
+
+  /// 탑·러시(장면 콘텐츠) — 같은 사건을 본다.
+  late final content = SimContent(t);
   BigNum killGold = BigNum.zero;
   BigNum eventGold = BigNum.zero;
   int challenges = 0;
@@ -21,6 +26,7 @@ class SimFun {
 
   /// 이번 틱 사건을 보고, 필요하면 탭 명령을 넣는다.
   void observe(GameEvent e, CoreEngine engine) {
+    content.observe(e, engine);
     switch (e) {
       case Kill(:final gold):
         killGold = killGold + gold;
@@ -58,4 +64,15 @@ class SimFun {
 
   /// 끝난 도전 중 성공 (%).
   double? get challengeWinPct => challenges == 0 ? null : challengeWins / challenges * 100;
+
+  /// 결과에 재미·콘텐츠 계측을 옮긴다([online] = 접속 시간, 피버 간격용).
+  void fill(SimResult r, Duration online) => r
+    ..eventGoldPct = eventGoldPct
+    ..challengeWinPct = challengeWinPct
+    ..feverIntervalMin = fevers == 0 ? null : online.inSeconds / Duration.secondsPerMinute / fevers
+    ..feverGoldPct = feverGoldPct
+    ..overflowPct = overflowPct
+    ..towerFloorSec = SimContent.median(content.towerFloorSec)
+    ..towerRunMin = SimContent.median(content.towerRunMin)
+    ..rushSec = SimContent.median(content.rushSec);
 }

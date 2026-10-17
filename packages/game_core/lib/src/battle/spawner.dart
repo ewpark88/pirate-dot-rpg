@@ -5,6 +5,9 @@ import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/fever.dart' show feverOn;
+import 'package:game_core/src/economy/formation.dart' show activeFleet;
+import 'package:game_core/src/economy/offline.dart' show fleetDps;
+import 'package:game_core/src/economy/ship_stats.dart' show shipMaxHp;
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -229,30 +232,44 @@ double wallBossScale(WavesTable w, int stage) {
   return 1;
 }
 
-/// 자동 보스 도전(설정 autoBoss, 방치형 — S3·S4 첫 15분 점검 2026-10-17 '실패 뒤 안 누르면 스테이지 3에 15분', S1 규칙):
-/// 보스 실패 뒤 파밍이 `waves.boss.autoBoss.cooldownSec` 지나고 그사이 배 부위 레벨 합이 `levelGain` 이상 올랐거나,
-/// 쿨다운의 2배가 지나면 다음 만남을 보스로 되돌린다(farming false). 튜토리얼 보스 단계도 — 재도전은 일반 보스(tutorialBossScale).
-/// 남은 틱은 [Field.autoBossLeft] → BattleView.autoBossTicksLeft. 센 값은 전장(Field)에만 — 세이브에 안 남는다.
+/// 자동 보스 도전(설정 autoBoss, 방치형 — S3·S4 첫 15분 점검 2026-10-17, S1 규칙 (A)): 실패 뒤 파밍 `cooldownSec`이 지나고
+/// **이길 만하면**(retryWinnable) 다음 만남을 보스로 되돌린다(farming false). 이길 만함 = 지금 (함대 DPS × 배 최대 HP)가
+/// 실패 때의 1 ÷ (1 − 그때 보스에게 남은 HP 비율)배 이상(최대 `maxNeed`) — 진 판에서 모자랐던 만큼 강화했나.
+/// 강화를 안 하는 방치 플레이어도 멈추지 않게 `fallbackSec`이 지나면 그냥 재도전. 튜토리얼 보스 단계도 같다(재도전은 일반 보스).
+/// 센 값은 전장(Field)에만 — 세이브에 안 남는다. 남은 틱·이길 만함은 BattleView.autoBossTicksLeft·retryWinnable(화면 신호).
 GameState autoBossTick(GameState s, Field f, GameTables t) {
   final p = s.progress;
   if (!p.farming || !s.settings.autoBoss) {
     f
       ..farmTicks = 0
-      ..autoBossLeft = 0;
+      ..autoBossLeft = 0
+      ..retryWinnable = false;
     return s;
   }
   final a = t.waves.raw.obj('boss').obj('autoBoss');
-  final perSec = Duration.millisecondsPerSecond / t.waves.tickMs;
-  final cool = (a.number('cooldownSec') * perSec).round();
-  final levels = s.ship.parts.values.fold(0, (sum, v) => sum + v);
-  if (f.farmTicks == 0) f.failLevels = levels;
+  final perSec = (Duration.millisecondsPerSecond / t.waves.tickMs).round();
+  if (f.farmTicks == 0) {
+    // 실패 직전 화면(이 틱의 s.battle은 아직 지난 틱 투영)에서 보스에게 남은 HP 비율.
+    final left = s.battle?.enemies.where((e) => e.boss).map((e) => e.hpRatio).toList() ?? const <double>[];
+    final r = left.isEmpty ? 0.0 : left.reduce(math.max);
+    final max = a.number('maxNeed');
+    f
+      ..failNeed = r >= 1 - 1 / max ? max : 1 / (1 - r)
+      ..failPower = retryPower(s, t);
+  }
   if (!feverOn(s)) f.farmTicks += 1; // 피버 중엔 쿨다운 멈춤 — 피버 무리 손맛을 끊지 않는다(핵앤슬래시)
-  final gained = levels - f.failLevels >= a.integer('levelGain');
-  final due = gained ? cool : cool + cool;
+  if (f.farmTicks % perSec == 0) f.retryWinnable = retryPower(s, t) >= f.failPower * f.failNeed;
+  final cool = (a.number('cooldownSec') * perSec).round();
+  final due = f.retryWinnable ? cool : (a.number('fallbackSec') * perSec).round();
   f.autoBossLeft = due - f.farmTicks > 0 ? due - f.farmTicks : 0;
   if (f.autoBossLeft > 0) return s;
   f
     ..farmTicks = 0
-    ..autoBossLeft = 0;
+    ..autoBossLeft = 0
+    ..retryWinnable = false;
   return s.copyWith(progress: p.copyWith(farming: false));
 }
+
+/// 재도전 판정용 힘 = 함대 DPS × 배 최대 HP(전투력 fleetPower와 같은 두 축, 지수 없이).
+double retryPower(GameState s, GameTables t) =>
+    (fleetDps(s, t, activeFleet(s, t)) * shipMaxHp(t.shipParts, s.ship.level('hull'))).toDouble();

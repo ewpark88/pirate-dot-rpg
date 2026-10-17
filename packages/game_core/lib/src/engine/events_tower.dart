@@ -48,7 +48,7 @@ class TowerFloorCleared extends GameEvent {
   Json _fields() => {'floor': floor, if (gems != 0) 'gems': gems, if (cards != 0) 'cards': cards};
 }
 
-/// 탑이 끝났다. [floor] = 마지막으로 깬 층(0이면 1층도 못 깸), [reason] = sunk·retreat·interrupted, 상자 보상.
+/// 탑이 끝났다. [floor] = 마지막으로 깬 층(0이면 1층도 못 깸), [reason] = sunk·retreat·interrupted·timeout(한 층 시간 초과), 상자 보상.
 class TowerEnded extends GameEvent {
   const TowerEnded(
     super.tick, {
