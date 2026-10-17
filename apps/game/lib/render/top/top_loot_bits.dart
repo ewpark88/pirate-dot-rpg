@@ -7,6 +7,9 @@ import 'package:pirate_dot/render/paint/sprite_draw.dart';
 class LootBits {
   final _paint = Paint()..isAntiAlias = false;
   final _path = Path();
+  final _ring = Paint()
+    ..style = PaintingStyle.stroke
+    ..isAntiAlias = false;
 
   /// 하늘로 솟는 금빛 기둥(0~900ms): 넓은 옅은 띠 + 가운데 밝은 줄, 위로 갈수록 옅게.
   void pillar(Canvas c, Offset at, double age, {required bool wide}) {
@@ -79,5 +82,34 @@ class LootBits {
     _paint.color = const Color(0xFFF6EBD0);
     c.drawRect(r.deflate(2.5), _paint);
     sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy - 1, w - 3, w - 3);
+  }
+
+  /// 새 동료 카드 뒤 후광: 등급 색 빛줄기가 돌고 고리가 맥박친다.
+  void halo(Canvas c, Offset p, double age, int big, int color) {
+    final r = 14 * (1 + 0.8 * big) + 14;
+    // 환영(2)은 금빛, 새 동료(1)는 등급 색 — 파란 바다에서도 보이게 알파를 넉넉히.
+    _paint.color = big >= 2 ? const Color(0x88FFD84A) : Color(color).withValues(alpha: 0.5);
+    _path.reset();
+    for (var k = 0; k < 8; k++) {
+      final a = age / 600 + k * math.pi / 4;
+      _path
+        ..moveTo(p.dx, p.dy)
+        ..lineTo(p.dx + math.cos(a - 0.14) * r, p.dy + math.sin(a - 0.14) * r)
+        ..lineTo(p.dx + math.cos(a + 0.14) * r, p.dy + math.sin(a + 0.14) * r)
+        ..close();
+    }
+    c.drawPath(_path, _paint);
+    _ring
+      ..strokeWidth = 1.5
+      ..color = const Color(0xCCFFE27A);
+    c.drawCircle(p, r * (0.55 + 0.08 * math.sin(age / 90)), _ring);
+  }
+
+  /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
+  void absorb(Canvas c, Offset ship, int n) {
+    _ring
+      ..strokeWidth = math.min(4, 1 + n * 0.5)
+      ..color = const Color(0xCCFFE27A);
+    c.drawCircle(ship, 14 + math.min(8, n * 1.0), _ring);
   }
 }
