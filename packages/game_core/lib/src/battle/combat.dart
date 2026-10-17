@@ -14,10 +14,10 @@ import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart';
 
-/// 한 틱 동안의 전투 계산. 지갑·게이지 변화는 [gold]·[rage]에 모아 두고 BattleSystem이 상태에 반영한다.
+/// 한 틱 동안의 전투 계산. 지갑 변화는 [gold]에 모아 두고 BattleSystem이 상태에 반영한다.
 /// 스킬·장판은 battle/skills.dart의 확장.
 class Round {
-  Round(this.field, this.ctx, this.stats, {required this.rage, this.invincible = false, this.zeroCooldown = false});
+  Round(this.field, this.ctx, this.stats, {this.invincible = false, this.zeroCooldown = false});
 
   final Field field;
   final SystemContext ctx;
@@ -27,9 +27,6 @@ class Round {
 
   /// 이번 틱에 번 골드 (화물칸·동시 처치 보너스 포함).
   BigNum gold = BigNum.zero;
-
-  /// 함성 게이지 0~rageMax.
-  double rage;
 
   final killedKinds = <String, int>{}; // 이번 틱 처치: kind → 수 (도감)
   int get kills => killedKinds.values.fold(0, (a, b) => a + b); // 이번 틱 처치 수 (일일 퀘스트 '처치')
@@ -173,19 +170,16 @@ class Round {
       for (final e in field.foes)
         if (e.alive && geo.onScreen(e)) e,
     ];
-    rage = 0;
     ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id));
     hitStop('ultimate');
     if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
-    final before = kills;
     strike(
       (x: geo.center.x, y: geo.center.y, hits: spread(targets, w)),
       damageOf(gun, t.skills.ultimateMultiplier),
       crewId: captain,
     );
     control(targets, knockback: ult.knockback, stunSec: ult.stunSec);
-    field.ultimateKills += kills - before;
     return true;
   }
 

@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
@@ -48,7 +49,9 @@ class StagePainter {
     final cx = x + v.width / 2;
     final sheet = sprites.sheet('boss:$kind');
     if (sheet != null) {
-      sprites.draw(c, 'boss:$kind', cx, top + h / 2, w: sheet.frameW * scale / 2, h: sheet.frameH * scale / 2);
+      // 큰 그림(대보스 88도트)은 띠 높이의 1.6배(기존 보스 최대 64)까지만.
+      final k = math.min(scale / 2, h * 1.6 / sheet.frameH);
+      sprites.draw(c, 'boss:$kind', cx, top + h / 2, w: sheet.frameW * k, h: sheet.frameH * k);
       return;
     }
     final shape = scene.looks.bossOf(kind, boss: true)!;

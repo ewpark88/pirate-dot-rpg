@@ -34,7 +34,7 @@ Map<String, GameState> sampleStates(GameTables t) {
 /// 설계서 5.2의 세이브 예시와 같은 상태.
 GameState _midgame(GameState base, GameTables t) => base.copyWith(
   wallet: Wallet(gold: BigNum.parse('1.25e6'), gems: 140),
-  progress: const Progress(stage: 37, wave: 2, bestStage: 41, rage: 0.4),
+  progress: const Progress(stage: 37, wave: 2, bestStage: 41),
   ship: const ShipState(parts: {'cannon': 16, 'hull': 15, 'sail': 18, 'crowsnest': 12, 'cargo': 17}),
   crews: const {
     'octo': CrewState(level: 15, cards: 2),

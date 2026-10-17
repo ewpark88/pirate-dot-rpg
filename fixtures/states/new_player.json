@@ -15,7 +15,6 @@
     "bestStage": 1,
     "farming": false,
     "rebirths": 0,
-    "rage": 0.0,
     "mapPiecesEarned": 0,
     "titles": [],
     "treasureSea": null,
@@ -205,7 +204,6 @@
     "stage": 1,
     "chest": null,
     "wave": 0,
-    "rage": 0.0,
     "gold": "0e0",
     "shipLook": {}
   }

@@ -59,7 +59,7 @@ void main() {
     final s = GameState.newGame(playerId: 'b', seed: 1, now: start);
     for (var i = 0; i < ticks; i++) {
       a.ctx.tick += 1;
-      Round(a.f, a.ctx, CombatStats.of(s, a.ctx.tables), rage: 0).topdownStep(s);
+      Round(a.f, a.ctx, CombatStats.of(s, a.ctx.tables)).topdownStep(s);
     }
   }
 

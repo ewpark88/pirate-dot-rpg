@@ -24,7 +24,6 @@ class BattleView {
     this.stage = 1,
     this.chest,
     this.wave = 0,
-    this.rage = 0,
     this.gold = BigNum.zero,
     this.shipLook = const {},
     this.mode = 'side',
@@ -58,7 +57,6 @@ class BattleView {
     stage: j['stage'] as int? ?? 1,
     chest: j['chest'] == null ? null : ChestView.fromJson(j['chest'] as Json),
     wave: j['wave'] as int? ?? 0,
-    rage: (j['rage'] as num?)?.toDouble() ?? 0,
     gold: j['gold'] == null ? BigNum.zero : BigNum.parse(j['gold'] as String),
     shipLook: {for (final e in (j['shipLook'] as Json? ?? const {}).entries) e.key: e.value as int},
     mode: j['mode'] as String? ?? 'side',
@@ -106,9 +104,8 @@ class BattleView {
   /// 떠 있는 보물상자. 없으면 null.
   final ChestView? chest;
 
-  /// 캔버스 HUD용 (기록 재생에서도 그리게): 이번 스테이지에서 잡은 파 수, 함성 게이지 0~1, 지갑 골드.
+  /// 캔버스 HUD용 (기록 재생에서도 그리게): 이번 스테이지에서 잡은 파 수, 지갑 골드.
   final int wave;
-  final double rage;
   final BigNum gold;
 
   /// 부위별 외형 단계 (ship_parts.json visualStages, 경제 partLook). 렌더가 배 그림을 고른다. 없으면 빈 맵.
@@ -169,7 +166,6 @@ class BattleView {
     ChestView? chest,
     bool clearChest = false,
     int? wave,
-    double? rage,
     BigNum? gold,
     double? fever,
     int? feverTicksLeft,
@@ -199,7 +195,6 @@ class BattleView {
     stage: stage ?? this.stage,
     chest: clearChest ? null : chest ?? this.chest,
     wave: wave ?? this.wave,
-    rage: rage ?? this.rage,
     gold: gold ?? this.gold,
     fever: fever ?? this.fever,
     feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
@@ -233,7 +228,6 @@ class BattleView {
     'stage': stage,
     'chest': chest?.toJson(),
     'wave': wave,
-    'rage': rage,
     'gold': gold.toJson(),
     'shipLook': shipLook,
     // 탑다운 T0 선택 키: 기본값이면 쓰지 않는다(옛 기록·픽스처와 같은 본문).
@@ -269,7 +263,6 @@ class BattleView {
     stage: stage,
     chest: chest,
     wave: wave,
-    rage: rage,
     gold: gold,
     shipLook: shipLook,
     mode: mode,

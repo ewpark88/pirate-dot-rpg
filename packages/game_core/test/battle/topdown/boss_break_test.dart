@@ -43,7 +43,7 @@ void main() {
     startBoss(f, stage, ctx, emit: false, x: g.top.shipX, y: g.top.shipY - g.top.bossStandoff);
     final s = GameState.newGame(playerId: 'k', seed: 1, now: start);
     return (
-      r: Round(f, ctx, CombatStats.of(s, t), rage: 0),
+      r: Round(f, ctx, CombatStats.of(s, t)),
       boss: f.foes.firstWhere((e) => e.boss),
       events: events,
       ctx: ctx,
