@@ -69,13 +69,17 @@ void main() {
     expect(a.r.traitHit(a.boss, hit, crewId: crewOf('direct')), hit);
   });
 
-  test('장갑: 타격마다 최대 HP × ratio를 깎고 최소 min(25%) — 작은 타격은 25%, 큰 타격은 거의 그대로', () {
+  test('장갑: 빠른 작은 타격(발사 간격 heavySec 미만)은 × factor, 느리고 센 공격·치명타는 그대로', () {
     final a = arena(const ['armor']);
-    final cut = a.boss.maxHp.times(0.0015);
-    final small = cut.times(0.5);
-    expect(a.r.traitHit(a.boss, small, crewId: crewOf('direct'))!.closeTo(small.times(0.25)), isTrue);
-    final big = cut.times(100);
-    expect(a.r.traitHit(a.boss, big, crewId: crewOf('direct'))!.closeTo(big - cut), isTrue);
+    a.r.field.guns = [Gun.of(t, 'pang', power: 1), Gun.of(t, 'davy', power: 1)]; // 0.6초 / 7.8초
+    expect(a.r.traitHit(a.boss, hit, crewId: 'pang')!.closeTo(hit.times(0.4)), isTrue);
+    expect(a.r.traitHit(a.boss, hit, crewId: 'pang', crit: true), hit);
+    expect(a.r.traitHit(a.boss, hit, crewId: 'davy'), hit);
+  });
+
+  test('HP 보정: 특성 hpFactor의 곱만큼 보스 HP가 줄어든다(평균 처치 시간 유지)', () {
+    final plain = arena(const []).boss.maxHp;
+    expect((arena(const ['evade', 'reflect']).boss.maxHp / plain).toDouble(), closeTo(0.75 * 0.78, 1e-9));
   });
 
   test('재생: 초당 최대 HP 1.5%, 기절 중엔 멈춘다', () {
