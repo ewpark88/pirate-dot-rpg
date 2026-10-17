@@ -15,6 +15,7 @@ dart compile exe bin\game_cli.dart -o %TEMP%\game_cli.exe
 cd ..\..
 %TEMP%\game_cli.exe sim --players 100 --days 30 --schedule daily --report docs/balance/nightly-30d.md
 ```
+- 한 번에: `python -I -B tool/nightly_sim.py` (컴파일 → sim → 리포트, 잠금·메모리 확인·build/nightly/log.csv 기록, `--dry-run`·`--players 50`). 손으로 할 때는 위 순서.
 - `dart run`보다 컴파일한 exe가 빠르다. 100명 × 30일은 단일 스레드로 수십 분 걸린다.
 - 메모리: 다른 무거운 일(Flutter 테스트·빌드)과 겹치지 않게 **한 번에 하나만** 돌린다. 메모리 부족이면 `--players 50`으로 줄이고 리포트에 그 사실을 적는다.
 - 목표 범위는 `packages/game_data/tables/meta.json` `sim.targets`. 벗어나면 종료 코드 1(스모크 `--smoke`만 경고).
