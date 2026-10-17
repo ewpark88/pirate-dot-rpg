@@ -137,4 +137,32 @@ void main() {
     expect(v.shipY ?? t.waves.top.shipY, closeTo(t.waves.top.shipY, 1e-6));
     expect(v.shipHeading.abs(), lessThan(1e-6));
   });
+
+  test('회귀(main 2df68598): 보스가 쓰러져(기절) 원 위로 다시 서지 않는 동안에도 배가 standoff 안으로 파고들지 않는다', () {
+    final t = GameTables.load();
+    final top = t.waves.top;
+    final e =
+        CoreEngine(
+            tables: t,
+            clock: ManualClock(start),
+            initial: GameState.newGame(playerId: 'k', seed: 2, now: start).copyWith(
+              progress: const Progress(stage: 8, bestStage: 8),
+            ),
+          )
+          ..enqueue(const OpSetInvincible(on: true))
+          ..enqueue(const OpSpawnBoss());
+    var broke = false;
+    for (var i = 0; i < 200; i++) {
+      if (i == 30) e.enqueue(const OpBossBreak());
+      e.tick();
+      broke |= e.drainEvents().any((x) => x is BossBroken);
+      final v = e.state.battle!;
+      if (!v.bossActive) continue;
+      final b = v.enemies.where((x) => x.boss).firstOrNull;
+      if (b == null) continue;
+      final d = math.sqrt(math.pow(b.x - (v.shipX ?? top.shipX), 2) + math.pow(b.y - (v.shipY ?? top.shipY), 2));
+      expect(d, greaterThanOrEqualTo(top.bossStandoff - 1e-6), reason: '틱 $i');
+    }
+    if (t.skills.raw.has('bossBreak')) expect(broke, isTrue, reason: '쓰러진 구간을 지나갔다');
+  });
 }
