@@ -85,8 +85,14 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
   if (p == null) return state;
 
   final fleet = offlineFleet(state, t);
-  // 오프라인 골드는 화물칸 용량까지(사용자 결정 ②). lastOfflineGold = 실제로 실은 몫(광고 ×2의 기준).
-  final paid = addGold(state.copyWith(savedAt: now), t, p.gold);
+  // 오프라인 골드는 화물칸 용량 × meta.offline.capMultiplier까지(사용자 변경 2026-10-17 — 예전 결정 ② '용량까지'를 갱신, 실기기: 화물칸이
+  // 차 있으면 16분 보상이 0이 되던 것). 넘게 가진 동안은 처치 골드가 안 들어오니 강화로 쓰게 된다. lastOfflineGold = 실제로 실은 몫.
+  final paid = addGold(
+    state.copyWith(savedAt: now),
+    t,
+    p.gold,
+    capScale: offlineCapScale(t),
+  );
   if (!paid.lost.isZero) ctx.emit(GoldOverflow(ctx.tick, lost: paid.lost));
   var s = paid.state.copyWith(lastOfflineGold: paid.added);
   for (var i = 0; i < p.cards; i++) {

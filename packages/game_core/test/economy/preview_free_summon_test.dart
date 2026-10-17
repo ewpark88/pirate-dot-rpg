@@ -25,7 +25,7 @@ void main() {
       expect(p.seconds, e.seconds);
       expect(p.gold, e.gold);
       expect(p.cards, e.cards);
-      final cap = goldCapacity(s0, t); // 화물칸 용량까지만 실린다
+      final cap = goldCapacity(s0, t).times(offlineCapScale(t)); // 화물칸 용량 × offline.capMultiplier까지
       expect(s.wallet.gold, p.gold < cap ? p.gold : cap);
     });
 
