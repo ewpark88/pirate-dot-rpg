@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:game_data/src/models/achievement_tables.dart';
 import 'package:game_data/src/models/battle_tables.dart';
 import 'package:game_data/src/models/common.dart';
 import 'package:game_data/src/models/crew_tables.dart';
@@ -28,6 +29,7 @@ class GameTables {
     required this.meta,
     required this.story,
     required this.iap,
+    required this.achievements,
   });
 
   /// [raw]를 주지 않으면 앱에 심은 테이블(tables.g.dart)을 쓴다.
@@ -55,6 +57,7 @@ class GameTables {
       meta: MetaTable.fromJson(read('meta')),
       story: StoryTable.fromJson(read('story')),
       iap: IapTable.fromJson(read('iap')),
+      achievements: AchievementsTable.fromJson(read('achievements')),
     );
     final errors = t.validate();
     if (errors.isNotEmpty) throw TableValidationException(errors);
@@ -80,6 +83,9 @@ class GameTables {
   /// 유료 상품(iap.json).
   final IapTable iap;
 
+  /// 업적(achievements.json — 요청 ui-achievements.md).
+  final AchievementsTable achievements;
+
   /// 테이블 하나씩의 검증 + 테이블 사이 참조 검증.
   List<String> validate() {
     final e = <String>[
@@ -97,6 +103,7 @@ class GameTables {
       ...meta.validate(),
       ...story.validate(regions.bosses.keys.toSet()),
       ...iap.validate(),
+      ...achievements.validate(),
     ];
     final fxIds = fxMap.sheets.map((s) => s.id).toSet();
     final familyIds = skills.families.map((f) => f.id).toSet();

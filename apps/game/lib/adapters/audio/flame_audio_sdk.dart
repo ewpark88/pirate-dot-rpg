@@ -54,6 +54,36 @@ class FlameAudioSdk implements AudioSdk {
 
   @override
   Future<void> resumeBgm() => FlameAudio.bgm.resume();
+
+  @override
+  Future<void> setBgmRate(double rate) => FlameAudio.bgm.audioPlayer.setPlaybackRate(rate);
+
+  AudioPlayer? _ambient;
+
+  @override
+  Future<void> playAmbient(String path, {required double volume}) async {
+    await _ambient?.dispose();
+    final p = _ambient = AudioPlayer()..audioCache = FlameAudio.audioCache;
+    await p.setAudioContext(_sfxContext); // 배경음 포커스를 빼앗지 않게 섞는다
+    await p.setReleaseMode(ReleaseMode.loop);
+    await p.play(AssetSource(path), volume: volume);
+  }
+
+  @override
+  Future<void> setAmbientVolume(double volume) async => _ambient?.setVolume(volume);
+
+  @override
+  Future<void> stopAmbient() async {
+    final p = _ambient;
+    _ambient = null;
+    await p?.dispose();
+  }
+
+  @override
+  Future<void> pauseAmbient() async => _ambient?.pause();
+
+  @override
+  Future<void> resumeAmbient() async => _ambient?.resume();
 }
 
 /// 한 효과음 파일의 플레이어 고리. 처음 쓸 때 하나씩 만들고(소스를 미리 실어 둠), 다 차면 가장 오래된 것부터 돌려 쓴다.

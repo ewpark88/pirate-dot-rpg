@@ -20,6 +20,7 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+import 'package:pirate_dot/ui/widgets/reward_fly.dart';
 
 /// 상단 바 (전장 밖, layout-v2-brief 1): 왼쪽 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원),
 /// 오른쪽 설정 그림 버튼(퀘스트는 도크 첫 칸으로 — 사용자 피드백 #9 A). 누르는 영역이 48dp라 바 높이도 48dp.
@@ -63,10 +64,13 @@ class TopBar extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  BigNumText(
-                    gold,
-                    key: const Key('top.gold'),
-                    style: Skin.outlined(16, color: const Color(0xFFFFD84A)),
+                  RewardBumpTarget(
+                    slot: RewardSlot.gold,
+                    child: BigNumText(
+                      gold,
+                      key: const Key('top.gold'),
+                      style: Skin.outlined(16, color: const Color(0xFFFFD84A)),
+                    ),
                   ),
                   if (over == null)
                     Text(
@@ -92,9 +96,12 @@ class TopBar extends ConsumerWidget {
             ],
           ),
           const SizedBox(width: 10),
-          const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
+          KeyedSubtree(key: topGemIconKey, child: const PixelSprite(UiSprites.gem, dots: 8, frames: 3)),
           const SizedBox(width: 4),
-          Text(gems.toString(), key: const Key('top.gems'), style: Skin.outlined(16)),
+          RewardBumpTarget(
+            slot: RewardSlot.gem,
+            child: Text(gems.toString(), key: const Key('top.gems'), style: Skin.outlined(16)),
+          ),
           const SizedBox(width: 8),
           const PowerBadge(),
         ],
