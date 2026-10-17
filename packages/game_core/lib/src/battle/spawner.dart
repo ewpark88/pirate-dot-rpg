@@ -74,7 +74,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   }
 }
 
-/// 피버 중 한 파 마리 수 = 평소 × countMul, 상한 max(평소 상한 150보다 크게). 표에 swarm이 없으면 평소 그대로.
+/// 피버 중 한 파 마리 수 = 평소 × countMul(바닥 min — 초반에도 화면 꽉, 실기기 6-2 피버에 8마리 2026-10-17), 상한 max. 표에 swarm이 없으면 평소 그대로.
 /// 몫(pool ÷ 마리 수)은 그대로 나뉘어 한 마리는 약해지고 파 총량(HP·골드·공격)은 변하지 않는다.
 /// 피버 중 무리 파의 자리 패턴(표 swarm.pattern). 피버가 아니거나 표에 swarm이 없으면 null.
 String? feverSwarmPattern(GameTables t, {required bool fever}) {
@@ -87,7 +87,7 @@ int feverSwarmCount(GameTables t, int stage) {
   final fever = t.meta.raw.obj('fever');
   if (!fever.has('swarm')) return n;
   final sw = fever.obj('swarm');
-  final m = (n * sw.number('countMul')).round();
+  final m = math.max((n * sw.number('countMul')).round(), sw.intOrNull('min') ?? 0);
   return m < sw.integer('max') ? m : sw.integer('max');
 }
 
