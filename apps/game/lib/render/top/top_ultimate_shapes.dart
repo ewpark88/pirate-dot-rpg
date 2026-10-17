@@ -10,11 +10,11 @@ extension _UltimateShapes on TopUltimate {
     final w = 26 * math.sin(math.min(1, t / 0.8) * math.pi) + 2;
     final e = TopUltimate._env(t);
     _line
-      ..strokeWidth = w * 1.8
+      ..strokeWidth = w * 1.8 * _k
       ..color = Color.fromRGBO(255, 210, 90, 0.45 * e);
     c.drawLine(a, head, _line);
     _line
-      ..strokeWidth = w
+      ..strokeWidth = w * _k
       ..color = Color.fromRGBO(255, 255, 235, 0.95 * e);
     c.drawLine(a, head, _line);
     final dir = (b - a) / (b - a).distance;
@@ -27,20 +27,21 @@ extension _UltimateShapes on TopUltimate {
       ..close();
     _fill.color = Color.fromRGBO(255, 236, 160, e);
     c.drawPath(_path, _fill);
+    if (t > 0.25 && t < 0.75) _boom(c, b, 34, (t - 0.25) / 0.5, const Color(0xFFFFC23A)); // 끝 큰 착탄
   }
 
   /// 레이저: 배에서 빔 3줄이 부채꼴로 180° 휩쓴다.
   void _laser(Canvas c, Offset s, double t, {required bool lite}) {
     final e = TopUltimate._env(t);
-    for (var i = 0; i < (lite ? 2 : 3); i++) {
-      final a = -math.pi + (t * 1.2 + i / 3) % 1 * math.pi;
+    for (var i = 0; i < (lite ? 3 : 5); i++) {
+      final a = -math.pi + (t * 1.2 + i / 5) % 1 * math.pi;
       final end = s + Offset(math.cos(a), math.sin(a)) * TopUltimate.reach;
       _line
-        ..strokeWidth = 23.8
+        ..strokeWidth = 23.8 * _k
         ..color = Color.fromRGBO(255, 90, 160, 0.4 * e);
       c.drawLine(s, end, _line);
       _line
-        ..strokeWidth = 8.5
+        ..strokeWidth = 8.5 * _k
         ..color = Color.fromRGBO(255, 230, 245, 0.95 * e);
       c.drawLine(s, end, _line);
     }
@@ -60,7 +61,7 @@ extension _UltimateShapes on TopUltimate {
         i == 0 ? _path.moveTo(p.dx, p.dy) : _path.lineTo(p.dx, p.dy);
       }
       _line
-        ..strokeWidth = 10.2
+        ..strokeWidth = 10.2 * _k
         ..color = Color.fromRGBO(120, 220, 255, 0.75 * e);
       c.drawPath(_path, _line);
     }
@@ -75,11 +76,11 @@ extension _UltimateShapes on TopUltimate {
 
   /// 번개: 위쪽 지그재그 자리 7곳에 낙뢰가 차례로 내리꽂힌다.
   void _thunder(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var i = 0; i < (lite ? 4 : 7); i++) {
-      final at = i * 0.09;
+    for (var i = 0; i < (lite ? 6 : 12); i++) {
+      final at = i * 0.05;
       final u = (t - at) / 0.3;
       if (u < 0 || u >= 1) continue;
-      final to = s + Offset(((i * 53) % 9 - 4) * 32.0, -60.0 - (i % 4) * 60);
+      final to = s + Offset(((i * 53) % 9 - 4) * 32.0, -60.0 - (i % 5) * 50);
       final from = to + const Offset(0, -140);
       _path
         ..reset()
@@ -89,11 +90,11 @@ extension _UltimateShapes on TopUltimate {
         _path.lineTo(p.dx + (k == 6 ? 0 : ((i * 7 + k * 5) % 11 - 5) * 3.0), p.dy);
       }
       _line
-        ..strokeWidth = 15.3 * (1 - u) + 2
+        ..strokeWidth = (15.3 * (1 - u) + 2) * _k
         ..color = Color.fromRGBO(255, 230, 90, 1 - u);
       c.drawPath(_path, _line);
       _line
-        ..strokeWidth = 5.1
+        ..strokeWidth = 5.1 * _k
         ..color = Color.fromRGBO(255, 255, 255, 1 - u);
       c.drawPath(_path, _line);
       _fill.color = Color.fromRGBO(255, 240, 160, 0.7 * (1 - u));
@@ -103,12 +104,12 @@ extension _UltimateShapes on TopUltimate {
 
   /// 폭발(투척): 융단 폭격 — 배 앞에서 위로 3줄 × 5발이 줄지어 터지며 올라간다.
   void _carpet(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var row = 0; row < 3; row++) {
+    for (var row = 0; row < 5; row++) {
       for (var i = 0; i < (lite ? 3 : 5); i++) {
-        final at = row * 0.18 + i * 0.03;
+        final at = row * 0.11 + i * 0.03;
         final u = (t - at) / 0.35;
         if (u < 0 || u >= 1) continue;
-        final p = s + Offset((i - 2) * 50.0 + (row.isOdd ? 25 : 0), -70.0 - row * 80);
+        final p = s + Offset((i - 2) * 50.0 + (row.isOdd ? 25 : 0), -60.0 - row * 55);
         _boom(c, p, 22 + 12 * u, u, const Color(0xFFFF8A2A));
       }
     }
@@ -116,7 +117,7 @@ extension _UltimateShapes on TopUltimate {
 
   /// 집속: 폭탄 비 — 작은 폭탄이 위에서 떨어져 바둑판 자리에서 연달아 터진다.
   void _bombRain(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var i = 0; i < (lite ? 8 : 16); i++) {
+    for (var i = 0; i < (lite ? 12 : 24); i++) {
       final at = (i * 37 % 16) / 16 * 0.5;
       final p = s + Offset(((i % 4) - 1.5) * 70, -60.0 - (i ~/ 4) * 60);
       final fall = (t - at) / 0.15;
@@ -132,16 +133,16 @@ extension _UltimateShapes on TopUltimate {
   /// 돌격: 칼바람 회오리 — 배 둘레 초승달 칼날이 돌며 퍼진다.
   void _whirl(Canvas c, Offset s, double t, {required bool lite}) {
     final e = TopUltimate._env(t);
-    final n = lite ? 4 : 8;
+    final n = lite ? 6 : 12;
     for (var i = 0; i < n; i++) {
       final a = i * 2 * math.pi / n + t * 12;
       final r = 40 + 170 * TopUltimate._ease(t);
       _line
-        ..strokeWidth = 8.5
+        ..strokeWidth = 8.5 * _k
         ..color = Color.fromRGBO(230, 245, 255, 0.85 * e);
       c.drawArc(Rect.fromCircle(center: s, radius: r), a, 0.6, false, _line);
       _line
-        ..strokeWidth = 20.4
+        ..strokeWidth = 20.4 * _k
         ..color = Color.fromRGBO(150, 200, 255, 0.25 * e);
       c.drawArc(Rect.fromCircle(center: s, radius: r), a, 0.6, false, _line);
     }
@@ -149,15 +150,15 @@ extension _UltimateShapes on TopUltimate {
 
   /// 직사: 일제 사격 — 배 양옆 대포 9문에서 위로 곧은 예광탄 줄 + 포구 섬광.
   void _broadside(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var i = 0; i < (lite ? 5 : 9); i++) {
+    for (var i = 0; i < (lite ? 7 : 13); i++) {
       final at = (i % 3) * 0.08;
       final u = (t - at) / 0.5;
       if (u < 0 || u >= 1) continue;
-      final x = s.dx + (i - (lite ? 2 : 4)) * 28.0;
+      final x = s.dx + (i - (lite ? 3 : 6)) * 22.0;
       final y0 = s.dy - 20;
       final head = y0 - TopUltimate.reach * TopUltimate._ease(u);
       _line
-        ..strokeWidth = 6.8
+        ..strokeWidth = 6.8 * _k
         ..color = Color.fromRGBO(255, 230, 150, 0.9 * (1 - u));
       c.drawLine(Offset(x, head + 60), Offset(x, head), _line);
       if (u < 0.2) _boom(c, Offset(x, y0), 10, u / 0.2, const Color(0xFFFFE07A));
@@ -166,19 +167,21 @@ extension _UltimateShapes on TopUltimate {
 
   /// 물수제비: 원반 행렬이 왼쪽에서 오른쪽으로 통통 튀며 지나간다(튈 때마다 물보라 고리).
   void _skipRow(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var r = 0; r < (lite ? 2 : 3); r++) {
-      final y = s.dy - 80.0 - r * 90;
+    for (var r = 0; r < (lite ? 2 : 4); r++) {
+      final y = s.dy - 70.0 - r * 65;
       final u = (t - r * 0.1).clamp(0.0, 1.0);
       final x = s.dx - TopUltimate.half + 2 * TopUltimate.half * u;
       final hop = math.sin(u * math.pi * 5).abs() * 24;
       _fill.color = Color.fromRGBO(120, 220, 230, TopUltimate._env(t));
-      c.drawOval(Rect.fromCenter(center: Offset(x, y - hop), width: 40, height: 22), _fill);
+      for (var d = 0; d < 3; d++) {
+        c.drawOval(Rect.fromCenter(center: Offset(x - d * 34, y - hop + d * 6), width: 40, height: 22), _fill);
+      }
       for (var k = 0; k < 5; k++) {
         final kx = s.dx - TopUltimate.half + 2 * TopUltimate.half * k / 5;
         final age = u - k / 5;
         if (age < 0 || age > 0.3) continue;
         _line
-          ..strokeWidth = 3.4
+          ..strokeWidth = 3.4 * _k
           ..color = Color.fromRGBO(220, 250, 255, 1 - age / 0.3);
         c.drawOval(Rect.fromCenter(center: Offset(kx, y), width: 20 + 80 * age, height: 8 + 30 * age), _line);
       }
@@ -187,21 +190,21 @@ extension _UltimateShapes on TopUltimate {
 
   /// 공중: 급강하 폭격 — 위에서 V자 날개 6쌍이 내리꽂혀 깃털 터짐.
   void _dive(Canvas c, Offset s, double t, {required bool lite}) {
-    for (var i = 0; i < (lite ? 3 : 6); i++) {
-      final at = i * 0.08;
+    for (var i = 0; i < (lite ? 5 : 10); i++) {
+      final at = i * 0.05;
       final u = (t - at) / 0.4;
       if (u < 0 || u >= 1.3) continue;
-      final to = s + Offset((i - 2.5) * 45, -90.0 - (i % 2) * 90);
+      final to = s + Offset((i - 4.5) * 30, -80.0 - (i % 3) * 70);
       if (u < 1) {
         final p = to + Offset(-60 * (1 - u), -200 * (1 - u));
         _line
-          ..strokeWidth = 6.8
+          ..strokeWidth = 6.8 * _k
           ..color = const Color(0xFFFFFFFF);
         c
           ..drawLine(p, p + const Offset(-26, -15), _line)
           ..drawLine(p, p + const Offset(18, -26), _line);
         _line
-          ..strokeWidth = 3.4
+          ..strokeWidth = 3.4 * _k
           ..color = const Color(0x99FFFFFF);
         c.drawLine(p, p + const Offset(-24, -80), _line);
       } else {
@@ -216,11 +219,11 @@ extension _UltimateShapes on TopUltimate {
       final u = (t - i * 0.15) / 0.75;
       if (u < 0 || u >= 1) continue;
       _line
-        ..strokeWidth = 17 * (1 - u) + 2
+        ..strokeWidth = (17 * (1 - u) + 2) * _k
         ..color = Color.fromRGBO(140, 200, 255, 0.85 * (1 - u));
       c.drawCircle(s, 30 + 260 * TopUltimate._ease(u), _line);
       _line
-        ..strokeWidth = 3.4
+        ..strokeWidth = 3.4 * _k
         ..color = Color.fromRGBO(255, 255, 255, 0.8 * (1 - u));
       c.drawCircle(s, 22 + 250 * TopUltimate._ease(u), _line);
     }
@@ -234,7 +237,7 @@ extension _UltimateShapes on TopUltimate {
     _fill.color = Color.fromRGBO(255, 250, 220, 0.9 * (1 - u));
     c.drawCircle(p, r * 0.4 * (1 - u * 0.5), _fill);
     _line
-      ..strokeWidth = 5.1 * (1 - u) + 0.5
+      ..strokeWidth = (5.1 * (1 - u) + 0.5) * _k
       ..color = const Color(0xFF1A1424).withValues(alpha: 0.6 * (1 - u));
     c.drawCircle(p, r * (0.7 + 0.5 * u), _line);
   }

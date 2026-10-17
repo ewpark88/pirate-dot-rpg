@@ -25,6 +25,11 @@ class TopUltimate {
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
   final _path = Path();
+  final _dim = Paint();
+
+  /// 선 굵기 배율(빛 번짐 패스는 더 굵게) — 화면 전체급 굵기(S1 '선 1~2px로는 가늘다').
+  double _k = 2.4;
+  static const _blur = MaskFilter.blur(BlurStyle.normal, 7);
 
   void start(String family, Offset ship, double now, {int rarity = 0}) {
     _family = family;
@@ -41,6 +46,37 @@ class TopUltimate {
     if (!active(now)) return;
     final t = (now - _at) / lifeMs;
     final s = _ship;
+    // ① 시작: 주변 25% 어둡게(필살기만 빛나게) + 흰 번쩍 — 화면 크기 레이어 없이 사각형 한 장
+    final dim = t < 0.15 ? t / 0.15 : (t > 0.6 ? math.max(0, 1 - (t - 0.6) / 0.25) : 1.0);
+    _dim.color = Color.fromRGBO(10, 14, 40, 0.25 * dim);
+    c.drawRect(Rect.fromCenter(center: s + const Offset(0, -100), width: 900, height: 1200), _dim);
+    if (t < 0.06) {
+      _dim.color = Color.fromRGBO(255, 255, 255, 0.4 * (1 - t / 0.06));
+      c.drawRect(Rect.fromCenter(center: s + const Offset(0, -100), width: 900, height: 1200), _dim);
+    }
+    // ② 빛 번짐 2겹: 굵고 흐린 패스(모양마다 블러 붓 — 오프스크린 레이어 없음) → 또렷한 패스
+    if (!lite) {
+      _k = 2.4 * 2.2;
+      _line.maskFilter = _blur;
+      _fill.maskFilter = _blur;
+      _shape(c, s, t, lite: lite);
+      _line.maskFilter = null;
+      _fill.maskFilter = null;
+    }
+    _k = 2.4;
+    _shape(c, s, t, lite: lite);
+    if (_rarity >= 5) _mythic(c, s, t);
+    // ⑤ 끝: 화면 전체 충격파 링
+    if (t > 0.62) {
+      final u = (t - 0.62) / 0.38;
+      _line
+        ..strokeWidth = 14 * (1 - u) + 2
+        ..color = Color.fromRGBO(255, 245, 210, 0.85 * (1 - u));
+      c.drawCircle(s, 40 + 420 * _ease(u), _line);
+    }
+  }
+
+  void _shape(Canvas c, Offset s, double t, {required bool lite}) {
     switch (_family) {
       case 'pierce':
         _pierce(c, s, t);
@@ -65,7 +101,6 @@ class TopUltimate {
       default:
         _carpet(c, s, t, lite: lite);
     }
-    if (_rarity >= 5) _mythic(c, s, t);
   }
 
   /// 0~1 사이 들어옴·사라짐(처음 [a]까지 차오르고 마지막 [b]부터 사라짐).

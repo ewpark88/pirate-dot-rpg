@@ -98,6 +98,8 @@ class M3Director {
     scene.topHits.feverStrike
       ..start(scene.clockMs, e.crewId, ship, near)
       ..ultimate.start(_familyOf(e.crewId), ship, scene.clockMs, rarity: _rarityOf(e.crewId)); // 계열별 고유 필살기
+    scene.shake.triggerPx(6, 450); // ④ 흔들림(멈춤은 아래 슬로모션 0.3초)
+    scene.topHits.juice.hit(scene.clockMs, Offset.zero, strong: true, shake: false); // 짧은 히트스톱 1회
     if (scene.slowMoMs <= 0) scene.slowMoMs = 300;
   }
 
