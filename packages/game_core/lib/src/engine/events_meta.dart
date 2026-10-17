@@ -150,7 +150,7 @@ class CrewSummoned extends GameEvent {
 }
 
 /// 카드 한 장을 받았다 (S3 요청 render-card-granted, 피드백 #17 '언제 선원을 얻는지 보여야').
-/// [source] 'boss'·'offline'·'starter'·'event'. [isNew]면 처음 얻은 선원(도감에 추가). 소환은 CrewSummoned가 따로 있어 안 낸다.
+/// [source] 'boss'·'offline'·'starter'·'event'·'bounty'. [isNew]면 처음 얻은 선원(도감에 추가). 소환은 CrewSummoned가 따로 있어 안 낸다.
 /// 보스 카드는 같은 틱 BossCleared 다음에 나온다.
 class CardGranted extends GameEvent {
   const CardGranted(super.tick, {required this.crewId, required this.rarity, required this.source, this.isNew = false});

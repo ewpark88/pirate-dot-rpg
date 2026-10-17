@@ -22,7 +22,7 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
   addTearDown(tester.view.reset);
   final tables = GameTables.load();
   final clock = FixedClock(initial.savedAt);
-  final host = EngineHost(tables: tables, initial: initial, clock: clock);
+  final host = EngineHost(tables: tables, initial: withGuidesSeen(initial), clock: clock);
   final ticks = <RecordedTick>[];
   final sub = host.ticks.listen(ticks.add);
   addTearDown(sub.cancel);

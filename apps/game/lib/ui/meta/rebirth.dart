@@ -265,6 +265,7 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
             chest: chest,
             pieces: e != null && e.rebirths == after.$1 ? e.gain : gain,
             bonus: percentText(AppLocalizations.of(context), bonus),
+            onSail: () => ref.read(commandSinkProvider).send(const StartVoyage()),
           ),
         ).whenComplete(open.closed),
       );

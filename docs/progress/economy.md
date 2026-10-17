@@ -5,10 +5,34 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | (사용자 퇴근으로 멈춤 2026-10-16) 아래 '남은 일' 순서대로 |
+| 바로 다음 할 일 | bossBreak 마무리(king·walrus 게이지, balance crews ±10%) → 선체 즉시 반영 재측정 → 보스 HP·첫 도전·환생 지표 → 도감 v2 수치 → 야간 리포트 |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 · S2 · 피드백 P0·계약 2건·bossPreview
+- 커밋: 0504818a 분노 정리(레인 안)+sim --boss-break, ac6cca60·d64bf3ca·9e62fdba 환영 선원 bones(첫 강화 단계 넘는 틱·건너뛰기도, CardGranted starter, 0.17분)·startingCrews octo 하나·튜토리얼 보스 ×5·피버 처치 200 → 스테이지 40에 1000,
+  9f81bad3 외형 문턱 앞당김(10분 외형 변화 9 → 15)·SimEarly, 6a2160fb 초반 무리 earlyExtra 28(스테이지 1 60마리 → 20에 덤 0), review/card-granted 4a2a2062(CardGranted·ClearHints, S1 머지), 4d5f3e8f bossPreview.
+- bossBreak(S1 결정 (b) — balance crews ±10% 유지 + 제어 1~2회·나머지 0~1회, king·walrus도 30초에 1회): L45 계측에서 제어 9명 +9~68%(출발값), damageMul 2·breakSec 2면 +6~36%.
+  king·walrus는 제어가 전설(L46+)부터이고 bossControlFactor 0.5라 지금 가중치로 30초 게이지 약 0.3·0.6 → 가중치 조정 중(미커밋 skills.json bossBreak, --boss-break-level).
+- 남은 문제: 스모크 스테이지 40 56분(목표 45~55, turtle 빠진 영향 — 야간 리포트로), 스테이지 10 6.5분(목표 7~9), 현상금 카드 CardGranted(grantBountyReward에 ctx 필요), sail-hold(S5) 들어오면 sim이 Rebirth 뒤 StartVoyage.
+- 6a2160fb는 S3 골든 반납 뒤 main에 들어간다(S1). 렌더 부담: 초반 최대 약 60마리.
+- bossBreak cooldownSec(review/break-cooldown 4cfd351f, S1 승인·S5 검토 대기). 수치 stun 0.7·slow 0.05·vuln 0.05·pull 0.03·breakSec 2·damageMul 2·cooldown 10 → L45·L60 제어 1~2회·king·walrus 1·나머지 0(기준 충족).
+  보스 피해 hippo +31·lamp +30·manta +21~36% → balance crews 순번(S4 → S5 → S2) 대기, 넘으면 powerScale 재적합. skills.json·waves.json(vanguard attackMul 1 자리) 미커밋.
+- 위협·보스 탐색(스모크 1명, 방향만): attackBase 5 → 8이면 벽 침몰 61 → 38초. vanguard attackMul 10·hpMul 10이면 파밍 피해 0.4 → 8.6%. boss attackMultiplier 25~30·hpMultiplier 40이면 보스전 피해 3 → 19~28%.
+  goldBase 3.2~3.4로 진행을 맞추는데 1명 스모크는 흔들림이 커서(스테이지 40 39~54분) 다명 sim(slot)으로 확정해야 한다.
+- 시드 1·2·3 스모크 비교(main + bossBreak, 값은 시드 순):
+  | 지표(목표) | 지금 | C1 | C2 | C3 |
+  | --- | --- | --- | --- | --- |
+  | 보스전 피해(25~45%) | 2.7·3.3·1.8 | 17·32·13 | 19·16·31 | 51·20·51 |
+  | 보통 첫 도전(70~85%) | 92·85·90 | 92·74·86 | 81·82·79 | 80·83·80 |
+  | 10단위 첫 도전(30~50%) | 25·75·75 | 50·100·75 | 75·75·100 | 50·75·25 |
+  | 파밍 파당 피해(10~30%) | 0.4·1.2·1.9 | 1.2·1.7·2.9 | 6.9·10·3.8 | 4.6·3.6·6.7 |
+  | 벽 침몰(25~40초) | 70·40·31 | 47·82·60 | 53·22·73 | 65·53·67 |
+  | 스테이지 40(45~55분) | 55·49·43 | 41·66·49 | 54·37·74 | 65·45·68 |
+  | 환생 첫 벽(0.75~0.85) | 0.50·0.80·1.00 | 0.96·0.56·0.82 | 0.95·1.00·0.53 | 0.68·0.75·0.57 |
+  C1 = attackBase 8·vanguard attackMul 10·hpMul 10·boss attack 25·boss hp 40·goldBase 3.3, C2 = attackBase 9·vanguard 30·boss attack 35, C3 = C2 + vanguard 40·boss attack 40·wallHpMultiplier 2.6.
+  다음(slot, 5명×3시간): C3에서 boss attack 35(피해 상한 45 넘김 방지)·vanguard 60(파밍 10%로)·goldBase 3.5(스테이지 40 당김). 벽 침몰은 attackBase로 안 움직인다(선체가 같이 커짐) — 지표 정의(그 벽의 선체 레벨)부터 다시 본다.
 
 ### 2026-10-16 저녁 · S2 · 멈춤 지점 (사용자 퇴근)
 - 커밋: 8825141 계열 v3 4·5단계 + 사거리 차등(균형 0.916~1.084), e74bd9f 빠른 항해 보급(fastSailSupplyLevels, S5 28ec135가 엔진 연결), 992462f 설정 flashLevel·sleepAfterSec, 이번 도감 경제 계약(progress.dex·첫 처치 젬 5).

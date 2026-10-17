@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 보스 직전 빨간 맥박: 이 시간 동안 3번 (끝이 있음 — 무한 반복 없음).
 const _pulse = Duration(milliseconds: 1800);
@@ -110,7 +111,10 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           SizedBox(
                             height: 12,
                             child: g.boss
-                                ? _TimerBar(value: (g.ticksLeft / _bossTotal).clamp(0.0, 1.0))
+                                ? TutorialSpot(
+                                    id: 'boss.timer',
+                                    child: _TimerBar(value: (g.ticksLeft / _bossTotal).clamp(0.0, 1.0)),
+                                  )
                                 : Row(
                                     children: [
                                       for (var i = 0; i < g.waves; i++) ...[
@@ -127,7 +131,10 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                                   ),
                           ),
                           // 보스전: 브레이크 막대(기절·둔화·취약·밀림이 쌓임 — 가득이면 쓰러짐).
-                          if (g.boss) ...[const SizedBox(height: 2), const BossBreakBar()],
+                          if (g.boss) ...[
+                            const SizedBox(height: 4),
+                            const TutorialSpot(id: 'boss.gauge', child: BossBreakBar()),
+                          ],
                           const SizedBox(height: 3),
                           // 해역 진행 (얇게).
                           ClipRRect(
@@ -180,7 +187,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                       Expanded(child: GoalBar(compact: true)),
                       SizedBox(width: 8),
                       // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
-                      FeverMeter(),
+                      TutorialSpot(id: 'fever.meter', child: FeverMeter()),
                     ],
                   ),
                 ),

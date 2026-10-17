@@ -28,7 +28,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          initialGameStateProvider.overrideWithValue(state),
+          initialGameStateProvider.overrideWithValue(withGuidesSeen(state)),
           battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
           clockProvider.overrideWithValue(FixedClock(state.savedAt)),
           ...extra,
@@ -62,7 +62,11 @@ void main() {
   ];
 
   testWidgets('골든: en_m3_hud (목표 막대 + 상자 + 순풍 + 퀘스트 아이콘)', (tester) async {
-    final state = base.copyWith(battle: base.battle!.copyWith(chest: const ChestView(x: 220, y: 110, ticksLeft: 500)));
+    // 튜토리얼이 끝난 HUD (가이드 카드는 en_tutorial_step2·guide_test 골든이 본다).
+    final state = base.copyWith(
+      clearTutorial: true,
+      battle: base.battle!.copyWith(chest: const ChestView(x: 220, y: 110, ticksLeft: 500)),
+    );
     await pump(
       tester,
       state,

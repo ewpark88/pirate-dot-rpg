@@ -115,6 +115,21 @@ void main() {
     expect(a.boss.breakGauge, closeTo(0.5, 1e-9));
   });
 
+  test('EnemyView.breakCooldown: 일어난 순간 1 → 줄어 0, 0이면 JSON에 없다', () {
+    final a = stoodUp(cooldownSec: 5);
+    final dt = a.ctx.tables.waves.tickMs / 1000;
+    final ticks = (5 / dt).round();
+    a.ctx.tick += ticks ~/ 2;
+    a.r.tickBossBreak();
+    expect(a.boss.view().breakCooldown, closeTo(0.5, 1 / ticks));
+    expect(a.boss.view().toJson()['breakCooldown'], isNotNull);
+    expect(EnemyView.fromJson(a.boss.view().toJson()).breakCooldown, a.boss.view().breakCooldown);
+    a.ctx.tick += ticks;
+    a.r.tickBossBreak();
+    expect(a.boss.view().breakCooldown, 0);
+    expect(a.boss.view().toJson().containsKey('breakCooldown'), isFalse);
+  });
+
   test('cooldownSec가 없으면(또는 0이면) 지금 그대로 — 일어난 바로 다음 틱부터 쌓인다, 이벤트도 같다', () {
     List<String> run({num? cooldownSec}) {
       final a = stoodUp(cooldownSec: cooldownSec);
