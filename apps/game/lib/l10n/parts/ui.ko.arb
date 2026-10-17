@@ -1152,48 +1152,18 @@
   "uiStoryTapNext": "톡 하면 다음",
   "uiShopTitle": "상점",
   "uiShopNoAds": "광고 없음",
-  "uiShopSubLeft": "구독 {days}일 남음",
   "uiShopBuy": "{price}",
-  "uiShopPrice": "{n}원",
-  "uiShopOff": "{pct}% 할인",
   "uiShopBest": "인기",
-  "uiShopGemsS": "젬 한 줌",
-  "uiShopGemsM": "젬 상자",
-  "uiShopGemsL": "젬 보물함",
-  "uiShopStarter": "스타터 팩",
-  "uiShopNoAdsName": "광고 제거",
-  "uiShopSubName": "선장 구독 30일",
   "uiShopGemsN": "젬 {n}",
   "uiShopSummonN": "소환 {n}회",
   "uiShopDailyGems": "매일 젬 {n}",
   "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
   "uiShopLater": "나중에",
   "uiShopOpen": "상점 (운영자)",
-  "@uiShopSubLeft": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "@uiShopBuy": {
     "placeholders": {
       "price": {
         "type": "String"
-      }
-    }
-  },
-  "@uiShopPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
-  "@uiShopOff": {
-    "placeholders": {
-      "pct": {
-        "type": "int"
       }
     }
   },
@@ -1428,6 +1398,93 @@
   "uiListSep": " · ",
   "uiGoldOver": "+{n} 넘침",
   "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiShopSecStarter": "처음 한 번",
+  "uiShopSecConvenience": "편의",
+  "uiShopSecGems": "젬",
+  "uiShopSecMonthly": "월간 젬",
+  "uiShopSecPass": "항해 패스",
+  "uiShopSecSkins": "배 스킨",
+  "uiShopFirstDouble": "첫 구매 ×2",
+  "uiShopOwned": "보유 중",
+  "uiShopDaysLeft": "{n}일 남음",
+  "@uiShopDaysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopClaimToday": "오늘 젬 받기",
+  "uiShopClaimedToday": "오늘 받았어요",
+  "uiShopRightNoAds": "광고 없이 보상",
+  "uiShopRightSpeed": "언제나 2배속",
+  "uiShopRightOffline": "복귀 보상 {h}시간",
+  "@uiShopRightOffline": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopRightPass": "패스 유료 보상",
+  "uiShopDays": "{n}일",
+  "@uiShopDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopForever": "영구",
+  "uiShopHeroCards": "영웅 카드 {n}장",
+  "@uiShopHeroCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSkinN": "배 스킨 {n}종",
+  "@uiShopSkinN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEndsIn": "{d}일 {h}시간 남음",
+  "@uiShopEndsIn": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEmpty": "지금은 상점을 열 수 없어요",
+  "uiPurchasePending": "결제 처리 중이에요…",
+  "uiPurchaseFailed": "결제가 되지 않았어요",
+  "uiPurchaseUnavailable": "지금은 결제할 수 없어요",
+  "uiPurchaseOwned": "이미 가진 상품이에요",
+  "uiPurchaseDone": "구매 완료! {what}",
+  "@uiPurchaseDone": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWonSign": "₩",
+  "uiWonPrice": "{n}원",
+  "@uiWonPrice": {
     "placeholders": {
       "n": {
         "type": "String"

@@ -1152,48 +1152,18 @@
   "uiStoryTapNext": "Tap for next",
   "uiShopTitle": "Shop",
   "uiShopNoAds": "No ads",
-  "uiShopSubLeft": "Subscribed · {days} days left",
   "uiShopBuy": "{price}",
-  "uiShopPrice": "{n} KRW",
-  "uiShopOff": "{pct}% off",
   "uiShopBest": "Popular",
-  "uiShopGemsS": "Handful of gems",
-  "uiShopGemsM": "Gem chest",
-  "uiShopGemsL": "Gem hoard",
-  "uiShopStarter": "Starter pack",
-  "uiShopNoAdsName": "Remove ads",
-  "uiShopSubName": "Captain pass · 30 days",
   "uiShopGemsN": "Gems ×{n}",
   "uiShopSummonN": "Summons ×{n}",
   "uiShopDailyGems": "Daily gems ×{n}",
   "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
   "uiShopLater": "Later",
   "uiShopOpen": "Shop (operator)",
-  "@uiShopSubLeft": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "@uiShopBuy": {
     "placeholders": {
       "price": {
         "type": "String"
-      }
-    }
-  },
-  "@uiShopPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
-  "@uiShopOff": {
-    "placeholders": {
-      "pct": {
-        "type": "int"
       }
     }
   },
@@ -1428,6 +1398,93 @@
   "uiListSep": " · ",
   "uiGoldOver": "+{n} extra",
   "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiShopSecStarter": "Just once",
+  "uiShopSecConvenience": "Convenience",
+  "uiShopSecGems": "Gems",
+  "uiShopSecMonthly": "Monthly gems",
+  "uiShopSecPass": "Voyage pass",
+  "uiShopSecSkins": "Ship skins",
+  "uiShopFirstDouble": "First buy ×2",
+  "uiShopOwned": "Owned",
+  "uiShopDaysLeft": "{n} days left",
+  "@uiShopDaysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopClaimToday": "Claim today's gems",
+  "uiShopClaimedToday": "Claimed today",
+  "uiShopRightNoAds": "Rewards without ads",
+  "uiShopRightSpeed": "Always 2× speed",
+  "uiShopRightOffline": "Offline rewards up to {h}h",
+  "@uiShopRightOffline": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopRightPass": "Premium pass rewards",
+  "uiShopDays": "{n} days",
+  "@uiShopDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopForever": "Forever",
+  "uiShopHeroCards": "Hero card ×{n}",
+  "@uiShopHeroCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSkinN": "Ship skin ×{n}",
+  "@uiShopSkinN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEndsIn": "Ends in {d}d {h}h",
+  "@uiShopEndsIn": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEmpty": "The shop isn't available right now",
+  "uiPurchasePending": "Processing your payment…",
+  "uiPurchaseFailed": "The payment didn't go through",
+  "uiPurchaseUnavailable": "Payments aren't available right now",
+  "uiPurchaseOwned": "You already own this",
+  "uiPurchaseDone": "Purchased! {what}",
+  "@uiPurchaseDone": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWonSign": "₩",
+  "uiWonPrice": "{n} KRW",
+  "@uiWonPrice": {
     "placeholders": {
       "n": {
         "type": "String"

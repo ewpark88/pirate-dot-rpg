@@ -203,7 +203,7 @@ class TrialEndDialog extends ConsumerWidget {
                 child: Text(l10n.uiTrialAdMore),
               ),
             ),
-          if (ref.watch(shopEnabledProvider)) ...[
+          if (ref.watch(shopOpenProvider)) ...[
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
