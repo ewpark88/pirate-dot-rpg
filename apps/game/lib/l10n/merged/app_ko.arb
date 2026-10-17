@@ -719,7 +719,6 @@
   "uiSettingsFlashFull": "강",
   "uiSettingsSleepAfter": "절전 화면까지",
   "uiSettingsSleepAfterSub": "화면을 안 만지면 어둡게 쉬어요 · 배는 계속 싸워요",
-  "uiSettingsSleepOff": "끔",
   "uiSettingsSleepMin": "{min}분",
   "@uiSettingsSleepMin": {
     "placeholders": {

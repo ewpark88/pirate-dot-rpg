@@ -726,7 +726,6 @@
   "uiSettingsFlashFull": "Full",
   "uiSettingsSleepAfter": "Sleep screen after",
   "uiSettingsSleepAfterSub": "Dims when untouched · your ship keeps fighting",
-  "uiSettingsSleepOff": "Off",
   "uiSettingsSleepMin": "{min} min",
   "@uiSettingsSleepMin": {
     "placeholders": {

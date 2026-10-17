@@ -70,6 +70,8 @@ BattleGame withTopTexts(BattleGame game, BuildContext context) {
     fled: l10n.uiBountyFled,
     // 카드 획득 연출(S3 #17): 첫 선원 '새 동료!'.
     newCrew: l10n.uiNewCrew,
+    // 보스 쓰러짐 연출(S3 a821bf7e).
+    bossBreak: l10n.uiBossBreak,
   );
   return game;
 }

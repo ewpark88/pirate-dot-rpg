@@ -14,7 +14,12 @@ void main() {
   // 가이드 v2 (docs/specs/ui-guide-v2.md): 단계마다 큰 카드(무엇 + 왜) · 가리킨 곳만 밝게 + 손가락 · 밝은 곳 밖 누름은 막음.
 
   testWidgets('기준 8: 2단계 — 카드 "배를 강화해요" + 왜 한 줄, 배 탭을 가리키고 누르면 대포 버튼', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame').copyWith(tutorialStep: 2), keepTutorial: true, openTab: false);
+    await pumpGame(
+      tester,
+      loadFixture('stage37_midgame').copyWith(tutorialStep: 2),
+      keepTutorial: true,
+      openTab: false,
+    );
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Upgrade your ship'), findsOneWidget);
     expect(find.textContaining('stronger cannon'), findsOneWidget);

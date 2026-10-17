@@ -66,7 +66,7 @@ class GuideCardPlacer extends StatelessWidget {
             );
             final h = box.maxHeight;
             // 전투 카드(피버·보스)는 늘 도크 위 — 화면 가운데·위쪽 연출('FEVER!'·보스 이름표)을 가리지 않게.
-          final hole = holes.isEmpty || card.battle ? null : holes.first;
+            final hole = holes.isEmpty || card.battle ? null : holes.first;
             // 위에 놓을 자리가 넉넉하면(가리킨 곳이 화면 아래쪽) 위, 아니면 아래.
             final above = hole != null && hole.center.dy > h / 2;
             return Stack(
