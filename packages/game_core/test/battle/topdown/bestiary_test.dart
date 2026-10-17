@@ -153,10 +153,11 @@ void main() {
       initial: GameState.newGame(playerId: 'x', seed: 1, now: start).copyWith(
         progress: const Progress(stage: 5, bestStage: 5),
         crews: const {'octo': CrewState(level: 60), 'pang': CrewState(level: 60), 'sword': CrewState(level: 60)},
+        ship: const ShipState().withLevel('hull', 30), // 보스 시간 제한 없음·공격 ×35 — 강화 안 한 배는 먼저 가라앉는다
       ),
     )..enqueue(const OpSpawnBoss());
     final events = <GameEvent>[];
-    for (var i = 0; i < 1200 && events.whereType<BossCleared>().isEmpty; i++) {
+    for (var i = 0; i < 2400 && events.whereType<BossCleared>().isEmpty; i++) {
       e.tick();
       events.addAll(e.drainEvents());
     }
