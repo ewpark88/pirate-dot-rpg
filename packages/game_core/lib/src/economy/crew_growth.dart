@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show canLevelUp, nextPromotion;
 import 'package:game_core/src/economy/crew_stats.dart';
@@ -53,7 +55,7 @@ CrewGrowthView? crewGrowth(GameState s, GameTables t, String crewId) {
     cardsToLevel: !open || canLevelUp(crew, t, maxLevel: max) || need <= 0
         ? 0
         : ((need - crew.exp) / (perCard <= 0 ? 1 : perCard)).ceil(),
-    levelsToPromote: p == null ? null : (p.level - crew.level).clamp(0, 1 << 30),
+    levelsToPromote: p == null ? null : math.max(0, p.level - crew.level),
     promoteGain: p == null ? 0 : g.promotionMultiplier - 1,
   );
 }
