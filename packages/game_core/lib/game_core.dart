@@ -9,6 +9,7 @@ export 'src/battle/topdown/geometry.dart' show inCamera; // 화면 안 적 세�
 export 'src/economy/achievements.dart'
     show AchievementSystem, AchievementView, achievementValue, achievementsClaimable, achievementsView; // 업적 시트(UI)
 export 'src/economy/ads.dart' show canWatchAd, tailwindRemaining;
+export 'src/economy/boss_dex.dart'; // 도감 보스 능력치(S4 화면)
 export 'src/economy/cards.dart';
 export 'src/economy/chest.dart' show chestReward;
 export 'src/economy/crew_stats.dart';
