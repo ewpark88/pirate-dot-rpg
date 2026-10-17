@@ -53,7 +53,7 @@ class BattleSystem implements GameSystem {
         final f = _sync(state, ctx);
         if (f.bossActive) return state;
         f.foes.clear();
-        startBoss(f, state.progress.stage, ctx);
+        startBoss(f, state.progress.stage, ctx, hpScale: earlyBossScale(state, ctx.tables)); // 초반 감쇠도 같게
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
       case StartVoyage():
         final p = state.progress;

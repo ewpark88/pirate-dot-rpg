@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
@@ -159,11 +161,21 @@ BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
 }
 
 /// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`, 스테이지 1~earlyStageMax는 × earlyAttackMultiplier.
+/// (공격은 HP처럼 완만하게 줄이지 않는다 — 시간 제한이 없어 배가 안 가라앉으면 튜토리얼 실패 보스와 끝없이 싸운다.)
 BigNum bossAttack(WavesTable w, int stage) => stageCurve(
   w.attackBase,
   w.attackGrowth,
   stage,
 ).times(w.bossAttackMultiplier * (stage <= w.earlyStageMax ? w.earlyAttackMultiplier : 1));
+
+/// 초반 보스 HP 감쇠: 스테이지 1~earlyStageMax는 [early] 그대로, 그 뒤 `boss.earlyRampToStage`까지 기하급수로 1에 닿는다
+/// (S3 첫 15분 점검 2026-10-17 — 스테이지 2 → 3에서 보스 HP가 67배로 뛰는 절벽에 사람식 강화가 7번 실패).
+double earlyRamp(WavesTable w, int stage, double early) {
+  if (stage <= w.earlyStageMax) return early;
+  final to = w.raw.obj('boss').integer('earlyRampToStage');
+  if (stage >= to) return 1;
+  return math.pow(early, (to - stage) / (to - w.earlyStageMax)).toDouble();
+}
 
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.
@@ -176,13 +188,16 @@ int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0, double? limitSec
 }
 
 /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
+/// 첫 회차 초반 보스 HP 감쇠만([earlyRamp]) — '보스 도전' 버튼(재도전)이 쓴다. 튜토리얼 실패 배율은 첫 만남에만.
+double earlyBossScale(GameState s, GameTables t) =>
+    s.progress.rebirths == 0 ? earlyRamp(t.waves, s.progress.stage, t.waves.earlyHpMultiplier) : 1.0;
+
 double tutorialBossScale(GameState s, GameTables t) {
   final w = t.waves;
-  final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
-  final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
-      ? w.tutorialFailHpMultiplier
-      : 1.0;
-  return early * fail;
+  final early = earlyBossScale(s, t);
+  // 튜토리얼 실패 보스(3단계)는 감쇠 없이 × tutorialFailHpMultiplier — 한 번은 꼭 진다(설계서 4.12).
+  final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage;
+  return fail ? w.tutorialFailHpMultiplier : early;
 }
 
 /// 벽 보스 (사용자 '너무 쉽다', 2026-10-16): waves.boss.wallEvery 스테이지마다(해역 보스 자리) 체력 × wallHpMultiplier,
