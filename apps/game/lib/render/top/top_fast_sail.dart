@@ -176,6 +176,7 @@ class TopTexts {
     this.wanted = 'WANTED',
     this.fled = 'Fled!',
     this.newCrew = 'NEW CREW!',
+    this.bossBreak = 'BREAK!',
   });
 
   final String start;
@@ -189,6 +190,9 @@ class TopTexts {
 
   /// 새 동료 카드 위 문구(피드백 #17, S4 ARB).
   final String newCrew;
+
+  /// 보스 브레이크 도장(S4 ARB uiBossBreak).
+  final String bossBreak;
 
   static String _endedEn(int from, int to) => 'STAGE $from → $to CLEARED!';
 }

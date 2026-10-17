@@ -1415,6 +1415,10 @@ const Map<String, String> rawTables = {
     "adReward": {
       "fx": null,
       "sfx": "promote"
+    },
+    "bossBroken": {
+      "fx": null,
+      "sfx": "ultimate"
     }
   },
   "projectiles": {

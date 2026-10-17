@@ -47,7 +47,7 @@ def croc(f):
     pts, rad = [], []
     for k in range(26):
         t = k / 25
-        pts.append((C + math.sin(t * 2.6 + 0.4) * 9 * t * sw, 52 + t * 34))
+        pts.append((C + math.sin(t * 2.6 + 0.4) * 15 * t * sw, 52 + t * 34))
         rad.append(7.5 - 6.3 * t)
     g.chain(pts, rad, skin)
     for k in range(2, 24, 3):  # 꼬리 가시
@@ -56,7 +56,7 @@ def croc(f):
     # 다리(위 팔꿈치 → 아래 발, 발가락 셋)
     for side in (-1, 1):
         for (ly, fwd) in ((30, -1), (54, 1)):
-            step = 3 if f == (side > 0) else -2
+            step = 5 if f == (side > 0) else -4
             ex, ey = C + side * 16, ly + fwd * 1
             kx, ky = C + side * 22, ly + fwd * (7 + step)
             g.chain([(C + side * 10, ly), (ex, ey), (kx, ky)], [3.4, 2.6, 2.4], skin)
@@ -71,7 +71,7 @@ def croc(f):
     for y in range(27, 63, 2):
         g.put(C, y, skin[0])
     # 머리·주둥이(하나의 쐐기, 끝이 둥근) — 2프레임째 입을 벌려 붉은 속
-    gap = 1.4 if f else 0.0
+    gap = 2.2 if f else 0.0
     g.blob(C, 21, 10.5, 8, skin)
     g.poly([(C - 7.5 - gap, 20), (C + 7.5 + gap, 20), (C + 5 + gap, 3), (C - 5 - gap, 3)], None, skin)
     g.blob(C, 4, 5 + gap, 3.4, skin, sep=False)
@@ -95,14 +95,14 @@ def whale(f):
     """괴물 고래: 폭풍 먹구름 색, 따개비·흉터, 박힌 작살, 붉은 눈, 숨구멍 물보라."""
     g = Can(N)
     body, belly = ramp((70, 84, 118)), ramp((150, 160, 180))
-    fl = 4 if f else -4
+    fl = 7 if f else -7
     # 꼬리 지느러미
     g.chain([(C, 64), (C, 72), (C + fl * 0.3, 78)], [9, 6, 4], body)
     for side in (-1, 1):
         g.blob(C + side * 12 + fl * 0.4, 82, 12, 4.2, body, ang=side * 0.35)
     # 가슴지느러미
     for side in (-1, 1):
-        g.blob(C + side * 23, 40 + side * fl * 0.3, 13, 5, body, ang=side * (0.55 + (0.1 if f else 0)))
+        g.blob(C + side * 23, 40 + (3 if f else -2), 13, 5, body, ang=side * (0.4 + (0.35 if f else 0)))
     g.blob(C, 38, 19, 31, body)
     g.blob(C, 18, 14, 13, body, lift=0.05)
     # 따개비·흉터
@@ -136,7 +136,7 @@ def slime(f):
     g = Can(N)
     jelly = [(60, 130, 190, 230), (90, 170, 220, 215), (130, 204, 240, 205), (180, 230, 250, 200), (230, 248, 255, 220)]
     ice = ramp((190, 226, 246))
-    wob = 2.2 if f else -2.2
+    wob = 3.6 if f else -3.6
     rx, ry = 31 + wob, 28 - wob * 0.7
     # 녹아 흐른 바닥 웅덩이
     g.blob(C, 50, rx + 6, ry * 0.75, None, flat=(90, 160, 210, 120), sep=False)
@@ -169,7 +169,7 @@ def leviathan(f):
     """레비아탄: S자로 휜 흑요석 바다용, 등가시, 용암 금, 뿔 달린 머리."""
     g = Can(N)
     scale, lava, spine = ramp((120, 40, 44)), ramp((255, 120, 30)), ramp((70, 60, 70))
-    ph = 0.6 if f else 0.0
+    ph = 1.3 if f else 0.0
     pts, rad = [], []
     for k in range(40):
         t = k / 39
@@ -213,7 +213,7 @@ def kraken_titan(f):
         pts, rad = [], []
         for k in range(22):
             t = k / 21
-            bend = math.sin(t * 3.2 + i * 1.3 + (0.9 if f else 0)) * 0.42 * t
+            bend = math.sin(t * 3.2 + i * 1.3 + (1.8 if f else 0)) * 0.48 * t
             r = 10 + t * 33
             pts.append((C + math.cos(a + bend) * r, 40 + math.sin(a + bend) * r))
             rad.append(4.8 - 3.6 * t)
@@ -225,7 +225,7 @@ def kraken_titan(f):
         pts, rad = [], []
         for k in range(24):
             t = k / 23
-            a = -0.5 + t * 2.1 + (0.15 if f else 0)
+            a = -0.5 + t * 2.1 + (0.45 if f else 0)
             pts.append((C + side * (10 + math.sin(a) * 28), 30 - math.cos(a) * 24 + t * 6))
             rad.append(2.4 - 0.8 * t)
         g.chain(pts, rad, body)
@@ -264,17 +264,18 @@ def poseidon(f):
     for side in (-1, 1):
         g.line(C + side * 3, 46, C + side * 9, 50, skin[1])  # 가슴 근육 그늘
     # 팔: 오른팔(화면 오른쪽) 앞으로 삼지창, 왼팔 옆으로
-    g.chain([(C + 16, 44), (C + 22, 36), (C + 24, 28)], [5, 4.4, 3.8], skin)
-    g.chain([(C - 16, 44), (C - 25, 48 + sw), (C - 30, 54 + sw)], [5, 4.4, 3.6], skin)
+    up = 5 * sw  # 둘째 프레임: 삼지창을 치켜든다
+    g.chain([(C + 16, 44), (C + 22, 36 - up), (C + 24, 28 - up)], [5, 4.4, 3.8], skin)
+    g.chain([(C - 16, 44), (C - 25, 48 + 3 * sw), (C - 30, 54 + 4 * sw)], [5, 4.4, 3.6], skin)
     # 삼지창(금, 위로)
     tx = C + 24
-    g.line(tx, 58, tx, 6, GOLD[1], w=2)
-    g.line(tx - 0.6, 58, tx - 0.6, 6, GOLD[3])
-    g.line(tx - 6, 10, tx + 6, 10, GOLD[2], w=2)
+    g.line(tx, 58 - up, tx, 6 - up, GOLD[1], w=2)
+    g.line(tx - 0.6, 58 - up, tx - 0.6, 6 - up, GOLD[3])
+    g.line(tx - 6, 10 - up, tx + 6, 10 - up, GOLD[2], w=2)
     for dx in (-6, 0, 6):
-        g.spike(tx + dx, 10, tx + dx, 1 - (2 if dx == 0 else 0), 1.6, GOLD)
+        g.spike(tx + dx, 10 - up, tx + dx, 1 - up - (2 if dx == 0 else 0) + (3 if up else 0), 1.6, GOLD)
     for k in range(3):  # 삼지창 빛
-        g.put(tx + (k - 1) * 6, 2 + (k % 2) * sw, (220, 255, 250))
+        g.put(tx + (k - 1) * 6, 2 - up + 3 * (1 if up else 0) + (k % 2) * sw, (220, 255, 250))
     # 어깨·머리
     for side in (-1, 1):
         g.blob(C + side * 14, 42, 8, 6, skin)

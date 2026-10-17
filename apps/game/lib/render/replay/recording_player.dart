@@ -36,6 +36,9 @@ class EnemyPose {
   /// 돌격대(EnemyView.vanguard, S5 chargers) — 붉은 테·물보라 꼬리.
   bool vanguard = false;
 
+  /// 보스 브레이크 게이지 0~1(EnemyView.breakRatio) — 체력 막대 아래 노란 막대.
+  double breakRatio = 0;
+
   void _set(EnemyView v, double nx, double ny) {
     id = v.id;
     kind = v.kind;
@@ -51,6 +54,7 @@ class EnemyPose {
     heading = v.heading;
     emerging = v.emerging;
     vanguard = v.vanguard;
+    breakRatio = v.breakRatio;
     x = nx;
     y = ny;
     drawX = nx;

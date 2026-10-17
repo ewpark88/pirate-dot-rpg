@@ -91,6 +91,10 @@
     "adReward": {
       "fx": null,
       "sfx": "promote"
+    },
+    "bossBroken": {
+      "fx": null,
+      "sfx": "ultimate"
     }
   },
   "projectiles": {
