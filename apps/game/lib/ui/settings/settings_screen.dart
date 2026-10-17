@@ -30,8 +30,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    // Settings에는 ==가 없어서 값 9개를 레코드로 골라 구독한다.
-    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, notifications) = ref.watch(
+    // Settings에는 ==가 없어서 값 10개를 레코드로 골라 구독한다.
+    final (lang, bgm, sfx, vibration, shake, flash, powerSave, autoBoss, autoUltimate, notifications) = ref.watch(
       gameStateProvider.select((s) {
         final v = s.settings;
         return (
@@ -43,6 +43,7 @@ class SettingsScreen extends ConsumerWidget {
           v.flash,
           v.powerSave,
           v.autoBoss,
+          v.autoUltimate,
           v.notifications,
         );
       }),
@@ -58,6 +59,8 @@ class SettingsScreen extends ConsumerWidget {
       ('flash', l10n.uiSettingsFlash, flash),
       ('powerSave', l10n.uiSettingsPowerSave, powerSave),
       ('autoBoss', l10n.uiSettingsAutoBoss, autoBoss),
+      // 선장 필살기: 켜면 게이지가 차는 즉시 사용, 끄면 버튼을 직접(S2 boss-feel, 기본 켬).
+      ('autoUltimate', l10n.uiSettingsAutoUltimate, autoUltimate),
       // 자동 강화 토글 없음 — 보상형 광고 10분으로만(사용자 지시 2026-10-16, 상단 바 '자동').
       // 오프라인 보상 가득 알림 (세이브 v4, ADR-0009).
       ('notifications', l10n.uiSettingsNotifications, notifications),
@@ -110,7 +113,7 @@ class SettingsScreen extends ConsumerWidget {
                   for (final (title, keys) in [
                     (l10n.uiSettingsSound, const ['bgm', 'sfx', 'vibration']),
                     (l10n.uiSettingsDisplay, const ['shake', 'flash', 'powerSave']),
-                    (l10n.uiSettingsPlay, const ['autoBoss', 'notifications']),
+                    (l10n.uiSettingsPlay, const ['autoBoss', 'autoUltimate', 'notifications']),
                   ])
                     _Group(
                       title: title,
@@ -196,6 +199,7 @@ IconData _settingIcon(String key) => switch (key) {
   'shake' => Icons.waves_rounded,
   'powerSave' => Icons.battery_saver_rounded,
   'autoBoss' => Icons.military_tech_rounded,
+  'autoUltimate' => Icons.bolt_rounded,
   _ => Icons.notifications_rounded,
 };
 

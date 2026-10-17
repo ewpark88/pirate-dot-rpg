@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/battle_providers.dart' show battleGameProvider, hasBattleGameProvider;
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
@@ -54,11 +55,20 @@ class _BossDamageGateState extends ConsumerState<BossDamageGate> {
         ];
         _wait?.cancel();
         _wait = Timer(bossDamageDelay, () async {
+          await _finishDone();
           await _burst(e, cards);
           _show(e);
         });
       }
     });
+  }
+
+  /// 렌더 보스 처치 피니시(슬로·VICTORY!, S3 bossFinishMs)가 끝날 때까지 기다린다(최대 3초).
+  Future<void> _finishDone() async {
+    for (var i = 0; i < 30 && mounted && ref.read(hasBattleGameProvider); i++) {
+      if (ref.read(battleGameProvider).bossFinishMs <= 0) return;
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
   }
 
   Future<void> _burst(BossCleared e, List<CardGranted> cards) async {

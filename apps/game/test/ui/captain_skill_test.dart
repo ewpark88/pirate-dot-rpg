@@ -51,9 +51,26 @@ void main() {
     expect(used, 0);
   });
 
-  testWidgets('기본(계약 전)은 숨김', (tester) async {
-    await pumpGame(tester, _farming(), openTab: false);
+  // 엔진 연결(S2 da9ac0fc): BattleView.captainGauge → 원, 가득이면 누름 = TriggerUltimate. 전투가 없으면 숨김.
+  testWidgets('엔진 게이지: 가득이면 누르면 TriggerUltimate · 전투 없으면 숨김', (tester) async {
+    final s = _farming();
+    final full = s.copyWith(battle: s.battle!.copyWith(captainGauge: 1));
+    final log = await pumpGame(tester, full, openTab: false);
+    await tester.tap(find.byKey(const Key('captain.skill')));
+    await tester.pump();
+    expect(log.sent.whereType<TriggerUltimate>(), hasLength(1));
+    await tester.pump(const Duration(milliseconds: 500));
+    replaceState(tester, GameState.fromJson(s.toJson()));
+    await tester.pump();
     expect(find.byKey(const Key('captain.skill')), findsNothing);
+  });
+
+  test('필살기 안내는 자동 필살기를 끈 사람에게만(가득일 때)', () {
+    final s = _farming();
+    final full = s.copyWith(battle: s.battle!.copyWith(captainGauge: 1));
+    expect(captainSkillReady(full), isFalse); // 기본 자동 켬
+    final manual = full.copyWith(settings: full.settings.withValue('autoUltimate', false));
+    expect(captainSkillReady(manual), isTrue);
   });
 
   group('골든', () {
