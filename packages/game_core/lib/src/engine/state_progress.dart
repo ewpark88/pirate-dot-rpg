@@ -22,6 +22,7 @@ class Progress {
     this.seaEventLast,
     this.challengeInSec,
     this.dex = const DexState(),
+    this.sailHold = false,
   });
 
   factory Progress.fromJson(Json j) => Progress(
@@ -43,6 +44,7 @@ class Progress {
     seaEventLast: (j['seaEvents'] as Json?)?['last'] as String?,
     challengeInSec: (j['challengeInSec'] as num?)?.toDouble(),
     dex: j['dex'] == null ? const DexState() : DexState.fromJson(j['dex'] as Json),
+    sailHold: j['sailHold'] as bool? ?? false,
   );
 
   final int stage;
@@ -87,6 +89,10 @@ class Progress {
   /// 바다 괴물 도감: 만난 것·처치 수 (선택 키 dex, 환생해도 유지).
   final DexState dex;
 
+  /// 환생 직후 출항 대기(사용자 피드백 #19 — 환생 지도 '출항!'을 눌러야 빠른 항해 시작, 선택 키): 무리·보스·돌파가 열리지 않는다.
+  /// StartVoyage가 푼다. 기본값이면 본문에 없다(옛 세이브 그대로).
+  final bool sailHold;
+
   Progress copyWith({
     int? stage,
     int? wave,
@@ -106,6 +112,7 @@ class Progress {
     String? seaEventLast,
     double? challengeInSec,
     DexState? dex,
+    bool? sailHold,
   }) => Progress(
     stage: stage ?? this.stage,
     wave: wave ?? this.wave,
@@ -123,6 +130,7 @@ class Progress {
     seaEventLast: seaEventLast ?? this.seaEventLast,
     challengeInSec: challengeInSec ?? this.challengeInSec,
     dex: dex ?? this.dex,
+    sailHold: sailHold ?? this.sailHold,
   );
 
   Json toJson() => {
@@ -141,6 +149,7 @@ class Progress {
     if (seaEventInSec != null || seaEventLast != null) 'seaEvents': {'inSec': seaEventInSec, 'last': seaEventLast},
     if (challengeInSec != null) 'challengeInSec': challengeInSec,
     if (!dex.isEmpty) 'dex': dex.toJson(),
+    if (sailHold) 'sailHold': true,
   };
 }
 
