@@ -1,11 +1,13 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:flutter/painting.dart' show TextDirection, TextPainter, TextSpan, TextStyle;
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/slot_states.dart';
+import 'package:pirate_dot/render/text/outline_digits.dart';
 
 /// 새 스킨 r1(파스텔·통통 버튼·PB 카드, 사용자 승인 — S4 docs/specs/ui-skin-r1.md)의 선원 줄. 값은 fx_map `slotSkin`(dp).
 /// - 줄: 크림 바탕, 위 경계선 대신 위로 부드러운 그림자.
@@ -165,9 +167,56 @@ class SlotSkinPainter {
       }
       _paint.color = Color(_familyColor[_family[slot.crewId]] ?? 0xFFFFFFFF);
       c.drawCircle(Offset(ir.left + _px(5), ir.top + _px(5)), _px(3), _paint);
+      final lv = scene.crewLevels[slot.crewId];
+      if (lv != null) _level(c, ir, lv);
     }
     return true;
   }
+
+  /// 테두리 숫자 아틀라스(HudPainter가 넣는다) — 선원 칸 큰 Lv.
+  OutlineDigits? digits;
+  (double, TextPainter, TextPainter)? _lv;
+
+  /// 큰 Lv(사용자 'Lv 크게', S4 카드와 같은 기준): 오른쪽 아래에 작은 금빛 'Lv' + 칸 폭 약 40% 높이의 큰 테두리 숫자.
+  void _level(Canvas c, Rect ir, int lv) {
+    final d = digits;
+    if (d == null) return;
+    final text = '$lv';
+    // 칸 폭 40% 높이가 기본, 'Lv'+숫자가 칸 폭 92%를 넘으면(세 자리 이상) 그만큼 줄인다.
+    var h = ir.width * 0.4;
+    final full = d.layout.measure(text, height: h) + h * 0.42 * 0.95;
+    if (full > ir.width * 0.92) h *= ir.width * 0.92 / full;
+    final w = d.layout.measure(text, height: h);
+    final x = ir.right - w - ir.width * 0.04;
+    final y = ir.bottom - h * 0.92;
+    d.paint(c, Offset(x, y), text, height: h);
+    final size = h * 0.42;
+    var lab = _lv;
+    if (lab == null || lab.$1 != size) lab = _lv = (size, _lvText(size, stroke: true), _lvText(size, stroke: false));
+    final at = Offset(x - lab.$2.width * 0.85, y + h * 0.42);
+    lab.$2.paint(c, at);
+    lab.$3.paint(c, at);
+  }
+
+  /// 'Lv' 글자: 진한 갈색 외곽선 한 장 + 금빛 글자 한 장(겹쳐 그린다).
+  static TextPainter _lvText(double size, {required bool stroke}) => TextPainter(
+    text: TextSpan(
+      text: 'Lv',
+      style: TextStyle(
+        fontFamily: 'Jua',
+        fontSize: size,
+        height: 1,
+        foreground: stroke
+            ? (Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = size * 0.28
+                ..strokeJoin = StrokeJoin.round
+                ..color = const Color(0xFF3A2410))
+            : (Paint()..color = const Color(0xFFFFD45A)),
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
 
   /// 비었지만 열림: 밝은 바탕 + 하늘색 점선 테두리 + 가운데 '+'가 살짝 맥박(누르라는 느낌).
   void _openSlot(Canvas c, Rect r) {
