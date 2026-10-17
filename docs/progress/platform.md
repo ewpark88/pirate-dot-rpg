@@ -1,5 +1,14 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 늦은 밤 · S5 · 쏘기 직전 예고·상세 피해 줄·BGM 믹스
+- **현재 위치**: review/enemy-windup 08fccf30 — S4(피해 줄 UI) 검토·S1 머지 대기.
+- 한 일: EnemyWindup(ranged·boss·volley, waves.top.windupSec 0.4, sim 불변 시험), 선원 상세 피해 줄(#13), BGM 기본 믹스 0.7.
+- 남은 ⬜(전부 폰·사람): 실기기 광고·UMP·알림·소리 확인, Firebase 수신, app-ads.txt 판정, 개인정보처리방침 게시, 실기기 손맛·60fps·HD 성능 재측정.
+- 배운 것
+  - 무적이면 보스 기본 포탄 이벤트가 아예 안 나온다(combat이 무적 검사를 먼저) — 보스 발사 시험은 무적 끄고.
+  - 셸에서 `cat > 파일`을 입력 없이 두면 명령이 멈춘다 — 파일 쓰기는 파일 도구로.
+  - 예고 0(끔) 처리: '남은 틱 == 예고 틱' 비교는 예고 0일 때 0 == 0으로 잘못 켜진다 — 0 확인 먼저.
+
 ## 2026-10-18 밤 늦게 · S5 · HD 굽기 성능·폰 확인표
 - **현재 위치**: 내 몫 끝 — hd-portrait main 머지, hd-bake-perf(ea854ae0)는 S3 lane/render 6b7833b6에 포함(미리 굽기·저사양 384 얹음), device-check c3168345 S1 대기.
 - 한 일: HD 굽기 측정(밀도 4: 40종 430ms·37MB, 밀도 6: 84MB, 보스 1.6~7MB) → 캐시 상한 14장 → 48MB. 폰 확인표 22줄(docs/plans/active/device-check-2026-10-17.md).
