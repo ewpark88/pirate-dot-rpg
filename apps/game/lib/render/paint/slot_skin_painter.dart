@@ -177,7 +177,7 @@ class SlotSkinPainter {
   OutlineDigits? digits;
   (double, TextPainter, TextPainter)? _lv;
 
-  /// 큰 Lv(사용자 'Lv 크게', S4 카드와 같은 기준): 오른쪽 아래에 작은 금빛 'Lv' + 칸 폭 약 40% 높이의 큰 테두리 숫자.
+  /// 큰 Lv(사용자 'Lv 크게', S4 카드와 같은 기준): 오른쪽 위에 작은 금빛 'Lv' + 칸 폭 약 40% 높이의 큰 테두리 숫자.
   void _level(Canvas c, Rect ir, int lv) {
     final d = digits;
     if (d == null) return;
@@ -188,7 +188,7 @@ class SlotSkinPainter {
     if (full > ir.width * 0.92) h *= ir.width * 0.92 / full;
     final w = d.layout.measure(text, height: h);
     final x = ir.right - w - ir.width * 0.04;
-    final y = ir.bottom - h * 0.92;
+    final y = ir.top + ir.height * 0.03; // 오른쪽 위 — 아래는 UI '⚔ 피해' 띠가 덮는다(S1 실기기)
     d.paint(c, Offset(x, y), text, height: h);
     final size = h * 0.42;
     var lab = _lv;
