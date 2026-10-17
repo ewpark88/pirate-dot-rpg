@@ -34,5 +34,7 @@ cd ..\..
   2. (시간 남으면) 위협·보스 후보 확정 5명 × 3시간 continuous, 시드 1, 후보마다 하나씩:
      `%TEMP%\game_cli.exe sim --players 5 --hours 3 --set waves.monster.attackBase=9 --set waves.top.vanguard.attackMul=60 --set waves.top.vanguard.hpMul=10 --set waves.boss.attackMultiplier=35 --set waves.boss.hpMultiplier=40 --set waves.monster.goldBase=3.5 --set waves.boss.wallHpMultiplier=2.6 --out build/nightly/c5.json`
      (C3 · C5 · hull base 900/1200 변형 — 결과 표는 docs/progress/economy.md)
+  0. (맨 위) 보스 시간 제한 없음(review/boss-untimed) 기준으로 보스 HP·공격·goldBase 확정: 목표 처치 20~40초·침몰까지 15~30초·보통 첫 도전 70~85%·벽 ~50%·보스전 피해 25~45%·스테이지 40 45~55분. 후보 = 출발값(HP ×160·공격 ×35·벽 ×2.0·gold 3.0) ± (HP 140/180, 공격 30/45, gold 2.9/3.1).
+     같은 slot에서 balance crews로 crew-traits-2 5명·강습 5명·공중 4명 powerScale 재적합.
   3. C8 뒤 남은 것: 보스 공격 ×120(보스전 피해 25%), goldGrowth 1.135(강화 간격 35~45 → 120초), crew-traits-2 5명(sword·saw·bara·lobster·davy) powerScale 재적합(balance crews), 금고 가득 지표를 구간 평균으로 바꾼 뒤 재측정.
 - 끝나면: 리포트 커밋(lane/economy) → S1에 '벗어남' 목록 + 전/후 표 보고, 잠금 파일이 지워졌는지 확인.
