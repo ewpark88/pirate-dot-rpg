@@ -42,6 +42,13 @@ void main() {
     expect(ticksUntilBoss(farming(), upgradeAt: cool + 10), cool + 10, reason: '쿨다운 뒤 강화하면 그 틱에 바로');
   });
 
+  test('피버 중엔 쿨다운이 멈춘다(피버 무리 손맛을 끊지 않게)', () {
+    final s = farming().copyWith(
+      battle: const BattleView(shipHp: BigNum.one, shipHpMax: BigNum.one, feverTicksLeft: 100),
+    );
+    expect(ticksUntilBoss(s), isNull);
+  });
+
   test('꺼져 있거나 튜토리얼 보스 단계면 계속 파밍(남은 틱 0)', () {
     final tut = t.meta.raw.obj('tutorial').obj('steps').integer('boss');
     for (final s0 in [farming(auto: false), farming(tutorialStep: tut)]) {

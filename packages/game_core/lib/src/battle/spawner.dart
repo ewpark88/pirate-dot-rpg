@@ -4,6 +4,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/fever.dart' show feverOn;
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -196,7 +197,8 @@ double tutorialBossScale(GameState s, GameTables t) {
   final w = t.waves;
   final early = earlyBossScale(s, t);
   // 튜토리얼 실패 보스(3단계)는 감쇠 없이 × tutorialFailHpMultiplier — 한 번은 꼭 진다(설계서 4.12).
-  final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage;
+  final step = t.meta.raw.obj('tutorial').obj('steps').integer('boss'); // 단계 번호와 스테이지 번호는 따로 바뀔 수 있다
+  final fail = s.tutorialStep == step && s.progress.stage == w.tutorialFailStage;
   return fail ? w.tutorialFailHpMultiplier : early;
 }
 
@@ -228,7 +230,7 @@ GameState autoBossTick(GameState s, Field f, GameTables t) {
   final cool = (a.number('cooldownSec') * perSec).round();
   final levels = s.ship.parts.values.fold(0, (sum, v) => sum + v);
   if (f.farmTicks == 0) f.failLevels = levels;
-  f.farmTicks += 1;
+  if (!feverOn(s)) f.farmTicks += 1; // 피버 중엔 쿨다운 멈춤 — 피버 무리 손맛을 끊지 않는다(핵앤슬래시)
   final gained = levels - f.failLevels >= a.integer('levelGain');
   final due = gained ? cool : cool + cool;
   f.autoBossLeft = due - f.farmTicks > 0 ? due - f.farmTicks : 0;
