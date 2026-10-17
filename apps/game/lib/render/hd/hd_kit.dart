@@ -27,6 +27,7 @@ class HdSpecies {
 /// HD 카툰 공용 부품(쿵푸할매 서바이버 스타일): 굵은 검정 외곽선·위 밝고 아래 어두운 그라데이션·왼쪽 위 광택·큰 눈.
 /// 모든 종이 이 부품만 쓰면 같은 품질이 된다. 붓은 재사용(그리는 동안 할당 최소).
 class HdKit {
+  HdMood mood = HdMood.idle; // 지금 굽는 표정(HD v2 보스) — 종 코드가 읽어 얼굴·자세를 바꾼다
   /// 애니메이션 고리 길이 — 0.1초 × 8장.
   static const loopMs = 800.0;
   static const frames = 8;
@@ -294,3 +295,6 @@ class HdKit {
     c.drawOval(Rect.fromCenter(center: Offset(0, r * ground), width: r * 1.7, height: r * 0.5), fill);
   }
 }
+
+/// HD v2 보스 표정 — 굽기가 줄마다 바꿔 넣는다.
+enum HdMood { idle, windup, down }

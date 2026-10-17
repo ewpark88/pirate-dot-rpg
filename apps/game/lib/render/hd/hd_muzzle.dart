@@ -52,6 +52,12 @@ class HdMuzzle {
     _now.add((x + (right ? -m.dx : m.dx) * r, y + m.dy * r, g.level(now), g.boss));
   }
 
+  /// 적 [id]가 지금 쏘기 직전(예고 중, 아직 안 쏨) — HD v2 보스 '공격 예고' 얼굴.
+  bool charging(int id, double now) {
+    final g = _glows[id];
+    return g != null && g.firedAt == null && !g.done(now);
+  }
+
   /// 예고·터짐 중인 적 수(시험).
   int get active => _glows.length;
 
