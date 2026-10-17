@@ -707,7 +707,6 @@
   },
   "uiBossFailShip": "Upgrade ship",
   "uiBossFailCrew": "Level up crew",
-<<<<<<< HEAD
   "uiDexNew": "New in the Monster Log! {name}",
   "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
   "uiDexTitleShort": "Log",
@@ -724,21 +723,10 @@
         "type": "String"
       },
       "gems": {
-=======
-  "uiSailHint": "Your map is ready! Set sail to start fast sailing",
-  "uiFastSailProgress": "Fast sail {n}/{m}",
-  "@uiFastSailProgress": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "m": {
->>>>>>> review/sail-ui
         "type": "int"
       }
     }
   },
-<<<<<<< HEAD
   "uiSettingsFlashOff": "Off",
   "uiSettingsFlashSoft": "Soft",
   "uiSettingsFlashFull": "Full",
@@ -766,8 +754,19 @@
       }
     }
   },
-  "uiBossDamageTap": "Tap to close"
-=======
+  "uiBossDamageTap": "Tap to close",
+  "uiSailHint": "Your map is ready! Set sail to start fast sailing",
+  "uiFastSailProgress": "Fast sail {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
   "uiFastSailStreak": "Boss streak {count}",
   "@uiFastSailStreak": {
     "placeholders": {
@@ -776,5 +775,4 @@
       }
     }
   }
->>>>>>> review/sail-ui
 }

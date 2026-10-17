@@ -492,7 +492,6 @@
   },
   "uiBossFailShip": "배 강화",
   "uiBossFailCrew": "선원 레벨업",
-<<<<<<< HEAD
   "uiDexNew": "새 괴물 도감 등록! {name}",
   "uiDexNewGems": "새 괴물 도감 등록! {name} · 젬 +{gems}",
   "uiDexTitleShort": "도감",
@@ -509,21 +508,10 @@
         "type": "String"
       },
       "gems": {
-=======
-  "uiSailHint": "보물 지도가 준비됐어요!\n출항하면 빠른 항해가 시작돼요",
-  "uiFastSailProgress": "빠른 항해 {n}/{m}",
-  "@uiFastSailProgress": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "m": {
->>>>>>> review/sail-ui
         "type": "int"
       }
     }
   },
-<<<<<<< HEAD
   "uiSettingsFlashOff": "끔",
   "uiSettingsFlashSoft": "약",
   "uiSettingsFlashFull": "강",
@@ -551,8 +539,19 @@
       }
     }
   },
-  "uiBossDamageTap": "누르면 닫혀요"
-=======
+  "uiBossDamageTap": "누르면 닫혀요",
+  "uiSailHint": "보물 지도가 준비됐어요!\n출항하면 빠른 항해가 시작돼요",
+  "uiFastSailProgress": "빠른 항해 {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
   "uiFastSailStreak": "보스 연속 격파 {count}",
   "@uiFastSailStreak": {
     "placeholders": {
@@ -561,5 +560,4 @@
       }
     }
   }
->>>>>>> review/sail-ui
 }
