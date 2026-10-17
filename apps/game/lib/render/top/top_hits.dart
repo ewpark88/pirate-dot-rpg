@@ -4,19 +4,23 @@ import 'dart:ui';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_bestiary.dart';
 import 'package:pirate_dot/render/top/top_boss_loot.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_bounty.dart';
 import 'package:pirate_dot/render/top/top_break.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
+import 'package:pirate_dot/render/top/top_emerge.dart';
 import 'package:pirate_dot/render/top/top_family_v3.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_fever_strike.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_juice.dart';
 import 'package:pirate_dot/render/top/top_muzzle.dart';
+import 'package:pirate_dot/render/top/top_resupply.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
+import 'package:pirate_dot/render/top/top_traits.dart';
 
 /// 탑다운 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다' — 엔진은 닿는데 눈에 안 보였다, S1):
 /// 때린 적이 배 쪽으로 툭 박고(돌진), 닿은 자리에 물보라·나뭇조각이 튄다. 엔진 무관 — ShipDamaged fromX/fromY.
@@ -29,6 +33,18 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
+  TopTraits? traits;
+
+  /// 도감 v2 보스 패턴(먹물·삼키기·분열).
+  final bestiary = TopBestiary();
+
+  /// 솟아오르기 예고(EnemyEmerging).
+  final emerges = TopEmerge();
+
+  /// 빠른 항해 보급 상자(ShipResupplied).
+  final resupply = TopResupply();
 
   /// 피버 첫 일격(UltimateCast).
   final feverStrike = TopFeverStrike();
@@ -117,7 +133,8 @@ class TopHits {
   void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
     muzzles.paint(c, now, flash: flash, powerSave: powerSave || lite);
     _paintUpgrade(c, ship, now);
-    _paintEmerges(c, now);
+    emerges.paint(c, now);
+    bestiary.paint(c, now);
     slash.paint(c, now);
     _spots.removeWhere((p) => now - p.ms >= spotMs);
     for (final p in _spots) {
@@ -182,59 +199,14 @@ class TopHits {
     }
   }
 
-  final List<_Emerge> _emerges = [];
-
-  /// 솟아오르기 예고(EnemyEmerging): ([x],[y])에 [warnMs] 동안 그림자·끓는 물보라, 끝나면 물보라 터짐.
-  void emerge(double x, double y, double startMs, double warnMs) {
-    if (_emerges.length >= 16) _emerges.removeAt(0);
-    _emerges.add(_Emerge(x, y, startMs, warnMs));
-  }
-
-  void _paintEmerges(Canvas c, double now) {
-    _emerges.removeWhere((m) => now - m.ms > m.warnMs + 350);
-    for (final m in _emerges) {
-      final age = now - m.ms;
-      if (age < 0) continue;
-      final at = Offset(m.x, m.y);
-      if (age < m.warnMs) {
-        final t = age / m.warnMs;
-        // 물 밑 그림자(점점 진해짐) + 끓는 거품 고리(맥박) + 올라오는 거품
-        _paint.color = Color.fromRGBO(10, 30, 60, 0.15 + 0.3 * t);
-        c.drawOval(Rect.fromCenter(center: at, width: 10 + 6 * t, height: 7 + 4 * t), _paint);
-        final pulse = 0.5 + 0.5 * math.sin(age / 60);
-        _ring
-          ..strokeWidth = 1.5
-          ..color = Color.fromRGBO(240, 250, 255, 0.5 + 0.4 * pulse);
-        c.drawCircle(at, 6 + 4 * t + pulse, _ring);
-        for (var k = 0; k < 6; k++) {
-          final a = k * math.pi / 3 + age / 300;
-          final r = 3 + ((age / 90 + k) % 5);
-          _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.8);
-          c.drawRect(Rect.fromLTWH(at.dx + math.cos(a) * r, at.dy + math.sin(a) * r, 1.5, 1.5), _paint);
-        }
-        continue;
-      }
-      // 터짐: 흰 물방울이 둥글게 튀고 고리가 퍼진다
-      final t = (age - m.warnMs) / 350;
-      _ring
-        ..strokeWidth = 2
-        ..color = Color.fromRGBO(255, 255, 255, 1 - t);
-      c.drawCircle(at, 6 + 14 * t, _ring);
-      for (var k = 0; k < 10; k++) {
-        final a = k * math.pi / 5 + 0.3;
-        final d = 4 + 16 * t;
-        _paint.color = Color.fromRGBO(220, 240, 255, 1 - t);
-        c.drawRect(Rect.fromLTWH(at.dx + math.cos(a) * d, at.dy + math.sin(a) * d - 6 * t * (1 - t) * 4, 2, 2), _paint);
-      }
-    }
-  }
-
   /// 적 위 층(전장 좌표): 범위 임팩트·적 포탄·돌파 사격·현상금 핀·보스 예고·선원 개성 — TopScenePainter가 적 다음에 부른다.
   void paintOver(Canvas c, BattleScene s, double now, double shipR, Offset? Function(int id) bossAt) {
     final view = s.frame;
     final flash = s.settings.flash;
     final ship = s.topShip;
-    juice.paint(c, now, lite: lite);
+    juice.paint(c, now, lite: lite, fever: view.feverTicksLeft > 0);
+    bestiary.paintOver(c, now);
+    traits?.paint(c, now, view, s.poses, s.poseCount, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);
@@ -246,6 +218,7 @@ class TopHits {
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
     loot.paint(c, now, ship, sprites, flash: flash);
     feverStrike.paintWorld(c, now, lite: lite);
+    resupply.paint(c, now, ship);
   }
 
   /// 화면 좌표 덮개: 빠른 항해 띠·현상금 포스터·피버 첫 일격 컷인.
@@ -267,8 +240,11 @@ class TopHits {
     loot.clear();
     breaks.clear();
     feverStrike.clear();
+    resupply.clear();
     slash.clear();
-    _emerges.clear();
+    emerges.clear();
+    bestiary.clear();
+    traits?.clear();
     upgradeAt = -1000000000;
     shots.clear();
     _flashAt = -1000000000;
@@ -283,12 +259,4 @@ class _Spot {
   final double y;
   final double ms;
   final double angle;
-}
-
-class _Emerge {
-  _Emerge(this.x, this.y, this.ms, this.warnMs);
-  final double x;
-  final double y;
-  final double ms;
-  final double warnMs;
 }

@@ -3,7 +3,6 @@ import 'dart:ui' show PictureRecorder;
 import 'package:flame/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -34,7 +33,9 @@ class _Painter extends CustomPainter {
 void main() {
   setUpAll(loadGoldenFonts);
   final rec = topRecording(tables, ticks: 400, stage: 120, bossAt: 5);
-  final cases = {'boss': (rec.indexWhere((t) => t.frame.bossActive && t.events.any((e) => e is BossFired)), 0.0)};
+  // 보스전 시작 60틱 뒤(10단위 대보스는 포탄을 안 쏠 수 있어 BossFired 대신 — 도감 v2 대보스 라이브).
+  final start = rec.indexWhere((t) => t.frame.bossActive && t.frame.enemies.any((e) => e.boss));
+  final cases = {'boss': (start < 0 ? -1 : start + 60, 0.0)};
   for (final MapEntry(key: name, value: (at, after)) in cases.entries) {
     testWidgets('보스전 카메라 골든 s24 $name', (tester) async {
       expect(at, greaterThan(0));

@@ -12,9 +12,10 @@ import 'package:pirate_dot/render/top/top_frame.dart';
 
 import '../render/helpers.dart';
 import '../render/top_recording.dart';
+import '../ui/ui_harness.dart';
 
 /// 피버 배 모션 'flow'(사용자 피드백 #24) — 실제 엔진 피버(게이지 0.99로 시작해 첫 처치에 켜짐)를 렌더로 그린 프레임 띠, 4기기.
-/// 피버 시작 뒤 1·2.5·4.5·5·5.5·7.5초(원 돌기는 둘째 바퀴 오른쪽 끝 5초 언저리). 한 장 = 프레임 6개 가로.
+/// 피버 시작 뒤 1·2.5·4.5·5·5.5·7.5초(넓고 긴 S자 — 원 돌기 없음, 사용자 피드백 8번). 한 장 = 프레임 6개 가로.
 const _framesSec = [1.0, 2.5, 4.5, 5.0, 5.5, 7.5];
 
 /// 전투 상자(상단 바·게이지·선원 줄·도크를 뺀 높이 — top_marks_golden_test와 같은 셈).
@@ -26,6 +27,7 @@ const List<(String, Size, double)> _devices = [
 ];
 
 void main() {
+  setUpAll(loadGoldenFonts); // BREAK! 도장 등 글자가 흰 상자로 나오지 않게(S3)
   final rec = topRecording(tables, ticks: 520, fever: 0.99);
   final start = rec.indexWhere((t) => t.events.any((e) => e is FeverStarted));
   final tickSec = tables.waves.tickMs / 1000;

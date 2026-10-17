@@ -42,10 +42,10 @@ void main() {
     return ((before - boss.hp) / dealt).toDouble();
   }
 
-  test('1. 25 = 중간 보스, 50 = 해역 보스, 51 = 다음 해역 일반 보스, 체력 배율', () {
+  test('1. 25 = 중간 보스, 50 = 해역 보스, 51 = 다음 해역 보통 보스(도감 v2 순환), 체력 배율', () {
     expect(tables.regions.bossAt(25).id, tables.regions.regionAt(25).midBoss);
     expect(tables.regions.bossAt(50).id, 'giant_hermit');
-    expect(tables.regions.bossAt(51).id, tables.regions.regionAt(51).boss);
+    expect(tables.regions.regionAt(51).bossRotation, contains(tables.regions.bossAt(51).id));
     final (_, _, boss) = bossFight(50, 'direct');
     final normal = stageCurve(w.hpBase, w.hpGrowth, 50).times(w.bossHpMultiplier * wallBossScale(w, 50)); // 50 = 벽 보스
     expect(boss.maxHp.closeTo(normal.times(tables.regions.bosses['giant_hermit']!.hpMultiplier)), isTrue);

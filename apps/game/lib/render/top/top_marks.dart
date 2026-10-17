@@ -117,7 +117,7 @@ class TopMarks {
       final prev = _bossLag[e.id] ?? ratio;
       final lag = prev < ratio ? ratio : (prev - dt / _lagMs).clamp(ratio, 1.0);
       _bossLag[e.id] = lag;
-      final w = (r * 1.6).clamp(30.0, 60.0).roundToDouble() + 6;
+      final w = (r * 1.7).clamp(40.0, 72.0).roundToDouble() + 6; // 사용자 '보스 체력이 안 보인다' — 넓고 굵게
       var fill = _pill.colorFor(ratio);
       if (_pill.isLow(ratio) && (scene.clockMs / 250).floor().isEven) {
         fill = Color.lerp(Color(fill), const Color(0xFFFFFFFF), 0.35)!.toARGB32();
@@ -125,17 +125,18 @@ class TopMarks {
       _pill.paint(
         c,
         left: (e.drawX - w / 2).roundToDouble(),
-        top: (e.drawY - r - 10).roundToDouble(),
+        top: (e.drawY - r - 12).roundToDouble(),
         w: w,
-        h: 6,
+        h: 9,
         ratio: ratio,
         lag: lag,
         fill: fill,
         skull: true,
       );
-      _breakBar(c, e, (e.drawX - w / 2).roundToDouble() + 8, (e.drawY - r - 2).roundToDouble(), w - 8);
+      _breakBar(c, e, (e.drawX - w / 2).roundToDouble() + 8, (e.drawY - r - 1).roundToDouble(), w - 8);
     }
     if (_bossLag.length > 8) _bossLag.clear();
+    scene.topHits.traits?.bossFx.paint(c, scene.clockMs, scene.poses, scene.poseCount, radiusOf);
     // 브레이크 도장·별은 보스 체력 막대 위에.
     scene.topHits.breaks.paint(c, scene.clockMs, _poseAt, flash: scene.settings.flash, lite: scene.topHits.lite);
   }

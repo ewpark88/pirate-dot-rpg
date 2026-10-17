@@ -34,10 +34,10 @@ void main() {
       expect(b.damageOf(direct), a.damageOf(direct));
     });
 
-    test('수용 기준 4: 보스전은 제한 시간 창, 60초 환산 배율', () {
+    test('수용 기준 4: 보스전은 30초 고정 창(보스 시간 제한이 없어진 뒤에도 같은 기준), 60초 환산 배율', () {
       final run = arena.run(Scene.boss, [direct], 45);
       expect(run.ticks, arena.bossWindowTicks);
-      expect(arena.bossScale, closeTo(arena.config.seconds / t.waves.bossTimeLimitSec, 1e-9));
+      expect(arena.bossScale, closeTo(arena.config.seconds / Arena.bossWindowSec, 1e-9));
       expect(run.kills, 0);
     });
 

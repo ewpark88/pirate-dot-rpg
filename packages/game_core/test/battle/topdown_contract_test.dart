@@ -79,7 +79,11 @@ void main() {
           .where((c) => c.family == fam.id)
           .map((c) => c.reachBonus)
           .reduce((a, b) => a < b ? a : b);
-      expect(gap, lessThanOrEqualTo(fam.attack.raw.number('reach') * top.reachScale + minBonus), reason: fam.id);
+      // 배 지킴이(강습)는 무리 reach가 짧고 보스에게만 bossReach(2026-10-17).
+      final reach = fam.attack.raw.has('bossReach')
+          ? fam.attack.raw.number('bossReach')
+          : fam.attack.raw.number('reach');
+      expect(gap, lessThanOrEqualTo(reach * top.reachScale + minBonus), reason: fam.id);
     }
   });
 }

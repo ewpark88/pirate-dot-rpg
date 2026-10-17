@@ -36,7 +36,6 @@ const _top = [
   'fun.fever.on',
   'bossFail.close',
   'boss.challenge',
-  'chest.pill',
   'fleet.crew.0',
   'fleet.crew.1',
 ];
@@ -97,7 +96,6 @@ void main() {
       expect(find.byKey(const Key('fun.challenge.kills')), findsOneWidget);
       expect(find.byKey(const Key('fun.sea.goldfish')), findsNothing);
       expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
-      expect(find.byKey(const Key('chest.pill')), findsOneWidget);
       _expectNoOverlap(tester, name);
       await tester.pump(const Duration(seconds: 10));
     });

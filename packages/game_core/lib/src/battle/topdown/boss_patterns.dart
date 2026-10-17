@@ -14,7 +14,7 @@ class BossPlan {
   BossPlan(this.patterns, this.restTicks, {int? firstTicks}) : ticksLeft = firstTicks ?? restTicks;
 
   final List<BossPatternDef> patterns;
-  final int restTicks;
+  int restTicks; // 분노(보스 특성 enrage)가 줄인다
   int index = 0;
 
   /// rest(기본 원거리 공격) · warn(예고) · charge(돌진 중) · back(standoff로 돌아감).
@@ -111,7 +111,7 @@ extension BossPatterns on Round {
         final r = g.top.shipRadius * p.radiusShipMul + g.top.radiusOf(e);
         final eaten = [
           for (final m in field.living)
-            if (!m.standsOff && m.eventKind == null && _gap(m, e) <= r) m,
+            if (!m.standsOff && m.eventKind == null && m.ownerId == null && _gap(m, e) <= r) m, // 호위·촉수는 안 먹는다
         ];
         field.foes.removeWhere(eaten.contains);
         final healed = e.maxHp.times(p.healRatio * eaten.length);
@@ -176,7 +176,9 @@ extension BossPatterns on Round {
             ..breakCooldownUntil = e
                 .breakCooldownUntil // 분열한 몸도 부모의 브레이크 쿨다운을 이어받는다(S5 참고)
             ..breakCooldownTicks = e.breakCooldownTicks
-            ..breakCooldownRatio = e.breakCooldownRatio;
+            ..breakCooldownRatio = e.breakCooldownRatio
+            ..enraged = e.enraged; // 보스 특성 상태도(호위를 다시 부르거나 분노가 다시 걸리지 않게)
+      child.traitTicks.addAll(e.traitTicks);
       e
         ..hp = halfHp
         ..splits += 1;

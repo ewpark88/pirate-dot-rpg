@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -87,6 +88,9 @@ class _ShipHeader extends ConsumerWidget {
                   Text(name, style: Skin.text(20, color: Colors.white)),
                   const SizedBox(height: 6),
                   const ShipSkinButton(),
+                  // 모두 강화 원터치(경제 bestUpgradePlan) — 배 그림 옆에 두어 360에서도 부위 줄이 보이게.
+                  const SizedBox(height: 6),
+                  const UpgradeAllButton(),
                 ],
               ),
             ),

@@ -242,7 +242,9 @@ int offlineMaxSec(GameState s, GameTables t) => t.meta.offlineMaxSec + shopEffec
 double fastSailFraction(GameState s, GameTables t) => t.waves.rebirthSkip.fraction + shopEffect(s, t, 'fastSail');
 
 /// 보스 제한 시간 추가(초).
-double bossExtraSec(GameState s, GameTables t) => shopEffect(s, t, 'bossTime');
+/// 보물지도 상점 'bossTime'(id는 세이브 호환으로 유지) = 철갑판: 보스전·현상금에서 배가 받는 피해 비율 감소
+/// (보스 시간 제한이 없어져 '보스 시간 +초' 대신, S1 결정 2026-10-17). 0.04/레벨, 최대 5 = 0.2.
+double bossGuard(GameState s, GameTables t) => shopEffect(s, t, 'bossTime');
 
 /// 출전 칸 추가.
 int fleetSlotBonus(GameState s, GameTables t) => shopEffect(s, t, 'fleetSlot').round();

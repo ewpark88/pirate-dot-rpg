@@ -53,6 +53,7 @@ class ComboBanner {
     required int minKills,
     required int baseColor,
     required void Function(int count) onMilestone,
+    bool fever = false,
   }) {
     if (count > _last && _crossed(_last, count)) {
       _milestoneAt = now;
@@ -60,7 +61,8 @@ class ComboBanner {
     }
     _last = count;
     if (count < minKills) return;
-    final (scale, color) = look(count, (now / 100).floorToDouble() * 100, baseColor);
+    final (s0, color) = look(count, (now / 100).floorToDouble() * 100, baseColor);
+    final scale = fever ? s0 + 1 : s0; // 피버 v2: 콤보 숫자 대형
     _milestoneColor = color;
     _num.set('x$count', color, scale);
     _word.set('COMBO', color, math.max(2, scale - 2));

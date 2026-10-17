@@ -67,7 +67,8 @@ double _minutesToBeat(GameState s0, GameTables t, int target) {
   final fleet = activeFleet(s0, t);
   final mult = upgradeCostMultiplier(s0, t);
   final fast = (s0.progress.bestStage * fastSailFraction(s0, t)).ceil();
-  final bossLimit = w.bossTimeLimitSec + bossExtraSec(s0, t);
+  // 시간 제한이 없으면(침몰로만 실패) 미리보기는 '이 초 안에 못 잡으면 파밍'으로 본다(waves.boss.forecastSec).
+  final bossLimit = w.bossTimeLimitSec > 0 ? w.bossTimeLimitSec : w.raw.obj('boss').number('forecastSec');
   final top = w.raw.obj('top');
   final bossWalk = math.max(top.number('bossSpawnRadius') - top.number('bossStandoff'), 0) / w.bossSpeed;
   var levels = {...s0.ship.parts};

@@ -1,6 +1,8 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
+import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/economy/economy_system.dart';
+import 'package:game_core/src/economy/rebirth_shop.dart' show bossGuard;
 import 'package:game_core/testing.dart';
 import 'package:test/test.dart';
 
@@ -38,26 +40,36 @@ void main() {
     expect(previewUpgrade(s.copyWith(wallet: Wallet(gold: gold)), t, 'cannon').cost.closeTo(gold), isTrue);
   });
 
-  test('기준 5: bossTime 3 → 보스 제한 39초 · critChance 10 + 망루 최대 → 치명 ≤ 0.5 · critDamage +0.1/레벨', () {
-    final now = DateTime.utc(2026, 11);
-    final s0 = shop(const {'bossTime': 3}, stage: 5);
-    final e = CoreEngine(tables: t, clock: ManualClock(now), initial: s0)
-      ..enqueue(const OpSpawnBoss())
-      ..tick();
-    final spawned = e.drainEvents().whereType<BossSpawned>().single;
-    expect(spawned.timeLimitTicks * t.waves.tickMs / 1000, closeTo(t.waves.bossTimeLimitSec + 9, 1e-9));
-    final crit = shop(const {
-      'critChance': 10,
-      'critDamage': 4,
-    }).copyWith(ship: const ShipState().withLevel('crowsnest', 45));
-    final stats = CombatStats.of(crit, t);
-    expect(stats.critChance, lessThanOrEqualTo(t.shipParts.critChanceMax));
-    expect(stats.critMultiplier, closeTo(t.shipParts.critMultiplier + 0.4, 1e-9));
-    expect(
-      CombatStats.of(shop(const {'critChance': 3}), t).critChance,
-      closeTo(ShipStats.of(t.shipParts, const ShipState()).critChance + 0.03, 1e-9),
-    );
-  });
+  test(
+    '기준 5: 보스 시간 제한 없음 · bossTime(철갑판) 3 → 보스전·현상금 배 피해 −12% · critChance 10 + 망루 최대 → 치명 ≤ 0.5 · critDamage +0.1/레벨',
+    () {
+      final now = DateTime.utc(2026, 11);
+      final s0 = shop(const {'bossTime': 3}, stage: 5);
+      final e = CoreEngine(tables: t, clock: ManualClock(now), initial: s0)
+        ..enqueue(const OpSpawnBoss())
+        ..tick();
+      final spawned = e.drainEvents().whereType<BossSpawned>().single;
+      expect(spawned.timeLimitTicks, 0, reason: '2026-10-17 사용자 결정: 보스 시간 없음 — 침몰로만 실패');
+      expect(bossGuard(s0, t), closeTo(0.12, 1e-9));
+      final f = Field(stage: 5, shipHpMax: BigNum.from(1000), shipHp: BigNum.from(1000))
+        ..bossGuard = bossGuard(s0, t)
+        ..bossActive = true;
+      expect(f.hurtShip(BigNum.from(50), 1).toDouble(), closeTo(44, 1e-9), reason: '보스전 피해 × (1 − 0.12)');
+      f.bossActive = false;
+      expect(f.hurtShip(BigNum.from(50), 1).toDouble(), closeTo(50, 1e-9), reason: '무리전은 그대로');
+      final crit = shop(const {
+        'critChance': 10,
+        'critDamage': 4,
+      }).copyWith(ship: const ShipState().withLevel('crowsnest', 45));
+      final stats = CombatStats.of(crit, t);
+      expect(stats.critChance, lessThanOrEqualTo(t.shipParts.critChanceMax));
+      expect(stats.critMultiplier, closeTo(t.shipParts.critMultiplier + 0.4, 1e-9));
+      expect(
+        CombatStats.of(shop(const {'critChance': 3}), t).critChance,
+        closeTo(ShipStats.of(t.shipParts, const ShipState()).critChance + 0.03, 1e-9),
+      );
+    },
+  );
 
   test('기준 6: offline 2 → offlineMaxSec 36000, 오프라인 보상이 같은 값을 쓴다', () {
     final s = shop(const {'offline': 2});

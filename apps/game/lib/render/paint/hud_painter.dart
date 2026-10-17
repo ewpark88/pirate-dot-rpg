@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_core/game_core.dart';
@@ -69,26 +70,42 @@ class HudPainter {
   /// [scale]: 탑다운은 전장 1단위가 옆모습 1도트보다 커서(S24 2.13 : 1.42dp) 숫자를 옆모습과 같은 화면 크기로 줄인다.
   void paintNumbers(Canvas c, {double scale = 1, Rect cull = Rect.largest}) {
     final layer = scene.numbers;
+    // 손맛 v4: 연쇄가 길수록 숫자가 커지고 색이 달아오른다(흰 → 연노랑 → 주황 → 분홍), 나올 때 톡 튀어 커졌다 자리 잡음.
+    final combo = scene.combo.count(scene.clockMs);
+    final tier = combo >= 50 ? 3 : (combo >= 25 ? 2 : (combo >= 10 ? 1 : 0));
+    final grow = 1 + math.min(combo, 60) / 60 * 0.45;
     for (final n in layer.active) {
       if (!cull.contains(Offset(n.x, n.y))) continue;
       final text = (n.cache ??= _NumberText()) as _NumberText;
-      if (text.version != n.version || text.kind != n.kind) {
+      final t = n.kind == DamageKind.normal ? tier : 0;
+      if (text.version != n.version || text.kind != n.kind || text.tier != t) {
         text
           ..version = n.version
           ..kind = n.kind
-          ..pixel.set(n.text, layer.colorOf(n), layer.scaleOf(n).round());
+          ..tier = t
+          ..pixel.set(n.text, t == 0 ? layer.colorOf(n) : _comboTint[t - 1], layer.scaleOf(n).round());
       }
-      if (scale == 1) {
-        text.pixel.draw(c, n.x - text.pixel.width / 2, n.y - layer.riseOf(n));
-        continue;
-      }
+      final pop = _popScale(n);
+      final s = scale * pop * (n.kind == DamageKind.ship ? 1 : grow);
       c
         ..save()
         ..translate(n.x, n.y)
-        ..scale(scale);
-      text.pixel.draw(c, -text.pixel.width / 2, -layer.riseOf(n));
+        ..scale(s);
+      text.pixel.draw(c, -text.pixel.width / 2, -layer.riseOf(n) / s * scale);
       c.restore();
     }
+  }
+
+  static const _comboTint = [0xFFFFF1A8, 0xFFFFB347, 0xFFFF7AC8];
+
+  /// 나올 때 크기: 치명은 0.5 → 1.55 → 1(160ms, 넘쳤다 돌아옴), 보통은 0.7 → 1.15 → 1(110ms).
+  static double _popScale(DamageNumber n) {
+    final crit = n.kind == DamageKind.crit;
+    final ms = crit ? 160.0 : 110.0;
+    final t = n.ageMs / ms;
+    if (t >= 1) return 1;
+    final (from, peak) = crit ? (0.5, 1.55) : (0.7, 1.15);
+    return t < 0.55 ? from + (peak - from) * (t / 0.55) : peak + (1 - peak) * ((t - 0.55) / 0.45);
   }
 
   /// 캔버스 HUD (흔들림 밖, 화면 배치 v2): 위 가운데 스테이지-파, 그 아래 보스 남은 초, 오른쪽 위 보스 체력, 콤보.
@@ -144,6 +161,7 @@ class HudPainter {
       scene.combo.lastAddMs,
       minKills: _fx.combo.integer('minKills'),
       baseColor: _comboColor,
+      fever: scene.frame.feverTicksLeft > 0,
       onMilestone: (_) {
         scene.shake.trigger(scene.juice.shake['aoe']!);
         scene.sound.sfx('multiKill', clockMs: now);
@@ -236,4 +254,5 @@ class _NumberText {
   final pixel = PixelText();
   int version = -1;
   DamageKind? kind;
+  int tier = 0;
 }

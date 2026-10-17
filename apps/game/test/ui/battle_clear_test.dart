@@ -22,7 +22,6 @@ const List<(String, Size, double)> _devices = [
 
 /// 늘 떠 있을 수 있는 전장 위 UI (띠·알약·말풍선). 처음 한 번 뜨는 안내 카드·튜토리얼은 뺀다.
 const _overlays = [
-  'chest.pill',
   'hud.farming',
   'fun.sea.goldfish',
   'fun.challenge.kills',
@@ -69,9 +68,8 @@ void main() {
         expect(r.width, lessThan(area.width * 0.9), reason: '$key 전폭');
         expect(r.overlaps(center), isFalse, reason: '$key가 전장 가운데를 덮는다 $r / $center');
       }
-      // 상자 광고 = 왼쪽 가장자리 알약(높이 ≤ 44dp), 상자 위 말풍선 없음(사용자 지시 2026-10-16).
-      expect(find.byKey(const Key('chest.pill')), findsOneWidget);
-      expect(tester.getSize(find.byKey(const Key('chest.pill'))).height, lessThanOrEqualTo(44));
+      // 상자 광고 알약·말풍선 없음(사용자 지시 2026-10-17 — 상자를 누르면 창).
+      expect(find.byKey(const Key('chest.pill')), findsNothing);
       expect(find.byKey(const Key('chest.adBubble')), findsNothing);
       // 현상금 전투 중 (현상금 알약만).
       final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
@@ -90,7 +88,7 @@ void main() {
     });
   }
 
-  testWidgets('피버: 시작 때 큰 FEVER! → 0.8초 뒤 빠짐, 동안 가장자리 빛·큰 원형 게이지, 끝나면 +골드', (tester) async {
+  testWidgets('피버: 시작 때 큰 FEVER! → 0.8초 뒤 빠짐, 동안 가장자리 빛·큰 원형 게이지·남은 시간 막대·FEVER ×n, 끝나면 n마리 · +골드', (tester) async {
     final feed = StreamController<RecordedTick>.broadcast(sync: true);
     addTearDown(feed.close);
     final s = loadFixture('stage37_midgame');
@@ -104,6 +102,16 @@ void main() {
     expect(find.byKey(const Key('fun.fever.big')), findsOneWidget);
     expect(find.byKey(const Key('fun.fever.glow')), findsOneWidget);
     expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
+    // 피버 v2: 게이지 안 막대는 '남은 시간'(가득에서 줄어듦) + 'FEVER ×2' 칩.
+    expect(find.byKey(const Key('fun.fever.chip')), findsOneWidget);
+    expect(find.text('FEVER ×2'), findsWidgets);
+    feed
+      ..add(RecordedTick(on.battle!, const [Kill(2, targetId: 1, gold: BigNum.zero, x: 0, y: 0)]))
+      ..add(RecordedTick(on.battle!, const [Kill(3, targetId: 2, gold: BigNum.zero, x: 0, y: 0)]));
+    c.read(gameStateProvider.notifier).replace(on.copyWith(battle: on.battle!.copyWith(feverTicksLeft: 100)));
+    await tester.pump();
+    final time = tester.widget<LinearProgressIndicator>(find.byKey(const Key('fun.fever.time')));
+    expect(time.value, closeTo(0.5, 0.01));
     await tester.pump(const Duration(milliseconds: 1300));
     expect(find.byKey(const Key('fun.fever.big')), findsNothing);
 
@@ -116,6 +124,7 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('fun.fever.end')), findsOneWidget);
     expect(find.textContaining('+${BigNum.from(5000).format()}'), findsOneWidget);
+    expect(find.textContaining('2 defeated'), findsOneWidget); // 끝 요약: 처치 수 · 골드
     expect(find.byKey(const Key('fun.fever.glow')), findsNothing);
     await tester.pump(const Duration(seconds: 2));
     expect(find.byKey(const Key('fun.fever.end')), findsNothing);

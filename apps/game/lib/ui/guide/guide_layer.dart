@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/guide/guide_card_view.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
+import 'package:pirate_dot/ui/guide/guide_talk.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -141,6 +142,8 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
       key: _box,
       children: [
         widget.child,
+        // 가이드 v3 시안: 옥토 선장 말풍선(말이 없으면 아무것도 안 그림).
+        const Positioned.fill(child: GuideTalkLayer()),
         if (card != null) ...[
           Positioned.fill(
             child: IgnorePointer(

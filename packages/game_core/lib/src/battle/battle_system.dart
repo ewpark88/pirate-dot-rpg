@@ -19,7 +19,7 @@ import 'package:game_core/src/economy/fever.dart' show feverOn, feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
 import 'package:game_core/src/economy/rebirth_shop.dart'
-    show ShipDressCache, beyondHonor, bossExtraSec, fastSailFraction, treasureHpMultiplier;
+    show ShipDressCache, beyondHonor, fastSailFraction, treasureHpMultiplier;
 import 'package:game_core/src/economy/sea_events.dart' show startSeaEvent, tapGoldfish;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -53,7 +53,7 @@ class BattleSystem implements GameSystem {
         final f = _sync(state, ctx);
         if (f.bossActive) return state;
         f.foes.clear();
-        startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
+        startBoss(f, state.progress.stage, ctx);
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
       case StartVoyage():
         final p = state.progress;
@@ -146,7 +146,7 @@ class BattleSystem implements GameSystem {
     final w = ctx.tables.waves;
     final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables), extraSec: bossExtraSec(s, ctx.tables));
+      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
     } else {
       f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
       spawnWave(f, p.stage, ctx);
@@ -160,8 +160,9 @@ class BattleSystem implements GameSystem {
     if (f.bossActive) {
       final bosses = f.foes.where((e) => e.boss); // 분열하면 여럿 — 모두 쓰러져야 격파(도감 v2)
       if (bosses.isNotEmpty && bosses.every((e) => !e.alive)) return _bossCleared(s, f, ctx);
-      f.bossTicksLeft -= 1;
-      if (f.bossTicksLeft <= 0 || f.shipHp.isZero) {
+      final timed = f.bossTicksLeft > 0; // 0 = 타이머 없음(침몰로만 실패)
+      if (timed) f.bossTicksLeft -= 1;
+      if ((timed && f.bossTicksLeft <= 0) || f.shipHp.isZero) {
         ctx.emit(BossFailed(ctx.tick, stage: p.stage));
         _restart(f, ctx);
         return s.copyWith(progress: p.copyWith(farming: true, bossFails: p.bossFails + 1));

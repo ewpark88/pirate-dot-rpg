@@ -16,7 +16,7 @@ enum ShopFx { levels, down, sec, hour, pp, plus, slots, percent }
 (ShopFx, double) shopDisplay(String id, double v) => switch (id) {
   'startParts' => (ShopFx.levels, v),
   'discount' => (ShopFx.down, v * 100),
-  'bossTime' => (ShopFx.sec, v),
+  'bossTime' => (ShopFx.down, v * 100), // 철갑판: 보스전 배 피해 −% (2026-10-17, 보스 시간 제한 없음)
   'offline' => (ShopFx.hour, v / Duration.secondsPerHour),
   'critChance' => (ShopFx.pp, v * 100),
   'critDamage' => (ShopFx.plus, v),

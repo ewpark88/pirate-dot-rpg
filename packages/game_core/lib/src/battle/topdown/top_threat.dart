@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/shield.dart';
 import 'package:game_core/src/battle/sortie.dart';
 import 'package:game_core/src/battle/topdown/boss_break.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart';
+import 'package:game_core/src/battle/topdown/boss_traits.dart';
 import 'package:game_core/src/battle/topdown/top_bomber.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
@@ -32,6 +33,7 @@ extension TopdownStep on Round {
     tickBeams();
     tickShield();
     tickBossPatterns();
+    tickBossTraits();
     tickBombers();
     tickBossBreak();
     feverAura(s);

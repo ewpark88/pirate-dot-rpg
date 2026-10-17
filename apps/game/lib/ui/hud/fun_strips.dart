@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 // 지루함 해소 3종 UI (스펙 platform-fun-sea-events · platform-fun-fever, 계약 S2 c5193fa).
 // 팝업 없음 — 전장 위 작은 띠와 전장 안 말풍선만. 실패·떠남은 조용히 접는다(벌칙 없음).
@@ -223,35 +224,56 @@ class _ChallengeStripState extends ConsumerState<ChallengeStrip> {
   }
 }
 
-/// 피버 막대 (진행 게이지 안 오른쪽 끝, 얇게): 평소엔 0~1 채움, 피버 중엔 '피버! n초' 금색.
-class FeverMeter extends ConsumerWidget {
+/// 피버 막대 (진행 게이지 안 오른쪽 끝, 얇게): 평소엔 0~1 채움.
+/// 피버 v2(사용자 2026-10-17): 피버 중엔 줄어드는 '남은 시간' 막대 + 'FEVER ×n' 칩(n = meta.fever.damageMultiplier).
+class FeverMeter extends ConsumerStatefulWidget {
   const FeverMeter({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    var (fever, left) = ref.watch(
+  ConsumerState<FeverMeter> createState() => _FeverMeterState();
+}
+
+class _FeverMeterState extends ConsumerState<FeverMeter> {
+  /// 이번 피버의 처음 남은 틱 (표의 지속 시간이 바뀌어도 막대가 맞게).
+  int _total = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final (fever, left) = ref.watch(
       gameStateProvider.select((s) => ((((s.battle?.fever ?? 0) * 20).round()) / 20, s.battle?.feverTicksLeft ?? 0)),
     );
+    if (left > _total) _total = left;
+    if (left == 0) _total = 1;
     final l10n = AppLocalizations.of(context);
-    // 발동 중에는 큰 원형 게이지(FeverDrama)가 보이므로 게이지 안 작은 막대는 꽉 찬 금색으로만.
-    if (left > 0) fever = 1;
+    final on = left > 0;
+    final value = on ? left / _total : fever;
+    final mult = ref.watch(tablesProvider).meta.raw.obj('fever').number('damageMultiplier');
     return Semantics(
-      label: '${l10n.uiFever} ${(fever * 100).round()}%',
+      label: on ? l10n.uiFeverChip(shortDecimal(mult)) : '${l10n.uiFever} ${(fever * 100).round()}%',
       excludeSemantics: true,
       child: Row(
-        key: const Key('fun.fever'),
+        key: Key(on ? 'fun.fever.meter.on' : 'fun.fever'),
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(l10n.uiFever, style: Skin.text(11, color: const Color(0xFFFFC27A))),
+          if (on)
+            Container(
+              key: const Key('fun.fever.chip'),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(color: const Color(0xFFFF8A2A), borderRadius: BorderRadius.circular(6)),
+              child: Text(l10n.uiFeverChip(shortDecimal(mult)), style: Skin.text(10, color: Colors.white)),
+            )
+          else
+            Text(l10n.uiFever, style: Skin.text(11, color: const Color(0xFFFFC27A))),
           const SizedBox(width: 3),
           SizedBox(
             width: 36,
-            height: 4,
+            height: on ? 6 : 4,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(3),
               child: LinearProgressIndicator(
-                value: fever.clamp(0.0, 1.0),
-                color: const Color(0xFFFF9A3C),
+                key: Key(on ? 'fun.fever.time' : 'fun.fever.fill'),
+                value: value.clamp(0.0, 1.0),
+                color: on ? const Color(0xFFFFD84A) : const Color(0xFFFF9A3C),
                 backgroundColor: Colors.white24,
               ),
             ),

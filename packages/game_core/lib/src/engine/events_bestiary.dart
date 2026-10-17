@@ -24,6 +24,12 @@ GameEvent _bestiaryEventFromJson(int t, Json j) => switch (j['type'] as String) 
     x: (j['x'] as num).toDouble(),
     y: (j['y'] as num).toDouble(),
   ),
+  'bossTraitFired' => BossTraitFired(
+    t,
+    enemyId: j['enemyId'] as int,
+    trait: j['trait'] as String,
+    ticks: j['ticks'] as int? ?? 0,
+  ),
   'bossBroken' => BossBroken(
     t,
     enemyId: j['enemyId'] as int,
@@ -134,4 +140,20 @@ class BossBroken extends GameEvent {
 
   @override
   Json _fields() => {'enemyId': enemyId, 'ticks': ticks, 'x': x, 'y': y};
+}
+
+/// 보스 특성이 움직였다(docs/specs/economy-boss-traits.md): [trait] 'reflect'(반사막 — 예고 뒤 [ticks] 동안) · 'enrage'(분노) ·
+/// 'escort'(호위 소환) · 'dash'(가속 — [ticks] 동안 자리 옮김). 회피는 AttackMissed(reason 'evade').
+class BossTraitFired extends GameEvent {
+  const BossTraitFired(super.tick, {required this.enemyId, required this.trait, this.ticks = 0});
+
+  final int enemyId;
+  final String trait;
+  final int ticks;
+
+  @override
+  String get type => 'bossTraitFired';
+
+  @override
+  Json _fields() => {'enemyId': enemyId, 'trait': trait, if (ticks != 0) 'ticks': ticks};
 }

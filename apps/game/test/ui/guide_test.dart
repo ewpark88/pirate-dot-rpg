@@ -98,6 +98,18 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
   });
 
+  testWidgets('출항 대기(progress.sailHold)면 출항 카드가 맨 먼저 — 출항 버튼을 가리킨다', (tester) async {
+    final s = loadFixture('stage37_midgame').copyWith(clearTutorial: true);
+    final hold = s.copyWith(progress: s.progress.copyWith(sailHold: true));
+    final log = await pumpGame(tester, _seen(hold, const []), openTab: false, guides: true);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(log.hints.first.id, 'guide.sail');
+    expect(find.text('Set sail!'), findsWidgets);
+    expect(find.byKey(const Key('tutorial.spot.sail.start')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+  });
+
   testWidgets("설정 '안내 다시 보기' → ClearHints('guide.')", (tester) async {
     final log = await pumpGame(tester, loadFixture('stage37_midgame'), openTab: false);
     await tester.tap(find.byKey(const Key('hud.settings')));
