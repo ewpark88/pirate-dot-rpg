@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 저녁 · S5 · HD 배 보스 무리 12종
+- **현재 위치**: review/hd-bosses-a 9d41f427(main 2876a4b1 위) — S3 검토 대기. HD 묶음 A는 main 머지됨.
+- 한 일: S3와 보스 나눔(S3 = 대보스·생물 보스·해역 보스, S5 = 배 무리) → 공용 몸 boss_ship.dart + 12종 + 비교 골든 hd_bosses_a.
+- 배운 것: 보스 특성(장갑·회피 등)은 렌더가 실시간으로 켜고 끈다 — 시트에 굽지 않는다. 작은 부품(금관)은 굵은 외곽선에 묻히니 크게.
+- 다음: S3 검토 반영. 남은 일(재개 지점): rotation+duel smoke, 폰 확인표.
+
 ## 2026-10-18 오후 · S5 · HD 몬스터 묶음 A 10종
 - **현재 위치**: review/hd-a 4bb6505a — S3 승인(검토 3건 반영: extent 1.2~1.3, 작은 얼음게 extent 같게, HdSpecies.muzzle + 원거리 7종 자리), S1 머지 중. review/k-windows-s5 7dcb0e53(창 개편 + 보상 연출)은 S4 UI run 대기.
 - 한 일
