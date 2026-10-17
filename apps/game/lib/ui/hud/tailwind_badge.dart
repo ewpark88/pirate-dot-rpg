@@ -44,6 +44,14 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
       }),
       (was, now) {
         if (was == null || !mounted) return;
+        // 소리: 켜진 동안 배경음 1.06배 + 바람 층(포트가 AudioMixPort면 — S5 2026-10-18).
+        final on = now.$1 || now.$2;
+        if (on != (was.$1 || was.$2)) {
+          if (ref.read(audioPortProvider) case final AudioMixPort mix) {
+            mix.setBgmRate(on ? 1.06 : 1);
+            on ? mix.playAmbient('wind') : mix.stopAmbient();
+          }
+        }
         final l10n = AppLocalizations.of(context);
         final reward = t.ads.placements.firstWhere((p) => p.id == 'tailwind').reward;
         String? text;
