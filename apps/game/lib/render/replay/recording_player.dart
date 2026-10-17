@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/replay/hit_stop_gate.dart';
 
 /// 보간된 적 한 마리. 매 프레임 다시 채우므로 객체를 재사용한다.
 class EnemyPose {
@@ -168,6 +169,10 @@ class RecordingPlayer {
   /// 구간 [i, i+1)이 멈춤인가. 엔진은 히트스톱 동안 같은 위치 프레임을 hitStopTicks>0으로 낸다.
   bool _frozen(int i) => _hasNext(i) && entryAt(i + 1).frame.hitStopTicks > 0;
 
+  final gate = HitStopGate();
+  String? _stopReason(int i) =>
+      [...entryAt(i).events, ...entryAt(i + 1).events].whereType<HitStop>().firstOrNull?.reason;
+
   bool _hasNext(int i) => _has(i) && _has(i + 1);
 
   /// 보간용 다음 틱 프레임(없거나 처음으로 돌아가는 자리면 null) — 배 자리·방향을 틱 사이에서 잇는다(모션 v1).
@@ -203,6 +208,7 @@ class RecordingPlayer {
   /// 처음 부르면 시작 시각(0과 lookahead까지)의 경계도 알린다.
   void advance(double dtMs) {
     if (_ticks.isEmpty) return;
+    gate.clock += dtMs;
     if (live) _catchUp();
     _fireCrossings();
     var remaining = dtMs;
@@ -211,7 +217,8 @@ class RecordingPlayer {
       if (limit != null && _position >= limit) break;
       final i = _position.floor();
       final speed = entryAt(i).frame.speed;
-      final msPerEntry = tickMs / (speed < 1 ? 1 : speed);
+      final fast = _frozen(i) && gate.fast(i, _frozen, _stopReason); // 히트스톱 초당 1.5회까지만 멈춤
+      final msPerEntry = tickMs / (speed < 1 ? 1 : speed) / (fast ? HitStopGate.fastMul : 1);
       var boundary = (i + 1).toDouble();
       if (limit != null && limit < boundary) boundary = limit;
       final toBoundary = (boundary - _position) * msPerEntry;
