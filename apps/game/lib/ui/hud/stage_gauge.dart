@@ -127,7 +127,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                                   ),
                           ),
                           // 보스전: 브레이크 막대(기절·둔화·취약·밀림이 쌓임 — 가득이면 쓰러짐).
-                          if (g.boss) ...[const SizedBox(height: 2), const BossBreakBar()],
+                          if (g.boss) ...[const SizedBox(height: 4), const BossBreakBar()],
                           const SizedBox(height: 3),
                           // 해역 진행 (얇게).
                           ClipRRect(
