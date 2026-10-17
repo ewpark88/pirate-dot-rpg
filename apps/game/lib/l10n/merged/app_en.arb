@@ -2204,5 +2204,66 @@
       }
     }
   },
-  "uiFleetAlreadyBest": "Already your strongest fleet"
+  "uiFleetAlreadyBest": "Already your strongest fleet",
+  "uiMergeResultTitle": "Merge results",
+  "uiMergeLv": "Lv {a} → {b}",
+  "@uiMergeLv": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeAtk": "Attack {a} → {b}",
+  "@uiMergeAtk": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeGain": "+{p}%",
+  "@uiMergeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeRarity": "{a} → {b}",
+  "@uiMergeRarity": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeMore": "+{n} more",
+  "@uiMergeMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeFleet": "Fleet power {a} → {b}",
+  "@uiMergeFleet": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1783,5 +1783,66 @@
       }
     }
   },
-  "uiFleetAlreadyBest": "이미 최강 편성이에요"
+  "uiFleetAlreadyBest": "이미 최강 편성이에요",
+  "uiMergeResultTitle": "합치기 결과",
+  "uiMergeLv": "Lv {a} → {b}",
+  "@uiMergeLv": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeAtk": "공격력 {a} → {b}",
+  "@uiMergeAtk": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeGain": "+{p}%",
+  "@uiMergeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeRarity": "{a} → {b}",
+  "@uiMergeRarity": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeMore": "외 {n}명",
+  "@uiMergeMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeFleet": "함대 전투력 {a} → {b}",
+  "@uiMergeFleet": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  }
 }

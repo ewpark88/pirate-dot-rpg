@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
 import 'package:pirate_dot/ui/crew/fleet_swap_fx.dart';
+import 'package:pirate_dot/ui/crew/merge_result.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -143,7 +144,7 @@ class CrewHeader extends ConsumerWidget {
                   key: const Key('crew.mergeAll'),
                   tone: SkinTone.gold,
                   height: 44,
-                  onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                  onPressed: () => mergeAllWithResult(context, ref),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Row(
