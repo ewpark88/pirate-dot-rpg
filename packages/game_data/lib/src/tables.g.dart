@@ -2938,7 +2938,7 @@ const Map<String, String> rawTables = {
       "feverIntervalMin": { "min": 4, "max": 6 },
       "bossFightDamagePct": { "min": 25, "max": 45 },
       "bossKillSec": { "min": 20, "max": 40 },
-      "bossFailSec": { "min": 15, "max": 30 },
+      "bossFailSec": { "min": 30, "max": 60 },
       "bossFirstWinPct": { "min": 70, "max": 85 },
       "wallFirstWinPct": { "min": 30, "max": 50 },
       "rebirthWallRatio": { "min": 0.75, "max": 0.85 },
