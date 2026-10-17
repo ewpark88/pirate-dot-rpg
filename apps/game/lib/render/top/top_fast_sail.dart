@@ -177,6 +177,7 @@ class TopTexts {
     this.fled = 'Fled!',
     this.newCrew = 'NEW CREW!',
     this.bossBreak = 'BREAK!',
+    this.crewName = _noName,
   });
 
   final String start;
@@ -193,6 +194,10 @@ class TopTexts {
 
   /// 보스 브레이크 도장(S4 ARB uiBossBreak).
   final String bossBreak;
+
+  /// 선원 이름(앞면 공개 카드 아래, 피드백 #22 — S4 crew 이름 키). 비면 이름 없음.
+  final String Function(String crewId) crewName;
+  static String _noName(String _) => '';
 
   static String _endedEn(int from, int to) => 'STAGE $from → $to CLEARED!';
 }
