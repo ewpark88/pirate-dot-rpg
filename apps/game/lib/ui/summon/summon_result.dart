@@ -7,6 +7,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/hud/reward_gate.dart' show rewardLite;
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -16,6 +17,7 @@ import 'package:pirate_dot/ui/summon/summon_card.dart';
 import 'package:pirate_dot/ui/summon/summon_cutin.dart';
 import 'package:pirate_dot/ui/summon/summon_fx.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
 /// 결과 격자 열 수 범위 (10연은 3~5열 중 카드가 가장 큰 것).
 const _minColumns = 3;
@@ -184,6 +186,15 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
                       radius: 1.1,
                     ),
                   ),
+                ),
+              ),
+              // 보상 터짐 빛(디자인 개편 ③): 카드는 아래 격자가 보여 주니 빛기둥만 — 최고 등급 = 빛 색.
+              Positioned.fill(
+                child: RewardBurst(
+                  key: const Key('summon.rays'),
+                  items: const [],
+                  tier: RewardTier.values[best.clamp(0, RewardTier.values.length - 1)],
+                  lite: rewardLite(ref),
                 ),
               ),
               if (best >= Tier.mythic) Positioned.fill(child: AuroraSweep(t: hint)),

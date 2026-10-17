@@ -1,13 +1,19 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_sheets.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 
+/// 그릴 그림 한 칸: 이미지·원본 칸·배율(HD는 world/cell)·HD 여부(부드러운 확대).
+typedef _Spr = ({Image image, Rect src, double scale, bool hd});
+
 /// 탑다운 적 그리기 (TopScenePainter에서 뺌): 그림별 drawAtlas 묶음, 헤엄 흔들림, 배를 때린 적의 돌진, 돌발 이벤트 그림.
+/// HD 카툰 종(개편 ④, hd_species.dart)은 굽힌 HD 시트로 — 돌리지 않고 좌우만 뒤집는다. 나머지는 도트.
 class TopEnemies {
   TopEnemies(this.scene, this.sprites);
 
@@ -51,6 +57,9 @@ class TopEnemies {
       final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
+      final hd = key.startsWith('td_e') || key.startsWith('td_b')
+          ? hdSheets.sheet(e.kind, boss: e.boss, world: sheet.frameW, density: snap)
+          : null;
       // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
       // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
@@ -66,66 +75,71 @@ class TopEnemies {
       final bk = (clock - born) / _bornMs;
       final pop = bk >= 1 || e.boss ? 1.0 : (bk < 0.6 ? 0.3 + 0.82 * bk / 0.6 : 1.12 - 0.12 * (bk - 0.6) / 0.4);
       if (bk == 0 && !lite && !e.boss && _rings.length < 24) _rings.add((e.drawX, e.drawY, clock));
-      final breathe = (e.boss ? (1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0) * pop;
+      // HD 보스는 그림 안에서 숨쉰다(굽힌 8장).
+      final breathe =
+          (e.boss ? (hd != null ? 1 : 1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0) * pop;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
-      final rotation =
-          e.heading +
-          math.pi / 2 +
-          math.sin(clock / 240 + e.id) * 0.08 +
-          (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0);
+      final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0.0;
+      // HD: 정면 3/4 그림이라 진행 방향으로 돌리지 않고 살짝 흔들기만(좌우는 시트 행으로).
+      final rotation = hd != null
+          ? math.sin(clock / 240 + e.id) * 0.06 + tilt
+          : e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08 + tilt;
+      final _Spr spr;
+      if (hd != null) {
+        final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
+        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading)), scale: hd.scale, hd: true);
+      } else {
+        spr = (image: sheet.image, src: _cell(sheet, frame), scale: 1.0, hd: false);
+      }
       // 기기 픽셀에 맞춤(모션 v1 — 전장 1단위 ≈ 4px로 반올림해 뚝뚝 떨리던 것).
       final tx = ((e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx) * snap).roundToDouble() / snap;
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
-      if (!e.boss) _seen[e.id] = (sheet, frame, tx, ty, rotation);
+      if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
       final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
       if (sq != null) {
-        _squashed.add((sheet, frame, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
+        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
         continue;
       }
       final batch = (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
-        sheet,
-        () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
+        spr.image,
+        () => _Batch(spr.image, flash: e.flash, boss: e.boss, hd: spr.hd),
       );
       // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
       final xf = RSTransform.fromComponents(
         rotation: rotation,
-        scale: key == _merchant ? _merchantScale : breathe,
-        anchorX: sheet.frameW / 2,
-        anchorY: sheet.frameH / 2,
+        scale: (key == _merchant ? _merchantScale : breathe) * spr.scale,
+        anchorX: spr.src.width / 2,
+        anchorY: spr.src.height / 2,
         translateX: tx,
         translateY: ty,
       );
-      batch.add(xf, Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH), 1 - blend * 0.5);
-      if (blend > 0) {
-        batch.add(xf, Rect.fromLTWH((frame + 1) % sheet.frames * sheet.frameW, 0, sheet.frameW, sheet.frameH), blend);
+      if (spr.hd) {
+        batch.add(xf, spr.src, 1); // HD는 8장이라 섞지 않는다
+        continue;
       }
+      batch.add(xf, spr.src, 1 - blend * 0.5);
+      if (blend > 0) batch.add(xf, _cell(sheet, frame + 1), blend);
     }
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       if (b.xf.isEmpty) continue;
       // 흰 실루엣은 보스만(강), 보통 명중은 금빛 색 번쩍(사용자 '흰 번쩍임 눈 아프다').
       final paint = b.flash ? (b.boss ? _flashPaint : _tintPaint) : (under ? _underPaint : _atlasPaint);
-      c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, paint);
+      c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _q(paint, hd: b.hd));
     }
     for (final b in _hotBatches.values) {
-      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _hotPaint);
+      if (b.xf.isEmpty) continue;
+      c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _q(_hotPaint, hd: b.hd));
     }
-    for (final (sheet, frame, rot, tx, ty, sx, sy, flash, hot) in _squashed) {
-      final w = sheet.frameW;
-      final h = sheet.frameH;
+    for (final (spr, rot, tx, ty, sx, sy, flash, hot) in _squashed) {
       c
         ..save()
         ..translate(tx, ty)
         ..rotate(rot)
-        ..scale(sx, sy)
-        ..drawImageRect(
-          sheet.image,
-          Rect.fromLTWH(frame * w, 0, w, h),
-          Rect.fromLTWH(-w / 2, -h / 2, w, h),
-          flash ? _tintPaint : (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)),
-        )
-        ..restore();
+        ..scale(sx, sy);
+      _draw(c, spr, flash ? _tintPaint : (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)));
+      c.restore();
     }
     _squashed.clear();
     _transitions(c, under: under, clock: clock, lite: lite);
@@ -135,10 +149,31 @@ class TopEnemies {
   static const _dieMs = 160.0;
   final Map<int, double> _born = {};
   final List<(double, double, double)> _rings = []; // 등장 물 고리 x, y, ms
-  final Map<int, (SpriteSheet, int, double, double, double)> _seen = {};
-  final Map<int, (SpriteSheet, int, double, double, double)> _lastUnder = {};
-  final Map<int, (SpriteSheet, int, double, double, double)> _lastOver = {};
-  final List<(SpriteSheet, int, double, double, double, double)> _dying = [];
+  final Map<int, (_Spr, double, double, double)> _seen = {};
+  final Map<int, (_Spr, double, double, double)> _lastUnder = {};
+  final Map<int, (_Spr, double, double, double)> _lastOver = {};
+  final List<(_Spr, double, double, double, double)> _dying = [];
+
+  /// HD 카툰 시트(개편 ④).
+  final hdSheets = HdSheets();
+  final Map<int, bool> _right = {};
+
+  /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
+  bool _facing(int id, double heading) {
+    final x = math.cos(heading);
+    return _right[id] = x > 0.3 || (x >= -0.3 && (_right[id] ?? x > 0));
+  }
+
+  static Rect _cell(SpriteSheet s, int frame) => Rect.fromLTWH(frame % s.frames * s.frameW, 0, s.frameW, s.frameH);
+
+  Paint _q(Paint p, {required bool hd}) => p..filterQuality = hd ? FilterQuality.medium : FilterQuality.none;
+
+  void _draw(Canvas c, _Spr s, Paint p) {
+    final w = s.src.width * s.scale;
+    final h = s.src.height * s.scale;
+    c.drawImageRect(s.image, s.src, Rect.fromLTWH(-w / 2, -h / 2, w, h), _q(p, hd: s.hd));
+  }
+
   final _ringPaint = Paint()
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
@@ -150,31 +185,27 @@ class TopEnemies {
     if (!lite) {
       for (final MapEntry(:key, :value) in last.entries) {
         if (_seen.containsKey(key) || _dying.length >= 24) continue;
-        _dying.add((value.$1, value.$2, value.$3, value.$4, value.$5, clock));
+        _dying.add((value.$1, value.$2, value.$3, value.$4, clock));
       }
     }
     last
       ..clear()
       ..addAll(_seen);
-    if (_born.length > 400) _born.removeWhere((id, _) => !_lastUnder.containsKey(id) && !_lastOver.containsKey(id));
+    if (_born.length > 400) {
+      _born.removeWhere((id, _) => !_lastUnder.containsKey(id) && !_lastOver.containsKey(id));
+      _right.removeWhere((id, _) => !_born.containsKey(id));
+    }
     if (under) return;
-    _dying.removeWhere((d) => clock - d.$6 > _dieMs);
-    for (final (sheet, frame, tx, ty, rot, at) in _dying) {
+    _dying.removeWhere((d) => clock - d.$5 > _dieMs);
+    for (final (spr, tx, ty, rot, at) in _dying) {
       final t = (clock - at) / _dieMs;
-      final w = sheet.frameW;
-      final h = sheet.frameH;
       c
         ..save()
         ..translate(tx, ty)
         ..rotate(rot)
-        ..scale(1.25 + 0.35 * t, math.max(0.05, 0.65 * (1 - t)))
-        ..drawImageRect(
-          sheet.image,
-          Rect.fromLTWH(frame * w, 0, w, h),
-          Rect.fromLTWH(-w / 2, -h / 2, w, h),
-          t < 0.45 ? _flashPaint : _atlasPaint,
-        )
-        ..restore();
+        ..scale(1.25 + 0.35 * t, math.max(0.05, 0.65 * (1 - t)));
+      _draw(c, spr, t < 0.45 ? _flashPaint : _atlasPaint);
+      c.restore();
     }
     _rings.removeWhere((r) => clock - r.$3 > 300);
     for (final (x, y, at) in _rings) {
@@ -186,12 +217,12 @@ class TopEnemies {
     }
   }
 
-  final List<(SpriteSheet, int, double, double, double, double, double, bool, bool)> _squashed = [];
+  final List<(_Spr, double, double, double, double, double, bool, bool)> _squashed = [];
   static const _maxSquash = 20;
 
-  final Map<SpriteSheet, _Batch> _batches = {};
-  final Map<SpriteSheet, _Batch> _flashBatches = {};
-  final Map<SpriteSheet, _Batch> _hotBatches = {};
+  final Map<Image, _Batch> _batches = {};
+  final Map<Image, _Batch> _flashBatches = {};
+  final Map<Image, _Batch> _hotBatches = {};
 
   /// 피버 녹이기: 이 자리(전장 좌표)의 적은 빨갛게 달아오른다. null이면 없음.
   bool Function(double x, double y)? hotAt;
@@ -231,10 +262,11 @@ class TopEnemies {
 
 /// 같은 그림(종류·번쩍임) 적 묶음 — 프레임마다 비우고 다시 채운다(리스트 재사용).
 class _Batch {
-  _Batch(this.image, {required this.flash, this.boss = false});
+  _Batch(this.image, {required this.flash, this.boss = false, this.hd = false});
   final Image image;
   final bool flash;
   final bool boss;
+  final bool hd;
   final xf = <RSTransform>[];
   final src = <Rect>[];
   final colors = <Color>[];

@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -61,21 +62,24 @@ class SettingsScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // 도트 머리줄: 뒤로 + 제목 (AppBar 대신).
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-              child: Row(
-                children: [
-                  PixelButton(
+            // k2 머리: 노란 리본 제목 + 왼쪽 뒤로 (AppBar 대신, 디자인 개편 — 쿵푸할매 창 머리).
+            Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: RibbonHeader(title: l10n.uiSettingsTitle, padRight: 64),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: PixelButton(
                     key: const Key('settings.back'),
                     semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: () => Navigator.of(context).maybePop(),
                     child: const Icon(Icons.arrow_back_rounded, size: 22, color: Skin.ink),
                   ),
-                  const SizedBox(width: 12),
-                  Text(l10n.uiSettingsTitle, style: Theme.of(context).textTheme.titleMedium),
-                ],
-              ),
+                ),
+              ],
             ),
             Expanded(
               child: ListView(
@@ -178,7 +182,7 @@ IconData _settingIcon(String key) => switch (key) {
   _ => Icons.notifications_rounded,
 };
 
-/// 설정 묶음: 머리 글 + 떠 있는 판 (스킨 r2 ①).
+/// 설정 묶음: 소제목 리본 + 안쪽 판 (k2).
 class _Group extends StatelessWidget {
   const _Group({required this.title, required this.child, super.key});
 
@@ -191,12 +195,10 @@ class _Group extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 6, bottom: 4),
-          child: Text(title, style: Skin.text(15, color: Skin.sub)),
-        ),
-        SkinDepth(
-          padding: EdgeInsets.zero,
+        // k2: 소제목 리본 + 연보라 안쪽 판(굵은 외곽선).
+        Padding(padding: const EdgeInsets.only(bottom: 6), child: SubRibbon(title)),
+        DecoratedBox(
+          decoration: Skin.inset(radius: Skin.radiusCard),
           child: ClipRRect(borderRadius: BorderRadius.circular(Skin.radiusCard), child: child),
         ),
       ],

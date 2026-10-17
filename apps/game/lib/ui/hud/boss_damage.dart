@@ -5,12 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/hud/reward_gate.dart' show rewardLite;
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/widgets/crew_portrait.dart';
+import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
 /// 보스 보상 연출(S3 TopBossLoot.totalMs 2.6초)이 끝난 뒤 창을 띄운다 — 겹치지 않게.
 const bossDamageDelay = Duration(milliseconds: 2600);
@@ -41,10 +45,42 @@ class _BossDamageGateState extends ConsumerState<BossDamageGate> {
         if (e is! BossCleared || e.crewDamage.isEmpty) continue;
         final b = tick.frame;
         if (b.fastSail != null || b.bounty != null) continue;
+        // 보상 터짐(디자인 개편 ③): 같은 틱에 받은 젬·카드를 처치 창 전에 — 창 안 피해 순위는 덮지 않는다(S4).
+        final cards = [
+          for (final c in tick.events)
+            if (c is CardGranted) c,
+        ];
         _wait?.cancel();
-        _wait = Timer(bossDamageDelay, () => _show(e));
+        _wait = Timer(bossDamageDelay, () async {
+          await _burst(e, cards);
+          _show(e);
+        });
       }
     });
+  }
+
+  Future<void> _burst(BossCleared e, List<CardGranted> cards) async {
+    if (!mounted || (e.gems <= 0 && cards.isEmpty)) return;
+    final t = ref.read(tablesProvider);
+    final rarities = t.rarities.rarities;
+    RewardTier tierOf(String rarity) =>
+        RewardTier.values[rarities.indexWhere((r) => r.id == rarity).clamp(0, RewardTier.values.length - 1)];
+    final r = t.regions;
+    await showRewardBurst(
+      context,
+      items: [
+        if (e.gems > 0) (icon: UiSprites.gem, label: '${e.gems}', tier: RewardTier.blue),
+        for (final c in cards) (icon: 'assets/${t.crews.byId(c.crewId).portrait}', label: '1', tier: tierOf(c.rarity)),
+      ],
+      source: UiSprites.trophy,
+      // 해역 보스(해역 마지막) 금 · 중간 보스·10단위 벽 보라 · 보통 파랑.
+      tier: e.stage % r.stagesPerRegion == 0
+          ? RewardTier.gold
+          : (e.stage % r.midBossEvery == 0 || (r.wallEvery > 0 && e.stage % r.wallEvery == 0)
+                ? RewardTier.purple
+                : RewardTier.blue),
+      lite: rewardLite(ref),
+    );
   }
 
   void _show(BossCleared e) {
@@ -134,11 +170,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  l10n.uiBossDamageTitle,
-                  textAlign: TextAlign.center,
-                  style: Skin.text(20, color: Skin.goldTop),
-                ),
+                SubRibbon(l10n.uiBossDamageTitle),
                 if (mvp != null) ...[
                   const SizedBox(height: 28), // 왕관이 초상 위로 22 튀어나온다 — 제목과 안 겹치게
                   Row(

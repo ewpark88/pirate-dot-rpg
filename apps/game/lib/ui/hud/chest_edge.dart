@@ -115,64 +115,50 @@ class ChestChoicesSheet extends ConsumerWidget {
         ),
       ),
     );
-    return Dialog(
-      backgroundColor: Skin.card,
-      insetPadding: popupInset,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: ConstrainedBox(
-        key: const Key('chest.sheet'),
-        constraints: popupConstraints(context),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    // k2: 노란 리본 제목 + X + 연보라 판 (공용 PixelDialog).
+    return PixelDialog(
+      key: const Key('chest.sheet'),
+      title: l10n.uiChestTitle,
+      icon: const ChestSprite(size: 48),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  const ChestSprite(size: 32),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(l10n.uiChestTitle, style: Skin.text(20))),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  option(
-                    key: const Key('chest.take'),
-                    tone: SkinTone.plain,
-                    top: l10n.uiChestJustTake,
-                    amount: base?.format() ?? '',
-                    onTap: () {
-                      ref.read(commandSinkProvider).send(const TapChest());
-                      close();
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  // 광고 쪽이 이득 — 금빛 + '×n'.
-                  option(
-                    key: const Key('ad.chest.gold'),
-                    tone: SkinTone.gold,
-                    top: l10n.uiChestAdMult(shortDecimal(mult)),
-                    amount: base?.times(mult).format() ?? '',
-                    ad: true,
-                    onTap: () {
-                      unawaited(watchAd(ref, AdPlacement.chest, choice: 'gold'));
-                      close();
-                    },
-                  ),
-                ],
-              ),
-              TextButton(
-                key: const Key('ad.chest.gems'),
-                onPressed: () {
-                  unawaited(watchAd(ref, AdPlacement.chest, choice: 'gems'));
+              option(
+                key: const Key('chest.take'),
+                tone: SkinTone.plain,
+                top: l10n.uiChestJustTake,
+                amount: base?.format() ?? '',
+                onTap: () {
+                  ref.read(commandSinkProvider).send(const TapChest());
                   close();
                 },
-                child: Text(l10n.uiChestAdGems(reward.integer('altGems')), style: Skin.text(14, color: Skin.sub)),
+              ),
+              const SizedBox(width: 8),
+              // 광고 쪽이 이득 — 금빛 + '×n'.
+              option(
+                key: const Key('ad.chest.gold'),
+                tone: SkinTone.gold,
+                top: l10n.uiChestAdMult(shortDecimal(mult)),
+                amount: base?.times(mult).format() ?? '',
+                ad: true,
+                onTap: () {
+                  unawaited(watchAd(ref, AdPlacement.chest, choice: 'gold'));
+                  close();
+                },
               ),
             ],
           ),
-        ),
+          TextButton(
+            key: const Key('ad.chest.gems'),
+            onPressed: () {
+              unawaited(watchAd(ref, AdPlacement.chest, choice: 'gems'));
+              close();
+            },
+            child: Text(l10n.uiChestAdGems(reward.integer('altGems')), style: Skin.text(14, color: Skin.sub)),
+          ),
+        ],
       ),
     );
   }

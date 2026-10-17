@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | 개편 ① k2 일괄 a557a0d0 — check --full 초록, S1 머지 대기(팝업 크기·HD 아이콘·역할 배지·OutlineText 포함)
-| 다음 | 창·시트 단계(상자 선택 창·새 동료 카드 리본 — S5와 나눔) · S5 review/reward-fx-wire 검토 · 보스 특성 UI 재개(아래 재개 지점)
+| 상태 | 개편 UI 마무리 6d86f128 — check --full 초록, S1 머지 대기(S2·S5 창 + reward-fx-wire + 내 창 + LEVEL UP!)
+| 다음 | 배 스킨 칸(meta.shipSkins 7 + 환생 4 한 창, IconCell 격자·미리보기·입기/BuySkin·SkinUnlocked 토스트) → 보스 특성 UI 재개(아래 재개 지점)
 | 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -22,6 +22,8 @@
 - c73b6ae4 팝업 크기: popupWidth(폰 85%·태블릿 480) · popupInset · showSkinDialog(200ms 커지며 페이드) 12곳. 관련 12파일 골든만 갱신 — --full 필요.
 - 보스 특성 UI 1차(위 재개 지점). 검토: S5 swap-compare·crew-preview 머지 OK 회신.
 - 교훈: 남이 slot을 쓰는 동안 빠른 check는 커밋 직전 1회만.
+- 6d86f128 개편 UI 마무리: 상자 선택·새 동료 PixelDialog, 보스 피해·도감·교체 비교 SubRibbon, 팝업 480dp를 화면 기준(태블릿 UI 배율로 나눔), LEVEL UP! 연출(crew/level_up_fx.dart), S2·S5 창·reward-fx-wire 검토·합침, 보상 터짐 타이머를 창 안 위젯으로(fleet_engine 전체 run 실패 원인), daily 출석 분리. --full 초록.
+- 교훈: 창 밖 Timer는 창과 같이 사라지게 위젯 안에 — 아니면 테스트 끝에 'Timer still pending'(전체 run에서만 드러남).
 - a557a0d0 k2 일괄: 외곽선 글자 굵게(Skin.outlined 크기 비례 테 + Skin.bold), 리본 입체·SubRibbon, Skin.inset, 버튼 띠 6, IconCell(배 부위 칸 + Lv 배지), OutlineText 11곳(테 층 RichText로 고쳐 find.text 하나), 흰 글자/테 일괄, 게이지 16dp. test/ui 골든 일괄 118장 + --full 초록.
 - 교훈: 두 겹 글자 위젯은 테 층을 RichText로 — 아니면 find.text가 2개를 찾아 테스트 대량 실패.
 - 개편 ① k1 시안: Skin 토큰(남보라·연보라·외곽선·초록/노랑 입체·Skin.outlined), PixelDialog 리본+X(RibbonHeader·CloseX·showClose), 도크·탭 막대 네모 칸, 위 막대·게이지·HP·토스트 외곽선. PB 키트는 색이 안 맞아 painter. S5 hd-icons 머지.

@@ -96,8 +96,9 @@ class BountyCard extends ConsumerWidget {
           key: const Key('bounty.card'),
           behavior: HitTestBehavior.opaque,
           onTap: openSheet,
-          child: SkinCard(
+          child: Container(
             padding: const EdgeInsets.all(10),
+            decoration: Skin.inset(radius: Skin.radiusCard),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -203,7 +204,7 @@ class BountyTicketPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: full ? const Color(0xFFFFE3E7) : Skin.cream,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: full ? Skin.danger : Skin.goldBottom, width: 1.5),
+        border: Border.all(color: full ? Skin.danger : Skin.outline, width: 2),
       ),
       child: Text(
         AppLocalizations.of(context).uiBountyTickets(cap, tickets),

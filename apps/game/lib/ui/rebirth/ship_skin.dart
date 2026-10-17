@@ -7,6 +7,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
@@ -33,11 +34,7 @@ class ShipSkinButton extends ConsumerWidget {
           constraints: const BoxConstraints(minHeight: 48),
           child: Container(
             padding: const EdgeInsets.fromLTRB(6, 2, 12, 2),
-            decoration: BoxDecoration(
-              color: Skin.card,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: Skin.shadowSmall,
-            ),
+            decoration: Skin.inset(radius: 24),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -67,7 +64,7 @@ class ShipSkinSheet extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.uiShipSkin, style: Skin.text(22)),
+        SubRibbon(l10n.uiShipSkin),
         const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -130,11 +127,11 @@ class _SkinTile extends StatelessWidget {
             duration: const Duration(milliseconds: 160),
             width: 112,
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: owned ? Skin.cream : Skin.track,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: equipped ? Skin.primaryBottom : Colors.transparent, width: 3),
-              boxShadow: owned ? Skin.shadowSmall : null,
+            // k2: 굵은 외곽선 칸(낀 것 = 파랑 테, 잠김 = 옅은 회보라).
+            decoration: Skin.inset(
+              fill: owned ? Skin.insetFill : const Color(0xFFD3D1EA),
+              border: equipped ? Skin.primaryBottom : Skin.outline,
+              radius: 16,
             ),
             child: Column(
               children: [

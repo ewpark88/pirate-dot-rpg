@@ -4,6 +4,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -52,11 +53,11 @@ class _BountySheetState extends ConsumerState<BountySheet> {
             margin: const EdgeInsets.all(3),
             padding: const EdgeInsets.symmetric(vertical: 6),
             decoration: BoxDecoration(
-              color: today ? Skin.goldTop : Skin.card,
+              color: today ? Skin.goldTop : Skin.insetFill, // k2: 연보라 칸 + 굵은 외곽선, 오늘은 금, 고른 칸은 파랑 테
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: selected ? Skin.primaryBottom : (today ? Skin.goldEdge : Skin.cardEdge),
-                width: selected || today ? 2.5 : 1.5,
+                color: selected ? Skin.primaryBottom : Skin.outline,
+                width: selected ? 3 : Skin.outlineWidth,
               ),
             ),
             child: Column(
@@ -89,7 +90,7 @@ class _BountySheetState extends ConsumerState<BountySheet> {
         children: [
           Row(
             children: [
-              Expanded(child: Text(l10n.uiBountyTitle, style: Skin.text(22))),
+              Expanded(child: SubRibbon(l10n.uiBountyTitle)),
               BountyTicketPill(tickets: vm.tickets, cap: ref.watch(bountyLimitsProvider).ticketCap),
             ],
           ),
@@ -110,8 +111,9 @@ class _BountySheetState extends ConsumerState<BountySheet> {
             ),
           ],
           const SizedBox(height: 10),
-          SkinCard(
+          Container(
             padding: const EdgeInsets.all(10),
+            decoration: Skin.inset(radius: Skin.radiusCard),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -217,7 +219,7 @@ class _Step extends StatelessWidget {
         decoration: BoxDecoration(
           color: onTap == null ? Skin.track : Skin.plainBottom,
           shape: BoxShape.circle,
-          border: Border.all(color: Skin.plainEdge, width: 1.5),
+          border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
         ),
         child: Icon(icon, color: onTap == null ? Skin.disabled : Skin.ink),
       ),
