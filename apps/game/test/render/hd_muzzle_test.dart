@@ -58,10 +58,15 @@ void main() {
       for (final (i, t) in base.indexed)
         i == at ? RecordedTick(t.frame, [...t.events, EnemyWindup(i, enemyId: id, atTicks: 8, kind: 'ranged')]) : t,
     ];
-    final scene = BattleScene(stillTables, rec, loop: false);
-    while (scene.player.position < at + 1) {
-      scene.update(16);
+    int lit(List<RecordedTick> r) {
+      final scene = BattleScene(stillTables, r, loop: false);
+      while (scene.player.position < at + 1) {
+        scene.update(16);
+      }
+      return scene.topHits.muzzle.active;
     }
-    expect(scene.topHits.muzzle.active, 1);
+
+    // 빽빽한 무리(화면 밀도 2026-10-17)는 스스로도 예고를 낸다 — 넣은 하나만큼 더 켜졌는지 본다.
+    expect(lit(rec), lit(base) + 1);
   });
 }

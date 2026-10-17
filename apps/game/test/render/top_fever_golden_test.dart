@@ -49,6 +49,12 @@ void main() {
       final at = rec.indexWhere((t) => t.events.any((e) => e is FeverStarted));
       expect(at, greaterThan(0), reason: '기록에 피버 시작이 있어야 한다');
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+      for (final c in tables.crews.crews) {
+        scene.topHits.feverStrike.names = {
+          ...scene.topHits.feverStrike.names,
+          c.id: c.id.toUpperCase(),
+        }; // 컷인 이름(UI가 번역해 넣음)
+      }
       final painter = ScenePainter(scene)..sprites = bank;
       final frame = topFrameFor(box, dpr);
       final warm = Canvas(PictureRecorder());

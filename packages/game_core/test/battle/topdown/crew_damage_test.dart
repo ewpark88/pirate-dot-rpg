@@ -64,7 +64,7 @@ void main() {
     )..enqueue(const OpSpawnBoss());
     final events = <GameEvent>[];
     BattleView? last;
-    for (var i = 0; i < 2400 && events.whereType<BossCleared>().isEmpty; i++) {
+    for (var i = 0; i < 12000 && events.whereType<BossCleared>().isEmpty; i++) {
       last = e.state.battle;
       e.tick();
       events.addAll(e.drainEvents());

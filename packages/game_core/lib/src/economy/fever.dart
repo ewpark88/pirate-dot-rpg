@@ -12,6 +12,15 @@ import 'package:game_data/game_data.dart';
 /// 피버 중인가 (BattleView.feverTicksLeft > 0).
 bool feverOn(GameState s) => (s.battle?.feverTicksLeft ?? 0) > 0;
 
+/// 피버가 켜진 첫 틱(남은 틱이 아직 꽉 찬 틱)인가 — 전투가 피버를 처음 보는 틱. 첫 일격·피버 무리 즉시 소환이 쓴다.
+bool feverJustStarted(GameState s, GameTables t) {
+  if (!feverOn(s)) return false;
+  final f = t.meta.raw.obj('fever');
+  final full = ((f.number('durationSec') + feverSupport(s, t).extraSec) / (t.waves.tickMs * secondsPerMillisecond))
+      .round();
+  return s.battle!.feverTicksLeft == full;
+}
+
 /// 피버 중 피해 % 합에 더하는 값 (damageMultiplier − 1 — 설계서 4.8: 새 보너스는 마지막 % 합에만).
 double feverDamageBonus(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('damageMultiplier') - 1 : 0;
@@ -20,7 +29,8 @@ double feverDamageBonus(GameState s, GameTables t) =>
 double feverGoldMultiplier(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('goldMultiplier') : 1;
 
-/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16 처치 수 기준, 피드백 #2 2026-10-17 '초반 200 → 점점 늘려 최대 1000').
+/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16 처치 수 기준, 피드백 #2 2026-10-17 '초반 200 → 점점 늘려 최대 1000',
+/// 같은 날 사용자 변경: 몬스터 ×1.3에 맞춰 260 → 1300).
 /// 스테이지 1에서 killsStart, killsRampStage까지 곧게 늘어 killsMax. 환생하면 스테이지를 따라 다시 짧아진다.
 int feverKillsAt(GameTables t, int stage) {
   final f = t.meta.raw.obj('fever');

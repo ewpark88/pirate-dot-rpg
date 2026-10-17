@@ -9,6 +9,7 @@ import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBo
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/fever.dart' show feverOn;
 import 'package:game_core/src/economy/formation.dart' show fleetSlots;
+import 'package:game_core/src/economy/iap.dart' show purchasedSpeedHpMul;
 import 'package:game_core/src/economy/rebirth_shop.dart' show bossGuard;
 import 'package:game_core/src/economy/ship_stats.dart' show partLook;
 import 'package:game_core/src/engine/game_engine.dart';
@@ -103,6 +104,8 @@ void shapeField(Field f, GameState s, GameTables t) {
   f
     ..bossGuard =
         bossGuard(s, t) // 보물지도 상점 철갑판(보스전·현상금 배 피해 감소)
+    ..speedHpMul =
+        purchasedSpeedHpMul(s, t, s.savedAt) // 유료 2배속: 화면 2배 · 진행 1.5배
     ..slotsOpen = fleetSlots(s, t); // 열린 칸(평생 최고 스테이지 기준) — 렌더 잠금 칸
   if (f.geometry == null || !identical(f.shipSeen, s.ship)) {
     if (f.shipSeen != null) _refreshHull(f, s, t); // 배를 강화했다(전장을 처음 만들 때는 이미 맞다)

@@ -80,6 +80,7 @@ class IapTable {
       firstBuyMultiplier = j.integer('firstBuyMultiplier'),
       offlineHours = j.integer('offlineHours'),
       speedMultiplier = j.integer('speedMultiplier'),
+      speedProgressMul = j.number('speedProgressMul'),
       products = {for (final p in j.objs('products').map(IapProduct.fromJson)) p.id: p},
       pass = PassTable.fromJson(j.obj('pass'));
 
@@ -94,6 +95,9 @@ class IapTable {
 
   /// speed 권리가 있으면 전투 배속(순풍과 겹치면 이 값 그대로 — 곱하지 않음).
   final int speedMultiplier;
+
+  /// 유료 2배속의 실제 진행 배수(사용자 결정 2026-10-17 '화면 2배 · 골드·진행 1.5배'): 배속 중 적 HP × 배속 ÷ 이 값, 공격 ÷ 같은 값.
+  final double speedProgressMul;
   final Map<String, IapProduct> products;
   final PassTable pass;
 

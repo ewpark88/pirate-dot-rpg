@@ -89,6 +89,9 @@ class HdSeaDetail {
       );
     }
     _glints(c, v, now, now * 0.12, const Color(0xFFFFFBE0), lite ? 8 : 18, f);
+    // 금빛 물결 띠(빠르게 흐름) + 위에서 내려오는 금빛 빛기둥 — 옅게(배·적 가독성)
+    _caustics(c, v, now, now * 0.25, const Color(0xFFFFF4C0), 0.1 * f);
+    if (!lite) _godRays(c, v, now, f, gold: true);
   }
 
   /// 햇빛 일렁임: 화면을 가로지르는 넓은 물결 띠 3개가 천천히 흐르고 출렁인다.
@@ -180,7 +183,7 @@ class HdSeaDetail {
     }
   }
 
-  void _godRays(Canvas c, Rect v, double now, double dim) {
+  void _godRays(Canvas c, Rect v, double now, double dim, {bool gold = false}) {
     for (var i = 0; i < 3; i++) {
       final x = v.left + v.width * (0.2 + i * 0.3) + math.sin(now / 3000 + i) * v.width * 0.05;
       final w = v.width * 0.12;
@@ -190,10 +193,10 @@ class HdSeaDetail {
         ..lineTo(x + w, v.bottom)
         ..lineTo(x - w, v.bottom)
         ..close();
-      _p.shader = Gradient.linear(Offset(x, v.top), Offset(x, v.bottom), [
-        Color.fromRGBO(150, 230, 255, 0.12 * dim * (0.7 + 0.3 * math.sin(now / 1500 + i))),
-        const Color(0x0096E6FF),
-      ]);
+      final top = gold
+          ? Color.fromRGBO(255, 236, 150, 0.16 * dim * (0.7 + 0.3 * math.sin(now / 700 + i)))
+          : Color.fromRGBO(150, 230, 255, 0.12 * dim * (0.7 + 0.3 * math.sin(now / 1500 + i)));
+      _p.shader = Gradient.linear(Offset(x, v.top), Offset(x, v.bottom), [top, top.withValues(alpha: 0)]);
       c.drawPath(p, _p);
     }
     _p.shader = null;
