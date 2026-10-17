@@ -2850,7 +2850,7 @@ const Map<String, String> rawTables = {
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
-    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
+    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150, "earlyExtra": 28, "earlyStages": 20 },
     "swarmSpacing": 3,
     "bossSpawnRadius": 152,
     "chestMargin": 12,
