@@ -60,6 +60,76 @@
   "battleBossSkeletonCaptain": "해골 선장",
   "battleBossCursegullLeader": "저주 갈매기 떼장",
   "battleBossSpecter": "망령",
+  "battleStoryOpen1A": "반짝반짝 보물이 잠든 일곱 바다.",
+  "battleStoryOpen1B": "그런데 바다 괴물들이 몽땅 차지했대요!",
+  "battleStoryOpen2A": "나는 옥토, 꼬마 해적선의 선장!",
+  "battleStoryOpen2B": "먹물 폭탄이라면 자신 있지!",
+  "battleStoryOpen3A": "배는 알아서 싸워요.",
+  "battleStoryOpen3B": "우리는 배를 키우고 동료를 모으면 돼!",
+  "battleStoryOpen4A": "바다마다 버티는 큰 보스들…",
+  "battleStoryOpen4B": "하나씩 무찌르고 보물을 되찾자!",
+  "battleStoryOpen5A": "출항이다! 우수수 쓸어 버리자!",
+  "battleStoryBossGiantHermitA": "내 껍데기는 정면으론 못 뚫어!",
+  "battleStoryBossGiantHermitB": "그럼 위에서 폭탄을 떨어뜨리지!",
+  "battleStoryBossThunderRayA": "찌릿! 내 번개 맛 좀 볼래?",
+  "battleStoryBossThunderRayB": "번개보다 우리 대포가 빠를걸!",
+  "battleStoryBossIcebergWalrusA": "얼음처럼 단단한 이 엄니를 봐라!",
+  "battleStoryBossIcebergWalrusB": "얼음은 깨라고 있는 거지.",
+  "battleStoryBossLavaWhaleA": "부글부글… 바다를 끓여 주마!",
+  "battleStoryBossLavaWhaleB": "앗 뜨거! 빨리 끝내자!",
+  "battleStoryBossKrakenA": "여덟 다리로 배째 삼켜 주지!",
+  "battleStoryBossKrakenB": "다리라면 나도 여덟 개야!",
+  "battleStoryBossGhostAdmiralA": "내 유령 함대는 끝없이 몰려온다…",
+  "battleStoryBossGhostAdmiralB": "그럼 끝없이 쓸어 주지.",
+  "battleStoryBossSeaCrocA": "약한 공격은 간지럽다! 화나면 더 무섭고!",
+  "battleStoryBossSeaCrocB": "작게 말고 한 방에 크게!",
+  "battleStoryBossMonsterWhaleA": "때려도 금방 낫지! 꼬마들아, 나와라!",
+  "battleStoryBossMonsterWhaleB": "호위부터 쓸고, 나을 틈을 주지 마!",
+  "battleStoryBossIceSlimeA": "말랑말랑… 깎아도 다시 차오르지.",
+  "battleStoryBossIceSlimeB": "그럼 한 번에 크게 깎아야겠군.",
+  "battleStoryBossLeviathanA": "내 비늘은 공격을 되돌려 보낸다!",
+  "battleStoryBossLeviathanB": "막이 걷힐 때를 노리자!",
+  "battleStoryBossKrakenTitanA": "거인 크라켄 납신다! 호위대, 막아라!",
+  "battleStoryBossKrakenTitanB": "호위 먼저, 그다음 큰 한 방!",
+  "battleStoryBossPoseidonA": "바다의 왕 앞에 무릎 꿇어라!",
+  "battleStoryBossPoseidonB": "왕관 말고 보물이나 돌려줘!",
+  "battleStoryTraitEvade1A": "어딜 쏘는 거야? 난 여기 있지!",
+  "battleStoryTraitEvade1B": "넓게 터뜨리면 못 피하지!",
+  "battleStoryTraitEvade2A": "포탄 따위 다 피해 주마!",
+  "battleStoryTraitEvade2B": "그럼 피할 곳을 없애지.",
+  "battleStoryTraitArmor1A": "약한 공격은 안 통해!",
+  "battleStoryTraitArmor1B": "한 방에 세게 가자!",
+  "battleStoryTraitArmor2A": "단단함이라면 바다 최고!",
+  "battleStoryTraitArmor2B": "큰 포탄으로 깨 주지.",
+  "battleStoryTraitRegen1A": "다쳐도 금방 나아!",
+  "battleStoryTraitRegen1B": "나을 틈을 주지 말자!",
+  "battleStoryTraitRegen2A": "후후, 회복 중…",
+  "battleStoryTraitRegen2B": "몰아쳐서 끝내자.",
+  "battleStoryTraitReflect1A": "내 막에 맞으면 되돌아간다!",
+  "battleStoryTraitReflect1B": "막이 걷힐 때를 노려!",
+  "battleStoryTraitReflect2A": "반사막, 펼쳐라!",
+  "battleStoryTraitReflect2B": "잠깐 쉬었다 치자.",
+  "battleStoryTraitEnrage1A": "체력이 줄수록 더 세진다!",
+  "battleStoryTraitEnrage1B": "화내기 전에 끝내자!",
+  "battleStoryTraitEnrage2A": "화났다! 진짜 화났다!",
+  "battleStoryTraitEnrage2B": "배를 단단히 해 둬.",
+  "battleStoryTraitEscort1A": "부하들아, 나와라!",
+  "battleStoryTraitEscort1B": "호위부터 쓸어 버리자!",
+  "battleStoryTraitEscort2A": "혼자 싸울 줄 알았냐!",
+  "battleStoryTraitEscort2B": "몰려오면 한꺼번에 쓸지.",
+  "battleStoryTraitDash1A": "들이받아 주마!",
+  "battleStoryTraitDash1B": "배 지킴이들, 막아!",
+  "battleStoryTraitDash2A": "빠르게, 더 빠르게!",
+  "battleStoryTraitDash2B": "멈출 때가 기회다.",
+  "battleStoryTraitDefault1A": "여기는 못 지나간다!",
+  "battleStoryTraitDefault1B": "그럼 뚫고 가지!",
+  "battleStoryTraitDefault2A": "보물은 내 거야!",
+  "battleStoryTraitDefault2B": "돌려받으러 왔어!",
+  "battleStoryTraitDefault3A": "해적 주제에 덤비냐!",
+  "battleStoryTraitDefault3B": "해적이니까 덤비지.",
+  "battleStoryOutro1": "보물 하나 되찾았다!",
+  "battleStoryOutro2": "우수수~ 다음 바다로!",
+  "battleStoryOutro3": "역시 우리 배가 최고군.",
   "crewOctoName": "문어 폭탄병 옥토",
   "crewOctoShort": "옥토",
   "crewStarryName": "불가사리 불꽃병 스타리",
@@ -229,6 +299,11 @@
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
   "opTraitSplit": "분열",
+  "opHudLayout": "HUD 배치 안",
+  "opHudNow": "지금",
+  "opHudThumb": "엄지",
+  "opHudFloating": "떠 있는 띠",
+  "opHudSlim": "얇은 도크",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -1400,6 +1475,84 @@
     "placeholders": {
       "n": {
         "type": "String"
+      }
+    }
+  },
+  "uiBossCanWin": "이길 수 있어요!",
+  "uiStoryOpen1": "아주 먼 바다에, 보물이 잠든 일곱 해역이 있었어요.",
+  "uiStoryOpen2": "작은 문어 옥토는 할아버지의 낡은 배를 물려받았죠.",
+  "uiStoryOpen3": "그런데 바다 괴물과 해적 보스들이 바닷길을 막고 있어요!",
+  "uiStoryOpen4": "동료를 모으고 배를 키워 보물 지도를 완성해요.",
+  "uiStoryOpen5": "자, 출항! 배는 알아서 싸우니 선장님은 키우기만 하면 돼요.",
+  "uiStorySkip": "건너뛰기",
+  "uiStoryTapNext": "톡 하면 다음",
+  "uiStoryBossTaunt": "누가 감히 내 바다에 들어왔지?!",
+  "uiStoryOctoReply": "우리 배는 안 져요! 다들, 포탄 준비!",
+  "uiShopTitle": "상점",
+  "uiShopNoAds": "광고 없음",
+  "uiShopSubLeft": "구독 {days}일 남음",
+  "uiShopBuy": "{price}",
+  "uiShopPrice": "{n}원",
+  "uiShopOff": "{pct}% 할인",
+  "uiShopBest": "인기",
+  "uiShopGemsS": "젬 한 줌",
+  "uiShopGemsM": "젬 상자",
+  "uiShopGemsL": "젬 보물함",
+  "uiShopStarter": "스타터 팩",
+  "uiShopNoAdsName": "광고 제거",
+  "uiShopSubName": "선장 구독 30일",
+  "uiShopGemsN": "젬 {n}",
+  "uiShopSummonN": "소환 {n}회",
+  "uiShopDailyGems": "매일 젬 {n}",
+  "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
+  "uiShopLater": "나중에",
+  "uiShopOpen": "상점 (운영자)",
+  "@uiShopSubLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopBuy": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopPrice": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopOff": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopGemsN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopSummonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopDailyGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
       }
     }
   }

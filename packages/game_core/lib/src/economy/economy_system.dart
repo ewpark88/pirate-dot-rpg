@@ -13,6 +13,7 @@ import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/sea_events.dart' show pickBottle;
 import 'package:game_core/src/economy/ship_skins.dart' show buySkin, unlockShipSkins;
 import 'package:game_core/src/economy/summon.dart';
+import 'package:game_core/src/economy/trials.dart' show claimTrial;
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -61,6 +62,7 @@ class EconomySystem implements GameSystem {
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
     final BuySkin c => buySkin(state, c, ctx),
     final ClaimCollectionReward c => claimCollectionReward(state, c, ctx),
+    final ClaimTrial c => claimTrial(state, c, ctx),
     ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),

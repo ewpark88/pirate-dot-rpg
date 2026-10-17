@@ -31,7 +31,8 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'rebirthUpgradeBought' ||
     'skinUnlocked' ||
     'contentUnlocked' ||
-    'collectionRewardClaimed' => _rebirthEventFromJson(t, j),
+    'collectionRewardClaimed' ||
+    'trialClaimed' => _rebirthEventFromJson(t, j),
     'bossFired' => BossFired(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'shipLookChanged' => ShipLookChanged(t, part: j['part'] as String, stage: j['stage'] as int),
     'fleetRejected' => FleetRejected(

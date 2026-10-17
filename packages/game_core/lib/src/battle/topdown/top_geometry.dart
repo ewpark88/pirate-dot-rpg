@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_aim.dart';
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/battle/topdown/top_spawn.dart';
+import 'package:game_core/src/battle/topdown/top_sway.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -237,26 +238,7 @@ class TopGeometry implements BattleGeometry {
         _spawn.place(e, _angle(e), _touchDist((e.x - top.shipX) / d, (e.y - top.shipY) / d));
       }
     }
-    for (final b in f.foes) {
-      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false);
-      final r = top.standoffOf(b);
-      if (!orbiting || _dist(b) > r + 1) continue;
-      final step = top.bossOrbitDegPerSec * radiansPerDegree * dt;
-      if (top.orbits(b)) {
-        _spawn.place(b, _angle(b) + step, r);
-        continue;
-      }
-      // 큰 보스(배율 > orbitMax): 옆으로 돌면 그림이 화면 밖 → 배 위쪽 ±swayDeg 호를 오간다(끝에서 방향을 바꿈).
-      final arc = top.swayDeg * radiansPerDegree;
-      if (arc <= 0) continue;
-      const up = -math.pi * half;
-      var a = _angle(b) + step * b.swayDir;
-      if ((a - up).abs() >= arc) {
-        a = up + arc * (a > up ? 1 : -1);
-        b.swayDir = -b.swayDir;
-      }
-      _spawn.place(b, a, r);
-    }
+    orbitBosses(top, f.foes, dt, _spawn.place); // 원 돌기, 큰 보스는 배 위 호(top_sway.dart)
   }
 
   double _dist(Foe e) => math.sqrt((e.x - top.shipX) * (e.x - top.shipX) + (e.y - top.shipY) * (e.y - top.shipY));

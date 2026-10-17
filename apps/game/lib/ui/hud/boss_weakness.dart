@@ -33,36 +33,44 @@ class BossWeakness extends ConsumerWidget {
     final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Skin.ink);
 
     // 왼쪽 위 작은 알약 하나(사용자 피드백 #9 C — 전폭 띠 대신, 보스 이름은 등장 이름표가 보여 준다). 누름 통과.
+    // 보스가 쓰러진(BREAK!) 동안은 도장이 보이게 비켜 준다(S5 스토어 샷 ④).
+    final broken = ref.watch(
+      gameStateProvider.select((s) => s.battle?.enemies.any((e) => e.boss && e.broken) ?? false),
+    );
     return IgnorePointer(
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Container(
-          key: const Key('boss.weak'),
-          margin: const EdgeInsets.fromLTRB(10, 4, 10, 0),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          decoration: BoxDecoration(
-            color: const Color(0xEEFFF0F2),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: Skin.shadowSmall,
-          ),
-          child: Semantics(
-            label: tableText(l10n, boss.nameKey),
-            child: Wrap(
-              spacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                // 보스 특성(#25) + 약점 = 표 약점 ∪ 특성 카운터.
-                for (final t in boss.traits)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(traitIcon(t.type), size: 14, color: Skin.ink),
-                      const SizedBox(width: 2),
-                      Text(traitName(l10n, t), style: small),
-                    ],
-                  ),
-                if (bossCounters(boss).isNotEmpty) WeakChips(boss: boss, labelStyle: small),
-              ],
+      child: AnimatedOpacity(
+        opacity: broken ? 0 : 1,
+        duration: const Duration(milliseconds: 180),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            key: const Key('boss.weak'),
+            margin: const EdgeInsets.fromLTRB(10, 4, 10, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xEEFFF0F2),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: Skin.shadowSmall,
+            ),
+            child: Semantics(
+              label: tableText(l10n, boss.nameKey),
+              child: Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  // 보스 특성(#25) + 약점 = 표 약점 ∪ 특성 카운터.
+                  for (final t in boss.traits)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(traitIcon(t.type), size: 14, color: Skin.ink),
+                        const SizedBox(width: 2),
+                        Text(traitName(l10n, t), style: small),
+                      ],
+                    ),
+                  if (bossCounters(boss).isNotEmpty) WeakChips(boss: boss, labelStyle: small),
+                ],
+              ),
             ),
           ),
         ),

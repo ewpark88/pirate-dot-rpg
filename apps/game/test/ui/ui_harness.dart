@@ -12,11 +12,13 @@ import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/guide/guide_marks.dart';
 import 'package:pirate_dot/ui/hud/chest_tap_hint.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/story/story_data.dart';
 
 /// 샘플 상태 4개: new_player, stage37_midgame, boss_fight, all_crews_mythic.
 /// flutter test는 apps/game에서 돌므로 저장소 루트의 fixtures/는 두 단계 위다.
@@ -51,6 +53,7 @@ Future<CommandLog> pumpGame(
   FixedClock? clock,
   bool keepTutorial = false,
   bool guides = false,
+  bool story = false,
   Size size = s24Size,
   double dpr = s24Dpr,
   List<Override> overrides = const [],
@@ -79,6 +82,10 @@ Future<CommandLog> pumpGame(
         commandSinkProvider.overrideWithValue(log),
         // 처음 만나는 시스템 카드는 가이드를 시험하는 테스트(guides: true)에서만.
         guidesEnabledProvider.overrideWithValue(guides),
+        // 가이드 손가락·테두리 되풀이는 멈춘 그림으로(pumpAndSettle이 끝나게).
+        guideMotionProvider.overrideWithValue(false),
+        // 오프닝·보스 대화는 이야기를 시험하는 테스트만.
+        storyEnabledProvider.overrideWithValue(story),
         // 시계는 샘플의 저장 시각에 고정 — 순풍 남은 시간 등이 매번 같게 (복귀 팝업도 안 뜬다).
         clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),
         // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.

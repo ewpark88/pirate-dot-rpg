@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/story/story_data.dart';
 
 import 'ui_harness.dart';
 
@@ -35,6 +36,8 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
       battleFeedProvider.overrideWithValue(host.ticks),
       clockProvider.overrideWithValue(clock),
       battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+      // 보스 대화창(시나리오)은 이 시험의 관심 밖 — 실제 엔진이 보스를 내도 뜨지 않게.
+      storyEnabledProvider.overrideWithValue(false),
       crewPreviewPlayProvider.overrideWithValue(false),
     ],
   );
@@ -89,6 +92,9 @@ void main() {
     await Scrollable.ensureVisible(tester.element(find.byKey(const Key('crew.card.starry'))), alignment: 0.3);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('crew.card.starry')));
+    await tester.pumpAndSettle();
+    // 상세 창이 길어(개편·피해 줄) 출전 버튼은 창 안에서 굴려 본다.
+    await tester.ensureVisible(find.byKey(const Key('crew.detail.deploy.starry')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('crew.detail.deploy.starry')));
     await tester.pumpAndSettle();
@@ -149,6 +155,8 @@ void main() {
 
       await tester.tap(find.byKey(const Key('fleet.crew.0')));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(Key('crew.detail.replace.$first')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(Key('crew.detail.replace.$first')));
       await tester.pumpAndSettle();
       // 쉬는 선원이 맨 위.
@@ -193,6 +201,8 @@ void main() {
     await _run(tester, host, 2);
     await tester.tap(find.byKey(const Key('fleet.crew.1')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(Key('crew.detail.undeploy.${ids[1]}')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(Key('crew.detail.undeploy.${ids[1]}')));
     await tester.pump();
     await _run(tester, host, 2);
@@ -210,6 +220,8 @@ void main() {
     final (host, _) = await _pumpReal(tester, base.copyWith(fleet: [id, null, null, null], fleetInit: true));
     await _run(tester, host, 2);
     await tester.tap(find.byKey(const Key('fleet.crew.0')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(Key('crew.detail.undeploy.$id')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(Key('crew.detail.undeploy.$id')));
     await tester.pump();

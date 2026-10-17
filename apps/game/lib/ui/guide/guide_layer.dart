@@ -197,7 +197,9 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
     final showing = talk != null && _shown == talk.key && _reaction == null;
     final holes = !showing || talk.battle ? const <Rect>[] : [for (final s in talk.spots) ...?_rects[s]];
     final calm =
-        MediaQuery.disableAnimationsOf(context) || !ref.watch(gameStateProvider.select((s) => s.settings.flash));
+        MediaQuery.disableAnimationsOf(context) ||
+        !ref.watch(gameStateProvider.select((s) => s.settings.flash)) ||
+        !ref.watch(guideMotionProvider);
     // 누를 곳이 화면에 없으면(시트가 닫혀 버튼이 안 보임 등) 막지 않는다 — 갇히지 않게.
     final block = showing && talk.block && holes.isNotEmpty;
     final dim = showing && talk.dim ? 0.35 : 0.0;
@@ -229,20 +231,11 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
               },
             ),
           ),
-        // 누를 곳만 살짝 빛나는 금빛 테두리 + 톡톡 손가락.
+        // 누를 곳: 굵은 금빛 맥박 테두리 + 밝게, 손가락은 0.9초마다 눌렀다 뗀다(S1 '여기를 눌러라').
         for (final (i, h) in holes.indexed)
           Positioned.fromRect(
             rect: h.inflate(4),
-            child: IgnorePointer(
-              child: DecoratedBox(
-                key: Key('talk.glow.$i'),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFFFD84A), width: 3),
-                  boxShadow: const [BoxShadow(color: Color(0xAAFFD84A), blurRadius: 12, spreadRadius: 2)],
-                ),
-              ),
-            ),
+            child: GuideGlow(key: Key('talk.glow.$i'), calm: calm),
           ),
         if (holes.isNotEmpty) GuideFinger(at: holes.first, taps: _taps, calm: calm),
         Positioned.fill(

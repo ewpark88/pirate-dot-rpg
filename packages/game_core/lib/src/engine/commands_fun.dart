@@ -88,6 +88,20 @@ class BuySkin extends Command {
   Json _fields() => {'id': id};
 }
 
+/// 맛보기 받기(meta.trials — 초기 유입 사용자에게 2배속·자동 강화를 한 번씩 무료로, 사용자 요청 2026-10-17).
+/// [kind] speed·autoUpgrade. 조건이 맞고 아직 안 받았으면 버프를 준다.
+class ClaimTrial extends Command {
+  const ClaimTrial(this.kind);
+
+  final String kind;
+
+  @override
+  String get type => 'claimTrial';
+
+  @override
+  Json _fields() => {'kind': kind};
+}
+
 /// 도감 수집 보상 받기(meta.collectionRewards, S4 '수집의 재미'): 보유 선원이 [at]명 이상이고 아직 안 받았으면 젬·소환.
 class ClaimCollectionReward extends Command {
   const ClaimCollectionReward(this.at);

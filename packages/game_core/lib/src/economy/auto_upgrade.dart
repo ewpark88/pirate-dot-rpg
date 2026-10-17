@@ -1,6 +1,7 @@
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/ads.dart' show autoUpgradeRemaining;
 import 'package:game_core/src/economy/gold_cap.dart';
+import 'package:game_core/src/economy/merge.dart' show mergeAllCards;
 import 'package:game_core/src/economy/rebirth_shop.dart' show upgradeCostMultiplier;
 import 'package:game_core/src/economy/ship_stats.dart';
 import 'package:game_core/src/economy/upgrade.dart' show upgradePart;
@@ -48,8 +49,12 @@ String? autoUpgradePick(GameState s, GameTables t) {
 GameState autoUpgradeStep(GameState s, SystemContext ctx) {
   final t = ctx.tables;
   if (autoUpgradeRemaining(s, ctx.clock.now()) == Duration.zero) return s;
-  final every = (_reward(t).number('intervalSec') / (t.waves.tickMs * secondsPerMillisecond)).round();
-  if (every > 0 && ctx.tick % every != 0) return s;
-  final pick = autoUpgradePick(s, t);
-  return pick == null ? s : upgradePart(s, UpgradePart(pick), ctx);
+  final ticks = 1 / (t.waves.tickMs * secondsPerMillisecond);
+  // 자동 합성(맛보기·광고 자동 강화 동안, 사용자 요청 2026-10-17): mergeEverySec마다 합칠 수 있는 선원 카드를 모두 합친다.
+  final mergeEvery = (_reward(t).numberOr('mergeEverySec', 0) * ticks).round();
+  final merged = mergeEvery > 0 && ctx.tick % mergeEvery == 0 ? mergeAllCards(s, const MergeAllCards(), ctx) : s;
+  final every = (_reward(t).number('intervalSec') * ticks).round();
+  if (every > 0 && ctx.tick % every != 0) return merged;
+  final pick = autoUpgradePick(merged, t);
+  return pick == null ? merged : upgradePart(merged, UpgradePart(pick), ctx);
 }

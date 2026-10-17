@@ -104,6 +104,7 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
       bossFails: s.progress.bossFails,
       dex: s.progress.dex,
       collectionClaimed: s.progress.collectionClaimed, // 도감 수집 보상은 환생해도 다시 안 준다
+      trialsUsed: s.progress.trialsUsed,
       sailHold: t.waves.rebirthSkip.breakSec > 0, // 빠른 항해가 있으면 '출항!'(StartVoyage)까지 대기 — #19
       treasureSea:
           route != null && route <= treasureSeasUnlocked(s.copyWith(progress: s.progress.copyWith(rebirths: n)), t)
