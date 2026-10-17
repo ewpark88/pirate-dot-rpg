@@ -65,7 +65,7 @@ GameState sweepBounty(GameState s, SweepBounty c, SystemContext ctx) {
   var type = '';
   for (var i = 0; i < n; i++) {
     final r = bountyReward(next, t, c.bossId, tier, ctx.rng);
-    next = grantBountyReward(next, t, r);
+    next = grantBountyReward(next, ctx, r);
     total += r.amount;
     type = r.type;
     crewId ??= r.crewId;

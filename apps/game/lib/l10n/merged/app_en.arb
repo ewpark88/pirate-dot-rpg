@@ -393,7 +393,7 @@
   "uiRebirthChestSummons": "Hero+ summon ×{count}",
   "uiRebirthChestSkin": "New ship skin: {name}",
   "uiRebirthChestTitle": "New title: {name}",
-  "uiRebirthSail": "Set Sail",
+  "uiRebirthSail": "Set sail!",
   "uiRebirthRowLocked": "Spend {count} more pieces to unlock",
   "uiRebirthRow": "Row {row}",
   "uiRebirthShopPieces": "{count} pieces to spend",
@@ -736,6 +736,108 @@
     }
   },
   "uiNewCrew": "New mate!",
+  "uiBossDamageTitle": "Boss down! Damage by crew",
+  "uiBossDamageLine": "{damage} · {percent}",
+  "@uiBossDamageLine": {
+    "placeholders": {
+      "damage": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDamageTap": "Tap to close",
+  "uiSailHint": "Your map is ready! Set sail to start fast sailing",
+  "uiFastSailProgress": "Fast sail {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFastSailStreak": "Boss streak {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewUpLevels": "+{count}",
+  "@uiCrewUpLevels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewMergeAllCount": "Merge all · {count}",
+  "@uiCrewMergeAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewWhyLevel": "Level up: attack +{percent} ({now} → {next}/s)",
+  "@uiCrewWhyLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewCardsToLevel": "{count} common cards to the next level",
+  "@uiCrewCardsToLevel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewPromoteIn": "{count} levels to promotion — promotion gives attack +{percent}",
+  "@uiCrewPromoteIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewPromoteGain": "Promotion gives attack +{percent}!",
+  "@uiCrewPromoteGain": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewMergeNow": "Merge now · Lv {from} → {to}",
+  "@uiCrewMergeNow": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDamageMvp": "MVP",
   "uiGuideStep1Title": "Your ship fights on its own",
   "uiGuideStep1Why": "It defeats monsters and collects gold even while you rest.",
   "uiGuideStep2Title": "Upgrade your ship",

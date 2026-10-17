@@ -21,6 +21,9 @@ class SimResult {
   Duration? firstFever;
   int lookChanges10Min = 0;
   int fevers10Min = 0;
+
+  /// 첫 회차 스테이지별 '빈 금고가 가득 차는 분'(SimEarly.cargoStages, 금고 피로 목표 초반 8~10분 → 점점 길게).
+  final cargoFillMin = <int, double>{};
   Duration? stage10;
   Duration? stage40;
 

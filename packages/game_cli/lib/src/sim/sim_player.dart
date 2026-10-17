@@ -59,7 +59,7 @@ class SimPlayer {
   final _killGold = <(Duration at, BigNum gold)>[];
   late final _fun = SimFun(t);
   late final _threat = SimThreat(t);
-  late final _early = SimEarly(result);
+  late final _early = SimEarly(t, result);
   final _gold = SimGold();
 
   SimResult run(Duration total, SimSchedule first) {
@@ -131,7 +131,7 @@ class SimPlayer {
     if (step != null && acks.contains(step)) engine.enqueue(TutorialAck(step));
 
     if (_shouldRebirth(s)) {
-      engine.enqueue(const Rebirth());
+      const <Command>[Rebirth(), StartVoyage()].forEach(engine.enqueue); // '출항!'도 바로 누른다(#19)
       _endWall();
       _farmSince = null;
       _recovering = (at: _online, stage: (s.progress.stage * t.meta.rebirth.number('recoverTargetRatio')).ceil());
@@ -193,7 +193,7 @@ class SimPlayer {
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       _fun.observe(e, engine);
-      _early.observe(e, _elapsed);
+      _early.observe(e, _elapsed, engine.state);
       _threat.observe(e, engine);
       switch (e) {
         case Kill(:final gold):

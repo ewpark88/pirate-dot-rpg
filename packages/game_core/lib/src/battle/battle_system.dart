@@ -56,6 +56,9 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case StartVoyage():
+        final p = state.progress;
+        return p.sailHold ? state.copyWith(progress: p.copyWith(sailHold: false)) : state;
       case SkipFastSail():
         final run = _sync(state, ctx).fastSail;
         if (run == null) return state;
@@ -142,6 +145,7 @@ class BattleSystem implements GameSystem {
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
+    if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
     final w = ctx.tables.waves;
     final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
@@ -186,7 +190,7 @@ class BattleSystem implements GameSystem {
     final stage = p.stage + 1;
     final gems = stage > p.bestStage ? t.waves.bossGems : 0; // 처음 깬 보스만(사용자 신고 '젬 과다', 환생 뒤 반복은 없음)
     ctx
-      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: gems))
+      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: gems, crewDamage: Map.of(f.bossDamage), mvp: f.bossMvp))
       ..emit(StageAdvanced(ctx.tick, stage: stage));
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);
