@@ -49,8 +49,8 @@ class TopImpact {
   static double _ease(double t) => 1 - (1 - t) * (1 - t) * (1 - t);
 
   /// 전장 좌표. [flash] 꺼짐이면 흰 번쩍 코어를 뺀다, [lite](절전·폭발 많음)면 입자를 반.
-  void paint(Canvas c, double now, {required bool flash, required bool lite}) {
-    hd.paint(c, now, lite: lite);
+  void paint(Canvas c, double now, {required bool flash, required bool lite, Offset? ship}) {
+    hd.paint(c, now, lite: lite, ship: ship);
     _hits.removeWhere((h) => now - h.ms >= _lifeMs);
     for (final h in _hits) {
       final age = now - h.ms;
