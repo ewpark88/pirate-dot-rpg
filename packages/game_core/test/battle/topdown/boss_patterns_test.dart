@@ -115,31 +115,44 @@ void main() {
     expect(r.events.whereType<ShipDamaged>().where((e) => e.tick == blastAct.tick), hasLength(1));
   });
 
-  test('예고 중 기절되면 그 패턴은 취소(cancel), 다음 패턴으로', () {
+  test('예고 중 기절·비틀은 일시정지(끝나면 이어서 터짐), 브레이크(쓰러짐)만 그 패턴을 취소(S2 2026-10-18)', () {
     final warn = fight(withPatterns([blast, volley]), 3.5).events.whereType<BossPatternShown>().first;
-    final t = withPatterns([blast, volley]);
-    final s = GameState.newGame(playerId: 'b', seed: 1, now: start).copyWith(
-      progress: const Progress(stage: stage, bestStage: stage),
-    );
-    final g = geometryFor(t, stage) as TopGeometry;
-    final f = Field(stage: stage, shipHpMax: BigNum.from(1000), shipHp: BigNum.from(1000))..geometry = g;
-    final events = <GameEvent>[];
-    final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: events.add);
-    startBoss(f, stage, ctx, emit: false, x: g.top.shipX, y: g.top.shipY - g.top.bossStandoff);
-    final boss = f.foes.firstWhere((e) => e.boss);
-    boss.y = g.top.shipY - g.top.standoffOf(boss); // 큰 보스(bossScale)는 standoff가 더 멀다
-    for (var i = 0; i < ticks(3.5); i++) {
-      ctx.tick = i;
-      if (i == warn.tick + 1) boss.stunTimer = 1;
-      Round(f, ctx, CombatStats.of(s, t))
-        ..moveFoes()
-        ..topdownStep(s);
+    List<GameEvent> run({required bool broken}) {
+      final t = withPatterns([blast, volley]);
+      final s = GameState.newGame(playerId: 'b', seed: 1, now: start).copyWith(
+        progress: const Progress(stage: stage, bestStage: stage),
+      );
+      final g = geometryFor(t, stage) as TopGeometry;
+      final f = Field(stage: stage, shipHpMax: BigNum.from(1000), shipHp: BigNum.from(1000))..geometry = g;
+      final events = <GameEvent>[];
+      final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: events.add);
+      startBoss(f, stage, ctx, emit: false, x: g.top.shipX, y: g.top.shipY - g.top.bossStandoff);
+      final boss = f.foes.firstWhere((e) => e.boss);
+      boss.y = g.top.shipY - g.top.standoffOf(boss); // 큰 보스(bossScale)는 standoff가 더 멀다
+      for (var i = 0; i < warn.tick + ticks(3); i++) {
+        ctx.tick = i;
+        if (i == warn.tick + 1) {
+          boss.stunTimer = 1;
+          if (broken) boss.brokenUntil = i + ticks(1);
+        }
+        Round(f, ctx, CombatStats.of(s, t))
+          ..moveFoes()
+          ..topdownStep(s);
+      }
+      return events;
     }
-    final shown = events.whereType<BossPatternShown>().map((e) => '${e.kind}:${e.phase}').toList();
-    expect(shown.take(2), ['blast:warn', 'blast:cancel']);
-    // 취소된 장판은 터지지 않는다 — 예고가 끝났을 틱(장판이 터졌을 때)에 배 피해 없음. 기본 포탄 피해는 따로 온다(보스 x가 같아
-    // 예전 걸러내기 fromX == boss.x는 보스가 원을 돌아 x가 바뀔 때만 비어 있었다 — 큰 보스는 돌지 않는다, bossScale).
-    expect(events.whereType<ShipDamaged>().where((e) => e.tick == warn.tick + ticks(0.6)), isEmpty);
+
+    // 기절만: 취소 없이, 기절(1초)만큼 늦게 장판이 터진다
+    final stunned = run(broken: false).whereType<BossPatternShown>().toList();
+    expect(stunned.take(2).map((e) => '${e.kind}:${e.phase}'), ['blast:warn', 'blast:act']);
+    expect(stunned[1].tick, greaterThanOrEqualTo(warn.tick + ticks(0.6) + ticks(1) - 1), reason: '남은 예고부터 이어서');
+    // 브레이크: 그 패턴은 취소 — 예고가 끝났을 틱에 장판 피해 없음
+    final broken = run(broken: true);
+    expect(
+      broken.whereType<BossPatternShown>().take(2).map((e) => '${e.kind}:${e.phase}'),
+      ['blast:warn', 'blast:cancel'],
+    );
+    expect(broken.whereType<ShipDamaged>().where((e) => e.tick == warn.tick + ticks(0.6)), isEmpty);
   });
 
   test('바다 괴물(ambush): meta.seaEvents 패턴이 있으면 몸통에 붙지 않고 standoff에서 돌진·복귀(사용자 결정)', () {

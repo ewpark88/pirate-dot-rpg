@@ -39,7 +39,7 @@ class BossPlan {
 }
 
 extension BossPatterns on Round {
-  /// 매 틱: 패턴이 있는 보스(살아 있는)마다 한 단계. 기절 중엔 멈추고, 예고 중 기절되면 그 패턴은 취소.
+  /// 매 틱: 패턴이 있는 보스(살아 있는)마다 한 단계. 기절·비틀 중엔 멈췄다 이어서, 예고 중 브레이크(쓰러짐)면 그 패턴은 취소.
   void tickBossPatterns() {
     final g = geo;
     if (g is! TopGeometry) return;
@@ -49,7 +49,9 @@ extension BossPatterns on Round {
       final plan = e.plan;
       if (plan == null) continue;
       if (e.stunned) {
-        if (plan.phase == 'warn') {
+        // 기절·비틀은 일시정지 — 끝나면 남은 예고부터 이어서(S2 2026-10-18: 취소면 비틀+선원 기절이 겹쳐 보스가 한 번도 못 쳤다).
+        // 브레이크(쓰러짐)만 그 패턴을 취소한다.
+        if (plan.phase == 'warn' && e.brokenUntil > 0) {
           _emit(e, plan.current, 'cancel', g);
           _next(plan);
         }
