@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/upgrade_all.dart';
+import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_intro.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
@@ -28,6 +29,8 @@ class BattleTopStrip extends StatelessWidget {
     children: [
       // 진행 게이지 + 다음 목표 한 줄 (전투력은 상단 바 골드 옆).
       StageGauge(),
+      // 보스 vs 나 (피드백 #5): 보스전·파밍 중에만.
+      BossCompare(),
       BossWeakness(),
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.

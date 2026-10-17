@@ -903,5 +903,25 @@
     }
   },
   "uiGuideSailTitle": "Set sail!",
-  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared."
+  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared.",
+  "uiBossCompare": "Boss HP {hp} · ~{kill}s / {limit}s · hit {hit}%",
+  "uiBossCompareEasy": "Easy",
+  "uiBossCompareTight": "Close",
+  "uiBossCompareHard": "Tough",
+  "@uiBossCompare": {
+    "placeholders": {
+      "hp": {
+        "type": "String"
+      },
+      "kill": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "hit": {
+        "type": "int"
+      }
+    }
+  }
 }
