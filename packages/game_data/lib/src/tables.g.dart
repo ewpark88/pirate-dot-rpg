@@ -2474,6 +2474,7 @@ const Map<String, String> rawTables = {
       "chest"
     ],
     "fever": {
+      "bgm": "bgm_fever",
       "border": "#FFD84A",
       "orange": "#FF8A2A",
       "seaAlpha": 1,
