@@ -56,6 +56,7 @@ class TopEnemies {
     }
     final clock = scene.clockMs;
     final lite = scene.topHits.lite;
+    final crowd = scene.topHits.juice.crowd = scene.poseCount > 140; // 붐빔: 하나씩 그리는 연출을 줄인다
     _seen.clear();
     hdSheets
       ..cap = lite ? HdSheets.lowCell : HdSheets.maxCell
@@ -97,7 +98,7 @@ class TopEnemies {
       final born = _born.putIfAbsent(e.id, () => clock);
       final bk = (clock - born) / _bornMs;
       final pop = bk >= 1 || e.boss ? 1.0 : (bk < 0.6 ? 0.3 + 0.82 * bk / 0.6 : 1.12 - 0.12 * (bk - 0.6) / 0.4);
-      if (bk == 0 && !lite && !e.boss && _rings.length < 24) _rings.add((e.drawX, e.drawY, clock));
+      if (bk == 0 && !lite && !crowd && !e.boss && _rings.length < 24) _rings.add((e.drawX, e.drawY, clock));
       // HD 보스는 그림 안에서 숨쉰다(굽힌 8장).
       final breathe =
           (e.boss ? (hd != null ? 1 : 1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0) * pop;
@@ -138,7 +139,9 @@ class TopEnemies {
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
       if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
-      final sq = _squashed.length >= _maxSquash ? null : _soft(scene.topHits.juice.squashOf(e.id, clock), e.boss);
+      final sq = _squashed.length >= (crowd ? 8 : _maxSquash)
+          ? null
+          : _soft(scene.topHits.juice.squashOf(e.id, clock), e.boss);
       if (sq != null) {
         _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash ? (e.boss ? _hdFlash : _tintPaint) : null, hot));
         continue;
@@ -243,6 +246,8 @@ class TopEnemies {
   /// 돌발 이벤트 적(황금 물고기·바다뱀·상인선)은 td_event 그림, 나머지는 td_enemy·td_boss.
   String _keyFor(String kind, {required bool boss}) {
     if (sprites.sheet('td_event:$kind') != null) return 'td_event:$kind';
+    // HD 그림만 있는 새 보스(순환 v2 18종 — 도트 없음): 크기 기준은 보통 보스 칸을 빌린다(그림은 HD 종 그대로).
+    if (boss && sprites.sheet('td_boss:$kind') == null && hdBosses.containsKey(kind)) return 'td_boss:hammer_shark';
     return boss ? 'td_boss:$kind' : 'td_enemy:$kind';
   }
 

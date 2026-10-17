@@ -25,14 +25,14 @@ void main() {
   });
 
   test(
-    '탑다운 마리 = 무리 습격: 초반 핵앤슬래시 72~85(피드백 #4 × 1.3 — 사용자 지시 몬스터 1.3배, 2026-10-17) → 스테이지 20에 58~78, 중반 65~130, 상한 195',
+    '탑다운 마리 = 무리 습격: 초반 핵앤슬래시 72~85(피드백 #4 × 1.3 — 사용자 지시 몬스터 1.3배, 2026-10-17) → 스테이지 20에 58~78, 중반 65~130, 상한 120',
     () {
       expect(w.topMobCountAt(1), inInclusiveRange(72, 85));
       expect(w.topMobCountAt(10), greaterThan(w.topMobCountAt(19)));
       expect(w.topMobCountAt(20), inInclusiveRange(58, 78));
       expect(w.topMobCountAt(60), inInclusiveRange(65, 130));
       expect(w.topMobCountAt(100), inInclusiveRange(78, 130));
-      expect(w.topMobCountAt(9999), 195);
+      expect(w.topMobCountAt(9999), 120);
     },
   );
 

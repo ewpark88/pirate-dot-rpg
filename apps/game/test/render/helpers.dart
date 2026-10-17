@@ -16,6 +16,14 @@ final stillTables = GameTables.load(() {
   (w['top'] as Map<String, dynamic>).remove('cruise');
   return raw..['waves'] = jsonEncode(w);
 }());
+
+/// 대군 습격(waves.top.horde — 스테이지 첫 파가 사방에서 큰 무리)을 뺀 표: 첫 파 타이밍에 맞춘 연출 시험용(S2 2026-10-18).
+final noHordeTables = GameTables.load(() {
+  final raw = Map<String, String>.of(rawTables);
+  final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
+  (w['top'] as Map<String, dynamic>).remove('horde');
+  return raw..['waves'] = jsonEncode(w);
+}());
 double get tickMs => tables.waves.tickMs.toDouble();
 
 /// 테스트용 기록 한 틱. [enemies]는 (id, x) 목록, y는 100 고정.

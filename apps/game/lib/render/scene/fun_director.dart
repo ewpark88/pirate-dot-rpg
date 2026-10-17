@@ -135,6 +135,12 @@ bool funEvent(BattleScene s, GameEvent e) {
     case TowerFloorCleared(:final floor):
       s.moments.onTowerFloor(floor + 1, cleared: true);
       _sfx(s, 'bossCleared', e);
+    // 대군 습격(S2 HordeIncoming — 스테이지 첫 파 60~100마리 사방): 붉은 띠 'HORDE!'·마리 수 + 흔들림·경고음
+    case HordeIncoming(:final count) when s.isTop:
+      s.moments.banner('HORDE!', sub: 'x$count', ms: 1500, hot: true);
+      s.shake.triggerPx(5, 500);
+      s.haptic(HapticLevel.medium);
+      _sfx(s, 'bossSpawned', e);
     // 요일 던전: 시작·끝 띠, 그 날 계열 착탄 강조
     case DungeonStarted(:final group, :final step):
       final g = s.tables.meta.raw.obj('dungeon').objs('groups').where((x) => x.str('id') == group).firstOrNull;

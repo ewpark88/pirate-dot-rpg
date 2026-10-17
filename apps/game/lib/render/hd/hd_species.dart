@@ -1,14 +1,20 @@
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/angler.dart';
 import 'package:pirate_dot/render/hd/species/blaze_pirate.dart';
+import 'package:pirate_dot/render/hd/species/boss_abyss2.dart';
 import 'package:pirate_dot/render/hd/species/boss_cephalo.dart';
+import 'package:pirate_dot/render/hd/species/boss_coral2.dart';
 import 'package:pirate_dot/render/hd/species/boss_crabs.dart';
 import 'package:pirate_dot/render/hd/species/boss_fish.dart';
+import 'package:pirate_dot/render/hd/species/boss_glacier2.dart';
 import 'package:pirate_dot/render/hd/species/boss_jellies.dart';
 import 'package:pirate_dot/render/hd/species/boss_misc.dart';
+import 'package:pirate_dot/render/hd/species/boss_phantom2.dart';
 import 'package:pirate_dot/render/hd/species/boss_rays.dart';
 import 'package:pirate_dot/render/hd/species/boss_serpents.dart';
+import 'package:pirate_dot/render/hd/species/boss_storm2.dart';
 import 'package:pirate_dot/render/hd/species/boss_undead.dart';
+import 'package:pirate_dot/render/hd/species/boss_volcano2.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
 import 'package:pirate_dot/render/hd/species/cursegull.dart';
 import 'package:pirate_dot/render/hd/species/deep_sub.dart';
@@ -107,6 +113,24 @@ const Map<String, HdSpecies> hdBosses = {
   'fire_pirate': firePirate,
   'deep_sub': deepSub,
   'ghost_ship': ghostShip,
+  'coral_golem': coralGolem,
+  'clown_king': clownKing,
+  'pearl_clam': pearlClam,
+  'storm_eagle': stormEagle,
+  'cloud_whale': cloudWhale,
+  'thunder_crab': thunderCrab,
+  'frost_yeti': frostYeti,
+  'ice_narwhal': iceNarwhal,
+  'snow_owl_ship': snowOwlShip,
+  'magma_golem': magmaGolem,
+  'fire_salamander': fireSalamander,
+  'ash_dragon': ashDragon,
+  'abyss_eye': abyssEye,
+  'lantern_eel': lanternEel,
+  'bone_shark': boneShark,
+  'banshee_queen': bansheeQueen,
+  'cursed_bell': cursedBell,
+  'ghost_kraken': ghostKraken,
   'ghost_admiral': ghostAdmiral,
   'kraken': kraken,
   // 대보스 6(S3)

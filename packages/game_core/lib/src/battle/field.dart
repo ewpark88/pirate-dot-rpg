@@ -126,6 +126,7 @@ class Field {
   List<String>? sceneFleet; // 장면 중 임시 출전(요일 던전 — 세이브 fleet는 그대로)
   String? scenePattern; // 장면 무리 파의 자리 패턴(요일 던전: arc·ring·scatter…)
   double speedHpMul = 1; // 유료 2배속 중 적 HP 배율(공격은 역수, iap purchasedSpeedHpMul — 진행 1.5배)
+  int hordeCount = 0; // 다음 무리 파가 대군 습격이면 마리 수(nextEncounter — spawnWaveFoes)
   double poolScale = 1; // 다음 무리 파의 몫 배율(피버 보충 고리 fever.swarm.refillPool — spawnWaveFoes)
   int slotsOpen = 0; // 열린 출전 칸(fleetSlots — 화면 잠금 칸 판정, BattleView.slotsOpen)
   double sceneHpMul = 1; // 장면 적 체력 배율(요일 던전 묶음 hpMul — 무리·보스)

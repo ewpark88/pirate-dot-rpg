@@ -29,7 +29,7 @@ extension _ImpactShapes on HdImpact {
             math.sin(a + 0.35) * d,
           )
           ..close();
-        c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
+        c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
         _k.blob(c, p, const Color(0xFFFFE45A), const Color(0xFFFF6A2A), gloss: false, line: 0.35);
         c.restore();
       }
@@ -103,7 +103,7 @@ extension _ImpactShapes on HdImpact {
       ..lineTo(len, 0)
       ..lineTo(0, w)
       ..close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(t)));
+    c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(t)));
     _k.blob(c, p, const Color(0xFFFFFFFF), h.color, gloss: false, line: 0.6);
     c.restore();
     _stroke
@@ -156,24 +156,46 @@ extension _ImpactShapes on HdImpact {
     }
   }
 
-  /// 물기둥 + 거품.
+  /// 수중(사용자 '물기둥은 볼품없고 몬스터를 가린다' → 납작하게): 적 발밑 청록 파문 2겹(눌린 타원, 반투명 70% 이하)
+  /// + 낮게 튀는 물방울 몇 개 + 가운데 짧은 '퐁' 반짝. 높이가 낮아 몬스터 외곽선이 늘 보인다.
   void _water(Canvas c, _Hit h, double r, double t, {required bool lite}) {
-    final up = t < 0.4 ? _ease(t / 0.4) : 1 - (t - 0.4) / 0.6;
-    final col = Path()
-      ..moveTo(-r * 0.22, 0)
-      ..quadraticBezierTo(-r * 0.3, -r * 0.9 * up, 0, -r * 1.1 * up)
-      ..quadraticBezierTo(r * 0.3, -r * 0.9 * up, r * 0.22, 0)
-      ..close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, 0.9 * (1 - t * 0.5)));
-    _k.blob(c, col, const Color(0xFFF0FCFF), const Color(0xFF6AC8F0), line: 0.6);
-    c.restore();
+    final a = 0.7 * (1 - t);
+    for (var k = 0; k < 2; k++) {
+      final u = (t - k * 0.18).clamp(0.0, 1.0);
+      final rr = r * (0.35 + 1.0 * _ease(u));
+      _stroke
+        ..strokeWidth = r * 0.1 * (1 - u) + 1
+        ..color = _a(k == 0 ? const Color(0xFF5FE0E8) : const Color(0xFFBFF6FF), a * (1 - u * 0.5));
+      c.drawOval(Rect.fromCenter(center: Offset(0, r * 0.15), width: rr * 2, height: rr * 0.8), _stroke);
+    }
+    if (t < 0.25) {
+      // '퐁' 반짝: 작은 흰 4갈래 별
+      final s = r * 0.35 * (1 - t / 0.25);
+      _k.fill.color = _a(const Color(0xFFFFFFFF), 0.85 * (1 - t / 0.25));
+      c.drawPath(
+        Path()
+          ..moveTo(0, -s)
+          ..lineTo(s * 0.25, -s * 0.25)
+          ..lineTo(s, 0)
+          ..lineTo(s * 0.25, s * 0.25)
+          ..lineTo(0, s)
+          ..lineTo(-s * 0.25, s * 0.25)
+          ..lineTo(-s, 0)
+          ..lineTo(-s * 0.25, -s * 0.25)
+          ..close(),
+        _k.fill,
+      );
+    }
     if (lite) return;
-    _stroke
-      ..strokeWidth = r * 0.04
-      ..color = _a(const Color(0xFFE8F8FF), 1 - t);
-    for (var i = 0; i < 6; i++) {
-      final a = i * math.pi / 3 + 0.3;
-      c.drawCircle(Offset(math.cos(a) * r * 0.7 * _ease(t), -r * 0.3 * t + math.sin(a) * r * 0.25), r * 0.07, _stroke);
+    _k.fill.color = _a(const Color(0xFFDFFBFF), a);
+    for (var i = 0; i < 5; i++) {
+      final ang = i * 2 * math.pi / 5 + 0.4;
+      final hop = math.sin(math.min(1, t * 1.6) * math.pi) * r * 0.25; // 낮게 튐
+      c.drawCircle(
+        Offset(math.cos(ang) * r * 0.75 * _ease(t), math.sin(ang) * r * 0.3 * _ease(t) - hop),
+        r * 0.06,
+        _k.fill,
+      );
     }
   }
 
@@ -216,7 +238,7 @@ extension _ImpactShapes on HdImpact {
         ..quadraticBezierTo(0, -w * 2, r * 0.9, 0)
         ..quadraticBezierTo(0, -w * 0.4, -r * 0.9, 0)
         ..close();
-      c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
+      c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
       _k.blob(c, p, const Color(0xFFFFFFFF), h.color, gloss: false, line: 0.5);
       c
         ..restore()
@@ -257,7 +279,7 @@ extension _ImpactShapes on HdImpact {
       i == 0 ? p.moveTo(q.dx, q.dy) : p.lineTo(q.dx, q.dy);
     }
     p.close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, alpha.clamp(0, 1)));
+    c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, alpha.clamp(0, 1)));
     _k.blob(c, p, light, dark, gloss: false, line: 0.5);
     c.restore();
   }
