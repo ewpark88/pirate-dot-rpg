@@ -1,5 +1,12 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 새벽 · S5 · 배 움직임 결정·업적·오디오·스토어 문서·크래시 대비
+- **현재 위치**: main에 들어감 — cruise-line(배는 피버·보스전에만, 일직선), achievements(업적 엔진 15종), audio-rate(AudioMixPort). 머지 대기 — review/app-links 46d77b29(링크·도전권 알림), review/image-cache 8e049556, review/device-watch b6f192e5, review/store-listing-v2 e947b470, review/non-fatal 1a993d67, review/crash-keys 11de0aec, fix/scene-spawn-view 76f068fb(S2 밀도에). 모두 빠른 check 통과.
+- 한 일: 넉백(엔진·Knockback 이벤트), 미리보기 배 고정(OpSetShipStill), 출현 자리 카메라 기준(spawnFromView 실패 원인), 업적 엔진(표·세이브·시스템 맨 끝 이벤트 누계·SystemContext.recent), 피버 390 탐침(390 OK·520 위험), 이미지 캐시 48MB·logcat 줄, 오디오 배경음 속도·환경음 층, 스토어 등록정보 2차·릴리스 노트·샷 2차 계획·crash-anr 점검, 비치명 보고·종료 저장 1초, 충돌 맥락 키. 보스 회피 설계(docs/plans/active/platform-boss-dodge.md).
+- 다음: S2 boss-feel 머지 → 보스 회피 구현(표 키 꺼짐 → 탐침 → S2 수치). 폰 연결되면 새 빌드 메모리(gfx 바닥·이미지 캐시 열) 재측정. 바람 음원(amb/wind.ogg)은 S3.
+- 남은 문제: 폰 입력·설치 권한(사용자). 블로그 방침 알림 문장 재게시(사람). docs/PROGRESS.md는 S1 몫.
+- 배운 것: 계약 인터페이스(AudioPort)에 메서드를 더하면 남의 시험 가짜가 깨진다 — 선택 기능은 별도 인터페이스(`is AudioMixPort`)로.
+
 ## 2026-10-17 밤(이어서) · S5 · 탑 몰림·배 순항·반사 상한·메모리 감시
 - **현재 위치**: 머지 대기 — review/ship-motion ac2a98c5(장면 수치·시나리오·탑 몰림·배 순항·반사 상한 전부), review/exit-save 81c9992c, review/save-transfer f71b9e5d, review/device-watch 305dd2f6. 모두 빠른 check 통과.
 - 한 일: 탑·던전 무리 출현을 카메라 테두리 밖으로(46/82마리가 화면 안에서 생기던 것), 크라켄 촉수 카메라 안(배가 비켜 있을 때도), 배 순항(waves.top.cruise — 8자 순항·빽빽한 무리 돌진·큰 호·피버 가속·벽 앞 감속), 보스 처치 때 배 순간이동 고침, 반사 상한 0.04/초 + 러시 1.6, 던전 0.6·1.6, exitSaveProvider 배선, 감시 도구 meminfo 항목별·누수 경고.
