@@ -54,6 +54,18 @@ class SimBillingSdk implements BillingSdk {
     }
   }
 
+  /// 같은 구매를 다시 보낸다(앱이 complete 전에 죽어 Play가 다음 실행에 다시 보내는 상황 흉내).
+  void replay(String token, String productId) => _stream.add([
+    SdkPurchase(
+      productId: productId,
+      status: SdkPurchaseStatus.purchased,
+      token: token,
+      packageName: packageName,
+      at: DateTime.now().toUtc(),
+      needsComplete: true,
+    ),
+  ]);
+
   /// 환불·구독 만료: 소유에서 지운다 — 다음 restore에서 PlayPurchases가 회수(Revoked)한다.
   void refund(String productId) => _owned.remove(productId);
 

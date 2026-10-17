@@ -21,6 +21,11 @@ import 'package:pirate_dot/adapters/file_save_store.dart';
 import 'package:pirate_dot/adapters/notify/local_notifications_sdk.dart';
 import 'package:pirate_dot/adapters/notify/offline_full_notifier.dart';
 import 'package:pirate_dot/adapters/power/power_channel.dart';
+import 'package:pirate_dot/adapters/purchase/play_billing_sdk.dart';
+import 'package:pirate_dot/adapters/purchase/play_purchases.dart';
+import 'package:pirate_dot/adapters/purchase/purchase_bridge.dart';
+import 'package:pirate_dot/adapters/purchase/purchase_providers.dart';
+import 'package:pirate_dot/adapters/purchase/sim_billing_sdk.dart';
 import 'package:pirate_dot/adapters/system_clock.dart';
 import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart' show operatorBackupProvider;
@@ -40,6 +45,9 @@ const _sdkTimeout = Duration(seconds: 3);
 
 /// 탑다운 전투 시험판 빌드(`--dart-define=PROTO=true`): 게임 대신 시험판 화면만 띄운다. 보통 빌드에선 컴파일 때 빠진다.
 const _proto = bool.fromEnvironment('PROTO');
+
+/// 영수증 패키지 이름 확인(android applicationId). 시험판(.proto 접미사)은 확인하지 않는다.
+const String? _packageName = _proto ? null : 'repo.dot.pirate';
 
 Future<void> main() async {
   if (_proto) {
@@ -96,6 +104,7 @@ Future<void> main() async {
     lang: () => container.read(gameStateProvider).settings.lang,
   );
   // 생명주기: 광고 화면이 앞에 와서 생기는 pause·resume은 백그라운드로 치지 않는다(광고 뒤 복귀 보상 버그, 2026-10-15).
+  PurchaseBridge? bridge; // 결제 다리 — 아래(광고 뒤)에서 만든다, 복귀 때 복원
   final life = AdAwareLifecycle(
     onBackground: () {
       // 현상금 전투 중이면 후퇴(실패·티켓 반환, 기획 수용 기준 7) — 엔진은 멈춰 있다가 돌아오면 첫 틱에 처리,
@@ -107,6 +116,7 @@ Future<void> main() async {
     },
     onForeground: () {
       host.resume();
+      unawaited(bridge?.restore()); // 구독 만료·환불 확인
       unawaited(notifier.onResume());
       audio.resumeBgm();
     },
@@ -125,6 +135,23 @@ Future<void> main() async {
       audio.unsuspend();
     },
   );
+  // 결제(계약 platform-iap — Android만, iOS는 M6): 배포는 Play 결제, 운영자 빌드는 구매 흉내(운영자 패널).
+  // 지급 → 저장 → complete 순서는 PurchaseBridge. 광고 제거 권리가 있으면 광고 없이 보상(EntitledAds).
+  final sim = kOperator ? SimBillingSdk(prices: {for (final id in tables.iap.products.keys) id: '₩ —'}) : null;
+  final shop = Platform.isAndroid
+      ? PlayPurchases(sim ?? PlayBillingSdk(), catalog: purchaseCatalog(tables), packageName: _packageName)
+      : null;
+  bridge = shop == null
+      ? null
+      : (PurchaseBridge(
+          shop: shop,
+          tables: tables,
+          send: host.send,
+          state: () => host.state,
+          ticks: host.ticks,
+          save: host.save,
+        )..start());
+  final paidAds = EntitledAds(ads, noAds: () => entitlementActive(host.state, 'noAds', clock.now()));
   // Analytics 수집은 꺼진 채 시작, 광고 동의(UMP)가 나면 켠다.
   ads.consent.addListener(() => analytics.setCollection(enabled: ads.consent.value));
   container = ProviderContainer(
@@ -133,7 +160,10 @@ Future<void> main() async {
       initialGameStateProvider.overrideWithValue(host.state),
       commandSinkProvider.overrideWithValue(host),
       battleFeedProvider.overrideWithValue(host.ticks),
-      adsPortProvider.overrideWithValue(ads),
+      adsPortProvider.overrideWithValue(paidAds),
+      if (shop != null) purchaseServiceProvider.overrideWithValue(shop),
+      purchaseBridgeProvider.overrideWithValue(bridge),
+      simBillingProvider.overrideWithValue(sim),
       audioPortProvider.overrideWithValue(audio),
       analyticsPortProvider.overrideWithValue(analytics),
       notifierProvider.overrideWithValue(notifier),
@@ -149,6 +179,7 @@ Future<void> main() async {
   host
     ..onState = controller.replace
     ..start();
+  unawaited(bridge?.restore()); // 소유 권리 맞추기 + 끝나지 않은 구매(앱이 complete 전에 죽음) 받기
   // 설정에서 끄면 남은 예약을 바로 취소한다.
   container.listen(
     gameStateProvider.select((s) => s.settings.notifications),
