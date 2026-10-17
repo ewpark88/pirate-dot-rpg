@@ -1,5 +1,6 @@
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/battle_view.dart';
+import 'package:game_core/src/engine/state_iap.dart';
 import 'package:game_core/src/engine/state_parts.dart';
 import 'package:meta/meta.dart';
 
@@ -32,6 +33,9 @@ class GameState {
     this.lastOfflineGold,
     this.buffs = const Buffs(),
     this.collection = const {},
+    this.entitlements = const {},
+    this.purchaseTokens = const [],
+    this.pass,
     this.settings = const Settings(),
     this.operator = false,
     this.battle,
@@ -82,6 +86,11 @@ class GameState {
     buffs: Buffs.fromJson(j['buffs'] as Json),
     daily: DailyState.fromJson(j['daily'] as Json),
     collection: (j['collection'] as List).cast<String>().toSet(),
+    entitlements: {
+      for (final e in ((j['entitlements'] as Json?) ?? const {}).entries) e.key: Entitlement.fromJson(e.value as Json),
+    },
+    purchaseTokens: (j['purchaseTokens'] as List?)?.cast<String>() ?? const [],
+    pass: j['pass'] == null ? null : PassState.fromJson(j['pass'] as Json),
     settings: Settings.fromJson(j['settings'] as Json),
     battle: j['battle'] == null ? null : BattleView.fromJson(j['battle'] as Json),
   );
@@ -142,6 +151,15 @@ class GameState {
 
   /// 도감에 등록된 선원 id.
   final Set<String> collection;
+
+  /// 유료 권리(계약 platform-iap, 선택 키): 권리 id(noAds·speed·gemSub·offline12·pass) 또는 `product:<id>`(산 기록) → 기간.
+  final Map<String, Entitlement> entitlements;
+
+  /// 지급한 영수증 토큰(최근 [purchaseTokenKeep]개) — 같은 토큰이 다시 오면 지급하지 않는다.
+  final List<String> purchaseTokens;
+
+  /// 항해 패스 진행(선택 키, 무료 줄은 누구나). null = 아직 시작 전(첫 틱에 만든다).
+  final PassState? pass;
   final Settings settings;
 
   /// 운영자 모드로 바뀐 적이 있는 세이브. 랭킹에 제출하지 않는다.
@@ -176,6 +194,9 @@ class GameState {
     Buffs? buffs,
     DailyState? daily,
     Set<String>? collection,
+    Map<String, Entitlement>? entitlements,
+    List<String>? purchaseTokens,
+    PassState? pass,
     Settings? settings,
     bool? operator,
     BattleView? battle,
@@ -203,6 +224,9 @@ class GameState {
     buffs: buffs ?? this.buffs,
     daily: daily ?? this.daily,
     collection: collection ?? this.collection,
+    entitlements: entitlements ?? this.entitlements,
+    purchaseTokens: purchaseTokens ?? this.purchaseTokens,
+    pass: pass ?? this.pass,
     settings: settings ?? this.settings,
     operator: operator ?? this.operator,
     battle: battle ?? this.battle,
@@ -231,6 +255,9 @@ class GameState {
     'buffs': buffs.toJson(),
     'daily': daily.toJson(),
     'collection': collection.toList()..sort(),
+    if (entitlements.isNotEmpty) 'entitlements': {for (final e in entitlements.entries) e.key: e.value.toJson()},
+    if (purchaseTokens.isNotEmpty) 'purchaseTokens': purchaseTokens,
+    if (pass != null) 'pass': pass!.toJson(),
     'settings': settings.toJson(),
     if (includeBattle && battle != null) 'battle': battle!.toJson(),
   };
@@ -242,3 +269,6 @@ String localDate(DateTime t) {
   String two(int n) => n.toString().padLeft(2, '0');
   return '${l.year}-${two(l.month)}-${two(l.day)}';
 }
+
+/// 기억하는 영수증 토큰 수(오래된 것부터 버린다 — 스토어가 같은 구매를 다시 보내는 건 며칠 안).
+const purchaseTokenKeep = 200;

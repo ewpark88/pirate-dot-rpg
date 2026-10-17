@@ -30,7 +30,10 @@ class TopBar extends ConsumerWidget {
     // 골드·젬은 지갑 값 그대로 실시간 (사용자 지시: 따로 움직이는 연출 없음).
     final (gold, gems) = ref.watch(gameStateProvider.select((s) => (s.wallet.gold, s.wallet.gems)));
     final tables = ref.watch(tablesProvider);
-    final cap = ref.watch(gameStateProvider.select((s) => goldCapacity(s, tables).format()));
+    final capacity = ref.watch(gameStateProvider.select((s) => goldCapacity(s, tables)));
+    final cap = capacity.format();
+    // 복귀 보상은 화물칸 × 3까지 실려 상한을 넘을 수 있다 — '600 / 200'(빨강)은 버그처럼 보여(S1 실기기 ④) 넘친 몫을 금빛 배지로.
+    final over = gold > capacity ? gold - capacity : null;
     final money = Container(
       padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
       // k1: 짙은 남색 알약 + 외곽선, 흰 외곽선 숫자.
@@ -63,11 +66,24 @@ class TopBar extends ConsumerWidget {
                     key: const Key('top.gold'),
                     style: Skin.outlined(16, color: const Color(0xFFFFD84A)),
                   ),
-                  Text(
-                    ' / $cap',
-                    key: const Key('top.goldCap'),
-                    style: Skin.text(14, color: const Color(0xFFB8BAE6)), // 노인 사용자 — 최대도 읽히게(#7·#9)
-                  ),
+                  if (over == null)
+                    Text(
+                      ' / $cap',
+                      key: const Key('top.goldCap'),
+                      style: Skin.text(14, color: const Color(0xFFB8BAE6)), // 노인 사용자 — 최대도 읽히게(#7·#9)
+                    )
+                  else ...[
+                    const SizedBox(width: 4),
+                    Container(
+                      key: const Key('top.goldOver'),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFD84A),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(l10n.uiGoldOver(over.format()), style: Skin.text(12, color: Skin.goldInk)),
+                    ),
+                  ],
                 ],
               ),
               const TutorialSpot(id: 'cargo.bar', child: GoldCapBar()),

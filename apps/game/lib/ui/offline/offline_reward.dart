@@ -39,6 +39,9 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
   late final AppLifecycleListener _lifecycle;
   var _open = false;
 
+  /// 이미 띄운 복귀(savedAt) — 시작과 복귀 신호가 겹쳐도 같은 복귀는 한 번만(S1 실기기 ①).
+  DateTime? _shownFor;
+
   @override
   void initState() {
     super.initState();
@@ -60,9 +63,12 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
 
   Future<void> _check() async {
     if (_open || !mounted) return;
-    final preview = ref.read(offlinePreviewProvider)(ref.read(gameStateProvider), ref.read(clockProvider).now());
+    final state = ref.read(gameStateProvider);
+    if (state.savedAt == _shownFor) return;
+    final preview = ref.read(offlinePreviewProvider)(state, ref.read(clockProvider).now());
     if (preview == null) return;
     _open = true;
+    _shownFor = state.savedAt;
     await showSkinDialog<void>(
       context,
       barrierDismissible: false,
@@ -89,12 +95,22 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
   /// 받기를 눌렀나. 광고 ×2는 받은 뒤(`lastOfflineGold`)에만 있으므로, 광고가 준비됐으면 창을 열어 둔다.
   var _claimed = false;
 
-  /// 받은 뒤 실제로 실린 양 (경제 lastOfflineGold).
+  /// 받을 때 보인 양 — 받은 뒤에도 그대로 둔다(명령은 다음 틱에 처리되므로 바로 읽으면 0 · 전부 잘림으로 보였다, S1 실기기 ①).
   BigNum? _received;
 
+  /// 실릴 몫 = min(계산값, 오프라인 상한(화물칸 × capMultiplier) − 지금 골드) — 경제 claimOffline과 같은 계산(실기기 ②).
+  BigNum _fits() {
+    final room = goldRoom(
+      ref.read(gameStateProvider),
+      ref.read(tablesProvider),
+      capScale: offlineCapScale(ref.read(tablesProvider)),
+    );
+    return widget.preview.gold > room ? room : widget.preview.gold;
+  }
+
   void _claim() {
+    _received = _fits();
     ref.read(commandSinkProvider).send(const ClaimOffline());
-    _received = ref.read(gameStateProvider).lastOfflineGold;
     if (ref.read(adsPortProvider).isReady(AdPlacement.offline)) {
       setState(() => _claimed = true);
     } else {
@@ -107,9 +123,8 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
     final l10n = AppLocalizations.of(context);
     final preview = widget.preview;
     final away = Duration(seconds: preview.seconds);
-    // 화물칸 용량까지만 실린다: 받을 몫 = min(계산값, 남은 칸), 잘린 몫 = 나머지 (S2 economy-cargo-capacity).
-    final room = goldRoom(ref.read(gameStateProvider), ref.read(tablesProvider));
-    final got = _received ?? (preview.gold > room ? room : preview.gold);
+    // 오프라인 상한까지만 실린다(S2 economy-cargo-capacity · capMultiplier), 잘린 몫 = 나머지.
+    final got = _received ?? _fits();
     final cut = preview.gold > got ? preview.gold - got : BigNum.zero;
     return PixelDialog(
       title: l10n.uiOfflineTitle,

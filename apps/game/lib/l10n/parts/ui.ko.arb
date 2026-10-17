@@ -1245,5 +1245,193 @@
         "type": "int"
       }
     }
+  },
+  "uiTowerTitle": "심연의 탑",
+  "uiTowerFloor": "{n}층",
+  "@uiTowerFloor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerBest": "최고 {n}층",
+  "@uiTowerBest": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerNone": "아직 기록 없음 — 몇 층까지 버틸까?",
+  "uiSceneTickets": "도전권 {n}/{cap}",
+  "@uiSceneTickets": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneChallenge": "도전",
+  "uiTowerSweep": "소탕 {n}층",
+  "@uiTowerSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneNoTicket": "도전권이 없어요 — 내일 또 차요",
+  "uiSceneAdTicket": "광고로 1장",
+  "uiTowerStrip": "심연 {floor}층 · {wave}/{waves}파",
+  "@uiTowerStrip": {
+    "placeholders": {
+      "floor": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerReached": "{n}층까지!",
+  "@uiTowerReached": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerEndSunk": "배가 가라앉았어요",
+  "uiTowerEndRetreat": "후퇴했어요",
+  "uiTowerEndInterrupted": "앱이 꺼져 멈췄어요 — 도달한 층까지 기록",
+  "uiTowerEndTimeout": "시간 초과 — {n}층까지",
+  "@uiTowerEndTimeout": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneKills": "처치 {n}마리",
+  "@uiSceneKills": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneGems": "젬 {n}",
+  "@uiSceneGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneCards": "카드 {n}장",
+  "@uiSceneCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiScenePieces": "지도 조각 {n}",
+  "@uiScenePieces": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerSwept": "{n}층 소탕 · {reward}",
+  "@uiTowerSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushTitle": "보스 러시",
+  "uiRushWeek": "이번 주 보스 5마리를 빨리 잡아라",
+  "uiRushBest": "최고 {time}",
+  "@uiRushBest": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushStrip": "보스 {i}/{n} · {time}",
+  "@uiRushStrip": {
+    "placeholders": {
+      "i": {
+        "type": "int"
+      },
+      "n": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushCleared": "5마리 모두! {time}",
+  "@uiRushCleared": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushPartial": "{killed}/{total} 처치",
+  "@uiRushPartial": {
+    "placeholders": {
+      "killed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRushNewBest": "새 기록!",
+  "uiRushBracket": "{time} 안",
+  "@uiRushBracket": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiClock": "{m}:{s}",
+  "@uiClock": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "String"
+      }
+    }
+  },
+  "uiListSep": " · ",
+  "uiGoldOver": "+{n} 넘침",
+  "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }

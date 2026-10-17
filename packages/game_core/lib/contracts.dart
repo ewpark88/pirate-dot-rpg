@@ -17,5 +17,6 @@ export 'src/engine/events.dart';
 export 'src/engine/game_engine.dart';
 export 'src/engine/game_state.dart';
 export 'src/engine/recording.dart';
+export 'src/engine/state_iap.dart';
 export 'src/engine/state_parts.dart';
 export 'src/ports/ports.dart';

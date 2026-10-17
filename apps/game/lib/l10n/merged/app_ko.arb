@@ -238,6 +238,24 @@
   "econTitleCaptain": "바다의 선장",
   "econTitleAdmiral": "전설의 제독",
   "econTitleSeaKing": "일곱 바다의 왕",
+  "econIapNoAds30d": "광고 제거 30일",
+  "econIapNoAds": "광고 제거 영구",
+  "econIapSpeed30d": "2배속 30일",
+  "econIapSpeed": "2배속 영구",
+  "econIapCaptainPack": "선장 패키지",
+  "econIapStarterPack": "스타터 팩",
+  "econIapGem120": "젬 한 줌",
+  "econIapGem650": "젬 주머니",
+  "econIapGem1400": "젬 상자",
+  "econIapGem4200": "젬 보물궤",
+  "econIapGem9000": "젬 해적왕 금고",
+  "econIapGemMonthly": "월간 젬",
+  "econIapVoyagePass": "항해 패스",
+  "econIapSkinGoldenGalleon": "황금 갈레온",
+  "econIapSkinJollyFlag": "해골 깃발",
+  "econIapSkinCoralYacht": "산호 요트",
+  "econIapSkinBundle": "배 스킨 3종 묶음",
+  "econIapOffline12h": "넉넉한 화물 지도",
   "opPanelTitle": "운영자 모드",
   "opGroupSave": "저장",
   "opGroupBattle": "전장",
@@ -1569,6 +1587,194 @@
     "placeholders": {
       "n": {
         "type": "int"
+      }
+    }
+  },
+  "uiTowerTitle": "심연의 탑",
+  "uiTowerFloor": "{n}층",
+  "@uiTowerFloor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerBest": "최고 {n}층",
+  "@uiTowerBest": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerNone": "아직 기록 없음 — 몇 층까지 버틸까?",
+  "uiSceneTickets": "도전권 {n}/{cap}",
+  "@uiSceneTickets": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneChallenge": "도전",
+  "uiTowerSweep": "소탕 {n}층",
+  "@uiTowerSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneNoTicket": "도전권이 없어요 — 내일 또 차요",
+  "uiSceneAdTicket": "광고로 1장",
+  "uiTowerStrip": "심연 {floor}층 · {wave}/{waves}파",
+  "@uiTowerStrip": {
+    "placeholders": {
+      "floor": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerReached": "{n}층까지!",
+  "@uiTowerReached": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerEndSunk": "배가 가라앉았어요",
+  "uiTowerEndRetreat": "후퇴했어요",
+  "uiTowerEndInterrupted": "앱이 꺼져 멈췄어요 — 도달한 층까지 기록",
+  "uiTowerEndTimeout": "시간 초과 — {n}층까지",
+  "@uiTowerEndTimeout": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneKills": "처치 {n}마리",
+  "@uiSceneKills": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneGems": "젬 {n}",
+  "@uiSceneGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneCards": "카드 {n}장",
+  "@uiSceneCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiScenePieces": "지도 조각 {n}",
+  "@uiScenePieces": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerSwept": "{n}층 소탕 · {reward}",
+  "@uiTowerSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushTitle": "보스 러시",
+  "uiRushWeek": "이번 주 보스 5마리를 빨리 잡아라",
+  "uiRushBest": "최고 {time}",
+  "@uiRushBest": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushStrip": "보스 {i}/{n} · {time}",
+  "@uiRushStrip": {
+    "placeholders": {
+      "i": {
+        "type": "int"
+      },
+      "n": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushCleared": "5마리 모두! {time}",
+  "@uiRushCleared": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushPartial": "{killed}/{total} 처치",
+  "@uiRushPartial": {
+    "placeholders": {
+      "killed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRushNewBest": "새 기록!",
+  "uiRushBracket": "{time} 안",
+  "@uiRushBracket": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiClock": "{m}:{s}",
+  "@uiClock": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "String"
+      }
+    }
+  },
+  "uiListSep": " · ",
+  "uiGoldOver": "+{n} 넘침",
+  "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
       }
     }
   }

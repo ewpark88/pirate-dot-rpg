@@ -17,7 +17,7 @@ const Map<String, String> rawTables = {
     { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
     { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
     { "id": "dungeonTicket", "dailyLimit": 1, "reward": { "type": "dungeonTicket", "value": 1 } },
-    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
+    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 2, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -2742,6 +2742,379 @@ const Map<String, String> rawTables = {
   "tokenExchangeCost": 10
 }
 ''',
+  'iap': r'''
+{
+  "gemSubDaily": 100,
+  "firstBuyMultiplier": 2,
+  "offlineHours": 12,
+  "speedMultiplier": 2,
+  "products": [
+    {
+      "id": "no_ads_30d",
+      "nameKey": "econIapNoAds30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "noAds",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "no_ads",
+      "nameKey": "econIapNoAds",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        }
+      ]
+    },
+    {
+      "id": "speed_30d",
+      "nameKey": "econIapSpeed30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "speed",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "nameKey": "econIapSpeed",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "captain_pack",
+      "nameKey": "econIapCaptainPack",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        },
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "starter_pack",
+      "nameKey": "econIapStarterPack",
+      "kind": "nonConsumable",
+      "gems": 600,
+      "heroCards": 1,
+      "skins": [
+        "sprout"
+      ],
+      "limit": 1
+    },
+    {
+      "id": "gem_120",
+      "nameKey": "econIapGem120",
+      "kind": "consumable",
+      "gems": 120,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_650",
+      "nameKey": "econIapGem650",
+      "kind": "consumable",
+      "gems": 650,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_1400",
+      "nameKey": "econIapGem1400",
+      "kind": "consumable",
+      "gems": 1400,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_4200",
+      "nameKey": "econIapGem4200",
+      "kind": "consumable",
+      "gems": 4200,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_9000",
+      "nameKey": "econIapGem9000",
+      "kind": "consumable",
+      "gems": 9000,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_monthly",
+      "nameKey": "econIapGemMonthly",
+      "kind": "subscription",
+      "gems": 300,
+      "entitlements": [
+        {
+          "id": "gemSub",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "voyage_pass",
+      "nameKey": "econIapVoyagePass",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "pass",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "skin_golden_galleon",
+      "nameKey": "econIapSkinGoldenGalleon",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon"
+      ]
+    },
+    {
+      "id": "skin_jolly_flag",
+      "nameKey": "econIapSkinJollyFlag",
+      "kind": "nonConsumable",
+      "skins": [
+        "jolly_flag"
+      ]
+    },
+    {
+      "id": "skin_coral_yacht",
+      "nameKey": "econIapSkinCoralYacht",
+      "kind": "nonConsumable",
+      "skins": [
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "skin_bundle",
+      "nameKey": "econIapSkinBundle",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon",
+        "jolly_flag",
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "offline_12h",
+      "nameKey": "econIapOffline12h",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "offline12"
+        }
+      ]
+    }
+  ],
+  "pass": {
+    "season": "s1",
+    "xpPerLevel": 50,
+    "xp": {
+      "quest": 10,
+      "attendance": 10,
+      "stage": 2
+    },
+    "free": [
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "title": "passFlag"
+      }
+    ],
+    "paid": [
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "skins": [
+          "pass_s1"
+        ]
+      },
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "legendSummon": 1
+      }
+    ]
+  }
+}
+''',
   'juice': r'''
 {
   "hitStopMs": {
@@ -2914,7 +3287,7 @@ const Map<String, String> rawTables = {
   "fever": { "weave": {"mode": "flow", "amp": 60, "ampY": 34, "periodSec": 6.0, "tiltDeg": 15, "drift": 1.0, "loopEvery": 0},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
-    "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring" },
+    "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring", "approachMul": 1.8 },
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
   "shipSkins": [{"id": "king", "nameKey": "shipSkinKing", "source": {"type": "collection", "value": 10}}, {"id": "fairy", "nameKey": "shipSkinFairy", "source": {"type": "bestStage", "value": 100}}, {"id": "frost", "nameKey": "shipSkinFrost", "source": {"type": "bountyTier", "value": 10}}, {"id": "lava", "nameKey": "shipSkinLava", "source": {"type": "bountyAll", "value": 5}}, {"id": "ghostship", "nameKey": "shipSkinGhostship", "source": {"type": "bestStage", "value": 300}}, {"id": "festival", "nameKey": "shipSkinFestival", "source": {"type": "collection", "value": 40}}, {"id": "abyss", "nameKey": "shipSkinAbyss", "source": {"type": "pieces", "value": 50}}],

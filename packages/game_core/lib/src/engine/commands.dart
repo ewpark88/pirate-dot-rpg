@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 
 part 'commands_bounty.dart';
 part 'commands_fun.dart';
+part 'commands_iap.dart';
 part 'commands_rebirth.dart';
 part 'commands_tower.dart';
 part 'operator_commands.dart';
@@ -53,14 +54,6 @@ sealed class Command {
       'startBounty' => StartBounty(j['bossId'] as String, j['tier'] as int),
       'sweepBounty' => SweepBounty(j['bossId'] as String, j['count'] as int),
       'retreatBounty' => const RetreatBounty(),
-      'startTower' => const StartTower(),
-      'sweepTower' => const SweepTower(),
-      'retreatTower' => const RetreatTower(),
-      'startRush' => const StartRush(),
-      'retreatRush' => const RetreatRush(),
-      'startDungeon' => StartDungeon(j['step'] as int),
-      'sweepDungeon' => SweepDungeon(j['step'] as int),
-      'retreatDungeon' => const RetreatDungeon(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       'markHint' => MarkHint(j['id'] as String),
       'buySkin' => BuySkin(j['id'] as String),
@@ -69,6 +62,8 @@ sealed class Command {
       'clearHints' => ClearHints(j['prefix'] as String? ?? ''),
       'skipFastSail' => const SkipFastSail(),
       'startVoyage' => const StartVoyage(),
+      _ when _sceneTypes.contains(type) => _sceneCommandFromJson(type, j),
+      _ when _iapTypes.contains(type) => _iapCommandFromJson(type, j),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };
