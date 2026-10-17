@@ -50,6 +50,27 @@ class FakeAudioSdk implements AudioSdk {
 
   @override
   Future<void> resumeBgm() async => bgmCalls.add('resume');
+
+  final rates = <double>[];
+  final ambient = <String>[];
+
+  @override
+  Future<void> setBgmRate(double rate) async => rates.add(rate);
+
+  @override
+  Future<void> playAmbient(String path, {required double volume}) async => ambient.add('play $path');
+
+  @override
+  Future<void> setAmbientVolume(double volume) async => ambient.add('volume');
+
+  @override
+  Future<void> stopAmbient() async => ambient.add('stop');
+
+  @override
+  Future<void> pauseAmbient() async => ambient.add('pause');
+
+  @override
+  Future<void> resumeAmbient() async => ambient.add('resume');
 }
 
 void main() {
@@ -239,6 +260,32 @@ void main() {
       ..maxTotal = AudioAdapter.maxTotalSfx
       ..playSfx('coin');
     expect(sdk.sfx.last.$1, 'sfx/coin.ogg');
+  });
+
+  test('AudioMixPort: 배경음 속도(2배속 칩 1.06)는 지금 곡에 걸고 곡이 바뀌어도 유지 · 환경음 층은 파일 있을 때만, 같은 id면 그대로', () async {
+    final sdk = FakeAudioSdk({'bgm/a.ogg', 'bgm/b.ogg', 'amb/wind.ogg'});
+    final a = await AudioAdapter.load(sdk)
+      ..playBgm('a')
+      ..setBgmRate(1.06);
+    await Future<void>.delayed(Duration.zero);
+    expect(sdk.rates, [1.06]);
+    a
+      ..stopBgm()
+      ..playBgm('b'); // 새 곡에도 같은 속도
+    await Future<void>.delayed(Duration.zero);
+    expect(sdk.rates, [1.06, 1.06]);
+    a
+      ..playAmbient('wind')
+      ..playAmbient('wind')
+      ..playAmbient('rain'); // 파일 없음 → 무시
+    await Future<void>.delayed(Duration.zero);
+    expect(sdk.ambient, ['play amb/wind.ogg']);
+    a
+      ..suspend()
+      ..unsuspend()
+      ..stopAmbient();
+    await Future<void>.delayed(Duration.zero);
+    expect(sdk.ambient, ['play amb/wind.ogg', 'pause', 'resume', 'stop']);
   });
 }
 

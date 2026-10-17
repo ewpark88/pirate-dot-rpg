@@ -19,4 +19,18 @@ abstract interface class AudioSdk {
   Future<void> pauseBgm();
 
   Future<void> resumeBgm();
+
+  /// 배경음 재생 속도(1 = 원래). 플랫폼이 못 하면 예외 — 어댑터가 삼킨다.
+  Future<void> setBgmRate(double rate);
+
+  /// 환경음 층 반복 재생(배경음과 따로 — 앞의 환경음은 멈춘다).
+  Future<void> playAmbient(String path, {required double volume});
+
+  Future<void> setAmbientVolume(double volume);
+
+  Future<void> stopAmbient();
+
+  Future<void> pauseAmbient();
+
+  Future<void> resumeAmbient();
 }
