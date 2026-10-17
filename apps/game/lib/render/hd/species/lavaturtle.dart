@@ -33,10 +33,6 @@ void _lavaturtle(HdKit k, Canvas c, double r, double t) {
       );
     k.blob(c, leg, _skin, _skinD, gloss: false, line: 0.8);
   }
-  // 2) 머리(왼쪽 앞, 등딱지 아래로 내밂)
-  final head = Path()
-    ..addOval(Rect.fromCenter(center: Offset(-r * 0.92, -r * 0.32 + bob), width: r * 0.8, height: r * 0.68));
-  k.blob(c, head, _skin, _skinD);
   // 3) 등딱지: 넓고 낮은 돔 + 아래 테
   final rim = Path()..addOval(Rect.fromCenter(center: Offset(0, r * 0.18 + bob), width: r * 1.85, height: r * 0.7));
   k.blob(c, rim, _rock, _rockD, gloss: false);
@@ -64,14 +60,26 @@ void _lavaturtle(HdKit k, Canvas c, double r, double t) {
   k
     ..limb(c, seams, glow, k.ink.strokeWidth * 0.55)
     ..shine(c, dome.getBounds());
-  // 5) 졸린 눈(반쯤 감김 — 눈 위를 머리 색 눈꺼풀로 덮음)
-  final eyeAt = Offset(-r * 1.0, -r * 0.42 + bob);
-  final s = r * 0.36;
+  // 5) 머리(왼쪽 앞으로 크게 내밂 — 등딱지 위에 그려 다 보이게) + 졸린 눈(위 35%만 눈꺼풀)
+  final head = Path()
+    ..addOval(Rect.fromCenter(center: Offset(-r * 1.0, -r * 0.32 + bob), width: r * 1.2, height: r * 1.05));
+  k.blob(c, head, _skin, _skinD);
+  final eyeAt = Offset(-r * 1.05, -r * 0.45 + bob);
+  final s = r * 0.55;
   k.eye(c, eyeAt, s, look: -0.6);
-  final lid = Path()
-    ..addArc(Rect.fromCenter(center: eyeAt, width: s * 1.08, height: s * 1.25), math.pi, math.pi)
-    ..close();
-  k
-    ..blob(c, lid, _skin, _skinD, gloss: false, line: 0.7)
-    ..smile(c, Offset(-r * 1.0, -r * 0.16 + bob), r * 0.2);
+  final white = Rect.fromCenter(center: eyeAt, width: s, height: s * 1.15);
+  c
+    ..save()
+    ..clipPath(Path()..addOval(white));
+  k.fill.color = _skin;
+  c
+    ..drawRect(Rect.fromLTWH(white.left, white.top, white.width, white.height * 0.35), k.fill)
+    ..restore()
+    ..drawLine(
+      Offset(white.left + s * 0.05, white.top + white.height * 0.35),
+      Offset(white.right - s * 0.05, white.top + white.height * 0.35),
+      k.ink,
+    )
+    ..drawOval(white, k.ink);
+  k.smile(c, Offset(-r * 1.05, -r * 0.08 + bob), r * 0.24);
 }
