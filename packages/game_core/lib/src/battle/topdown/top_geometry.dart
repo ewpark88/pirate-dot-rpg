@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/battle/topdown/top_aim.dart';
 import 'package:game_core/src/battle/topdown/top_field.dart';
 import 'package:game_core/src/battle/topdown/top_spawn.dart';
+import 'package:game_core/src/battle/topdown/top_sway.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -237,11 +238,7 @@ class TopGeometry implements BattleGeometry {
         _spawn.place(e, _angle(e), _touchDist((e.x - top.shipX) / d, (e.y - top.shipY) / d));
       }
     }
-    for (final b in f.foes) {
-      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false) && top.orbits(b);
-      if (!orbiting || _dist(b) > top.standoffOf(b) + 1) continue;
-      _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, top.standoffOf(b));
-    }
+    orbitBosses(top, f.foes, dt, _spawn.place); // 원 돌기, 큰 보스는 배 위 호(top_sway.dart)
   }
 
   double _dist(Foe e) => math.sqrt((e.x - top.shipX) * (e.x - top.shipX) + (e.y - top.shipY) * (e.y - top.shipY));
