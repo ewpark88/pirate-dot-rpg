@@ -15,6 +15,9 @@ import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 보스 도전 버튼 (파밍 중): 원형 56dp(해역 보스 초상 · 빨강·금 테두리 · 칼 교차 · 리본 '도전!'), 맥박, 처음 1회 말풍선.
 /// 자리는 BattleButtons가 정한다(화면 오른쪽 가장자리, 선원 줄 바로 위 — 사용자 피드백 #9 D·#26).
+/// 보스 도전 버튼 자리 — 가이드 말풍선(talkBottom)이 피한다.
+final GlobalKey bossChallengeAnchor = GlobalKey(debugLabel: 'bossChallenge');
+
 class BossChallengeButton extends ConsumerStatefulWidget {
   const BossChallengeButton({super.key});
 
@@ -58,6 +61,8 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
     return TutorialSpot(
       id: 'boss.challenge',
       child: SizedBox(
+        // 가이드 말풍선이 이 버튼을 덮지 않게 자리를 알린다(S5 실기기 ④).
+        key: bossChallengeAnchor,
         width: bossChallengeSize,
         height: bossChallengeHeight,
         child: Stack(

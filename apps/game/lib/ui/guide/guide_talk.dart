@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart' show kDockHeight;
+import 'package:pirate_dot/ui/hud/boss_challenge_button.dart' show bossChallengeAnchor;
 import 'package:pirate_dot/ui/hud/hp_bars.dart' show shipHpAnchor;
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
@@ -27,9 +28,19 @@ double talkBottom(BuildContext context, Size box, Rect? hole, {required RenderBo
     final top = layer.globalToLocal(anchor.localToGlobal(Offset.zero)).dy;
     if (top > box.height * 0.4 && top < box.height) bottom = box.height - top + 6;
   }
-  final zoneTop = box.height - bottom - talkHeight;
-  if (hole != null && hole.bottom > zoneTop && hole.top < box.height - bottom) return box.height - hole.top + 12;
+  // 누를 곳과 보스 도전 버튼(S5 실기기 ④)이 말풍선 자리와 겹치면 그 위로 올린다(가장 높은 것 위로).
+  for (final r in [?hole, ?_rectOf(bossChallengeAnchor, layer)]) {
+    final zoneTop = box.height - bottom - talkHeight;
+    if (r.bottom > zoneTop && r.top < box.height - bottom) bottom = box.height - r.top + 12;
+  }
   return bottom;
+}
+
+/// [key] 위젯의 층 좌표 사각형 (없거나 아직 크기가 없으면 null).
+Rect? _rectOf(GlobalKey key, RenderBox? layer) {
+  final box = key.currentContext?.findRenderObject();
+  if (layer == null || box is! RenderBox || !box.attached || !box.hasSize) return null;
+  return layer.globalToLocal(box.localToGlobal(Offset.zero)) & box.size;
 }
 
 /// 초상(원) + 말풍선(꼬리). [reaction]이면 초록 테두리. [collapsed]면 초상만(누르면 펼침).
