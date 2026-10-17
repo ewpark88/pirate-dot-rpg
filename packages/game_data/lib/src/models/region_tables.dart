@@ -206,6 +206,13 @@ class RegionsTable {
 
   List<String> get enemyIds => enemies.keys.toList();
 
+  /// 보스 크기 분류(S1 2026-10-18 핵앤슬래시 존재감 — waves.top.bossScale 키): 해역 대보스 'wall' · 해역 보스 'region' · 그 밖 'other'.
+  String bossClassOf(String id) {
+    if (regions.any((r) => r.wallBoss == id)) return 'wall';
+    if (regions.any((r) => r.regionBoss == id)) return 'region';
+    return 'other';
+  }
+
   // 종 해금(사용자 2026-10-18 '초반에는 1~2종만, 환생·스테이지가 높아질수록 다양하게'): 해역 안 스테이지(1~stagesPerRegion)가
   // steps의 at 이상이면 count종, 환생마다 perRebirth종 더. 해역 적 목록 앞에서부터 연다(쉬운 종이 앞). 표에 없으면 전부.
   final List<({int at, int count})> _unlockSteps;

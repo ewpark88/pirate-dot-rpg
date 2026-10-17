@@ -52,11 +52,11 @@ extension BossPatterns on Round {
       } else if (plan.phase == 'back') {
         final d = _dist(e, g);
         final step = e.speed * plan.current.speedMul * dt * g.speedScale;
-        var out = g.top.bossStandoff - d; // standoff까지 남은 거리만큼만
+        var out = g.top.standoffOf(e) - d; // standoff까지 남은 거리만큼만
         if (out > step) out = step;
         if (out < 0) out = 0;
         _moveToward(e, g, -out);
-        if (d + step >= g.top.bossStandoff) _next(plan);
+        if (d + step >= g.top.standoffOf(e)) _next(plan);
       } else {
         plan.ticksLeft -= 1;
         // 일제 사격은 쏘기 직전(waves.top.windupSec) 예고 — 렌더가 포문을 밝힌다. 예고가 그보다 짧으면 예고 시작 때.
@@ -174,7 +174,7 @@ extension BossPatterns on Round {
               id: field.nextId(),
               kind: e.kind,
               layer: e.layer,
-              x: e.x + g.top.radiusOf(e) / half,
+              x: e.x + g.top.bodyOf(e) / half,
               y: e.y,
               maxHp: e.maxHp,
               speed: e.speed,
@@ -185,6 +185,7 @@ extension BossPatterns on Round {
               tier: e.tier,
             )
             ..splits = e.splits + 1
+            ..scale = e.scale
             ..hp = halfHp
             ..breakCooldownUntil = e
                 .breakCooldownUntil // 분열한 몸도 부모의 브레이크 쿨다운을 이어받는다(S5 참고)

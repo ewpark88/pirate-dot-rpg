@@ -53,7 +53,7 @@ class BattleSystem implements GameSystem {
         final f = _sync(state, ctx);
         if (f.bossActive) return state;
         f.foes.clear();
-        startBoss(f, state.progress.stage, ctx);
+        startBoss(f, state.progress.stage, ctx, hpScale: earlyBossScale(state, ctx.tables)); // 초반 감쇠도 같게
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
       case StartVoyage():
         final p = state.progress;
@@ -130,7 +130,7 @@ class BattleSystem implements GameSystem {
     if (_field!.bounty != null) {
       return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
-    final resolved = _resolve(next, _field!, ctx);
+    final resolved = autoBossTick(_resolve(next, _field!, ctx), _field!, ctx.tables);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);

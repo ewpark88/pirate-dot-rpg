@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:game_core/game_core.dart' show bossScaleOf;
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/hd_sheets.dart';
 import 'package:pirate_dot/render/hd/hd_species.dart';
@@ -42,16 +43,11 @@ class TopEnemies {
     return (sprites.sheet(key)?.frameW ?? 12) / 2 * _boost(e.kind, boss: e.boss);
   }
 
-  /// 그리는 배율(맞는 자리는 엔진 그대로): HD 잡몹 1.3, 보스는 핵앤슬래시 존재감(S1) — 대보스 1.8·해역 1.4·순환·중간 1.2.
-  double _boost(String kind, {required bool boss}) =>
-      boss ? (_bossBoost[kind] ?? 1.2) : (hdEnemies.containsKey(kind) ? HdSheets.enemyBoost : 1);
-  late final Map<String, double> _bossBoost = {
-    for (final r in scene.tables.regions.regions) ...{
-      for (final b in [r.boss, r.midBoss, ...r.bossRotation]) b: 1.2,
-      r.regionBoss: 1.4,
-      if (r.wallBoss != null) r.wallBoss!: 1.8,
-    },
-  };
+  /// 그리는 배율: HD 잡몹 1.3(그림만), 보스는 엔진과 같은 waves.top.bossScale(대보스·해역·그 밖 — 충돌·standoff도 같은 값).
+  double _boost(String kind, {required bool boss}) => boss
+      ? (_bossBoost[kind] ??= bossScaleOf(scene.tables, kind))
+      : (hdEnemies.containsKey(kind) ? HdSheets.enemyBoost : 1);
+  final Map<String, double> _bossBoost = {};
 
   /// 그림(종류)별로 묶어 drawAtlas 한 번씩(150마리 60fps), 맞은 적은 흰 실루엣 묶음·물속은 반투명 붓.
   void paint(Canvas c, {required bool under, required Rect cull}) {

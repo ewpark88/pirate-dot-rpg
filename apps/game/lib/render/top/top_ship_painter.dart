@@ -70,6 +70,7 @@ class TopShipPainter {
         alpha: SkinDecor.alphaOf(decor),
         rainbow: HdShip.rainbowSkins.contains(skin),
         now: now,
+        tier: tierId,
       );
       if (decor != null) _decor.over(c, decor, size, now);
       c.restore();
