@@ -492,7 +492,7 @@
   },
   "uiBossFailShip": "배 강화",
   "uiBossFailCrew": "선원 레벨업",
-  "uiSailHint": "보물 지도가 준비됐어요! 출항하면 빠른 항해가 시작돼요",
+  "uiSailHint": "보물 지도가 준비됐어요!\n출항하면 빠른 항해가 시작돼요",
   "uiFastSailProgress": "빠른 항해 {n}/{m}",
   "@uiFastSailProgress": {
     "placeholders": {
