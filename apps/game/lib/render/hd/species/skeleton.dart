@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 해골 선원(td_enemy:skeleton — 부활·수면, docs/specs/economy-hd-monsters-b.md): 큰 해골 머리(2등신) + 해적 두건, 갈비뼈 사이 보라
 /// 혼불(= 부활 심지), 녹슨 칼, 빈 눈구멍에 보라 불빛. 덜그럭 걸음 — 머리·팔이 따로 흔들린다.
@@ -101,6 +102,10 @@ void _draw(HdKit k, Canvas c, double r, double t) {
     );
   for (final s in const [-1.0, 1.0]) {
     final at = Offset(s * r * 0.2 + rattle, -r * 0.45);
+    if (k.mood == HdMood.hit) {
+      k.squintEye(c, at, r * 0.28); // 맞음: 찡긋(잡몹 v2 — 눈구멍 대신)
+      continue;
+    }
     k.fill.color = HdKit.inkColor;
     c.drawOval(Rect.fromCenter(center: at, width: r * 0.28, height: r * 0.3), k.fill);
     k.fill.color = Color.lerp(_curse, const Color(0xFFFFFFFF), soul * 0.5)!;
