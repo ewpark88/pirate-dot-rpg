@@ -34,6 +34,8 @@ void main() {
     const OpJumpStage(150),
     const OpSetWave(count: 14, enemyKind: 'gull'),
     const OpSpawnBoss(),
+    const OpSpawnBoss(bossId: 'kraken'),
+    const OpBossBreak(),
     const OpSetInvincible(on: true),
     const OpSetSpeed(4),
     const OpStepTick(),
@@ -84,6 +86,9 @@ void main() {
     ChestOpened(10, gold: BigNum.from(100)),
     OfflineReward(0, gold: BigNum.parse('1e9'), cards: 3, seconds: 28800),
     const SaveRequested(11, reason: 'upgrade'),
+    const BossTraitFired(12, enemyId: 7, trait: 'reflect', ticks: 40),
+    const BossTraitFired(12, enemyId: 7, trait: 'enrage'),
+    const AttackMissed(12, crewId: 'octo', x: 1, y: 2, reason: 'evade'),
   ];
 
   test('모든 이벤트 JSON 왕복', () {

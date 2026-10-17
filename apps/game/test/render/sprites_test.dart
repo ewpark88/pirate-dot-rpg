@@ -52,6 +52,21 @@ void main() {
     }
   });
 
+  test('도감 v2 보통 보스 23종: 탑다운 2프레임 + 컷인 초상', () {
+    final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
+    for (final b in const [
+      'hermit_conch', 'jelly_queen', 'hammer_shark', 'storm_raider', 'thunder_ray_pup', 'great_serpent', //
+      'twister_dolphin', 'frost_pirate', 'seal_chief', 'giant_squid', 'icecrab_chief', 'blaze_pirate', //
+      'lava_tortoise', 'flame_eel', 'lava_slime', 'hunter_sub', 'angler_king', 'deep_octopus', //
+      'phantom_jelly', 'wraith_ship', 'skeleton_captain', 'cursegull_leader', 'specter',
+    ]) {
+      for (final k in ['td_boss:$b', 'boss:$b']) {
+        expect(paths[k], isNotNull, reason: '$k — fx_map bossLook에 없음');
+        expect(File('assets/${paths[k]}').existsSync(), isTrue, reason: '$k → assets/${paths[k]}');
+      }
+    }
+  });
+
   test('배 등급 탑다운 층 그림이 모두 있다 (t1~t4)', () {
     final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
     for (final tier in tables.shipTiers.tiers) {

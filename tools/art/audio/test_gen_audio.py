@@ -25,7 +25,8 @@ class SfxTest(unittest.TestCase):
         root = Path(__file__).resolve().parents[3]
         fx = json.loads((root / "packages/game_data/tables/fx_map.json").read_text(encoding="utf-8"))
         ids = {e["sfx"] for e in fx["events"].values() if isinstance(e, dict) and e.get("sfx")}
-        self.assertEqual(ids - set(gen_audio.SFX), set())
+        # coin은 fx_map(coinArrive)에 쓰이지만 EXTRA_SFX(미리 듣기용 추가 후보)에서 만든다.
+        self.assertEqual(ids - set(gen_audio.SFX) - set(gen_audio.EXTRA_SFX), set())
 
     def test_frequent_sounds_are_short_and_quiet(self):
         # 자주 겹치는 소리: 0.2초 이하, 피크 0.5 이하 (sfxMaxPerFrame 6개가 겹쳐도 덜 뭉개지게)

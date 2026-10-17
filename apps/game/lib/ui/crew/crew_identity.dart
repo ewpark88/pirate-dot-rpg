@@ -16,7 +16,7 @@ export 'package:pirate_dot/ui/crew/crew_trait_text.dart';
 
 enum AimKind { nearest, strongest, weakest, cluster, boss, random, farthest, air, ring }
 
-enum HitKind { instant, lead, free }
+enum HitKind { instant, lead, free, homing }
 
 /// 선원 한 명의 특색: 조준 · 연사 간격(초) · 범위 공격인가 · 명중 방식.
 /// range = 사거리 단계 0 짧음 · 1 보통 · 2 김 (사용자 지시 '캐릭터마다 사정거리 차등', S2 aim reach).
@@ -43,7 +43,11 @@ CrewIdentity? crewIdentity(GameTables t, String crewId, {int rarity = 0}) {
   final area = areaShapes.contains(shape) || (aim?.has('topRadius') ?? false);
   final projectile = aim != null && aim.has('projectile') ? aim.obj('projectile') : null;
   final HitKind hit;
-  if (projectile == null) {
+  // 추적 깃털(polly, 전설 noMiss 2026-10-17): 빈자리에 떨어져도 가까운 적을 쫓는다 — 빗나가지 않음.
+  final legendIdx = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
+  if (t.skills.legendFor(crewId, legendIdx, legendIdx)?.noMiss ?? false) {
+    hit = HitKind.homing;
+  } else if (projectile == null) {
     hit = HitKind.instant;
   } else if (projectile.raw['lead'] == true || !projectile.has('speed')) {
     hit = HitKind.lead;
@@ -96,6 +100,7 @@ String hitText(AppLocalizations l, HitKind h) => switch (h) {
   HitKind.instant => l.uiHitInstant,
   HitKind.lead => l.uiHitLead,
   HitKind.free => l.uiHitFree,
+  HitKind.homing => l.uiHitHoming,
 };
 
 /// 아이콘 4개 한 줄 (카드 아래 작게 / 상세에 크게). [size] = 아이콘 한 칸 크기.

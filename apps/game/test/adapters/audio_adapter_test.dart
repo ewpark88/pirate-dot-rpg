@@ -26,7 +26,12 @@ class FakeAudioSdk implements AudioSdk {
   }
 
   @override
-  Future<void> playBgm(String path, {required double volume}) async => bgm.add(path);
+  Future<void> playBgm(String path, {required double volume}) async {
+    bgm.add(path);
+    bgmStartVolume = volume;
+  }
+
+  double? bgmStartVolume;
 
   @override
   Future<void> setBgmVolume(double volume) async => bgmVolume = volume;
@@ -122,10 +127,10 @@ void main() {
     expect(sdk.sfx, isEmpty);
     expect(sdk.bgm, ['bgm/sea1.ogg']);
     a.playBgm('sea2');
-    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs * 2 + 100)); // 페이드 아웃·인
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs * 2 + 600)); // 페이드 아웃·인
     expect(sdk.bgm, ['bgm/sea1.ogg', 'bgm/sea2.ogg']);
     a.setVolumes(sfx: 1, bgm: 0.5);
-    await pumpEventQueue();
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 250)); // 진행 중인 페이드가 끝난 뒤
     expect(sdk.bgmVolume, 0.5);
   });
 
@@ -177,16 +182,63 @@ void main() {
       ..playBgm('sea')
       ..playBgm('bgm_fever');
     expect(sdk.bgm, ['bgm/sea.ogg'], reason: '페이드 아웃 동안은 앞 곡');
-    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 30));
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 250));
     expect(sdk.bgm, ['bgm/sea.ogg', 'bgm/bgm_fever.ogg']);
-    expect(sdk.bgmVolume, lessThan(0.8), reason: '새 곡은 작게 시작');
-    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 30));
+    expect(sdk.bgmStartVolume, 0, reason: '새 곡은 0에서 시작'); // 시간에 기대지 않게
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 250));
     expect(sdk.bgmVolume, closeTo(0.8, 1e-9));
     a
       ..playBgm('sea')
       ..playBgm('bgm_fever'); // 같은 곡으로 바로 돌아오면 그대로(이미 울리는 곡)
     await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs * 2 + 60));
     expect(sdk.bgm.last, 'bgm/bgm_fever.ogg');
+  });
+
+  test("회귀(사용자 폰 버그 '가끔 타격음이 안 나고 배경음만'): 재생 요청이 안 끝나도 2초 뒤 자리를 돌려받아 다시 난다", () async {
+    final sdk = FakeAudioSdk({for (var i = 0; i < 8; i++) 'sfx/s$i.ogg'});
+    final a = await AudioAdapter.load(sdk, nowMs: () => 0);
+    for (var i = 0; i < 8; i++) {
+      a.playSfx('s$i');
+    }
+    expect(sdk.sfx, hasLength(AudioAdapter.maxTotalSfx), reason: '상한까지');
+    // 플랫폼이 끝을 알리지 않는다(sdk.playing 미완료) — 예전엔 여기서 영영 무음.
+    await Future<void>.delayed(AudioAdapter.sfxSlotTimeout + const Duration(milliseconds: 100));
+    a.playSfx('s7');
+    expect(sdk.sfx.last.$1, 'sfx/s7.ogg');
+  });
+
+  test('회귀: 조용히(절전)·광고 덮개·발열 상한이 풀리면 효과음이 다시 난다', () async {
+    final sdk = FakeAudioSdk({'sfx/hit.ogg', 'sfx/pop.ogg', 'sfx/coin.ogg'});
+    var now = 0;
+    final a = await AudioAdapter.load(sdk, nowMs: () => now += 100)
+      ..quiet = true
+      ..playSfx('hit');
+    expect(sdk.sfx, isEmpty);
+    a
+      ..quiet = false
+      ..playSfx('hit');
+    expect(sdk.sfx, hasLength(1));
+    a
+      ..suspend()
+      ..playSfx('hit')
+      ..unsuspend()
+      ..playSfx('hit');
+    expect(sdk.sfx, hasLength(2));
+    for (final c in sdk.playing) {
+      c.complete();
+    }
+    await pumpEventQueue();
+    a
+      ..maxTotal = 1
+      ..playSfx('pop')
+      ..playSfx('coin');
+    expect(sdk.sfx.map((e) => e.$1).skip(2), ['sfx/pop.ogg'], reason: '발열 심함 — 동시 1');
+    sdk.playing.last.complete();
+    await pumpEventQueue();
+    a
+      ..maxTotal = AudioAdapter.maxTotalSfx
+      ..playSfx('coin');
+    expect(sdk.sfx.last.$1, 'sfx/coin.ogg');
   });
 }
 

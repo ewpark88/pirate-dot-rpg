@@ -4,21 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
-import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 // 사용자 직접 지시 2026-10-16: 보물상자의 '젬×30·골드' 말풍선이 크고 캐릭터·전투를 가린다 → 말풍선 삭제.
-// 광고 제안은 전장 왼쪽 가장자리의 작은 알약 하나(상자 그림 + 골드·젬 그림, 글자 없음, 높이 40dp).
-// 알약이나 상자를 누르면 작은 선택 시트(그냥 받기 / 광고 골드 / 광고 젬).
-
-/// 가장자리 알약 크기(dp) — 전장 폭 20% 안(360dp 전장 = 72dp)에 들어간다.
-const chestPillSize = Size(58, 40);
+// 2026-10-17: 왼쪽 알약도 없앤다 — 상자를 누르면 작은 선택 창(그냥 받기 / 광고 ×n 골드 / 광고 젬)만.
 
 /// 떠 있는 보물상자가 있고 광고 제안이 준비됐나 (알약을 띄울지).
 final chestOfferProvider = Provider<bool>((ref) {
@@ -51,52 +46,7 @@ class ChestSprite extends StatelessWidget {
   );
 }
 
-/// 전장 왼쪽 가장자리 알약: [상자] [골드·젬]. 누르면 선택 시트.
-class ChestEdgePill extends ConsumerWidget {
-  const ChestEdgePill({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (!ref.watch(chestOfferProvider)) return const SizedBox.shrink();
-    return Semantics(
-      button: true,
-      label: AppLocalizations.of(context).uiChestPill,
-      excludeSemantics: true,
-      child: GestureDetector(
-        key: const Key('chest.pill'),
-        behavior: HitTestBehavior.opaque,
-        onTap: () => showChestChoices(context),
-        child: Container(
-          width: chestPillSize.width,
-          height: chestPillSize.height,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.85),
-            borderRadius: BorderRadius.circular(chestPillSize.height / 2),
-            border: Border.all(color: Skin.goldBottom, width: 2),
-            boxShadow: Skin.shadow,
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ChestSprite(),
-              SizedBox(width: 2),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SkinIcon(UiSprites.coin, size: 13),
-                  SkinIcon(UiSprites.gem, size: 13),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 상자 보상 선택 시트를 연다 (광고가 없으면 그냥 받는다).
+/// 상자 보상 선택 창을 연다 (광고가 없으면 그냥 받는다). 사용자 2026-10-17: 왼쪽 알약 없이 상자를 누르면 작은 창만.
 void showChestChoices(BuildContext context) {
   final container = ProviderScope.containerOf(context, listen: false);
   if (!container.read(adOfferProvider(AdPlacement.chest))) {
@@ -104,19 +54,15 @@ void showChestChoices(BuildContext context) {
     return;
   }
   unawaited(
-    showModalBottomSheet<void>(
+    showDialog<void>(
       context: context,
-      backgroundColor: Colors.transparent,
-      // 테마의 시트 판·테두리 없이 카드 하나만.
-      elevation: 0,
-      shape: const RoundedRectangleBorder(),
-      showDragHandle: false,
+      barrierColor: const Color(0x66000000),
       builder: (_) => const ChestChoicesSheet(),
     ),
   );
 }
 
-/// 작은 선택 시트: 제목 · [그냥 받기] · 광고 [골드 ×5] [젬]. 상자가 가라앉으면 스스로 닫힌다.
+/// 작은 선택 창: 상자 · [그냥 받기 금액] [광고 ×n 금액(금빛)] · 아래 작은 '광고로 젬 n'. 상자가 가라앉으면 스스로 닫힌다.
 class ChestChoicesSheet extends ConsumerWidget {
   const ChestChoicesSheet({super.key});
 
@@ -126,46 +72,105 @@ class ChestChoicesSheet extends ConsumerWidget {
       if (gone && Navigator.of(context).canPop()) Navigator.of(context).pop();
     });
     final l10n = AppLocalizations.of(context);
+    final tables = ref.watch(tablesProvider);
+    final reward = adDef(tables, AdPlacement.chest).reward;
+    final mult = reward.number('value');
     final rewardOf = ref.watch(chestRewardProvider);
     final base = ref.watch(gameStateProvider.select(rewardOf));
-    return SafeArea(
-      child: Container(
-        key: const Key('chest.sheet'),
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-        constraints: const BoxConstraints(maxWidth: 420),
-        decoration: BoxDecoration(
-          color: Skin.card,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: Skin.shadow,
-        ),
+    void close() => Navigator.of(context).pop();
+    Widget option({
+      required Key key,
+      required SkinTone tone,
+      required String top,
+      required String amount,
+      required VoidCallback onTap,
+      bool ad = false,
+    }) => Expanded(
+      child: SkinButton(
+        key: key,
+        tone: tone,
+        height: 76,
+        onPressed: onTap,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const ChestSprite(size: 32),
-                const SizedBox(width: 8),
-                Text(l10n.uiChestTitle, style: Skin.text(18)),
+                if (ad) ...[const PixelSprite(UiSprites.ad, dots: 16, scale: 1), const SizedBox(width: 4)],
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(top, style: Skin.text(16)),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 10),
-            // 광고: 골드 ×5 · 젬 (기존 버튼 그대로 — 결과는 경제가 상자를 열며 준다).
-            const ChestAdButtons(),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: SkinButton(
-                key: const Key('chest.take'),
-                height: 44,
-                onPressed: () {
-                  ref.read(commandSinkProvider).send(const TapChest());
-                  Navigator.of(context).pop();
-                },
-                child: Text(l10n.uiChestTake(base?.format() ?? '')),
-              ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(amount, style: Skin.text(18)),
             ),
           ],
+        ),
+      ),
+    );
+    return Dialog(
+      backgroundColor: Skin.card,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: ConstrainedBox(
+        key: const Key('chest.sheet'),
+        constraints: const BoxConstraints(maxWidth: 340),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const ChestSprite(size: 32),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(l10n.uiChestTitle, style: Skin.text(20))),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  option(
+                    key: const Key('chest.take'),
+                    tone: SkinTone.plain,
+                    top: l10n.uiChestJustTake,
+                    amount: base?.format() ?? '',
+                    onTap: () {
+                      ref.read(commandSinkProvider).send(const TapChest());
+                      close();
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  // 광고 쪽이 이득 — 금빛 + '×n'.
+                  option(
+                    key: const Key('ad.chest.gold'),
+                    tone: SkinTone.gold,
+                    top: l10n.uiChestAdMult(shortDecimal(mult)),
+                    amount: base?.times(mult).format() ?? '',
+                    ad: true,
+                    onTap: () {
+                      unawaited(watchAd(ref, AdPlacement.chest, choice: 'gold'));
+                      close();
+                    },
+                  ),
+                ],
+              ),
+              TextButton(
+                key: const Key('ad.chest.gems'),
+                onPressed: () {
+                  unawaited(watchAd(ref, AdPlacement.chest, choice: 'gems'));
+                  close();
+                },
+                child: Text(l10n.uiChestAdGems(reward.integer('altGems')), style: Skin.text(14, color: Skin.sub)),
+              ),
+            ],
+          ),
         ),
       ),
     );

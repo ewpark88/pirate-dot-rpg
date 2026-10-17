@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/painting.dart' show HSVColor;
 import 'package:game_data/game_data.dart';
 
 /// 탑다운 바다 (T2, S1 '단색에 점선뿐이라 밋밋'): 깊이 얼룩(느린 시차) · 물결 대시 · 햇빛 반짝임 · 파도 거품 · 배 항적(흰 V자).
@@ -211,6 +212,7 @@ class TopSeaPainter {
     for (final b in _wakeBuckets) {
       b.n = 0;
     }
+    _rainbowClock = clockMs;
     final phase = (clockMs / 50) % 6;
     for (var i = 0; i < length; i += 2) {
       final fade = 1 - i / length;
@@ -266,12 +268,16 @@ class TopSeaPainter {
     for (var k = 0; k < 4; k++) {
       final b = _wakeBuckets[k];
       if (b.n == 0) continue;
-      _points.color = _foam.withValues(alpha: 0.2 + 0.7 * (k + 1) / 4);
+      // 피버 v2: 무지개 항적 — 거리 칸마다 색이 다르고 시간에 따라 흘러간다.
+      _points.color = fever > 0.5
+          ? HSVColor.fromAHSV(0.35 + 0.6 * (k + 1) / 4, (_rainbowClock / 4 + k * 70) % 360, 0.8, 1).toColor()
+          : _foam.withValues(alpha: 0.2 + 0.7 * (k + 1) / 4);
       c.drawRawPoints(PointMode.points, Float32List.sublistView(b.xy, 0, b.n * 2), _points);
     }
   }
 
   final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(480));
+  double _rainbowClock = 0;
 }
 
 /// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.

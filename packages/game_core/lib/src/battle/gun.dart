@@ -60,6 +60,9 @@ class Gun {
   /// 다음 발사까지 남은 초 (공격 속도 배율 적용 전 기준).
   double cooldown = 0;
 
+  /// 맞힌 발 수 (충전 사격 legend.charge의 every번째를 센다).
+  int shots = 0;
+
   /// 다음 스킬까지 남은 초 (공격 속도 배율 적용 전 기준).
   double skillCooldown = 0;
 

@@ -59,6 +59,7 @@ void main() {
       initial: GameState.newGame(playerId: 'x', seed: 1, now: start).copyWith(
         progress: const Progress(stage: 5, bestStage: 5),
         crews: const {'octo': CrewState(level: 60), 'pang': CrewState(level: 60), 'sword': CrewState(level: 60)},
+        ship: const ShipState().withLevel('hull', 30), // 보스 공격 × 100(C8) — 강화 안 한 배는 보스전 중에 가라앉는다
       ),
     )..enqueue(const OpSpawnBoss());
     final events = <GameEvent>[];

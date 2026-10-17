@@ -17,6 +17,12 @@ class SimThreat {
 
   /// 보스전 한 번에 깎인 배 체력(보스 행동 v2 목표 25~45%, S5).
   final bossFightDamage = <double>[];
+
+  /// 보스 시간 제한이 없어진 뒤(2026-10-17): 깬 보스전 길이(목표 20~40초)·실패(침몰)까지 길이(15~30초), 초.
+  final bossKillSec = <double>[];
+  final bossFailSec = <double>[];
+  int? _bossFrom;
+  double _sec(int ticks) => ticks * t.waves.tickMs / Duration.millisecondsPerSecond;
   double _bossMin = 1;
 
   /// 환생 뒤 첫 벽: 첫 보스 실패 스테이지 ÷ 환생 전 최고 (사용자 신고 '환생 뒤 강화 없이 너무 멀리 감' — 목표 0.5~0.6).
@@ -54,13 +60,17 @@ class SimThreat {
       case WaveCleared():
         if (s.progress.farming) farmWaveDamage.add(1 - _minRatio);
         _minRatio = 1;
-      case BossCleared(:final stage):
+      case BossSpawned(:final tick):
+        _bossFrom = tick;
+      case BossCleared(:final stage, :final tick):
+        if (_bossFrom case final f?) bossKillSec.add(_sec(tick - f));
         _firstTry(s, stage, won: true);
         bossFightDamage.add(1 - _bossMin);
         _bossMin = 1;
       case RebirthDone():
         _bestBeforeRebirth = s.progress.bestStage;
-      case BossFailed(:final stage):
+      case BossFailed(:final stage, :final tick):
+        if (_bossFrom case final f?) bossFailSec.add(_sec(tick - f));
         _firstTry(s, stage, won: false);
         bossFightDamage.add(1 - _bossMin);
         _bossMin = 1;

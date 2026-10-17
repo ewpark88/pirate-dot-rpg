@@ -80,9 +80,9 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
 
 Finder _ad() => find.byWidgetPredicate((w) => '${w.key}'.contains("'ad."));
 
-/// 상자 광고는 왼쪽 가장자리 알약 → 선택 시트 안(사용자 지시 2026-10-16).
+/// 상자 광고는 상자를 누르면 뜨는 선택 창 안(사용자 지시 2026-10-17).
 Future<void> _openChestSheet(WidgetTester tester) async {
-  await tester.tap(find.byKey(const Key('chest.pill')));
+  await tester.tap(find.byKey(const Key('chest')));
   await tester.pumpAndSettle();
 }
 
@@ -104,7 +104,8 @@ void main() {
     await _openChestSheet(tester);
     expect(find.byKey(const Key('ad.chest.gold')), findsOneWidget);
     expect(find.byKey(const Key('ad.chest.gems')), findsOneWidget);
-    expect(find.text('Gems 30'), findsOneWidget);
+    expect(find.text('or watch an ad for 30 gems'), findsOneWidget);
+    expect(find.text('Ad ×5'), findsOneWidget);
     await tester.tap(find.byKey(const Key('ad.chest.gold')));
     await tester.pump();
     expect(ads.shown, [AdPlacement.chest]);

@@ -80,7 +80,7 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 3.0989,
+        "powerScale": 2.9279,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -171,7 +171,7 @@
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 1.1686,
+        "powerScale": 1.1149,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -201,6 +201,7 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 1.7,
+        "powerScale": 0.8559,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -240,7 +241,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.8985,
+        "powerScale": 1.0376,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -275,7 +276,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.9519,
+        "powerScale": 0.8596,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -307,7 +308,7 @@
         "intervalSec": 1.4,
         "shape": "chain",
         "chains": 3,
-        "powerScale": 0.4896,
+        "powerScale": 0.5292,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -600,7 +601,7 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.0342,
+        "powerScale": 0.9874,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -840,7 +841,7 @@
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 2.4846,
+        "powerScale": 2.8822,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -917,7 +918,7 @@
           "delaySec": 0.4,
           "hitRadius": 22
         },
-        "powerScale": 0.6406,
+        "powerScale": 0.6111,
         "behavior": {
           "kind": "lightning"
         },
@@ -1021,21 +1022,21 @@
         "targets": "nearest",
         "intervalSec": 2.0,
         "shape": "single",
-        "powerScale": 4.0451,
+        "powerScale": 4.4708,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
-          "reach": 86
+          "reach": 30
         },
-        "reach": 70,
+        "reach": 22,
         "rare": {
-          "reach": 74
+          "reach": 24
         },
         "hero": {
-          "reach": 78
+          "reach": 26
         },
         "legend": {
-          "reach": 82
+          "reach": 28
         }
       }
     },
@@ -1052,18 +1053,18 @@
         "targets": "nearest",
         "intervalSec": 4.2,
         "powerScale": 0.8811,
-        "reach": 74,
+        "reach": 22,
         "rare": {
-          "reach": 78
+          "reach": 24
         },
         "hero": {
-          "reach": 82
+          "reach": 26
         },
         "legend": {
-          "reach": 86
+          "reach": 28
         },
         "mythic": {
-          "reach": 90
+          "reach": 30
         }
       }
     },
@@ -1079,19 +1080,19 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 5.2,
-        "powerScale": 0.8608,
-        "reach": 72,
+        "powerScale": 0.8884,
+        "reach": 22,
         "rare": {
-          "reach": 76
+          "reach": 24
         },
         "hero": {
-          "reach": 80
+          "reach": 26
         },
         "legend": {
-          "reach": 84
+          "reach": 28
         },
         "mythic": {
-          "reach": 88
+          "reach": 30
         }
       }
     },
@@ -1107,19 +1108,19 @@
       "aim": {
         "targets": "cluster",
         "intervalSec": 3.5,
-        "powerScale": 0.9601,
-        "reach": 72,
+        "powerScale": 1.0334,
+        "reach": 22,
         "rare": {
-          "reach": 76
+          "reach": 24
         },
         "hero": {
-          "reach": 80
+          "reach": 26
         },
         "legend": {
-          "reach": 84
+          "reach": 28
         },
         "mythic": {
-          "reach": 88
+          "reach": 30
         }
       }
     },
@@ -1137,19 +1138,19 @@
         "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.7866,
-        "reach": 78,
+        "powerScale": 0.87,
+        "reach": 22,
         "rare": {
-          "reach": 82
+          "reach": 24
         },
         "hero": {
-          "reach": 86
+          "reach": 26
         },
         "legend": {
-          "reach": 90
+          "reach": 28
         },
         "mythic": {
-          "reach": 94
+          "reach": 30
         }
       }
     },
@@ -1249,7 +1250,7 @@
         "intervalSec": 1.7,
         "shape": "single",
         "targets": "nearest",
-        "powerScale": 5.31,
+        "powerScale": 5.04,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -1280,7 +1281,7 @@
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.8,
-        "powerScale": 0.7377,
+        "powerScale": 0.48,
         "reach": 160,
         "rare": {
           "reach": 164

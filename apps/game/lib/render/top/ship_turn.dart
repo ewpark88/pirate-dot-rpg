@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
@@ -17,6 +18,7 @@ class ShipTurn {
   double _bank = 0;
   double _heading = 0;
   double _vx = 0;
+  double _sprayAt = -1000000000;
 
   /// 피버 좌우 이동: x 변화로 뱅크(이동 방향으로 최대 15°, 부드럽게), 방향을 바꾸면 큰 물보라.
   void update(double x, double clockMs, double dt) {
@@ -33,7 +35,19 @@ class ShipTurn {
     final target = (vx / 90).clamp(-1.0, 1.0) * 15 * math.pi / 180;
     // 엔진이 배 방향(shipHeading, 피버 지그재그 ±25°)을 주면 그 각도로 — 꺾을 때 약 0.25초에 빠르게 돌고, x 변화 뱅크는 쓰지 않는다.
     final heading = scene.frame.shipHeading;
-    _heading += (heading - _heading) * math.min(1, dt / 80);
+    final before = _heading;
+    // 보스전 v2(S5: 배가 보스를 마주 보며 돈다)는 방향이 한 바퀴를 넘나든다 — 가까운 쪽으로 돌게 차이를 −π~π로.
+    var diff = (heading - _heading) % (2 * math.pi);
+    if (diff > math.pi) diff -= 2 * math.pi;
+    _heading += diff * math.min(1, dt / 80);
+    // 피버 8자 곡선(S5): 크게 꺾는 동안 0.11초마다 바깥쪽으로 물보라가 튄다(사용자 '물보라가 약하다').
+    final rate = (_heading - before) / dt;
+    if (rate.abs() > 0.0012 && clockMs - _sprayAt > 110) {
+      _sprayAt = clockMs;
+      final out = scene.frame.shipHeading - math.pi / 2 + (rate > 0 ? -math.pi / 2 : math.pi / 2);
+      final at = scene.topShip + Offset(math.cos(out) * 16, math.sin(out) * 16 + 6);
+      scene.topHits.impact.add(at.dx, at.dy, 18, 0xFFE6F6FF, clockMs, water: true);
+    }
     _bank += ((heading != 0 ? 0 : target) - _bank) * math.min(1, dt / 120);
   }
 }

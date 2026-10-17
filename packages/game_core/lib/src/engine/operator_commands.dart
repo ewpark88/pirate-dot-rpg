@@ -22,7 +22,8 @@ sealed class OperatorCommand extends Command {
     'op.setShip' => OpSetShip((j['parts'] as Map).cast<String, int>()),
     'op.jumpStage' => OpJumpStage(j['stage'] as int),
     'op.setWave' => OpSetWave(count: j['count'] as int?, enemyKind: j['enemyKind'] as String?),
-    'op.spawnBoss' => const OpSpawnBoss(),
+    'op.spawnBoss' => OpSpawnBoss(bossId: j['bossId'] as String?),
+    'op.bossBreak' => const OpBossBreak(),
     'op.invincible' => OpSetInvincible(on: j['on'] as bool),
     'op.speed' => OpSetSpeed(j['speed'] as int),
     'op.step' => const OpStepTick(),
@@ -124,11 +125,25 @@ class OpSetWave extends OperatorCommand {
   Json _fields() => {'count': count, 'enemyKind': enemyKind};
 }
 
+/// 보스 소환. [bossId]가 있으면 그 보스(특성 보스 시험 — 스테이지의 보스 대신), 없으면 지금 스테이지의 보스.
 class OpSpawnBoss extends OperatorCommand {
-  const OpSpawnBoss();
+  const OpSpawnBoss({this.bossId});
+
+  final String? bossId;
 
   @override
   String get type => 'op.spawnBoss';
+
+  @override
+  Json _fields() => {if (bossId != null) 'bossId': bossId};
+}
+
+/// 지금 보스의 브레이크 게이지를 가득 — 다음 틱에 쓰러진다(보스 브레이크 시험).
+class OpBossBreak extends OperatorCommand {
+  const OpBossBreak();
+
+  @override
+  String get type => 'op.bossBreak';
 }
 
 /// 배 무적.

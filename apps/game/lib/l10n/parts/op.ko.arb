@@ -42,5 +42,13 @@
   "opLabSwarm": "무리 {count}마리",
   "opLabWave": "기본 파 (돌격대 포함)",
   "opGroupLab": "선원 시험",
-  "opCardFxMin": "카드 연출 시작 등급"
+  "opCardFxMin": "카드 연출 시작 등급",
+  "opGroupToday": "오늘 새 기능",
+  "opTodayFever": "피버 곧 시작(99%)",
+  "opTodayBreak": "보스 브레이크 가득",
+  "opTodayBossPick": "특징 보스 고르기",
+  "opTodayBoss": "고른 보스 소환",
+  "opTodayArc": "연쇄 번개 시험(pelly 전설 출전)",
+  "opTodaySail": "출항 대기 상태",
+  "opTodayFirstTen": "첫 10연 다시 받기"
 }

@@ -126,6 +126,8 @@ void critBurst(Round r, Gun g, Volley v, BigNum base, {required bool crit}) {
 void lightningArc(Round r, Gun g, Volley v, BigNum base) {
   final arc = g.legend?.arc;
   if (arc == null) return;
+  final counts = arc.counts;
+  if (counts != null) return _chainLightning(r, g, v, base, counts[g.rarity.clamp(0, counts.length - 1)]);
   final n = arc.count + (roll(arc.chance, r.ctx.rng) ? 1 : 0);
   if (n <= 0) return;
   final hitIds = {for (final h in v.hits) h.foe.id};
@@ -139,6 +141,69 @@ void lightningArc(Round r, Gun g, Volley v, BigNum base) {
   r
     ..strike((x: v.x, y: v.y, hits: spread(hit, r.w)), base.times(arc.ratio), crewId: g.crewId)
     ..control(hit, stunSec: arc.stunSec);
+}
+
+/// 연쇄 번개(pelly, 사용자 2026-10-17 '등급이 오를수록 더 많은 몬스터로 이어짐'): 마지막에 맞은 적에서 가장 가까운
+/// 맞지 않은 적으로 [n]번 튄다. k번째는 base × ratio × falloff^k, 맞은 적마다 기절 stunSec.
+void _chainLightning(Round r, Gun g, Volley v, BigNum base, int n) {
+  final arc = g.legend!.arc!;
+  if (n <= 0 || v.hits.isEmpty) return;
+  final hit = <Foe>[];
+  final pool = [
+    for (final e in r.geo.eligible(g.attack, r.field.foes))
+      if (!v.hits.any((h) => h.foe.id == e.id)) e,
+  ];
+  var from = v.hits.last.foe;
+  for (var i = 0; i < n && pool.isNotEmpty; i++) {
+    final next = pool.reduce((m, e) => _d2(e, from) < _d2(m, from) ? e : m);
+    hit.add(next);
+    pool.remove(next);
+    from = next;
+  }
+  if (hit.isEmpty) return;
+  var factor = 1.0;
+  final hits = <Hit>[];
+  for (final e in hit) {
+    hits.add((foe: e, factor: factor));
+    factor *= arc.falloff;
+  }
+  r
+    ..strike((x: v.x, y: v.y, hits: hits), base.times(arc.ratio), crewId: g.crewId)
+    ..control(hit, stunSec: arc.stunSec);
+}
+
+/// 처형(bones): 맞은 뒤 HP 비율이 below 아래로 살아 있는 적에게 base × (mul − 1)을 더.
+void execute(Round r, Gun g, Volley v, BigNum base) {
+  final ex = g.legend?.execute;
+  if (ex == null) return;
+  final low = [
+    for (final h in v.hits)
+      if (h.foe.alive && (h.foe.hp / h.foe.maxHp).toDouble() < ex.below) (foe: h.foe, factor: h.factor),
+  ];
+  if (low.isEmpty) return;
+  r.strike((x: v.x, y: v.y, hits: low), base.times(ex.mul - 1), crewId: g.crewId);
+}
+
+/// 충전 사격(volt): every번째로 맞힌 발마다 맞은 적에게 base × (mul − 1)을 더하고 기절.
+void chargedShot(Round r, Gun g, Volley v, BigNum base) {
+  final c = g.legend?.charge;
+  if (c == null || v.hits.isEmpty) return;
+  g.shots++;
+  if (g.shots % c.every != 0) return;
+  final alive = [
+    for (final h in v.hits)
+      if (h.foe.alive) h,
+  ];
+  if (alive.isEmpty) return;
+  r
+    ..strike((x: v.x, y: v.y, hits: alive), base.times(c.mul - 1), crewId: g.crewId)
+    ..control([for (final h in alive) h.foe], stunSec: c.stunSec);
+}
+
+/// 추적 깃털(polly): 이 발은 빗나가지 않는가 — 전설부터 늘, 그 아래는 noMissChance 확률.
+bool missProof(Gun g, Rng rng) {
+  final l = g.legend;
+  return l != null && (l.noMiss || roll(l.noMissChance, rng));
 }
 
 /// 맞은 자리 작은 폭발(사용자 '전설 상위·신화는 범위 공격과 막강한 임팩트' — aim.legend·aim.mythic의 splashRadius·splashRatio):
@@ -168,6 +233,8 @@ void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit})
   spawnLegendZone(r, g, v.x, v.y);
   critBurst(r, g, v, base, crit: crit);
   lightningArc(r, g, v, base);
+  execute(r, g, v, base);
+  chargedShot(r, g, v, base);
 }
 
 double _d2(Foe a, Foe b) => (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);

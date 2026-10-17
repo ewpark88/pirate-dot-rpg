@@ -51,10 +51,25 @@ class TopEnemies {
       if (sheet == null) continue;
       // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
-      final frame = ((scene.clockMs / (huge ? 350 : 220)).floor() + e.id) % sheet.frames;
-      final breathe = huge ? 1 + 0.03 * math.sin(clock / 420 + e.id) : 1.0;
+      // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
+      final frame = ((scene.clockMs / (huge ? 350 : (e.boss ? 300 : 220))).floor() + e.id) % sheet.frames;
+      final angry = e.boss && (scene.topHits.traits?.bossFx.enraged(e.id) ?? false); // 분노: 8% 크게
+      final breathe = e.boss ? (1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
+      final rotation =
+          e.heading +
+          math.pi / 2 +
+          math.sin(clock / 240 + e.id) * 0.08 +
+          (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0);
+      final tx = (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble();
+      final ty = (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble();
+      // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
+      final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
+      if (sq != null) {
+        _squashed.add((sheet, frame, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
+        continue;
+      }
       (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
           sheet,
           () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
@@ -62,16 +77,12 @@ class TopEnemies {
         ..xf.add(
           RSTransform.fromComponents(
             // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation:
-                e.heading +
-                math.pi / 2 +
-                math.sin(clock / 240 + e.id) * 0.08 +
-                (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0),
+            rotation: rotation,
             scale: key == _merchant ? _merchantScale : breathe,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
-            translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble(),
-            translateY: (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble(),
+            translateX: tx,
+            translateY: ty,
           ),
         )
         ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
@@ -85,7 +96,27 @@ class TopEnemies {
     for (final b in _hotBatches.values) {
       if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, null, null, null, _hotPaint);
     }
+    for (final (sheet, frame, rot, tx, ty, sx, sy, flash, hot) in _squashed) {
+      final w = sheet.frameW;
+      final h = sheet.frameH;
+      c
+        ..save()
+        ..translate(tx, ty)
+        ..rotate(rot)
+        ..scale(sx, sy)
+        ..drawImageRect(
+          sheet.image,
+          Rect.fromLTWH(frame * w, 0, w, h),
+          Rect.fromLTWH(-w / 2, -h / 2, w, h),
+          flash ? _tintPaint : (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)),
+        )
+        ..restore();
+    }
+    _squashed.clear();
   }
+
+  final List<(SpriteSheet, int, double, double, double, double, double, bool, bool)> _squashed = [];
+  static const _maxSquash = 20;
 
   final Map<SpriteSheet, _Batch> _batches = {};
   final Map<SpriteSheet, _Batch> _flashBatches = {};
