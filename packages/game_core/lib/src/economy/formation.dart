@@ -10,9 +10,10 @@ export 'package:game_core/src/battle/fleet.dart' show autoFleet;
 
 // 수동 편성 (사용자 결정 2026-10-15, ADR-0010): 출전은 사용자가 고르고, ‘자동 편성’ 버튼으로 한 번에 채운다.
 
-/// 지금 배 등급의 출전 슬롯 수.
+/// 출전 슬롯 수 — 한 번 연 칸은 영구(평생 최고 스테이지의 배 등급 기준, 사용자 버그 2026-10-17 '환생하니 4번째 칸이 다시 잠김').
+/// bestStage는 환생해도 유지된다.
 int fleetSlots(GameState s, GameTables t) {
-  final n = t.shipTiers.tierAt(s.progress.stage).slots + fleetSlotBonus(s, t);
+  final n = t.shipTiers.tierAt(s.progress.bestStage).slots + fleetSlotBonus(s, t);
   final max = t.meta.rebirth.integer('fleetSlotsMax');
   return n > max ? max : n;
 }
