@@ -29,6 +29,19 @@ extension _EnemyTransitions on TopEnemies {
     return breaks.crackAge(e.id, clock);
   }
 
+  /// 잡몹 등장 톡: 0.3배 → 1.12배 → 1배.
+  double _bornPop(double bk) => bk >= 1 ? 1 : (bk < 0.6 ? 0.3 + 0.82 * bk / 0.6 : 1.12 - 0.12 * (bk - 0.6) / 0.4);
+
+  /// 보스 등장: 바다 밑에서 솟아오름 — 등장 연출 앞 60% 동안 0.35배 → 1.1배(튀어 오름) → 1배.
+  double _rise(double clock) {
+    final m = scene.moments;
+    final age = clock - scene.topHits.glow.bossRiseAt;
+    final dur = m.entryTotal * 0.6;
+    if (age < 0 || age >= dur) return 1;
+    final u = age / dur;
+    return u < 0.7 ? 0.35 + 0.75 * (1 - (1 - u / 0.7) * (1 - u / 0.7)) : 1.1 - 0.1 * (u - 0.7) / 0.3;
+  }
+
   /// 층이 깨진 뒤 1초 비틀(좌우로 흔들리며 잦아듦, S1).
   double _crackTilt(double age) => age < 1000 ? math.sin(age / 45) * 0.16 * (1 - age / 1000) : 0;
 

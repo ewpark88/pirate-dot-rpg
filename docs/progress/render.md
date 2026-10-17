@@ -561,3 +561,8 @@
 - 다음: S2 보스 18종 데이터 해시 오면 장면 확인, S5 폰 측정 반영.
 - 남은 문제: pubspec에 assets/audio/amb/ 등록(main 공유 — S1), test/ui 골든 10장(ui 레인).
 
+## 2026-10-18 (오전) — 보스 등장·갑판 선원
+- 한 일: 7ade4bc2 보스 등장 연출(솟아오름·물보라·어둡게·WARNING·포효, bossEntryMs) · 5236ac9b 갑판 선원 HD 미니 캐릭터 · f08b2656 sprites_test HD 전용 보스 허용. boss-feel 연결은 패치로 준비(scratchpad bossfeel_render.patch — 층 막대 bossBars·manual 컷인), S2 bc10abcf가 main에 오면 적용.
+- 다음: boss-feel main 머지 뒤 패치 적용·골든, S5 폰 측정 반영.
+- 남은 문제: test/ui 골든 10장(선원 미리보기 — 이번 갑판 선원으로 또 바뀜, ui 레인), pubspec amb 등록(S1).
+

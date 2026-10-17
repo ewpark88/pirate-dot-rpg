@@ -48,6 +48,9 @@ class TopFeverStrike {
       ..addAll(targets.take(_maxTargets));
   }
 
+  /// 필살기 시작 시각(장면 ms) — 갑판 선원이 손을 든다.
+  double get startedAt => _at;
+
   bool active(double now) => now - _at < _strikeAtMs + _maxTargets * _gapMs + _boltMs + 400;
 
   void clear() {

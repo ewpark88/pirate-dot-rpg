@@ -33,7 +33,7 @@ class TopScenePainter {
   final SpriteDraw sprites;
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
   final _seaHd = HdSeaDetail();
-  late final TopShipPainter _ship = TopShipPainter(sprites);
+  late final TopShipPainter _ship = TopShipPainter(sprites, scene);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
   late final TopOverlays _overlays = TopOverlays(scene, sprites, atmosphere);
   late final TopMarks _marks = TopMarks(scene, sprites);
