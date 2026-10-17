@@ -14,6 +14,7 @@ import 'package:pirate_dot/render/top/top_emerge.dart';
 import 'package:pirate_dot/render/top/top_family_v3.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_fever_strike.dart';
+import 'package:pirate_dot/render/top/top_glow.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_juice.dart';
 import 'package:pirate_dot/render/top/top_muzzle.dart';
@@ -36,6 +37,9 @@ class TopHits {
 
   /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
   TopTraits? traits;
+
+  /// 디자인 개편 발광: 스킬 마법진(배 밑).
+  final glow = TopGlow();
 
   /// 도감 v2 보스 패턴(먹물·삼키기·분열).
   final bestiary = TopBestiary();
@@ -131,6 +135,7 @@ class TopHits {
 
   /// 물보라(흰·하늘 점이 둥글게 퍼짐)·나뭇조각(배 바깥쪽으로 튐)·작은 번쩍. 전장 좌표.
   void paint(Canvas c, double now, {required bool flash, bool powerSave = false, Offset ship = Offset.zero}) {
+    glow.paint(c, now, ship, lite: lite || powerSave);
     muzzles.paint(c, now, flash: flash, powerSave: powerSave || lite);
     _paintUpgrade(c, ship, now);
     emerges.paint(c, now);
@@ -244,6 +249,7 @@ class TopHits {
     slash.clear();
     emerges.clear();
     bestiary.clear();
+    glow.clear();
     traits?.clear();
     upgradeAt = -1000000000;
     shots.clear();
