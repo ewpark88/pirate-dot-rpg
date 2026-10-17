@@ -32,7 +32,8 @@ class RollingText extends StatelessWidget {
       transitionBuilder: (child, a) {
         // 들어오는 글: 아래(+) → 제자리, 나가는 글: 제자리 → 위(−). 둘 다 같은 a(1 → 0이 나감)를 쓴다.
         final incoming = child.key == ValueKey(text);
-        final slide = Tween<Offset>(begin: Offset(0, incoming ? 0.7 : -0.7), end: Offset.zero).animate(a);
+        // 한 줄 높이만큼(1.0) 밀어 두 글이 같은 줄에서 겹치지 않게 — 0.7이면 반쯤 겹쳐 뭉개져 보였다(S1 실기기 2026-10-18).
+        final slide = Tween<Offset>(begin: Offset(0, incoming ? 1 : -1), end: Offset.zero).animate(a);
         return ClipRect(
           child: SlideTransition(
             position: slide,
