@@ -29,5 +29,11 @@
   "battleBossIcebergWalrus": "Iceberg Walrus",
   "battleBossLavaWhale": "Lava Whale",
   "battleBossKraken": "Kraken",
-  "battleBossGhostAdmiral": "Ghost Fleet Admiral"
+  "battleBossGhostAdmiral": "Ghost Fleet Admiral",
+  "battleBossSeaCroc": "Sea Crocodile",
+  "battleBossMonsterWhale": "Monster Whale",
+  "battleBossIceSlime": "Giant Ice Slime",
+  "battleBossLeviathan": "Leviathan",
+  "battleBossKrakenTitan": "Kraken Titan",
+  "battleBossPoseidon": "Poseidon"
 }
