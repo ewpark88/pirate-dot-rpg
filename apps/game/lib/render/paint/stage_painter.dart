@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_species.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -14,6 +16,7 @@ class StagePainter {
   final BattleScene scene;
   final SpriteDraw sprites;
   final _paint = Paint()..isAntiAlias = false;
+  final _hd = HdKit();
 
   void _rect(Canvas c, double l, double t, double w, double h, int argb) {
     _paint.color = Color(argb);
@@ -47,6 +50,19 @@ class StagePainter {
     final kind = cut.kind!;
     final scale = cfg.number('bossScale');
     final cx = x + v.width / 2;
+    // HD 카툰 보스면 종 그림을 띠 안에 바로 그린다(띠 높이의 1.6배 칸, 위아래는 띠 밖으로 조금 나가도 됨).
+    final hd = hdBosses[kind];
+    if (hd != null) {
+      final cell = h * 1.6;
+      final r = cell / (2 * hd.extent);
+      c
+        ..save()
+        ..translate(cx, top + h / 2);
+      _hd.begin(r);
+      hd.draw(_hd, c, r, age % HdKit.loopMs);
+      c.restore();
+      return;
+    }
     final sheet = sprites.sheet('boss:$kind');
     if (sheet != null) {
       // 큰 그림(대보스 88도트)은 띠 높이의 1.6배(기존 보스 최대 64)까지만.
