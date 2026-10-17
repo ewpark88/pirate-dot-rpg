@@ -20,3 +20,6 @@ const voyageTab = 0;
 
 /// 배 탭 번호 (화물칸 강화 줄이 있는 곳).
 const shipTabIndex = 1;
+
+/// 선원 탭 번호 (레벨업·합치기·승급).
+const crewTabIndex = 2;

@@ -79,11 +79,11 @@
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
   "fever": { "weave": {"mode": "zigzag", "amp": 70, "legSec": 2.0, "turnSec": 0.45, "surge": 8, "tiltDeg": 25},
-    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
+    "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
-  "startingCrews": ["octo", "turtle"],
+  "startingCrews": ["octo"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
   "dailyQuests": [
@@ -111,6 +111,7 @@
     "firstTenSummonFree": true,
     "firstTenCount": 10,
     "firstTenGuarantee": "hero",
+    "welcomeCrew": { "crewId": "bones", "rarity": "rare" },
     "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 1 }, "boss": 3, "merge": 5, "last": 6 }
   },
   "notifications": { "dailyMax": 1 },
@@ -125,6 +126,7 @@
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
+      "welcomeCrewMin": { "min": 0, "max": 1 },
       "stage10Min": { "min": 7, "max": 9 },
       "stage40DayHours": { "min": 0, "max": 8.67, "schedule": "daily" },
       "stage40OnlineMin": { "min": 45, "max": 55, "schedule": "continuous" },
