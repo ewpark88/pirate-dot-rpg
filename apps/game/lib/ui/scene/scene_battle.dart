@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/bounty/bounty_card.dart' show bossName;
+import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
@@ -18,7 +20,8 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 // 탑·러시 전투 중 UI (S5 계약): 위쪽 띠('심연 12층 · 2/3파' / '보스 3/5 · 1:42'), 후퇴(보스 도전 자리), 끝나면 결과 창,
 // 소탕은 토스트. 시작하면 시트를 닫는다(전장이 보이게).
 
-/// 전장 위 장면 띠 (탑·러시 중일 때만, 누름 통과). 현상금 띠와 같은 모양, 심연 보라.
+/// 장면 글 — 떠 있는 띠 안 스테이지 글자 자리(사용자 2026-10-18 '띠 아래 안내 줄이 보스를 가린다'): 탑·러시·던전·현상금 중에만.
+/// '심연 12층 · 2/3파' · '보스 3/5 · 1:42' · '요일 던전 3단계 · 1/2파' · '현상금 · 보스 2단계'.
 class SceneStrip extends ConsumerWidget {
   const SceneStrip({super.key});
 
@@ -27,26 +30,27 @@ class SceneStrip extends ConsumerWidget {
     final (tower, rush, dungeon) = ref.watch(
       gameStateProvider.select((s) => (s.battle?.tower, s.battle?.rush, s.battle?.dungeon)),
     );
-    if (tower == null && rush == null && dungeon == null) return const SizedBox.shrink();
+    final bounty = ref.watch(bountyProvider.select((v) => v.active));
     final l10n = AppLocalizations.of(context);
     final tickMs = ref.watch(tablesProvider).waves.tickMs;
     final text = switch ((tower, rush, dungeon)) {
       (final w?, _, _) => l10n.uiTowerStrip(w.floor, w.wave + 1, w.waves),
       (_, final r?, _) => l10n.uiRushStrip(r.index + 1, r.total, sceneClock(l10n, r.ticks, tickMs)),
       (_, _, final d?) => l10n.uiDungeonStrip(d.step, d.wave + 1, d.waves),
-      _ => '',
+      _ => bounty == null ? '' : l10n.uiBountyStrip(bossName(l10n, ref, bounty.bossId), bounty.tier),
     };
-    return IgnorePointer(
-      child: Container(
-        key: Key(tower != null ? 'tower.strip' : (rush != null ? 'rush.strip' : 'dungeon.strip')),
-        padding: const EdgeInsets.fromLTRB(10, 4, 12, 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFF2E2260).withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFB79CFF), width: 1.5),
-        ),
-        child: OutlineText(text, size: 15),
-      ),
+    final key = switch ((tower, rush, dungeon)) {
+      (_?, _, _) => 'tower.strip',
+      (_, _?, _) => 'rush.strip',
+      (_, _, _?) => 'dungeon.strip',
+      _ => 'bounty.strip',
+    };
+    return Text(
+      text,
+      key: Key(key),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Skin.outlined(14, color: const Color(0xFFFFE27A)),
     );
   }
 }

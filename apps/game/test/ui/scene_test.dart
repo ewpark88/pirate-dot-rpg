@@ -27,10 +27,7 @@ GameState _state({
   );
 }
 
-Future<void> _show(WidgetTester tester, String key) async {
-  await tester.ensureVisible(find.byKey(Key(key)));
-  await tester.pump();
-}
+Future<void> _show(WidgetTester tester, String key) => showInSheet(tester, key);
 
 void main() {
   testWidgets('탑 카드: 최고 12층 · 도전권 2/3 · 도전 → StartTower · 소탕 9층(12×0.8) → SweepTower', (tester) async {

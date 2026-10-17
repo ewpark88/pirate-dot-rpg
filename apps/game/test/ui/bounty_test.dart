@@ -52,10 +52,7 @@ Future<CommandLog> _pump(
   overrides: overrides,
 );
 
-Future<void> _show(WidgetTester tester, String key) async {
-  await tester.ensureVisible(find.byKey(Key(key)));
-  await tester.pump();
-}
+Future<void> _show(WidgetTester tester, String key) => showInSheet(tester, key);
 
 void _replace(WidgetTester tester, GameState s) =>
     ProviderScope.containerOf(tester.element(find.byType(HomeScreen))).read(gameStateProvider.notifier).replace(s);

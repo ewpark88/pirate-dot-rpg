@@ -52,8 +52,7 @@ GameState _state({
 }
 
 Future<void> _openShop(WidgetTester tester) async {
-  await tester.ensureVisible(find.byKey(const Key('rebirth.shop.open')));
-  await tester.pump();
+  await showInSheet(tester, 'rebirth.shop.open');
   await tester.tap(find.byKey(const Key('rebirth.shop.open')));
   await tester.pumpAndSettle();
 }
@@ -110,6 +109,7 @@ void main() {
 
   testWidgets('살 수 있는 칸이 있으면 상점 버튼에 빨간 점', (tester) async {
     await pumpGame(tester, _state(), size: _tall);
+    await showInSheet(tester, 'rebirth.shop.open');
     expect(find.byKey(const Key('rebirth.shop.cardDot')), findsOneWidget);
   });
 
