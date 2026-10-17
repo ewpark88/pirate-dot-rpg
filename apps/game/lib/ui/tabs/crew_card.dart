@@ -7,6 +7,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/crew/level_up_fx.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -57,67 +58,71 @@ class CrewCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              PbCardFront(
-                key: Key('crew.name.${def.id}'),
-                crew: def,
-                rarity: rarity,
-                name: shortCrewName(l10n, def),
-                silhouette: !owned,
-                topLeft: level == null ? null : PbBadge(l10n.uiLevel(level), key: Key('crew.level.${def.id}')),
-                topRight: cards == null || cards == 0
-                    ? null
-                    : PbBadge(
-                        l10n.uiCrewCardBadge(cards),
-                        key: Key('crew.cards.${def.id}'),
-                        color: Skin.goldBottom,
-                        ink: Skin.goldInk,
-                      ),
-              ),
-              // 합치기로 레벨이 오르면 빛나는 초록 알약 '↑ +n' (피드백 #11·#16 — 합칠 수 있는 선원이 눈에 띄게).
-              // 레벨 배지 바로 아래(그림 위) — 이름판·승급 버튼과 겹치지 않게.
-              if (up > 0)
-                Positioned(
-                  left: -4,
-                  top: 26,
-                  child: Semantics(
-                    label: l10n.uiCrewUpBadge,
-                    child: TutorialSpot(
-                      id: levelUpSpot ? 'crew.levelUp' : 'crew.up',
-                      child: Container(
-                        key: Key('crew.up.${def.id}'),
-                        padding: const EdgeInsets.fromLTRB(4, 2, 7, 2),
-                        decoration: BoxDecoration(
-                          color: Skin.mint,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Skin.outline, width: 2),
-                          boxShadow: [
-                            BoxShadow(color: Skin.mint.withValues(alpha: 0.7), blurRadius: 8, spreadRadius: 1),
-                            ...Skin.shadowSmall,
-                          ],
+          // 레벨이 오르면 'LEVEL UP!' + 별 + 튕김 (S1 2026-10-17).
+          LevelUpFx(
+            level: level,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                PbCardFront(
+                  key: Key('crew.name.${def.id}'),
+                  crew: def,
+                  rarity: rarity,
+                  name: shortCrewName(l10n, def),
+                  silhouette: !owned,
+                  topLeft: level == null ? null : PbBadge(l10n.uiLevel(level), key: Key('crew.level.${def.id}')),
+                  topRight: cards == null || cards == 0
+                      ? null
+                      : PbBadge(
+                          l10n.uiCrewCardBadge(cards),
+                          key: Key('crew.cards.${def.id}'),
+                          color: Skin.goldBottom,
+                          ink: Skin.goldInk,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
-                            OutlineText(l10n.uiCrewUpLevels(up), size: 13),
-                          ],
+                ),
+                // 합치기로 레벨이 오르면 빛나는 초록 알약 '↑ +n' (피드백 #11·#16 — 합칠 수 있는 선원이 눈에 띄게).
+                // 레벨 배지 바로 아래(그림 위) — 이름판·승급 버튼과 겹치지 않게.
+                if (up > 0)
+                  Positioned(
+                    left: -4,
+                    top: 26,
+                    child: Semantics(
+                      label: l10n.uiCrewUpBadge,
+                      child: TutorialSpot(
+                        id: levelUpSpot ? 'crew.levelUp' : 'crew.up',
+                        child: Container(
+                          key: Key('crew.up.${def.id}'),
+                          padding: const EdgeInsets.fromLTRB(4, 2, 7, 2),
+                          decoration: BoxDecoration(
+                            color: Skin.mint,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Skin.outline, width: 2),
+                            boxShadow: [
+                              BoxShadow(color: Skin.mint.withValues(alpha: 0.7), blurRadius: 8, spreadRadius: 1),
+                              ...Skin.shadowSmall,
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
+                              OutlineText(l10n.uiCrewUpLevels(up), size: 13),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              if (_atGate.contains(status))
-                Positioned(
-                  right: -4,
-                  bottom: -4,
-                  width: kMinTap,
-                  height: kMinTap,
-                  child: _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
-                ),
-            ],
+                if (_atGate.contains(status))
+                  Positioned(
+                    right: -4,
+                    bottom: -4,
+                    width: kMinTap,
+                    height: kMinTap,
+                    child: _PromoteButton(crewId: def.id, ready: status == PromoteStatus.ok),
+                  ),
+              ],
+            ),
           ),
           // 특색 아이콘 4개 (조준·연사·범위·명중 — 선원 개성 v2).
           Padding(
