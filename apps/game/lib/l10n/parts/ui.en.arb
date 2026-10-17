@@ -620,40 +620,10 @@
     }
   },
   "uiBossDamageMvp": "MVP",
-  "uiGuideStep1Title": "Your ship fights on its own",
-  "uiGuideStep1Why": "It defeats monsters and collects gold even while you rest.",
-  "uiGuideStep2Title": "Upgrade your ship",
-  "uiGuideStep2Why": "A stronger cannon defeats monsters faster and earns more gold.",
-  "uiGuideStep3Title": "Beat the boss",
-  "uiGuideStep3Why": "Defeat the boss to reach the next sea. If you lose, upgrade and try again!",
-  "uiGuideStep4Title": "Call your crew",
-  "uiGuideStep4Why": "Crew fight with you and make you much stronger. Use gems to call 10.",
-  "uiGuideStep5Title": "Merge the same crew",
-  "uiGuideStep5Why": "Matching cards raise stars and attack.",
-  "uiGuideStep6Title": "You're all set!",
-  "uiGuideStep6Why": "Gold piles up even when the app is closed. Follow the goal at the top.",
-  "uiGuideBossTitle": "Boss fight",
-  "uiGuideBossWhy": "Red bar = boss HP. Fill the BREAK bar below to knock the boss down for big damage!",
-  "uiGuideFeverTitle": "Fever!",
-  "uiGuideFeverWhy": "Enough defeats power everyone up for a moment, and the first strike sweeps the screen.",
-  "uiGuideChestTitle": "Treasure chest",
-  "uiGuideChestWhy": "Tap to open it. Watch an ad for a better reward.",
-  "uiGuideNewCrewTitle": "New mate!",
-  "uiGuideNewCrewWhy": "A new crew member joined. Check the Crew tab.",
-  "uiGuideCargoTitle": "Cargo is filling up",
-  "uiGuideCargoWhy": "When it's full you can't collect more gold. Upgrade the cargo hold in the Ship tab.",
-  "uiGuideMergeTitle": "Ready to merge",
-  "uiGuideMergeWhy": "You have matching crew. Merge them to get stronger.",
-  "uiGuidePromoteTitle": "Ready to promote",
-  "uiGuidePromoteWhy": "Promotion changes your crew's attack and makes it much stronger.",
-  "uiGuideSummonTitle": "Call more crew",
-  "uiGuideSummonWhy": "You have enough gems. A new crew member may appear.",
-  "uiGuideOk": "Got it",
   "uiGuideSkip": "Skip",
   "uiGuideSkipAsk": "Turn off the guide?",
   "uiGuideSkipOff": "Turn off",
   "uiGuideSkipKeep": "Keep it",
-  "uiGuideTapHere": "Tap here",
   "uiSettingsGuideReplay": "Show tips again",
   "uiSettingsGuideReplayDone": "First-time tips will show again",
   "uiSummonFirstTenFirst": "Claim your free 10-pull ({rarity} guaranteed) first",
@@ -684,8 +654,6 @@
       }
     }
   },
-  "uiGuideSailTitle": "Set sail!",
-  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared.",
   "uiBossCompare": "Down in ~{kill}s · hit {hit}%",
   "uiBossCompareEasy": "Easy",
   "uiBossCompareTight": "Close",
@@ -787,6 +755,41 @@
     "placeholders": {
       "amount": {
         "type": "String"
+      }
+    }
+  },
+  "uiTalkName": "Captain Octo",
+  "uiTalkTapNext": "Tap to continue",
+  "uiTalkWelcome": "Welcome aboard, Captain! Our ship fights on its own. Let's watch.",
+  "uiTalkUpgrade": "We got gold! Shall we power up the cannon? Tap here!",
+  "uiTalkUpgradeOpen": "This button! Tap the cannon.",
+  "uiTalkNice": "Nice! {part} Lv {level} — they melt faster now.",
+  "uiTalkBossSoon": "A boss is coming. Let's see if our ship holds!",
+  "uiTalkBossFail": "That boss is tough… our ship went down. Upgrade the cannon and hull, then try again!",
+  "uiTalkBossGo": "We'll win this time! Tap Boss Challenge!",
+  "uiTalkSummonTab": "We did it! We got gems. Shall we call some mates?",
+  "uiTalkSummonTen": "Your first 10-pull is free! Tap here!",
+  "uiTalkMergeTab": "Two of the same mate! Merge them to get stronger.",
+  "uiTalkMergeAll": "Tap here to merge them all at once.",
+  "uiTalkDone": "The ship fights on its own now. Gold piles up even when you close the app!",
+  "uiTalkSail": "Rebirth made us stronger! Set sail to zip through the seas we've cleared.",
+  "uiTalkBoss": "A boss! The red bar is its HP. Fill the BREAK bar to knock it down.",
+  "uiTalkFever": "Fever! Everyone's stronger for a bit. Keep defeating to get it again.",
+  "uiTalkChest": "A treasure chest floated by! Tap it to open.",
+  "uiTalkNewCrew": "A new mate joined! Say hi in the Crew tab.",
+  "uiTalkCargo": "The cargo hold is filling up. When it's full, gold can't fit!",
+  "uiTalkMerge": "Some mates can merge. Merge them to get stronger!",
+  "uiTalkPromote": "You can promote! Their attack changes a lot.",
+  "uiTalkSummon": "We have gems. Shall we call a new mate?",
+  "uiTalkBossRetry": "You can challenge the boss again. Tap when you're ready!",
+  "uiTalkRebirth": "You can rebirth! It's a fresh start, but you'll go much faster.",
+  "@uiTalkNice": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
       }
     }
   }

@@ -5,22 +5,29 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/guide/guide_card_view.dart';
+import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/dock/upgrade_all.dart' show canUpgradeAnyProvider;
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
 import 'package:pirate_dot/ui/guide/guide_talk.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// 가리킨 자리를 다시 읽는 간격 — 시트를 끌거나 탭을 굴려도 구멍이 따라간다. 바뀔 때만 다시 그린다.
+/// 가리킨 자리를 다시 읽는 간격 — 시트를 끌거나 탭을 굴려도 따라간다. 바뀔 때만 다시 그린다.
 const _track = Duration(milliseconds: 150);
 
-/// 전투 카드가 알약으로 접히기까지.
+/// 새 말이 나오기 전 쉼 (S1: 앞 행동의 결과가 끝나고 0.5~1초 뒤).
+const _pause = Duration(milliseconds: 700);
+
+/// 반응('좋아요! …')이 머무는 시간.
+const _reactionFor = Duration(milliseconds: 1500);
+
+/// 전투 중 말이 초상만 남게 접히기까지.
 const _collapseAfter = Duration(seconds: 3);
 
-/// 가이드 v2 층 (docs/specs/ui-guide-v2.md): 홈 화면 위에 카드 하나 + 가리킨 곳만 밝게 + 큰 손가락.
-/// 튜토리얼 단계는 밝은 곳 밖 누름을 막고(어두운 곳을 누르면 손가락이 다시 톡톡 + '여기를 눌러요'),
-/// 처음 만나는 시스템 카드는 막지 않는다. 창(소환 결과 등)은 이 층 위 경로라 가리지 않는다.
+/// 가이드 v3 층: 홈 화면 위에 옥토 선장 말풍선 + 누를 곳 빛 테두리·손가락. 튜토리얼 누를 곳 단계는 밝은 곳 밖 누름을 막는다.
+/// 창(소환 결과 등)은 이 층 위 경로라 가리지 않는다.
 class GuideLayer extends ConsumerStatefulWidget {
   const GuideLayer({required this.child, super.key});
 
@@ -33,77 +40,111 @@ class GuideLayer extends ConsumerStatefulWidget {
 class _GuideLayerState extends ConsumerState<GuideLayer> {
   final GlobalKey _box = GlobalKey();
   Timer? _tracker;
+  Timer? _pauseTimer;
+  Timer? _reactionTimer;
   Timer? _collapse;
-  List<Rect> _holes = const [];
+  StreamSubscription<RecordedTick>? _sub;
 
-  /// 손가락 톡톡을 다시 시작하는 번호(카드가 바뀌거나 어두운 곳을 눌렀을 때).
+  /// 가리킬 수 있는 id → 지금 화면 자리(층 좌표).
+  Map<String, List<Rect>> _rects = const {};
+
+  /// 지금 보이는 말의 key (쉼이 끝나야 채워진다).
+  String? _shown;
+  String? _pending;
+  String? _reaction;
   int _taps = 0;
-  bool _nudge = false;
   bool _collapsed = false;
-  String? _shownKey;
 
   @override
   void initState() {
     super.initState();
     _tracker = Timer.periodic(_track, (_) => _refresh());
+    _sub = ref.read(battleFeedProvider)?.listen((tick) {
+      final step = ref.read(tutorialStepProvider);
+      if (step == null || step > 3) return;
+      for (final e in tick.events) {
+        if (e is PartUpgraded && mounted) _react(e);
+      }
+    });
   }
 
   @override
   void dispose() {
     _tracker?.cancel();
+    _pauseTimer?.cancel();
+    _reactionTimer?.cancel();
     _collapse?.cancel();
+    unawaited(_sub?.cancel());
     super.dispose();
   }
 
-  List<String> _spots() {
-    final step = ref.read(tutorialStepProvider);
-    if (step != null) return [...?tutorialSpots[step]];
-    return [...?guideSpots[ref.read(guideQueueProvider)]];
+  /// 강화하면 짧게 칭찬하고(초록), 그 뒤 다음 말.
+  void _react(PartUpgraded e) {
+    final l10n = AppLocalizations.of(context);
+    final def = ref.read(tablesProvider).shipParts.byId(e.part);
+    _reactionTimer?.cancel();
+    setState(() => _reaction = l10n.uiTalkNice(tableText(l10n, def.nameKey), e.level));
+    _reactionTimer = Timer(_reactionFor, () {
+      if (mounted) setState(() => _reaction = null);
+    });
   }
 
   void _refresh() {
     if (!mounted) return;
     final box = _box.currentContext?.findRenderObject();
     if (box is! RenderBox || !box.hasSize) return;
-    final local = [
-      for (final r in guideSpotRects(_spots()))
-        Rect.fromPoints(box.globalToLocal(r.topLeft), box.globalToLocal(r.bottomRight)),
-    ];
-    if (!_same(local, _holes)) setState(() => _holes = local);
+    final ids = {...ref.read(guidePointedProvider), ?ref.read(guideLineProvider)?.spot};
+    final next = {
+      for (final id in ids)
+        id: [
+          for (final r in guideSpotRects([id]))
+            Rect.fromPoints(box.globalToLocal(r.topLeft), box.globalToLocal(r.bottomRight)),
+        ],
+    };
+    if (!_sameRects(next, _rects)) setState(() => _rects = next);
   }
 
-  static bool _same(List<Rect> a, List<Rect> b) {
+  static bool _sameRects(Map<String, List<Rect>> a, Map<String, List<Rect>> b) {
     if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if ((a[i].topLeft - b[i].topLeft).distance > 0.5 || (a[i].size - b[i].size as Offset).distance > 0.5) {
-        return false;
+    for (final e in a.entries) {
+      final o = b[e.key];
+      if (o == null || o.length != e.value.length) return false;
+      for (var i = 0; i < o.length; i++) {
+        if ((o[i].topLeft - e.value[i].topLeft).distance > 0.5 ||
+            (o[i].size - e.value[i].size as Offset).distance > 0.5) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  /// 카드가 바뀌면 손가락을 다시 톡톡, 전투 카드면 3초 뒤 접기.
-  void _onCard(GuideCard? card) {
-    if (card?.key == _shownKey) return;
-    _shownKey = card?.key;
+  /// 말이 바뀌면 잠깐 쉬었다가 보인다. 전투 말은 3초 뒤 접힌다.
+  void _onTalk(GuideTalk? talk) {
+    final key = talk?.key;
+    if (key == _pending) return;
+    _pending = key;
+    _pauseTimer?.cancel();
     _collapse?.cancel();
-    _taps++;
-    _nudge = false;
     _collapsed = false;
-    if (card != null && card.battle) {
-      _collapse = Timer(_collapseAfter, () {
-        if (mounted) setState(() => _collapsed = true);
+    _shown = null;
+    if (talk == null) return;
+    _pauseTimer = Timer(_pause, () {
+      if (!mounted) return;
+      setState(() {
+        _shown = talk.key;
+        _taps++;
       });
-    }
+      if (talk.battle) {
+        _collapse = Timer(_collapseAfter, () {
+          if (mounted) setState(() => _collapsed = true);
+        });
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }
 
-  void _blocked() => setState(() {
-    _taps++;
-    _nudge = true;
-  });
-
-  void _ack(GuideCard card) {
+  void _ack() {
     final step = ref.read(tutorialStepProvider);
     if (step != null) {
       ref.read(commandSinkProvider).send(TutorialAck(step));
@@ -126,57 +167,135 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
     }
   }
 
+  bool _visible(String id) => _rects[id]?.isNotEmpty ?? false;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final step = ref.watch(tutorialStepProvider);
     final id = ref.watch(guideQueueProvider);
-    final card = guideCardFor(l10n, step: step, id: id);
-    _onCard(card);
+    final line = ref.watch(guideLineProvider);
+    final farming = ref.watch(gameStateProvider.select((s) => s.progress.farming));
+    final canUpgrade = ref.watch(canUpgradeAnyProvider);
+    final scene = (
+      shipOpen: _visible('ship.upgrade.cannon'),
+      summonOpen: _visible('summon.ten'),
+      crewOpen: _visible('crew.mergeAll'),
+      farming: farming,
+      canUpgrade: canUpgrade,
+    );
+    // 덧씌운 말(스토리보드·운영자)이 먼저, 그다음 튜토리얼·시스템 안내.
+    final talk = line != null
+        ? (
+            key: 'line:${line.text}',
+            text: line.text,
+            spots: [?line.spot],
+            ack: false,
+            block: false,
+            battle: false,
+            dim: line.dim,
+          )
+        : guideTalkFor(l10n, scene: scene, step: step, id: id);
+    _onTalk(talk);
+    final showing = talk != null && _shown == talk.key && _reaction == null;
+    final holes = !showing || talk.battle ? const <Rect>[] : [for (final s in talk.spots) ...?_rects[s]];
     final calm =
         MediaQuery.disableAnimationsOf(context) || !ref.watch(gameStateProvider.select((s) => s.settings.flash));
-    // 누를 곳이 화면에 없으면(시트가 닫혀 탭 안 버튼이 안 보임 등) 막지 않는다 — 갇히지 않게.
-    final block = card != null && card.block && _holes.isNotEmpty;
-    final dim = card == null || card.battle ? 0.0 : (card.block ? 0.45 : 0.25);
+    // 누를 곳이 화면에 없으면(시트가 닫혀 버튼이 안 보임 등) 막지 않는다 — 갇히지 않게.
+    final block = showing && talk.block && holes.isNotEmpty;
+    final dim = showing && talk.dim ? 0.35 : 0.0;
+    final layer = _box.currentContext?.findRenderObject() as RenderBox?;
+    final text = _reaction ?? (showing ? talk.text : null);
     return Stack(
       key: _box,
       children: [
         widget.child,
-        // 가이드 v3 시안: 옥토 선장 말풍선(말이 없으면 아무것도 안 그림).
-        const Positioned.fill(child: GuideTalkLayer()),
-        if (card != null) ...[
+        if (dim > 0)
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(
-                painter: _DimPainter(holes: _holes, alpha: dim),
+                painter: _DimPainter(holes: holes, alpha: dim),
               ),
             ),
           ),
-          if (block)
-            Positioned.fill(
-              child: _HoleBlocker(holes: _holes, onBlocked: _blocked),
+        if (block)
+          Positioned.fill(
+            child: _HoleBlocker(holes: holes, onBlocked: () => setState(() => _taps++)),
+          ),
+        // 시스템 안내: 누를 곳을 누르면(했다) 닫는다. 누름은 그대로 아래로 간다.
+        if (showing && !block && step == null && line == null && holes.isNotEmpty)
+          Positioned.fill(
+            child: Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (e) {
+                if (holes.any((h) => h.contains(e.localPosition))) ref.read(guideQueueProvider.notifier).close();
+              },
             ),
-          // 시스템 카드: 밝은 곳을 누르면(했다) 카드를 닫는다. 누름은 그대로 아래로 간다.
-          if (!block && step == null)
-            Positioned.fill(
-              child: Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: (e) {
-                  if (_holes.any((h) => h.contains(e.localPosition))) ref.read(guideQueueProvider.notifier).close();
-                },
+          ),
+        // 누를 곳만 살짝 빛나는 금빛 테두리 + 톡톡 손가락.
+        for (final (i, h) in holes.indexed)
+          Positioned.fromRect(
+            rect: h.inflate(4),
+            child: IgnorePointer(
+              child: DecoratedBox(
+                key: Key('talk.glow.$i'),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFFFD84A), width: 3),
+                  boxShadow: const [BoxShadow(color: Color(0xAAFFD84A), blurRadius: 12, spreadRadius: 2)],
+                ),
               ),
             ),
-          if (_holes.isNotEmpty && !_collapsed) GuideFinger(at: _holes.first, taps: _taps, calm: calm),
-          GuideCardPlacer(
-            card: card,
-            holes: _holes,
-            collapsed: _collapsed,
-            nudge: _nudge,
-            onAck: card.ack ? () => _ack(card) : null,
-            onSkip: () => unawaited(_skip()),
-            onExpand: () => setState(() => _collapsed = false),
           ),
-        ],
+        if (holes.isNotEmpty) GuideFinger(at: holes.first, taps: _taps, calm: calm),
+        Positioned.fill(
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final bottom = talkBottom(context, box.biggest, holes.isEmpty ? null : holes.first, layer: layer);
+              return Stack(
+                children: [
+                  Positioned(
+                    left: 10,
+                    right: 10,
+                    bottom: bottom,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      // 모션 기준: 아래에서 살짝 올라오며 페이드(200ms, ease-out).
+                      child: AnimatedSwitcher(
+                        duration: calm ? Duration.zero : talkMotion,
+                        switchInCurve: Curves.easeOut,
+                        transitionBuilder: (child, a) => FadeTransition(
+                          opacity: a,
+                          child: SlideTransition(
+                            position: Tween(begin: const Offset(0, 0.15), end: Offset.zero).animate(a),
+                            child: child,
+                          ),
+                        ),
+                        child: text == null
+                            ? const SizedBox.shrink()
+                            : GuideTalkBubble(
+                                key: ValueKey(text),
+                                text: text,
+                                reaction: _reaction != null,
+                                collapsed: _collapsed && _reaction == null,
+                                tapHint: _reaction == null && talk!.ack && step != null,
+                                onTap: _reaction != null || line != null
+                                    ? null
+                                    : (_collapsed
+                                          ? () => setState(() => _collapsed = false)
+                                          : (talk!.ack ? _ack : null)),
+                                onSkip: _reaction != null || line != null || _collapsed
+                                    ? null
+                                    : () => unawaited(_skip()),
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ],
     );
   }
@@ -191,7 +310,6 @@ class _DimPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (alpha <= 0) return;
     var path = Path()..addRect(Offset.zero & size);
     for (final h in holes) {
       path = Path.combine(
@@ -244,7 +362,7 @@ class _RenderHoleBlocker extends RenderBox {
   }
 }
 
-/// 가리킨 곳 아래쪽에 큰 손가락 — 3번 톡톡 누르고 멈춘다([taps]가 바뀌면 다시). 동작 줄이기면 가만히.
+/// 가리킨 곳 오른쪽 아래 모서리에 큰 손가락 — 3번 톡톡 누르고 멈춘다([taps]가 바뀌면 다시). 동작 줄이기면 가만히.
 class GuideFinger extends StatelessWidget {
   const GuideFinger({required this.at, required this.taps, required this.calm, super.key});
 
@@ -254,7 +372,7 @@ class GuideFinger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Positioned(
-    // 가리킨 곳 오른쪽 아래 모서리 — 글자(탭 이름 등)를 덮지 않게.
+    // 글자(탭 이름 등)를 덮지 않게 오른쪽 아래 모서리.
     left: at.right - 24,
     top: at.bottom - 28,
     child: IgnorePointer(

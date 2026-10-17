@@ -24,6 +24,9 @@ const _outline = [
   Shadow(color: Color(0xFF0B1730), offset: Offset(-1, -1)),
 ];
 
+/// 배 체력 막대 자리 — 가이드 말풍선이 이 위에 앉는다(선원 줄·하단 글자를 가리지 않게).
+final GlobalKey shipHpAnchor = GlobalKey(debugLabel: 'shipHp');
+
 /// 맞은 뒤 흔들림·빨강 깜빡임이 남는 틱 수.
 const _hitTicks = 8;
 
@@ -126,6 +129,7 @@ class _ShipHpBarState extends ConsumerState<ShipHpBar> {
     final color = hpColor(v.ratio, full: Skin.mint);
     final low = v.ratio < 0.15 && !calm && (v.tick ~/ 5).isOdd;
     return IgnorePointer(
+      key: shipHpAnchor,
       child: Transform.translate(
         offset: Offset(shake, 0),
         child: Container(

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -28,14 +29,12 @@ void main() {
     }
   });
 
-  testWidgets('보스 도전: 보스 초상 + "Boss!" 버튼, 처음 1회 말풍선, 누르면 ChallengeBoss', (tester) async {
+  testWidgets('보스 도전: 보스 초상 + "Boss!" 버튼(버튼 위 말풍선은 가이드 v3 옥토 말로 합침), 누르면 ChallengeBoss', (tester) async {
     final log = await pumpGame(tester, _with(farming: true), openTab: false);
     expect(find.text('Boss!'), findsOneWidget);
-    expect(find.byKey(const Key('boss.bubble')), findsOneWidget);
+    expect(find.byKey(const Key('boss.bubble')), findsNothing);
     await tester.tap(find.byKey(const Key('boss.challenge')));
     expect(log.sent.whereType<ChallengeBoss>(), hasLength(1));
-    await tester.pump(const Duration(seconds: 5)); // 말풍선 4초 뒤 닫힘
-    expect(find.byKey(const Key('boss.bubble')), findsNothing);
   });
 
   testWidgets('빠른 강화: 비용 알약 · 골드 부족이면 "부족" · PartUpgraded → "+부품 Lv" 떠오름', (tester) async {
@@ -56,24 +55,32 @@ void main() {
     expect(find.textContaining('Need '), findsOneWidget);
   });
 
-  testWidgets('처음 1회 안내는 세이브에 남는다: 보스 도전 말풍선을 띄우면 MarkHint, 본 기록(hints)이 있으면 안 뜬다', (tester) async {
-    final log = await pumpGame(tester, _with(farming: true), openTab: false);
-    expect(find.byKey(const Key('boss.bubble')), findsOneWidget);
-    expect(log.hints.map((c) => c.id), contains('boss.bubble'));
+  testWidgets('처음 1회 안내는 세이브에 남는다: 옥토 "보스에 다시 도전" → MarkHint(guide.bossRetry)', (tester) async {
+    final log = await pumpGame(
+      tester,
+      withGuidesSeenExcept(_with(farming: true), 'guide.bossRetry'),
+      openTab: false,
+      guides: true,
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('challenge the boss again'), findsOneWidget);
+    expect(log.hints.map((c) => c.id), contains('guide.bossRetry'));
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('세이브에 boss.bubble을 본 기록이 있으면 보스 도전 말풍선 없음', (tester) async {
+  testWidgets('옛 세이브에 boss.bubble을 본 기록이 있으면 옥토 보스 재도전 안내 없음', (tester) async {
     final s = _with(farming: true);
     final seen = s.copyWith(
       settings: Settings.fromJson({
         ...s.settings.toJson(),
         'battleView': s.settings.battleView,
-        'hints': const ['boss.bubble'],
+        'hints': [...guideIds.where((id) => id != 'guide.bossRetry'), 'boss.bubble'],
       }),
     );
-    await pumpGame(tester, seen, openTab: false);
-    expect(find.byKey(const Key('boss.bubble')), findsNothing);
+    await pumpGame(tester, seen, openTab: false, guides: true);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byKey(const Key('talk')), findsNothing, reason: '예전 boss.bubble을 봤으면 옥토도 다시 말하지 않는다');
     expect(find.byKey(const Key('boss.challenge')), findsOneWidget);
     await tester.pump(const Duration(seconds: 5));
   });
