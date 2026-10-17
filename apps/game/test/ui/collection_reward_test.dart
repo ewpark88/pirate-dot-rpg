@@ -28,7 +28,6 @@ void main() {
       tester,
       _with(loadFixture('stage37_midgame'), 6, claimed: [5]),
       tab: crewTab,
-      locale: const Locale('en'),
     );
     expect(find.byKey(const Key('collect.claim')), findsNothing);
     expect(find.text('Next reward at 10: Free summon ×1'), findsOneWidget);

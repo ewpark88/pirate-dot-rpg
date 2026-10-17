@@ -1067,7 +1067,7 @@
   "uiCollectNext": "Next reward at {at}: {reward}",
   "uiCollectGems": "Gems ×{n}",
   "uiCollectSummons": "Free summon ×{n}",
-  "uiCollectClaim": "Claim ({at} crew)",
+  "uiCollectClaim": "Claim ({at} crew) · {reward}",
   "uiCollectAllDone": "All log rewards claimed",
   "@uiCollectNext": {
     "placeholders": {
@@ -1097,6 +1097,9 @@
     "placeholders": {
       "at": {
         "type": "int"
+      },
+      "reward": {
+        "type": "String"
       }
     }
   }

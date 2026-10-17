@@ -38,7 +38,7 @@ class CollectionRewardRow extends ConsumerWidget {
         onPressed: () => ref.read(commandSinkProvider).send(ClaimCollectionReward(ready.at)),
         child: FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text('${l10n.uiCollectClaim(ready.at)} · ${collectRewardText(l10n, ready)}'),
+          child: Text(l10n.uiCollectClaim(ready.at, collectRewardText(l10n, ready))),
         ),
       );
     }
