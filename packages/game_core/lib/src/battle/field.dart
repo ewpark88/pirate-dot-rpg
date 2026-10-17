@@ -113,6 +113,10 @@ class Field {
   fastSail; // 빠른 항해 돌파 구간(fast_sail.dart) // 날아가는 선원 탄(선원 개성 v2, flight.dart) // 날아가는 적 탄(배 위협 (a)) — 도착하면 배 피해
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
+  TowerRun? tower; // 진행 중인 탑(top_tower.dart)
+
+  /// 본 전투를 멈춘 장면 모드(현상금·탑 — scene_mode.dart) 중인가.
+  bool get inScene => bounty != null || tower != null;
 
   Object? shipSeen; // [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다)
 
@@ -180,6 +184,7 @@ class Field {
     challenge: prev.challenge,
     mode: 'top',
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
+    tower: tower == null ? null : TowerView(floor: tower!.floor, wave: tower!.wave, waves: tower!.waves),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
     shipHeading: switch (geometry) {
@@ -190,4 +195,15 @@ class Field {
     fastSail: fastSail?.view(),
     crewDamage: crewDamage.isEmpty ? const {} : Map.unmodifiable(crewDamage),
   );
+}
+
+/// 탑 한 판의 진행(전장에만 — 세이브엔 tower.active.floor만). [wave] 1부터, [boss] = 이 층 보스가 나왔다, [spawned] = 나온 적 수(처치 수 계산).
+class TowerRun {
+  TowerRun({required this.floor, required this.waves});
+
+  int floor;
+  int wave = 0;
+  final int waves;
+  bool boss = false;
+  int spawned = 0;
 }

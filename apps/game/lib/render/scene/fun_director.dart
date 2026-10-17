@@ -120,6 +120,13 @@ bool funEvent(BattleScene s, GameEvent e) {
     case EnemyWindup(:final enemyId, :final atTicks, :final kind) when s.isTop:
       final speed = s.frame.speed < 1 ? 1 : s.frame.speed;
       s.topHits.muzzle.windup(enemyId, s.clockMs, atTicks * s.player.tickMs / speed, boss: kind != 'ranged');
+    // 심연의 탑: 층 시작·클리어 띠(다음 층 번호)
+    case TowerStarted(:final floor):
+      s.moments.onTowerFloor(floor);
+      _sfx(s, 'bossSpawned', e);
+    case TowerFloorCleared(:final floor):
+      s.moments.onTowerFloor(floor + 1, cleared: true);
+      _sfx(s, 'bossCleared', e);
     case BossTraitFired() when s.isTop:
       _sfx(s, 'bossTrait', e);
       s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);

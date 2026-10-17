@@ -42,7 +42,7 @@ BigNum bountyBossHp(GameTables t, String bossId, int tier) {
 /// [weekday]: 운영자가 고정한 요일(1~7). 없으면 [now]의 현지 요일.
 bool canStartBounty(GameState s, GameTables t, DateTime now, String bossId, int tier, {int? weekday}) {
   final b = s.bounty;
-  if (b == null || b.tickets < 1 || b.active != null) return false;
+  if (b == null || b.tickets < 1 || b.active != null || s.tower?.active != null) return false; // 탑 중엔 안 됨
   if (!bountyBosses(t).contains(bossId)) return false;
   final today = bountyBossOn(t, weekday ?? now.weekday);
   if (today != anyBoss && today != bossId) return false;

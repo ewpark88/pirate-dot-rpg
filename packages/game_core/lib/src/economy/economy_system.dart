@@ -13,6 +13,7 @@ import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/sea_events.dart' show pickBottle;
 import 'package:game_core/src/economy/ship_skins.dart' show buySkin, unlockShipSkins;
 import 'package:game_core/src/economy/summon.dart';
+import 'package:game_core/src/economy/tower.dart';
 import 'package:game_core/src/economy/trials.dart' show claimTrial;
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
@@ -68,6 +69,8 @@ class EconomySystem implements GameSystem {
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),
     final StartBounty c => startBounty(state, c, ctx),
     final SweepBounty c => sweepBounty(state, c, ctx),
+    final StartTower c => startTower(state, c, ctx),
+    final SweepTower c => sweepTower(state, c, ctx),
     final OpSetBountyTickets c => opSetBountyTickets(state, c),
     final OpSetWeekday c => opSetWeekday(state, c),
     _ => null,
@@ -76,10 +79,13 @@ class EconomySystem implements GameSystem {
   @override
   GameState update(GameState state, SystemContext ctx) => autoUpgradeStep(
     tickChest(
-      bountyTick(
-        tutorialTick(
-          unlockShipSkins(
-            rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+      towerTick(
+        bountyTick(
+          tutorialTick(
+            unlockShipSkins(
+              rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+              ctx,
+            ),
             ctx,
           ),
           ctx,

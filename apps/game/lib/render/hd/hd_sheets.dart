@@ -174,8 +174,8 @@ class HdSheets {
         if (row.isOdd) c.scale(-1, 1);
         k
           ..mood = row < 2 ? HdMood.idle : (f < 4 ? HdMood.windup : HdMood.down)
-          ..begin(r)
-          ..shadow(c, r, sp.ground);
+          ..begin(r);
+        moods ? k.shadow2(c, r, sp.ground) : k.shadow(c, r, sp.ground); // 보스는 그림자 2단(v2)
         final t = row < 2 ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4;
         final generic = !selfMood && k.mood == HdMood.down;
         if (generic) k.downTilt(c, r * 0.9, t);
