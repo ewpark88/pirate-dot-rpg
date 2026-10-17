@@ -52,4 +52,33 @@ void main() {
     expect(ds.first, greaterThan(top.number('viewWidth') / 2), reason: '화면 밖에서 시작');
     expect(ds.last, lessThan(halfDiag + top.number('approachRadius')), reason: '멀리 끼인 적 없음');
   });
+
+  test('spawnFromView(waves.top, 기본 꺼짐): 켜면 평소 무리도 카메라 테두리 바로 밖에서 출발 — 접근 원(206)보다 가깝게', () {
+    double medianStart({required bool fromView}) {
+      final raw = Map<String, String>.of(rawTables);
+      final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
+      (w['top'] as Map<String, dynamic>)['spawnFromView'] = fromView;
+      raw['waves'] = jsonEncode(w);
+      final tt = GameTables.load(raw);
+      final e =
+          CoreEngine(
+              tables: tt,
+              clock: ManualClock(start),
+              initial: GameState.newGame(playerId: 'v', seed: 3, now: start),
+            )
+            ..enqueue(const OpSetWave(count: 40))
+            ..tick();
+      final v = e.state.battle!;
+      final ds = [
+        for (final m in v.enemies)
+          if (!m.emerging) math.sqrt(math.pow(m.x - top.number('shipX'), 2) + math.pow(m.y - top.number('shipY'), 2)),
+      ]..sort();
+      return ds[ds.length ~/ 2];
+    }
+
+    expect(medianStart(fromView: false), greaterThanOrEqualTo(top.number('approachRadius')));
+    expect(medianStart(fromView: true), lessThan(top.number('approachRadius')));
+    expect(inCamera(t, top.number('shipX'), top.number('shipY')), isTrue);
+    expect(inCamera(t, top.number('shipX') + top.number('viewWidth'), top.number('shipY')), isFalse);
+  });
 }
