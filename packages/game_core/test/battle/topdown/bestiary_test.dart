@@ -129,6 +129,17 @@ void main() {
     expect(a.events.whereType<BossSplit>(), hasLength(1));
   });
 
+  test('분열한 몸은 부모의 브레이크 쿨다운을 이어받는다(S5 참고)', () {
+    final a = arena(withPattern({'type': 'volley', 'warnSec': 9, 'count': 1, 'speed': 100}, splitAt: [0.5]));
+    a.boss
+      ..hp = a.boss.maxHp.times(0.4)
+      ..breakCooldownUntil = a.ctx.tick + 100
+      ..breakCooldownTicks = 200;
+    run(a, 1);
+    final child = a.f.foes.firstWhere((e) => e.id == a.events.whereType<BossSplit>().single.childId);
+    expect((child.breakCooldownUntil, child.breakCooldownTicks), (a.boss.breakCooldownUntil, 200));
+  });
+
   test('분열한 보스는 둘 다 쓰러져야 격파(엔진): 두 몸의 Kill이 모두 BossCleared 앞에', () {
     final t = withPattern({'type': 'volley', 'warnSec': 9, 'count': 1, 'speed': 100}, splitAt: [0.5], rest: 30);
     final e = CoreEngine(
