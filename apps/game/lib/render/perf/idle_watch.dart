@@ -20,6 +20,25 @@ class IdleWatch {
   final double Function() now;
 
   final ValueNotifier<IdleLevel> level = ValueNotifier(IdleLevel.active);
+
+  /// 기기 발열 단계 0 none·1 light·2 moderate·3 severe·4 critical (UI가 thermalLevelProvider의 index를 넣는다).
+  /// 보통(2) 이상이면 방치처럼 가벼운 그리기, 심함(3) 이상이면 효과음 예산도 줄인다.
+  final ValueNotifier<int> heat = ValueNotifier(0);
+
+  /// 가벼운 그리기(30fps·가벼운 연출·흔들림 끔)를 써야 하나 — 방치 또는 발열 보통 이상.
+  bool get lite => level.value != IdleLevel.active || heat.value >= 2;
+
+  /// 효과음 초당 예산 배율 — 방치 단계와 발열 중 더 낮은 쪽.
+  double get soundBudget {
+    final byIdle = switch (level.value) {
+      IdleLevel.active => 1.0,
+      IdleLevel.idle => 0.5,
+      IdleLevel.dim => 0.15,
+    };
+    final byHeat = heat.value >= 3 ? 0.5 : 1.0;
+    return byIdle < byHeat ? byIdle : byHeat;
+  }
+
   double _lastInput = 0;
   bool _routed = false;
 

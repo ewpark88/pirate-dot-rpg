@@ -44,6 +44,20 @@ void main() {
     expect(w.level.value, IdleLevel.dim);
   });
 
+  test('발열 단계: 보통 이상이면 가벼운 그리기, 심함 이상이면 효과음 예산 절반 (thermalLevelProvider.index)', () {
+    final w = IdleWatch(idleMs: 60000, dimMs: 180000, now: () => 0);
+    expect(w.lite, isFalse);
+    w.heat.value = 1;
+    expect(w.lite, isFalse);
+    w.heat.value = 2;
+    expect(w.lite, isTrue);
+    expect(w.soundBudget, 1);
+    w.heat.value = 3;
+    expect(w.soundBudget, 0.5);
+    w.follow(IdleLevel.dim);
+    expect(w.soundBudget, 0.15, reason: '방치와 발열 중 낮은 쪽');
+  });
+
   testWidgets('방치 단계마다 절전·어두운 화면, 그리기 수가 준다', (tester) async {
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     const box = Size(384, 832);
@@ -92,6 +106,10 @@ void main() {
     final dimMs = cpuMs();
     game.idle.level.value = IdleLevel.active;
     expect(game.painter.dim, isNull);
+    expect(game.scene.settings.powerSave, isFalse);
+    game.idle.heat.value = 2;
+    expect(game.scene.settings.powerSave, isTrue, reason: '발열 보통 → 가벼운 그리기');
+    game.idle.heat.value = 0;
     expect(game.scene.settings.powerSave, isFalse);
     // 측정 기록
     // ignore: avoid_print
