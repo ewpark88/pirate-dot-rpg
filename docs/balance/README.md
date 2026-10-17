@@ -30,7 +30,7 @@ cd ..\..
 - 기준: **main 최신**(미커밋 수치로는 안 돌린다). 어디서: `D:\Projects\pde-economy`에서 `git merge main` → 작업 트리 깨끗한지 확인 → 아래 순서, 한 번에 하나(잠금 파일 있으면 기다림).
 1. **보스 무제한 확정**(5명 × 3시간 continuous, 후보마다 하나씩): 출발값 보스 HP ×160·공격 ×35·벽 ×2.0·goldBase 3.0 ± (HP 140/180 · 공격 30/45 · gold 2.9/3.1).
    목표: 처치 20~40초 · 침몰까지 15~30초 · 보통 첫 도전 70~85% · 벽 ~50% · 보스전 피해 25~45% · 스테이지 40 45~55분. 같이 봄: 강화 간격 35~45(→ 120초 이하, 안 되면 goldGrowth 1.135), 금고 가득 시간(초반 8~10분).
-2. **balance crews 재적합**(같은 slot): 2차 특성 5명(sword·saw·bara·lobster·davy) · 강습 5(shark·crabby·king·lobster·davy — 배 지킴이) · 공중 4(polly·gull·alba·manta — 일반 탄). 5레벨 ±10%, `docs/balance/` fit 절차(aim → 전설 → 신화 powerScale).
+2. **balance crews 확인**(낮에 재적합 끝남, 15e6b03e — 0.908~1.099): 1의 수치를 바꾸면 한 번 더 돌려 ±10% 유지 확인, 벗어나면 같은 fit 절차(aim → 전설 → 신화 powerScale, 저레벨만이면 rare·hero 상대 배율).
 3. **보스 특성 hpFactor 확인**: 재생 0.8·호위 0.85(추정)를 1의 확정값으로 5명 × 3시간 — 특성 보스(중간 25단위·대보스 10단위)의 bossKillSec가 특성 없는 보스와 ±10%면 OK.
 4. **100명 × 30일**: `python -I -B tool/nightly_sim.py` → `docs/balance/nightly-30d.md` — 첫 전설(1~4일)·첫 신화(28~56일)·수집 보상 영향·피버 간격(200킬 고정).
 - 끝나면: 수치 커밋(lane/economy) + BALANCE.md 변경 기록 + S1에 '벗어남' 목록·전/후 표, 잠금 파일 지워졌는지 확인.
