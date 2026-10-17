@@ -9,6 +9,8 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_shop_parts.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -54,9 +56,9 @@ class _RebirthShopSheetState extends ConsumerState<RebirthShopSheet> {
       children: [
         Row(
           children: [
-            const SkinIcon(UiSprites.tabMap, size: 28),
+            // k2: 노란 소제목 리본 + 남색 조각 알약.
+            Expanded(child: SubRibbon(l10n.uiRebirthShop)),
             const SizedBox(width: 8),
-            Expanded(child: Text(l10n.uiRebirthShop, style: Skin.text(22))),
             _PiecePill(count: shop.pieces),
           ],
         ),
@@ -101,16 +103,16 @@ class _PiecePill extends StatelessWidget {
     key: const Key('rebirth.shop.pieces'),
     padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
     decoration: BoxDecoration(
-      color: Skin.cream,
+      color: Skin.navyPanel,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Skin.goldBottom, width: 2),
+      border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SkinIcon(UiSprites.tabMap),
+        const SkinIcon(UiSprites.shard, size: 22),
         const SizedBox(width: 4),
-        Text(AppLocalizations.of(context).uiRebirthShopPieces(count), style: Skin.text(15, color: Skin.goldInk)),
+        OutlineText(AppLocalizations.of(context).uiRebirthShopPieces(count), size: 15, tone: OutlineTone.gold),
       ],
     ),
   );
@@ -160,17 +162,14 @@ class _Row extends StatelessWidget {
     return Container(
       key: Key('rebirth.shop.row.$row'),
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-      decoration: BoxDecoration(
-        color: locked ? Skin.track : Skin.card,
-        borderRadius: BorderRadius.circular(Skin.radiusCard),
-        boxShadow: locked ? null : Skin.shadowSmall,
-      ),
+      // 잠긴 줄은 옅은 회보라(k2의 Skin.track은 남색이라 잠김 안내 글자가 묻힌다).
+      decoration: Skin.inset(fill: locked ? const Color(0xFFD3D1EA) : Skin.insetFill, radius: Skin.radiusCard),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(l10n.uiRebirthRow(row), style: Skin.text(15, color: Skin.sub)),
+              Text(l10n.uiRebirthRow(row), style: Skin.bold(15, color: Skin.outline)),
               if (locked) ...[
                 const SizedBox(width: 8),
                 const SkinIcon(UiSprites.lock),

@@ -106,18 +106,20 @@ class _Quests extends ConsumerWidget {
       children: [
         SubRibbon(l10n.uiQuestTitle),
         for (final q in quests)
-          // 퀘스트 한 줄: 체크 · 이름/진행 · 받기 (ListTile 대신).
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+          // 퀘스트 한 줄: 체크 · 이름/진행 · 받기 — k2 안쪽 판(굵은 외곽선, 다 한 줄은 연초록).
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+            decoration: Skin.inset(fill: q.done && !q.claimed ? const Color(0xFFDDF7EA) : Skin.insetFill),
             child: Row(
               children: [
-                PixelSprite(q.done ? UiSprites.check : UiSprites.checkEmpty, dots: 8),
+                SkinIcon(q.done ? UiSprites.check : UiSprites.checkEmpty, size: 30),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name(q)),
+                      Text(name(q), style: Skin.bold(15)),
                       Text(
                         l10n.uiQuestProgress(q.progress, q.target),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(color: PixelPalette.textDim),
@@ -143,7 +145,11 @@ class _Quests extends ConsumerWidget {
                   Container(
                     key: Key('daily.claimed.${q.id}'),
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(color: const Color(0xFFDDF7EA), borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDDF7EA),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -247,15 +253,16 @@ class _DayCell extends StatelessWidget {
     // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
     final checked = day < view.day || (today && view.claimedToday);
     // 오늘(안 받음) = 금색 판·진한 글, 받은 날 = 흐린 판·초록 체크, 나머지 = 흰 판. 7일(소환권)은 금 테두리.
-    final fill = today && !checked ? Skin.goldTop : (checked ? Skin.track : Skin.card);
+    // k2: 받은 날 = 옅은 회보라(Skin.track은 남색이라 글이 묻힌다), 나머지 = 연보라 안쪽 판.
+    final fill = today && !checked ? Skin.goldTop : (checked ? const Color(0xFFD3D1EA) : Skin.insetFill);
     final ink = today && !checked ? Skin.goldInk : (checked ? Skin.sub : Skin.ink);
     return Padding(
       key: Key('attendance.day.$day.${checked ? 'checked' : (today ? 'today' : 'later')}'),
       padding: const EdgeInsets.all(2),
       child: SkinDepth(
         fill: fill,
-        border: today ? Skin.goldEdge : (ticket ? Skin.goldBottom : null),
-        borderWidth: today ? 2.5 : 1.5,
+        border: today ? Skin.goldEdge : (ticket ? Skin.goldBottom : Skin.outline),
+        borderWidth: today ? 2.5 : 2,
         radius: 12,
         shadow: Skin.shadowSmall,
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),

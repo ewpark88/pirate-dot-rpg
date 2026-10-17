@@ -6,7 +6,10 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/hud/battle_hud_buttons.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -60,24 +63,18 @@ class RebirthReadyPill extends ConsumerWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 160, minHeight: 32),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          // k2: 남색 판 + 굵은 외곽선, HD 환생 아이콘, 금빛 테두리 글자.
           decoration: BoxDecoration(
-            color: const Color(0xE61B2A4A),
+            color: Skin.navyPanel,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Skin.goldBottom, width: 2),
+            border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.anchor_rounded, size: 18, color: Skin.goldBottom),
+              const SkinIcon(UiSprites.rebirth, size: 22),
               const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Skin.text(14, color: Skin.goldBottom),
-                ),
-              ),
+              Flexible(child: OutlineText(label, size: 14, tone: OutlineTone.gold, fit: true)),
             ],
           ),
         ),
@@ -142,15 +139,10 @@ class _RebirthReadyBubbleState extends ConsumerState<RebirthReadyBubble> {
           width: double.infinity,
           constraints: const BoxConstraints(maxWidth: 420),
           padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFF8E1),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Skin.goldBottom, width: 2.5),
-            boxShadow: Skin.shadow,
-          ),
+          decoration: Skin.inset(fill: const Color(0xFFFFF4CF), radius: 14).copyWith(boxShadow: Skin.shadow),
           child: Row(
             children: [
-              const Icon(Icons.anchor_rounded, size: 28, color: Skin.goldInk),
+              const SkinIcon(UiSprites.rebirth, size: 32),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
