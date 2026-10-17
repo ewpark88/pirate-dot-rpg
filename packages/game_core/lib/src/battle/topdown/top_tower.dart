@@ -42,6 +42,11 @@ abstract final class TopTower {
     final run = f.tower;
     if (run == null || s.tower?.active == null) return s;
     if (f.shipHp.isZero) return _end(s, f, ctx, 'sunk');
+    run.floorTicks += 1; // 안전판: 한 층이 floorTimeLimitSec를 넘으면 그 층까지 기록하고 끝(timeout)
+    if (run.floorTicks * ctx.tables.waves.tickMs >
+        towerCfg(ctx.tables).number('floorTimeLimitSec') * Duration.millisecondsPerSecond) {
+      return _end(s, f, ctx, 'timeout');
+    }
     if (f.living.isNotEmpty) return s;
     if (run.wave < run.waves) {
       _nextWave(s, f, ctx);
@@ -59,9 +64,12 @@ abstract final class TopTower {
   static GameState retreat(GameState s, Field f, SystemContext ctx) =>
       f.tower == null || s.tower?.active == null ? s : _end(s, f, ctx, 'retreat');
 
-  /// 이 층 기준 스테이지: max(1, floor(최고 스테이지 × stageRatio)) + 층.
-  static int _stage(GameState s, SystemContext ctx, int floor) =>
-      math.max(1, (s.progress.bestStage * towerCfg(ctx.tables).number('stageRatio')).floor()) + floor;
+  /// 이 층 기준 스테이지: max(1, floor(최고 스테이지 × stageRatio)) + 층 × floorStageMul — 층마다 적 HP·공격이 함께 올라
+  /// 센 함대도 언젠가 가라앉는다(S2 2026-10-18: 신화 함대가 끝없이 늘어지던 것).
+  static int _stage(GameState s, SystemContext ctx, int floor) {
+    final c = towerCfg(ctx.tables);
+    return math.max(1, (s.progress.bestStage * c.number('stageRatio')).floor()) + floor * c.integer('floorStageMul');
+  }
 
   static void _nextWave(GameState s, Field f, SystemContext ctx) {
     final run = f.tower!;
@@ -124,6 +132,7 @@ abstract final class TopTower {
     run
       ..floor += 1
       ..wave = 0
+      ..floorTicks = 0
       ..boss = false;
     _nextWave(paid, f, ctx);
     return paid.copyWith(

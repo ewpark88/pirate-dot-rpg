@@ -208,6 +208,7 @@ class TowerRun {
   final int waves;
   bool boss = false;
   int spawned = 0;
+  int floorTicks = 0; // 이 층에서 지난 틱(floorTimeLimitSec)
 }
 
 /// 보스 러시 한 판의 진행(전장에만 — 세이브엔 rush.active {index, ticks}).
