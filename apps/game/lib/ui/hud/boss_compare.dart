@@ -32,7 +32,10 @@ BossCompareView? bossCompareOf(GameState s, GameTables t) {
   }
   final kill = (hpLeft / dps).toDouble();
   final ratio = limit <= 0 ? double.infinity : kill / limit;
-  final hit = b.shipHpMax.isZero ? 0.0 : (p.attack / b.shipHpMax).toDouble() * 100;
+  // 한 대 피해는 엔진이 배 최대 체력 × waves.shipHitCap으로 막는다(한 방 침몰 금지) — 표시도 같은 상한.
+  final cap = t.waves.raw.number('shipHitCap');
+  final raw = b.shipHpMax.isZero ? 0.0 : (p.attack / b.shipHpMax).toDouble();
+  final hit = (raw < cap ? raw : cap) * 100;
   return (
     hp: hpLeft.format(),
     killSec: kill.ceil(),

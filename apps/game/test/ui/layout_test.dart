@@ -30,6 +30,8 @@ void main() {
     testWidgets('HUD·배 탭', (tester) async {
       await pumpGame(tester, loadFixture('boss_fight'), locale: const Locale('ko'), tab: shipTab);
       expect(find.text('브레이크'), findsOneWidget); // 보스전 브레이크 막대 꼬리표(궁극기 버튼은 2026-10-17 제거)
+      // 배 탭 맨 위에 '모두 강화'(56dp)가 생겨 부위 줄은 조금 아래 — 굴려서 찾는다.
+      await tester.scrollUntilVisible(find.text('대포'), 100, scrollable: find.byType(Scrollable).last);
       expect(find.text('대포'), findsOneWidget);
     });
 

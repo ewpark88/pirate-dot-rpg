@@ -18,7 +18,9 @@ void main() {
     final p = bossPreview(farming, t);
     expect(v.killSec, (p.maxHp / fleetPower(farming, t).dps).toDouble().ceil());
     expect(v.limitSec, p.timeLimitSec.ceil());
-    expect(v.hitPct, ((p.attack / farming.battle!.shipHpMax).toDouble() * 100).ceil());
+    final cap = t.waves.raw.number('shipHitCap');
+    final raw = (p.attack / farming.battle!.shipHpMax).toDouble();
+    expect(v.hitPct, ((raw < cap ? raw : cap) * 100).ceil(), reason: '한 대 상한(shipHitCap) 넘게 보이지 않는다');
     expect(bossCompareOf(s, t), isNull, reason: '파 진행 중(보스·파밍 아님)엔 없음');
   });
 

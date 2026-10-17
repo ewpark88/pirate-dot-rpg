@@ -40,8 +40,6 @@ class ShipTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
-        // 모두 강화 원터치(경제 bestUpgradePlan) — 반복 강화 대신.
-        const Padding(padding: EdgeInsets.only(bottom: 8), child: UpgradeAllButton()),
         if (cargoFirst) ...[for (final def in parts.take(1)) _PartRow(def: def)],
         // 지금 배 (크게) · 등급 이름 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
         const _ShipHeader(),
@@ -90,6 +88,9 @@ class _ShipHeader extends ConsumerWidget {
                   Text(name, style: Skin.text(20, color: Colors.white)),
                   const SizedBox(height: 6),
                   const ShipSkinButton(),
+                  // 모두 강화 원터치(경제 bestUpgradePlan) — 배 그림 옆에 두어 360에서도 부위 줄이 보이게.
+                  const SizedBox(height: 6),
+                  const UpgradeAllButton(),
                 ],
               ),
             ),
