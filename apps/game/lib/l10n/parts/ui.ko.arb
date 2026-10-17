@@ -491,5 +491,73 @@
     }
   },
   "uiBossFailShip": "배 강화",
-  "uiBossFailCrew": "선원 레벨업"
+  "uiBossFailCrew": "선원 레벨업",
+  "uiCrewUpLevels": "+{count}",
+  "@uiCrewUpLevels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewMergeAllCount": "일괄 합치기 · {count}명",
+  "@uiCrewMergeAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewWhyLevel": "레벨업하면 공격력 +{percent} (초당 {now} → {next})",
+  "@uiCrewWhyLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewCardsToLevel": "다음 레벨까지 일반 카드 {count}장",
+  "@uiCrewCardsToLevel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewPromoteIn": "승급까지 {count}레벨 — 승급하면 공격력 +{percent}",
+  "@uiCrewPromoteIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewPromoteGain": "승급하면 공격력 +{percent}!",
+  "@uiCrewPromoteGain": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewMergeNow": "지금 합치기 · Lv {from} → {to}",
+  "@uiCrewMergeNow": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  }
 }
