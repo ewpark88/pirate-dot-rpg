@@ -135,6 +135,9 @@ bool funEvent(BattleScene s, GameEvent e) {
     case TowerFloorCleared(:final floor):
       s.moments.onTowerFloor(floor + 1, cleared: true);
       _sfx(s, 'bossCleared', e);
+    // 보스 공격 빗나감(S2 boss-dodge): 배 옆 'MISS!'
+    case BossAttackMissed() when s.isTop:
+      s.topHits.boss.miss(s.topShip, s.clockMs);
     // 대군 습격(S2 HordeIncoming — 스테이지 첫 파 60~100마리 사방): 붉은 띠 'HORDE!'·마리 수 + 흔들림·경고음
     case HordeIncoming(:final count) when s.isTop:
       s.moments.banner('HORDE!', sub: 'x$count', ms: 1500, hot: true);
