@@ -256,6 +256,24 @@
   "econIapSkinCoralYacht": "산호 요트",
   "econIapSkinBundle": "배 스킨 3종 묶음",
   "econIapOffline12h": "넉넉한 화물 지도",
+  "econBossCoralGolem": "산호 골렘",
+  "econBossClownKing": "흰동가리 왕",
+  "econBossPearlClam": "진주 조개",
+  "econBossStormEagle": "폭풍 독수리",
+  "econBossCloudWhale": "먹구름 고래",
+  "econBossThunderCrab": "번개 게",
+  "econBossFrostYeti": "빙하 예티",
+  "econBossIceNarwhal": "얼음 일각고래",
+  "econBossSnowOwlShip": "눈부엉이 범선",
+  "econBossMagmaGolem": "마그마 골렘",
+  "econBossFireSalamander": "불도롱뇽",
+  "econBossAshDragon": "화산재 용",
+  "econBossAbyssEye": "심연의 눈",
+  "econBossLanternEel": "등불 장어",
+  "econBossBoneShark": "해골 상어",
+  "econBossBansheeQueen": "밴시 여왕",
+  "econBossCursedBell": "저주받은 종",
+  "econBossGhostKraken": "유령 크라켄",
   "opPanelTitle": "운영자 모드",
   "opGroupSave": "저장",
   "opGroupBattle": "전장",
@@ -2406,5 +2424,34 @@
     }
   },
   "uiShopSpeedOff": "보통",
-  "uiShopSpeedOn": "×2"
+  "uiShopSpeedOn": "×2",
+  "uiTalkHorde": "몰려와요! 우수수 쓸어 버려요!",
+  "uiTalkAchievement": "업적 보상을 받을 수 있어요! 항해 탭 '업적'을 눌러요!",
+  "uiTalkSpeed": "2배속이 켜졌어요! 전투가 두 배로 빨라져요. 남은 시간은 위 칩에서 봐요!",
+  "uiTipBossDex": "약점 칩의 계열 선원으로 편성하면 훨씬 빨리 잡아요!",
+  "uiHelpTower": "심연의 탑",
+  "uiHelpTowerBody": "한 층씩 올라가는 도전이에요. 높이 오를수록 보상이 커지고, 이미 깬 층은 한 번에 소탕할 수 있어요.",
+  "uiHelpRush": "보스 러시",
+  "uiHelpRushBody": "보스를 연달아 상대해요. 모두 잡으면 큰 보상, 빨리 잡을수록 기록이 남아요.",
+  "uiHelpDungeon": "요일 던전",
+  "uiHelpDungeonBody": "요일마다 다른 재료를 주는 던전이에요. 깬 단계는 소탕으로 빠르게 받을 수 있어요.",
+  "uiHelpAchievements": "업적",
+  "uiHelpAchievementsBody": "처치·보스·스테이지 같은 기록이 목표에 닿으면 젬을 받아요. 항해 탭 '업적'에서 받아요.",
+  "uiHelpPass": "항해 패스",
+  "uiHelpPassBody": "플레이하며 패스 단계를 올리면 단계마다 보상을 받아요.",
+  "uiHelpUltimate": "선장 필살기",
+  "uiHelpUltimateBody": "싸우면 필살기 게이지가 차요. 가득 차면 오른쪽 아래 버튼으로 화면 전체를 쓸어 버려요.",
+  "uiHelpFever": "피버",
+  "uiHelpFeverBody": "적을 잡으면 피버 게이지가 차요. 가득 차면 잠깐 동안 공격이 세지고 적이 우르르 몰려와요.",
+  "uiBossDexAtFirst": "처음 등장 때: 체력 {hp} · 공격 {atk}",
+  "@uiBossDexAtFirst": {
+    "placeholders": {
+      "hp": {
+        "type": "String"
+      },
+      "atk": {
+        "type": "String"
+      }
+    }
+  }
 }

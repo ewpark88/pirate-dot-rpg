@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/dock/upgrade_all.dart' show canUpgradeAnyProvider;
 import 'package:pirate_dot/ui/guide/guide_boss_trait.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_marks.dart';
+import 'package:pirate_dot/ui/guide/guide_moments.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
 import 'package:pirate_dot/ui/guide/guide_talk.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -59,6 +60,7 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
     super.initState();
     _tracker = Timer.periodic(_track, (_) => _refresh());
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
+      if (tick.events.any((e) => e is HordeIncoming)) ref.read(guideMomentsProvider.notifier).flash('guide.horde');
       final step = ref.read(tutorialStepProvider);
       if (step == null || step > 3) return;
       for (final e in tick.events) {
