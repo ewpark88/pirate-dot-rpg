@@ -1,5 +1,15 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤 · S5 · 종 해금·바다 소품·보스 크기·출시 문서·결제 1단계·콘텐츠 v2
+- **현재 위치**: 머지됨 — sea-props-off·species-unlock·store-bake·content-v2·store-data-safety(문서). 대기 — review/boss-scale 5bb1345a(S2 smoke 다시), review/iap a400de7c(pubspec in_app_purchase·계약 머지 필요).
+- A줄 순번: S4 → S3(render 골든에 boss-scale·배 v2·auto-boss 같이) → S5 release_check + 운영자 apk.
+- 폰: 읽기 전용 측정 완료(60Hz p95 16.8ms·절전 30Hz·21분 최고 35.9℃·발열 0). **폰 입력(adb input)은 이 세션 권한 설정에서 거부** — 사용자가 직접 허락하기 전까지 읽기만. 도구 docs/store/device/device_loop.py.
+- 배운 것
+  - 보스 그림을 키워도 판정 반경은 그대로 둬야 밸런스가 안 바뀐다(범위 공격이 더 걸림 — S2 smoke). 그림 몸 반경은 배치(호위·분열·standoff)에만.
+  - 대보스 1.8배는 그림 폭이 화면 폭(180)에 가까워 원을 돌면 잘린다 → 배 위에 세운다.
+  - 셸·파이썬으로 만든 dart 파일은 훅이 포맷하지 않는다 → 해시 보내기 전 `dart format --set-exit-if-changed`.
+  - 스토어 샷은 본 전투(Flame) 없이 그려서, 미리보기처럼 본 전투 스프라이트를 빌리는 위젯은 override가 필요하다.
+
 ## 2026-10-18 늦은 밤 · S5 · 스토어 샷 개편 후 장면·폰 읽기 전용 측정
 - **현재 위치**: store-shots-v3(0a90be73) main 머지됨 — 굽기는 slot 순서 S2 → S4 → S5. 폰 측정(프레임·메모리·온도 3회) 진행 중 → 표를 S1에.
 - 장면 8: HD 무리·피버 v2·대보스 브레이크(폭풍해 80)·연쇄 번개(볼트·범고래·수달, 120)·새 동료 카드·선원 상세·10연 소환·환생 지도. 도우미 store_shot_kit.dart.
