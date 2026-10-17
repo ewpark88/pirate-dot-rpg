@@ -789,7 +789,6 @@
       }
     }
   },
-  "uiChestPill": "Choose chest reward",
   "uiSlotDamage": "DMG {amount}",
   "@uiSlotDamage": {
     "placeholders": {

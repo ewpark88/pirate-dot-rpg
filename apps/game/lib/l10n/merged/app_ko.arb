@@ -1006,7 +1006,6 @@
       }
     }
   },
-  "uiChestPill": "보물상자 보상 고르기",
   "uiSlotDamage": "피해 {amount}",
   "@uiSlotDamage": {
     "placeholders": {
