@@ -78,6 +78,32 @@ class OfflineFullNotifier {
     await log.write(dir);
   });
 
+  /// 알림 권한 상태(설정 화면 알림 칸 — S4): true 허용 · false 꺼짐(시스템 설정에서 켜야) · null 모름(Android 아님·오류).
+  Future<bool?> permissionStatus() async {
+    try {
+      return await _sdk.permissionGranted();
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'notify: permission status');
+      return null;
+    }
+  }
+
+  /// 알림 권한 요청(설정에서 알림을 켤 때 — S4): 시스템 창을 띄우고 허용되면 true. 자동 첫 질문 기록도 남겨 다시 묻지 않는다.
+  /// Android가 두 번 거부된 뒤엔 창을 띄우지 않고 false — 화면이 '시스템 설정 → 알림'을 안내한다.
+  Future<bool> requestPermission() async {
+    try {
+      final log = await NotifyLog.read(dir);
+      if (!log.permissionAsked) {
+        log.permissionAsked = true;
+        await log.write(dir);
+      }
+      return await _sdk.requestPermission();
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'notify: permission request');
+      return false;
+    }
+  }
+
   /// 운영자 패널 전용(`if (kOperator)` 안에서만 부른다): 권한을 묻고 [after] 뒤 시험 알림 1건.
   /// 하루 기록·설정과 무관하다(실기기에서 채널·문구·권한만 본다).
   Future<void> testRing({Duration after = const Duration(seconds: 10)}) => _guard(() async {

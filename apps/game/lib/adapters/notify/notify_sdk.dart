@@ -9,4 +9,7 @@ abstract interface class NotifySdk {
 
   /// Android 13+ `POST_NOTIFICATIONS`. 허용되면 true.
   Future<bool> requestPermission();
+
+  /// 지금 알림이 켜져 있나(시스템 설정·권한) — true 허용 · false 꺼짐 · null 모름(Android 아님).
+  Future<bool?> permissionGranted();
 }

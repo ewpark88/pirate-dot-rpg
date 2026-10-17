@@ -23,8 +23,13 @@ class FakeNotifySdk implements NotifySdk {
   @override
   Future<bool> requestPermission() async {
     permissionRequests++;
-    return true;
+    return granted ?? true;
   }
+
+  bool? granted;
+
+  @override
+  Future<bool?> permissionGranted() async => granted;
 }
 
 void main() {
@@ -140,5 +145,20 @@ void main() {
     enabled = true;
     await make().onPause(); // 하루 1회 칸을 쓰지 않았다
     expect(sdk.scheduled.length, 2);
+  });
+
+  test('권한 포트(S4 설정 알림 칸): 상태는 SDK 그대로(null = 모름), 요청하면 결과 + 자동 첫 질문 기록 — 복귀 때 다시 묻지 않음', () async {
+    final n = make();
+    expect(await n.permissionStatus(), isNull);
+    sdk.granted = false;
+    expect(await n.permissionStatus(), isFalse);
+    expect(await n.requestPermission(), isFalse);
+    expect(sdk.permissionRequests, 1);
+    await n.onPause();
+    clock.setTime(clock.now().add(const Duration(hours: 2)));
+    await n.onResume(); // 오래 비웠지만 이미 물었으니 다시 안 묻는다
+    expect(sdk.permissionRequests, 1);
+    sdk.granted = true;
+    expect(await n.requestPermission(), isTrue);
   });
 }
