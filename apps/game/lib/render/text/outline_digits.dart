@@ -15,6 +15,7 @@ class OutlineDigitsLayout {
   OutlineDigitsLayout.fromJson(Map<String, dynamic> j)
     : width = (j['width'] as num).toDouble(),
       cellHeight = (j['cellHeight'] as num).toDouble(),
+      fontSize = (j['fontSize'] as num? ?? j['cellHeight'] as num).toDouble(),
       baseline = (j['baseline'] as num).toDouble(),
       rows = {for (final e in (j['colors'] as Map<String, dynamic>).entries) e.key: (e.value as num).toDouble()},
       glyphs = {
@@ -29,6 +30,12 @@ class OutlineDigitsLayout {
   /// 1x 아틀라스 폭(그림 배율 = 실제 폭 ÷ 이것).
   final double width;
   final double cellHeight;
+
+  /// 칸 안 글자 크기(1x) — 글꼴 크기 s로 그리려면 칸 높이 = s × cellHeight ÷ fontSize.
+  final double fontSize;
+
+  /// 글자 크기 [size]에 맞는 칸 높이.
+  double heightFor(double size) => size * cellHeight / fontSize;
   final double baseline;
 
   /// 색 이름(white·gold·red·green) → 그 줄의 y(1x).
