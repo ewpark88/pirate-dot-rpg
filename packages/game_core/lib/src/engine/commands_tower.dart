@@ -75,3 +75,26 @@ class RetreatDungeon extends Command {
   @override
   String get type => 'retreatDungeon';
 }
+
+/// 장면 모드(탑·러시·요일 던전) 명령 type — commands.dart 300줄 규칙으로 여기서 읽는다.
+const _sceneTypes = {
+  'startTower',
+  'sweepTower',
+  'retreatTower',
+  'startRush',
+  'retreatRush',
+  'startDungeon',
+  'sweepDungeon',
+  'retreatDungeon',
+};
+
+Command _sceneCommandFromJson(String type, Json j) => switch (type) {
+  'startTower' => const StartTower(),
+  'sweepTower' => const SweepTower(),
+  'retreatTower' => const RetreatTower(),
+  'startRush' => const StartRush(),
+  'retreatRush' => const RetreatRush(),
+  'startDungeon' => StartDungeon(j['step'] as int),
+  'sweepDungeon' => SweepDungeon(j['step'] as int),
+  _ => const RetreatDungeon(),
+};
