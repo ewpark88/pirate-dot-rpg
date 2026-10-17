@@ -14,12 +14,10 @@ import 'ui_harness.dart';
 void main() {
   final t = GameTables.load();
 
-  test('역할 어댑터: turtle 배 지킴이 · pumpum 지원 · king 제어 · lion 보스 킬러 · octo 제어(둔화 장판)', () {
-    expect(crewRoleOf(t, 'turtle'), CrewRole.guard);
-    expect(crewRoleOf(t, 'pumpum'), CrewRole.support);
-    expect(crewRoleOf(t, 'king'), CrewRole.control);
-    expect(crewRoleOf(t, 'lion'), CrewRole.boss);
-    expect(crewRoleOf(t, 'octo'), CrewRole.control);
+  test('역할 = 표 crews[].role — 40명 모두 배지가 있다', () {
+    for (final c in t.crews.crews) {
+      expect(crewRoleOf(t, c.id).name, c.role, reason: c.id);
+    }
   });
 
   testWidgets('CardGranted(isNew) → 연출 뒤 카드, 빈 칸 있으면 [출전시키기] → SetFleetSlot', (tester) async {

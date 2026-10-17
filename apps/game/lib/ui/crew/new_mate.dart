@@ -27,26 +27,10 @@ import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 /// S3 카드 앞면 공개 연출이 끝나기를 기다리는 시간.
 const newMateDelay = Duration(milliseconds: 2600);
 
-/// 역할 5가지 (S2 BALANCE 역할표의 묶음). 표 키(crews[].role)가 오기 전엔 [crewRoleOf]가 조준·범위·전설 능력으로 정한다.
+/// 역할 5가지 = 표 crews[].role (S2 BALANCE 역할표, game_data crewRoles와 같은 이름).
 enum CrewRole { guard, boss, mob, control, support }
 
-/// 임시 어댑터: 보호막 = 배 지킴이, 피버·응원·충격 계열 = 지원, 기절·둔화·끌기·장판 = 제어, 보스·강한 적 조준 = 보스 킬러, 범위 = 무리 청소.
-CrewRole crewRoleOf(GameTables t, String crewId) {
-  final legendIdx = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
-  final legend = t.skills.legendFor(crewId, legendIdx, legendIdx);
-  final def = t.crews.crews.firstWhere((c) => c.id == crewId);
-  if (legend?.shield != null) return CrewRole.guard;
-  if (legend?.fever != null || def.family == 'shock') return CrewRole.support;
-  final hit = legend?.onHit;
-  if ((hit != null && (hit.stunSec > 0 || hit.slow > 0 || hit.pull != 0)) ||
-      legend?.zone != null ||
-      legend?.charge != null) {
-    return CrewRole.control;
-  }
-  final id = crewIdentity(t, crewId);
-  if (id != null && (id.aim == AimKind.boss || id.aim == AimKind.strongest)) return CrewRole.boss;
-  return id?.area ?? false ? CrewRole.mob : CrewRole.boss;
-}
+CrewRole crewRoleOf(GameTables t, String crewId) => CrewRole.values.byName(t.crews.byId(crewId).role);
 
 String roleText(AppLocalizations l, CrewRole r) => switch (r) {
   CrewRole.guard => l.uiRoleGuard,
