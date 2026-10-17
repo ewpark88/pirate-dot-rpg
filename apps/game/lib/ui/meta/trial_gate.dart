@@ -20,7 +20,7 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 
 // 맛보기 (사용자 2026-10-17, 경제 S2 meta.trials · ClaimTrial): 받을 수 있게 되면 큰 카드 팝업(체험 전/후 한 줄 ·
 // [무료로 써 보기] · [나중에]). 체험 중 남은 시간은 순풍 배지·자동 강화 칩(크게)이 보여 준다. 끝나면 '광고로 10분 더'
-// (+ 상점이 열려 있으면 '영구로 갖기'). [나중에]는 이번 실행에서만 다시 묻지 않는다. 시험에선 [trialsEnabledProvider]로 끈다.
+// (+ 상점이 열려 있으면 '영구로 갖기'). [나중에]는 이번 실행에서만 다시 묻지 않는다. 한 실행에 권하기 1번, 조용한 45초 뒤. 시험에선 [trialsEnabledProvider]로 끈다.
 
 /// 받을 수 있는 맛보기(경제 trialsReady와 같은 조건 — game_core가 export하기 전 임시 어댑터, S2 요청).
 List<String> trialsReadyUi(GameState s, GameTables t) {
@@ -45,6 +45,9 @@ final trialAskedProvider = Provider<Set<String>>((_) => <String>{});
 /// 체험이 끝났는지 볼 간격.
 const _check = Duration(seconds: 1);
 
+/// 권하기 전 조용한 시간(초) — 앱 시작·다른 창이 닫힌 뒤 이만큼 아무 창 없이 지나야 권한다(S1 실기기 ③: 켜자마자 창 4개).
+const trialQuietSec = 45;
+
 class TrialGate extends ConsumerStatefulWidget {
   const TrialGate({required this.child, super.key});
 
@@ -59,6 +62,9 @@ class _TrialGateState extends ConsumerState<TrialGate> {
   final _was = <String, bool>{};
   bool _open = false;
 
+  /// 아무 창 없이 지난 초.
+  int _quiet = 0;
+
   @override
   void initState() {
     super.initState();
@@ -72,8 +78,13 @@ class _TrialGateState extends ConsumerState<TrialGate> {
   }
 
   Future<void> _poll() async {
-    // 다른 창·시트(오프라인 보상·퀘스트 등)가 떠 있으면 기다린다 — 겹쳐 뜨지 않게.
-    if (!mounted || _open || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
+    // 다른 창·시트(오프라인 보상·퀘스트 등)가 떠 있으면 기다린다 — 겹쳐 뜨지 않게. 닫힌 뒤에도 조용한 시간을 센다.
+    if (!mounted) return;
+    if (_open || !(ModalRoute.of(context)?.isCurrent ?? true)) {
+      _quiet = 0;
+      return;
+    }
+    _quiet++;
     final s = ref.read(gameStateProvider);
     final t = ref.read(tablesProvider);
     // 끝난 체험: 쓰던 버프가 0이 되는 순간 한 번.
@@ -83,8 +94,10 @@ class _TrialGateState extends ConsumerState<TrialGate> {
       _was[kind] = on;
       if (was && !on) return _show(TrialEndDialog(kind: kind));
     }
+    // 한 실행에 하나만 — 두 번째 체험은 다음 실행에서(조건이 맞는 순간).
     final asked = ref.read(trialAskedProvider);
-    final ready = trialsReadyUi(s, t).where((k) => !asked.contains(k)).firstOrNull;
+    if (asked.isNotEmpty || _quiet < trialQuietSec) return;
+    final ready = trialsReadyUi(s, t).firstOrNull;
     if (ready != null) {
       asked.add(ready);
       await _show(TrialOfferDialog(kind: ready));

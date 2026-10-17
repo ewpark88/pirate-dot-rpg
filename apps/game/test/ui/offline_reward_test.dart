@@ -75,15 +75,24 @@ void main() {
     expect(find.byType(OfflineRewardDialog), findsOneWidget);
   });
 
-  testWidgets('기준 5: 받은 뒤 복귀하면 다시 미리보기를 구해 새 팝업', (tester) async {
+  testWidgets('기준 5: 같은 복귀는 한 번 · 받은 뒤 새로 떠났다 오면 새 팝업', (tester) async {
     await _pump(tester, const Duration(hours: 2));
     await tester.tap(find.byKey(const Key('offline.claim')));
     await tester.pumpAndSettle();
+    final c = ProviderScope.containerOf(tester.element(find.byType(PirateDotApp)));
+    final s = c.read(gameStateProvider);
+    // 같은 복귀(savedAt 그대로)로는 다시 안 뜬다(실기기 ① 중복).
     tester.binding
       ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
       ..handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
-    // 테스트의 상태는 엔진이 없어 savedAt이 그대로 → 미리보기가 다시 있다
+    expect(find.byType(OfflineRewardDialog), findsNothing);
+    // 엔진이 받기를 처리해 savedAt이 바뀐 뒤 다시 오래 떠났다 오면 새 팝업(테스트엔 엔진이 없어 직접 바꾼다).
+    c.read(gameStateProvider.notifier).replace(s.copyWith(savedAt: s.savedAt.subtract(const Duration(hours: 1))));
+    tester.binding
+      ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
+      ..handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
     expect(find.byType(OfflineRewardDialog), findsOneWidget);
   });
 
