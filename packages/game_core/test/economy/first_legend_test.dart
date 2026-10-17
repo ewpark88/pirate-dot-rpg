@@ -47,7 +47,22 @@ void main() {
     expect(gateFirstLegend(at(h, 10), t, 'rare'), 'rare');
     expect(gateFirstLegend(at(h, until), t, 'legend'), 'legend');
     expect(gateFirstLegend(at(h, 10, rebirths: 1), t, 'legend'), 'legend');
-    grantCard(at(h, 10), h.ctx, 'bones', 'legend', 'boss'); // 옥토는 시작 선원 보호로 일반이 된다(starter_guard_test)
+    grantCard(
+      at(h, 30),
+      h.ctx,
+      'bones',
+      'legend',
+      'boss',
+    ); // 스테이지 20 전엔 초반 카드 문(earlyCards)이 희귀로 더 낮춘다 // 옥토는 시작 선원 보호로 일반이 된다(starter_guard_test)
     expect(h.of<CardGranted>().single.rarity, 'hero');
+  });
+
+  test('초반 카드 문(meta.earlyCards): 스테이지 untilStage 전 보스 카드 영웅 → 희귀, 넘으면·환생 뒤엔 그대로', () {
+    final h = EconomyHarness();
+    final until = t.meta.raw.obj('earlyCards').integer('untilStage');
+    grantCard(at(h, until - 1), h.ctx, 'bones', 'hero', 'boss');
+    grantCard(at(h, until), h.ctx, 'bones', 'hero', 'boss');
+    grantCard(at(h, until - 1, rebirths: 1), h.ctx, 'bones', 'hero', 'boss');
+    expect(h.of<CardGranted>().map((e) => e.rarity), ['rare', 'hero', 'hero']);
   });
 }

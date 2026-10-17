@@ -88,13 +88,15 @@ BigNum promotionGold(GameTables t, PromotionDef p, int stage) =>
     stageCurve(t.waves.goldBase, t.waves.goldGrowth, stage).times(p.goldKills);
 
 /// 승급 버튼 상태. [ok]가 아니면 무엇이 모자란지.
-enum PromoteStatus { ok, notOwned, maxRarity, level, cards, gold, tokens }
+/// [stageLocked]: 첫 전설 유예(meta.firstLegend) 중 전설 이상으로 오르는 승급 — 화면은 '스테이지 N에서 열림'.
+enum PromoteStatus { ok, notOwned, maxRarity, stageLocked, level, cards, gold, tokens }
 
 PromoteStatus promoteStatus(GameState state, GameTables t, String crewId) {
   final crew = state.crews[crewId];
   if (crew == null) return PromoteStatus.notOwned;
   final p = nextPromotion(t, crew.level);
   if (p == null) return PromoteStatus.maxRarity;
+  if (gateFirstLegend(state, t, p.to) != p.to) return PromoteStatus.stageLocked; // 승급도 카드와 같은 문
   if (crew.level < p.level) return PromoteStatus.level;
   if (crew.cards < p.cards) return PromoteStatus.cards;
   if (state.wallet.gold < promotionGold(t, p, state.progress.stage)) return PromoteStatus.gold;
@@ -186,12 +188,25 @@ bool starterGuarded(GameState s, GameTables t, String crewId) {
       s.progress.bestStage < b.starterFirstStage + b.starterCount * b.starterEvery;
 }
 
+/// 초반 카드 문(meta.earlyCards, 사용자 '테스트하는데 벌써 영웅 2마리' 2026-10-17): 첫 회차 최고 스테이지 `untilStage` 전엔
+/// 소환 밖 카드(보스·오프라인·이벤트·현상금)를 `maxRarity`까지로 — 보스 카드 영웅(2.8%)이 희귀 선원을 영웅으로 뛰게 하던 것.
+/// 소환(첫 10연 영웅 1 확정 등)은 그대로. 첫 전설 유예가 전설을 영웅으로 낮춘 것도 여기서 한 번 더 막힌다.
+String capEarlyCard(GameState s, GameTables t, String rarity) {
+  final m = t.meta.raw;
+  if (!m.has('earlyCards') || s.progress.rebirths > 0) return rarity;
+  final g = m.obj('earlyCards');
+  if (s.progress.bestStage >= g.integer('untilStage')) return rarity;
+  final order = t.rarities.rarities;
+  final cap = order.indexWhere((r) => r.id == g.str('maxRarity'));
+  return order.indexWhere((r) => r.id == rarity) > cap ? order[cap].id : rarity;
+}
+
 /// [receiveCard] + CardGranted 이벤트 (렌더가 카드가 날아와 모이는 연출, S3 요청). [source]는 CardGranted 참고.
 GameState grantCard(GameState state, SystemContext ctx, String crewId, String cardRarity, String source) {
   final t = ctx.tables;
   final rarity = starterGuarded(state, t, crewId)
       ? t.rarities.rarities.first.id
-      : gateFirstLegend(state, t, cardRarity);
+      : capEarlyCard(state, t, gateFirstLegend(state, t, cardRarity));
   ctx.emit(
     CardGranted(ctx.tick, crewId: crewId, rarity: rarity, source: source, isNew: !state.crews.containsKey(crewId)),
   );
