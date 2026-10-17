@@ -57,6 +57,7 @@ sealed class Command {
       'markHint' => MarkHint(j['id'] as String),
       'buySkin' => BuySkin(j['id'] as String),
       'claimCollectionReward' => ClaimCollectionReward(j['at'] as int),
+      'claimTrial' => ClaimTrial(j['kind'] as String),
       'clearHints' => ClearHints(j['prefix'] as String? ?? ''),
       'skipFastSail' => const SkipFastSail(),
       'startVoyage' => const StartVoyage(),

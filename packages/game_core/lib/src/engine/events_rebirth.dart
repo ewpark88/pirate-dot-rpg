@@ -21,6 +21,7 @@ GameEvent _rebirthEventFromJson(int t, Json j) => switch (j['type'] as String) {
     gems: j['gems'] as int? ?? 0,
     summons: j['summons'] as int? ?? 0,
   ),
+  'trialClaimed' => TrialClaimed(t, kind: j['kind'] as String, seconds: j['seconds'] as int),
   _ => ContentUnlocked(t, kind: j['kind'] as String, value: j['value'] as int),
 };
 
@@ -114,4 +115,18 @@ class CollectionRewardClaimed extends GameEvent {
 
   @override
   Json _fields() => {'at': at, if (gems != 0) 'gems': gems, if (summons != 0) 'summons': summons};
+}
+
+/// 맛보기를 받았다(meta.trials): [kind] speed·autoUpgrade, [seconds]초 버프. 끝나면 화면이 '광고로 더 / 유료 영구' 안내.
+class TrialClaimed extends GameEvent {
+  const TrialClaimed(super.tick, {required this.kind, required this.seconds});
+
+  final String kind;
+  final int seconds;
+
+  @override
+  String get type => 'trialClaimed';
+
+  @override
+  Json _fields() => {'kind': kind, 'seconds': seconds};
 }
