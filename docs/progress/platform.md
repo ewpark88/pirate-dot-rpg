@@ -1,5 +1,18 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 밤 · S5 · 통합 --full 머지, 피버 v2(#24 배 모션·#23 음악), #13·#14 UI, 검토 4건
+- **현재 위치**: 통합(review/s5-integrate 03461948) main 머지됨(00628c0d). 머지 대기: review/fever-motion 87d1604c(#24) · review/fever-music de736c97(#23, S3 검토·청취 대기). 다음 #9 HUD(A·C·D·E + #26) → B.
+- 한 일
+  - #13·#14 UI(review/damage-ui): 선원 칸 아래 피해량, 보스 처치 2.6초 뒤 선원별 피해 창(MVP).
+  - 통합 --full: 줄 수(events·top_geometry)·리터럴·하드코딩 문구 고침, ARB는 3-way 키 합치기(scratchpad arb_union.py), 골든은 최신 main 위 다시 굽기. boss-duel 키는 보류 → S1이 ① 채택(S2 재조정).
+  - boss-duel sim(5명×1시간): 보스가 화면 밖에서 조준 안 되던 숨은 난이도가 사라져 보스전 크게 쉬워짐(10단위 첫 도전 25→100%).
+  - #24 flow 모션(8자 곡선·가감속·드리프트 기울기·가끔 원 돌기) + 4기기 프레임 띠 골든. #23 bgm_fever(168 BPM, 조 바꿈) + 곡 전환 페이드.
+  - 검토: S2 break-cooldown·bounty-card·break-view·crew-traits OK, fever-swarm은 top_geometry 300줄 초과 지적.
+- 배운 것
+  - main이 계속 움직인다 → --full 직전에 반드시 다시 머지(이번에 세 번). 단독 실행과 파일 실행 골든이 다를 수 있다(파일 기준으로 굽기).
+  - 브랜치 전환 뒤 l10n gen이 낡아 컴파일 실패 → merge_arb + gen-l10n 먼저.
+  - 보고 해시는 `git log -1`로 확인하고 보낸다(잘못 보낸 적 있음).
+
 ## 2026-10-17 저녁 · S5 · S4 짐 덜기 — UI #19·#20·#12·#11·#16, S2 검토
 - **현재 위치**: 리뷰 브랜치 머지 대기(S1 순서 crew-damage → boss-duel → sail-hold → sail-ui). review/sail-hold ef3fc1f3 · review/sail-ui f2fbd543(S4 검토 반영 완료, 기본 check 통과) · review/crew-ui f2d8bbc3(S4 검토 대기). boss-duel sim은 5명×1시간 짧게(slot), 정밀 비교는 밤.
 - 한 일
