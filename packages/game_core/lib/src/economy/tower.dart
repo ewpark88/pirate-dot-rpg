@@ -13,9 +13,10 @@ import 'package:game_data/game_data.dart';
 
 JsonReader towerCfg(GameTables t) => t.meta.raw.obj('tower');
 
-/// 열림: 환생 1회 이상 또는 최고 스테이지 ≥ unlockStage.
+/// 열림: 환생 ≥ unlockRebirths 또는 최고 스테이지 ≥ unlockStage(S2 확정 2026-10-18).
 bool towerOpen(GameState s, GameTables t) =>
-    s.progress.rebirths > 0 || s.progress.bestStage >= towerCfg(t).integer('unlockStage');
+    s.progress.rebirths >= towerCfg(t).integer('unlockRebirths') ||
+    s.progress.bestStage >= towerCfg(t).integer('unlockStage');
 
 /// 매 틱: 열렸는데 상태가 없으면 오늘 도전권 ticketsPerDay로 만든다. 날짜가 바뀐 첫 틱엔 지난 일수 × ticketsPerDay를
 /// maxTickets까지 더한다(현상금 티켓과 같은 규칙 — 매일 안 들어와도 쌓인다, 피로 금지).
@@ -42,7 +43,12 @@ GameState towerTick(GameState s, SystemContext ctx) {
 /// 지금 탑에 들어갈 수 있나(UI 버튼). 현상금·탑 진행 중이면 안 된다.
 bool canStartTower(GameState s, GameTables t) {
   final w = s.tower;
-  return towerOpen(s, t) && w != null && w.tickets > 0 && w.active == null && s.bounty?.active == null;
+  return towerOpen(s, t) &&
+      w != null &&
+      w.tickets > 0 &&
+      w.active == null &&
+      s.bounty?.active == null &&
+      s.rush?.active == null;
 }
 
 /// StartTower: 도전권 −1, 1층부터. 아니면 그대로(거절).
@@ -58,12 +64,15 @@ GameState startTower(GameState s, StartTower c, SystemContext ctx) {
 GameState sweepTower(GameState s, SweepTower c, SystemContext ctx) {
   final w = s.tower;
   if (w == null || w.best < 1 || w.tickets < 1 || w.active != null) return s;
-  final floor = math.max(1, (w.best * towerCfg(ctx.tables).number('sweepRatio')).floor());
+  final floor = towerSweepFloor(w, ctx.tables);
   final chest = towerChest(ctx.tables, floor);
   ctx.emit(TowerSwept(ctx.tick, floor: floor, chestGems: chest.gems, chestCards: chest.cards));
   final paid = grantTowerReward(s, ctx, chest.gems, chest.cards);
   return paid.copyWith(tower: w.copyWith(tickets: w.tickets - 1));
 }
+
+/// 소탕 층 = max(1, floor(최고 층 × sweepRatio)) — UI 소탕 버튼도 이 값.
+int towerSweepFloor(TowerState w, GameTables t) => math.max(1, (w.best * towerCfg(t).number('sweepRatio')).floor());
 
 /// 도달 층 [floor]의 상자: chest 구간 중 floor 이하로 가장 높은 것(0층이면 없음).
 ({int gems, int cards}) towerChest(GameTables t, int floor) {

@@ -10,6 +10,7 @@ import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
 import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart';
+import 'package:game_core/src/economy/rush.dart';
 import 'package:game_core/src/economy/sea_events.dart' show pickBottle;
 import 'package:game_core/src/economy/ship_skins.dart' show buySkin, unlockShipSkins;
 import 'package:game_core/src/economy/summon.dart';
@@ -71,6 +72,7 @@ class EconomySystem implements GameSystem {
     final SweepBounty c => sweepBounty(state, c, ctx),
     final StartTower c => startTower(state, c, ctx),
     final SweepTower c => sweepTower(state, c, ctx),
+    final StartRush c => startRush(state, c, ctx),
     final OpSetBountyTickets c => opSetBountyTickets(state, c),
     final OpSetWeekday c => opSetWeekday(state, c),
     _ => null,
@@ -79,11 +81,14 @@ class EconomySystem implements GameSystem {
   @override
   GameState update(GameState state, SystemContext ctx) => autoUpgradeStep(
     tickChest(
-      towerTick(
-        bountyTick(
-          tutorialTick(
-            unlockShipSkins(
-              rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+      rushTick(
+        towerTick(
+          bountyTick(
+            tutorialTick(
+              unlockShipSkins(
+                rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+                ctx,
+              ),
               ctx,
             ),
             ctx,

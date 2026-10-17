@@ -114,9 +114,10 @@ class Field {
 
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
   TowerRun? tower; // 진행 중인 탑(top_tower.dart)
+  RushRun? rush; // 진행 중인 보스 러시(top_rush.dart)
 
   /// 본 전투를 멈춘 장면 모드(현상금·탑 — scene_mode.dart) 중인가.
-  bool get inScene => bounty != null || tower != null;
+  bool get inScene => bounty != null || tower != null || rush != null;
 
   Object? shipSeen; // [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다)
 
@@ -185,6 +186,7 @@ class Field {
     mode: 'top',
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     tower: tower == null ? null : TowerView(floor: tower!.floor, wave: tower!.wave, waves: tower!.waves),
+    rush: rush == null ? null : RushView(index: rush!.index, total: rush!.bosses.length, ticks: rush!.ticks),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
     shipHeading: switch (geometry) {
@@ -206,4 +208,13 @@ class TowerRun {
   final int waves;
   bool boss = false;
   int spawned = 0;
+}
+
+/// 보스 러시 한 판의 진행(전장에만 — 세이브엔 rush.active {index, ticks}).
+class RushRun {
+  RushRun({required this.bosses, this.index = 0, this.ticks = 0});
+
+  final List<String> bosses;
+  int index;
+  int ticks;
 }

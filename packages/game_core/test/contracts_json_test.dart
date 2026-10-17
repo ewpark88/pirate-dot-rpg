@@ -52,6 +52,9 @@ void main() {
     const SweepTower(),
     const RetreatTower(),
     const GrantAdReward(AdPlacement.towerTicket),
+    const StartRush(),
+    const RetreatRush(),
+    const GrantAdReward(AdPlacement.rushTicket),
   ];
 
   test('모든 명령 JSON 왕복', () {
@@ -97,6 +100,9 @@ void main() {
     const TowerFloorCleared(13, floor: 5, gems: 10, cards: 1),
     const TowerEnded(14, floor: 4, reason: 'sunk', kills: 120, chestGems: 20),
     const TowerSwept(15, floor: 3, chestGems: 20),
+    const RushStarted(16, bosses: ['kraken', 'sea_croc']),
+    const RushBossDown(16, index: 0, bossId: 'kraken', ticks: 300),
+    const RushEnded(17, killed: 5, ticks: 2400, reason: 'cleared', gems: 115, pieces: 15, best: true),
   ];
 
   test('모든 이벤트 JSON 왕복', () {

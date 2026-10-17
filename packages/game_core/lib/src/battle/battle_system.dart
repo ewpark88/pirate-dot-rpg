@@ -67,7 +67,7 @@ class BattleSystem implements GameSystem {
           s = _bossCleared(s, _field!, ctx);
         }
         return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
-      case RetreatBounty() || RetreatTower():
+      case RetreatBounty() || RetreatTower() || RetreatRush():
         return _project(sceneRetreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case OpJumpStage(:final stage):
         _field = null;

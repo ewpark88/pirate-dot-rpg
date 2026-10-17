@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/spawner.dart' show spawnWave, startBoss;
+import 'package:game_core/src/battle/spawner.dart' show bossStandoffFor, spawnWave, startBoss;
+import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/tower.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -71,6 +72,16 @@ abstract final class TopTower {
     );
     final before = f.foes.length;
     spawnWave(f, _stage(s, ctx, run.floor), ctx, count: n); // 장면 모드라 골드 없음(spawnWaveFoes)
+    // 화면 가장자리 바로 밖에서 몰려오게(S3: 멀리서 걸어와 층당 25초로 느림) — 배 쪽으로 spawnDistanceMul만큼 당긴다.
+    final g = f.geometry;
+    if (g is TopGeometry) {
+      final mul = c.number('spawnDistanceMul');
+      for (final e in f.foes.skip(before)) {
+        e
+          ..x = g.top.shipX + (e.x - g.top.shipX) * mul
+          ..y = g.top.shipY + (e.y - g.top.shipY) * mul;
+      }
+    }
     run
       ..wave += 1
       ..spawned += f.foes.length - before;
@@ -81,7 +92,18 @@ abstract final class TopTower {
     final stage = _stage(s, ctx, run.floor);
     final r = ctx.tables.regions.regionAt(stage);
     final id = r.bossRotation.isEmpty ? r.boss : r.bossRotation[run.floor % r.bossRotation.length];
-    startBoss(f, stage, ctx, emit: false, bossDef: ctx.tables.regions.bosses[id], gold: false);
+    final g = f.geometry;
+    final top = g is TopGeometry ? g.top : null; // 걸어오는 시간 없이 standoff 원 바로 밖에서(S1)
+    startBoss(
+      f,
+      stage,
+      ctx,
+      emit: false,
+      bossDef: ctx.tables.regions.bosses[id],
+      gold: false,
+      x: top?.shipX,
+      y: top == null ? null : top.shipY - bossStandoffFor(ctx.tables, id) - top.bossRadius,
+    );
     run
       ..boss = true
       ..spawned += 1;
