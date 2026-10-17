@@ -120,9 +120,9 @@ class HdShip {
     _sailShadows(c, len, hw, st('sail', 5));
     _part(c, 'cargo', glowPart, glow, w, h, () => _cargo(c, len, hw, st('cargo', 7)));
     _part(c, 'cannon', glowPart, glow, w, h, () => _cannons(c, len, hw, st('cannon', 7), recoil));
-    _crew(c, len, hw);
     _rigging(c, len, hw, st('sail', 5), col);
     _part(c, 'sail', glowPart, glow, w, h, () => _sails(c, len, hw, st('sail', 5), billow, col, rainbow));
+    _crew(c, len, hw); // 선원(주인공)은 돛 위 층 — 큰 배에서 돛 3장이 갑판을 덮어도 늘 보이게(S1)
     _part(c, 'crowsnest', glowPart, glow, w, h, () => _nest(c, len, st('crowsnest', 6), col, now));
     if (layered) c.restore();
   }
