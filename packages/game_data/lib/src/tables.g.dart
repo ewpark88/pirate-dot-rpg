@@ -2465,7 +2465,14 @@ const Map<String, String> rawTables = {
           "#78FFC8"
         ],
         "glow": true
-      }
+      },
+      "king": {"stripe": ["#FFD24A"], "hull": ["#2A1E14", "#1A120C", "#C9A030", "#E6C25A", "#8A6A1E"], "sail": ["#B0202A", "#801820", "#E04A4A"], "flag": ["#FFD24A"], "speckle": [{"on": "sail", "color": "#FFD24A", "every": 9}], "wake": "#FFE27A", "muzzle": "#FFD24A"},
+      "ghostship": {"stripe": ["#78FFC8"], "hull": ["#2E3A40", "#1E282C", "#56686E", "#6A7E84", "#3E4E54"], "sail": ["#B8F0D8", "#80C8B0", "#E6FFF4"], "flag": ["#78FFC8"], "glow": true, "wake": "#8EF0D0", "muzzle": "#78FFC8"},
+      "frost": {"stripe": ["#6EC8FF"], "hull": ["#5A7A9A", "#40607E", "#BCD8EE", "#D8ECFA", "#8EB0CC"], "sail": ["#E8F6FF", "#B8DCF4", "#FFFFFF"], "flag": ["#6EC8FF"], "speckle": [{"on": "hull", "color": "#FFFFFF", "every": 6}], "wake": "#CFF0FF", "muzzle": "#9EE6FF"},
+      "lava": {"stripe": ["#FF6A20"], "hull": ["#2A2426", "#1A1416", "#4A4044", "#5E5256", "#3A3034"], "sail": ["#3A2A26", "#261A18", "#5A4038"], "flag": ["#FF7A2A"], "speckle": [{"on": "hull", "color": "#FF8A2A", "every": 5}, {"on": "sail", "color": "#FFB040", "every": 11}], "wake": "#FFB060", "muzzle": "#FF6A20"},
+      "fairy": {"stripe": ["#FFE27A"], "hull": ["#E07A9A", "#B85A7A", "#FFD0DC", "#FFE2EA", "#F0A8BC"], "sail": ["#C8F4FF", "#9ADCF0", "#F0FCFF"], "flag": ["#FFE27A"], "speckle": [{"on": "sail", "color": "#FF9ACF", "every": 8}], "wake": "#FFC8E6", "muzzle": "#FF9ACF"},
+      "festival": {"stripe": ["#FFFFFF"], "hull": ["#3A5CC8", "#2A44A0", "#F4E6C8", "#FFF2DC", "#D8C8A8"], "sail": ["#F0E8D2", "#CEC2A4", "#FCF8EC"], "flag": ["#FF5A5A"], "rainbowSail": true, "wake": "rainbow", "muzzle": "rainbow"},
+      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"}
     }
   },
   "topSea": {

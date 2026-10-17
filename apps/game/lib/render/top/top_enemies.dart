@@ -41,6 +41,8 @@ class TopEnemies {
       b.clear();
     }
     final clock = scene.clockMs;
+    final lite = scene.topHits.lite;
+    _seen.clear();
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -52,9 +54,19 @@ class TopEnemies {
       // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
       // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
-      final frame = ((scene.clockMs / (huge ? 350 : (e.boss ? 300 : 220))).floor() + e.id) % sheet.frames;
+      final period = huge ? 350 : (e.boss ? 300 : 220);
+      final phase = scene.clockMs / period + e.id;
+      final frame = phase.floor() % sheet.frames;
+      // 모션 v1: 2프레임 깜빡임 대신 프레임 끝 30% 동안 다음 프레임으로 서서히 겹쳐 넘어간다(절전이면 끔).
+      final u = phase - phase.floor();
+      final blend = !lite && sheet.frames > 1 && u > 0.7 ? (u - 0.7) / 0.3 : 0.0;
       final angry = e.boss && (scene.topHits.traits?.bossFx.enraged(e.id) ?? false); // 분노: 8% 크게
-      final breathe = e.boss ? (1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0;
+      // 모션 v1 등장: 처음 보인 적은 0.24초 동안 0.3 → 1.12 → 1로 톡 커지며 물 고리(갑자기 나타나지 않게).
+      final born = _born.putIfAbsent(e.id, () => clock);
+      final bk = (clock - born) / _bornMs;
+      final pop = bk >= 1 || e.boss ? 1.0 : (bk < 0.6 ? 0.3 + 0.82 * bk / 0.6 : 1.12 - 0.12 * (bk - 0.6) / 0.4);
+      if (bk == 0 && !lite && !e.boss && _rings.length < 24) _rings.add((e.drawX, e.drawY, clock));
+      final breathe = (e.boss ? (1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0) * pop;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       final rotation =
@@ -62,39 +74,42 @@ class TopEnemies {
           math.pi / 2 +
           math.sin(clock / 240 + e.id) * 0.08 +
           (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0);
-      final tx = (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble();
-      final ty = (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble();
+      // 기기 픽셀에 맞춤(모션 v1 — 전장 1단위 ≈ 4px로 반올림해 뚝뚝 떨리던 것).
+      final tx = ((e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx) * snap).roundToDouble() / snap;
+      final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
+      if (!e.boss) _seen[e.id] = (sheet, frame, tx, ty, rotation);
       final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
       if (sq != null) {
         _squashed.add((sheet, frame, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
         continue;
       }
-      (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
-          sheet,
-          () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
-        )
-        ..xf.add(
-          RSTransform.fromComponents(
-            // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation: rotation,
-            scale: key == _merchant ? _merchantScale : breathe,
-            anchorX: sheet.frameW / 2,
-            anchorY: sheet.frameH / 2,
-            translateX: tx,
-            translateY: ty,
-          ),
-        )
-        ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
+      final batch = (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
+        sheet,
+        () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
+      );
+      // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
+      final xf = RSTransform.fromComponents(
+        rotation: rotation,
+        scale: key == _merchant ? _merchantScale : breathe,
+        anchorX: sheet.frameW / 2,
+        anchorY: sheet.frameH / 2,
+        translateX: tx,
+        translateY: ty,
+      );
+      batch.add(xf, Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH), 1 - blend * 0.5);
+      if (blend > 0) {
+        batch.add(xf, Rect.fromLTWH((frame + 1) % sheet.frames * sheet.frameW, 0, sheet.frameW, sheet.frameH), blend);
+      }
     }
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       if (b.xf.isEmpty) continue;
       // 흰 실루엣은 보스만(강), 보통 명중은 금빛 색 번쩍(사용자 '흰 번쩍임 눈 아프다').
       final paint = b.flash ? (b.boss ? _flashPaint : _tintPaint) : (under ? _underPaint : _atlasPaint);
-      c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
+      c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, paint);
     }
     for (final b in _hotBatches.values) {
-      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, null, null, null, _hotPaint);
+      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _hotPaint);
     }
     for (final (sheet, frame, rot, tx, ty, sx, sy, flash, hot) in _squashed) {
       final w = sheet.frameW;
@@ -113,6 +128,62 @@ class TopEnemies {
         ..restore();
     }
     _squashed.clear();
+    _transitions(c, under: under, clock: clock, lite: lite);
+  }
+
+  static const _bornMs = 240.0;
+  static const _dieMs = 160.0;
+  final Map<int, double> _born = {};
+  final List<(double, double, double)> _rings = []; // 등장 물 고리 x, y, ms
+  final Map<int, (SpriteSheet, int, double, double, double)> _seen = {};
+  final Map<int, (SpriteSheet, int, double, double, double)> _lastUnder = {};
+  final Map<int, (SpriteSheet, int, double, double, double)> _lastOver = {};
+  final List<(SpriteSheet, int, double, double, double, double)> _dying = [];
+  final _ringPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..isAntiAlias = false;
+
+  /// 모션 v1 사망·등장 전환: 지난 프레임에 있다 사라진 잡몹은 0.16초 동안 납작하게 찌그러지며(흰 실루엣 → 작아짐) 사라지고,
+  /// 막 나타난 잡몹 자리엔 물 고리가 퍼진다. 절전·시트가 가리면 없음.
+  void _transitions(Canvas c, {required bool under, required double clock, required bool lite}) {
+    final last = under ? _lastUnder : _lastOver;
+    if (!lite) {
+      for (final MapEntry(:key, :value) in last.entries) {
+        if (_seen.containsKey(key) || _dying.length >= 24) continue;
+        _dying.add((value.$1, value.$2, value.$3, value.$4, value.$5, clock));
+      }
+    }
+    last
+      ..clear()
+      ..addAll(_seen);
+    if (_born.length > 400) _born.removeWhere((id, _) => !_lastUnder.containsKey(id) && !_lastOver.containsKey(id));
+    if (under) return;
+    _dying.removeWhere((d) => clock - d.$6 > _dieMs);
+    for (final (sheet, frame, tx, ty, rot, at) in _dying) {
+      final t = (clock - at) / _dieMs;
+      final w = sheet.frameW;
+      final h = sheet.frameH;
+      c
+        ..save()
+        ..translate(tx, ty)
+        ..rotate(rot)
+        ..scale(1.25 + 0.35 * t, math.max(0.05, 0.65 * (1 - t)))
+        ..drawImageRect(
+          sheet.image,
+          Rect.fromLTWH(frame * w, 0, w, h),
+          Rect.fromLTWH(-w / 2, -h / 2, w, h),
+          t < 0.45 ? _flashPaint : _atlasPaint,
+        )
+        ..restore();
+    }
+    _rings.removeWhere((r) => clock - r.$3 > 300);
+    for (final (x, y, at) in _rings) {
+      final t = (clock - at) / 300;
+      _ringPaint
+        ..strokeWidth = 2 * (1 - t) + 0.5
+        ..color = Color.fromRGBO(230, 248, 255, 0.85 * (1 - t));
+      c.drawCircle(Offset(x, y), 4 + 10 * t, _ringPaint);
+    }
   }
 
   final List<(SpriteSheet, int, double, double, double, double, double, bool, bool)> _squashed = [];
@@ -137,6 +208,9 @@ class TopEnemies {
   }
 
   final Map<String, String> _bossKeys = {};
+
+  /// 전장 1단위당 기기 픽셀(TopScenePainter가 프레임마다) — 위치를 이 격자에 맞춘다.
+  double snap = 1;
   static const _hugeW = 80;
   final _atlasPaint = Paint()
     ..isAntiAlias = false
@@ -163,9 +237,18 @@ class _Batch {
   final bool boss;
   final xf = <RSTransform>[];
   final src = <Rect>[];
+  final colors = <Color>[];
+
+  /// [alpha] = 겹침 투명도(프레임 넘김 섞기).
+  void add(RSTransform t, Rect r, double alpha) {
+    xf.add(t);
+    src.add(r);
+    colors.add(Color.fromRGBO(255, 255, 255, alpha));
+  }
 
   void clear() {
     xf.clear();
     src.clear();
+    colors.clear();
   }
 }
