@@ -19,14 +19,16 @@ typedef ShipLook = ({
   bool ghost,
   bool crown,
   bool ram,
+  bool patch,
 });
 
 void drawShipBoss(HdKit k, Canvas c, double r, double t, ShipLook look) {
   final rock = k.wave(t, 1) * 0.04; // 좌우로 흔들
   final bob = k.wave(t, 1, 1.5) * r * 0.04;
+  // extent 1.3(보스 칸의 1.15배 크게 — S1 '중간 보스가 작아 보인다'), 금관이 칸 안에 들게 조금 내려 그린다.
   c
     ..save()
-    ..translate(0, bob)
+    ..translate(0, bob + r * 0.1)
     ..rotate(rock);
   if (look.sub) {
     _subTop(k, c, r, t, look);
@@ -65,7 +67,7 @@ void _sails(HdKit k, Canvas c, double r, double t, ShipLook look) {
     ..lineTo(-r * 0.05, -r * 0.8)
     ..close();
   k.blob(c, flag, look.flag, Color.lerp(look.flag, const Color(0xFF000000), 0.35)!, gloss: false, line: 0.6);
-  if (look.crown) k.crown(c, Offset(0, -r * 0.92), r * 0.85); // 돛대 끝 큰 금관(깃발은 왼쪽으로 비켜) — 작으면 외곽선에 묻힌다
+  if (look.crown) k.crown(c, Offset(0, -r * 0.9), r * 0.75); // 돛대 끝 큰 금관(깃발은 왼쪽으로 비켜) — 작으면 외곽선에 묻힌다
 }
 
 /// 잠수함 함교(둥근 탑) + 잠망경 + 앞 프로펠러 날 흔들.
@@ -133,6 +135,13 @@ void _face(HdKit k, Canvas c, double r, double t, ShipLook look) {
   k
     ..eye(c, Offset(-r * 0.42, y), r * 0.42, angry: true)
     ..eye(c, Offset(r * 0.42, y), r * 0.42, angry: true);
+  if (look.patch) {
+    // 중간 보스 표식: 왼쪽 눈 안대 + 끈(순환 보스는 금관 — S1 '왕관 유무뿐이라 구분이 약하다').
+    k.fill.color = HdKit.inkColor;
+    c
+      ..drawLine(Offset(-r * 0.95, y - r * 0.32), Offset(r * 0.1, y - r * 0.12), k.ink)
+      ..drawOval(Rect.fromCenter(center: Offset(-r * 0.42, y + r * 0.02), width: r * 0.48, height: r * 0.5), k.fill);
+  }
   // 입 = 포문 줄: 고리에 한 번 벌렸다 닫음.
   final open = (k.wave(t, 1) + 1) * 0.5 * r * 0.06;
   final my = y + r * 0.42;

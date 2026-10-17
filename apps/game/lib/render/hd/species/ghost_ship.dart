@@ -4,7 +4,7 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/boss_ship.dart';
 
 /// 유령선(중간): 반투명 회색 선체·옅은 돛·유령 문양 — 배 보스 공용 몸(boss_ship.dart), 정면 3/4.
-const ghostShip = HdSpecies(_ghostShip, extent: 1.5, ground: 0.95);
+const ghostShip = HdSpecies(_ghostShip, extent: 1.3, ground: 0.95);
 
 const ShipLook _look = (
   hull: Color(0xFFB8C4C6),
@@ -17,6 +17,7 @@ const ShipLook _look = (
   ghost: true,
   crown: false,
   ram: false,
+  patch: true,
 );
 
 void _ghostShip(HdKit k, Canvas c, double r, double t) => drawShipBoss(k, c, r, t, _look);

@@ -4,7 +4,7 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/boss_ship.dart';
 
 /// 폭풍 해적선(중간): 녹슨 갈색 선체·회색 돛·번개 문양 — 배 보스 공용 몸(boss_ship.dart), 정면 3/4.
-const stormPirate = HdSpecies(_stormPirate, extent: 1.5, ground: 0.95);
+const stormPirate = HdSpecies(_stormPirate, extent: 1.3, ground: 0.95);
 
 const ShipLook _look = (
   hull: Color(0xFFB05A44),
@@ -17,6 +17,7 @@ const ShipLook _look = (
   ghost: false,
   crown: false,
   ram: false,
+  patch: true,
 );
 
 void _stormPirate(HdKit k, Canvas c, double r, double t) => drawShipBoss(k, c, r, t, _look);
