@@ -12,7 +12,7 @@ extension TopPaint on ScenePainter {
     scene.topHits.sprites ??= _sprite;
     _pb
       ..unitDp = frame.dot
-      ..fever = top.fever.level;
+      ..fever = math.max(top.fever.level, scene.topHits.feverStrike.rush(scene.clockMs)); // 필살기 폭주 3초도 굵은 불 꼬리
     top.paint(canvas, frame, _worldFx);
     final l = scene.layout;
     canvas
