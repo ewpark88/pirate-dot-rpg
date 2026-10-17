@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:game_cli/src/sim/sim_boss_break.dart';
 import 'package:game_cli/src/sim/sim_patch.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
@@ -28,6 +29,7 @@ class SimCommand extends Command<int> {
       ..addOption('view', defaultsTo: 'top', allowed: ['top', 'side'], help: '전장 방식(기본 탑다운, side는 삭제 전 비교용)')
       ..addFlag('boss-ad', help: '보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지)')
       ..addMultiOption('set', splitCommas: false, help: '테이블 값 덮어쓰기(탐색용) — 예: --set meta.rebirth.minStage=30 (값은 JSON)')
+      ..addFlag('boss-break', help: '보스 브레이크 계측(선원 한 명씩 보스전, 브레이크 끔·켬) — 다른 sim은 안 돈다')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로')
       ..addOption('report', help: '사람이 읽는 표(마크다운) 저장 경로 — 예: docs/balance/nightly-30d.md');
@@ -42,7 +44,12 @@ class SimCommand extends Command<int> {
   @override
   Future<int> run() async {
     final a = argResults!;
-    final t = GameTables.load(patchTables(rawTables, a['set'] as List<String>));
+    final patched = patchTables(rawTables, a['set'] as List<String>);
+    if (a['boss-break'] as bool) {
+      stdout.write(BossBreakProbe(patched).run());
+      return 0;
+    }
+    final t = GameTables.load(patched);
     final seed = int.parse(a['seed'] as String);
     final players = int.parse(a['players'] as String);
     final days = a['days'] as String?;

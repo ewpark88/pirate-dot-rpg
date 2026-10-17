@@ -232,7 +232,6 @@ class BattleSystem implements GameSystem {
       f,
       ctx,
       CombatStats.of(state, ctx.tables, now: ctx.clock.now()),
-      rage: state.progress.rage,
       invincible: _invincible,
       zeroCooldown: _zeroCooldown,
     );
@@ -241,9 +240,7 @@ class BattleSystem implements GameSystem {
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
     final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
     _fun.overflow(paid.lost, ctx);
-    final s = paid.state.copyWith(
-      progress: r.rage == state.progress.rage ? null : paid.state.progress.copyWith(rage: r.rage),
-    );
+    final s = paid.state;
     final d = f.fastSail != null ? s : recordDex(s, ctx, present: f.foes.map((e) => e.kind), killed: r.killedKinds);
     return _project(d, f, ctx.tables);
   }
@@ -295,7 +292,7 @@ class BattleSystem implements GameSystem {
 
   GameState _project(GameState s, Field f, GameTables t) => s.copyWith(
     battle: _dress.apply(
-      f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, rage: s.progress.rage, gold: s.wallet.gold),
+      f.view(s.battle ?? BattleView.empty).copyWith(wave: s.progress.wave, gold: s.wallet.gold),
       s,
       t,
     ),

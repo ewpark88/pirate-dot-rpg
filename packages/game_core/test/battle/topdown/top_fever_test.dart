@@ -54,7 +54,7 @@ void main() {
   /// [seconds] 동안 오라만 돌린다.
   void run(Field f, GameState s, double seconds) {
     final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: (_) {});
-    final r = Round(f, ctx, CombatStats.of(s, t), rage: 0);
+    final r = Round(f, ctx, CombatStats.of(s, t));
     for (var i = 0; i < (seconds / r.dt).round(); i++) {
       ctx.tick = i;
       r.feverAura(s);

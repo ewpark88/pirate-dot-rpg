@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
@@ -125,6 +126,8 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                                     ],
                                   ),
                           ),
+                          // 보스전: 브레이크 막대(기절·둔화·취약·밀림이 쌓임 — 가득이면 쓰러짐).
+                          if (g.boss) ...[const SizedBox(height: 2), const BossBreakBar()],
                           const SizedBox(height: 3),
                           // 해역 진행 (얇게).
                           ClipRRect(
@@ -176,7 +179,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                     children: [
                       Expanded(child: GoalBar(compact: true)),
                       SizedBox(width: 8),
-                      // 피버(10초 전체 강화) — 함성(궁극기 버튼 둘레)과 헷갈리지 않게 게이지 안에 따로.
+                      // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
                       FeverMeter(),
                     ],
                   ),

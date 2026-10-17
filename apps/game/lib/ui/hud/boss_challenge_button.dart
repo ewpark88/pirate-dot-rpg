@@ -50,10 +50,9 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
       return const SizedBox.shrink();
     }
     if (_bubble == null) {
-      // 처음 1회 · 궁극기 말풍선이 떠 있으면 다음 기회로 (말풍선은 한 번에 하나) · 4초 뒤 닫힘.
+      // 처음 1회 · 4초 뒤 닫힘.
       final hints = ref.read(hudHintsProvider.notifier);
-      final rageFull = ref.read(gameStateProvider).progress.rage >= tables.skills.rageMax;
-      _bubble = hints.count('boss.bubble') < 1 && hints.count('ult.on') == 0 && !rageFull;
+      _bubble = hints.count('boss.bubble') < 1;
       if (_bubble!) {
         WidgetsBinding.instance.addPostFrameCallback((_) => hints.shown('boss.bubble'));
         _hide = Timer(const Duration(seconds: 4), () {

@@ -1815,6 +1815,36 @@ const Map<String, String> rawTables = {
       "color": "#D5D8DC",
       "w": 52,
       "h": 52
+    },
+    "sea_croc": {
+      "color": "#4A8042",
+      "w": 72,
+      "h": 72
+    },
+    "monster_whale": {
+      "color": "#465476",
+      "w": 72,
+      "h": 72
+    },
+    "ice_slime": {
+      "color": "#82CCF0",
+      "w": 72,
+      "h": 72
+    },
+    "leviathan": {
+      "color": "#782C2C",
+      "w": 72,
+      "h": 72
+    },
+    "kraken_titan": {
+      "color": "#AA283C",
+      "w": 72,
+      "h": 72
+    },
+    "poseidon": {
+      "color": "#5AAAA0",
+      "w": 72,
+      "h": 72
     }
   },
   "bossLookDefault": "enemy_ship",
@@ -2047,8 +2077,6 @@ const Map<String, String> rawTables = {
     "bossFill": "#FF5A5A",
     "barBack": "#1B1726",
     "bossTimerColor": "#FF8A8A",
-    "rageFill": "#FF5A5A",
-    "rageFull": "#FFFFFF",
     "textScale": 2,
     "stageY": 5,
     "timerY": 19
@@ -2148,11 +2176,7 @@ const Map<String, String> rawTables = {
     "locked": "#4A5266",
     "lockedBorder": "#353B4C",
     "lock": "#C9D2E3",
-    "ultimateTop": "#FFE27A",
     "ultimateBottom": "#FFB31F",
-    "ultimateEdge": "#D98A00",
-    "gauge": "#FF5A6E",
-    "gaugeBack": "#7A4A12",
     "radius": 12,
     "ultimateRadius": 14,
     "border": 3,
@@ -2611,7 +2635,7 @@ const Map<String, String> rawTables = {
     "events": [
       { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 2, "autoCatchRatio": 0.3 },
       { "id": "merchant", "weight": 20, "durationSec": 20, "passMargin": 40, "passSpread": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
-      { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "rage": 0.3, "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.0, "capMul": 2}], "restSec": 2.5 },
+      { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.0, "capMul": 2}], "restSec": 2.5 },
       { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
@@ -2633,8 +2657,7 @@ const Map<String, String> rawTables = {
     "kinds": [
       { "id": "kills", "weight": 40, "sec": 30, "targetFactor": 0.85, "reward": { "type": "goldMinutes", "value": 1 } },
       { "id": "combo", "weight": 25, "sec": 45, "multiKill": 5, "times": 2, "reward": { "type": "fever", "value": 0.3 } },
-      { "id": "noHit", "weight": 20, "sec": 20, "reward": { "type": "goldMinutes", "value": 1 } },
-      { "id": "ultimate", "weight": 15, "sec": 20, "kills": 10, "minRage": 0.8, "reward": { "type": "gems", "value": 2 } }
+      { "id": "noHit", "weight": 20, "sec": 20, "reward": { "type": "goldMinutes", "value": 1 } }
     ]
   },
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
@@ -2829,7 +2852,7 @@ const Map<String, String> rawTables = {
   "crewSkills": [{"id": "support_rally", "reach": 117, "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
   "maxSameFamilyInFleet": 2,
-  "rage": {"perKill": 0.01, "max": 1.0, "autoTrigger": true, "ultimateMultiplier": 5},
+  "ultimateMultiplier": 5,
   "bossControlFactor": 0.5,
   "critBurstDamage": 0.5,
   "rarityTempo": [1, 1, 1, 0.9, 0.8],

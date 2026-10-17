@@ -13,7 +13,7 @@ import 'ui_harness.dart';
 GameState _busy() {
   final s = loadFixture('stage37_midgame');
   return s.copyWith(
-    progress: s.progress.copyWith(rage: 1, farming: true, bossFails: 1),
+    progress: s.progress.copyWith(farming: true, bossFails: 1),
     battle: s.battle!.copyWith(
       seaEvent: const SeaEventView(id: 'goldfish', ticksLeft: 120),
       challenge: const ChallengeView(id: 'kills', target: 50, value: 37, ticksLeft: 200),
@@ -35,7 +35,6 @@ const _top = [
   'bounty.strip',
   'fun.fever.on',
   'bossFail.close',
-  'hud.ult.ring',
   'boss.challenge',
   'chest.pill',
   'fleet.crew.0',
