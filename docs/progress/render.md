@@ -14,6 +14,13 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-18 · S3 · HD v2·숫자 버그·콤보·오프닝
+- 버그: 514006ef 피해 숫자 세로 겹침(쌓기 간격을 실제 그린 크기·화면 배율로, 배 피해 0 숨김) + 회귀 top_digits_early_test(dpr 3종). dae0d1c6 HD 보스 맞음 흰빛 간격. 8cc199c0 콤보는 피버에만(fx_map combo.feverOnly).
+- 점검 도구: first15_strip_test(STRIP_DIR — 실제 엔진 첫 15분 30초마다 한 장 + log). 최근 결과: 15분에 st23(st22에서 4분 정체 — S2 밸런스).
+- HD v2: 대보스 6 전용(림 라이트·이중 광택·표정 3종), 전 보스 표정 공용(HdKit.eye·굽기 기우뚱·별), 표정 시트 4행 연결(EnemyWindup·BossBroken), blob 림 라이트 자동, 배 v2(나무결·밧줄·돛 그림자·등급 장식·선원 돛 위), 보스 처치 HD 터짐(HdBossShatter), 보스 그림 배율 = 엔진 bossScaleOf(boss-scale f79dbe35 머지).
+- 오프닝: 3ed689c9 HdOpeningBackdrop 5컷(S4가 main에서 끼움).
+- 다음: A줄 오면 render 골든 일괄(대보스 호 자리) → main. 남은 것: 해역·중간 보스 전용 v2 디테일(지금은 공용 표정만), 몬스터 v2 디테일.
+
 ### 2026-10-17 밤 2 · S3 · 개편 ③ 연출 마무리 → ④ HD 전환 1단계·대보스 6
 - 7ff1ceaa 스킨별 항적·포구 색 + '새 배 스킨!' 변신. 5831f37f 보스 등장/처치 빛기둥·피버 큰 마법진. f545f6f4 render 골든 일괄(sea-v2) — main 머지됨.
 - HD: 82d81750 기준서·HdKit 부품·hd_species 목록·HdSheets 굽기(기기 해상도 8장×2방향 toImageSync, 14장 캐시)·TopEnemies HD 경로(회전 없이 좌우 뒤집기). 시범 4종 본 게임. d55cb908 blob(line:) 얇은 선. 대보스 6(ice_slime·sea_croc·kraken_titan·leviathan·monster_whale·poseidon) + 눈 선 두께를 눈 크기에 맞춤 + hd_bosses 골든 — 이번 커밋.
