@@ -1913,5 +1913,102 @@
   },
   "uiPassSkinName": "시즌1 깃발 배",
   "uiTitlePassFlag": "시즌1 항해사",
-  "uiPassLegend": "전설 소환"
+  "uiPassLegend": "전설 소환",
+  "uiDungeonTitle": "요일 던전",
+  "uiDungeonToday": "{day} · 오늘의 계열",
+  "@uiDungeonToday": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonAll": "모든 계열",
+  "uiDungeonStep": "{n}단계",
+  "@uiDungeonStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonStart": "{n}단계 도전",
+  "@uiDungeonStart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonSweep": "{n}단계 소탕",
+  "@uiDungeonSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonReward": "이 계열 선원 카드 {c}장 · 젬 {g}",
+  "@uiDungeonReward": {
+    "placeholders": {
+      "c": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonCrewNote": "출전은 이 계열 선원으로 잠시 바뀌어요",
+  "uiDungeonNoCrew": "이 계열 선원이 없어요 — 다른 요일에 도전해요",
+  "uiDungeonStrip": "요일 던전 {n}단계 · {wave}/{waves}파",
+  "@uiDungeonStrip": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonClear": "{n}단계 클리어!",
+  "@uiDungeonClear": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonFail": "{n}단계 실패",
+  "@uiDungeonFail": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonTicketBack": "도전권은 돌려받았어요",
+  "uiDungeonTimeout": "시간 초과",
+  "uiDungeonSwept": "{n}단계 소탕 · {reward}",
+  "@uiDungeonSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeekday1": "월요일",
+  "uiWeekday2": "화요일",
+  "uiWeekday3": "수요일",
+  "uiWeekday4": "목요일",
+  "uiWeekday5": "금요일",
+  "uiWeekday6": "토요일",
+  "uiWeekday7": "일요일"
 }

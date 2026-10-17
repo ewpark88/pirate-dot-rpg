@@ -16,6 +16,7 @@ import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
+import 'package:pirate_dot/ui/scene/dungeon_card.dart';
 import 'package:pirate_dot/ui/scene/rush_card.dart';
 import 'package:pirate_dot/ui/scene/tower_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -59,6 +60,8 @@ class VoyageTab extends ConsumerWidget {
         const TowerCard(),
         const SizedBox(height: 8),
         const RushCard(),
+        const SizedBox(height: 8),
+        const DungeonCard(),
         if (!ready) ...const [SizedBox(height: 8), RebirthCard()],
         // 바다 괴물 도감 (보물지도 옆, S1 2026-10-16 — 골격).
         const SizedBox(height: 8),
