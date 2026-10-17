@@ -7,6 +7,7 @@ import 'package:game_data/src/models/economy_tables.dart';
 import 'package:game_data/src/models/region_tables.dart';
 import 'package:game_data/src/models/render_tables.dart';
 import 'package:game_data/src/models/skill_tables.dart';
+import 'package:game_data/src/models/story_tables.dart';
 import 'package:game_data/src/tables.g.dart';
 
 /// 모든 데이터 테이블. [GameTables.load]로 만들면 검증까지 끝난 상태다.
@@ -24,6 +25,7 @@ class GameTables {
     required this.fxMap,
     required this.ads,
     required this.meta,
+    required this.story,
   });
 
   /// [raw]를 주지 않으면 앱에 심은 테이블(tables.g.dart)을 쓴다.
@@ -49,6 +51,7 @@ class GameTables {
       fxMap: FxMapTable.fromJson(read('fx_map')),
       ads: AdsTable.fromJson(read('ads')),
       meta: MetaTable.fromJson(read('meta')),
+      story: StoryTable.fromJson(read('story')),
     );
     final errors = t.validate();
     if (errors.isNotEmpty) throw TableValidationException(errors);
@@ -68,6 +71,9 @@ class GameTables {
   final AdsTable ads;
   final MetaTable meta;
 
+  /// 짧은 시나리오(오프닝·보스 대사, story.json).
+  final StoryTable story;
+
   /// 테이블 하나씩의 검증 + 테이블 사이 참조 검증.
   List<String> validate() {
     final e = <String>[
@@ -83,6 +89,7 @@ class GameTables {
       ...fxMap.validate(),
       ...ads.validate(),
       ...meta.validate(),
+      ...story.validate(regions.bosses.keys.toSet()),
     ];
     final fxIds = fxMap.sheets.map((s) => s.id).toSet();
     final familyIds = skills.families.map((f) => f.id).toSet();

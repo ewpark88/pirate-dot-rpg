@@ -10,4 +10,5 @@ export 'src/models/legend_tables.dart';
 export 'src/models/region_tables.dart';
 export 'src/models/render_tables.dart';
 export 'src/models/skill_tables.dart';
+export 'src/models/story_tables.dart';
 export 'src/tables.g.dart' show rawTables;
