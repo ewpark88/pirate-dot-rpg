@@ -1,15 +1,19 @@
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 리바이어던(대보스 td_boss:leviathan): 바다에서 S자로 솟은 붉은 바다뱀 — 몸 고리가 물결처럼 오르내리고,
-/// 뿔 달린 머리가 불빛 눈으로 내려다본다. 몸 고리 둘이 물에 잠겼다 나온다(물 고리).
-const leviathan = HdSpecies(_leviathan, extent: 1.6, ground: 1);
+/// 뿔 달린 머리가 불빛 눈으로 내려다본다. 몸 고리 둘이 물에 잠겼다 나온다(물 고리). HD v2: 머리 1.35배(2등신)·
+/// 림 라이트·이중 광택, 표정: 평소 / 공격 예고(고개를 쳐들고 입 안 불빛·붉은 눈) / 쓰러짐(목이 옆으로 축·소용돌이 눈·별).
+const leviathan = HdSpecies(_leviathan, extent: 1.75, ground: 1);
 
 void _leviathan(HdKit k, Canvas c, double r, double t) {
   const red = Color(0xFFE8503A);
   const redD = Color(0xFF7A1E22);
   const belly = Color(0xFFFFC46A);
+  final wind = k.mood == HdMood.windup;
+  final down = k.mood == HdMood.down;
   // 물에 잠긴 몸 고리 2개(뒤): 물 위로 반원만
   for (final (x, ph) in const [(0.95, 0.0), (-0.95, 2.0)]) {
     final up = r * (0.32 + k.wave(t, 1, ph) * 0.05);
@@ -21,10 +25,12 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
     _waterRing(k, c, Offset(x * r, r * 0.95), r * 0.42);
   }
   // 목(S자) — 아래 물에서 머리까지 굵은 줄 + 배 비늘 줄
-  final sway = k.wave(t, 1) * r * 0.1;
+  // 쓰러짐: 목이 옆으로 축 처짐, 예고: 고개를 쳐든다
+  final sway = down ? r * 0.55 + k.wave(t, 1) * r * 0.03 : k.wave(t, 1) * r * 0.1;
+  final lift = wind ? -r * 0.12 : (down ? r * 0.25 : 0.0);
   final neck = Path()
     ..moveTo(0, r * 0.95)
-    ..cubicTo(r * 0.7, r * 0.45, -r * 0.6 + sway, -r * 0.1, sway * 0.6, -r * 0.55);
+    ..cubicTo(r * 0.7, r * 0.45, -r * 0.6 + sway, -r * 0.1 + lift, sway * 0.6, -r * 0.55 + lift);
   k.limb(c, neck, red, r * 0.5);
   _scales(k, c, neck, r);
   _waterRing(k, c, Offset(0, r * 0.95), r * 0.5);
@@ -40,7 +46,11 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
   // 머리(위에서 내려다봄): 넓은 턱·뿔 둘
   c
     ..save()
-    ..translate(sway * 0.6, -r * 0.82);
+    ..translate(sway * 0.6, -r * 0.72 + lift)
+    ..rotate(down ? 0.5 : 0)
+    ..scale(1.35); // v2: 머리를 크게(2등신) — 선 두께는 그대로 보이게 나눈다
+  final ink0 = k.ink.strokeWidth;
+  k.ink.strokeWidth = ink0 / 1.35;
   for (final s in const [-1.0, 1.0]) {
     final horn = Path()
       ..moveTo(s * r * 0.22, -r * 0.2)
@@ -56,10 +66,17 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
     ..quadraticBezierTo(r * 0.3, r * 0.42, 0, r * 0.45)
     ..quadraticBezierTo(-r * 0.3, r * 0.42, -r * 0.48, r * 0.05)
     ..close();
-  k.blob(c, head, const Color(0xFFFF8A6A), redD);
+  k
+    ..blob(c, head, const Color(0xFFFF8A6A), redD)
+    ..rim(c, head, const Color(0x99FFE8C8))
+    ..shine2(c, head.getBounds());
   // 불빛 눈(주황 + 세로 동공)
   for (final s in const [-1.0, 1.0]) {
     final at = Offset(s * r * 0.24, -r * 0.08);
+    if (down) {
+      k.dizzyEye(c, at, r * 0.26, t * s);
+      continue;
+    }
     final eye = Rect.fromCenter(center: at, width: r * 0.26, height: r * 0.24);
     k.fill.color = const Color(0xFFFFB02A);
     c
@@ -69,7 +86,9 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
     c
       ..drawOval(Rect.fromCenter(center: at, width: r * 0.06, height: r * 0.18), k.fill)
       ..drawLine(at + Offset(-s * r * 0.18, -r * 0.2), at + Offset(s * r * 0.14, -r * 0.1), k.ink);
+    if (wind) k.angerEye(c, at, r * 0.26);
   }
+  final open = wind ? r * 0.16 : (k.wave(t, 1, 1) + 1) * r * 0.03;
   // 입 + 송곳니, 콧구멍
   k
     ..mouth(
@@ -77,13 +96,21 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
       Path()
         ..moveTo(-r * 0.24, r * 0.2)
         ..quadraticBezierTo(0, r * 0.12, r * 0.24, r * 0.2)
-        ..quadraticBezierTo(0, r * 0.4 + (k.wave(t, 1, 1) + 1) * r * 0.03, -r * 0.24, r * 0.2)
+        ..quadraticBezierTo(0, r * 0.4 + open, -r * 0.24, r * 0.2)
         ..close(),
     )
     ..tooth(c, Offset(-r * 0.2, r * 0.17), r * 0.09, r * 0.12)
     ..tooth(c, Offset(r * 0.11, r * 0.17), r * 0.09, r * 0.12)
     ..spots(c, r, const [(-0.07, 0.1, 0.025), (0.07, 0.1, 0.025)], HdKit.inkColor);
+  if (wind) {
+    // 입 안 불빛(브레스 예고)
+    final g = 0.6 + 0.4 * (k.wave(t, 4) + 1) / 2;
+    k.fill.color = Color.fromRGBO(255, 200, 60, 0.85 * g);
+    c.drawCircle(Offset(0, r * 0.3), r * 0.07 * (1 + g * 0.4), k.fill);
+  }
+  k.ink.strokeWidth = ink0;
   c.restore();
+  if (down) k.dizzyStars(c, Offset(sway * 0.6, -r * 1.25 + lift), r, t);
   k.spots(c, r, const [(0.3, 0.35, 0.03), (-0.1, 0.05, 0.03)], belly);
 }
 

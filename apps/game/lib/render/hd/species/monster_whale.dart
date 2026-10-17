@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 괴물 고래(대보스 td_boss:monster_whale): 작살이 박힌 회청색 거대 고래가 정면으로 떠오른다 — 지느러미를 퍼덕이고
-/// 붉은 눈·흉터, 숨구멍에서 물줄기가 고리마다 솟는다.
+/// 붉은 눈·흉터, 숨구멍에서 물줄기가 고리마다 솟는다. HD v2: 림 라이트·이중 광택, 표정: 평소 / 공격 예고(입 활짝·
+/// 붉은 눈·물줄기 크게 계속) / 쓰러짐(배를 드러내며 기우뚱·소용돌이 눈·별).
 const monsterWhale = HdSpecies(_monsterWhale, extent: 1.55, ground: 1.02);
 
 /// 용암 고래(해역 보스 td_boss:lava_whale): 같은 고래 몸에 검은 현무암 피부·빛나는 용암 금, 숨구멍에서 연기와 불똥.
@@ -16,7 +18,10 @@ void _lavaWhale(HdKit k, Canvas c, double r, double t) => _whale(k, c, r, t, lav
 void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
   final grey = lava ? const Color(0xFF6A5E62) : const Color(0xFF8AA6D8);
   final greyD = lava ? const Color(0xFF221A1E) : const Color(0xFF34466E);
-  final bob = k.wave(t, 1) * r * 0.04;
+  final wind = k.mood == HdMood.windup;
+  final down = k.mood == HdMood.down;
+  final bob = k.wave(t, wind ? 2 : 1) * r * (wind ? 0.06 : 0.04);
+  if (down) k.downTilt(c, r * 0.95, t);
   // 꼬리(아래 뒤로 보이는 두 갈래)
   final flick = k.wave(t, 1, 1) * r * 0.06;
   for (final s in const [-1.0, 1.0]) {
@@ -49,7 +54,10 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
     ..quadraticBezierTo(-r * 0.45, r * 0.85, -r * 0.75, r * 0.4)
     ..cubicTo(-r * 0.95, -r * 0.2, -r * 0.75, -r * 0.95, 0, -r * 0.95)
     ..close();
-  k.blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD);
+  k
+    ..blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD)
+    ..rim(c, body, lava ? const Color(0x99FFB060) : const Color(0x99E0F0FF))
+    ..shine2(c, body.getBounds());
   // 흰 배(주름 줄)
   final belly = Path()
     ..moveTo(-r * 0.48, r * 0.1)
@@ -123,6 +131,10 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
   // 붉은 눈(화남) + 큰 입(이빨 몇 개)
   for (final s in const [-1.0, 1.0]) {
     final at = Offset(s * r * 0.42, -r * 0.42);
+    if (down) {
+      k.dizzyEye(c, at, r * 0.3, t * s);
+      continue;
+    }
     final eye = Rect.fromCenter(center: at, width: r * 0.28, height: r * 0.3);
     k.fill.color = lava ? const Color(0xFFFFB02A) : const Color(0xFFFF4A3A);
     c
@@ -134,20 +146,21 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
     c
       ..drawCircle(at + Offset(-r * 0.05, -r * 0.06), r * 0.035, k.fill)
       ..drawLine(at + Offset(-s * r * 0.2, -r * 0.25), at + Offset(s * r * 0.16, -r * 0.14), k.ink);
+    if (wind) k.angerEye(c, at, r * 0.3);
   }
   k.mouth(
     c,
     Path()
       ..moveTo(-r * 0.5, -r * 0.12)
       ..quadraticBezierTo(0, r * 0.02, r * 0.5, -r * 0.12)
-      ..quadraticBezierTo(0, r * 0.12 + (k.wave(t, 1) + 1) * r * 0.03, -r * 0.5, -r * 0.12)
+      ..quadraticBezierTo(0, r * (wind ? 0.34 : 0.12) + (k.wave(t, 1) + 1) * r * 0.03, -r * 0.5, -r * 0.12)
       ..close(),
   );
   for (final x in const [-0.36, -0.12, 0.12]) {
     k.tooth(c, Offset(x * r, -r * 0.08), r * 0.12, r * 0.09);
   }
   // 숨구멍 물줄기(고리 앞 절반에 솟고 사라짐)
-  final spout = (k.wave(t, 1, -1.2) + 1) / 2;
+  final spout = wind ? 1.0 : (down ? 0.0 : (k.wave(t, 1, -1.2) + 1) / 2);
   if (spout > 0.25) {
     // 용암 고래는 회색 연기 + 불똥
     k.fill.color = lava ? Color.fromRGBO(90, 80, 84, 0.8 * spout) : Color.fromRGBO(220, 244, 255, 0.85 * spout);
@@ -167,4 +180,8 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
     }
   }
   c.restore();
+  if (down) {
+    k.dizzyStars(c, Offset(0, -r * 1.2), r, t);
+    c.restore();
+  }
 }

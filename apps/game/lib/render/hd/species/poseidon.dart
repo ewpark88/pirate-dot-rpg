@@ -1,9 +1,12 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 포세이돈(대보스 td_boss:poseidon): 금관·흰 수염의 바다 왕 — 삼지창을 들고 물고기 꼬리를 흔들며 떠 있다.
-/// 금 어깨갑옷·허리띠, 삼지창 끝이 번쩍인다(고리마다 한 번).
+/// 금 어깨갑옷·허리띠, 삼지창 끝이 번쩍인다(고리마다 한 번). HD v2: 림 라이트·이중 광택, 표정: 평소 / 공격 예고(삼지창에
+/// 번개 구슬·붉은 눈·고함) / 쓰러짐(금관이 비뚤어지고 소용돌이 눈·기우뚱·별).
 const poseidon = HdSpecies(_poseidon, extent: 1.6, ground: 1.1);
 
 void _poseidon(HdKit k, Canvas c, double r, double t) {
@@ -11,7 +14,10 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
   const skinD = Color(0xFF2A9A8E);
   const gold = Color(0xFFFFE27A);
   const goldD = Color(0xFFD8901A);
+  final wind = k.mood == HdMood.windup;
+  final down = k.mood == HdMood.down;
   final bob = k.wave(t, 1) * r * 0.05;
+  if (down) k.downTilt(c, r * 1.0, t);
   // 물고기 꼬리(아래로 휘어 흔들림)
   final sw = k.wave(t, 1, 1) * r * 0.12;
   final tail = Path()
@@ -67,6 +73,7 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
     ..close();
   k
     ..blob(c, torso, skin, skinD)
+    ..rim(c, torso, const Color(0x99E8FFF8))
     // 손(삼지창 쥔 주먹)
     ..blob(
       c,
@@ -85,7 +92,10 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
   }
   // 머리(2등신 — 몸통만큼 크게): 얼굴 → 수염 → 눈썹 짙은 눈 → 금관
   final face = Path()..addOval(Rect.fromCenter(center: Offset(0, -r * 0.72), width: r * 0.86, height: r * 0.8));
-  k.blob(c, face, const Color(0xFFB4FFE8), skinD);
+  k
+    ..blob(c, face, const Color(0xFFB4FFE8), skinD, gloss: false)
+    ..rim(c, face, const Color(0x99E8FFF8))
+    ..shine2(c, face.getBounds());
   final beard = Path()
     ..moveTo(-r * 0.42, -r * 0.66)
     ..quadraticBezierTo(-r * 0.46, -r * 0.12, 0, r * 0.02 + k.wave(t, 1) * r * 0.03)
@@ -95,11 +105,50 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
     ..close();
   k.blob(c, beard, const Color(0xFFFFFFFF), const Color(0xFFC8D8E8), gloss: false);
   for (final s in const [-1.0, 1.0]) {
-    k.eye(c, Offset(s * r * 0.18, -r * 0.8), r * 0.26, angry: true);
+    final at = Offset(s * r * 0.18, -r * 0.8);
+    if (down) {
+      k.dizzyEye(c, at, r * 0.24, t * s);
+    } else {
+      k.eye(c, at, r * 0.26, angry: true);
+      if (wind) k.angerEye(c, at, r * 0.26);
+    }
   }
-  k.crown(c, Offset(0, -r * 1.06), r * 0.66);
+  if (wind) {
+    // 고함(수염 위로 벌린 입)
+    k.mouth(c, Path()..addOval(Rect.fromCenter(center: Offset(0, -r * 0.5), width: r * 0.22, height: r * 0.16)));
+  }
+  // 쓰러짐: 금관이 비뚤어짐
+  c
+    ..save()
+    ..translate(down ? r * 0.12 : 0, -r * 1.06)
+    ..rotate(down ? 0.45 : 0);
+  k.crown(c, Offset.zero, r * 0.66);
+  c.restore();
   // 삼지창 번쩍(고리 끝 무렵)
-  final flash = k.wave(t, 1, -2);
+  final flash = wind ? 1.0 : k.wave(t, 1, -2);
+  if (wind) {
+    // 번개 구슬(삼지창 끝) — 지지직 가지
+    final tip = Offset(r * 0.82, -r * 1.42);
+    k.fill.color = const Color(0x6680D8FF);
+    _glow(c, k, tip, r * (0.22 + 0.05 * k.wave(t, 4)));
+    final w0 = k.ink.strokeWidth;
+    final bolt = Paint()
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w0 * 0.5
+      ..color = const Color(0xFFFFF6A0);
+    for (var i = 0; i < 4; i++) {
+      final a = i * math.pi / 2 + t / 90;
+      final p = Path()..moveTo(tip.dx, tip.dy);
+      for (var j = 1; j <= 3; j++) {
+        p.lineTo(
+          tip.dx + math.cos(a + (j.isEven ? 0.4 : -0.4)) * r * 0.1 * j,
+          tip.dy + math.sin(a + (j.isEven ? 0.4 : -0.4)) * r * 0.1 * j,
+        );
+      }
+      c.drawPath(p, bolt);
+    }
+  }
   if (flash > 0.6) {
     final a = (flash - 0.6) / 0.4;
     final at = Offset(r * 0.82, -r * 1.38);
@@ -125,4 +174,15 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
       );
   }
   c.restore();
+  if (down) {
+    k.dizzyStars(c, Offset(0, -r * 1.45), r, t);
+    c.restore();
+  }
+}
+
+/// 빛 구슬(바깥 옅게 → 가운데 희게).
+void _glow(Canvas c, HdKit k, Offset at, double rad) {
+  c.drawCircle(at, rad, k.fill);
+  k.fill.color = const Color(0xCCE8FBFF);
+  c.drawCircle(at, rad * 0.45, k.fill);
 }
