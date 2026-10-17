@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui — 실기기 ①~⑤(복귀 창·맛보기 간격·넘침 배지·고해상 초상)까지 끝, main 6525a220 머지 |
-| 다음 | S5 결제 배선(review/iap-wiring 780abc0e) main 반영 → 상점 화면(가격 = products().price, 없으면 숨김)·대기/실패 토스트·운영자 '결제' 묶음 · A줄 받으면 test/ui 골든 일괄 |
+| 상태 | lane/ui — 상점·운영자 결제·항해 패스·요일 던전 끝(빠른 check 통과), main f6dc2ecc 머지 |
+| 다음 | 실기기 확인 뒤 다듬기(상점 가격 글꼴 '₩'·패스 스킨 미리보기 장식) · trialsReady export 오면 UI 어댑터 지우기 |
 | 기다리는 것 | S2 trialsReady export · S5 결제 어댑터 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -15,6 +15,12 @@
 - 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-18 · S4 · 결제·패스·요일 던전
+- 211ac225 상점(iap.json 18종, 가격 = products().price·없으면 숨김, 묶음·첫 구매 ×2·보유 중·구독 n일·월간 젬 받기, 위 막대 버튼, PurchaseGate 토스트, 스타터 1회 팝업 7일) + A줄 골든 일괄.
+- c308af23 운영자 '결제(흉내)' 묶음. 4352be2b 항해 패스(카드·두 줄 30칸·모두 받기·스킨 미리보기). 요일 던전(카드·띠·후퇴·결과).
+- 남은 문제: 게임 글꼴에 '₩' 없음 → 'n원'으로 바꿔 보임. 패스 스킨 미리보기는 ShipPreview라 렌더의 패스 장식(HdPassDecor)이 안 보일 수 있다(S3 확인).
+- 교훈: 운영자 패널 시험의 _tap은 아래로만 굴려 묶음이 늘면 위 버튼을 놓친다 → 맨 위에서 시작.
 
 ### 2026-10-17 밤 3 · S4 · 대본 연결·맛보기·재도전 링·배치 확정·승급 잠금·실기기 ①~⑤
 - e2333f92 story.json 대본 + S3 오프닝 배경. 81daad4b 맛보기 팝업(ClaimTrial, 끝나면 광고 10분 더/영구). 9102e65c 자동 재도전 링(autoBossTicksLeft).
