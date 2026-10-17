@@ -8,8 +8,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
-| 마지막 갱신 | 2026-10-15 · S1 |
-| 바로 다음 할 일 | **탑다운 전환(docs/plans/active/topdown-migration.md)**: T0·T1·T2 main 머지 완료(운영자 토글로 실행) → 적 밀도·보스 위치 균형 → T4 기본값 전환·옆모습 제거 · 환생 v2 연결·forecast · 스킨 r2 |
+| 마지막 갱신 | 2026-10-17 · S1 |
+| 바로 다음 할 일 | **인계 docs/plans/active/handoff-2026-10-16.md 4절 재개 순서**: check --full → 레인 4개 재배정(완료) → 폰 연결 시 release_smoke 설치·발열 측정 → fever-break UI·보스 브레이크 수치·대보스 도트·도감 v2 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -111,6 +111,10 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ```
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 · S1 · 재개: 레인 재배정
+- 세션 새로 열림: S2 economy=pirate-dot-rpg-26, S3 render=-5d, S4 ui=-24, S5 platform=-e8 (각자 D:\Projects\pde-<레인>). 인계 1절의 레인별 할 일 그대로 배정, 무거운 작업은 S1에 slot 요청 후 하나씩.
+- main 07b7f035 check --full 실행. 폰 미연결(adb 장치 없음) → 설치·실측은 연결 뒤.
 
 ### 2026-10-16 · S1 · 저녁: 사용자 퇴근 — 인계
 - 인계 문서: docs/plans/active/handoff-2026-10-16.md(오늘 사용자 요청 전체·상태·결정·머지 대기·재개 순서). 재개 시 이 문서부터.
