@@ -70,10 +70,16 @@ class _SfxPool {
     if (_players.length < size) {
       final p = AudioPlayer()..audioCache = FlameAudio.audioCache;
       _players.add(p); // 먼저 넣어 같은 프레임의 다른 요청이 플레이어를 더 만들지 않게
-      await p.setAudioContext(context);
-      await p.setPlayerMode(PlayerMode.lowLatency);
-      await p.setReleaseMode(ReleaseMode.stop);
-      await p.setSource(AssetSource(path));
+      try {
+        await p.setAudioContext(context);
+        await p.setPlayerMode(PlayerMode.lowLatency);
+        await p.setReleaseMode(ReleaseMode.stop);
+        await p.setSource(AssetSource(path));
+      } on Object {
+        _players.remove(p); // 만들다 실패한 플레이어를 고리에 남기지 않는다
+        unawaited(p.dispose().catchError((Object _) {}));
+        rethrow;
+      }
       return p;
     }
     final p = _players[_next];
@@ -84,9 +90,17 @@ class _SfxPool {
 
   Future<void> play(double volume, double rate) async {
     final p = await _player();
-    await p.setVolume(volume);
-    if (rate != 1) await p.setPlaybackRate(rate);
-    await p.resume();
+    try {
+      await p.setVolume(volume);
+      if (rate != 1) await p.setPlaybackRate(rate);
+      await p.resume();
+    } on Object {
+      // 고장 난 플레이어(소스 해제·플랫폼 오류)는 고리에서 빼서 다음에 새로 만든다 — 그 자리만 계속 무음이 되지 않게.
+      _players.remove(p);
+      if (_next >= _players.length) _next = 0;
+      unawaited(p.dispose().catchError((Object _) {}));
+      rethrow;
+    }
   }
 
   Future<void> stopAll() async {

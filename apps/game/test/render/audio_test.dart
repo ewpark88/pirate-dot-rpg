@@ -3,6 +3,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/sound_director.dart';
 
 import 'helpers.dart';
 
@@ -121,6 +122,21 @@ void main() {
       for (var t = 5; t < 8; t++) at(t, 51),
     ], audio);
     expect(audio.bgm, ['bgm_coral', tables.fxMap.raw.obj('topEvents').obj('fever').str('bgm'), 'bgm_storm']);
+  });
+
+  test('회귀(사용자 폰 버그 — 가끔 타격음이 사라짐): 장면 시계가 뒤로 가도(장면 새로 만들기·기록 처음부터) 효과음이 막히지 않는다', () {
+    final rec = _Rec();
+    final d = SoundDirector(tables.fxMap, tables.juice)..audio = rec;
+    for (var ms = 0.0; ms < 3000; ms += 50) {
+      d.sfx('damage', clockMs: 60000 + ms, tick: ms.toInt());
+    }
+    final before = rec.sfx.length;
+    expect(before, greaterThan(0));
+    // 시계가 0 근처로 돌아왔다 — 예전엔 '마지막 재생 시각'이 미래(6만 ms)로 남아 한동안 무음이었다.
+    for (var ms = 0.0; ms < 500; ms += 50) {
+      d.sfx('damage', clockMs: ms, tick: ms.toInt());
+    }
+    expect(rec.sfx.length, greaterThan(before));
   });
 
   test('수용 기준 5: audio가 없으면 아무 일 없음', () {
