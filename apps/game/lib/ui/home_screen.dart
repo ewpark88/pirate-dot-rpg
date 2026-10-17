@@ -64,11 +64,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     // 이탈 분석(설계서 4.9): 마지막으로 본 화면·스테이지.
     ref.listenManual(gameStateProvider.select((s) => s.progress.stage), (_, _) => _reportLastSeen());
     _reportLastSeen();
-    // 알약·안내의 바로가기(환생 가능 → 항해 탭 등): 그 탭 시트를 연다.
+    // 알약·안내의 바로가기(환생 가능 → 항해 탭 등): 그 탭 시트를 연다. 닫기 요청이면 닫는다.
     ref.listenManual(dockTabRequestProvider, (_, tab) {
       if (tab == null) return;
-      setState(() => _tab = tab);
-      if (!_open) _snapTo(_snapHalf);
+      if (tab == dockCloseRequest) {
+        _close(); // 환영 카드 순간 — 전장 가운데 카드 연출이 보이게
+      } else {
+        setState(() => _tab = tab);
+        if (!_open) _snapTo(_snapHalf);
+      }
       ref.read(dockTabRequestProvider.notifier).done();
       _reportLastSeen();
     });
@@ -135,7 +139,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       child: SummonResultGate(
         child: RebirthDoneGate(
           child: BountyResultGate(
-            // 빠른 항해 돌파 끝 요약 창.
             child: FastSailEndGate(
               child: ShipLookCelebrationGate(
                 child: FleetRejectedToast(
@@ -190,8 +193,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           child: GestureDetector(
             // 시트가 열렸을 때 전투 영역의 빈 곳을 누르면 닫힌다(보물상자·칸 버튼은 자기가 먼저 받는다).
             behavior: HitTestBehavior.translucent,
-            // 화면 낭독용 닫기는 뒤로 가기·손잡이로 — 전장 전체가 ‘누를 수 있는 곳’으로 읽히지 않게.
-            excludeFromSemantics: true,
+            excludeFromSemantics: true, // 낭독용 닫기는 뒤로 가기·손잡이로 — 전장 전체가 누를 곳으로 읽히지 않게
             onTap: _open ? _close : null,
             child: Stack(
               key: const Key('battle.area'),
@@ -205,13 +207,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
                 const FeverDrama(),
                 const BottleChoices(),
                 const SailStartButton(),
-                // 코인 도착: 골드 아이콘 자리를 렌더에 알린다(그림·누름 없음).
                 const IgnorePointer(child: CoinLink()),
               ],
             ),
           ),
         ),
-        // 위쪽 띠 (게이지·목표·전투력·안내·말풍선).
         Positioned(left: 0, right: 0, top: 0, child: BattleTopStrip(tutorial: tutorial)),
         // 도크: 시트 위(닫힘이면 화면 아래). 도크 위에는 아무것도 얹지 않는다 — 전장 상자가 도크 높이만큼만 비켜 있으므로(선원 줄 가림 버그).
         Positioned(

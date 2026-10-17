@@ -1250,5 +1250,113 @@
       }
     }
   },
-  "uiLevelUpFx": "LEVEL UP!"
+  "uiLevelUpFx": "LEVEL UP!",
+  "uiSkinHowCollection": "도감 {n}명 모으기",
+  "uiSkinHowStage": "스테이지 {n} 도달",
+  "uiSkinHowBounty": "현상금 보스 {n}단계 깨기",
+  "uiSkinHowBountyAll": "모든 현상금 보스 {n}단계",
+  "uiSkinHowPieces": "지도 조각 {n}개로 사기",
+  "uiSkinWear": "입기",
+  "uiSkinBuy": "조각 {n}개로 사기",
+  "uiSkinGot": "새 배 스킨: {name}!",
+  "uiSkinTryOn": "입어 보기",
+  "uiSkinProgress": "{now} / {need}",
+  "@uiSkinHowCollection": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowBounty": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowBountyAll": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowPieces": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinBuy": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinGot": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSkinProgress": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCollectNext": "다음 보상 {at}명: {reward}",
+  "uiCollectGems": "젬 {n}",
+  "uiCollectSummons": "무료 소환 {n}회",
+  "uiCollectClaim": "보상 받기 ({at}명) · {reward}",
+  "uiCollectAllDone": "도감 보상을 모두 받았어요",
+  "@uiCollectNext": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiCollectGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectClaim": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  }
 }

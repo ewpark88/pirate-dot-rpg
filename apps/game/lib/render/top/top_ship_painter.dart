@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/top/skin_decor.dart';
 
@@ -11,6 +12,10 @@ class TopShipPainter {
   TopShipPainter(this.sprites);
 
   final SpriteDraw sprites;
+
+  /// HD 카툰 배(개편 ④ — 위에서 본 코드 벡터). false면 옛 도트 층 시트.
+  bool hd = true;
+  final _hd = HdShip();
 
   static const _recoilSqueeze = 0.07;
 
@@ -44,6 +49,32 @@ class TopShipPainter {
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
+    if (hd) {
+      final live = now != 0;
+      final decor = skin != null && SkinDecor.ids.contains(skin) ? skin : null;
+      c
+        ..save()
+        ..translate(0, live ? math.sin(now / 700) * 0.5 : 0)
+        ..rotate(live ? math.sin(now / 900) * 0.026 : 0);
+      if (decor != null) _decor.under(c, decor, size, now);
+      _hd.paint(
+        c,
+        size,
+        look,
+        HdShip.skins[skin] ?? HdShip.tierColors(tierId),
+        glowPart: glowPart,
+        glow: glow,
+        recoil: recoil,
+        billow: live ? math.max(billow, 0.15 + 0.1 * math.sin(now / 240)) : billow,
+        flash: flash,
+        alpha: SkinDecor.alphaOf(decor),
+        rainbow: HdShip.rainbowSkins.contains(skin),
+        now: now,
+      );
+      if (decor != null) _decor.over(c, decor, size, now);
+      c.restore();
+      return true;
+    }
     // 그림자: 지금 선체 단계 실루엣을 오른쪽 아래로 3·4단위 (선체 층 = 단계마다 길이·뱃머리가 다름).
     final hull = sprites.sheet('td:$tierId:hull');
     if (hull != null) {

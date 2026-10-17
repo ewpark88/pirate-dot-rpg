@@ -193,7 +193,7 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
             battle: false,
             dim: line.dim,
           )
-        : guideTalkFor(l10n, scene: scene, step: step, id: id);
+        : (ref.watch(guideHoldProvider) ? null : guideTalkFor(l10n, scene: scene, step: step, id: id));
     _onTalk(talk);
     final showing = talk != null && _shown == talk.key && _reaction == null;
     final holes = !showing || talk.battle ? const <Rect>[] : [for (final s in talk.spots) ...?_rects[s]];

@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/crew/new_mate.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 
 import 'ui_harness.dart';
 
@@ -83,4 +87,23 @@ void main() {
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/${lang}_new_mate_$name.png'));
     });
   }
+
+  testWidgets('환영 카드(starter) 순간: 열린 시트를 닫고 가이드 말을 연출 동안 접는다 (S3 c12ced0a)', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = loadFixture('new_player');
+    await pumpGame(tester, s, tab: shipTabIndex, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    expect(find.byKey(const Key('sheet.panel')), findsOneWidget);
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    feed.add(
+      RecordedTick(s.battle!, const [CardGranted(3, crewId: 'bones', rarity: 'rare', source: 'starter', isNew: true)]),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.byKey(const Key('sheet.panel')), findsNothing, reason: '시트가 닫혀 전장이 넓게');
+    expect(c.read(guideHoldProvider), isTrue);
+    await tester.pump(newMateDelay);
+    expect(c.read(guideHoldProvider), isFalse);
+    await tester.pumpAndSettle();
+  });
 }

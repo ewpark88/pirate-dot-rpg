@@ -1,12 +1,26 @@
+import 'package:flame/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/render/top/ship_skins.dart';
 
 import 'helpers.dart';
 
 /// 배 스킨 v2(사용자 #8 '배 스킨을 늘려서 재미'): 새 6종 — 해적왕 금장·유령선·얼음 쇄빙선·용암 철갑선·산호 요정선·무지개 축제선.
 /// 색 바꾸기 + 무늬(무지개 돛·점 무늬). 위 줄 = 군함(warship) 부품 4단계, 아래 줄 = 슬루프(sloop) 3단계.
 void main() {
+  test('같은 스킨을 동시에 굽기 요청해도 둘 다 끝날 때 준비됨(배 탭 미리보기 여러 칸 — S4 신고)', () async {
+    final bank = await SpriteBank.load(Images(prefix: 'assets/'), tables, only: 'td:');
+    final skins = ShipSkins();
+    final cfg = tables.fxMap.raw.obj('topShip').obj('skinPreview').obj('fairy');
+    const keys = ['td:sloop:hull'];
+    final a = skins.prepare('fairy', cfg, bank, keys);
+    await skins.prepare('fairy', cfg, bank, keys);
+    expect(skins.ready('fairy'), isTrue, reason: '두 번째 요청이 첫 굽기를 기다려야 한다');
+    await a;
+  });
+
   testWidgets('배 스킨 v2 시안: 새 6종 × 등급 2', (tester) async {
     const ids = ['king', 'ghostship', 'frost', 'lava', 'fairy', 'festival', 'abyss'];
     final skins = tables.fxMap.raw.obj('topShip').obj('skinPreview');

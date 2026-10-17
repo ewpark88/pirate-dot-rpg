@@ -17,7 +17,13 @@ void main() {
       200,
       scrollable: find.descendant(of: find.byKey(const Key('sheet.panel')), matching: find.byType(Scrollable)).first,
     );
+    // 도감 카드(수집 보상 줄)로 격자가 내려가 카드가 시트 아래 가장자리에 걸칠 수 있다 — 다 보이게 한 뒤 누른다.
+    await tester.ensureVisible(card);
+    await tester.pumpAndSettle();
     await tester.tap(card);
+    await tester.pumpAndSettle();
+    // 개편(k2)으로 창 위쪽이 커져 미리보기는 창 안에서 조금 아래 — 굴려서 본다.
+    await tester.ensureVisible(find.byType(CrewPreviewPanel));
     await tester.pumpAndSettle();
     final view = find.byType(CrewPreviewView);
     expect(view, findsOneWidget);

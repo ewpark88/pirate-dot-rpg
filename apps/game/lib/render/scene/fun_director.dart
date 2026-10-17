@@ -106,13 +106,18 @@ bool funEvent(BattleScene s, GameEvent e) {
       );
       s.topHits.cardsShown++;
       if (isNew || special) s.haptic(HapticLevel.medium);
-      _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
+      _sfx(
+        s,
+        isNew || special ? 'crewPromoted' : (from >= 0 && rs.indexOf(r) >= from ? 'cardRevealed' : 'coinArrive'),
+        e,
+      );
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y, :final reason):
       s.topHits.crew.miss(x, y, s.clockMs);
       if (reason == 'evade') s.topHits.traits?.bossFx.evade(x, y, s.clockMs);
     case BossTraitFired() when s.isTop:
+      _sfx(s, 'bossTrait', e);
       s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);
       if (e.trait == 'enrage' || e.trait == 'dash') s.shake.trigger(s.juice.shake['aoe']!);
     case FeverStarted():

@@ -32,7 +32,7 @@
 - [x] BigNum (속성 테스트 포함) — 0단계에 선행
 - [x] 세이브 v1 코덱·체크섬·마이그레이션 틀·백업 복구 — 0단계에 선행
 - [x] 전투: 무리·발사·피해·동시 처치·궁극기(공통)·보스 타이머·파밍 (`BattleSystem`) — 경제 수치는 임시 `combat_stats`
-- [ ] 강화·소환·천장·카드·승급·오프라인 (`EconomySystem`)
+- [x] 강화·소환·천장·카드·승급·오프라인 (`EconomySystem`)
 - [x] `game_cli sim`이 7.2 목표 리포트, check 밸런스 스모크 활성화 (목표 벗어남 4건 — economy 조정 대기)
 - [x] `scenarios/boss_timeout_farming.yaml` skip 해제, `boss_clear_advances.yaml` 추가 · 화면 없이 돈다(강화가 없어 스테이지 1 파밍에서 멈춤)
 - [x] `game_cli export-events` 실제 엔진 출력 (+ 앱 데모 상수 `render/demo/sample_battle.g.dart`, allLanes)
