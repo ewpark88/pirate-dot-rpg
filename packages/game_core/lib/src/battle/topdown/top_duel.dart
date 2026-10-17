@@ -27,7 +27,7 @@ final _states = Expando<_DuelState>('topDuelState');
 _DuelState _of(TopGeometry g) => _states[g] ??= _DuelState();
 
 class TopDuel {
-  TopDuel._(this.shift, this.speed, this.rise, this.turn, this.shiftY);
+  TopDuel._(this.shift, this.speed, this.rise, this.turn, this.shiftY, this.dodge);
 
   static final _cache = Expando<({TopDuel? duel})>('topDuel');
 
@@ -44,6 +44,7 @@ class TopDuel {
       d.numberOr('rise', 0) * top.number('viewHeight'),
       d.numberOr('turnDegPerSec', 0) * radiansPerDegree,
       d.numberOr('shiftY', d.number('shift')),
+      d.has('dodge') ? d.obj('dodge') : null,
     );
   }
 
@@ -59,6 +60,10 @@ class TopDuel {
 
   /// 머리 회전 상한(라디안/초). 0이면 머리를 돌리지 않는다(v1 — 기울기 0).
   final double turn;
+
+  /// 회피 대시(S1 2026-10-17 '보스 공격 예고 때 옆으로 빠르게'): {dist, speed, maxX}. 보스 패턴 예고(warn) 동안 결투 자리에서
+  /// 보스 방향의 옆으로 dist만큼 speed로 비킨다(패턴마다 번갈아 왼쪽·오른쪽, 가로는 ±maxX 안). 없으면 회피 없음.
+  final JsonReader? dodge;
 
   /// 강화로 전장 모양을 새로 만들 때 비켜서기 상태를 이어 준다(배 자리는 geometry.dart가 옮긴다).
   static void carry(TopGeometry from, TopGeometry to) {
@@ -82,11 +87,20 @@ class TopDuel {
     if (st.duelling && st.tick == f.tick) return (x: cur.x, y: cur.y, heading: st.heading);
     st.tick = f.tick;
     final duel = f.bossActive && f.fastSail == null ? _aside(f, g) : null;
-    final to = duel == null ? (x: free.x, y: free.y) : (x: duel.x, y: duel.y);
+    final side = duel == null ? 0 : _dodgeSide(f);
+    final dg = dodge;
+    final to = duel == null
+        ? (x: free.x, y: free.y)
+        : side == 0 || dg == null
+        ? (x: duel.x, y: duel.y)
+        : (
+            x: (duel.x + math.cos(duel.face) * dg.number('dist') * side).clamp(-dg.number('maxX'), dg.number('maxX')),
+            y: duel.y + math.sin(duel.face) * dg.number('dist') * side,
+          );
     final dx = to.x - cur.x;
     final dy = to.y - cur.y;
     final d = math.sqrt(dx * dx + dy * dy);
-    final max = speed * dt;
+    final max = (side == 0 || dg == null ? speed : dg.number('speed')) * dt;
     // 머리: 결투 중이면 보스 쪽, 아니면 평소(피버 기울기) — 초당 turn까지만 돈다.
     final want = duel?.face ?? free.heading;
     final turning = turn > 0 && want != st.heading;
@@ -121,6 +135,15 @@ class TopDuel {
       y = e.y + dy / d * r;
     }
     return (x: x - g.base.shipX, y: y - g.base.shipY);
+  }
+
+  /// 보스 패턴 예고 중이면 비킬 쪽(패턴 순번이 짝수면 오른쪽 1, 홀수면 왼쪽 −1), 아니면 0.
+  static int _dodgeSide(Field f) {
+    for (final e in f.foes) {
+      final p = e.plan;
+      if (e.boss && e.alive && p != null && p.phase == 'warn') return p.index.isEven ? 1 : -1;
+    }
+    return 0;
   }
 
   /// [from]에서 [to]로 가장 짧은 쪽으로 최대 [step]만큼 돈다.
