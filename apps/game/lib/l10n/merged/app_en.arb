@@ -343,6 +343,7 @@
   "opSimNone": "No purchase simulator in this build",
   "opEntitlements": "Entitlements on/off",
   "opShopOpen": "Open shop",
+  "opCaptainSkillFake": "Ultimate button (fake — fever gauge)",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -2078,5 +2079,7 @@
     }
   },
   "uiRebirthReadyAgain": "You can rebirth now! Any time from the Voyage tab.",
-  "uiRebirthGo": "Voyage"
+  "uiRebirthGo": "Voyage",
+  "uiCaptainSkill": "Captain's ultimate",
+  "uiCaptainSkillShort": "ULT"
 }

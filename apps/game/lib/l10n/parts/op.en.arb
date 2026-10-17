@@ -85,5 +85,6 @@
   "opSimReplay": "Replay last purchase",
   "opSimNone": "No purchase simulator in this build",
   "opEntitlements": "Entitlements on/off",
-  "opShopOpen": "Open shop"
+  "opShopOpen": "Open shop",
+  "opCaptainSkillFake": "Ultimate button (fake — fever gauge)"
 }
