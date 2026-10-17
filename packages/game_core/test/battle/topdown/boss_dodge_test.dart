@@ -5,12 +5,14 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 보스 공격 진짜 회피(docs/plans/active/platform-boss-dodge.md — waves.top.bossDodge, 기본 꺼짐).
 void main() {
   final start = DateTime.utc(2026, 11, 2, 3);
 
   GameTables tables({bool dodge = false, bool homing = false}) {
-    final raw = Map<String, String>.of(rawTables);
+    final raw = noDodgeRaw();
     final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
     final top = w['top'] as Map<String, dynamic>;
     if (dodge) {
@@ -54,7 +56,7 @@ void main() {
   }
 
   test('표 키가 없으면 지금 그대로 — 빗나감 0(늘 맞는다)', () {
-    final r = fight(GameTables.load(), 'enemy_ship', 30);
+    final r = fight(tables(), 'enemy_ship', 30);
     expect(r.fired, greaterThan(2));
     expect(r.missed, 0);
   });
