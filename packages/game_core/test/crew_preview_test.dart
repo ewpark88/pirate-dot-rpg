@@ -41,4 +41,15 @@ void main() {
     }
     expect(differs, isTrue);
   });
+
+  test('배 고정(OpSetShipStill): 무리 차례엔 배가 순항하지 않고 가운데 그대로 — 공격 모양이 보이게(S1 2026-10-17)', () {
+    final p = CrewPreview(t, crewId: 'pang', level: 30);
+    final top = t.waves.raw.obj('top');
+    for (var i = 0; i < phase - 1; i++) {
+      final f = p.step().frame;
+      expect(f.shipX ?? top.number('shipX'), top.number('shipX'), reason: '틱 $i');
+      expect(f.shipY ?? top.number('shipY'), top.number('shipY'), reason: '틱 $i');
+    }
+    expect(Command.fromJson(const OpSetShipStill(on: true).toJson()).toJson(), const OpSetShipStill(on: true).toJson());
+  });
 }
