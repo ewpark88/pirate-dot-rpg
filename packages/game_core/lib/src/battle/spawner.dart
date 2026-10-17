@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:game_core/src/battle/captain_skill.dart' show bossBarsAt, bossBarsLeftAt;
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
@@ -139,9 +140,12 @@ void startBoss(
     bossDef: def,
     tier: t.regions.tierAt(stage),
   );
+  final bars = bossBarsAt(t, stage); // 체력 층(boss-feel) — 불러오기면 남은 HP로 남은 층
   boss
     ..hp = boss.maxHp.times(hpRatio)
-    ..scale = bossScaleOf(t, def.id);
+    ..scale = bossScaleOf(t, def.id)
+    ..bossBars = bars
+    ..bossBarsLeft = bossBarsLeftAt(bars, hpRatio);
   if (def.patterns.isNotEmpty) {
     int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
     final first = def.firstRestSec;

@@ -140,7 +140,7 @@ void main() {
     expect(r.gold > goldBefore, isTrue); // 동시 처치 골드 보너스
   });
 
-  test('7. 궁극기 제거(사용자 결정 2026-10-17): 분노는 쌓이지 않고 버튼도 무시, 피버가 켜지는 틱에 선장 궁극기 효과 한 번', () {
+  test('7. 궁극기 제거(사용자 결정 2026-10-17): 분노는 쌓이지 않고 빈 게이지의 버튼은 무시, 피버가 켜지는 틱에 선장 궁극기 효과 한 번', () {
     final s = game(crews: {crewOf('skip'): const CrewState(level: 30)}).copyWith(
       progress: const Progress(fever: 0.999),
     );
@@ -152,9 +152,11 @@ void main() {
     }
     final started = events.whereType<FeverStarted>().first;
     final ults = events.whereType<UltimateCast>().toList();
-    expect(ults, hasLength(1), reason: '피버 하나에 첫 일격 하나');
-    expect(ults.single.tick, started.tick + 1, reason: '피버가 켜진 다음 틱(전투가 피버 상태를 보는 첫 틱)');
-    expect(ults.single.ultimateId, family('skip').ultimateId);
+    // 선장 필살기(boss-feel 2026-10-18)는 게이지가 차면 따로 나간다 — 피버 첫 일격은 피버가 켜진 다음 틱에 하나.
+    final strike = ults.where((u) => u.tick == started.tick + 1).toList();
+    expect(strike, hasLength(1), reason: '피버 하나에 첫 일격 하나(피버가 켜진 다음 틱 — 전투가 피버 상태를 보는 첫 틱)');
+    expect(strike.single.ultimateId, family('skip').ultimateId);
+    expect(ults.where((u) => u.tick <= started.tick), isEmpty, reason: '게이지가 빈 채 누른 버튼은 무시');
   });
 
   test('처치하면 골드가 지갑에 들어간다', () {
