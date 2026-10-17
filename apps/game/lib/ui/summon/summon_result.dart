@@ -7,6 +7,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -196,7 +197,7 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
                   child: Column(
                     children: [
                       const SizedBox(height: 16),
-                      Text(l10n.uiSummonResultTitle, style: Skin.outlined(24)),
+                      OutlineText(l10n.uiSummonResultTitle, size: 24),
                       Expanded(child: _grid(l10n, tables, tiers, hint)),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

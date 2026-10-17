@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
@@ -169,7 +170,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(l10n.uiBossDamageMvp, style: Skin.text(16, color: Skin.goldTop)),
-                            Text(shortCrewName(l10n, mvp), style: Skin.outlined(20)),
+                            OutlineText(shortCrewName(l10n, mvp), size: 20),
                             Text(
                               l10n.uiBossDamageLine(widget.damage[mvp.id]!.format(), pct(widget.damage[mvp.id]!)),
                               style: Skin.text(16, color: Colors.white70),

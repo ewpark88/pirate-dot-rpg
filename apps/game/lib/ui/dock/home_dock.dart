@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
@@ -208,7 +209,7 @@ class _DockIcon extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              Text(label, maxLines: 1, style: Skin.outlined(14)),
+              OutlineText(label, size: 14),
             ],
           ),
         ),

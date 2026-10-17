@@ -50,11 +50,17 @@ void main() {
     final box = tester.getSize(find.byType(CustomPaint).last);
     final h = atlas.layout.heightFor(20);
     expect(box, Size(atlas.layout.measure('12.5K', height: h), h));
+    // 채움 층 Text는 하나(find.text·낭독이 한 번만 본다), 테 층은 RichText.
     final texts = tester.widgetList<Text>(find.text('보스 처치!')).toList();
-    expect(texts, hasLength(2));
-    expect(texts.first.style!.foreground!.style, PaintingStyle.stroke);
-    expect(texts.first.style!.foreground!.strokeWidth, closeTo(20 * strokeRatio * 2, 1e-4));
-    expect(texts.last.style!.color, OutlineTone.white.color);
+    expect(texts, hasLength(1));
+    expect(texts.single.style!.color, OutlineTone.white.color);
+    final stroke = tester
+        .widgetList<RichText>(find.text('보스 처치!', findRichText: true))
+        .map((r) => r.text.style?.foreground)
+        .whereType<Paint>()
+        .single;
+    expect(stroke.style, PaintingStyle.stroke);
+    expect(stroke.strokeWidth, closeTo(20 * strokeRatio * 2, 1e-4));
   });
 
   testWidgets('fit: 좁은 칸에서도 넘치지 않는다(FittedBox scaleDown)', (tester) async {

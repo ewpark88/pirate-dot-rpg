@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -87,7 +88,7 @@ class _ShipHeader extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: Skin.outlined(20)),
+                  OutlineText(name, size: 20),
                   const SizedBox(height: 6),
                   const ShipSkinButton(),
                   // 모두 강화 원터치(경제 bestUpgradePlan) — 배 그림 옆에 두어 360에서도 부위 줄이 보이게.

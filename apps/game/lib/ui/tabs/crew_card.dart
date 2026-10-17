@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
@@ -101,7 +102,7 @@ class CrewCard extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
-                            Text(l10n.uiCrewUpLevels(up), style: Skin.outlined(13)),
+                            OutlineText(l10n.uiCrewUpLevels(up), size: 13),
                           ],
                         ),
                       ),

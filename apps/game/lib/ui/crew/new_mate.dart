@@ -9,6 +9,7 @@ import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -185,7 +186,7 @@ class NewMateDialog extends ConsumerWidget {
                             children: [
                               Icon(roleIcon(role), size: 14, color: const Color(0xFFFFD84A)),
                               const SizedBox(width: 4),
-                              Text(roleText(l10n, role), style: Skin.outlined(13)),
+                              OutlineText(roleText(l10n, role), size: 13),
                             ],
                           ),
                         ),

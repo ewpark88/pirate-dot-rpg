@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
 // 스킨 k2 아이콘 칸 (디자인 개편 ①, S1 2026-10-17 — 쿵푸할매 장비 화면): 색 네모 칸(초록·파랑·보라 …) + 굵은 외곽선 +
@@ -75,7 +76,7 @@ class IconCell extends StatelessWidget {
                 borderRadius: BorderRadius.circular(7),
                 border: Border.all(color: Skin.outline, width: 1.5),
               ),
-              child: Text(lv, style: Skin.outlined(11)),
+              child: OutlineText(lv, size: 11),
             ),
           ),
       ],

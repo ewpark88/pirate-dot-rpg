@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
 // 스킨 k2 리본 (디자인 개편 ①, S1 2026-10-17 — 쿵푸할매 '스킬 비전서' 창 머리·'북극 빙결' 소제목).
@@ -41,7 +42,7 @@ class RibbonHeader extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.fromLTRB(padRight, 10, padRight, 8),
-          child: Text(title, textAlign: TextAlign.center, maxLines: 2, style: Skin.outlined(22)),
+          child: OutlineText(title, maxLines: 2, size: 22),
         ),
       ),
     ),
