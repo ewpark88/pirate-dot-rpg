@@ -59,7 +59,7 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        initialGameStateProvider.overrideWithValue(state),
+        initialGameStateProvider.overrideWithValue(withGuidesSeen(state)),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),
         clockProvider.overrideWithValue(FixedClock(state.savedAt)),
@@ -151,7 +151,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          initialGameStateProvider.overrideWithValue(state),
+          initialGameStateProvider.overrideWithValue(withGuidesSeen(state)),
           commandSinkProvider.overrideWithValue(log),
           adsPortProvider.overrideWithValue(_FakeAds()),
         ],

@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 상자 탭 영역 지름 (화면 픽셀).
 const _size = 44.0;
@@ -67,22 +68,26 @@ class ChestLayer extends ConsumerWidget {
                   key: const Key('chest'),
                   behavior: HitTestBehavior.opaque,
                   onTap: () => showChestChoices(context),
-                  child: SizedBox.square(
-                    dimension: _size,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      clipBehavior: Clip.none,
-                      children: [
-                        PixelRing(value: (ticksLeft / floatTicks).clamp(0.0, 1.0)),
-                        if (reward != null)
-                          Positioned(
-                            top: _rewardOffset,
-                            child: Text(
-                              reward.format(),
-                              style: const TextStyle(color: PixelPalette.gold, fontWeight: FontWeight.bold),
+                  // 가이드 v2 '보물상자' 카드가 가리키는 자리.
+                  child: TutorialSpot(
+                    id: 'chest',
+                    child: SizedBox.square(
+                      dimension: _size,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        clipBehavior: Clip.none,
+                        children: [
+                          PixelRing(value: (ticksLeft / floatTicks).clamp(0.0, 1.0)),
+                          if (reward != null)
+                            Positioned(
+                              top: _rewardOffset,
+                              child: Text(
+                                reward.format(),
+                                style: const TextStyle(color: PixelPalette.gold, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

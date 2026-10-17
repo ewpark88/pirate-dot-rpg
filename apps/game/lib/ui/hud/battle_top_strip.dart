@@ -12,32 +12,31 @@ import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
-/// 전장 위쪽 (선원 줄·시트를 가리지 않게, 전장 가운데 60%를 덮지 않게): 진행 게이지(+목표·파밍·피버) · 왼쪽 위 작은 알약들 · 보스 실패 안내 · 튜토리얼 말풍선.
+/// 전장 위쪽 (선원 줄·시트를 가리지 않게, 전장 가운데 60%를 덮지 않게): 진행 게이지(+목표·파밍·피버) · 왼쪽 위 작은 알약들 · 보스 실패 안내. 튜토리얼·가이드 카드는 가이드 층(GuideLayer)이 그린다.
 /// 전폭 불투명 띠 금지(사용자 지시 2026-10-16) — 띠는 모두 왼쪽 위 작은 알약.
 class BattleTopStrip extends StatelessWidget {
   const BattleTopStrip({required this.tutorial, super.key});
 
+  /// 튜토리얼 중인가 (알약을 줄이는 데 쓸 수 있게 남겨 둔다 — 말풍선은 가이드 층으로 옮김).
   final bool tutorial;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) => const Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       // 진행 게이지 + 다음 목표 한 줄 (전투력은 상단 바 골드 옆).
-      const StageGauge(),
-      const BossWeakness(),
+      StageGauge(),
+      BossWeakness(),
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
-      const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
+      Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
       // 보스 등장 이름표 (2초).
-      const BossIntro(),
+      BossIntro(),
       // 처음 환생할 수 있게 된 순간 큰 말풍선 한 번.
-      const RebirthReadyBubble(),
-      const BossFailNotice(),
-      if (tutorial) const TutorialBubble(),
+      RebirthReadyBubble(),
+      BossFailNotice(),
     ],
   );
 }
