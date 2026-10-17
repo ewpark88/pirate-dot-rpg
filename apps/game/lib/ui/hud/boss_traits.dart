@@ -107,9 +107,13 @@ class CounterChip extends StatelessWidget {
       children: [
         const Icon(Icons.gps_fixed_rounded, size: 12, color: Color(0xFFC2185B)),
         const SizedBox(width: 3),
-        Text(
-          AppLocalizations.of(context).uiCounterChip,
-          style: const TextStyle(fontSize: 12, color: Color(0xFFC2185B), fontWeight: FontWeight.w800),
+        Flexible(
+          child: Text(
+            AppLocalizations.of(context).uiCounterChip,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: Color(0xFFC2185B), fontWeight: FontWeight.w800),
+          ),
         ),
       ],
     ),

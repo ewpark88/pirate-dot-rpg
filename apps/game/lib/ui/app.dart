@@ -6,6 +6,7 @@ import 'package:pirate_dot/ui/guide/guide_layer.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/idle/idle_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
+import 'package:pirate_dot/ui/rebirth/ship_skin_entries.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 앱 루트. 언어는 설정의 lang 값(`system`이면 OS 언어, ko/en)을 따른다.
@@ -37,7 +38,9 @@ class PirateDotApp extends ConsumerWidget {
       ),
       // 가이드 v2 층(카드·밝은 곳·손가락)은 홈 화면 위, 창(경로)들 아래.
       // 새 동료 카드(수집의 재미)는 홈 화면에서 연다.
-      home: const GuideLayer(child: NewMateGate(child: HomeScreen())),
+      home: const GuideLayer(
+        child: NewMateGate(child: SkinUnlockGate(child: HomeScreen())),
+      ),
     );
   }
 }

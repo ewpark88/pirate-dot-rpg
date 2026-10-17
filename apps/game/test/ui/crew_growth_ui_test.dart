@@ -22,13 +22,23 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getSize(find.byKey(const Key('crew.mergeAll'))).height, greaterThanOrEqualTo(56));
     expect(find.textContaining('Merge all · '), findsOneWidget);
+    // 도감 카드(수집 보상 줄)가 위에 있어 격자는 굴려서 본다.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('crew.card.pang')),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
     expect(upBadge(), findsWidgets);
   });
 
   testWidgets('상세: 레벨업 이유 줄 + 합칠 수 있으면 합치기 버튼 → MergeAllCards', (tester) async {
     final log = await pumpGame(tester, _mergeable(), tab: crewTab);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('crew.card.pang')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('crew.card.pang')),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('crew.card.pang')));
     await tester.pumpAndSettle();

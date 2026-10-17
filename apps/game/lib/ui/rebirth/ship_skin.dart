@@ -1,26 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
-import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/rebirth/ship_skin_entries.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
+import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 
-// 환생 v2 꾸미기: 배 스킨 고르기(스펙 7장 ⑤)와 칭호(⑥).
+// 배 스킨 칸 (환생 v2 스펙 7장 ⑤ + 새 스킨 7종 docs/specs/economy-ship-skins.md) — 목록은 ship_skin_entries.dart.
 
-/// 배 탭의 작은 '배 스킨' 버튼 (스킨이 하나라도 있으면 보인다).
+/// 배 탭의 작은 '배 스킨' 버튼.
 class ShipSkinButton extends ConsumerWidget {
   const ShipSkinButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final skins = ref.watch(shipSkinProvider);
-    if (skins.owned.isEmpty) return const SizedBox.shrink();
+    // 잠긴 스킨도 얻는 방법을 보여 주니 늘 보인다(새 스킨 7종, S1 2026-10-17).
     final l10n = AppLocalizations.of(context);
     return Semantics(
       button: true,
@@ -50,119 +53,196 @@ class ShipSkinButton extends ConsumerWidget {
   }
 }
 
-/// 배 스킨 고르기: 가로 목록, 잠긴 것은 '환생 N회'.
-class ShipSkinSheet extends ConsumerWidget {
+/// 배 스킨 칸 (k2): 위 = 고른 스킨 큰 미리보기 · 이름 · 얻는 방법/진행 · [입기]/[조각으로 사기], 아래 = 등급 칸 격자.
+class ShipSkinSheet extends ConsumerStatefulWidget {
   const ShipSkinSheet({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final skins = ref.watch(shipSkinProvider);
-    final control = ref.read(rebirthV2Provider);
-    return Column(
-      key: const Key('ship.skin.sheet'),
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SubRibbon(l10n.uiShipSkin),
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _SkinTile(
-                key: const Key('ship.skin.default'),
-                skin: null,
-                name: l10n.uiShipSkinDefault,
-                owned: true,
-                equipped: skins.equipped == null,
-                onTap: () => control.selectSkin(null),
-              ),
-              for (final s in skinDefs)
-                _SkinTile(
-                  key: Key('ship.skin.${s.id}'),
-                  skin: s,
-                  name: skinName(l10n, s.id),
-                  owned: skins.owned.contains(s.id),
-                  equipped: skins.equipped == s.id,
-                  onTap: () => control.selectSkin(s.id),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  ConsumerState<ShipSkinSheet> createState() => _ShipSkinSheetState();
 }
 
-class _SkinTile extends StatelessWidget {
-  const _SkinTile({
-    required this.skin,
-    required this.name,
-    required this.owned,
-    required this.equipped,
-    required this.onTap,
-    super.key,
-  });
-
-  final SkinDef? skin;
-  final String name;
-  final bool owned;
-  final bool equipped;
-  final VoidCallback onTap;
+class _ShipSkinSheetState extends ConsumerState<ShipSkinSheet> {
+  /// 미리 보는 스킨 (처음엔 지금 입은 것). '' = 기본 배.
+  String? _pick;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Semantics(
-        button: owned,
-        selected: equipped,
-        label: name,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: owned ? onTap : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            width: 112,
-            padding: const EdgeInsets.all(8),
-            // k2: 굵은 외곽선 칸(낀 것 = 파랑 테, 잠김 = 옅은 회보라).
-            decoration: Skin.inset(
-              fill: owned ? Skin.insetFill : const Color(0xFFD3D1EA),
-              border: equipped ? Skin.primaryBottom : Skin.outline,
-              radius: 16,
-            ),
-            child: Column(
-              children: [
-                Opacity(
-                  opacity: owned ? 1 : 0.35,
-                  child: ShipLookPreview(useSkin: true, skin: skin?.id, size: 84),
+    final equipped = ref.watch(shipSkinProvider).equipped;
+    // 스킨·조각·진행이 바뀔 때만 다시 짓는다.
+    ref.watch(
+      gameStateProvider.select(
+        (s) => '${s.ship.skinsOwned.join(',')}|${s.wallet.mapPieces}|${s.collection.length}|${s.progress.bestStage}',
+      ),
+    );
+    final entries = skinEntries(l10n, ref.read(gameStateProvider), ref.read(tablesProvider));
+    final pick = _pick ?? equipped ?? '';
+    final sel = entries.firstWhere((e) => (e.id ?? '') == pick, orElse: () => entries.first);
+    final control = ref.read(rebirthV2Provider);
+    return SingleChildScrollView(
+      key: const Key('ship.skin.sheet'),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SubRibbon(l10n.uiShipSkin),
+          const SizedBox(height: 8),
+          _SkinPreview(
+            entry: sel,
+            equipped: (sel.id ?? '') == (equipped ?? ''),
+            pieces: ref.read(gameStateProvider).wallet.mapPieces,
+            onWear: () => control.selectSkin(sel.id),
+            onBuy: () => ref.read(commandSinkProvider).send(BuySkin(sel.id!)),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            alignment: WrapAlignment.center,
+            children: [
+              for (final e in entries)
+                _SkinTile(
+                  key: Key('ship.skin.${e.id ?? 'default'}'),
+                  entry: e,
+                  equipped: (e.id ?? '') == (equipped ?? ''),
+                  picked: (e.id ?? '') == pick,
+                  onTap: () => setState(() => _pick = e.id ?? ''),
                 ),
-                const SizedBox(height: 6),
-                Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: Skin.text(14)),
-                const SizedBox(height: 2),
-                if (!owned)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SkinIcon(UiSprites.lock),
-                      const SizedBox(width: 2),
-                      Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(l10n.uiSkinLocked(skin!.rebirths), style: Skin.text(13, color: Skin.sub)),
-                        ),
-                      ),
-                    ],
-                  )
-                else
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 고른 스킨 큰 미리보기 + 행동 버튼.
+class _SkinPreview extends StatelessWidget {
+  const _SkinPreview({
+    required this.entry,
+    required this.equipped,
+    required this.pieces,
+    required this.onWear,
+    required this.onBuy,
+  });
+
+  final SkinEntry entry;
+  final bool equipped;
+  final int pieces;
+  final VoidCallback onWear;
+  final VoidCallback onBuy;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final e = entry;
+    final price = e.price;
+    final action = equipped
+        ? Text(
+            l10n.uiSkinEquipped,
+            key: const Key('ship.skin.equipped'),
+            style: Skin.bold(16, color: Skin.mintInk),
+          )
+        : e.owned
+        ? SkinButton(key: const Key('ship.skin.wear'), onPressed: onWear, child: Text(l10n.uiSkinWear))
+        : price != null
+        ? SkinButton(
+            key: const Key('ship.skin.buy'),
+            tone: SkinTone.gold,
+            onPressed: pieces >= price ? onBuy : null,
+            child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiSkinBuy(price))),
+          )
+        : const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: Skin.inset(radius: Skin.radiusCard),
+      child: Row(
+        children: [
+          ShipLookPreview(key: const Key('ship.skin.preview'), useSkin: true, skin: e.id, size: 110),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(e.name, style: Skin.bold(19)),
+                if (!e.owned) ...[
+                  const SizedBox(height: 4),
                   Text(
-                    equipped ? l10n.uiSkinEquipped : ' ',
-                    style: Skin.text(13, color: Skin.primaryEdge),
+                    e.how,
+                    key: const Key('ship.skin.how'),
+                    style: Skin.text(15, color: Skin.sub),
                   ),
+                  const SizedBox(height: 4),
+                  SkinBar(value: e.need == 0 ? 0 : e.now / e.need, color: Skin.goldBottom),
+                  Text(l10n.uiSkinProgress(e.now.clamp(0, e.need), e.need), style: Skin.text(13, color: Skin.sub)),
+                ],
+                const SizedBox(height: 8),
+                action,
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 격자 칸: 등급색 네모(가진 것 = 파랑 · 입은 것 = 금 · 잠김 = 회보라 + 자물쇠) + 이름.
+class _SkinTile extends StatelessWidget {
+  const _SkinTile({
+    required this.entry,
+    required this.equipped,
+    required this.picked,
+    required this.onTap,
+    super.key,
+  });
+
+  final SkinEntry entry;
+  final bool equipped;
+  final bool picked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final e = entry;
+    final color = equipped ? Skin.goldBottom : (e.owned ? partCellColors[1] : const Color(0xFF8E8CB4));
+    return Semantics(
+      button: true,
+      selected: picked,
+      label: e.name,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: SizedBox(
+          width: 82,
+          child: Column(
+            children: [
+              AnimatedScale(
+                scale: picked ? 1.08 : 1,
+                duration: const Duration(milliseconds: 160),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconCell(
+                      color: color,
+                      size: 72,
+                      child: Opacity(
+                        opacity: e.owned ? 1 : 0.4,
+                        child: ShipLookPreview(useSkin: true, skin: e.id, size: 56),
+                      ),
+                    ),
+                    if (!e.owned) const Positioned(right: -4, bottom: -4, child: SkinIcon(UiSprites.lock, size: 22)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                e.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: picked ? Skin.bold(13) : Skin.text(13),
+              ),
+            ],
           ),
         ),
       ),

@@ -196,7 +196,7 @@ void main() {
     expect(find.byKey(const Key('rebirth.chest.skin')), findsOneWidget);
   });
 
-  testWidgets('배 스킨: coral·storm 보유(coral 장착), gold는 환생 5회 잠김, 고르면 SelectShipSkin', (tester) async {
+  testWidgets('배 스킨: 칸을 누르면 미리보기 — 가진 것은 [입기] → SelectShipSkin, 잠긴 것은 얻는 방법(환생 5회)', (tester) async {
     final log = await pumpGame(
       tester,
       _state(rebirths: 3, skins: {'coral', 'storm'}, skin: 'coral'),
@@ -204,24 +204,45 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('ship.skin')));
     await tester.pumpAndSettle();
-    expect(find.text('Rebirth ×5'), findsOneWidget);
-    expect(find.text('Rebirth ×10'), findsOneWidget);
-    expect(find.text('Equipped'), findsOneWidget);
+    expect(find.byKey(const Key('ship.skin.equipped')), findsOneWidget, reason: '처음엔 입은 coral 미리보기');
     await tester.tap(find.byKey(const Key('ship.skin.storm')));
     await tester.pump();
-    await tester.ensureVisible(find.byKey(const Key('ship.skin.gold')));
-    await tester.pump();
-    await tester.tap(find.byKey(const Key('ship.skin.gold')), warnIfMissed: false);
+    await tester.tap(find.byKey(const Key('ship.skin.wear')));
     await tester.pump();
     expect(log.sent.whereType<SelectShipSkin>().map((c) => c.toJson()), [const SelectShipSkin('storm').toJson()]);
+    await tester.ensureVisible(find.byKey(const Key('ship.skin.gold')));
+    await tester.tap(find.byKey(const Key('ship.skin.gold')));
+    await tester.pump();
+    expect(find.text('Rebirth ×5'), findsOneWidget);
+    expect(find.byKey(const Key('ship.skin.wear')), findsNothing);
   });
 
-  testWidgets('환생 전에는 스킨 버튼·칭호 띠가 없다', (tester) async {
+  testWidgets('새 스킨 7종도 한 칸에: 도감 10명 king은 잠김 + 얻는 방법 · 조각 abyss는 조각이 모자라면 사기 버튼 꺼짐', (tester) async {
+    final log = await pumpGame(
+      tester,
+      _state(rebirths: 3, skins: {'coral'}, skin: 'coral'),
+      tab: shipTab,
+    );
+    await tester.tap(find.byKey(const Key('ship.skin')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('ship.skin.king')));
+    await tester.tap(find.byKey(const Key('ship.skin.king')));
+    await tester.pump();
+    expect(find.text('Collect 10 crew'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('ship.skin.abyss')));
+    await tester.tap(find.byKey(const Key('ship.skin.abyss')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('ship.skin.buy')), warnIfMissed: false);
+    await tester.pump();
+    expect(log.sent.whereType<BuySkin>(), isEmpty, reason: '조각 50개가 없으면 못 산다');
+  });
+
+  testWidgets('환생 전: 칭호 띠는 없고, 스킨 버튼은 있다(잠긴 스킨의 얻는 방법을 보여 주려고)', (tester) async {
     await pumpGame(tester, _state());
     expect(find.byKey(const Key('title.chip')), findsNothing);
     await tester.tap(find.byKey(const Key('tab.$shipTab')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('ship.skin')), findsNothing);
+    expect(find.byKey(const Key('ship.skin')), findsOneWidget);
   });
 
   testWidgets('칭호: 띠를 누르면 목록, 고르면 SelectTitle · 고른 칭호가 띠에 보인다', (tester) async {
