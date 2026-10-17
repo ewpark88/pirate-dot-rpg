@@ -1257,5 +1257,74 @@
       }
     }
   },
-  "uiLevelUpFx": "LEVEL UP!"
+  "uiLevelUpFx": "LEVEL UP!",
+  "uiSkinHowCollection": "Collect {n} crew",
+  "uiSkinHowStage": "Reach stage {n}",
+  "uiSkinHowBounty": "Clear a bounty boss at tier {n}",
+  "uiSkinHowBountyAll": "All bounty bosses at tier {n}",
+  "uiSkinHowPieces": "Buy with {n} map pieces",
+  "uiSkinWear": "Wear",
+  "uiSkinBuy": "Buy · {n} pieces",
+  "uiSkinGot": "New ship skin: {name}!",
+  "uiSkinTryOn": "Try it on",
+  "uiSkinProgress": "{now} / {need}",
+  "@uiSkinHowCollection": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowBounty": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowBountyAll": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinHowPieces": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinBuy": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiSkinGot": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSkinProgress": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  }
 }
