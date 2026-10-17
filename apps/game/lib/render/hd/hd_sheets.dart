@@ -35,6 +35,12 @@ class HdSheets {
   /// 지금 캐시에 든 텍스처 바이트(측정·시험용).
   int get bytes => _bytes;
 
+  /// HD 잡몹은 도트 칸보다 1.3배 크게 그린다(맞는 자리는 그대로 — 귀엽고 잘 보이게, S1 '귀엽지만 멋지고 화려').
+  static const enemyBoost = 1.3;
+
+  /// 그리는 크기(단위): 잡몹은 [enemyBoost]배.
+  static double drawWorld(double world, {required bool boss}) => boss ? world : world * enemyBoost;
+
   /// 칸 한 변 최대 px(대보스 메모리 상한 — 512² × 16장 ≈ 16MB). 저사양(절전·발열)은 [lowCell].
   static const maxCell = 512.0;
   static const lowCell = 384.0;
@@ -61,7 +67,8 @@ class HdSheets {
     _queue.clear();
     void add(String kind, {required bool boss}) {
       if ((boss ? hdBosses : hdEnemies)[kind] == null || _ready.containsKey(boss ? 'b:$kind' : kind)) return;
-      final w = worldOf(kind, boss: boss);
+      final w0 = worldOf(kind, boss: boss);
+      final w = w0 == null ? null : drawWorld(w0, boss: boss);
       if (w != null) _queue.add((kind, boss, w));
     }
 

@@ -3,11 +3,14 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/hd_sheets.dart';
+import 'package:pirate_dot/render/hd/hd_species.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+
+part 'top_enemies_fx.dart';
 
 /// 그릴 그림 한 칸: 이미지·원본 칸·배율(HD는 world/cell)·HD 여부(부드러운 확대).
 typedef _Spr = ({Image image, Rect src, double scale, bool hd});
@@ -36,7 +39,9 @@ class TopEnemies {
   /// 적 그림 반지름(단위) — 상태 아이콘·보호막 고리 자리.
   double radiusOf(EnemyPose e) {
     final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
-    return (sprites.sheet(key)?.frameW ?? 12) / 2;
+    return (sprites.sheet(key)?.frameW ?? 12) /
+        2 *
+        (!e.boss && hdEnemies.containsKey(e.kind) ? HdSheets.enemyBoost : 1);
   }
 
   /// 그림(종류)별로 묶어 drawAtlas 한 번씩(150마리 60fps), 맞은 적은 흰 실루엣 묶음·물속은 반투명 붓.
@@ -64,7 +69,12 @@ class TopEnemies {
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
       final hd = key.startsWith('td_e') || key.startsWith('td_b')
-          ? hdSheets.sheet(e.kind, boss: e.boss, world: sheet.frameW, density: snap)
+          ? hdSheets.sheet(
+              e.kind,
+              boss: e.boss,
+              world: HdSheets.drawWorld(sheet.frameW, boss: e.boss),
+              density: snap,
+            )
           : null;
       // 보스는 프레임 300ms·숨쉬기 3%, 큰 보스(대보스 88도트)는 350ms(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
@@ -140,7 +150,10 @@ class TopEnemies {
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       if (b.xf.isEmpty) continue;
       // 흰 실루엣은 보스만(강), 보통 명중은 금빛 색 번쩍(사용자 '흰 번쩍임 눈 아프다').
-      final paint = b.flash ? (b.boss ? _flashPaint : _tintPaint) : (under ? _underPaint : _atlasPaint);
+      // HD 보스 맞음은 흰 실루엣 대신 반쯤 흰빛(그림이 보이게).
+      final paint = b.flash
+          ? (b.boss ? (b.hd ? _hdFlash : _flashPaint) : _tintPaint)
+          : (under ? _underPaint : _atlasPaint);
       c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _q(paint, hd: b.hd));
     }
     for (final b in _hotBatches.values) {
@@ -193,44 +206,6 @@ class TopEnemies {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
 
-  /// 모션 v1 사망·등장 전환: 사라진 잡몹은 0.16초 납작하게 찌그러지며 사라지고, 막 나타난 자리엔 물 고리(절전이면 없음).
-  void _transitions(Canvas c, {required bool under, required double clock, required bool lite}) {
-    final last = under ? _lastUnder : _lastOver;
-    if (!lite) {
-      for (final MapEntry(:key, :value) in last.entries) {
-        if (_seen.containsKey(key) || _dying.length >= 24) continue;
-        _dying.add((value.$1, value.$2, value.$3, value.$4, clock));
-      }
-    }
-    last
-      ..clear()
-      ..addAll(_seen);
-    if (_born.length > 400) {
-      _born.removeWhere((id, _) => !_lastUnder.containsKey(id) && !_lastOver.containsKey(id));
-      _right.removeWhere((id, _) => !_born.containsKey(id));
-    }
-    if (under) return;
-    _dying.removeWhere((d) => clock - d.$5 > _dieMs);
-    for (final (spr, tx, ty, rot, at) in _dying) {
-      final t = (clock - at) / _dieMs;
-      c
-        ..save()
-        ..translate(tx, ty)
-        ..rotate(rot)
-        ..scale(1.25 + 0.35 * t, math.max(0.05, 0.65 * (1 - t)));
-      _draw(c, spr, t < 0.45 ? _flashPaint : _atlasPaint);
-      c.restore();
-    }
-    _rings.removeWhere((r) => clock - r.$3 > 300);
-    for (final (x, y, at) in _rings) {
-      final t = (clock - at) / 300;
-      _ringPaint
-        ..strokeWidth = 2 * (1 - t) + 0.5
-        ..color = Color.fromRGBO(230, 248, 255, 0.85 * (1 - t));
-      c.drawCircle(Offset(x, y), 4 + 10 * t, _ringPaint);
-    }
-  }
-
   final List<(_Spr, double, double, double, double, double, bool, bool)> _squashed = [];
   static const _maxSquash = 20;
 
@@ -242,7 +217,6 @@ class TopEnemies {
   bool Function(double x, double y)? hotAt;
   final _hotPaint = Paint()
     ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
     ..colorFilter = const ColorFilter.mode(Color(0xFFFF8A50), BlendMode.modulate);
   final Map<String, String> _enemyKeys = {};
 
@@ -262,15 +236,13 @@ class TopEnemies {
     ..filterQuality = FilterQuality.none;
   late final _underPaint = Paint()
     ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
     ..color = const Color.fromRGBO(255, 255, 255, _underwaterAlpha);
   final _tintPaint = Paint()
     ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
     ..colorFilter = const ColorFilter.mode(Color(0x66FFD24A), BlendMode.srcATop);
+  final _hdFlash = Paint()..colorFilter = const ColorFilter.mode(Color(0x99FFFFFF), BlendMode.srcATop);
   final _flashPaint = Paint()
     ..isAntiAlias = false
-    ..filterQuality = FilterQuality.none
     ..colorFilter = const ColorFilter.mode(Color(0xFFFFFFFF), BlendMode.srcIn);
 }
 

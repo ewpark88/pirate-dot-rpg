@@ -85,12 +85,30 @@ class TopBossTraits {
         _sparks.add((at + Offset(((now / 37) % 2 - 1) * r * 0.6, 0), now, 2));
       }
       if (_enraged.contains(e.id)) {
+        // HD 그림을 가리지 않게: 가운데는 비운 붉은 고리 빛 + 둘레에서 솟는 불티(도트 시절 눈 빛 점은 HD 눈과 어긋나 뺌).
         final pulse = 0.5 + 0.5 * math.sin(now / 140);
-        _fill.color = Color.fromRGBO(255, 40, 30, 0.18 + 0.14 * pulse);
-        c.drawCircle(at, r * (1.05 + 0.1 * pulse), _fill);
-        _fill.color = const Color.fromRGBO(255, 90, 60, 0.9);
-        for (final s in const [-1.0, 1.0]) {
-          c.drawCircle(at + Offset(s * r * 0.22, -r * 0.35), 1.6 + pulse, _fill);
+        final rr = r * (1.1 + 0.08 * pulse);
+        _fill.shader = Gradient.radial(
+          at,
+          rr,
+          [
+            const Color(0x00FF2A1E),
+            Color.fromRGBO(255, 50, 30, 0.35 + 0.2 * pulse),
+            const Color(0x00FF2A1E),
+          ],
+          const [0.62, 0.86, 1],
+        );
+        c.drawCircle(at, rr, _fill);
+        _fill.shader = null;
+        for (var k = 0; k < 6; k++) {
+          final u = (now / 700 + k / 6) % 1;
+          final a = k * math.pi / 3 + 0.4;
+          _fill.color = Color.fromRGBO(255, 120 + (k * 20) % 80, 40, 0.9 * (1 - u));
+          c.drawCircle(
+            at + Offset(math.cos(a) * r * 0.95, math.sin(a) * r * 0.6 - u * r * 0.7),
+            1.2 + 1.5 * (1 - u),
+            _fill,
+          );
         }
       }
       final rf = _reflect[e.id];
