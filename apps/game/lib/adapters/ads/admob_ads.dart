@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:game_core/contracts.dart';
 import 'package:pirate_dot/adapters/ads/ads_sdk.dart';
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 
 /// 지연 실행. 테스트는 기록만 하고 직접 부른다.
 typedef Schedule = void Function(Duration delay, void Function() run);
@@ -52,8 +53,8 @@ class AdMobAds implements AdsPort {
       if (!_consent.value) return;
       await _sdk.initialize();
       _started = true;
-    } on Object catch (e) {
-      debugPrint('ads: start failed $e');
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'ads: start failed');
       return;
     }
     await _load();
@@ -74,8 +75,8 @@ class AdMobAds implements AdsPort {
         AdShowOutcome.dismissed => AdResult.dismissed,
         AdShowOutcome.failed => AdResult.failed,
       };
-    } on Object catch (e) {
-      debugPrint('ads: show failed $e');
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'ads: show failed');
       result = AdResult.failed;
     } finally {
       onShowEnd?.call();
