@@ -364,6 +364,28 @@
       }
     }
   },
+  "opHudTopDp": "보스 카메라 위 여백 hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "이미지 캐시 {mb}MB · {live}장 살아 있음 · {count}장 보관",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -1872,15 +1894,6 @@
       }
     }
   },
-  "uiWonSign": "₩",
-  "uiWonPrice": "{n}원",
-  "@uiWonPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
   "uiPassTitle": "항해 패스",
   "uiPassLevel": "{n}/{max}단계",
   "@uiPassLevel": {
@@ -2133,5 +2146,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiTalkUlt": "필살기 게이지가 꽉 찼어요! 오른쪽 아래 버튼을 눌러요!"
 }

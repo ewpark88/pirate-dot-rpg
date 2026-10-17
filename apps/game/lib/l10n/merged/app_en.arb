@@ -371,6 +371,28 @@
       }
     }
   },
+  "opHudTopDp": "Boss camera top inset hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "Image cache {mb}MB · {live} live · {count} cached",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -1879,15 +1901,6 @@
       }
     }
   },
-  "uiWonSign": "₩",
-  "uiWonPrice": "{n} KRW",
-  "@uiWonPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
   "uiPassTitle": "Voyage Pass",
   "uiPassLevel": "Level {n}/{max}",
   "@uiPassLevel": {
@@ -2140,5 +2153,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiTalkUlt": "Your ultimate is charged! Tap the button at the bottom right!"
 }

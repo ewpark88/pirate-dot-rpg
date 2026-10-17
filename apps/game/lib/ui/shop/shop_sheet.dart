@@ -164,7 +164,7 @@ class ProductCard extends ConsumerWidget {
                   tone: SkinTone.gold,
                   height: 44,
                   onPressed: () => buyProduct(ref, p.id),
-                  child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiShopBuy(shopPrice(l10n, offer.price)))),
+                  child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiShopBuy(offer.price))),
                 ),
             ],
           ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:game_core/game_core.dart' show GameState;
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
@@ -36,6 +37,10 @@ final captainSkillProvider = Provider<CaptainSkillView?>((ref) {
   final g = ref.watch(gameStateProvider.select((s) => ((s.battle?.fever ?? 0) * 20).round() / 20));
   return (gauge: g.clamp(0, 1).toDouble(), ready: g >= 1);
 });
+
+/// 필살기가 가득 찼나(가이드 'guide.ult' — 처음 가득 찰 때 옥토 한 마디). S2 계약(BattleView.captainGauge)이 오면
+/// `(s.battle?.captainGauge ?? 0) >= 1`로 바꾼다 — 그전엔 늘 false.
+bool captainSkillReady(GameState s) => false;
 
 /// 누르면 할 일(계약 전엔 화면 연출만). S2 UseCaptainSkill이 오면 명령을 보낸다.
 final captainSkillUseProvider = Provider<void Function()>((_) => () {});

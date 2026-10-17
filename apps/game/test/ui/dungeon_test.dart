@@ -70,7 +70,8 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Step 4 cleared!'), findsOneWidget);
-    expect(find.text('Gems 4 · Cards ×2'), findsOneWidget);
+    expect(find.text('Gems 4'), findsOneWidget);
+    expect(find.text('Cards ×2'), findsOneWidget);
     await tester.tap(find.byKey(const Key('scene.result.ok')));
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [DungeonFailed(2, group: 'mon', step: 5, reason: 'timeout')]));

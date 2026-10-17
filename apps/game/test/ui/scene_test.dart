@@ -124,7 +124,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('tower.result')), findsOneWidget);
     expect(find.text("Time's up — F12 reached"), findsOneWidget);
-    expect(find.text('Gems 25 · Cards ×1'), findsOneWidget);
+    expect(find.text('Gems 25'), findsOneWidget);
+    expect(find.text('Cards ×1'), findsOneWidget);
     await tester.tap(find.byKey(const Key('scene.result.ok')));
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [TowerSwept(2, floor: 9, chestGems: 10)]));

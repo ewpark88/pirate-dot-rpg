@@ -184,7 +184,7 @@ class _Chip extends StatelessWidget {
   );
 }
 
-/// 단계 동그라미(36dp, 누름 44dp): 깬 단계 금빛 · 고른 단계 굵은 테두리 · 안 열린 단계 흐림.
+/// 단계 동그라미(36dp, 누름 48dp): 깬 단계 금빛 · 고른 단계 굵은 테두리 · 안 열린 단계 흐림.
 class _StepDot extends StatelessWidget {
   const _StepDot({required this.n, required this.cleared, required this.picked, this.onTap, super.key});
 
@@ -198,7 +198,7 @@ class _StepDot extends StatelessWidget {
     onTap: onTap,
     behavior: HitTestBehavior.opaque,
     child: SizedBox.square(
-      dimension: 44,
+      dimension: 48,
       child: Center(
         child: Opacity(
           opacity: onTap == null ? 0.4 : 1,
