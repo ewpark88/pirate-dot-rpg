@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:game_core/game_core.dart';
 import 'package:path/path.dart' as p;
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 
 /// 마지막 저장이 실패한 이유. 다음 저장이 성공하면 null로 돌아간다.
 enum SaveFailure { diskFull, io }
@@ -83,7 +84,7 @@ class FileSaveStore implements SaveStore {
   }
 
   void _fail(SaveFailure f, Object e) {
-    debugPrint('save: ${f.name} ($e)');
+    reportNonFatal(e, StackTrace.current, 'save: ${f.name}');
     _failure.value = f;
   }
 

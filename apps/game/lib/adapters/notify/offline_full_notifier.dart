@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:game_core/contracts.dart';
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 import 'package:pirate_dot/adapters/notify/notify_log.dart';
 import 'package:pirate_dot/adapters/notify/notify_sdk.dart';
 import 'package:pirate_dot/adapters/notify/notify_texts.dart';
@@ -110,8 +110,8 @@ class OfflineFullNotifier {
   static Future<void> _guard(Future<void> Function() f) async {
     try {
       await f();
-    } on Object catch (e) {
-      debugPrint('notify: $e');
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'notify');
     }
   }
 }
