@@ -5,10 +5,15 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | 쿵푸할매 스타일 디자인 개편 지원(사용자 최우선, docs/plans/active/design-kungfu-style.md): PB UI 키트 에셋 등록(review/ui-kit) → 화면 목록표 · 밤 sim(README '오늘 밤') |
+| 바로 다음 할 일 | 밤 sim(docs/balance/README.md '오늘 밤' 1~4, 사용자 퇴근 신호 뒤) → 결과 커밋·BALANCE.md · 그 뒤 설계서 4.10 선원 표를 BALANCE 3절과 맞추기(개편 뒤) |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 밤 전 · S2 · 개편 지원·남은 경제
+- main에 들어감: PB UI 키트(075fec44 — SVG를 직접 그리는 tools/art/gen_ui_kit.py), 화면 목록표(→ design-kungfu-screens.md), 테두리 숫자 아틀라스·로더(f5539bf9), OutlineText(5f52acd1 — S4가 테 층 RichText로 고침), crew-role-2(0ee0344e), 첫 전설 유예 스테이지 45(bb2d23c0), 설계서 동기화(84f27f57).
+- 대기: review/ship-skins f896091a(S3 v3 그림과 한 run으로).
+- 실수 기록: 겹쳐 그린 Text 두 개가 find.text를 2개로 만들어 UI 시험을 깨뜨림 → 테 층은 RichText, 그림 숫자엔 투명 Text(메모리 layered-text-widgets).
 
 ### 2026-10-17 저녁 · S2 · 재개 지점(디자인 개편으로 멈춤)
 - 배 스킨: review/ship-skins 41ae5de7 커밋(표·자동 해금·BuySkin·shipSkinsView·이름 ko/en·시험 4, check 통과) — S1 머지 대기. **재개할 것**: 화면(S4 '새 배 스킨!'·입어 보기)·팔레트(S3)가 붙으면 스킨 목록 UI가 shipSkinsView를 쓰는지 확인, 환생 4종(meta.rebirth.skins)도 shipSkins로 합칠지 결정(지금은 따로).
