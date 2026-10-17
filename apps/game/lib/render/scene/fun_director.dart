@@ -53,6 +53,24 @@ bool funEvent(BattleScene s, GameEvent e) {
     case MultiKill(:final count) when s.isTop && count >= 5:
       if (s.settings.flash && s.screenFlashMs <= 0) s.screenFlashMs = 140;
       s.shake.trigger(s.juice.shake['aoe']!);
+    // 도감 v2 보스 패턴: 먹물·삼키기·분열·자폭.
+    case InkCloud(:final x, :final y, :final radius, :final ticks) when s.isTop:
+      s.topHits.bestiary.ink(x, y, radius, ticks * s.player.tickMs, s.clockMs);
+    case BossSwallowed(:final enemyId, :final eaten) when s.isTop:
+      final boss = s.poseOf(enemyId);
+      if (boss != null) {
+        s.topHits.bestiary.gulp(Offset(boss.drawX, boss.drawY), [
+          for (final id in eaten)
+            if (s.poseOf(id) case final p?) Offset(p.drawX, p.drawY),
+        ], s.clockMs);
+      }
+    case BossSplit(:final parentId, :final x, :final y) when s.isTop:
+      final from = s.poseOf(parentId);
+      s.topHits.bestiary.split(from == null ? Offset(x, y) : Offset(from.drawX, from.drawY), Offset(x, y), s.clockMs);
+      s.shake.trigger(s.juice.shake['aoe']!);
+    case BomberBlast(:final x, :final y, :final radius, :final onShip) when s.isTop:
+      s.topHits.impact.add(x, y, radius, 0xFFFF7A2A, s.clockMs);
+      s.shake.trigger(s.juice.shake[onShip ? 'bossKill' : 'aoe']!);
     // 빠른 항해 보급: 오른 부위마다 낙하산 상자가 배로 — 닿으면 그 부위가 빛난다(문구는 UI 요약 창).
     case ShipResupplied(:final before, :final after) when s.isTop:
       s.topHits.resupply

@@ -101,7 +101,7 @@ extension _TopEvents on EventDirector {
 
   /// 솟아오르기 예고(EnemyEmerging): warnTicks 동안 물보라, 끝나면 터짐(몸은 EnemyPose.emerging 동안 숨김).
   void _emerging(EnemyEmerging e, BattleView frame) {
-    scene.topHits.emerge(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
+    scene.topHits.emerges.add(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
   }
 
   /// 강습(assault) 탑다운: 발사체 대신 피해 순간(index)에 배에서 대상마다 휘두르기 + 베기 자국. 색 = 쏜 선원 등급 색.
