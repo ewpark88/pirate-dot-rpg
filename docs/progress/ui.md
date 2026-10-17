@@ -4,9 +4,9 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui 05e1ad72 — 새 화면 en 점검·접근성 검사·필살기 첫 안내 자리, test/ui 719 초록 |
+| 상태 | lane/ui 45797284 — 설정 '정보'(약관·문의·버전)·운영자 패널 버튼, 빠른 check 통과 |
 | 다음 | S2 필살기·보스 여러 줄 계약(captainGauge·TriggerUltimate·autoUltimate·bossBarsLeft) main 반영 → 어댑터 교체·설정 '자동 필살기' 토글 · trialsReady export |
-| 기다리는 것 | S2 필살기·보스 줄 계약 · S3 painter.top.memory()(운영자 메모리 진단 줄) |
+| 기다리는 것 | S2 필살기·보스 줄 계약 · S3 memory()·crewNames 세터 main 반영 · S1 url_launcher(appLinkOpenerProvider 덮기) |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
 - 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
@@ -18,6 +18,7 @@
 
 ### 2026-10-18 밤 · S4 · 사용자 요청 묶음
 - f3af95bc 운영자 맨 위 출전 칸 진단 줄(UI·렌더 모두 fleetSlots 기준 확인) · 보스 여러 줄 임시 어댑터. a2003ad7 퀘스트 시트 자동 접기. 3a28d9d3 태블릿 40장 점검.
+- 45797284 설정 '정보' 묶음·운영자 패널 버튼(설정 맨 아래, 운영자 빌드만).
 - 05e1ad72 새 화면 en 골든(360·tablet)·접근성 검사(던전 단계 48dp)·guide.ult 자리(captainSkillReady 계약 대기).
 - c5064daa 운영자 메모리 줄 · a41d4714 상점 가격 스토어 글 그대로(Galmuri11 대체로 ₩) · 2108a6d6 첫 15분 흐름 시험(겹침 없음).
 - deb344aa 운영자 hudTopDp 줄(S3와 battle.area 기준 확인). S3 hd_sheets 고침 머지 → 빠른 check 다시 통과.
