@@ -78,14 +78,21 @@ void main() {
   });
 
   test('bountyReward·grantBountyReward: floor(base + perTier × (t − 1)), 카드는 보유 선원 결정론, 조각은 둘 다', () {
+    final h = EconomyHarness();
     final s = withBounty(const BountyState(tickets: 1));
     final gems = bountyReward(s, t, 'giant_hermit', 3, XorShiftRng(1));
     expect(gems, const BountyReward(type: 'gems', amount: 12));
-    expect(grantBountyReward(s, t, gems).wallet.gems, s.wallet.gems + 12);
+    expect(grantBountyReward(s, h.ctx, gems).wallet.gems, s.wallet.gems + 12);
     final cards = bountyReward(s, t, 'kraken', 6, XorShiftRng(1));
     expect(cards, bountyReward(s, t, 'kraken', 6, XorShiftRng(1)));
     expect([cards.type, cards.amount, s.crews.containsKey(cards.crewId)], ['cards', 3, isTrue]);
-    final pieces = grantBountyReward(s, t, bountyReward(s, t, 'ghost_admiral', 11, XorShiftRng(1)));
+    grantBountyReward(s, h.ctx, cards);
+    expect(
+      h.of<CardGranted>().map((e) => (e.crewId, e.source, e.isNew)),
+      List.filled(3, (cards.crewId, 'bounty', false)),
+      reason: '카드 장마다 CardGranted',
+    );
+    final pieces = grantBountyReward(s, h.ctx, bountyReward(s, t, 'ghost_admiral', 11, XorShiftRng(1)));
     expect(
       [pieces.wallet.mapPieces, pieces.progress.mapPiecesEarned],
       [s.wallet.mapPieces + 2, s.progress.mapPiecesEarned + 2],
