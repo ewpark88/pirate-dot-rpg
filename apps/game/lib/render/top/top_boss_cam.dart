@@ -94,7 +94,9 @@ class TopBossCam {
     final cap = math.min(_cap, fit + 0.02);
     // 보스전 줌 = 역동 줌 + 펀치, 상한(cap)으로 깎은 뒤 평소 ↔ 보스전 사이를 blend로 부드럽게(시작 때 툭 튀지 않게).
     final target = math.min(_zoom + punch, math.max(cap, 0.45)); // 작은 폰·큰 띠에서도 잘리지 않게 0.45까지
-    zoom = 1 + (target - 1) * blend;
+    // 처치 피니시 줌 펀치(보스가 사라져 blend가 풀려도 따로 — 0.5초 +0.14, 배만 남아 안전 영역 걱정 없음)
+    final fin = (now - scene.moments.finishAt) / 500;
+    zoom = 1 + (target - 1) * blend + (fin >= 0 && fin < 1 ? 0.14 * math.sin(fin * math.pi) : 0);
     final y = frame.shipScreen.dy + (_y - frame.shipScreen.dy) * blend;
     final x = ((safe.center.dx - field.center.dx) - _mx * d * zoom) * blend; // 화면 가로 기준점 옮김(dp)
     return (zoom, y, x);
