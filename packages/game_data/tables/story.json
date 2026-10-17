@@ -1,0 +1,421 @@
+{
+  "lineSec": 2.5,
+  "openingCutSec": 3.0,
+  "speakers": [
+    "narrator",
+    "boss",
+    "octo",
+    "bones"
+  ],
+  "opening": [
+    {
+      "art": "opening_1",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen1A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen1B"
+        }
+      ]
+    },
+    {
+      "art": "opening_2",
+      "lines": [
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen2A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen2B"
+        }
+      ]
+    },
+    {
+      "art": "opening_3",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen3A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen3B"
+        }
+      ]
+    },
+    {
+      "art": "opening_4",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen4A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen4B"
+        }
+      ]
+    },
+    {
+      "art": "opening_5",
+      "lines": [
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen5A"
+        }
+      ]
+    }
+  ],
+  "bosses": {
+    "giant_hermit": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossGiantHermitA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossGiantHermitB"
+        }
+      ]
+    },
+    "thunder_ray": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossThunderRayA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossThunderRayB"
+        }
+      ]
+    },
+    "iceberg_walrus": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossIcebergWalrusA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossIcebergWalrusB"
+        }
+      ]
+    },
+    "lava_whale": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossLavaWhaleA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossLavaWhaleB"
+        }
+      ]
+    },
+    "kraken": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossKrakenA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossKrakenB"
+        }
+      ]
+    },
+    "ghost_admiral": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossGhostAdmiralA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossGhostAdmiralB"
+        }
+      ]
+    },
+    "sea_croc": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossSeaCrocA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossSeaCrocB"
+        }
+      ]
+    },
+    "monster_whale": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossMonsterWhaleA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossMonsterWhaleB"
+        }
+      ]
+    },
+    "ice_slime": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossIceSlimeA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossIceSlimeB"
+        }
+      ]
+    },
+    "leviathan": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossLeviathanA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossLeviathanB"
+        }
+      ]
+    },
+    "kraken_titan": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossKrakenTitanA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossKrakenTitanB"
+        }
+      ]
+    },
+    "poseidon": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossPoseidonA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossPoseidonB"
+        }
+      ]
+    }
+  },
+  "traitLines": {
+    "evade": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEvade1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEvade1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEvade2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEvade2B"
+        }
+      ]
+    ],
+    "armor": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitArmor1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitArmor1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitArmor2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitArmor2B"
+        }
+      ]
+    ],
+    "regen": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitRegen1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitRegen1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitRegen2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitRegen2B"
+        }
+      ]
+    ],
+    "reflect": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitReflect1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitReflect1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitReflect2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitReflect2B"
+        }
+      ]
+    ],
+    "enrage": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEnrage1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEnrage1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEnrage2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEnrage2B"
+        }
+      ]
+    ],
+    "escort": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEscort1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEscort1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEscort2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEscort2B"
+        }
+      ]
+    ],
+    "dash": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDash1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDash1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDash2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitDash2B"
+        }
+      ]
+    ],
+    "default": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDefault1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault2A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDefault2B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault3A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitDefault3B"
+        }
+      ]
+    ]
+  },
+  "outro": [
+    {
+      "who": "octo",
+      "nameKey": "battleStoryOutro1"
+    },
+    {
+      "who": "octo",
+      "nameKey": "battleStoryOutro2"
+    },
+    {
+      "who": "bones",
+      "nameKey": "battleStoryOutro3"
+    }
+  ]
+}

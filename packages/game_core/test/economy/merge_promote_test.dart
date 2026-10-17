@@ -85,7 +85,8 @@ void main() {
   });
 
   test('신화 승급은 증표 50도 쓴다', () {
-    final s0 = withCrews({'octo': const CrewState(level: 60, cards: 20)}, gold: 1e60, tokens: 55);
+    final w = withCrews({'octo': const CrewState(level: 60, cards: 20)}, gold: 1e60, tokens: 55);
+    final s0 = w.copyWith(progress: const Progress(stage: 45, bestStage: 45)); // 첫 전설 유예 뒤(전설 이상 승급 문)
     final s = sys.handle(s0, const PromoteCrew('octo'), h.ctx)!;
     expect(s.crews['octo']!.level, 61);
     expect(s.tokens, 5);

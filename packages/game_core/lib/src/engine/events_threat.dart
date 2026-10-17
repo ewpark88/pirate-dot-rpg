@@ -96,7 +96,7 @@ class EnemyFired extends GameEvent {
 /// 원거리 적·보스가 [atTicks]틱 뒤 쏜다(쏘기 직전 예고 — 렌더가 쏘는 부위를 밝힌다, S1 2026-10-18).
 /// [kind]: 'ranged'(잡몹 원거리) · 'boss'(보스 기본 포탄) · 'volley'(보스 일제 사격 패턴). 표 waves.top.windupSec(0이면 없음).
 /// 예고만 — 발사 시점·피해는 그대로(sim 불변). 첫 발처럼 예고 시간보다 빨리 쏘게 되면 예고 없이 쏜다.
-/// 보스 기본 포탄은 정지 지점 이동·패턴 쉼으로 몇 틱 늦게 쏠 수 있다(일찍 쏘지는 않음).
+/// 보스 기본 포탄은 정지 지점 이동·패턴 쉼으로 늦게 쏠 수 있다(보통 atTicks 안, 일찍 쏘지는 않음).
 class EnemyWindup extends GameEvent {
   const EnemyWindup(super.tick, {required this.enemyId, required this.atTicks, required this.kind});
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 import 'package:pirate_dot/render/hd/hd_species.dart';
 
 /// 굽힌 HD 시트: 칸 [cell]px 정사각 × 8열(고리 0.1초씩) × 2행(0 = 왼쪽 봄 그대로, 1 = 좌우 뒤집어 오른쪽 봄).
@@ -114,7 +115,7 @@ class HdSheets {
     _used[key] = ++_tick;
     final have = _ready[key];
     if (have != null) return have;
-    final sheet = bake(sp, world, _density, cap: _cap, moods: boss && hdMoodSpecies.contains(kind));
+    final sheet = bake(sp, world, _density, cap: _cap, moods: boss, selfMood: hdMoodSpecies.contains(kind));
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
@@ -147,7 +148,16 @@ class HdSheets {
   }
 
   /// 한 종을 8장 × 2방향으로 굽는다(각 칸은 잘라 옆 칸에 번지지 않게).
-  static HdSheet bake(HdSpecies sp, double world, double density, {double cap = maxCell, bool moods = false}) {
+  /// [moods]면 표정 2행을 더 굽는다. [selfMood]가 아니면(표정을 직접 안 그리는 종) 쓰러짐에 기우뚱·별을 굽기가 얹는다
+  /// — 눈은 HdKit.eye가 표정대로(소용돌이·붉은 눈).
+  static HdSheet bake(
+    HdSpecies sp,
+    double world,
+    double density, {
+    double cap = maxCell,
+    bool moods = false,
+    bool selfMood = true,
+  }) {
     final rows = moods ? 4 : 2;
     // 표정 보스는 4행이라 칸 상한을 한 단계 낮춘다(메모리 2배 → 약 1.1배).
     final cell = (world * density).clamp(16.0, moods ? cap * 0.75 : cap).roundToDouble();
@@ -166,7 +176,14 @@ class HdSheets {
           ..mood = row < 2 ? HdMood.idle : (f < 4 ? HdMood.windup : HdMood.down)
           ..begin(r)
           ..shadow(c, r, sp.ground);
-        sp.draw(k, c, r, row < 2 ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4);
+        final t = row < 2 ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4;
+        final generic = !selfMood && k.mood == HdMood.down;
+        if (generic) k.downTilt(c, r * 0.9, t);
+        sp.draw(k, c, r, t);
+        if (generic) {
+          c.restore();
+          k.dizzyStars(c, Offset(0, -r * sp.extent * 0.8), r, t);
+        }
         c.restore();
       }
     }

@@ -163,8 +163,8 @@ class SimPlayer {
         _farmSince = _elapsed;
         _upgradesAtFarm = result.upgrades;
       }
-      if ((tutorialBoss && result.upgrades - _upgradesAtFarm >= _tutorialRetryUpgrades) ||
-          _elapsed - _farmSince! >= farmRetry) {
+      final manual = !s.settings.autoBoss && _elapsed - _farmSince! >= farmRetry; // 자동 보스면 엔진이 재도전(autoBossTick)
+      if ((tutorialBoss && result.upgrades - _upgradesAtFarm >= _tutorialRetryUpgrades) || manual) {
         engine.enqueue(const ChallengeBoss());
         _farmSince = null;
       }

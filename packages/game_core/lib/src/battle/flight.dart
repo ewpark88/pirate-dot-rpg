@@ -182,7 +182,7 @@ extension Flights on Round {
     final d = math.sqrt(dx * dx + dy * dy);
     if (d <= 0) return (x: e.x, y: e.y);
     final room = e.standsOff
-        ? math.max(0, d - geo.top.bossStandoff)
+        ? math.max(0, d - geo.top.standoffOf(e))
         : math.max(0, geo.hullGap(e.x, e.y) - geo.top.radiusOf(e));
     final step = math.min(speed * sec, room.toDouble());
     return (x: e.x + dx / d * step, y: e.y + dy / d * step);

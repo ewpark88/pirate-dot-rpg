@@ -177,8 +177,8 @@ extension _TopEvents on EventDirector {
     }
     final colors = scene.tables.rarities.rarities;
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
-    final water = crew != null && _crewFamily[crew] == 'underwater';
-    scene.topHits.impact.add(e.x, e.y, math.min(r, 64), color, scene.clockMs, water: water);
+    // 계열마다 다른 착탄(lob 폭발·ring 고리·shock 충격파… — 사용자 '같은 게 많아 보여')
+    scene.topHits.impact.addFamily(_crewFamily[crew] ?? 'lob', e.x, e.y, math.min(r, 64), color, rarity, scene.clockMs);
     // 타격감 v3: 범위 = 중 단계(히트스톱·방향 흔들림), 맞은 적은 폭심에서 바깥으로 튕김.
     scene.topHits.juice.hit(
       scene.clockMs,
@@ -276,7 +276,9 @@ extension _TopEvents on EventDirector {
       ..haptic(HapticLevel.medium)
       ..slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
-    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: scene.topHits.lite || scene.settings.powerSave);
+    final lite = scene.topHits.lite || scene.settings.powerSave;
+    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: lite);
+    scene.topHits.bossKilled(scene, e.targetId, Offset(e.x, e.y), lite: lite);
     scene.numbers.add(e.gold, e.x, e.y - 18, DamageKind.crit);
   }
 }

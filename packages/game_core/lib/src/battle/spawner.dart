@@ -1,12 +1,29 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
 import 'package:game_core/src/bignum/big_num.dart';
+import 'package:game_core/src/economy/fever.dart' show feverOn;
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart' show BossDef, GameTables, WavesTable;
+
+/// 보스 크기 배율(waves.top.bossScale[분류], 없으면 1) — 그림(S3)과 엔진(충돌·standoff)이 같은 값을 읽는다.
+double bossScaleOf(GameTables t, String bossId) {
+  final top = t.waves.raw.obj('top');
+  if (!top.has('bossScale')) return 1;
+  return top.obj('bossScale').numberOr(t.regions.bossClassOf(bossId), 1);
+}
+
+/// 그 보스가 서는 standoff 원 반지름(TopField.standoffOf와 같은 식 — 상태 보기·시나리오용).
+double bossStandoffFor(GameTables t, String bossId) {
+  final top = t.waves.raw.obj('top');
+  final grow = top.has('bossScale') ? top.obj('bossScale').numberOr('standoffGrow', 0) : 0;
+  return top.number('bossStandoff') + top.number('bossRadius') * (bossScaleOf(t, bossId) - 1) * grow;
+}
 
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
@@ -107,7 +124,9 @@ void startBoss(
     bossDef: def,
     tier: t.regions.tierAt(stage),
   );
-  boss.hp = boss.maxHp.times(hpRatio);
+  boss
+    ..hp = boss.maxHp.times(hpRatio)
+    ..scale = bossScaleOf(t, def.id);
   if (def.patterns.isNotEmpty) {
     int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
     final first = def.firstRestSec;
@@ -159,11 +178,21 @@ BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
 }
 
 /// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`, 스테이지 1~earlyStageMax는 × earlyAttackMultiplier.
+/// (공격은 HP처럼 완만하게 줄이지 않는다 — 시간 제한이 없어 배가 안 가라앉으면 튜토리얼 실패 보스와 끝없이 싸운다.)
 BigNum bossAttack(WavesTable w, int stage) => stageCurve(
   w.attackBase,
   w.attackGrowth,
   stage,
 ).times(w.bossAttackMultiplier * (stage <= w.earlyStageMax ? w.earlyAttackMultiplier : 1));
+
+/// 초반 보스 HP 감쇠: 스테이지 1~earlyStageMax는 [early] 그대로, 그 뒤 `boss.earlyRampToStage`까지 기하급수로 1에 닿는다
+/// (S3 첫 15분 점검 2026-10-17 — 스테이지 2 → 3에서 보스 HP가 67배로 뛰는 절벽에 사람식 강화가 7번 실패).
+double earlyRamp(WavesTable w, int stage, double early) {
+  if (stage <= w.earlyStageMax) return early;
+  final to = w.raw.obj('boss').integer('earlyRampToStage');
+  if (stage >= to) return 1;
+  return math.pow(early, (to - stage) / (to - w.earlyStageMax)).toDouble();
+}
 
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.
@@ -176,13 +205,18 @@ int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0, double? limitSec
 }
 
 /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
+/// 첫 회차 초반 보스 HP 감쇠만([earlyRamp]) — '보스 도전' 버튼(재도전)이 쓴다. 튜토리얼 실패 배율은 첫 만남에만.
+double earlyBossScale(GameState s, GameTables t) =>
+    s.progress.rebirths == 0 ? earlyRamp(t.waves, s.progress.stage, t.waves.earlyHpMultiplier) : 1.0;
+
 double tutorialBossScale(GameState s, GameTables t) {
   final w = t.waves;
-  final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
-  final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
-      ? w.tutorialFailHpMultiplier
-      : 1.0;
-  return early * fail;
+  final early = earlyBossScale(s, t);
+  // 튜토리얼 실패 보스(3단계)는 감쇠 없이 × tutorialFailHpMultiplier — 한 번은 꼭 진다(설계서 4.12).
+  final step = t.meta.raw.obj('tutorial').obj('steps').integer('boss'); // 단계 번호와 스테이지 번호는 따로 바뀔 수 있다
+  // 첫 만남(보스 실패 0번)만 — 실패 뒤 자동 보스·재도전은 일반 보스(안 그러면 방치 플레이어가 튜토리얼 보스에 영원히 진다).
+  final fail = s.tutorialStep == step && s.progress.stage == w.tutorialFailStage && s.progress.bossFails == 0;
+  return fail ? w.tutorialFailHpMultiplier : early;
 }
 
 /// 벽 보스 (사용자 '너무 쉽다', 2026-10-16): waves.boss.wallEvery 스테이지마다(해역 보스 자리) 체력 × wallHpMultiplier,
@@ -193,4 +227,32 @@ double wallBossScale(WavesTable w, int stage) {
   // 중간 벽(선택): midWallEvery 스테이지마다 조금 단단하게 — 보통 스테이지 첫 도전이 늘 성공하지 않게.
   if (b.has('midWallEvery') && stage % b.integer('midWallEvery') == 0) return b.number('midWallHpMultiplier');
   return 1;
+}
+
+/// 자동 보스 도전(설정 autoBoss, 방치형 — S3·S4 첫 15분 점검 2026-10-17 '실패 뒤 안 누르면 스테이지 3에 15분', S1 규칙):
+/// 보스 실패 뒤 파밍이 `waves.boss.autoBoss.cooldownSec` 지나고 그사이 배 부위 레벨 합이 `levelGain` 이상 올랐거나,
+/// 쿨다운의 2배가 지나면 다음 만남을 보스로 되돌린다(farming false). 튜토리얼 보스 단계도 — 재도전은 일반 보스(tutorialBossScale).
+/// 남은 틱은 [Field.autoBossLeft] → BattleView.autoBossTicksLeft. 센 값은 전장(Field)에만 — 세이브에 안 남는다.
+GameState autoBossTick(GameState s, Field f, GameTables t) {
+  final p = s.progress;
+  if (!p.farming || !s.settings.autoBoss) {
+    f
+      ..farmTicks = 0
+      ..autoBossLeft = 0;
+    return s;
+  }
+  final a = t.waves.raw.obj('boss').obj('autoBoss');
+  final perSec = Duration.millisecondsPerSecond / t.waves.tickMs;
+  final cool = (a.number('cooldownSec') * perSec).round();
+  final levels = s.ship.parts.values.fold(0, (sum, v) => sum + v);
+  if (f.farmTicks == 0) f.failLevels = levels;
+  if (!feverOn(s)) f.farmTicks += 1; // 피버 중엔 쿨다운 멈춤 — 피버 무리 손맛을 끊지 않는다(핵앤슬래시)
+  final gained = levels - f.failLevels >= a.integer('levelGain');
+  final due = gained ? cool : cool + cool;
+  f.autoBossLeft = due - f.farmTicks > 0 ? due - f.farmTicks : 0;
+  if (f.autoBossLeft > 0) return s;
+  f
+    ..farmTicks = 0
+    ..autoBossLeft = 0;
+  return s.copyWith(progress: p.copyWith(farming: false));
 }

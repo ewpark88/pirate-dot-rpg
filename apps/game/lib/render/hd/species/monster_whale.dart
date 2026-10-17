@@ -56,7 +56,6 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
     ..close();
   k
     ..blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD)
-    ..rim(c, body, lava ? const Color(0x99FFB060) : const Color(0x99E0F0FF))
     ..shine2(c, body.getBounds());
   // 흰 배(주름 줄)
   final belly = Path()

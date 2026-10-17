@@ -104,6 +104,8 @@ class Foe {
 
   /// 보스 기본 포탄 예고(EnemyWindup)용 — 지난 틱에 본 접촉 타이머(이번 틱 값과 비교해 예고 시점을 지났나 본다).
   double seenContact = double.infinity;
+  int swayDir = 1; // 큰 보스가 배 위 호를 오가는 방향(+1 시계·−1)
+  double scale = 1; // 보스 크기 배율(waves.top.bossScale) — 충돌 반경·standoff·원 돌기(TopField)
   BossPlan? plan; // 보스 행동 v2 패턴 상태(boss_patterns.dart) — 패턴이 있는 보스·바다 괴물
   bool get standsOff => boss || plan != null; // standoff 원에 서서 돈다(보스·패턴 있는 이벤트 적)
   bool get emerging => warned && holdSec > 0;

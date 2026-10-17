@@ -48,6 +48,12 @@ extension _HdShipParts on HdShip {
             ),
           );
         _k.blob(c, barrel, const Color(0xFF7A808C), const Color(0xFF2A2E38), line: 0.6);
+        // v2 금속 반사: 포신 위쪽 가는 흰 줄
+        _k.fill.color = const Color(0xAAFFFFFF);
+        c.drawRect(
+          Rect.fromCenter(center: base + Offset(s * hw * 0.22, -hw * 0.05), width: hw * 0.3, height: hw * 0.035),
+          _k.fill,
+        );
       }
     }
     if (stage >= 6) {
@@ -137,16 +143,36 @@ extension _HdShipParts on HdShip {
   }
 
   void _nest(Canvas c, double len, int stage, HdShipColors col, double now) {
-    // 망루: 돛대 위 둥근 발판 + 깃발(단계마다 크게, 펄럭)
+    // 망루(v2): 돛대 위 나무 고리 발판(가운데 구멍·난간 점) + 해골 깃발(단계마다 크게, 펄럭)
     final at = Offset(0, -len * (0.08 + (stage >= 3 ? 0.16 : 0)));
-    final r = len * (0.05 + 0.008 * stage);
-    _k.blob(c, Path()..addOval(Rect.fromCircle(center: at, radius: r)), col.rim, col.rimD, gloss: false, line: 0.6);
-    final wave = now == 0 ? 0.0 : math.sin(now / 160) * r * 0.25;
+    final r = len * (0.04 + 0.006 * stage);
+    final ring = Path()
+      ..fillType = PathFillType.evenOdd
+      ..addOval(Rect.fromCircle(center: at, radius: r))
+      ..addOval(Rect.fromCircle(center: at, radius: r * 0.55));
+    _k.blob(c, ring, Color.lerp(col.rim, const Color(0xFFFFFFFF), 0.2)!, col.rimD, gloss: false, line: 0.5);
+    _k.fill.color = col.rimD;
+    c.drawCircle(at, r * 0.3, _k.fill);
+    _k.fill.color = const Color(0xFFFFE8B0);
+    for (var i = 0; i < 6; i++) {
+      final a = i * math.pi / 3;
+      c.drawCircle(at + Offset(math.cos(a), math.sin(a)) * r * 0.78, r * 0.08, _k.fill);
+    }
+    final wave = now == 0 ? 0.0 : math.sin(now / 160) * r * 0.3;
+    final tip = at + Offset(r * (2.2 + 0.12 * stage), wave);
     final flag = Path()
-      ..moveTo(at.dx, at.dy)
-      ..quadraticBezierTo(at.dx + r * 1.4, at.dy - r * 0.3 + wave, at.dx + r * (1.8 + 0.1 * stage), at.dy + wave)
-      ..quadraticBezierTo(at.dx + r * 1.2, at.dy + r * 0.5 + wave, at.dx, at.dy + r * 0.7)
+      ..moveTo(at.dx + r * 0.3, at.dy - r * 0.35)
+      ..quadraticBezierTo(at.dx + r * 1.4, at.dy - r * 0.7 + wave, tip.dx, tip.dy - r * 0.1)
+      ..quadraticBezierTo(at.dx + r * 1.4, at.dy + r * 0.5 + wave, at.dx + r * 0.3, at.dy + r * 0.35)
       ..close();
-    _k.blob(c, flag, Color.lerp(col.flag, const Color(0xFFFFFFFF), 0.25)!, col.flag, gloss: false, line: 0.6);
+    _k.blob(c, flag, Color.lerp(col.flag, const Color(0xFFFFFFFF), 0.25)!, col.flag, gloss: false, line: 0.5);
+    // 해골 문양(흰 점 + 눈)
+    final mid = Offset(at.dx + r * 1.25, at.dy - r * 0.05 + wave * 0.6);
+    _k.fill.color = const Color(0xFFF4F0E4);
+    c.drawCircle(mid, r * 0.22, _k.fill);
+    _k.fill.color = col.flag;
+    for (final s in const [-1.0, 1.0]) {
+      c.drawCircle(mid + Offset(s * r * 0.08, -r * 0.02), r * 0.05, _k.fill);
+    }
   }
 }

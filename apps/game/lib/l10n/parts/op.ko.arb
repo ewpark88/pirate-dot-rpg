@@ -59,5 +59,10 @@
   "opTraitEscort": "호위",
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
-  "opTraitSplit": "분열"
+  "opTraitSplit": "분열",
+  "opHudLayout": "HUD 배치 안",
+  "opHudNow": "지금",
+  "opHudThumb": "엄지",
+  "opHudFloating": "떠 있는 띠",
+  "opHudSlim": "얇은 도크"
 }

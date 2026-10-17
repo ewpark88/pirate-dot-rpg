@@ -14,7 +14,7 @@ const Map<String, String> rawTables = {
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
-    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9 } }
+    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -2917,6 +2917,8 @@ const Map<String, String> rawTables = {
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
   "firstLegend": { "untilStage": 45, "downgradeTo": "hero" },
+  "earlyCards": { "untilStage": 30, "maxRarity": "rare" },
+  "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
   "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
@@ -3129,6 +3131,429 @@ const Map<String, String> rawTables = {
   "legends": {"octo": {"zone": {"radius": 20, "sec": 3, "slow": 0.3}, "mythic": {"zone": {"radius": 40, "sec": 3, "slow": 0.3}, "powerScale": 2.1897}, "powerScale": 1.1242}, "starry": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "extraProjectiles": 1, "powerScale": 1.4719}, "powerScale": 1.1499}, "crabs": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 1.0027}, "powerScale": 1.0485}, "uni": {"extraProjectiles": 1, "mythic": {"extraProjectiles": 2, "powerScale": 2.3801}, "powerScale": 1.3973}, "volke": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.4}, "extraProjectiles": 2, "powerScale": 1.6985}, "powerScale": 1.1336}, "pang": {"critBurst": 12, "mythic": {"critBurst": 24, "powerScale": 0.8037}, "powerScale": 0.9864}, "hippo": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.25, "vulnerableSec": 2}, "powerScale": 0.8958}, "powerScale": 0.9659}, "bones": {"execute": {"below": 0.3, "mul": 2}, "mythic": {"execute": {"below": 0.4, "mul": 2.5}, "powerScale": 0.7355}, "powerScale": 0.9963}, "lion": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 2, "burnRatio": 0.6}, "powerScale": 0.8121}, "powerScale": 0.9173}, "volt": {"charge": {"every": 5, "mul": 2, "stunSec": 0.6}, "onHit": {"stunSec": 0.3}, "mythic": {"charge": {"every": 4, "mul": 2.5, "stunSec": 0.8}, "onHit": {"stunSec": 0.3}, "powerScale": 1.2666}, "powerScale": 0.9974}, "sword": {"pierceRamp": 0.2, "mythic": {"pierceRamp": 0.3, "powerScale": 0.7304}, "powerScale": 0.8066}, "nar": {"noFalloff": true, "mythic": {"noFalloff": true, "zone": {"radius": 12, "sec": 2, "slow": 0.3}, "powerScale": 0.9282}, "powerScale": 0.812}, "walrus": {"onHit": {"pull": 12}, "mythic": {"onHit": {"pull": 24}, "powerScale": 1.0852}, "powerScale": 0.8667}, "saw": {"boomerang": 0.8, "mythic": {"boomerang": 1.0, "powerScale": 0.9346}, "powerScale": 0.8395}, "moby": {"onHit": {"pull": 16}, "mythic": {"onHit": {"pull": 20}, "critBurst": 20, "powerScale": 1.1074}, "powerScale": 0.9807}, "otter": {"extraChains": 1, "mythic": {"extraChains": 2, "powerScale": 0.9769}, "powerScale": 1.0573}, "pingu": {"onHit": {"stunSec": 0.5}, "mythic": {"onHit": {"stunSec": 1.0}, "powerScale": 1.0089}, "powerScale": 0.9137}, "sheldon": {"critBurst": 14, "mythic": {"critBurst": 20, "powerScale": 1.0019}, "powerScale": 0.9039}, "dolphy": {"onHit": {"pull": -6}, "mythic": {"onHit": {"pull": -12}, "powerScale": 0.9698}, "powerScale": 0.9353}, "orca": {"extraChains": 2, "mythic": {"extraChains": 4, "powerScale": 1.1732}, "powerScale": 1.1252}, "puffer": {"critBurst": 14, "mythic": {"critBurst": 28, "powerScale": 1.9369}, "powerScale": 1.1778}, "jelly": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "mythic": {"zone": {"radius": 16, "sec": 3, "stunEverySec": 1}, "extraProjectiles": 1, "powerScale": 2.3274}, "powerScale": 1.2899}, "bara": {"bindSec": 2.0, "mythic": {"bindSec": 2.5, "powerScale": 3.606}, "powerScale": 2.1725}, "moray": {"onHit": {"stunSec": 2}, "mythic": {"onHit": {"stunSec": 2}, "extraProjectiles": 1, "powerScale": 1.5217}, "powerScale": 1.2845}, "kraki": {"zone": {"radius": 20, "sec": 4, "stunEverySec": 1}, "mythic": {"zone": {"radius": 40, "sec": 4, "stunEverySec": 1}, "powerScale": 1.8392}, "powerScale": 1.237}, "polly": {"noMiss": true, "mythic": {"noMiss": true, "powerScale": 0.7705}, "powerScale": 1.0918}, "gull": {"extraProjectiles": 2, "mythic": {"extraProjectiles": 4, "powerScale": 0.7011}, "powerScale": 1.074}, "pelly": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.1, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 0.9659, "mythic": {"arc": {"count": 0, "ratio": 0.4, "stunSec": 0.15, "counts": [0, 2, 3, 5, 7], "falloff": 0.7}, "powerScale": 1.1969}}, "alba": {"critBurst": 16, "mythic": {"critBurst": 32, "powerScale": 0.8269}, "powerScale": 0.964}, "manta": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "mythic": {"zone": {"radius": 20, "sec": 3, "slow": 0.2}, "extraProjectiles": 1, "powerScale": 1.5223}, "powerScale": 0.9988}, "shark": {"onHit": {"vulnerable": 0.1, "vulnerableSec": 2}, "mythic": {"onHit": {"vulnerable": 0.2, "vulnerableSec": 2}, "powerScale": 1.078}, "powerScale": 1.081}, "crabby": {"onHit": {"pull": 20}, "mythic": {"onHit": {"pull": 20}, "extraProjectiles": 1, "powerScale": 1.2851}, "powerScale": 1.1618}, "king": {"onHit": {"stunSec": 0.3}, "mythic": {"onHit": {"stunSec": 0.6}, "powerScale": 1.3245}, "powerScale": 1.1424}, "lobster": {"sweep": {"deg": 70, "range": 30}, "mythic": {"sweep": {"deg": 100, "range": 40}, "powerScale": 1.3395}, "powerScale": 1.1216}, "davy": {"bossBonus": 0.5, "mythic": {"bossBonus": 0.75, "powerScale": 1.2903}, "powerScale": 1.0753}, "turtle": {"shield": {"everySec": 8, "durationSec": 4, "hpRatio": 0.25}, "powerScale": 1.2647, "mythic": {"shield": {"everySec": 6, "durationSec": 4, "hpRatio": 0.35}, "powerScale": 2.0814}}, "pumpum": {"fever": {"chargeBonus": 0.5, "extraSec": 5}, "powerScale": 1.3378, "mythic": {"fever": {"chargeBonus": 0.8, "extraSec": 8}, "powerScale": 1.9519}}, "cook": {"onHit": {"burnSec": 2, "burnRatio": 0.3}, "mythic": {"onHit": {"burnSec": 4, "burnRatio": 0.3}, "powerScale": 2.0676}, "powerScale": 1.4304}, "corey": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "mythic": {"zone": {"radius": 16, "sec": 2, "stunEverySec": 2}, "extraProjectiles": 1, "powerScale": 1.2501}, "powerScale": 1.3148}, "lamp": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "mythic": {"onHit": {"vulnerable": 0.15, "vulnerableSec": 4}, "powerScale": 0.7329}, "powerScale": 0.6783}}
 }
 ''',
+  'story': r'''
+{
+  "lineSec": 2.5,
+  "openingCutSec": 3.0,
+  "speakers": [
+    "narrator",
+    "boss",
+    "octo",
+    "bones"
+  ],
+  "opening": [
+    {
+      "art": "opening_1",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen1A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen1B"
+        }
+      ]
+    },
+    {
+      "art": "opening_2",
+      "lines": [
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen2A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen2B"
+        }
+      ]
+    },
+    {
+      "art": "opening_3",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen3A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen3B"
+        }
+      ]
+    },
+    {
+      "art": "opening_4",
+      "lines": [
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen4A"
+        },
+        {
+          "who": "narrator",
+          "nameKey": "battleStoryOpen4B"
+        }
+      ]
+    },
+    {
+      "art": "opening_5",
+      "lines": [
+        {
+          "who": "octo",
+          "nameKey": "battleStoryOpen5A"
+        }
+      ]
+    }
+  ],
+  "bosses": {
+    "giant_hermit": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossGiantHermitA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossGiantHermitB"
+        }
+      ]
+    },
+    "thunder_ray": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossThunderRayA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossThunderRayB"
+        }
+      ]
+    },
+    "iceberg_walrus": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossIcebergWalrusA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossIcebergWalrusB"
+        }
+      ]
+    },
+    "lava_whale": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossLavaWhaleA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossLavaWhaleB"
+        }
+      ]
+    },
+    "kraken": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossKrakenA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossKrakenB"
+        }
+      ]
+    },
+    "ghost_admiral": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossGhostAdmiralA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossGhostAdmiralB"
+        }
+      ]
+    },
+    "sea_croc": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossSeaCrocA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossSeaCrocB"
+        }
+      ]
+    },
+    "monster_whale": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossMonsterWhaleA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossMonsterWhaleB"
+        }
+      ]
+    },
+    "ice_slime": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossIceSlimeA"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryBossIceSlimeB"
+        }
+      ]
+    },
+    "leviathan": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossLeviathanA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossLeviathanB"
+        }
+      ]
+    },
+    "kraken_titan": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossKrakenTitanA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossKrakenTitanB"
+        }
+      ]
+    },
+    "poseidon": {
+      "intro": [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryBossPoseidonA"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryBossPoseidonB"
+        }
+      ]
+    }
+  },
+  "traitLines": {
+    "evade": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEvade1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEvade1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEvade2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEvade2B"
+        }
+      ]
+    ],
+    "armor": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitArmor1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitArmor1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitArmor2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitArmor2B"
+        }
+      ]
+    ],
+    "regen": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitRegen1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitRegen1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitRegen2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitRegen2B"
+        }
+      ]
+    ],
+    "reflect": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitReflect1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitReflect1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitReflect2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitReflect2B"
+        }
+      ]
+    ],
+    "enrage": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEnrage1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEnrage1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEnrage2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEnrage2B"
+        }
+      ]
+    ],
+    "escort": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEscort1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitEscort1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitEscort2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitEscort2B"
+        }
+      ]
+    ],
+    "dash": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDash1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDash1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDash2A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitDash2B"
+        }
+      ]
+    ],
+    "default": [
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault1A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDefault1B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault2A"
+        },
+        {
+          "who": "octo",
+          "nameKey": "battleStoryTraitDefault2B"
+        }
+      ],
+      [
+        {
+          "who": "boss",
+          "nameKey": "battleStoryTraitDefault3A"
+        },
+        {
+          "who": "bones",
+          "nameKey": "battleStoryTraitDefault3B"
+        }
+      ]
+    ]
+  },
+  "outro": [
+    {
+      "who": "octo",
+      "nameKey": "battleStoryOutro1"
+    },
+    {
+      "who": "octo",
+      "nameKey": "battleStoryOutro2"
+    },
+    {
+      "who": "bones",
+      "nameKey": "battleStoryOutro3"
+    }
+  ]
+}
+''',
   'waves': r'''
 {
   "tickMs": 50,
@@ -3137,7 +3562,7 @@ const Map<String, String> rawTables = {
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
-  "boss": { "hpMultiplier": 270, "wallEvery": 10, "wallHpMultiplier": 2.8, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 20, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.015, "earlyAttackMultiplier": 0.035 },
+  "boss": { "hpMultiplier": 270, "wallEvery": 10, "wallHpMultiplier": 2.8, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 20, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "levelGain": 1 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.015, "earlyAttackMultiplier": 0.035 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
@@ -3154,6 +3579,7 @@ const Map<String, String> rawTables = {
     "mobRadius": 6,
     "bossRadius": 24,
     "bossStandoff": 100,
+    "bossScale": {"wall": 1.8, "region": 1.4, "other": 1.2, "standoffGrow": 0, "orbitMax": 1.5, "swayDeg": 20},
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,

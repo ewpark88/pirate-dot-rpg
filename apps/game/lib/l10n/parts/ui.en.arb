@@ -1146,5 +1146,83 @@
         "type": "String"
       }
     }
+  },
+  "uiBossCanWin": "You can win!",
+  "uiStoryOpen1": "Far across the sea lay seven waters where treasure slept.",
+  "uiStoryOpen2": "Little Octo inherited Grandpa's old, creaky ship.",
+  "uiStoryOpen3": "But sea monsters and pirate bosses block the way!",
+  "uiStoryOpen4": "Gather mates, grow your ship, and complete the treasure map.",
+  "uiStoryOpen5": "Set sail! The ship fights on its own — you just make it stronger.",
+  "uiStorySkip": "Skip",
+  "uiStoryTapNext": "Tap for next",
+  "uiStoryBossTaunt": "Who dares sail into MY sea?!",
+  "uiStoryOctoReply": "Our ship won't lose! Crew, ready the cannons!",
+  "uiShopTitle": "Shop",
+  "uiShopNoAds": "No ads",
+  "uiShopSubLeft": "Subscribed · {days} days left",
+  "uiShopBuy": "{price}",
+  "uiShopPrice": "{n} KRW",
+  "uiShopOff": "{pct}% off",
+  "uiShopBest": "Popular",
+  "uiShopGemsS": "Handful of gems",
+  "uiShopGemsM": "Gem chest",
+  "uiShopGemsL": "Gem hoard",
+  "uiShopStarter": "Starter pack",
+  "uiShopNoAdsName": "Remove ads",
+  "uiShopSubName": "Captain pass · 30 days",
+  "uiShopGemsN": "Gems ×{n}",
+  "uiShopSummonN": "Summons ×{n}",
+  "uiShopDailyGems": "Daily gems ×{n}",
+  "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
+  "uiShopLater": "Later",
+  "uiShopOpen": "Shop (operator)",
+  "@uiShopSubLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopBuy": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopPrice": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopOff": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopGemsN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopSummonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopDailyGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
