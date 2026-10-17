@@ -135,9 +135,12 @@ class TopGeometry implements BattleGeometry {
     } else {
       _spawn.place(boss, up, top.bossSpawnRadius + top.bossRadius);
     }
+    // 촉수: 배 위쪽 호(armsArcDeg) 안에 — 원 전체면 옆 자리가 카메라 밖이라 조준이 안 돼 크라켄 보호막이 안 꺼졌다(S5 10-18).
     final arms = f.foes.where((e) => e.ownerId == boss.id).toList();
+    final arc = top.armsArcDeg * radiansPerDegree;
     for (var i = 0; i < arms.length; i++) {
-      _spawn.place(arms[i], up + (i + 1) * turn / (arms.length + 1), top.bossStandoff);
+      final a = arc > 0 ? up - arc * half + (i + 1) * arc / (arms.length + 1) : up + (i + 1) * turn / (arms.length + 1);
+      _spawn.place(arms[i], a, top.bossStandoff);
     }
   }
 
