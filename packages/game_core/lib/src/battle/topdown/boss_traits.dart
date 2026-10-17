@@ -18,7 +18,7 @@ extension BossTraits on Round {
 
   /// strike 안: 보스 [e]가 [crewId]의 한 방 [amount]에서 실제로 받는 피해. null = 이번엔 안 맞음(회피·반사막).
   /// 선원이 아닌 피해(빠른 항해 돌파 사격·피버 오라 등, crewId null)는 특성을 지나간다 — 특성은 편성의 카운터 문제다.
-  BigNum? traitHit(Foe e, BigNum amount, {String? crewId}) {
+  BigNum? traitHit(Foe e, BigNum amount, {String? crewId, bool crit = false}) {
     final def = e.bossDef;
     if (!e.boss || def == null || def.traits.isEmpty || crewId == null) return amount;
     final family = familyOf(crewId);
@@ -27,7 +27,7 @@ extension BossTraits on Round {
       final gun = field.guns.where((g) => g.crewId == crewId).firstOrNull;
       final p = ev.cfg.strs('dodge').contains(family) ? ev.cfg.numberOr('chance', 0) : ev.cfg.numberOr('areaChance', 0);
       if (p > 0 && !(gun != null && missProof(gun, ctx.rng)) && ctx.rng.nextDouble() < p) {
-        ctx.emit(AttackMissed(ctx.tick, crewId: crewId ?? '', x: e.x, y: e.y, reason: 'evade'));
+        ctx.emit(AttackMissed(ctx.tick, crewId: crewId, x: e.x, y: e.y, reason: 'evade'));
         return null;
       }
     }
@@ -35,7 +35,15 @@ extension BossTraits on Round {
     if (rf != null && ctx.tick < (e.traitTicks['reflectUntil'] ?? 0) && !rf.cfg.strs('bypass').contains(family)) {
       if (!invincible) {
         final hurt = field.hurtShip(amount.times(rf.cfg.number('ratio')), w.raw.number('shipHitCap'));
-        ctx.emit(ShipDamaged(ctx.tick, amount: hurt, hpRatio: (field.shipHp / field.shipHpMax).toDouble()));
+        ctx.emit(
+          ShipDamaged(
+            ctx.tick,
+            amount: hurt,
+            hpRatio: (field.shipHp / field.shipHpMax).toDouble(),
+            fromX: e.x,
+            fromY: e.y,
+          ),
+        );
       }
       return null;
     }
@@ -43,10 +51,10 @@ extension BossTraits on Round {
     final es = def.trait('escort');
     if (es != null && field.living.any((x) => x.ownerId == e.id)) out = out.times(es.cfg.number('damageMul'));
     final ar = def.trait('armor');
-    if (ar != null) {
-      final cut = out - e.maxHp.times(ar.cfg.number('ratio'));
-      final floor = out.times(ar.cfg.number('min'));
-      out = cut > floor ? cut : floor;
+    if (ar != null && !crit) {
+      // 장갑: 느리고 센 공격(발사 간격 heavySec 이상)·치명타만 그대로, 빠른 작은 타격은 × factor.
+      final gun = field.guns.where((g) => g.crewId == crewId).firstOrNull;
+      if ((gun?.attack.intervalSec ?? 0) < ar.cfg.number('heavySec')) out = out.times(ar.cfg.number('factor'));
     }
     return out;
   }

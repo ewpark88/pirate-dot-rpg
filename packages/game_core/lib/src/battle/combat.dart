@@ -233,7 +233,12 @@ class Round {
       final g = guard(e, familyOf(crewId));
       if (g <= 0) continue; // 보호막: 피해 없음
       final vul = e.vulnerableTimer > 0 ? e.vulnerable : 0.0;
-      final amount = traitHit(e, base.times(h.factor * g * (1 + vul)), crewId: crewId); // 보스 특성(boss_traits)
+      final amount = traitHit(
+        e,
+        base.times(h.factor * g * (1 + vul)),
+        crewId: crewId,
+        crit: crit,
+      ); // 보스 특성(boss_traits)
       if (amount == null) continue;
       total = total + amount;
       if (crewId != null) field.creditDamage(crewId, e, amount > e.hp ? e.hp : amount);
