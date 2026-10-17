@@ -1,5 +1,8 @@
 import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui';
+
+import 'package:flutter/painting.dart' show HSVColor;
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -220,21 +223,52 @@ class TopFever {
     }
   }
 
-  final List<(double, double)> _trail = []; // (배 x, 장면 ms)
+  final List<(double, double, double)> _trail = []; // (배 x, 배 y, 장면 ms)
+  final List<Float32List> _trailPts = List.generate(4, (_) => Float32List(_trailCap * 6));
+  final List<int> _trailN = List.filled(4, 0);
+  final _trailPaint = Paint()
+    ..strokeCap = StrokeCap.square
+    ..isAntiAlias = false;
+  static const _trailCap = 96;
+  static const _trailLifeMs = 2200.0;
 
-  /// 피버 S자 항적: 지난 배 x를 흐름 속도로 뒤로 흘려 흰 거품 줄로(전장 좌표 — 카메라 원점 캔버스).
+  /// 피버 항적(S5 8자 곡선, '항적이 약하다'): 지난 배 자리를 흐름으로 뒤로 흘린 세 줄 무지개 거품 띠, 2.2초 남아 원이 고리로 보인다.
   void weaveTrail(Canvas c, Offset ship, double ms, double flowSpeed) {
-    if (_trail.isEmpty || ms - _trail.last.$2 >= 60) _trail.add((ship.dx, ms));
-    _trail.removeWhere((p) => ms - p.$2 > 1600);
-    if (level <= 0 || _trail.length < 2) return;
-    for (var i = 0; i < _trail.length; i++) {
-      final (x, at) = _trail[i];
-      final age = (ms - at) / 1000;
-      final y = ship.dy + 22 + age * flowSpeed;
-      final a = (1 - age / 1.6).clamp(0.0, 1.0) * level;
-      _paint.color = const Color(0xFFF2FBFF).withValues(alpha: 0.75 * a);
-      // 한 점(좌우 번갈아) — 입자 예산
-      c.drawRect(Rect.fromLTWH(i.isEven ? x - 5 : x + 3, y, 2, 2), _paint);
+    if (_trail.isEmpty || ms - _trail.last.$3 >= 30) _trail.add((ship.dx, ship.dy, ms));
+    while (_trail.length > _trailCap || (_trail.isNotEmpty && ms - _trail.first.$3 > _trailLifeMs)) {
+      _trail.removeAt(0);
+    }
+    if (level <= 0 || _trail.length < 3) return;
+    _trailN.fillRange(0, 4, 0);
+    for (var i = 1; i < _trail.length; i++) {
+      final (x, y, at) = _trail[i];
+      final (px, py, pat) = _trail[i - 1];
+      final age = (ms - at) / _trailLifeMs;
+      final drift = (ms - at) / 1000 * flowSpeed;
+      final pdrift = (ms - pat) / 1000 * flowSpeed;
+      var dx = x - px;
+      var dy = (y + drift) - (py + pdrift);
+      final len = math.sqrt(dx * dx + dy * dy);
+      if (len < 1e-3) continue;
+      dx /= len;
+      dy /= len;
+      final w = 4 + 3 * (1 - age);
+      final b = (age * 3.99).floor().clamp(0, 3);
+      final pts = _trailPts[b];
+      var n = _trailN[b];
+      for (final o in const [-1.0, 0.0, 1.0]) {
+        pts[n * 2] = (x - dy * w * o).roundToDouble();
+        pts[n * 2 + 1] = (y + drift + dx * w * o + 18).roundToDouble();
+        n++;
+      }
+      _trailN[b] = n;
+    }
+    _trailPaint.strokeWidth = 3.5;
+    for (var b = 0; b < 4; b++) {
+      if (_trailN[b] == 0) continue;
+      final a = (1 - b / 4) * 0.85 * level;
+      _trailPaint.color = HSVColor.fromAHSV(a, (ms / 4 + b * 70) % 360, 0.45, 1).toColor();
+      c.drawRawPoints(PointMode.points, Float32List.sublistView(_trailPts[b], 0, _trailN[b] * 2), _trailPaint);
     }
   }
 

@@ -24,6 +24,9 @@ class Projectile {
   double startIndex = 0;
   double impactIndex = 0;
 
+  /// 옆으로 휘는 정도(단위, 추적 깃털 — 길 가운데에서 가장 크게). 0이면 곧게.
+  double curve = 0;
+
   /// 0(출발)~1(도착). 장면이 매 프레임 갱신한다.
   double progress = 0;
   double x = 0;

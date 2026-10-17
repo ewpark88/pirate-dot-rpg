@@ -96,6 +96,22 @@
       "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (sfx/ultimate_0.wav)",
       "license": "OWN"
     },
+    "bosses/angler_king.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/blaze_pirate.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/cursegull_leader.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/deep_octopus.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/deep_sub.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
@@ -106,6 +122,14 @@
     },
     "bosses/fire_pirate.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/flame_eel.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/frost_pirate.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/ghost_admiral.png": {
@@ -120,6 +144,26 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/giant_squid.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/great_serpent.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/hammer_shark.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/hermit_conch.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/hunter_sub.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/ice_slime.png": {
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
@@ -130,6 +174,14 @@
     },
     "bosses/icebreaker.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/icecrab_chief.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/jelly_queen.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/kraken.png": {
@@ -144,6 +196,14 @@
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
     },
+    "bosses/lava_slime.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/lava_tortoise.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/lava_whale.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
       "license": "OWN"
@@ -154,6 +214,10 @@
     },
     "bosses/monster_whale.png": {
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
+      "license": "OWN"
+    },
+    "bosses/phantom_jelly.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/poseidon.png": {
@@ -168,8 +232,40 @@
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
     },
+    "bosses/seal_chief.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/skeleton_captain.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/specter.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/storm_pirate.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/storm_raider.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_angler_king.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_blaze_pirate.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_cursegull_leader.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_deep_octopus.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/td_deep_sub.png": {
@@ -184,6 +280,14 @@
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/td_flame_eel.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_frost_pirate.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/td_ghost_admiral.png": {
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
       "license": "OWN"
@@ -194,6 +298,26 @@
     },
     "bosses/td_giant_hermit.png": {
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_giant_squid.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_great_serpent.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_hammer_shark.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_hermit_conch.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_hunter_sub.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/td_ice_slime.png": {
@@ -208,6 +332,14 @@
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/td_icecrab_chief.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_jelly_queen.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/td_kraken.png": {
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
       "license": "OWN"
@@ -218,6 +350,14 @@
     },
     "bosses/td_kraken_titan.png": {
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
+      "license": "OWN"
+    },
+    "bosses/td_lava_slime.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_lava_tortoise.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/td_lava_whale.png": {
@@ -232,6 +372,10 @@
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
     },
+    "bosses/td_phantom_jelly.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/td_poseidon.png": {
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
@@ -244,16 +388,56 @@
       "source": "자작(코드) — tools/art/gen_topdown_bigbosses.py 위에서 본 픽셀 격자(입체 음영)",
       "license": "OWN"
     },
+    "bosses/td_seal_chief.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_skeleton_captain.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_specter.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/td_storm_pirate.png": {
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/td_storm_raider.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "bosses/td_thunder_ray.png": {
       "source": "Pirate Busters v0.24 자체 IP(보스 디자인) → tools/art/gen_topdown_bosses.py 위에서 본 픽셀 격자",
       "license": "OWN"
     },
+    "bosses/td_thunder_ray_pup.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_twister_dolphin.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/td_wraith_ship.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
     "bosses/thunder_ray.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_bosses.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "bosses/thunder_ray_pup.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/twister_dolphin.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
+      "license": "OWN"
+    },
+    "bosses/wraith_ship.png": {
+      "source": "자작(코드) — tools/art/gen_topdown_rotation_bosses.py 위에서 본 픽셀 격자(입체 음영·배는 gen_topdown_bosses 재색칠)",
       "license": "OWN"
     },
     "coin.png": {

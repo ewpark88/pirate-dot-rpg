@@ -13,6 +13,7 @@ import 'package:pirate_dot/render/scene/fun_director.dart';
 import 'package:pirate_dot/render/scene/m3_director.dart';
 import 'package:pirate_dot/render/scene/projectile_rules.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_traits.dart';
 
 part 'event_director_top.dart';
 part 'event_director_v3.dart';
@@ -94,11 +95,9 @@ class EventDirector implements ReplayListener {
   late final _rules = ProjectileRules(scene.fx, fallbackMs: _juice.lookaheadTicks * _player.tickMs);
   void _flashSlot(BattleView frame, String crewId) {
     for (var i = 0; i < frame.fleet.length && i < kMaxSlots; i++) {
-      if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = _slotFlashMs;
+      if (frame.fleet[i].crewId == crewId) scene.slotFlashMs[i] = 200; // 선원 칸 반짝(ms)
     }
   }
-
-  static const _slotFlashMs = 200.0;
 
   late final Set<String> _muzzleFamilies = {...scene.fx.muzzle.strs('families')};
 
@@ -107,6 +106,7 @@ class EventDirector implements ReplayListener {
     final f = tick.frame;
     scene.shipHpRatio = f.shipHpMax.isZero ? 0 : (f.shipHp / f.shipHpMax).toDouble().clamp(0.0, 1.0);
     final events = tick.events;
+    if (scene.isTop) (scene.topHits.traits ??= TopTraits(scene.tables)).onTick(tick, index, _player, scene.clockMs);
     for (var i = 0; i < events.length; i++) {
       final e = events[i];
       _sound(e);
@@ -281,8 +281,8 @@ class EventDirector implements ReplayListener {
     if (_player.enemyAt(index - 1, e.targetId)?.boss ?? false) scene.isTop ? _topBossKill(e) : _bossKill();
   }
 
-  static const _coinLiftPx = 10.0;
-  static const _coinLiftJitterPx = 5.0;
+  static const _coinLiftPx = 18.0; // 손맛 v4: 짤랑 높이 튀었다 빨려 들어감
+  static const _coinLiftJitterPx = 8.0;
 
   void _bossKill() {
     if (scene.slowMoMs > 0) return;
