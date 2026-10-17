@@ -15,6 +15,7 @@ import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
 import 'package:pirate_dot/ui/settings/about_section.dart';
+import 'package:pirate_dot/ui/settings/help_section.dart';
 import 'package:pirate_dot/ui/settings/save_transfer_section.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
@@ -164,6 +165,7 @@ class SettingsScreen extends ConsumerWidget {
                       title: l10n.uiSaveTitle,
                       child: const SaveTransferSection(),
                     ),
+                  _Group(key: const Key('settings.help'), title: l10n.uiSettingsHelp, child: const HelpSection()),
                   // 정보: 개인정보처리방침 · 이용약관 · 문의하기 · 버전(출시 준비).
                   _Group(key: const Key('settings.about'), title: l10n.uiSettingsAbout, child: const AboutSection()),
                   // 운영자 빌드만: 패널 바로 열기(돈 알약 5번 탭은 안쪽 골드 칸이 먼저 받는다 — S1 2026-10-18).

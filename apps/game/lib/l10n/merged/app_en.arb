@@ -2413,5 +2413,23 @@
     }
   },
   "uiShopSpeedOff": "Normal",
-  "uiShopSpeedOn": "×2"
+  "uiShopSpeedOn": "×2",
+  "uiTalkHorde": "Here they come! Sweep them all away!",
+  "uiTalkAchievement": "An achievement reward is ready! Tap 'Achievements' on the Voyage tab!",
+  "uiTalkSpeed": "Double speed is on! Battles run twice as fast. Check the time left on the chip up top!",
+  "uiTipBossDex": "Field crew of the weak-to families to beat it much faster!",
+  "uiHelpTower": "Abyss Tower",
+  "uiHelpTowerBody": "Climb one floor at a time. Higher floors give bigger rewards, and cleared floors can be swept in one tap.",
+  "uiHelpRush": "Boss Rush",
+  "uiHelpRushBody": "Fight bosses back to back. Beat them all for a big reward — the faster, the better your record.",
+  "uiHelpDungeon": "Daily Dungeon",
+  "uiHelpDungeonBody": "A dungeon with different rewards each day of the week. Cleared levels can be swept quickly.",
+  "uiHelpAchievements": "Achievements",
+  "uiHelpAchievementsBody": "Reach goals like kills, bosses and stages to earn gems. Claim them from 'Achievements' on the Voyage tab.",
+  "uiHelpPass": "Voyage Pass",
+  "uiHelpPassBody": "Level up the pass as you play and collect a reward at each level.",
+  "uiHelpUltimate": "Captain's Ultimate",
+  "uiHelpUltimateBody": "The gauge fills as you fight. When it's full, tap the button at the bottom right to sweep the whole screen.",
+  "uiHelpFever": "Fever",
+  "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your attacks get stronger for a while and enemies swarm in."
 }
