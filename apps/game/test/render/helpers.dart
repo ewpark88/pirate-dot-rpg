@@ -13,7 +13,7 @@ final tables = GameTables.load();
 final stillTables = GameTables.load(() {
   final raw = Map<String, String>.of(rawTables);
   final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
-  (w['top'] as Map<String, dynamic>).remove('cruise');
+  _noDodge((w['top'] as Map<String, dynamic>)..remove('cruise'));
   return raw..['waves'] = jsonEncode(w);
 }());
 
@@ -21,9 +21,16 @@ final stillTables = GameTables.load(() {
 final noHordeTables = GameTables.load(() {
   final raw = Map<String, String>.of(rawTables);
   final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
-  (w['top'] as Map<String, dynamic>).remove('horde');
+  _noDodge((w['top'] as Map<String, dynamic>)..remove('horde'));
   return raw..['waves'] = jsonEncode(w);
 }());
+
+/// 보스전 회피(bossDuel.dodge·bossDodge — 배가 예고 때 옆으로 비킴)도 뺀다: 배 자리를 고정으로 보는 연출 시험용(S5 still_ship과 같음).
+void _noDodge(Map<String, dynamic> top) {
+  top.remove('bossDodge');
+  (top['bossDuel'] as Map<String, dynamic>?)?.remove('dodge');
+}
+
 double get tickMs => tables.waves.tickMs.toDouble();
 
 /// 테스트용 기록 한 틱. [enemies]는 (id, x) 목록, y는 100 고정.
