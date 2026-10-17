@@ -15,6 +15,12 @@ class SimResult {
 
   /// 환영 선원(meta.tutorial.welcomeCrew, 피드백 #21 — 목표 1분 안)을 받은 시점.
   Duration? welcomeCrew;
+
+  /// 첫 배 외형 변화·첫 피버 시점과 처음 10분의 횟수(SimEarly, 피드백 #8·#2).
+  Duration? firstLookChange;
+  Duration? firstFever;
+  int lookChanges10Min = 0;
+  int fevers10Min = 0;
   Duration? stage10;
   Duration? stage40;
 
