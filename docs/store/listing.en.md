@@ -52,7 +52,7 @@ Korean and English · Playable offline (ads need a connection)
 - Category: Games > Role Playing (alt: Casual)
 - Tags: Idle, Pixel art, Pirates, Offline, Single player
 - Content rating (expected IARC): fantasy violence (no blood), no user interaction (before leaderboards), no real-money gambling → Everyone to 12+
-- Contains ads: yes · In-app purchases: none (phase 1)
+- Contains ads: yes · In-app purchases: **yes** (gem packs, ad removal, 2× speed, skins, monthly gems, voyage pass — iap.json; prices set in Play Console)
 
 ## Graphics
 Names above match the in-game English strings (`parts/*.en.arb`: `shipTier*`, `battleRegion*`, `battleCombo*`, `uiFeverBig`, `uiRebirthTitle`).

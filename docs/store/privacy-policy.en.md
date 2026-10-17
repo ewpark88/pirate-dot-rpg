@@ -20,7 +20,10 @@ Effective date: `<publish date>` · Developer: 박은우 `<romanized name — to
 
 - We do not try to identify you from this information, and we do not sell it.
 - How Google uses data: https://policies.google.com/technologies/partner-sites
-- All ads are **rewarded ads** that you choose to watch by tapping a reward button. There are no real-money purchases.
+- All ads are **rewarded ads** that you choose to watch by tapping a reward button.
+- **Paid items** (gem packs, ad removal, etc.) are sold only through **Google Play billing**. Google processes your payment method; we never receive card details.
+  To verify purchases, the app keeps the **purchase token, product ID and purchase time** from Google Play in the save on your device (to prevent double delivery and keep your entitlements) and does not send them to any server.
+  Refunds and subscription cancellations are handled in Google Play; after a refund, the related entitlement is turned off the next time you open the game. Firebase Analytics automatically collects in-app purchase events (product ID, name, price).
 - Users in the EEA, UK and Switzerland see a consent form on first launch. **No ads are requested and no Analytics data is collected before consent.**
   You can change your choice at any time under "Privacy options" in the game settings.
 - **Crash reports (Crashlytics) are collected regardless of consent to keep the app stable** (never used for ads or tracking). `<pending decision — data-safety.md §4: remove this line if crash reports are tied to consent>`

@@ -17,6 +17,7 @@
 | 화면 보기(`screen_view`), 사용자 속성 `last_screen`·`last_stage` | Firebase Analytics | **UMP 동의(canRequestAds) 뒤에만 수집 켬** — 시작은 꺼짐(매니페스트 `firebase_analytics_collection_enabled=false`) |
 | 게임 이벤트 6종: `bounty_start`·`bounty_clear`·`bounty_fail`·`bounty_sweep`·`dex_seen`·`dex_first_kill` (보스 id·단계·보상 수치만) | Firebase Analytics | 위와 같음 |
 | 충돌 기록 + 사용자 키 `screen` | Firebase Crashlytics | **배포 빌드에서 동의와 상관없이**(`collectCrashes: kReleaseMode && !kOperator`) — 아래 4절 결정 필요 |
+| 유료 상품 구매(구매 토큰·상품 ID·시각) | Google Play 결제 → 기기 안 세이브(entitlements·purchaseTokens) | 우리 서버 없음. GA가 인앱 구매 이벤트 자동 수집 → 2.2 '구매 내역' |
 | 오프라인 보상 알림 | 기기 안 예약(로컬) | 서버 전송 없음 → 수집 아님 |
 | 세이브 | 기기 안 앱 폴더 | 개발자에게 전송 안 함 → 수집 아님. 단 Android 자동 백업(기본 켜짐)이 사용자 본인 Google 계정에 백업할 수 있다(OS 기능, 개발자는 볼 수 없음) |
 
