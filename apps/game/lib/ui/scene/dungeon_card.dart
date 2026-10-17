@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/scene/tower_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
@@ -68,6 +69,8 @@ class _DungeonCardState extends ConsumerState<DungeonCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // 처음 열렸을 때 한 번 옥토 한 마디(S1 2026-10-18).
+          OnceTip(id: 'tip.dungeon', text: l10n.uiTipDungeon),
           Row(
             children: [
               Expanded(

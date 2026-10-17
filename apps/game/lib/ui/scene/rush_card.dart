@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart' show BossPortrait;
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/scene/tower_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -33,6 +34,8 @@ class RushCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // 처음 열렸을 때 한 번 옥토 한 마디(S1 2026-10-18).
+          OnceTip(id: 'tip.rush', text: l10n.uiTipRush),
           Row(
             children: [
               Expanded(
