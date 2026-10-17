@@ -154,7 +154,10 @@ class TopScenePainter {
       HdShip.load(_skinCfg); // HD 배 스킨 색(한 번만)
       final skinGlow = skins.frame(skinId, _skinCfg, sprites.bank, _shipKeys);
       scene.topHits.skinMuzzle = skins.muzzle; // 스킨별 포구 화염 색(배 스킨 v2)
-      if (skins.changed) scene.topHits.loot.reward(clockMs, ship); // 새 배 스킨! 빛기둥·고리·별가루
+      if (skins.changed) {
+        scene.topHits.loot.reward(clockMs, ship); // 새 배 스킨! 빛기둥·고리·별가루
+        scene.sound.sfx('skinChanged', clockMs: clockMs);
+      }
       final celebrate = m.glowMs > 0;
       _ship.paint(
         c,

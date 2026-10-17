@@ -1464,6 +1464,26 @@ const Map<String, String> rawTables = {
     "bossBroken": {
       "fx": null,
       "sfx": "ultimate"
+    },
+    "bossTrait": {
+      "fx": null,
+      "sfx": "skill",
+      "pitch": 0.8
+    },
+    "cardRevealed": {
+      "fx": null,
+      "sfx": "promote",
+      "pitch": 1.25
+    },
+    "skinChanged": {
+      "fx": null,
+      "sfx": "fanfare",
+      "pitch": 1.1
+    },
+    "enemyFired": {
+      "fx": null,
+      "sfx": "pop",
+      "pitch": 1.7
     }
   },
   "projectiles": {
