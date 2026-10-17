@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_pass_decor.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
+import 'package:pirate_dot/render/hd/hd_skin_extra.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/top/skin_decor.dart';
@@ -84,6 +85,7 @@ class TopShipPainter {
       if (decor != null) _decor.over(c, decor, size, now);
       if (scene case final s?) _deck.paint(c, sprites, s, size, (look['hull'] ?? 1).clamp(1, 7), now); // 갑판 선원
       if (skin != null && HdPassDecor.ids.contains(skin)) _pass.over(c, skin, size, now); // 패스·상점 스킨 장식
+      if (skin != null) _extra.over(c, skin, size, now); // 스킨 HD v2 고유 장식 + 유료 반짝(S1)
       c.restore();
       return true;
     }
@@ -160,4 +162,5 @@ class TopShipPainter {
 
   final _decor = SkinDecor();
   final _pass = HdPassDecor();
+  final _extra = HdSkinExtra();
 }
