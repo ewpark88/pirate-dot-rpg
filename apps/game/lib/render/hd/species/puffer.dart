@@ -5,7 +5,7 @@ import 'package:pirate_dot/render/hd/hd_kit_parts.dart';
 
 /// 복어(td_enemy:puffer — 폭풍 · 단단함 · 수면 · 원거리 가시): 넓게 부푼 노란 공 + 갈색 반점 + 짧고 성긴 가시(성게와 구분),
 /// 부풀었다 줄었다. 쏘는 가시 하나는 밝은 노랑. 오므린 입·성난 눈, 테 두껍게.
-const puffer = HdSpecies(_puffer, extent: 1.35);
+const puffer = HdSpecies(_puffer, extent: 1.2, muzzle: Offset(-0.79, -0.58));
 
 void _puffer(HdKit k, Canvas c, double r, double t) {
   final puff = 1 + k.wave(t, 1) * 0.05;

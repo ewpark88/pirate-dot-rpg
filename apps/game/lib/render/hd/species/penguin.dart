@@ -4,7 +4,7 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 
 /// 펭귄(td_enemy:penguin — 빙하 · 빠름 · 수면 · 원거리 눈덩이): 배로 미끄러지는 길쭉한 몸(앞으로 기움) + 뒤로 잔상,
 /// 짧은 날개 끝에 눈덩이(쏘는 부위 — 흰 공 강조), 주황 부리·발, 볼 홍조의 신난 표정.
-const penguin = HdSpecies(_penguin, extent: 1.45);
+const penguin = HdSpecies(_penguin, extent: 1.25, muzzle: Offset(-0.38, -0.26));
 
 void _penguin(HdKit k, Canvas c, double r, double t) {
   final slide = k.wave(t, 2) * r * 0.03;

@@ -9,7 +9,7 @@ typedef HdDraw = void Function(HdKit k, Canvas c, double r, double t);
 
 /// HD 종 하나: 그리기 + 크기 규격.
 class HdSpecies {
-  const HdSpecies(this.draw, {this.extent = 1.4, this.ground = 0.75});
+  const HdSpecies(this.draw, {this.extent = 1.4, this.ground = 0.75, this.muzzle});
 
   final HdDraw draw;
 
@@ -18,6 +18,10 @@ class HdSpecies {
 
   /// 그림자 타원 중심 높이(r 배수, 아래가 +). 날짐승은 더 아래로(떠 있게).
   final double ground;
+
+  /// 쏘는 부위 자리(r 배수, 왼쪽 보기 기준) — 원거리 적이 쏘기 직전 TopEnemies가 그 자리를 번쩍인다(오른쪽 볼 땐 x 뒤집기).
+  /// null이면 몸 가운데.
+  final Offset? muzzle;
 }
 
 /// HD 카툰 공용 부품(쿵푸할매 서바이버 스타일): 굵은 검정 외곽선·위 밝고 아래 어두운 그라데이션·왼쪽 위 광택·큰 눈.

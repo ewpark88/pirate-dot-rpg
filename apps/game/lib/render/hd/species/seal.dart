@@ -4,7 +4,7 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 
 /// 물범(td_enemy:seal — 빙하 · 단단함 · 수면): 넓고 낮은 통통한 회백 몸 + 회색 반점, 앞지느러미·뒤 꼬리지느러미, 수염,
 /// 크고 촉촉한 느긋한 눈. 테 두껍게, 몸을 들썩이며 느리게.
-const seal = HdSpecies(_seal, extent: 1.45);
+const seal = HdSpecies(_seal, extent: 1.3);
 
 void _seal(HdKit k, Canvas c, double r, double t) {
   final heave = k.wave(t, 1);

@@ -83,13 +83,26 @@ class _Sheet extends CustomPainter {
         canvas
           ..save()
           ..translate(230 + f * 160, cy);
-        // 게임 안처럼 칸(같은 크기)에 맞춘 반지름 — extent가 크면 작게 보인다(작은 얼음게 '반 크기').
+        // 게임 안처럼 도트 칸 크기(잡몹 16단위, 작은 것 12단위)에 맞춘 반지름 — 칸 한 변 = 2·extent·r.
         final sp = hdEnemies[kind]!;
-        final r = 40 * 1.35 / sp.extent;
+        final cell = 140.0 * (kind.endsWith('_small') ? 12 / 16 : 1);
+        final r = cell / (2 * sp.extent);
         _k
           ..begin(r)
           ..shadow(canvas, r, sp.ground);
         sp.draw(_k, canvas, r, f * HdKit.loopMs / HdKit.frames);
+        // 마지막 칸: 칸 테두리 + 쏘는 부위(muzzle) 노란 점 — 자리 확인용.
+        if (f == HdKit.frames - 1) {
+          canvas.drawRect(
+            Rect.fromCenter(center: Offset.zero, width: cell, height: cell),
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..color = const Color(0x66FFFFFF),
+          );
+          if (sp.muzzle case final m?) {
+            canvas.drawCircle(m * r, 5, Paint()..color = const Color(0xFFFFE24A));
+          }
+        }
         canvas.restore();
       }
     }
