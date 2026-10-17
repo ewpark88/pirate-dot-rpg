@@ -27,6 +27,24 @@ final cargoLevelProvider = Provider<int>((ref) {
   );
 });
 
+/// 금고 가득 → 배 탭 화물칸 강화 손가락: 처음 [cargoFingerHints] 번만(사용자 버그 2026-10-17 '눌러도 계속 생긴다').
+/// 가득일 때 화물칸을 강화하면 그 번은 끝(본 기록 하나).
+const cargoFingerHints = ['cargo.finger1', 'cargo.finger2'];
+
+final cargoFingerProvider = Provider<bool>((ref) {
+  if (ref.watch(cargoLevelProvider) != 2) return false;
+  final seen = ref.watch(gameStateProvider.select((s) => s.settings.hints));
+  return cargoFingerHints.any((id) => !seen.contains(id));
+});
+
+/// 가득일 때 화물칸을 강화했다 → 손가락 한 번 끝으로 남긴다.
+void markCargoFingerDone(WidgetRef ref) {
+  if (ref.read(cargoLevelProvider) != 2) return;
+  final seen = ref.read(gameStateProvider).settings.hints;
+  final next = cargoFingerHints.where((id) => !seen.contains(id)).firstOrNull;
+  if (next != null) ref.read(commandSinkProvider).send(MarkHint(next));
+}
+
 /// 금고 채움 비율 (0~1, 막대). 2% 단위로만 다시 그린다.
 final cargoRatioProvider = Provider<double>((ref) {
   final t = ref.watch(tablesProvider);

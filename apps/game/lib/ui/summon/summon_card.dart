@@ -119,13 +119,16 @@ class SummonRevealCard extends ConsumerWidget {
                         children: [
                           const SizedBox(height: 3),
                           FittedBox(child: CrewIdentityIcons(crewId: crew.id, size: 12, light: true)),
-                          Text(
-                            crewTraitLine(l10n, crew.id),
-                            key: Key('summon.card.$i.trait'),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: Skin.outlined(11),
+                          // 길면(영어) 말줄임 대신 칸에 맞춰 글자를 줄인다(S5 스토어 샷 ③).
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              crewTraitLine(l10n, crew.id),
+                              key: Key('summon.card.$i.trait'),
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              style: Skin.outlined(11),
+                            ),
                           ),
                         ],
                       ),

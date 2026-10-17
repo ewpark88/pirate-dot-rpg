@@ -48,13 +48,10 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
     // 남은 시간은 경제 tailwindRemaining (끝났으면 zero).
     final left = ref.watch(gameStateProvider.select((s) => tailwindRemaining(s, now)));
     final active = left > Duration.zero;
-    final multiplier = ref
-        .watch(tablesProvider)
-        .ads
-        .placements
-        .firstWhere((p) => p.id == 'tailwind')
-        .reward
-        .number('goldMultiplier');
+    final reward = ref.watch(tablesProvider).ads.placements.firstWhere((p) => p.id == 'tailwind').reward;
+    final multiplier = reward.number('goldMultiplier');
+    // 남은 시간 막대: 광고 한 번(durationSec) 기준 — 겹쳐 봐서 더 길면 가득.
+    final full = Duration(seconds: reward.integer('durationSec'));
 
     return Container(
       key: const Key('tailwind'),
@@ -69,19 +66,34 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
       ),
       child: Opacity(
         opacity: active ? 1 : _inactiveOpacity,
-        child: Row(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
-            if (active) ...[
-              const SizedBox(width: 4),
-              Text(remainingText(left), style: Skin.outlined(15, color: const Color(0xFF8CF5B8))),
-              const SizedBox(width: 4),
-              Text(
-                l10n.uiEffectMultiplier(shortDecimal(multiplier)),
-                style: Skin.outlined(15, color: const Color(0xFFFFD84A)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
+                if (active) ...[
+                  const SizedBox(width: 4),
+                  Text(remainingText(left), style: Skin.outlined(15, color: const Color(0xFF8CF5B8))),
+                  const SizedBox(width: 4),
+                  Text(
+                    l10n.uiEffectMultiplier(shortDecimal(multiplier)),
+                    style: Skin.outlined(15, color: const Color(0xFFFFD84A)),
+                  ),
+                ],
+              ],
+            ),
+            if (active)
+              SizedBox(
+                width: 64,
+                child: SkinBar(
+                  key: const Key('tailwind.bar'),
+                  value: left.inSeconds / full.inSeconds,
+                  color: const Color(0xFF8CF5B8),
+                  height: 5,
+                ),
               ),
-            ],
           ],
         ),
       ),

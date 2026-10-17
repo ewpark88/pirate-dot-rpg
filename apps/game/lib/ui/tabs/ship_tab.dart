@@ -196,14 +196,17 @@ class _PartRow extends ConsumerWidget {
                   constraints: const BoxConstraints(minWidth: _buttonMinWidth),
                   child: TutorialSpot(
                     id: 'ship.upgrade.${def.id}',
-                    // 금고가 가득 차면 화물칸 강화 버튼을 가리킨다(사용자 지시 2026-10-16).
-                    force: def.id == 'cargo' && ref.watch(cargoLevelProvider) == 2,
+                    // 금고가 가득 차면 화물칸 강화 버튼을 가리킨다(사용자 지시 2026-10-16) — 처음 두 번만(2026-10-17 버그).
+                    force: def.id == 'cargo' && ref.watch(cargoFingerProvider),
                     child: PixelButton(
                       key: Key('ship.upgrade.${def.id}'),
                       primary: true,
                       onPressed: maxed || !affordable
                           ? null
-                          : () => ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult)),
+                          : () {
+                              if (def.id == 'cargo') markCargoFingerDone(ref);
+                              ref.read(commandSinkProvider).send(bulkUpgradeCommand(def.id, mult));
+                            },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

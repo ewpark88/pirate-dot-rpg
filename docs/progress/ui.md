@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui c9912b53 — 개편 UI 마무리(6d86f128, main 머지됨) 뒤 배 스킨 칸·환영 카드 가림·도감 보상·보스 특성 2차(c9c8a131 UI 초록)·#50 모션·#6 상자 톡! — 다음 slot에서 골든 일괄 + --full
-| 다음 | slot(S3 → S2 → S4) 때 test/ui 골든 일괄 + --full · S5 enemy-windup 피해 줄 수정본 확인 · main proto/render 골든 14개 빨강은 S3·S5 몫(내 레인 밖)
+| 상태 | lane/ui — A줄 UI 골든 일괄 중(손가락·광고 칩·재도전 표시·HUD 배치 안·시나리오 골격·상점 골격·스토어 샷 4개)
+| 다음 | S2 계약 오면: 자동 재도전 링(autoBossTicksLeft)·맛보기 팝업(ClaimTrial)·story.json 연결 · S5 결제 어댑터 오면 상점 연결 · 사용자 HUD 배치 선택 뒤 하나만 남기기
 | 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -15,6 +15,14 @@
 - 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 밤 2 · S4 · 손가락 버그·광고 칩·재도전 표시·HUD 배치 안·시나리오·상점 골격
+- 4cbc61d7 화물칸 손가락이 계속 뜨던 버그(force: 금고 가득) → 처음 2번만. 손가락 0.9초 눌림 반복 + 금빛 맥박 테두리(GuideGlow), 숫자 덮지 않게, 말풍선이 보스 도전 버튼 피함.
+- a8267a5b 광고 칩을 게이지 아래 오른쪽(BuffChips, 44dp·통통 등장), 순풍 남은 시간 막대. 87c1d5ec '이길 수 있어요!' — settings.autoBoss를 엔진이 안 읽는 것 발견(S2로).
+- d7221a84 HUD 배치 안 4개(hudLayoutProvider + 운영자 토글 + 4기기 시안 docs/specs/ui-hud-layout.md).
+- 10ab2862 시나리오 골격(오프닝 5컷·보스 대화창, FakeStoryScript). fc459fb3 상점 골격(FakeShopCatalog, shopEnabledProvider 꺼 둠). 스토어 샷 4개 고침.
+- 남은 문제: 오프닝 첫 컷 그림이 임시 아이콘(S3 그림 필요). 상점·대화는 가짜 데이터 — 계약 오면 바꿈. 배치 안은 사용자가 고르면 나머지 지움.
+- 교훈: 되풀이 애니메이션은 시험 하네스 스위치(guideMotionProvider)로 멈춰야 pumpAndSettle이 끝난다. 같은 provider를 하네스와 테스트가 둘 다 덮어쓰면 오류 — 하네스 인자로.
 
 ### 2026-10-17 밤 · S4 · 배 스킨 칸 · 환영 카드 가림 · 도감 보상 · 보스 특성 2차 · #50 모션 · #6 상자
 - 1ab0538a 배 스킨 칸: 기본·환생 4·새 7종 한 창(미리보기 + 얻는 방법·진행 + 입기/조각 사기, IconCell 격자, SkinUnlockGate 토스트 + 입어 보기). 스킨 버튼 늘 보임.

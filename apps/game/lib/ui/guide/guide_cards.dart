@@ -270,6 +270,12 @@ class GuideHold extends Notifier<bool> {
     return false;
   }
 
+  /// 타이머를 멈춘다(접은 쪽 화면이 사라질 때 — 타이머가 남지 않게). 화면 정리 중이라 상태는 바꾸지 않는다.
+  void release() {
+    _end?.cancel();
+    _end = null;
+  }
+
   /// [duration] 동안 말을 접는다.
   void hold(Duration duration) {
     _end?.cancel();
