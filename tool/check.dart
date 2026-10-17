@@ -98,7 +98,20 @@ Future<_Outcome> _generate() async {
     if (arb.violations.isEmpty) ...checkMergedArbFresh(_root, arb),
   ];
   if (problems.isNotEmpty) return _Outcome(ok: false, output: problems.join('\n'));
+  final fonts = await _fontGlyphs();
+  if (!fonts.ok) return fonts;
   return _run('flutter', ['gen-l10n'], cwd: 'apps/game');
+}
+
+/// 폰트 서브셋(docs/store/app-size.md)이 문구의 글자를 다 덮는지 — 빠지면 '폰트에 없는 글자: …'.
+/// Python·fontTools가 없는 PC면 건너뛴다(종료 3 또는 실행 실패).
+Future<_Outcome> _fontGlyphs() async {
+  try {
+    final r = await _run(_isWindows ? 'python' : 'python3', ['-I', '-B', 'docs/store/size/subset_fonts.py', '--check']);
+    return r.exitCode == 1 ? r : const _Outcome(ok: true);
+  } on ProcessException {
+    return const _Outcome(ok: true);
+  }
 }
 
 Future<_Outcome> _harnessRules() async {
