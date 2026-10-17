@@ -79,7 +79,11 @@ GameState summonCards(
         : rollSummonRarity(t.rarities, ctx.rng, pity: s.pityCount + 1 >= t.rarities.pityCount);
     if (rarityOrder.indexOf(rarity) >= guaranteeIndex) guaranteed = true;
     final got = gateFirstLegend(s, t, rarity); // 첫 전설 유예 — 천장 판정은 굴린 등급 그대로
-    final crewId = t.crews.crews[ctx.rng.nextInt(t.crews.crews.length)].id;
+    var crewId = t.crews.crews[ctx.rng.nextInt(t.crews.crews.length)].id;
+    // 시작 선원 보호 중엔 일반 위 등급이 그 선원에게 가지 않게 다른 선원으로(첫 10연 영웅 확정은 그대로 남는다).
+    while (rarity != t.rarities.rarities.first.id && starterGuarded(s, t, crewId)) {
+      crewId = t.crews.crews[ctx.rng.nextInt(t.crews.crews.length)].id;
+    }
     final pityCount = rarityOrder.indexOf(rarity) >= minIndex ? 0 : s.pityCount + 1;
     shown.add(SummonResult(crewId: crewId, rarity: got, isNew: !s.crews.containsKey(crewId)));
     s = receiveCard(s, t, crewId, got).copyWith(pityCount: pityCount);
