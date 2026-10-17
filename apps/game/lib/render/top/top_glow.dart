@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/top/top_label.dart';
+
 /// 디자인 개편 ③ 발광(쿵푸할매식 마법진): 선원 스킬을 쓰면 배 밑에 빛나는 마법진이 펼쳐졌다(0.2초) 돌며(0.6초) 사라진다(0.3초).
 /// 두 겹 고리 + 육각별 + 고리 사이 룬 눈금, 바깥은 두꺼운 반투명 선을 겹쳐 번지는 빛. 색 = 스킬 쓴 선원 계열 색. 전장 좌표(배를 따라감).
 class TopGlow {
@@ -22,7 +24,39 @@ class TopGlow {
     _circles.add(_Circle(now, r, color));
   }
 
+  /// 부위 마일스톤(S2 — 8레벨마다 효과 ×2, '튄다' 대신 그 순간을 크게): 배에서 솟는 금빛 빛기둥 + 금 고리 2겹 + 큰 '×2!'.
+  double milestoneAt = -1000000000;
+  static const _mileMs = 1400.0;
+  final _label = TopLabel();
+
+  void _milestone(Canvas c, double now, Offset ship) {
+    final age = now - milestoneAt;
+    if (age < 0 || age > _mileMs) return;
+    final t = age / _mileMs;
+    final rise = math.min<double>(1, t * 4);
+    final fade = t < 0.6 ? 1.0 : 1 - (t - 0.6) / 0.4;
+    for (final (w, col) in const [(70.0, 0xFFFFC23A), (40.0, 0xFFFFE89A), (16.0, 0xFFFFFFFF)]) {
+      final rect = Rect.fromLTRB(ship.dx - w / 2, ship.dy - 260 * rise, ship.dx + w / 2, ship.dy + 10);
+      _fill.shader = Gradient.linear(rect.bottomCenter, rect.topCenter, [
+        Color(col).withValues(alpha: 0.6 * fade),
+        Color(col).withValues(alpha: 0),
+      ]);
+      c.drawRect(rect, _fill);
+    }
+    _fill.shader = null;
+    for (var k = 0; k < 2; k++) {
+      final u = (t * 1.6 - k * 0.25).clamp(0.0, 1.0);
+      _line
+        ..strokeWidth = 4 * (1 - u) + 1
+        ..color = const Color(0xFFFFD45A).withValues(alpha: (1 - u) * fade);
+      c.drawCircle(ship, 20 + 70 * u, _line);
+    }
+    final pop = t < 0.15 ? 0.5 + 0.7 * t / 0.15 : (t < 0.25 ? 1.2 - 0.2 * (t - 0.15) / 0.1 : 1.0);
+    _label.draw(c, '×2!', ship + Offset(0, -62 - 18 * rise), 26 * pop, alpha: fade);
+  }
+
   void clear() {
+    milestoneAt = -1000000000;
     _circles.clear();
     bossRiseAt = -1000000000;
   }
@@ -61,6 +95,7 @@ class TopGlow {
 
   /// 배([ship]) 밑 — 적보다 먼저 그린다. [lite]면 번지는 빛 겹을 뺀다.
   void paint(Canvas c, double now, Offset ship, {required bool lite}) {
+    _milestone(c, now, ship);
     _circles.removeWhere((m) => now - m.at > _openMs + _holdMs + _closeMs);
     for (final m in _circles) {
       final age = now - m.at;
