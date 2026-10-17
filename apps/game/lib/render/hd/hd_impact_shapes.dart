@@ -50,7 +50,7 @@ extension _ImpactShapes on HdImpact {
     for (var k = 0; k < 2; k++) {
       final rr = r * (0.4 + 0.6 * e) * (k == 0 ? 1 : 0.7);
       _stroke
-        ..strokeWidth = r * 0.07
+        ..strokeWidth = r * 0.1
         ..color = _a(k == 0 ? h.color : const Color(0xFFFFFFFF), 0.9 * (1 - t));
       c.drawArc(
         Rect.fromCircle(center: Offset.zero, radius: rr),
@@ -86,7 +86,7 @@ extension _ImpactShapes on HdImpact {
       final u = (t - i * 0.12) / 0.45;
       if (u < 0 || u > 1) continue;
       final at = Offset((i - 1) * r * 0.35, (i.isOdd ? -1 : 1) * r * 0.12);
-      _star(c, at, r * 0.32 * math.sin(u * math.pi), 4, const Color(0xFFFFFFFF), h.color, 1);
+      _star(c, at, r * 0.42 * math.sin(u * math.pi), 4, const Color(0xFFFFFFFF), h.color, 1);
     }
     _k.fill.color = _a(const Color(0xFF1A1424), 0.4 * (1 - t));
     c.drawCircle(Offset.zero, r * 0.08, _k.fill);
@@ -96,7 +96,7 @@ extension _ImpactShapes on HdImpact {
   void _pierce(Canvas c, _Hit h, double r, double t) {
     final e = _ease(t);
     final len = r * (0.6 + 1.2 * e);
-    final w = r * 0.22 * (1 - t);
+    final w = r * 0.3 * (1 - t * 0.7);
     final p = Path()
       ..moveTo(-len, 0)
       ..lineTo(0, -w)
@@ -121,7 +121,7 @@ extension _ImpactShapes on HdImpact {
     _k.fill.color = _a(const Color(0xFFFFFFE0), 1 - t);
     c.drawCircle(Offset.zero, r * 0.18 * (1 - t * 0.5), _k.fill);
     _stroke
-      ..strokeWidth = r * 0.05
+      ..strokeWidth = r * 0.07
       ..color = _a(const Color(0xFFFFB45A), 0.8 * (1 - t));
     for (var i = -1; i <= 1; i++) {
       final p = Path()..moveTo(i * r * 0.25, 0);
@@ -210,7 +210,7 @@ extension _ImpactShapes on HdImpact {
       c
         ..save()
         ..rotate(k == 0 ? math.pi / 4 : -math.pi / 4);
-      final w = r * 0.18 * (1 - u);
+      final w = r * 0.26 * (1 - u * 0.6);
       final p = Path()
         ..moveTo(-r * 0.9, 0)
         ..quadraticBezierTo(0, -w * 2, r * 0.9, 0)
@@ -233,7 +233,7 @@ extension _ImpactShapes on HdImpact {
       ..color = _a(Color.lerp(h.color, const Color(0xFFFFFFFF), 0.3)!, 0.7 * (1 - t));
     c.drawCircle(Offset.zero, r * (0.2 + 0.9 * e), _stroke);
     _stroke
-      ..strokeWidth = r * 0.05
+      ..strokeWidth = r * 0.08
       ..color = _a(const Color(0xFF1A1424), 0.6 * (1 - t));
     for (var i = 0; i < 6; i++) {
       final a = i * math.pi / 3 + 0.2;

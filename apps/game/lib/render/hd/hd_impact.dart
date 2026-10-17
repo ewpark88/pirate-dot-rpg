@@ -46,8 +46,9 @@ class HdImpact {
       final age = now - h.at;
       if (age < 0) continue;
       final t = age / _lifeMs;
-      final r = h.radius * h.jitter * (0.8 + 0.08 * h.rarity);
-      _k.ink.strokeWidth = math.max<double>(1, r * 0.07);
+      // 일반·희귀도 바다 위에서 약하지 않게 최소 1.3배·굵은 선(S1 핵앤슬래시 손맛), 등급마다 +0.1
+      final r = h.radius * h.jitter * (1.3 + 0.1 * h.rarity);
+      _k.ink.strokeWidth = math.max<double>(1.4, r * 0.09);
       c
         ..save()
         ..translate(h.pos.dx, h.pos.dy)
