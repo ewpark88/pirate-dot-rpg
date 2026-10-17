@@ -50,8 +50,9 @@ GameState rushTick(GameState s, SystemContext ctx) {
   );
 }
 
-/// 장면 모드(현상금·탑·러시) 가운데 하나라도 진행 중인가.
-bool sceneBusy(GameState s) => s.bounty?.active != null || s.tower?.active != null || s.rush?.active != null;
+/// 장면 모드(현상금·탑·러시·요일 던전) 가운데 하나라도 진행 중인가.
+bool sceneBusy(GameState s) =>
+    s.bounty?.active != null || s.tower?.active != null || s.rush?.active != null || s.dungeon?.active != null;
 
 bool canStartRush(GameState s, GameTables t) {
   final r = s.rush;

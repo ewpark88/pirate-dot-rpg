@@ -2,6 +2,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:meta/meta.dart';
 
 export 'package:game_core/src/engine/state_bounty.dart';
+export 'package:game_core/src/engine/state_dungeon.dart';
 export 'package:game_core/src/engine/state_progress.dart';
 export 'package:game_core/src/engine/state_rush.dart';
 export 'package:game_core/src/engine/state_tower.dart';

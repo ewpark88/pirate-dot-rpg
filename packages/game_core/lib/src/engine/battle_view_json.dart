@@ -35,6 +35,7 @@ BattleView _viewFromJson(Json j) => BattleView(
   bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
   tower: j['tower'] == null ? null : TowerView.fromJson(j['tower'] as Json),
   rush: j['rush'] == null ? null : RushView.fromJson(j['rush'] as Json),
+  dungeon: j['dungeon'] == null ? null : DungeonView.fromJson(j['dungeon'] as Json),
   fastSail: j['fastSail'] == null ? null : FastSailView.fromJson(j['fastSail'] as Json),
   crewDamage: {
     for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),

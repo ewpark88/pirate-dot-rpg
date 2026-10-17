@@ -67,7 +67,7 @@ class BattleSystem implements GameSystem {
           s = _bossCleared(s, _field!, ctx);
         }
         return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
-      case RetreatBounty() || RetreatTower() || RetreatRush():
+      case RetreatBounty() || RetreatTower() || RetreatRush() || RetreatDungeon():
         return _project(sceneRetreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case OpJumpStage(:final stage):
         _field = null;
@@ -275,20 +275,7 @@ class BattleSystem implements GameSystem {
   void _arm(Field f, GameState s, SystemContext ctx) {
     _crewsSeen = s.crews;
     _fleetSeen = s.fleet;
-    final t = ctx.tables;
-    final ids = [
-      for (final id in _fixedFleet ?? activeFleet(s, t))
-        if (s.crews.containsKey(id)) id,
-    ];
-    final old = {for (final g in f.guns) g.crewId: (g.cooldown, g.skillCooldown)};
-    f
-      ..guns = [
-        for (final id in ids)
-          Gun.of(t, id, power: crewPower(t, s.crews[id]!.level), rarity: rarityIndexAt(t.rarities, s.crews[id]!.level))
-            ..cooldown = old[id]?.$1 ?? 0
-            ..skillCooldown = old[id]?.$2 ?? 0,
-      ]
-      ..captainId = captainOf(ids, s, t);
+    armField(f, s, ctx.tables, f.sceneFleet ?? _fixedFleet ?? activeFleet(s, ctx.tables)); // 장면 출전(요일 던전) 우선
   }
 
   GameState _project(GameState s, Field f, GameTables t) => s.copyWith(

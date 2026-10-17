@@ -41,6 +41,7 @@ enum AdPlacement {
   autoUpgrade,
   towerTicket,
   rushTicket,
+  dungeonTicket,
 }
 
 enum AdResult { rewarded, dismissed, failed, notLoaded }
