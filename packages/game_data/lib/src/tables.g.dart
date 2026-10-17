@@ -1407,6 +1407,14 @@ const Map<String, String> rawTables = {
     "seaEventStarted": {
       "fx": null,
       "sfx": "combo"
+    },
+    "chestOpened": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "adReward": {
+      "fx": null,
+      "sfx": "promote"
     }
   },
   "projectiles": {

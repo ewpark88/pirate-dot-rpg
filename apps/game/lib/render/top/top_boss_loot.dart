@@ -22,9 +22,22 @@ class TopBossLoot {
   static const totalMs = 2600.0;
 
   /// 보스가 ([at])에서 쓰러졌다. [lite]면 조각 절반(절전·시트가 가림).
-  void burst(double now, Offset at, {required bool lite, double size = 1.7}) {
+  void burst(double now, Offset at, {required bool lite, double size = 1.7}) =>
+      _add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+
+  /// 보물상자가 열렸다(피드백 #15, 탭·광고 둘 다 ChestOpened): 폭발 대신 하늘로 솟는 금빛 기둥 + 금화(또는 젬) 분수.
+  void chest(double now, Offset at, {required bool lite, bool gems = false}) {
+    final b = _Burst(now, at, gems ? 0 : (lite ? 10 : 20), 0, 1.3, style: LootStyle.chest);
+    if (gems) b.gems = 5;
+    _add(b);
+  }
+
+  /// 광고 보상을 받았다(순풍·자동 강화·오프라인 ×2 등 — 배에 버프): 배에서 금빛 고리·별가루가 솟는다.
+  void reward(double now, Offset ship) => _add(_Burst(now, ship, 0, 0, 1.2, style: LootStyle.reward));
+
+  void _add(_Burst b) {
     if (_bursts.length >= _maxBursts) _bursts.removeAt(0);
-    _bursts.add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+    _bursts.add(b);
   }
 
   /// 젬 [n]개를 가장 최근 터짐에 더한다(BossCleared·DexFirstKill). 터짐이 없으면 무시.
@@ -57,6 +70,8 @@ class TopBossLoot {
     for (final b in _bursts) {
       final age = now - b.ms;
       if (age < 0) continue;
+      if (b.style != LootStyle.boss) _pillar(c, b, age);
+      if (b.style == LootStyle.reward) _stars(c, b, age);
       _rays(c, b, age);
       if (flash && age < 160) {
         _paint.color = Color.fromRGBO(255, 248, 210, 0.85 * (1 - age / 160));
@@ -77,6 +92,42 @@ class TopBossLoot {
         arrivals += _piece(c, b, i, age, ship, sprites, kind: 2);
       }
       if (arrivals > 0) _absorb(c, ship, arrivals);
+    }
+  }
+
+  /// 하늘로 솟는 금빛 기둥(0~900ms): 넓은 옅은 띠 + 가운데 밝은 줄, 위로 갈수록 옅게.
+  void _pillar(Canvas c, _Burst b, double age) {
+    const ms = 900.0;
+    if (age >= ms) return;
+    final t = age / ms;
+    final rise = math.min<double>(1, t * 4);
+    final fade = t < 0.6 ? 1.0 : 1 - (t - 0.6) / 0.4;
+    final h = 150 * rise;
+    final w = (b.style == LootStyle.chest ? 16 : 22) * (1 - t * 0.5);
+    for (var k = 0; k < 4; k++) {
+      final y0 = b.at.dy - h * k / 4;
+      final y1 = b.at.dy - h * (k + 1) / 4;
+      _paint.color = Color.fromRGBO(255, 214, 90, 0.4 * fade * (1 - k / 4));
+      c.drawRect(Rect.fromLTRB(b.at.dx - w / 2, y1, b.at.dx + w / 2, y0), _paint);
+      _paint.color = Color.fromRGBO(255, 250, 220, 0.85 * fade * (1 - k / 4));
+      c.drawRect(Rect.fromLTRB(b.at.dx - w / 6, y1, b.at.dx + w / 6, y0), _paint);
+    }
+  }
+
+  /// 별가루(광고 보상): 배 둘레에서 빙글 돌며 솟아오르는 반짝 12개.
+  void _stars(Canvas c, _Burst b, double age) {
+    const ms = 1200.0;
+    if (age >= ms) return;
+    final t = age / ms;
+    for (var k = 0; k < 12; k++) {
+      final a = k * math.pi / 6 + t * 3;
+      final r = 14 + 10 * math.sin(k * 1.3) + 8 * t;
+      final p = b.at + Offset(math.cos(a) * r, math.sin(a) * r * 0.6 - 50 * t);
+      _paint.color = Color.fromRGBO(255, 236, 140, 1 - t);
+      final s = (k.isEven ? 2.0 : 1.0) + ((age / 100 + k).floor().isEven ? 1 : 0);
+      c
+        ..drawRect(Rect.fromCenter(center: p, width: s * 3, height: s), _paint)
+        ..drawRect(Rect.fromCenter(center: p, width: s, height: s * 3), _paint);
     }
   }
 
@@ -250,8 +301,12 @@ class TopBossLoot {
   }
 }
 
+/// 터짐 종류: 보스 처치(연쇄 폭발) · 보물상자(금빛 기둥) · 광고 보상(배에서 고리·별가루).
+enum LootStyle { boss, chest, reward }
+
 class _Burst {
-  _Burst(this.ms, this.at, this.coins, this.blasts, this.size);
+  _Burst(this.ms, this.at, this.coins, this.blasts, this.size, {this.style = LootStyle.boss});
+  final LootStyle style;
   final double ms;
   final Offset at;
   final int coins;
