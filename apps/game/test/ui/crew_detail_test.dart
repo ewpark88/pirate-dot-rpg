@@ -32,6 +32,12 @@ Future<_FakeFleet> _pump(WidgetTester tester, {GameState? state, int tab = crewT
 }
 
 Future<void> _openDetail(WidgetTester tester, String id) async {
+  // 작은 화면은 카드가 목록의 미리 짓는 범위 밖일 수 있다 — 짓힐 때까지 탭 목록을 내린다.
+  await tester.scrollUntilVisible(
+    find.byKey(Key('crew.card.$id')),
+    200,
+    scrollable: find.descendant(of: find.byKey(const Key('sheet.panel')), matching: find.byType(Scrollable)).first,
+  );
   await tester.ensureVisible(find.byKey(Key('crew.card.$id')));
   await tester.pump();
   await tester.tap(find.byKey(Key('crew.card.$id')));

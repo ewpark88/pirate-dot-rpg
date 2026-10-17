@@ -559,5 +559,73 @@
         "type": "int"
       }
     }
+  },
+  "uiCrewUpLevels": "+{count}",
+  "@uiCrewUpLevels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewMergeAllCount": "Merge all · {count}",
+  "@uiCrewMergeAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewWhyLevel": "Level up: attack +{percent} ({now} → {next}/s)",
+  "@uiCrewWhyLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewCardsToLevel": "{count} common cards to the next level",
+  "@uiCrewCardsToLevel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewPromoteIn": "{count} levels to promotion — promotion gives attack +{percent}",
+  "@uiCrewPromoteIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewPromoteGain": "Promotion gives attack +{percent}!",
+  "@uiCrewPromoteGain": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewMergeNow": "Merge now · Lv {from} → {to}",
+  "@uiCrewMergeNow": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
   }
 }
