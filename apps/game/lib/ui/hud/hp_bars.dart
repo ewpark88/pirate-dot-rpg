@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/boss_bars.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -41,13 +42,15 @@ class BossHpBar extends ConsumerWidget {
       }),
     );
     final l10n = AppLocalizations.of(context);
-    final ratio = v?.ratio ?? 1.0;
+    // 여러 줄 보스: 이번 줄 비율·색, 바탕은 다음 줄 색(깎이면 드러난다), 오른쪽 '×남은 줄'.
+    final bars = ref.watch(bossBarsProvider);
+    final ratio = bars?.ratio ?? v?.ratio ?? 1.0;
     final boss = v == null ? null : t.regions.bosses[v.kind];
     final name = boss == null ? '' : tableText(l10n, boss.nameKey);
     return Container(
       key: const Key('hud.bossHp'),
       decoration: BoxDecoration(
-        color: const Color(0xFF3A1A24),
+        color: bars != null && bars.left > 1 ? bossBarColor(bars.left - 1) : const Color(0xFF3A1A24),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFF0B1730), width: 2),
       ),
@@ -62,10 +65,9 @@ class BossHpBar extends ConsumerWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      hpColor(ratio, full: const Color(0xFFFF5A6E)),
-                      const Color(0xFFE8443A),
-                    ],
+                    colors: bars != null && bars.left > 1
+                        ? [bossBarColor(bars.left), bossBarColor(bars.left)]
+                        : [hpColor(ratio, full: const Color(0xFFFF5A6E)), const Color(0xFFE8443A)],
                   ),
                 ),
               ),
@@ -76,7 +78,9 @@ class BossHpBar extends ConsumerWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    '$name · ${v.now} / ${v.max}',
+                    bars != null && bars.left > 1
+                        ? l10n.uiBossHpBars(name, v.now, v.max, bars.left)
+                        : l10n.uiBossHpLine(name, v.now, v.max),
                     key: const Key('hud.bossHp.text'),
                     maxLines: 1,
                     style: Skin.outlined(13),

@@ -1711,5 +1711,36 @@
   "uiRebirthGo": "Voyage",
   "uiCaptainSkill": "Captain's ultimate",
   "uiCaptainSkillShort": "ULT",
-  "uiBackToExit": "Press back again to exit"
+  "uiBackToExit": "Press back again to exit",
+  "uiBossHpLine": "{name} · {now} / {max}",
+  "@uiBossHpLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossHpBars": "{name} · {now} / {max}  ×{bars}",
+  "@uiBossHpBars": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -337,6 +337,33 @@
   "opEntitlements": "권리 켜기/끄기",
   "opShopOpen": "상점 열기",
   "opCaptainSkillFake": "필살기 버튼(가짜 — 피버 게이지)",
+  "opBossBarsFake": "보스 여러 줄(가짜 — 3줄)",
+  "opSlotDebug": "칸 진단: 스테이지 {stage} · 최고 {best} · 환생 {rebirths} · fleetSlots {slots} · 전장 slotsOpen {open} · 출전 {fleet} · fleetInit {init}",
+  "@opSlotDebug": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      },
+      "rebirths": {
+        "type": "String"
+      },
+      "slots": {
+        "type": "String"
+      },
+      "open": {
+        "type": "String"
+      },
+      "fleet": {
+        "type": "String"
+      },
+      "init": {
+        "type": "String"
+      }
+    }
+  },
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -2075,5 +2102,36 @@
   "uiRebirthGo": "항해 탭",
   "uiCaptainSkill": "선장 필살기",
   "uiCaptainSkillShort": "필살기",
-  "uiBackToExit": "한 번 더 누르면 종료돼요"
+  "uiBackToExit": "한 번 더 누르면 종료돼요",
+  "uiBossHpLine": "{name} · {now} / {max}",
+  "@uiBossHpLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossHpBars": "{name} · {now} / {max}  ×{bars}",
+  "@uiBossHpBars": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -79,5 +79,32 @@
   "opSimNone": "결제 흉내가 없는 빌드예요",
   "opEntitlements": "권리 켜기/끄기",
   "opShopOpen": "상점 열기",
-  "opCaptainSkillFake": "필살기 버튼(가짜 — 피버 게이지)"
+  "opCaptainSkillFake": "필살기 버튼(가짜 — 피버 게이지)",
+  "opBossBarsFake": "보스 여러 줄(가짜 — 3줄)",
+  "opSlotDebug": "칸 진단: 스테이지 {stage} · 최고 {best} · 환생 {rebirths} · fleetSlots {slots} · 전장 slotsOpen {open} · 출전 {fleet} · fleetInit {init}",
+  "@opSlotDebug": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      },
+      "rebirths": {
+        "type": "String"
+      },
+      "slots": {
+        "type": "String"
+      },
+      "open": {
+        "type": "String"
+      },
+      "fleet": {
+        "type": "String"
+      },
+      "init": {
+        "type": "String"
+      }
+    }
+  }
 }
