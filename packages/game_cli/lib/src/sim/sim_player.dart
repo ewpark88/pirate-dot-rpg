@@ -71,10 +71,11 @@ class SimPlayer {
         if (engine.state.battle != null && (_elapsed.inMilliseconds ~/ tick.inMilliseconds) % decisionTicks == 0) {
           _decide();
         }
+        final step = tick ~/ (engine.state.battle?.speed ?? 1); // 배속(순풍·유료 2배속): 같은 시간에 틱을 더 돈다
         engine.tick();
-        clock.advance(tick);
-        _elapsed += tick;
-        _online += tick;
+        clock.advance(step);
+        _elapsed += step;
+        _online += step;
         _observe(engine.drainEvents());
       }
       if (schedule.offline > Duration.zero && _elapsed < total) _goOffline(schedule.offline);

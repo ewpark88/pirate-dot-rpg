@@ -2748,6 +2748,7 @@ const Map<String, String> rawTables = {
   "firstBuyMultiplier": 2,
   "offlineHours": 12,
   "speedMultiplier": 2,
+  "speedProgressMul": 1.5,
   "products": [
     {
       "id": "no_ads_30d",
