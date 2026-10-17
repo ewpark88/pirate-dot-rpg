@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/skin/press_feel.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+
+export 'package:pirate_dot/ui/skin/press_feel.dart' show PressWeight;
 
 /// 보상(금색) 버튼 빛 줄기 주기·길이 (스킨 r2 결정 ①: 5초).
 const _shineEvery = Duration(seconds: 5);
@@ -24,7 +26,7 @@ enum SkinTone {
 
 /// 통통한 버튼 (스킨 r1): 위가 밝은 그라데이션 + 아래 진한 테두리 [Skin.buttonEdge] + 흰 안쪽 테두리.
 /// 누르면 테두리만큼 내려앉으며 95%로 줄고, 놓으면 통 튀어 돌아온다(easeOutBack). 누르는 영역은 최소 48dp.
-/// [onPressed]가 null이면 회색.
+/// [onPressed]가 null이면 회색 — 누르면 좌우 흔들림 + '부족해요' 소리([onDenied]도 부른다). 누름 손맛은 [pressFeel](press_feel.dart).
 class SkinButton extends StatefulWidget {
   const SkinButton({
     required this.onPressed,
@@ -32,8 +34,16 @@ class SkinButton extends StatefulWidget {
     this.tone = SkinTone.primary,
     this.height = 48,
     this.semanticLabel,
+    this.weight = PressWeight.light,
+    this.onDenied,
     super.key,
   });
+
+  /// 큰 동작(구매·환생·소환)이면 [PressWeight.heavy] — '퉁' + medium 진동.
+  final PressWeight weight;
+
+  /// 꺼진 버튼을 눌렀을 때(흔들림 뒤) — 이유 토스트 등.
+  final VoidCallback? onDenied;
 
   final VoidCallback? onPressed;
   final Widget child;
@@ -83,10 +93,12 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
     });
   }
 
-  /// 누를 때 짧은 '톡' (스킨 r2 결정 ②: 주 버튼(파랑·금색)만, 기존 pop.ogg 높은 음 — 설정 효과음을 따른다).
-  void _tock() {
-    if (widget.tone == SkinTone.plain) return;
-    _container?.read(audioPortProvider)?.playSfx('pop', pitch: 1.6);
+  late final AnimationController _shake = AnimationController(vsync: this, duration: const Duration(milliseconds: 360));
+
+  void _denied() {
+    deniedFeel(context);
+    if (!MediaQuery.disableAnimationsOf(context)) _shake.forward(from: 0).ignore();
+    widget.onDenied?.call();
   }
 
   @override
@@ -94,6 +106,7 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
     _shineTimer?.cancel();
     _shine.dispose();
     _press.dispose();
+    _shake.dispose();
     super.dispose();
   }
 
@@ -116,37 +129,40 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
         behavior: HitTestBehavior.opaque,
         onTapDown: enabled
             ? (_) {
-                _tock();
+                pressFeel(context, widget.weight);
                 _press.forward().ignore();
               }
             : null,
         onTapCancel: enabled ? _press.reverse : null,
         onTapUp: enabled ? (_) => _press.reverse() : null,
-        onTap: widget.onPressed,
+        onTap: enabled ? widget.onPressed : _denied,
         child: ConstrainedBox(
           constraints: BoxConstraints(minWidth: 48, minHeight: widget.height < 48 ? 48 : widget.height),
           child: AnimatedBuilder(
-            animation: _t,
+            animation: Listenable.merge([_t, _shake]),
             builder: (context, child) {
               // easeOutBack은 놓을 때 0 밑으로 살짝 넘친다 — 크기만 통 튀고, 내려앉는 거리는 0~1로 자른다.
               final bounce = _t.value;
               final p = bounce.clamp(0.0, 1.0);
-              return Transform.scale(
-                scale: 1 - 0.05 * bounce,
-                child: Padding(
-                  // 눌리면 아래 테두리 자리로 내려앉는다(전체 높이는 그대로).
-                  padding: EdgeInsets.only(top: Skin.buttonEdge * p),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: edge,
-                      borderRadius: BorderRadius.circular(Skin.radiusButton),
-                      // k1: 굵은 검정 외곽선.
-                      border: Border.all(color: Skin.outline, width: 2),
-                      boxShadow: p > 0.5 ? null : Skin.shadowSmall,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: Skin.buttonEdge * (1 - p)),
-                      child: child,
+              return Transform.translate(
+                offset: Offset(shakeOffset(_shake.value), 0),
+                child: Transform.scale(
+                  scale: 1 - 0.05 * bounce,
+                  child: Padding(
+                    // 눌리면 아래 테두리 자리로 내려앉는다(전체 높이는 그대로).
+                    padding: EdgeInsets.only(top: Skin.buttonEdge * p),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: edge,
+                        borderRadius: BorderRadius.circular(Skin.radiusButton),
+                        // k1: 굵은 검정 외곽선.
+                        border: Border.all(color: Skin.outline, width: 2),
+                        boxShadow: p > 0.5 ? null : Skin.shadowSmall,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: Skin.buttonEdge * (1 - p)),
+                        child: child,
+                      ),
                     ),
                   ),
                 ),

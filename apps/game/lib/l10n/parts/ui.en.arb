@@ -1983,11 +1983,11 @@
   "uiTalkSpeed": "Double speed is on! Battles run twice as fast. Check the time left on the chip up top!",
   "uiTipBossDex": "Field crew of the weak-to families to beat it much faster!",
   "uiHelpTower": "Abyss Tower",
-  "uiHelpTowerBody": "Climb one floor at a time. Higher floors give bigger rewards, and cleared floors can be swept in one tap.",
+  "uiHelpTowerBody": "Climb one floor at a time (opens at stage 60 or after your first rebirth). Higher floors give bigger rewards, and cleared floors can be swept in one tap.",
   "uiHelpRush": "Boss Rush",
-  "uiHelpRushBody": "Fight bosses back to back. Beat them all for a big reward — the faster, the better your record.",
+  "uiHelpRushBody": "Fight 5 bosses back to back. Beat them all for a reward — the faster you are, the more gems and map pieces.",
   "uiHelpDungeon": "Daily Dungeon",
-  "uiHelpDungeonBody": "A dungeon with different rewards each day of the week. Cleared levels can be swept quickly.",
+  "uiHelpDungeonBody": "A dungeon that gives crew cards of a different family each weekday. Enter with your daily ticket; cleared steps can be swept quickly.",
   "uiHelpAchievements": "Achievements",
   "uiHelpAchievementsBody": "Reach goals like kills, bosses and stages to earn gems. Claim them from 'Achievements' on the Voyage tab.",
   "uiHelpPass": "Voyage Pass",
@@ -1995,5 +1995,5 @@
   "uiHelpUltimate": "Captain's Ultimate",
   "uiHelpUltimateBody": "The gauge fills as you fight. When it's full, tap the button at the bottom right to sweep the whole screen.",
   "uiHelpFever": "Fever",
-  "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your attacks get stronger for a while and enemies swarm in."
+  "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your damage and gold go up for a while and enemies swarm in."
 }

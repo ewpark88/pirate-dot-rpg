@@ -4,7 +4,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
-// 설정 '도움말' (S1 2026-10-18): 새 시스템 짧은 설명 — 탑·러시·던전·업적·패스·필살기·피버. 칸을 누르면 펼친다.
+// 설정 '도움말' (S1 2026-10-18): 새 시스템 짧은 설명 — 탑·러시·던전·업적·패스·필살기·피버(칸을 누르면 펼침) + 큰 수 단위(E11).
 
 class HelpSection extends StatelessWidget {
   const HelpSection({super.key});
@@ -35,6 +35,10 @@ class HelpSection extends StatelessWidget {
               children: [Text(body, style: Skin.text(14, color: Skin.sub))],
             ),
           ),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Text(l.uiNumberUnits, style: Skin.text(13, color: Skin.sub)),
+        ),
       ],
     );
   }

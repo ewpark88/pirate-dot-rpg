@@ -10,7 +10,6 @@ import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
@@ -165,7 +164,6 @@ class SettingsScreen extends ConsumerWidget {
                       title: l10n.uiSaveTitle,
                       child: const SaveTransferSection(),
                     ),
-                  _Group(key: const Key('settings.help'), title: l10n.uiSettingsHelp, child: const HelpSection()),
                   // 정보: 개인정보처리방침 · 이용약관 · 문의하기 · 버전(출시 준비).
                   _Group(key: const Key('settings.about'), title: l10n.uiSettingsAbout, child: const AboutSection()),
                   // 운영자 빌드만: 패널 바로 열기(돈 알약 5번 탭은 안쪽 골드 칸이 먼저 받는다 — S1 2026-10-18).
@@ -178,15 +176,8 @@ class SettingsScreen extends ConsumerWidget {
                         child: Text(l10n.opOpenPanel),
                       ),
                     ),
-                  // 도움말: 큰 수 단위 (계획 E11).
-                  _Group(
-                    key: const Key('settings.help'),
-                    title: l10n.uiSettingsHelp,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(l10n.uiNumberUnits, style: const TextStyle(color: PixelPalette.textDim)),
-                    ),
-                  ),
+                  // 도움말: 새 시스템 짧은 설명(S1 2026-10-18) + 큰 수 단위(계획 E11).
+                  _Group(key: const Key('settings.help'), title: l10n.uiSettingsHelp, child: const HelpSection()),
                 ],
               ),
             ),

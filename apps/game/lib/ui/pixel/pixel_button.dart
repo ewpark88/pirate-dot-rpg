@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pirate_dot/ui/skin/press_feel.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 
@@ -14,8 +15,12 @@ class PixelButton extends StatelessWidget {
     this.primary = false,
     this.semanticLabel,
     this.compact = false,
+    this.weight = PressWeight.light,
     super.key,
   });
+
+  /// 큰 동작(구매·환생·소환)이면 heavy — '퉁' + medium 진동.
+  final PressWeight weight;
 
   final VoidCallback? onPressed;
   final Widget child;
@@ -30,6 +35,7 @@ class PixelButton extends StatelessWidget {
         onPressed: onPressed,
         tone: primary ? SkinTone.primary : SkinTone.plain,
         semanticLabel: semanticLabel,
+        weight: weight,
         child: child,
       );
     }
@@ -38,9 +44,11 @@ class PixelButton extends StatelessWidget {
       button: true,
       enabled: enabled,
       label: semanticLabel,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: Pressable(
         onTap: onPressed,
+        weight: weight,
+        // 카드 모서리 작은 버튼 — 꺼졌을 때 누름을 잡으면 아래 카드 탭(상세 열기)을 가로챈다.
+        deniable: false,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minWidth: kMinTap, minHeight: kMinTap),
           child: Align(
