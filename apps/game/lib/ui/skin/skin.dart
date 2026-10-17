@@ -61,8 +61,8 @@ abstract final class Skin {
   static const radiusCard = 16.0;
   static const radiusButton = 14.0;
 
-  /// 통통한 버튼의 아래 테두리 두께.
-  static const buttonEdge = 4.0;
+  /// 통통한 버튼의 아래 테두리 두께 (k2: 입체감 한 단계 더).
+  static const buttonEdge = 6.0;
 
   static const shadowColor = Color(0x5510122A);
   static const List<BoxShadow> shadow = [BoxShadow(color: shadowColor, blurRadius: 10, offset: Offset(0, 3))];
@@ -82,6 +82,20 @@ abstract final class Skin {
     BoxShadow(color: Color(0x4010122A), blurRadius: 14, offset: Offset(0, 5)),
   ];
 
+  /// 창 안쪽 판 (k2): 연보라 + 굵은 외곽선 + 위쪽 안쪽 그림자(위가 살짝 진한 그라데이션).
+  static const insetFill = Color(0xFFE7E6FC);
+
+  static BoxDecoration inset({Color fill = insetFill, Color border = outline, double radius = 12}) => BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color.lerp(fill, outline, 0.16)!, fill, fill],
+      stops: const [0, 0.14, 1],
+    ),
+    borderRadius: BorderRadius.circular(radius),
+    border: Border.all(color: border, width: 2.2),
+  );
+
   // ── 글꼴 ── Jua(OFL) + Jua에 없는 기호(· × → … 등)는 Gowun Dodum 서브셋(OFL).
   static const font = 'Jua';
   static const fontFallback = ['GowunDodumSymbols'];
@@ -96,17 +110,27 @@ abstract final class Skin {
     height: 1.2,
   );
 
-  /// 외곽선 글자 (흰 글씨 + 검은 테두리): 여덟 방향 그림자로 테두리를 그린다.
-  static TextStyle outlined(double size, {Color color = Colors.white, double stroke = 1.6}) => text(
-    size,
-    color: color,
-  ).copyWith(shadows: outlineShadows(stroke));
+  /// 외곽선 글자 (흰 글씨 + 두꺼운 검은 테, k2): 여덟 방향 그림자로 테를 그리고, 같은 색 그림자로 획을 굵게 한다.
+  static TextStyle outlined(double size, {Color color = Colors.white, double? stroke}) {
+    final s = stroke ?? (size * 0.11).clamp(1.4, 2.6);
+    return text(size, color: color).copyWith(shadows: [...outlineShadows(s), ..._thicken(color, size)]);
+  }
+
+  /// 굵은 글자 (진한 글씨, 테 없음) — Jua는 굵기가 하나라 같은 색 그림자로 획을 굵게 한다(버튼 글자).
+  static TextStyle bold(double size, {Color color = ink}) =>
+      text(size, color: color).copyWith(shadows: _thicken(color, size));
 
   static List<Shadow> outlineShadows(double stroke) => [
-    for (final (dx, dy) in const [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)])
-      Shadow(color: outline, offset: Offset(dx * stroke, dy * stroke)),
+    for (final (dx, dy) in _ring) Shadow(color: outline, offset: Offset(dx * stroke, dy * stroke)),
     Shadow(color: outline, offset: Offset(0, stroke + 1)),
   ];
+
+  static List<Shadow> _thicken(Color color, double size) {
+    final w = (size * 0.03).clamp(0.4, 0.8);
+    return [for (final (dx, dy) in _ring) Shadow(color: color, offset: Offset(dx * w, dy * w))];
+  }
+
+  static const _ring = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)];
 }
 
 /// 흰/크림 판 카드 (스킨 r2 깊이감 — [SkinDepth]).

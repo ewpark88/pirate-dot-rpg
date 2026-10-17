@@ -62,7 +62,7 @@ class TopBar extends ConsumerWidget {
                   BigNumText(
                     gold,
                     key: const Key('top.gold'),
-                    style: Skin.outlined(16, color: const Color(0xFFFFD84A), stroke: 1.2),
+                    style: Skin.outlined(16, color: const Color(0xFFFFD84A)),
                   ),
                   Text(
                     ' / $cap',
@@ -77,7 +77,7 @@ class TopBar extends ConsumerWidget {
           const SizedBox(width: 10),
           const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
           const SizedBox(width: 4),
-          Text(gems.toString(), key: const Key('top.gems'), style: Skin.outlined(16, stroke: 1.2)),
+          Text(gems.toString(), key: const Key('top.gems'), style: Skin.outlined(16)),
           const SizedBox(width: 8),
           const PowerBadge(),
         ],

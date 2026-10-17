@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
+import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -140,8 +141,13 @@ class _PartRow extends ConsumerWidget {
           children: [
             Row(
               children: [
-                // 부위 아이콘 (아트 레인 16px × 2).
-                PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
+                // k2: 부위 색 네모 칸 + 왼쪽 위 Lv 배지 (쿵푸할매 장비 화면처럼).
+                IconCell(
+                  color: partCellColors[ref.read(tablesProvider).shipParts.parts.indexOf(def) % partCellColors.length],
+                  level: l10n.uiLevel(level),
+                  levelKey: Key('ship.lv.${def.id}'),
+                  child: PixelSprite(UiSprites.part(def.id), dots: 16, key: Key('ship.icon.${def.id}')),
+                ),
                 const SizedBox(width: 8),
                 // 이름과 레벨은 한 덩어리.
                 Expanded(
@@ -149,7 +155,8 @@ class _PartRow extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(tableText(l10n, def.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(max == null ? l10n.uiLevel(level) : l10n.uiLevelMax(level, max), style: small),
+                      // 레벨은 칸 배지에 — 최대가 있는 부위만 '현재/최대'.
+                      if (max != null) Text(l10n.uiLevelMax(level, max), style: small),
                       // 화물칸 = 골드 금고: '최대 a → b'(다음 레벨 용량).
                       if (def.stat == 'capacity')
                         Text(

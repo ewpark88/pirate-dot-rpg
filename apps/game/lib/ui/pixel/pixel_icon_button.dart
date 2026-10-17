@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
 /// 그림 아이콘 크기 목표(dp) — 실기기에서 24~28dp (layout-v2-brief 1).
@@ -40,7 +41,9 @@ class _PixelIconButtonState extends State<PixelIconButton> {
   @override
   Widget build(BuildContext context) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
-    final size = pixelIconSize(dpr);
+    // HD 아이콘은 칸(44)의 약 80%, 부드럽게 (S5 합의). 도트 그림은 정수배 그대로.
+    final hd = widget.asset.startsWith(UiSprites.hdDir);
+    final size = hd ? 36.0 : pixelIconSize(dpr);
     final enabled = widget.onPressed != null;
     return Tooltip(
       message: widget.semanticLabel,
@@ -87,12 +90,12 @@ class _PixelIconButtonState extends State<PixelIconButton> {
                           width: size,
                           height: size,
                           fit: BoxFit.fill,
-                          filterQuality: FilterQuality.none,
+                          filterQuality: hd ? FilterQuality.medium : FilterQuality.none,
                         ),
                         if (widget.trailing case final t?) ...[
                           const SizedBox(width: 2),
                           DefaultTextStyle.merge(
-                            style: Skin.outlined(15, color: const Color(0xFFFFD84A), stroke: 1.2),
+                            style: Skin.outlined(15, color: const Color(0xFFFFD84A)),
                             child: t,
                           ),
                         ],

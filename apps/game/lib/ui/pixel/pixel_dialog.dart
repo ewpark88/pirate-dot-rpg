@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
 /// 창·시트 최대 폭(dp) — 태블릿에서 가운데에 알맞은 크기로.
@@ -116,34 +117,6 @@ class PixelDialog extends StatelessWidget {
       ),
     );
   }
-}
-
-/// 창 머리 노란 리본 띠: 위가 밝은 금빛 + 광택 + 아래 진한 선, 가운데 흰 외곽선 제목.
-class RibbonHeader extends StatelessWidget {
-  const RibbonHeader({required this.title, this.padRight = 12, super.key});
-
-  final String title;
-  final double padRight;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    key: const Key('dialog.ribbon'),
-    padding: EdgeInsets.fromLTRB(padRight, 10, padRight, 10),
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Skin.ribbonTop, Skin.ribbonBottom],
-      ),
-      border: Border(bottom: BorderSide(color: Skin.outline, width: 2.5)),
-    ),
-    child: Text(
-      title,
-      textAlign: TextAlign.center,
-      maxLines: 2,
-      style: Skin.outlined(22, stroke: 2),
-    ),
-  );
 }
 
 /// 오른쪽 위 노란 X 버튼 (누름 영역 48dp).

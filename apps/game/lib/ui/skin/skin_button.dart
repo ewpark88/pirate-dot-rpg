@@ -171,9 +171,8 @@ class _SkinButtonState extends State<SkinButton> with TickerProviderStateMixin {
                     heightFactor: 1,
                     child: DefaultTextStyle.merge(
                       // 초록·회색 버튼은 흰 외곽선 글자(k1), 금색·보조는 진한 글자.
-                      style: ink == Colors.white
-                          ? Skin.outlined(17).copyWith(fontWeight: FontWeight.bold)
-                          : Skin.text(17, color: ink, weight: FontWeight.bold),
+                      // k2: 굵은 글자 17sp (초록은 두꺼운 테).
+                      style: ink == Colors.white ? Skin.outlined(17) : Skin.bold(17, color: ink),
                       textAlign: TextAlign.center,
                       child: IconTheme.merge(
                         data: IconThemeData(color: ink),

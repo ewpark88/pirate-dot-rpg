@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -152,7 +153,8 @@ class _DockIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget icon = PixelSprite(asset, dots: 16);
+    // HD 아이콘은 칸의 약 80% (S5 합의 — 칸이 정해진 곳은 크기를 준다).
+    Widget icon = SkinIcon(asset, size: selected ? 44 : 38);
     if (spot case final id?) icon = TutorialSpot(id: id, force: guide, child: icon);
     return Semantics(
       button: true,
@@ -206,7 +208,7 @@ class _DockIcon extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              Text(label, maxLines: 1, style: Skin.outlined(selected ? 13 : 12, stroke: 1.2)),
+              Text(label, maxLines: 1, style: Skin.outlined(14)),
             ],
           ),
         ),

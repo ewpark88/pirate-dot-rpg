@@ -70,9 +70,8 @@ class PixelTabItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Skin.outlined(
-                  13,
+                  14,
                   color: selected ? const Color(0xFFFFFFFF) : const Color(0xFFC9CAF0),
-                  stroke: 1.1,
                 ),
               ),
             ],

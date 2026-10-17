@@ -48,7 +48,7 @@ void showSkinToast(BuildContext context, String text, {String? action, VoidCallb
                       child: Text(
                         text,
                         textAlign: TextAlign.center,
-                        style: Skin.outlined(16, stroke: 1.2),
+                        style: Skin.outlined(16),
                       ),
                     ),
                     if (action != null) ...[

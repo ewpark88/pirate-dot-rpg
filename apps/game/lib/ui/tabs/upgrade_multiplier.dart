@@ -74,7 +74,7 @@ class UpgradeMultiplierPills extends ConsumerWidget {
                     ),
                     child: Text(
                       n == 0 ? l10n.uiMultMax : l10n.uiMult(n),
-                      style: now == n ? Skin.outlined(15, stroke: 1.2) : Skin.text(15),
+                      style: now == n ? Skin.outlined(15) : Skin.text(15),
                     ),
                   ),
                 ),

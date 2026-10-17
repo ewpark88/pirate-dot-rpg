@@ -75,11 +75,11 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
             const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
             if (active) ...[
               const SizedBox(width: 4),
-              Text(remainingText(left), style: Skin.outlined(15, color: const Color(0xFF8CF5B8), stroke: 1.2)),
+              Text(remainingText(left), style: Skin.outlined(15, color: const Color(0xFF8CF5B8))),
               const SizedBox(width: 4),
               Text(
                 l10n.uiEffectMultiplier(shortDecimal(multiplier)),
-                style: Skin.outlined(15, color: const Color(0xFFFFD84A), stroke: 1.2),
+                style: Skin.outlined(15, color: const Color(0xFFFFD84A)),
               ),
             ],
           ],
