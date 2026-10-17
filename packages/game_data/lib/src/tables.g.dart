@@ -2870,7 +2870,6 @@ const Map<String, String> rawTables = {
   "maxSameFamilyInFleet": 2,
   "ultimateMultiplier": 5,
   "bossControlFactor": 0.5,
-  "bossBreak": {"stunPerSec": 0.7, "slowPerSec": 0.05, "vulnerablePerSec": 0.05, "pullPerPx": 0.03, "breakSec": 2, "damageMul": 2, "cooldownSec": 10},
   "critBurstDamage": 0.5,
   "rarityTempo": [1, 1, 1, 0.9, 0.8],
   "traitScale": [0.4, 0.6, 0.8],
