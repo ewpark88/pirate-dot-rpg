@@ -148,7 +148,7 @@ void main() {
             tables: t,
             clock: ManualClock(start),
             initial: GameState.newGame(playerId: 'k', seed: 2, now: start).copyWith(
-              progress: const Progress(stage: 7, bestStage: 7), // enemy_ship(7칸 회전 — 보스 +18)
+              progress: const Progress(stage: 8, bestStage: 8),
             ),
           )
           ..enqueue(const OpSetInvincible(on: true))

@@ -169,18 +169,17 @@ void main() {
 
   test('9. 보스를 잡으면 스테이지 +1·젬·보스 카드(스테이지 올리기 전 기준)·저장 요청', () {
     final crews = {crewOf('direct'): const CrewState(level: 40), crewOf('lob'): const CrewState(level: 40)};
-    // 스테이지 8 = 회전 보스 hermit_conch(7칸 회전 — 2026-10-18 보스 +18, 예전 스테이지 5와 같은 보스).
-    final s = game(stage: 8, crews: crews).copyWith(ship: const ShipState(parts: {'cannon': 30}));
+    final s = game(stage: 5, crews: crews).copyWith(ship: const ShipState(parts: {'cannon': 30}));
     final e = engineOf(
       s.copyWith(battle: BattleView.empty.copyWith(chest: const ChestView(x: 150, y: 100, ticksLeft: 9999))),
     )..enqueue(const OpSpawnBoss());
     final ev = <GameEvent>[];
-    for (var i = 0; i < 30 * 1000 ~/ w.tickMs && e.state.progress.stage == 8; i++) {
+    for (var i = 0; i < 30 * 1000 ~/ w.tickMs && e.state.progress.stage == 5; i++) {
       ev.addAll((e..tick()).drainEvents());
     }
-    expect(ev.whereType<BossCleared>().single.stage, 8);
+    expect(ev.whereType<BossCleared>().single.stage, 5);
     expect(ev.whereType<SaveRequested>().map((x) => x.reason), contains('bossCleared'));
-    expect(e.state.progress.stage, 9);
+    expect(e.state.progress.stage, 6);
     expect(e.state.wallet.gems, w.bossGems + dexFirstKillGems(tables, boss: true)); // + 도감 첫 처치
     expect(e.state.battle!.chest?.x, 150, reason: '보스를 잡아도 떠 있던 보물상자는 남는다');
     final cards =
