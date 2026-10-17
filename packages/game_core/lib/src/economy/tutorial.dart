@@ -1,7 +1,6 @@
-import 'package:game_core/src/economy/cards.dart' show receiveCard;
+import 'package:game_core/src/economy/cards.dart' show grantCard;
 import 'package:game_core/src/economy/formation.dart' show fleetSlots;
 import 'package:game_core/src/engine/commands.dart';
-import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
@@ -28,14 +27,14 @@ GameState tutorialTick(GameState s, SystemContext ctx) {
 }
 
 /// 환영 선원(사용자 피드백 #21 '1분 안에 연사 특성 희귀 선원 확정'): 첫 강화 단계를 넘는 순간 `meta.tutorial.welcomeCrew` 한 명을
-/// 그 등급으로 보유 + 첫 빈 출전 칸에 앉힌다. 받는 화면·카드 연출은 소환과 같은 CrewSummoned(한 장). 이미 있으면 주지 않는다.
+/// 그 등급으로 보유 + 첫 빈 출전 칸에 앉힌다. 받는 화면·카드 연출은 CardGranted(source 'starter', isNew). 이미 있으면 주지 않는다.
 GameState _welcome(GameState s, SystemContext ctx) {
   final tut = ctx.tables.meta.raw.obj('tutorial');
   if (!tut.has('welcomeCrew')) return s;
   final w = tut.obj('welcomeCrew');
   final id = w.str('crewId');
   if (s.crews.containsKey(id)) return s;
-  final got = receiveCard(s, ctx.tables, id, w.str('rarity'));
+  final got = grantCard(s, ctx, id, w.str('rarity'), 'starter');
   final fleet = [...got.fleet];
   final slots = fleetSlots(got, ctx.tables);
   final at = fleet.indexOf(null);
@@ -44,7 +43,6 @@ GameState _welcome(GameState s, SystemContext ctx) {
   } else if (fleet.length < slots) {
     fleet.add(id);
   }
-  ctx.emit(CrewSummoned(ctx.tick, results: [(crewId: id, rarity: w.str('rarity'))]));
   return got.copyWith(fleet: fleet);
 }
 

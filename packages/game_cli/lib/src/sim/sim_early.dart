@@ -10,7 +10,7 @@ class SimEarly {
 
   void observe(GameEvent e, Duration elapsed) {
     switch (e) {
-      case CrewSummoned(:final results) when results.length == 1 && result.summons == 0:
+      case CardGranted(source: 'starter'):
         result.welcomeCrew ??= elapsed;
       case ShipLookChanged():
         result.firstLookChange ??= elapsed;
