@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
+import 'package:game_core/src/battle/topdown/top_duel.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverPose;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/fever.dart' show feverOn;
@@ -103,7 +104,13 @@ void shapeField(Field f, GameState s, GameTables t) {
       ..shipSeen = s.ship
       ..geometry = geometryFor(t, s.progress.stage, hullStage: partLook(s, t)['hull'] ?? 1);
     final g = f.geometry;
-    if (old is TopGeometry && g is TopGeometry) g.weaveTick = old.weaveTick; // 강화해도 좌우 이동이 끊기지 않게
+    if (old is TopGeometry && g is TopGeometry) {
+      // 강화해도 좌우 이동·비켜선 자리가 끊기지 않게
+      g
+        ..weaveTick = old.weaveTick
+        ..duelling = old.duelling
+        ..weave(old.top.shipX - old.base.shipX, dy: old.top.shipY - old.base.shipY, heading: old.shipHeading);
+    }
   }
   final g = f.geometry;
   if (g is TopGeometry) {
@@ -111,8 +118,10 @@ void shapeField(Field f, GameState s, GameTables t) {
     g
       ..speedScale = seaEventSpeed(s, t)
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
-      ..weaveTick = on ? g.weaveTick + 1 : 0
-      ..pose(feverPose(s, t, g.weaveTick, on: on));
+      ..weaveTick = on ? g.weaveTick + 1 : 0;
+    final free = feverPose(s, t, g.weaveTick, on: on);
+    final duel = TopDuel.of(t.waves); // 보스전 비켜서기(사용자 피드백 #10), 표 키 없으면 피버 자리 그대로
+    g.pose(duel == null ? free : duel.step(f, g, free, dt: t.waves.tickMs * secondsPerMillisecond));
   }
 }
 

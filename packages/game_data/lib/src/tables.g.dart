@@ -2916,6 +2916,7 @@ const Map<String, String> rawTables = {
     "reachScale": 1,
     "separation": 0.5,
     "bossOrbitDegPerSec": 12,
+    "bossDuel": { "shift": 0.5, "speed": 40 },
     "viewWidth": 180,
     "viewHeight": 320
   },
