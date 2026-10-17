@@ -100,4 +100,14 @@ void main() {
     expect((m.bannerText, m.bannerSub, m.bannerHot), ('LAST BOSS!', '5/5', true));
     expect(m.bannerTotal, greaterThan(2000), reason: '마지막 보스 띠는 길게');
   });
+
+  test('요일 던전 띠: MON 3 + 계열, 그 날 계열 착탄 강조 켜짐 → 끝나면 꺼짐', () {
+    final scene = BattleScene(tables, null);
+    final m = scene.moments..onDungeonStarted('mon', 3, const ['pierce', 'laser']);
+    expect((m.bannerText, m.bannerSub), ('MON 3', 'PIERCE · LASER'));
+    expect(scene.topHits.impact.hotFamilies, {'pierce', 'laser'});
+    m.onDungeonEnded(cleared: false);
+    expect((m.bannerText, m.bannerHot), ('FAILED', true));
+    expect(scene.topHits.impact.hotFamilies, isEmpty);
+  });
 }

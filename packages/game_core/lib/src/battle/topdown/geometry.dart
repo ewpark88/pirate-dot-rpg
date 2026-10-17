@@ -118,7 +118,9 @@ void shapeField(Field f, GameState s, GameTables t) {
   if (g is TopGeometry) {
     final on = feverOn(s) || f.fastSail != null; // 빠른 항해 돌파도 피버처럼 전진·좌우
     g
-      ..speedScale = seaEventSpeed(s, t)
+      ..speedScale =
+          seaEventSpeed(s, t) *
+          feverApproach(s, t) // 피버 무리는 빨리 조여 온다
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
       ..weaveTick = on ? g.weaveTick + 1 : 0;
     final free = feverPose(s, t, g.weaveTick, on: on);
@@ -146,4 +148,11 @@ double seaEventSpeed(GameState s, GameTables t) {
     if (e.str('id') == id) return e.numberOr('enemySpeed', 1);
   }
   return 1;
+}
+
+/// 피버 중 적 접근 배율(meta.fever.swarm.approachMul, 없으면 1) — 화면 밖 고리에서 피버 10초 안에 배까지 조여 오게.
+double feverApproach(GameState s, GameTables t) {
+  if (!feverOn(s)) return 1;
+  final f = t.meta.raw.obj('fever');
+  return f.has('swarm') ? f.obj('swarm').numberOr('approachMul', 1) : 1;
 }

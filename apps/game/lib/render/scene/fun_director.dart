@@ -127,6 +127,16 @@ bool funEvent(BattleScene s, GameEvent e) {
     case TowerFloorCleared(:final floor):
       s.moments.onTowerFloor(floor + 1, cleared: true);
       _sfx(s, 'bossCleared', e);
+    // 요일 던전: 시작·끝 띠, 그 날 계열 착탄 강조
+    case DungeonStarted(:final group, :final step):
+      final g = s.tables.meta.raw.obj('dungeon').objs('groups').where((x) => x.str('id') == group).firstOrNull;
+      s.moments.onDungeonStarted(group, step, g == null ? const [] : g.strs('families'));
+      _sfx(s, 'bossSpawned', e);
+    case DungeonCleared():
+      s.moments.onDungeonEnded(cleared: true);
+      _sfx(s, 'bossCleared', e);
+    case DungeonFailed():
+      s.moments.onDungeonEnded(cleared: false);
     // 보스 러시: 시작·다음 보스·마지막 보스 띠
     case RushStarted(:final bosses):
       s.moments.onRushStarted(bosses.length);
