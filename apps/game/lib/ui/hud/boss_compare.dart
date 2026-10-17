@@ -42,15 +42,18 @@ BossCompareView? bossCompareOf(GameState s, GameTables t) {
   );
 }
 
-/// 상단 게이지 아래 한 줄: [⚔] 보스 체력 1.2M · 약 15초 / 20초 · 한 방 12%. 색 = 여유(초록)·빠듯(노랑)·어려움(빨강).
+/// 진행 게이지 안 둘째 줄(다음 목표 자리): [⚔] 보스 체력 1.2M · 약 15초 / 20초 · 한 방 12% · 여유/빠듯/어려움.
+/// 보스전·파밍이 아니면 [fallback](다음 목표). 높이를 늘리지 않아 전장 가운데를 덮지 않는다.
 class BossCompare extends ConsumerWidget {
-  const BossCompare({super.key});
+  const BossCompare({required this.fallback, super.key});
+
+  final Widget fallback;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(tablesProvider);
     final v = ref.watch(gameStateProvider.select((s) => bossCompareOf(s, t)));
-    if (v == null) return const SizedBox.shrink();
+    if (v == null) return fallback;
     final l10n = AppLocalizations.of(context);
     final color = switch (v.level) {
       0 => Skin.mint,
@@ -62,39 +65,26 @@ class BossCompare extends ConsumerWidget {
       1 => l10n.uiBossCompareTight,
       _ => l10n.uiBossCompareHard,
     };
-    return IgnorePointer(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 3, 10, 0),
-        child: Container(
-          key: Key('boss.compare.${v.level}'),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: Skin.ink.withValues(alpha: 0.88),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: color, width: 1.5),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.sports_martial_arts_rounded, size: 16, color: color),
-              const SizedBox(width: 6),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    l10n.uiBossCompare(v.hp, v.killSec, v.limitSec, v.hitPct),
-                    key: const Key('boss.compare'),
-                    maxLines: 1,
-                    style: Skin.text(13, color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text(verdict, style: Skin.text(13, color: color)),
-            ],
+    return Row(
+      key: Key('boss.compare.${v.level}'),
+      children: [
+        Icon(Icons.sports_martial_arts_rounded, size: 15, color: color),
+        const SizedBox(width: 4),
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              l10n.uiBossCompare(v.hp, v.killSec, v.limitSec, v.hitPct),
+              key: const Key('boss.compare'),
+              maxLines: 1,
+              style: Skin.text(13, color: Colors.white),
+            ),
           ),
         ),
-      ),
+        const SizedBox(width: 4),
+        Text(verdict, style: Skin.text(13, color: color)),
+      ],
     );
   }
 }

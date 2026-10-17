@@ -923,5 +923,24 @@
         "type": "int"
       }
     }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "Fever over · {kills} defeated · +{amount} gold",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

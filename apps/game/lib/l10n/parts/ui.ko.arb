@@ -707,5 +707,24 @@
         "type": "int"
       }
     }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "피버 끝 · {kills}마리 · 골드 +{amount}",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

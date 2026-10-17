@@ -22,14 +22,15 @@ void main() {
     expect(bossCompareOf(s, t), isNull, reason: '파 진행 중(보스·파밍 아님)엔 없음');
   });
 
-  testWidgets('보스전: 게이지 아래 한 줄 + 판정 색(boss.compare.<단계>)', (tester) async {
+  testWidgets('보스전: 게이지 안 다음 목표 자리에 한 줄 + 판정 색(boss.compare.<단계>)', (tester) async {
     final s = loadFixture('boss_fight');
     await pumpGame(tester, s, openTab: false);
     final v = bossCompareOf(s.copyWith(clearTutorial: true), t)!;
     expect(find.byKey(Key('boss.compare.${v.level}')), findsOneWidget);
     expect(find.textContaining('Boss HP'), findsOneWidget);
+    // 게이지 안(다음 목표 자리) — 높이를 늘리지 않는다.
     final gauge = tester.getRect(find.byKey(const Key('hud.gauge')));
-    expect(tester.getRect(find.byKey(Key('boss.compare.${v.level}'))).top, greaterThanOrEqualTo(gauge.bottom));
+    expect(gauge.contains(tester.getCenter(find.byKey(Key('boss.compare.${v.level}')))), isTrue);
   });
 
   for (final (name, size, dpr) in [('360', const Size(360, 640), 3.0), ('tablet', const Size(800, 1280), 2.0)]) {
