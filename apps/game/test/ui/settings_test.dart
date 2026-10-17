@@ -73,6 +73,9 @@ void main() {
   testWidgets('세이브 v4: 알림 끄기 → SetSetting(notifications, false)', (tester) async {
     final log = await _openSettings(tester, loadFixture('stage37_midgame'));
     await tester.scrollUntilVisible(find.byKey(const Key('settings.notifications')), 100);
+    // k2 리본으로 목록이 길어져 막 보이는 끝에 멈출 수 있다 — 완전히 보이게.
+    await tester.ensureVisible(find.byKey(const Key('settings.notifications')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('settings.notifications')));
     expect(log.sent.map((c) => c.toJson()), [const SetSetting('notifications', false).toJson()]);
   });

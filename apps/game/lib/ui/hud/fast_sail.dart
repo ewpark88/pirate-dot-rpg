@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/hud/boss_damage.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -219,13 +220,25 @@ class FastSailEndDialog extends ConsumerWidget {
     return PixelDialog(
       key: const Key('fastSail.end'),
       title: l10n.uiFastSailEndTitle(ended.from, ended.to),
+      // k2: 결과 줄을 연보라 안쪽 판에, 보급은 소제목 리본.
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          line(Icons.military_tech_rounded, l10n.uiFastSailEndStages(ended.stages)),
-          line(Icons.monetization_on_rounded, l10n.uiFastSailEndGold(ended.gold.format()), color: Skin.goldInk),
-          if (ended.gems > 0) line(Icons.diamond_rounded, l10n.uiFastSailEndGems(ended.gems), color: Skin.primaryEdge),
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
+            decoration: Skin.inset(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                line(Icons.military_tech_rounded, l10n.uiFastSailEndStages(ended.stages)),
+                line(Icons.monetization_on_rounded, l10n.uiFastSailEndGold(ended.gold.format()), color: Skin.goldInk),
+                if (ended.gems > 0)
+                  line(Icons.diamond_rounded, l10n.uiFastSailEndGems(ended.gems), color: Skin.primaryEdge),
+              ],
+            ),
+          ),
           if (!lost.isZero) ...[
             line(
               Icons.inventory_2_rounded,
@@ -251,11 +264,7 @@ class FastSailEndDialog extends ConsumerWidget {
           if (ref.watch(resupplyProvider) case final r?)
             if (r.after.entries.any((p) => p.value > (r.before[p.key] ?? 0))) ...[
               const SizedBox(height: 8),
-              Text(
-                l10n.uiResupplyTitle,
-                key: const Key('fastSail.resupply'),
-                style: Skin.text(16, color: Skin.primaryEdge),
-              ),
+              SubRibbon(l10n.uiResupplyTitle, key: const Key('fastSail.resupply')),
               for (final p in r.after.entries)
                 if (p.value > (r.before[p.key] ?? 0))
                   line(
