@@ -98,7 +98,6 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
           // k2: 작은 리본 제목 + 굵은 외곽선 틀.
           SubRibbon(l10n.uiPreviewTitle),
           // 처음 볼 때 옥토 한 마디: 등급 칸 누르기(가이드 v3).
-          if (widget.showTabs) OnceTip(id: 'tip.preview', text: l10n.uiTipPreview),
           const SizedBox(height: 4),
           Container(
             // 테두리를 장면 위에 그린다(장면이 가리지 않게).
@@ -147,6 +146,8 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
                   ),
               ],
             ),
+            // 처음 볼 때 옥토 한 마디 — 등급 칩 아래(미리보기·칩을 가리지 않게, S5 스토어 샷 ②).
+            OnceTip(id: 'tip.preview', text: l10n.uiTipPreview),
           ],
         ],
       ),

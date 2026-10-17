@@ -160,7 +160,8 @@ class NewMateDialog extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(name, style: Skin.bold(20)),
-                      Text(tableText(l10n, rarity.nameKey), style: Skin.text(14, color: rarityColor(rarity))),
+                      // 등급: 등급색 외곽선 글자 크게(연한 노랑 '전설'이 안 읽히던 것 — S5 스토어 샷 ①).
+                      Text(tableText(l10n, rarity.nameKey), style: Skin.outlined(17, color: rarityColor(rarity))),
                       const SizedBox(height: 4),
                       Container(
                         key: Key('newMate.role.${role.name}'),
