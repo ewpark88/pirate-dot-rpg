@@ -37,8 +37,12 @@ class RegionDef {
 
 /// 보스 하나 (설계서 4.11). 체력은 일반 보스(waves.boss.hpMultiplier) 대비 [hpMultiplier]배.
 class BossDef {
-  BossDef.fromJson(JsonReader j)
-    : id = j.str('id'),
+  BossDef.fromJson(JsonReader j, {Map<String, dynamic> traitDefaults = const {}})
+    : traits = [
+        for (final t in (j.raw['traits'] as List?) ?? const [])
+          BossTraitDef.of(t is String ? {'type': t} : t as Map<String, dynamic>, traitDefaults, j.path),
+      ],
+      id = j.str('id'),
       nameKey = j.str('nameKey'),
       hpMultiplier = j.number('hpMultiplier'),
       weakFamilies = j.strs('weakFamilies'),
@@ -69,6 +73,30 @@ class BossDef {
 
   /// 분열(도감 v2 — 아메바·슬라임): HP 비율이 이 값들 아래로 내려갈 때마다 둘로 갈라진다(둘 다 잡아야 격파).
   final List<double> splitAt;
+
+  /// 보스 특성(docs/specs/economy-boss-traits.md, 사용자 요청 #25): 회피·장갑·재생·반사막·분노·호위·가속. 비면 지금 그대로.
+  final List<BossTraitDef> traits;
+
+  BossTraitDef? trait(String type) => traits.where((t) => t.type == type).firstOrNull;
+
+  /// 약점 표시(UI): 특성들의 카운터 계열.
+  List<String> get counterFamilies => {for (final t in traits) ...t.cfg.strs('counters')}.toList();
+}
+
+/// 보스 특성 하나 = regions.json bossTraits[type](기본 수치·카운터) 위에 보스별 덮어쓰기.
+class BossTraitDef {
+  BossTraitDef(this.type, this.cfg);
+
+  factory BossTraitDef.of(Map<String, dynamic> raw, Map<String, dynamic> defaults, String path) {
+    final type = raw['type'] as String;
+    final base = (defaults[type] as Map<String, dynamic>?) ?? const {};
+    return BossTraitDef(type, JsonReader({...base, ...raw}, '$path.traits.$type'));
+  }
+
+  static const types = {'evade', 'armor', 'regen', 'reflect', 'enrage', 'escort', 'dash'};
+
+  final String type;
+  final JsonReader cfg;
 }
 
 /// 보스 패턴 하나: volley(조준 탄막) · charge(돌진) · summon(졸개) · blast(배 둘레 장판).
@@ -193,7 +221,10 @@ class RegionsTable {
       loopStages = j.integer('loopStages'),
       maxLoopTier = j.integer('maxLoopTier'),
       regions = j.objs('regions').map(RegionDef.fromJson).toList(),
-      bosses = {for (final b in j.objs('bosses')) b.str('id'): BossDef.fromJson(b)},
+      bosses = {
+        for (final b in j.objs('bosses'))
+          b.str('id'): BossDef.fromJson(b, traitDefaults: (j.raw['bossTraits'] as Map<String, dynamic>?) ?? const {}),
+      },
       enemies = {for (final e in j.objs('enemies')) e.str('id'): EnemyDef.fromJson(e)};
 
   final int stagesPerRegion;
@@ -247,6 +278,9 @@ class RegionsTable {
 
   List<String> validate() {
     final e = <String>[];
+    for (final t in [for (final b in bosses.values) ...b.traits]) {
+      expect(e, that: BossTraitDef.types.contains(t.type), message: 'regions: 모르는 보스 특성 ${t.type}');
+    }
     for (var i = 0; i < regions.length; i++) {
       final r = regions[i];
       expect(e, that: r.fromStage == i * stagesPerRegion + 1, message: 'regions: ${r.id} fromStage 오류');

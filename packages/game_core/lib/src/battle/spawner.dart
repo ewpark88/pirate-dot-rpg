@@ -148,11 +148,13 @@ void startBoss(
 BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
   final w = t.waves;
   final d = def ?? t.regions.bossAt(stage);
+  // 보스 특성 보정 hpFactor(특성이 처치를 늦추는 만큼 HP를 줄여 평균 처치 시간을 같게, economy-boss-traits 3절).
+  final traits = d.traits.fold<double>(1, (a, x) => a * x.cfg.numberOr('hpFactor', 1));
   return stageCurve(
     w.hpBase,
     w.hpGrowth,
     stage,
-  ).times(w.bossHpMultiplier * d.hpMultiplier * hpScale * wallBossScale(w, stage));
+  ).times(w.bossHpMultiplier * d.hpMultiplier * hpScale * wallBossScale(w, stage) * traits);
 }
 
 /// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`, 스테이지 1~earlyStageMax는 × earlyAttackMultiplier.
