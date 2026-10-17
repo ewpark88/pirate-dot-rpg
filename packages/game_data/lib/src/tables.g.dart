@@ -2920,7 +2920,7 @@ const Map<String, String> rawTables = {
   "earlyCards": { "untilStage": 30, "maxRarity": "rare" },
   "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -3089,7 +3089,7 @@ const Map<String, String> rawTables = {
     {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
     {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 11, 30], "nameKey": "shipPartSail"},
     {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 12, 26, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 120, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.2, "costBase": 0, "costGrowth": 1}
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 200, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.2, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
