@@ -2,7 +2,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
 /// 새 콘텐츠 계측(심연의 탑·보스 러시, S5 엔진 — 3자 균형 경계에 '탑 층당 초·한 판 분'을 붙이려고, 사용자 상시 지시).
-/// 가상 플레이어는 파를 잡을 때마다 장면이 비어 있으면 탑 → 러시 순으로 도전권을 바로 쓴다.
+/// 가상 플레이어는 파를 잡을 때마다 항해 패스·월간 젬을 받고(받을 게 있으면), 장면이 비어 있으면 탑 → 러시 순으로 도전권을 바로 쓴다.
 class SimContent {
   SimContent(this.t);
 
@@ -19,6 +19,10 @@ class SimContent {
     switch (e) {
       case WaveCleared():
         final s = engine.state;
+        for (final paid in const [false, true]) {
+          if (canClaimPass(s, t, s.savedAt, paid: paid)) engine.enqueue(ClaimPassReward(paid: paid));
+        }
+        if (canClaimGemSub(s, s.savedAt)) engine.enqueue(const ClaimGemSub());
         if (sceneBusy(s)) return;
         if (canStartTower(s, t)) {
           engine.enqueue(const StartTower());

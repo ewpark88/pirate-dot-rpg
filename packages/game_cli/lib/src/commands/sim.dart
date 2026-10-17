@@ -34,6 +34,12 @@ class SimCommand extends Command<int> {
       ..addFlag('boss-break', help: '보스 브레이크 계측(선원 한 명씩 보스전, 브레이크 끔·켬) — 다른 sim은 안 돈다')
       ..addOption('boss-trait', help: '보스 특성 보정 계측(evade·armor·…) — 레벨은 --boss-break-level')
       ..addOption('boss-break-level', defaultsTo: '45', help: '--boss-break 선원 레벨(전설 46~60·신화 61~)')
+      ..addOption(
+        'spend',
+        allowed: ['none', 'light', 'heavy'],
+        defaultsTo: 'none',
+        help: '과금 가상 플레이어: light = 스타터 + 젬 주머니, heavy = + 선장 패키지·젬·패스',
+      )
       ..addFlag('guard', help: '3자 균형 경계(meta.sim.guard) — 벗어나면 종료 코드 1(check 밸런스 스모크, --players 3과 같이)')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로')
@@ -67,9 +73,18 @@ class SimCommand extends Command<int> {
     final total = Duration(minutes: (hours * Duration.minutesPerHour).round());
     final schedule = a['schedule'] == 'daily' ? SimSchedule.daily : SimSchedule(online: total);
 
+    // 과금 가상 플레이어(meta.sim.spendProfiles — 시작할 때 산다, economy-iap.md 5절 '무과금 대비 최대 30~40% 단축' 확인).
+    final spend = a['spend'] as String;
+    final buys = spend == 'none' ? const <String>[] : t.meta.raw.obj('sim').obj('spendProfiles').strs(spend);
     final results = [
       for (var i = 0; i < players; i++)
-        SimPlayer(t, seed: seed + i, bossAd: a['boss-ad'] as bool, view: a['view'] as String).run(total, schedule),
+        SimPlayer(
+          t,
+          seed: seed + i,
+          bossAd: a['boss-ad'] as bool,
+          view: a['view'] as String,
+          buys: buys,
+        ).run(total, schedule),
     ];
     final checks = judge(t, results, schedule: a['schedule'] as String);
     final report = formatReport(t, results, checks);
