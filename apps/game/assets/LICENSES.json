@@ -1440,6 +1440,486 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     },
+    "ui/hd/2.0x/ad.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/check.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/check_empty.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/coin.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_air.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_assault.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_cluster.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_direct.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_laser.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_lob.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_pierce.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_ring.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_shock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_skip.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/fam_underwater.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/farm.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/flag.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/gear.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/gem.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/hand.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/lock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/mail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/moon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/part_cannon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/part_cargo.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/part_crowsnest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/part_hull.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/part_sail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/quest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/rebirth.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/shard.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/shop.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/star.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/tab_crew.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/tab_map.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/tab_ship.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/tab_summon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/tailwind.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/trophy.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/ad.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/check.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/check_empty.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/coin.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_air.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_assault.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_cluster.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_direct.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_laser.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_lob.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_pierce.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_ring.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_shock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_skip.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/fam_underwater.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/farm.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/flag.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/gear.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/gem.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/hand.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/lock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/mail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/moon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/part_cannon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/part_cargo.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/part_crowsnest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/part_hull.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/part_sail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/quest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/rebirth.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/shard.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/shop.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/star.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/tab_crew.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/tab_map.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/tab_ship.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/tab_summon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/tailwind.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/trophy.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/ad.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/check.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/check_empty.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/coin.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_air.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_assault.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_cluster.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_direct.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_laser.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_lob.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_pierce.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_ring.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_shock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_skip.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/fam_underwater.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/farm.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/flag.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/gear.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/gem.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/hand.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/lock.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/mail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/moon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/part_cannon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/part_cargo.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/part_crowsnest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/part_hull.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/part_sail.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/quest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/rebirth.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/shard.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/shop.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/star.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/tab_crew.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/tab_map.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/tab_ship.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/tab_summon.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/tailwind.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/trophy.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
     "ui/kit/2.0x/badge_frame.png": {
       "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
       "license": "OWN"
