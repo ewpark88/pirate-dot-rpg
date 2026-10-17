@@ -108,6 +108,21 @@ void main() {
     expect(audio.bgm, ['bgm_coral', 'bgm_storm']);
   });
 
+  test('피버 전용 곡(#23): FeverStarted → bgm_fever, 피버 중 해역이 바뀌어도 그대로, FeverEnded → 그 해역 곡', () {
+    RecordedTick at(int t, int stage, [List<GameEvent> events = const []]) =>
+        RecordedTick(BattleView(tick: t, shipHp: BigNum.from(60), shipHpMax: BigNum.from(60), stage: stage), events);
+    final audio = _Rec();
+    _play([
+      at(0, 50),
+      at(1, 50, [const FeverStarted(1, untilTick: 5)]),
+      at(2, 51),
+      at(3, 51),
+      at(4, 51, [const FeverEnded(4)]),
+      for (var t = 5; t < 8; t++) at(t, 51),
+    ], audio);
+    expect(audio.bgm, ['bgm_coral', tables.fxMap.raw.obj('topEvents').obj('fever').str('bgm'), 'bgm_storm']);
+  });
+
   test('수용 기준 5: audio가 없으면 아무 일 없음', () {
     final s = _play([
       tickOf(0, enemies: [(1, 200)]),

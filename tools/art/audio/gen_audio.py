@@ -389,6 +389,24 @@ SONGS = {
         bass="R...C...C...", arp="waltz", arp_oct=1,
         drums=dict(kick="x...........", snare="................", hat="....x...x...", ohat="................"),
     ),
+    # 피버 전용(사용자 피드백 #23 '피버 음악이 색다르지 않다'): 168 BPM, E장조 → 2회차 G장조(조 바꿈 +3), 4박 킥·강한 드럼,
+    # 2옥타브 위 반짝이 아르페지오(메아리) — 해역 곡들(80~150 BPM)과 확실히 다르게. 10초 피버 동안 1회차가 거의 다 지나간다.
+    "bgm_fever": dict(
+        bpm=168, beats=4, lead_duty=(0.25, 0.125), lead_vib=(7, 0.008), lead_oct=-1, pass_transpose=(0, 3), drum_gain=0.62,
+        chords=["E", "B", "C#m", "A", "E", "B", "A", "B"],
+        melody=[
+            [("B5", 2), ("E6", 2), ("G#6", 2), ("B6", 2), ("G#6", 2), ("E6", 2), ("B5", 2), ("E6", 2)],
+            [("D#6", 2), ("F#6", 2), ("B6", 4), ("A#6", 2), ("F#6", 2), ("D#6", 4)],
+            [("E6", 2), ("G#6", 2), ("C#7", 4), ("B6", 2), ("G#6", 2), ("E6", 4)],
+            [("C#6", 4), ("E6", 2), ("A6", 2), ("G#6", 2), ("F#6", 2), ("E6", 4)],
+            [("G#6", 2), ("G#6", 2), ("B6", 2), ("G#6", 2), ("E7", 4), ("D#7", 2), ("B6", 2)],
+            [("F#6", 4), ("D#6", 2), ("B5", 2), ("F#6", 4), ("A#6", 4)],
+            [("A6", 2), ("G#6", 2), ("F#6", 2), ("E6", 2), ("C#6", 4), ("E6", 4)],
+            [("D#6", 4), ("F#6", 4), ("B6", 4), ("r", 4)],
+        ],
+        bass="RORORORORORORORO", arp="up16", arp_oct=2, arp_echo=True,
+        drums=dict(kick="x...x...x...x...", snare="....x.......x...", hat="xxxxxxxxxxxxxxxx", ohat="..x...x...x...x."),
+    ),
 }
 
 
@@ -408,13 +426,14 @@ def render_song(name: str, spec: dict, sr: int = BGM_SR) -> Buf:
     for ps in range(passes):
         for bi, ch in enumerate(chords):
             t0 = (ps * len(chords) + bi) * bar_len
-            tones = chord_tones(ch)
+            tr = spec.get("pass_transpose", (0, 0))[ps]  # 회차마다 조 바꿈(반음 수)
+            tones = [x + tr for x in chord_tones(ch)]
             # 멜로디 (2회차는 음색을 바꿔 덜 질리게)
             pos = 0
             for n, ln in spec["melody"][bi]:
                 if n != "r":
                     dur = ln * step * 0.9
-                    lead.mix(adsr_note(sr, dur, hz(midi(n) + oct_shift), kind=lead_kind, duty=spec["lead_duty"][ps],
+                    lead.mix(adsr_note(sr, dur, hz(midi(n) + oct_shift + tr), kind=lead_kind, duty=spec["lead_duty"][ps],
                                        a=0.004, d=0.06, s=0.65, r=0.05, vib_hz=spec["lead_vib"][0],
                                        vib_depth=spec["lead_vib"][1], vib_delay=0.14, vol=1.0), at=t0 + pos * step)
                 pos += ln
@@ -479,7 +498,7 @@ def render_song(name: str, spec: dict, sr: int = BGM_SR) -> Buf:
     mix.mix(lead, gain=0.26)
     mix.mix(harm, gain=0.11)
     mix.mix(bass, gain=0.42)
-    mix.mix(drums, gain=0.45)
+    mix.mix(drums, gain=spec.get("drum_gain", 0.45))
     # 이음매 없는 루프: 끝을 넘친 꼬리를 앞에 더한다
     n = int(round(total * sr))
     tail = mix.d[n:]

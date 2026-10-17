@@ -122,6 +122,7 @@ void main() {
     expect(sdk.sfx, isEmpty);
     expect(sdk.bgm, ['bgm/sea1.ogg']);
     a.playBgm('sea2');
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs * 2 + 100)); // 페이드 아웃·인
     expect(sdk.bgm, ['bgm/sea1.ogg', 'bgm/sea2.ogg']);
     a.setVolumes(sfx: 1, bgm: 0.5);
     await pumpEventQueue();
@@ -167,6 +168,25 @@ void main() {
       ..suspend()
       ..unsuspend();
     expect(sdk.bgmCalls, isEmpty);
+  });
+
+  test('배경음 바꾸기(피버 전용 곡 #23): 지금 곡을 줄이고 → 새 곡을 0에서 키운다, 도중에 또 바꾸면 앞 페이드는 버린다', () async {
+    final sdk = FakeAudioSdk({'bgm/sea.ogg', 'bgm/bgm_fever.ogg'});
+    final a = await AudioAdapter.load(sdk)
+      ..setVolumes(sfx: 1, bgm: 0.8)
+      ..playBgm('sea')
+      ..playBgm('bgm_fever');
+    expect(sdk.bgm, ['bgm/sea.ogg'], reason: '페이드 아웃 동안은 앞 곡');
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 30));
+    expect(sdk.bgm, ['bgm/sea.ogg', 'bgm/bgm_fever.ogg']);
+    expect(sdk.bgmVolume, lessThan(0.8), reason: '새 곡은 작게 시작');
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs + 30));
+    expect(sdk.bgmVolume, closeTo(0.8, 1e-9));
+    a
+      ..playBgm('sea')
+      ..playBgm('bgm_fever'); // 같은 곡으로 바로 돌아오면 그대로(이미 울리는 곡)
+    await Future<void>.delayed(const Duration(milliseconds: AudioAdapter.bgmFadeMs * 2 + 60));
+    expect(sdk.bgm.last, 'bgm/bgm_fever.ogg');
   });
 }
 
