@@ -491,5 +491,25 @@
     }
   },
   "uiBossFailShip": "배 강화",
-  "uiBossFailCrew": "선원 레벨업"
+  "uiBossFailCrew": "선원 레벨업",
+  "uiDexNew": "새 괴물 도감 등록! {name}",
+  "uiDexNewGems": "새 괴물 도감 등록! {name} · 젬 +{gems}",
+  "uiDexTitleShort": "도감",
+  "@uiDexNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiDexNewGems": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "gems": {
+        "type": "int"
+      }
+    }
+  }
 }

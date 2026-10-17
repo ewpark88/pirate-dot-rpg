@@ -700,5 +700,25 @@
     }
   },
   "uiBossFailShip": "Upgrade ship",
-  "uiBossFailCrew": "Level up crew"
+  "uiBossFailCrew": "Level up crew",
+  "uiDexNew": "New in the Monster Log! {name}",
+  "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
+  "uiDexTitleShort": "Log",
+  "@uiDexNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiDexNewGems": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "gems": {
+        "type": "int"
+      }
+    }
+  }
 }
