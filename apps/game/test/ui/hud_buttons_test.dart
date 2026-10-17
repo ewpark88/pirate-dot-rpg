@@ -38,9 +38,11 @@ void main() {
     final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(button.width, greaterThanOrEqualTo(56));
     expect(screen.width - button.right, closeTo(8, 1), reason: '#26 오른쪽 가장자리에 붙임');
-    final slot = tester.getRect(find.byKey(const Key('fleet.crew.0')));
-    final gap = slot.top - button.bottom;
-    expect(gap, inInclusiveRange(8, 12), reason: '#26 선원 줄과 살짝 마진');
+    // 배 체력 막대는 전폭(버튼에 끊기지 않음), 버튼은 막대 바로 위(겹치지 않게 — S1 2026-10-17).
+    final hp = tester.getRect(find.byKey(const Key('hud.shipHp')));
+    final screenW = screen.width;
+    expect(hp.width, greaterThan(screenW - 24), reason: '체력 막대 전폭');
+    expect(hp.top - button.bottom, inInclusiveRange(8, 12), reason: '#26 막대와 살짝 마진');
     expect(find.byKey(const Key('boss.bubble')), findsNothing);
     await tester.tap(find.byKey(const Key('boss.challenge')));
     expect(log.sent.whereType<ChallengeBoss>(), hasLength(1));
