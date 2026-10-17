@@ -4,23 +4,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/widgets/reward_rays.dart';
+
+export 'package:pirate_dot/ui/widgets/reward_rays.dart' show RewardTier;
 
 /// 보상 하나: HD 아이콘 경로(UiSprites) + 수량 글자(이미 줄여 쓴 '1.2K' 등) + 칸 색 등급(없으면 연출 등급).
 typedef RewardItem = ({String icon, String label, RewardTier? tier});
-
-/// 보상 연출 등급 → 빛·칸 색 (디자인 개편 ③, 쿵푸할매 상자 연출): 초록 · 파랑 · 보라 · 금 · 무지개.
-enum RewardTier {
-  green(Color(0xFF5BE37A)),
-  blue(Color(0xFF4FA8FF)),
-  purple(Color(0xFFB06BFF)),
-  gold(Color(0xFFFFD34A)),
-  rainbow(Color(0xFFFF6BD0));
-
-  const RewardTier(this.color);
-
-  /// 빛·칸 색(무지개는 빛줄기만 무지개, 칸·가운데 빛은 이 색).
-  final Color color;
-}
 
 /// 보상 터짐(디자인 개편 ③ — 참고 이미지 상자 연출): 가운데 보상 출처 그림([source] — 상자·보스 초상·도감 책)이
 /// 흔들리다 열리며(0~0.25) 뒤로 회전 빛기둥·둥근 빛·반짝이 별이 펼쳐지고, 아이템이 등급색 칸(IconCell) 안에 담겨
@@ -30,7 +19,7 @@ enum RewardTier {
 class RewardBurst extends StatefulWidget {
   const RewardBurst({
     required this.items,
-    required this.source,
+    this.source,
     this.openedSource,
     this.tier = RewardTier.gold,
     this.lite = false,
@@ -41,7 +30,8 @@ class RewardBurst extends StatefulWidget {
   final List<RewardItem> items;
 
   /// 가운데 출처 그림(HD 아이콘·보스 초상 경로). [openedSource]가 있으면 열린 뒤 그것으로(상자 → 열린 상자).
-  final String source;
+  /// null이면 그림 없이 빛만(소환 결과처럼 창이 따로 카드를 보여 줄 때 — 뒤 배경).
+  final String? source;
   final String? openedSource;
   final RewardTier tier;
   final bool lite;
@@ -88,7 +78,7 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
     builder: (context, box) {
       final size = box.biggest;
       final n = widget.items.length;
-      final perRow = n > 5 ? (n / 2).ceil() : n;
+      final perRow = math.max(1, n > 5 ? (n / 2).ceil() : n); // 아이템이 없으면(빛만) 1
       // 칸 56~64dp, 좁으면 줄인다(간격 = 칸 × 0.25 일정).
       final cell = math.min<double>(64, size.width / (perRow * 1.25 + 0.5)).clamp(40.0, 64.0);
       final rows = (n / perRow).ceil();
@@ -101,7 +91,7 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
         children: [
           Positioned.fill(
             child: CustomPaint(
-              painter: _RaysPainter(
+              painter: RewardRaysPainter(
                 center: source,
                 t: bt,
                 spin: widget.lite ? 0 : (widget.progress ?? sec) * 0.6,
@@ -110,7 +100,7 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
               ),
             ),
           ),
-          _source(t, source, cell * 2),
+          if (widget.source != null) _source(t, source, cell * 2),
           for (var i = 0; i < n; i++) _item(i, bt, source, size, cell, perRow, gridTop),
         ],
       );
@@ -132,7 +122,7 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
         child: Transform.scale(
           scale: pop,
           child: Image.asset(
-            opened ? widget.openedSource! : widget.source,
+            opened ? widget.openedSource! : widget.source!,
             key: const Key('reward.source'),
             width: side,
             height: side,
@@ -206,78 +196,31 @@ class _RewardBurstState extends State<RewardBurst> with SingleTickerProviderStat
   }
 }
 
-class _RaysPainter extends CustomPainter {
-  _RaysPainter({required this.center, required this.t, required this.spin, required this.tier, required this.lite});
-
-  final Offset center;
-  final double t;
-  final double spin;
-  final RewardTier tier;
-  final bool lite;
-
-  Color _ray(int i, int n) =>
-      tier == RewardTier.rainbow ? HSVColor.fromAHSV(1, 360 * i / n, 0.75, 1).toColor() : tier.color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // 빛은 빠르게 펼쳐지고(0~0.25) 그 뒤 유지.
-    final grow = Curves.easeOutCubic.transform((t / 0.25).clamp(0.0, 1.0));
-    if (grow <= 0) return;
-    final radius = math.min(size.width, size.height) * 0.62 * grow;
-    final n = lite ? 8 : 14;
-    final half = math.pi / n * 0.45;
-    final paint = Paint()..isAntiAlias = true;
-    for (var i = 0; i < n; i++) {
-      final a = spin + i * 2 * math.pi / n;
-      final p = Path()
-        ..moveTo(center.dx, center.dy)
-        ..lineTo(center.dx + math.cos(a - half) * radius, center.dy + math.sin(a - half) * radius)
-        ..lineTo(center.dx + math.cos(a + half) * radius, center.dy + math.sin(a + half) * radius)
-        ..close();
-      // 색 빛줄기와 옅은 흰 빛줄기를 번갈아 — 아이콘이 빛에 묻히지 않게 밖으로 갈수록 사라진다.
-      final col = i.isEven ? _ray(i, n) : Colors.white;
-      paint.shader = RadialGradient(
-        colors: [
-          col.withValues(alpha: i.isEven ? 0.55 : 0.3),
-          col.withValues(alpha: 0),
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
-      canvas.drawPath(p, paint);
-    }
-    // 가운데 둥근 빛.
-    final glow = _ray(0, n);
-    canvas.drawCircle(
-      center,
-      radius * 0.32,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [Colors.white.withValues(alpha: 0.95), glow.withValues(alpha: 0.6), glow.withValues(alpha: 0)],
-          stops: const [0, 0.35, 1],
-        ).createShader(Rect.fromCircle(center: center, radius: radius * 0.32)),
-    );
-    // 반짝이 별(결정론 자리, 깜빡임).
-    final stars = lite ? 6 : 16;
-    final star = Paint()..color = Colors.white;
-    for (var i = 0; i < stars; i++) {
-      final h = (i * 2654435761) & 0xFFFFFF;
-      final a = (h % 628) / 100;
-      final d = radius * (0.25 + (h >> 10) % 60 / 100);
-      final tw = math.max<double>(0, math.sin(t * 9 + i * 1.7));
-      final s = (3 + (h >> 4) % 5) * tw * grow;
-      if (s < 0.5) continue;
-      final at = center + Offset(math.cos(a) * d, math.sin(a) * d * 0.8);
-      canvas.drawPath(
-        Path()
-          ..moveTo(at.dx, at.dy - s * 2)
-          ..quadraticBezierTo(at.dx, at.dy, at.dx + s * 2, at.dy)
-          ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy + s * 2)
-          ..quadraticBezierTo(at.dx, at.dy, at.dx - s * 2, at.dy)
-          ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy - s * 2),
-        star,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_RaysPainter old) => old.t != t || old.spin != spin || old.tier != tier;
+/// 보상 터짐을 창으로 띄운다(창 밖에서 받는 보상 — 상자·보스·도감). 누르거나 [hold]가 지나면 닫힌다.
+/// 닫힐 때까지 기다린다(보스 처치 창 같은 다음 창을 그 뒤에 띄우게).
+Future<void> showRewardBurst(
+  BuildContext context, {
+  required List<RewardItem> items,
+  String? source,
+  String? openedSource,
+  RewardTier tier = RewardTier.gold,
+  bool lite = false,
+  Duration hold = const Duration(milliseconds: 1200),
+}) async {
+  var open = true;
+  final close = Timer(RewardBurst.duration + hold, () {
+    if (open && context.mounted) Navigator.of(context).pop();
+  });
+  await showDialog<void>(
+    context: context,
+    barrierColor: const Color(0x99000000),
+    builder: (dialog) => GestureDetector(
+      key: const Key('reward.burst'),
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.of(dialog).pop(),
+      child: RewardBurst(items: items, source: source, openedSource: openedSource, tier: tier, lite: lite),
+    ),
+  );
+  open = false;
+  close.cancel();
 }

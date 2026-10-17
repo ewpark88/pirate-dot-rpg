@@ -59,6 +59,7 @@ void main() {
     expect(find.byKey(const Key('bossDamage')), findsNothing, reason: '보상 연출 동안은 안 뜬다');
     await tester.pump(const Duration(milliseconds: 200));
     await tester.pumpAndSettle();
+    await _passBurst(tester);
     expect(find.byKey(const Key('bossDamage')), findsOneWidget);
     expect(find.byKey(const Key('bossDamage.mvp')), findsOneWidget);
     expect(find.byKey(Key('bossDamage.row.${s.battle!.fleet.first.crewId}')), findsOneWidget);
@@ -75,6 +76,7 @@ void main() {
     feed.add(RecordedTick(s.battle!, [_cleared(s)]));
     await tester.pump(bossDamageDelay);
     await tester.pumpAndSettle();
+    await _passBurst(tester);
     expect(find.byKey(const Key('bossDamage')), findsOneWidget);
     await tester.pump(bossDamageHold);
     await tester.pumpAndSettle();
@@ -108,6 +110,7 @@ void main() {
         feed.add(RecordedTick(s.battle!, [_cleared(s)]));
         await tester.pump(bossDamageDelay);
         await tester.pumpAndSettle();
+        await _passBurst(tester);
         await precacheImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_boss_damage_$name.png'));
         await tester.pump(bossDamageHold);
@@ -115,4 +118,11 @@ void main() {
       });
     }
   });
+}
+
+/// 보스 보상 터짐(디자인 개편 ③)이 처치 창 전에 뜬다 — 있는지 보고 눌러 닫는다.
+Future<void> _passBurst(WidgetTester tester) async {
+  expect(find.byKey(const Key('reward.burst')), findsOneWidget, reason: '처치 창 전 보상 터짐');
+  await tester.tap(find.byKey(const Key('reward.burst')));
+  await tester.pumpAndSettle();
 }
