@@ -127,6 +127,10 @@ class OfflineAdButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gold = ref.watch(gameStateProvider.select((s) => s.lastOfflineGold));
     if (gold == null) return const SizedBox.shrink();
-    return AdButton(placement: AdPlacement.offline, label: AppLocalizations.of(context).uiAdOffline(gold.format()));
+    return AdButton(
+      placement: AdPlacement.offline,
+      label: AppLocalizations.of(context).uiAdOffline(gold.format()),
+      gold: true,
+    );
   }
 }

@@ -2432,5 +2432,6 @@
   "uiHelpUltimateBody": "The gauge fills as you fight. When it's full, tap the button at the bottom right to sweep the whole screen.",
   "uiHelpFever": "Fever",
   "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your damage and gold go up for a while and enemies swarm in.",
-  "uiSettingsAutoUltimate": "Auto ultimate (fires when full)"
+  "uiSettingsAutoUltimate": "Auto ultimate (fires when full)",
+  "uiAttendanceStamp": "Got it"
 }

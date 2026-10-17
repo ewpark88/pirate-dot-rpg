@@ -7,6 +7,7 @@ import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/no_ads.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
@@ -43,26 +44,29 @@ AdPlacementDef adDef(GameTables t, AdPlacement p) => t.ads.placements.firstWhere
 
 /// 광고 버튼 — 재생 아이콘 + 이득 숫자. 제안할 수 없으면(`adOfferProvider` false) 아무것도 그리지 않는다.
 class AdButton extends ConsumerWidget {
-  const AdButton({required this.placement, required this.label, this.choice, super.key});
+  const AdButton({required this.placement, required this.label, this.choice, this.gold = false, super.key});
 
   final AdPlacement placement;
   final String label;
   final String? choice;
 
+  /// 금빛 버튼(보상 ×2처럼 눌러 보고 싶게 — 복귀 창).
+  final bool gold;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!ref.watch(adOfferProvider(placement))) return const SizedBox.shrink();
-    return PixelButton(
-      key: Key('ad.${placement.name}${choice == null ? '' : '.$choice'}'),
-      onPressed: () => watchAd(ref, placement, choice: choice),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const PixelSprite(UiSprites.ad, dots: 16, scale: 1),
-          const SizedBox(width: 4),
-          Flexible(child: Text(label, maxLines: 2, textAlign: TextAlign.center)),
-        ],
-      ),
+    final key = Key('ad.${placement.name}${choice == null ? '' : '.$choice'}');
+    void watch() => watchAd(ref, placement, choice: choice);
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const PixelSprite(UiSprites.ad, dots: 16, scale: 1),
+        const SizedBox(width: 4),
+        Flexible(child: Text(label, maxLines: 2, textAlign: TextAlign.center)),
+      ],
     );
+    if (gold) return SkinButton(key: key, tone: SkinTone.gold, onPressed: watch, child: row);
+    return PixelButton(key: key, onPressed: watch, child: row);
   }
 }
