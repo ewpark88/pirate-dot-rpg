@@ -54,7 +54,6 @@ void main() {
     clock: clock,
     dir: dir,
     fullAfter: const Duration(seconds: 28800),
-    minAway: const Duration(seconds: 60),
     dailyMax: 1,
     enabled: () => enabled,
     lang: () => lang,
@@ -116,20 +115,12 @@ void main() {
     expect(notifyTextsFor('en', hours: 6).body, 'Your crew saved up 6 hours of gold for you.');
   });
 
-  test('14. 60초 이상 비운 첫 복귀에 권한 1회, 다시 안 묻는다', () async {
+  test('14. 복귀(onResume)는 권한을 묻지 않는다 — 묻는 때는 화면(S4 notify_ask: 첫 복귀 보상 직후·설정에서 켤 때)', () async {
     final n = make();
     await n.onPause();
-    clock.advance(const Duration(seconds: 30));
+    clock.advance(const Duration(hours: 2));
     await n.onResume();
     expect(sdk.permissionRequests, 0);
-    await n.onPause();
-    clock.advance(const Duration(seconds: 61));
-    await n.onResume();
-    expect(sdk.permissionRequests, 1);
-    await n.onPause();
-    clock.advance(const Duration(minutes: 5));
-    await make().onResume();
-    expect(sdk.permissionRequests, 1);
   });
 
   test('깨진 기록 파일은 빈 기록으로', () async {
@@ -147,7 +138,7 @@ void main() {
     expect(sdk.scheduled.length, 2);
   });
 
-  test('권한 포트(S4 설정 알림 칸): 상태는 SDK 그대로(null = 모름), 요청하면 결과 + 자동 첫 질문 기록 — 복귀 때 다시 묻지 않음', () async {
+  test('권한 포트(S4 notify_ask·설정 알림 칸): 상태는 SDK 그대로(null = 모름), 요청하면 결과 — 복귀가 따로 묻지 않음', () async {
     final n = make();
     expect(await n.permissionStatus(), isNull);
     sdk.granted = false;
@@ -156,7 +147,7 @@ void main() {
     expect(sdk.permissionRequests, 1);
     await n.onPause();
     clock.setTime(clock.now().add(const Duration(hours: 2)));
-    await n.onResume(); // 오래 비웠지만 이미 물었으니 다시 안 묻는다
+    await n.onResume(); // 복귀는 묻지 않는다
     expect(sdk.permissionRequests, 1);
     sdk.granted = true;
     expect(await n.requestPermission(), isTrue);

@@ -14,7 +14,6 @@ class OfflineFullNotifier {
     required this._clock,
     required this.dir,
     required this.fullAfter,
-    required this.minAway,
     required this.dailyMax,
     required this.enabled,
     required this.lang,
@@ -35,9 +34,6 @@ class OfflineFullNotifier {
 
   /// `meta.offline.maxSec`.
   final Duration fullAfter;
-
-  /// `meta.offline.minSec` — 이만큼 비운 첫 복귀에 권한을 묻는다.
-  final Duration minAway;
 
   /// `meta.notifications.dailyMax`.
   final int dailyMax;
@@ -68,13 +64,7 @@ class OfflineFullNotifier {
     final log = await NotifyLog.read(dir);
     final now = _clock.now();
     await _cancelPending(log, now);
-    final away = log.pausedAt == null ? Duration.zero : now.difference(log.pausedAt!);
-    log.pausedAt = null;
-    if (!log.permissionAsked && away >= minAway) {
-      log.permissionAsked = true;
-      await log.write(dir); // 권한 창이 떠 있는 동안 죽어도 다시 묻지 않게 먼저 기록
-      await _sdk.requestPermission();
-    }
+    log.pausedAt = null; // 권한은 여기서 묻지 않는다 — 첫 복귀 보상 직후 화면이 묻는다(S4 notify_ask, requestPermission)
     await log.write(dir);
   });
 
