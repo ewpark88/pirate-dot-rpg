@@ -5,7 +5,8 @@ import 'package:game_cli/src/sim/sim_threat.dart';
 import 'package:game_data/game_data.dart';
 
 /// 보스 특성 보정 계측 (docs/specs/economy-boss-traits.md 3절): 선원 40명 단독 보스전(불사 보스, 30초 창)을 특성 끔·켬으로 재서
-/// 보정 배율 = 끔 중앙 ÷ 켬 중앙(이만큼 hpMultiplier에 곱하면 평균 처치 시간이 같아진다), 보정 뒤 카운터·비카운터 계열 중앙 증감.
+/// hpFactor = 켬 중앙 ÷ 끔 중앙(보스 HP에 곱하면 평균 처치 시간이 같아진다 — 표 bossTraits.hpFactor), 보정 뒤 카운터·비카운터 계열 중앙 증감.
+/// 끔 = hpFactor를 빼고 잰다(보정 전 효과).
 /// 성립 조건: 카운터 +15% 이상, 비카운터 −25% 이내.
 class BossTraitProbe {
   BossTraitProbe(this.raw, this.trait, {this.level = 45, this.stage = 2001, this.seed = 1});
@@ -46,7 +47,7 @@ class BossTraitProbe {
     final cg = gain(counter);
     final og = gain(other);
     final ok = cg >= 0.15 && og >= -0.25;
-    return '보스 특성 $trait — 레벨 $level · 보정 배율(hpMultiplier ×) ${comp.toStringAsFixed(3)} · '
+    return '보스 특성 $trait — 레벨 $level · hpFactor ${(1 / comp).toStringAsFixed(3)} · '
         '보정 뒤 카운터(${counters.join('·')}) ${(cg * 100).toStringAsFixed(1)}% · 비카운터 ${(og * 100).toStringAsFixed(1)}% · '
         '${ok ? 'OK' : '벗어남(카운터 +15% 이상·비카운터 −25% 이내)'}\n';
   }
