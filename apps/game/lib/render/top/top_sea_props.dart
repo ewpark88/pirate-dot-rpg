@@ -27,6 +27,9 @@ class TopSeaProps {
   late final int _max = cfg.integer('maxOnScreen');
   late final double _lane = cfg.number('laneHalf');
   late final double _size = cfg.number('size');
+
+  /// 소품이 바다 무늬보다 빨리 흐르는 배수(가까운 물체 — 배 속도감, S1).
+  late final double _flowMul = cfg.numberOr('flowMul', 1);
   late final JsonReader _sets = cfg.obj('sets');
   final Map<String, Picture> _pictures = {};
 
@@ -42,10 +45,11 @@ class TopSeaProps {
     return (h ^ (h >> 16)) & 0x7FFFFFFF;
   }
 
-  /// [flowY] = 바다가 흐른 거리(아래로 쌓임), [view] = 보이는 영역(단위), [region] = 해역 id.
-  void paint(Canvas c, Rect view, double flowY, String region, {double alpha = 1}) {
+  /// [seaFlowY] = 바다가 흐른 거리(아래로 쌓임), [view] = 보이는 영역(단위), [region] = 해역 id.
+  void paint(Canvas c, Rect view, double seaFlowY, String region, {double alpha = 1}) {
     drawn = 0;
     if (alpha <= 0.02) return;
+    final flowY = seaFlowY * _flowMul;
     final kinds = _kinds(region);
     final margin = _size * 2;
     // 행 k의 바다 자리 y = -k·spacing, 화면 y = 바다 y + flowY.
@@ -61,7 +65,8 @@ class TopSeaProps {
       final x = view.center.dx + side * (_lane + _size + ((h >> 3) % 1000) / 1000 * (reach - _lane - _size));
       final y = -k * _spacing + flowY + ((h >> 13) % 100 - 50) / 100 * _spacing * 0.4;
       final kind = kinds[(h >> 7) % kinds.length];
-      final scale = 0.8 + ((h >> 17) % 50) / 100;
+      // 크기 차이는 ±10%만 — 외곽선 두께가 소품마다 들쭉날쭉하지 않게(S1).
+      final scale = 0.9 + ((h >> 17) % 20) / 100;
       final turn = ((h >> 11) % 628) / 100;
       c
         ..save()

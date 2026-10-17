@@ -2483,9 +2483,9 @@ const Map<String, String> rawTables = {
     "feverDeep": "#F59A2C",
     "feverShallow": "#FFD66A",
     "regions": {
-      "coral": { "base": "#1E6FA8", "deep": "#175E92", "shallow": "#2A80BA", "wave": "#7FC4EC" },
-      "storm": { "base": "#1F4E78", "deep": "#183F63", "shallow": "#2A5E8A", "wave": "#8AB0CF" },
-      "glacier": { "base": "#22668E", "deep": "#1A5476", "shallow": "#3378A0", "wave": "#C2E6FA" },
+      "coral": { "base": "#178CA6", "deep": "#11738C", "shallow": "#25A3BC", "wave": "#9AEDF2" },
+      "storm": { "base": "#2B3E52", "deep": "#213042", "shallow": "#384D63", "wave": "#94A3B3" },
+      "glacier": { "base": "#3F8FC8", "deep": "#3279B0", "shallow": "#62AEE0", "wave": "#F4FCFF" },
       "volcano": { "base": "#33355A", "deep": "#272846", "shallow": "#43446C", "wave": "#E0A890" },
       "abyss": { "base": "#152E5A", "deep": "#0F2246", "shallow": "#1E3C6E", "wave": "#6E8FD0" },
       "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
@@ -2494,7 +2494,8 @@ const Map<String, String> rawTables = {
       "spacing": 70,
       "maxOnScreen": 6,
       "laneHalf": 34,
-      "size": 28,
+      "size": 36,
+      "flowMul": 1.4,
       "sets": {
         "coral": ["coral", "rock", "buoy", "seaweed"],
         "storm": ["plank", "barrel", "buoy", "rock"],
