@@ -685,5 +685,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiGuideSailTitle": "출항!",
+  "uiGuideSailWhy": "환생으로 더 강해졌어요. 출항하면 지나온 바다를 빠르게 지나가요."
 }

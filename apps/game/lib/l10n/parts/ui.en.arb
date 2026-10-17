@@ -685,5 +685,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiGuideSailTitle": "Set sail!",
+  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared."
 }
