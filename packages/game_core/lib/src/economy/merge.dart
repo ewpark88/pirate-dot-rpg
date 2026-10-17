@@ -16,10 +16,14 @@ CrewState mergeCrew(CrewState crew, GameTables t, {int? maxLevel}) {
   return c;
 }
 
-/// 일괄 합치기 (설계서 4.3.1). 바뀐 선원이 없으면 상태 그대로, 이벤트 없음.
+/// 일괄 합치기 (설계서 4.3.1) — `crewId`가 있으면 그 해적만. 바뀐 선원이 없으면 상태 그대로, 이벤트 없음.
 GameState mergeAllCards(GameState state, MergeAllCards command, SystemContext ctx) {
   final max = crewMaxLevel(state, ctx.tables);
-  final crews = {for (final e in state.crews.entries) e.key: mergeCrew(e.value, ctx.tables, maxLevel: max)};
+  final only = command.crewId;
+  final crews = {
+    for (final e in state.crews.entries)
+      e.key: only == null || e.key == only ? mergeCrew(e.value, ctx.tables, maxLevel: max) : e.value,
+  };
   final changed = crews.entries.any((e) => e.value.level != state.crews[e.key]!.level);
   if (!changed) return state;
   ctx.emit(SaveRequested(ctx.tick, reason: command.type));
