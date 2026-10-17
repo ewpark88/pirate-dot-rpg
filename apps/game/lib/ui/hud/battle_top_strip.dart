@@ -13,6 +13,8 @@ import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
+import 'package:pirate_dot/ui/scene/scene_battle.dart';
+import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 전장 위쪽 (선원 줄·시트를 가리지 않게, 전장 가운데 60%를 덮지 않게): 진행 게이지(+목표·파밍·피버) · 왼쪽 위 작은 알약들 · 보스 실패 안내. 튜토리얼·가이드 카드는 가이드 층(GuideLayer)이 그린다.
@@ -60,13 +62,17 @@ class _Pills extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
+    final scene = ref.watch(sceneActiveProvider);
     final challenge = ref.watch(gameStateProvider.select((s) => s.battle?.challenge != null));
     final cargoFull = ref.watch(cargoLevelProvider) == 2;
     final rebirth = ref.watch(rebirthReadyProvider);
     // 우선순위: 현상금 > 도전 > 화물칸 가득 > 환생 가능(계속). 늘 한 줄(실기기 ④ — 전장 위가 3줄이 됐다): 한 묶음만,
     // 좁으면 줄여서. 돌발 이벤트는 띠 안 아이콘(SeaEventIcon). 도전이 끝난 '성공' 알약은 도전 자리에 잠깐.
     final List<Widget> pills;
-    if (bounty) {
+    if (scene) {
+      // 탑·러시 중엔 장면 띠만(피버·도전·돌발은 멈춘다).
+      pills = const [SceneStrip()];
+    } else if (bounty) {
       pills = const [BountyStrip()];
     } else {
       // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸.
@@ -95,7 +101,7 @@ class _Pills extends ConsumerWidget {
             ),
           ),
         ),
-        const FeverSlot(),
+        if (!scene) const FeverSlot(),
       ],
     );
   }

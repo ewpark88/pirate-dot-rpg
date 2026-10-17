@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/idle/idle_gate.dart';
 import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin_entries.dart';
+import 'package:pirate_dot/ui/scene/scene_battle.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/story/story_layer.dart';
 
@@ -44,7 +45,9 @@ class PirateDotApp extends ConsumerWidget {
       home: const GuideLayer(
         child: StoryLayer(
           child: NewMateGate(
-            child: SkinUnlockGate(child: TrialGate(child: HomeScreen())),
+            child: SkinUnlockGate(
+              child: TrialGate(child: SceneGate(child: HomeScreen())),
+            ),
           ),
         ),
       ),

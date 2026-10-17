@@ -47,7 +47,8 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
     final (show, stage, tick, flashOn, canWin, autoLeft) = ref.watch(
       gameStateProvider.select(
         (s) => (
-          s.progress.farming && !(s.battle?.bossActive ?? false),
+          // 탑·러시 중엔 숨김(S5 계약 — 장면 모드).
+          s.progress.farming && !(s.battle?.bossActive ?? false) && s.battle?.tower == null && s.battle?.rush == null,
           s.progress.stage,
           s.battle?.tick ?? 0,
           s.settings.flash,

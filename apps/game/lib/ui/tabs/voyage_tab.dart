@@ -15,6 +15,8 @@ import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/title_sheet.dart';
+import 'package:pirate_dot/ui/scene/rush_card.dart';
+import 'package:pirate_dot/ui/scene/tower_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -48,6 +50,11 @@ class VoyageTab extends ConsumerWidget {
         const SizedBox(height: 8),
         // 현상금 사냥 (보물지도 카드 위, 기획 6절 ①).
         const BountyCard(),
+        // 심연의 탑 · 보스 러시 (S5 — 환생 1 또는 스테이지 60에 열림, 열리기 전엔 자리 없음).
+        const SizedBox(height: 8),
+        const TowerCard(),
+        const SizedBox(height: 8),
+        const RushCard(),
         if (!ready) ...const [SizedBox(height: 8), RebirthCard()],
         // 바다 괴물 도감 (보물지도 옆, S1 2026-10-16 — 골격).
         const SizedBox(height: 8),

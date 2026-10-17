@@ -1578,5 +1578,185 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiTowerTitle": "Abyss Tower",
+  "uiTowerFloor": "F{n}",
+  "@uiTowerFloor": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerBest": "Best: F{n}",
+  "@uiTowerBest": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerNone": "No record yet — how high can you go?",
+  "uiSceneTickets": "Tickets {n}/{cap}",
+  "@uiSceneTickets": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "cap": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneChallenge": "Challenge",
+  "uiTowerSweep": "Sweep F{n}",
+  "@uiTowerSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneNoTicket": "No tickets — more tomorrow",
+  "uiSceneAdTicket": "Ad: +1 ticket",
+  "uiTowerStrip": "Abyss F{floor} · wave {wave}/{waves}",
+  "@uiTowerStrip": {
+    "placeholders": {
+      "floor": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerReached": "Reached F{n}!",
+  "@uiTowerReached": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerEndSunk": "Your ship sank",
+  "uiTowerEndRetreat": "You retreated",
+  "uiTowerEndInterrupted": "The app closed — progress so far was kept",
+  "uiTowerEndTimeout": "Time's up — F{n} reached",
+  "@uiTowerEndTimeout": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneKills": "{n} defeated",
+  "@uiSceneKills": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneGems": "Gems {n}",
+  "@uiSceneGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSceneCards": "Cards ×{n}",
+  "@uiSceneCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiScenePieces": "Map pieces {n}",
+  "@uiScenePieces": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTowerSwept": "Swept F{n} · {reward}",
+  "@uiTowerSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushTitle": "Boss Rush",
+  "uiRushWeek": "Beat this week's 5 bosses, fast",
+  "uiRushBest": "Best {time}",
+  "@uiRushBest": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushStrip": "Boss {i}/{n} · {time}",
+  "@uiRushStrip": {
+    "placeholders": {
+      "i": {
+        "type": "int"
+      },
+      "n": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushCleared": "All bosses down! {time}",
+  "@uiRushCleared": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiRushPartial": "{killed}/{total} defeated",
+  "@uiRushPartial": {
+    "placeholders": {
+      "killed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRushNewBest": "New record!",
+  "uiRushBracket": "Under {time}",
+  "@uiRushBracket": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "uiClock": "{m}:{s}",
+  "@uiClock": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "String"
+      }
+    }
+  },
+  "uiListSep": " · "
 }
