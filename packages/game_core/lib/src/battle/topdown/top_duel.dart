@@ -97,8 +97,28 @@ class TopDuel {
     st
       ..duelling = duel != null || d > max || turning
       ..heading = turn > 0 ? _turnToward(st.heading, want, turn * dt) : (duel == null ? free.heading : 0);
-    if (d <= max) return (x: to.x, y: to.y, heading: st.heading);
-    return (x: cur.x + dx / d * max, y: cur.y + dy / d * max, heading: st.heading);
+    final next = d <= max ? to : (x: cur.x + dx / d * max, y: cur.y + dy / d * max);
+    final kept = _keepOff(f, g, next);
+    return (x: kept.x, y: kept.y, heading: st.heading);
+  }
+
+  /// 배가 움직여도 보스와 standoff보다 가까워지지 않게(보스가 기절·돌진 중이면 엔진이 보스를 원 위로 다시 세우지 않는다 —
+  /// 그때 배가 다가가면 보스가 배에 붙는다, S1 2026-10-17 top_engine 실패). 가까우면 보스 → 배 방향으로 standoff까지 물러난다.
+  ({double x, double y}) _keepOff(Field f, TopGeometry g, ({double x, double y}) off) {
+    var x = g.base.shipX + off.x;
+    var y = g.base.shipY + off.y;
+    final r = g.top.bossStandoff;
+    for (final e in f.foes) {
+      // 돌진(패턴 steering)은 일부러 배에 박히는 공격이라 막지 않는다(피하면 돌진 피해·침몰이 사라진다).
+      if (!e.boss || !e.alive || (e.plan?.steering ?? false)) continue;
+      final dx = x - e.x;
+      final dy = y - e.y;
+      final d = math.sqrt(dx * dx + dy * dy);
+      if (d >= r || d == 0) continue;
+      x = e.x + dx / d * r;
+      y = e.y + dy / d * r;
+    }
+    return (x: x - g.base.shipX, y: y - g.base.shipY);
   }
 
   /// [from]에서 [to]로 가장 짧은 쪽으로 최대 [step]만큼 돈다.
