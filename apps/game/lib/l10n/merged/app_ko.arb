@@ -1146,5 +1146,7 @@
   "uiSwapBossWeak": "보스전 약함",
   "uiSwapConfirm": "교체",
   "uiSwapDpsUp": "공격력 높음",
-  "uiSwapDpsDown": "공격력 낮음"
+  "uiSwapDpsDown": "공격력 낮음",
+  "uiPreviewTitle": "공격 미리보기",
+  "uiPreviewNow": "지금"
 }

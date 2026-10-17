@@ -10,6 +10,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -81,6 +82,8 @@ Future<CommandLog> pumpGame(
         clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),
         // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.
         battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+        // 선원 공격 미리보기도 첫 장면만(끝없는 애니메이션이 pumpAndSettle을 막지 않게).
+        crewPreviewPlayProvider.overrideWithValue(false),
         ...overrides,
       ],
       child: PirateDotApp(locale: locale),

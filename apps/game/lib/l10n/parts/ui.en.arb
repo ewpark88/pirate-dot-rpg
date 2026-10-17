@@ -906,5 +906,7 @@
   "uiSwapBossWeak": "Weaker vs bosses",
   "uiSwapConfirm": "Swap",
   "uiSwapDpsUp": "Stronger attack",
-  "uiSwapDpsDown": "Weaker attack"
+  "uiSwapDpsDown": "Weaker attack",
+  "uiPreviewTitle": "Attack preview",
+  "uiPreviewNow": "Now"
 }

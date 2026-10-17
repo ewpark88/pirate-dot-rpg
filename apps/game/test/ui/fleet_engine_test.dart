@@ -7,6 +7,7 @@ import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -34,6 +35,7 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
       battleFeedProvider.overrideWithValue(host.ticks),
       clockProvider.overrideWithValue(clock),
       battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+      crewPreviewPlayProvider.overrideWithValue(false),
     ],
   );
   addTearDown(container.dispose);
