@@ -160,8 +160,9 @@ class BattleSystem implements GameSystem {
     if (f.bossActive) {
       final bosses = f.foes.where((e) => e.boss); // 분열하면 여럿 — 모두 쓰러져야 격파(도감 v2)
       if (bosses.isNotEmpty && bosses.every((e) => !e.alive)) return _bossCleared(s, f, ctx);
-      f.bossTicksLeft -= 1;
-      if (f.bossTicksLeft <= 0 || f.shipHp.isZero) {
+      final timed = f.bossTicksLeft > 0; // 0 = 타이머 없음(침몰로만 실패)
+      if (timed) f.bossTicksLeft -= 1;
+      if ((timed && f.bossTicksLeft <= 0) || f.shipHp.isZero) {
         ctx.emit(BossFailed(ctx.tick, stage: p.stage));
         _restart(f, ctx);
         return s.copyWith(progress: p.copyWith(farming: true, bossFails: p.bossFails + 1));

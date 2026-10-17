@@ -2771,6 +2771,7 @@ const Map<String, String> rawTables = {
     ]
   },
   "bounty": {
+    "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
     "days": [
       { "weekday": 1, "boss": "giant_hermit", "reward": { "type": "gems", "base": 10, "perTier": 1 } },
@@ -2859,6 +2860,8 @@ const Map<String, String> rawTables = {
       "challengeWinPct": { "min": 60, "max": 70 },
       "feverIntervalMin": { "min": 4, "max": 6 },
       "bossFightDamagePct": { "min": 25, "max": 45 },
+      "bossKillSec": { "min": 20, "max": 40 },
+      "bossFailSec": { "min": 15, "max": 30 },
       "bossFirstWinPct": { "min": 70, "max": 85 },
       "wallFirstWinPct": { "min": 30, "max": 50 },
       "rebirthWallRatio": { "min": 0.75, "max": 0.85 },
@@ -3033,8 +3036,8 @@ const Map<String, String> rawTables = {
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
-  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 2.7, "goldGrowth": 1.13 },
-  "boss": { "hpMultiplier": 80, "wallEvery": 10, "wallHpMultiplier": 2.3, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 100, "goldMultiplier": 6, "timeLimitSec": 30, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.028, "earlyAttackMultiplier": 0.02 },
+  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.0, "goldGrowth": 1.13 },
+  "boss": { "hpMultiplier": 160, "wallEvery": 10, "wallHpMultiplier": 2.0, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 35, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.028, "earlyAttackMultiplier": 0.02 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
