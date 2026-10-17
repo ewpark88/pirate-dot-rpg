@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/hd/hd_sea_detail.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
@@ -28,6 +29,7 @@ class TopScenePainter {
   final BattleScene scene;
   final SpriteDraw sprites;
   late final TopSeaPainter _sea = TopSeaPainter(scene.fx.raw.obj('topSea'));
+  final _seaHd = HdSeaDetail();
   late final TopShipPainter _ship = TopShipPainter(sprites);
   late final ShipHpPainter _hp = ShipHpPainter(scene);
   late final TopOverlays _overlays = TopOverlays(scene, sprites, atmosphere);
@@ -100,6 +102,7 @@ class TopScenePainter {
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
       ..paint(c, viewRect, clockMs, region: region);
+    _seaHd.paint(c, viewRect, clockMs, _sea.flow.dy, region, lite: scene.topHits.lite, fever: fever.sea); // HD 빛 반사
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
