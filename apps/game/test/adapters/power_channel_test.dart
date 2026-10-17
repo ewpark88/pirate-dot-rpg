@@ -13,10 +13,21 @@ void main() {
     expect(targetFrameRate(idle: IdleLevel.active, thermal: ThermalLevel.moderate), 30);
   });
 
-  test('효과음: 방치·절전·발열 심함 이상이면 끔(배경음만)', () {
+  test('효과음: 절전 화면일 때만 끔 — 방치(60초 무입력)·발열 심함엔 켜 둔다(사용자 폰 버그 회귀 방지)', () {
     expect(sfxQuiet(idle: IdleLevel.active, thermal: ThermalLevel.moderate), isFalse);
-    expect(sfxQuiet(idle: IdleLevel.idle, thermal: ThermalLevel.none), isTrue);
-    expect(sfxQuiet(idle: IdleLevel.active, thermal: ThermalLevel.severe), isTrue);
+    expect(
+      sfxQuiet(idle: IdleLevel.idle, thermal: ThermalLevel.none),
+      isFalse,
+      reason: '보면서 두는 게임 — 안 만져도 타격음',
+    );
+    expect(sfxQuiet(idle: IdleLevel.active, thermal: ThermalLevel.severe), isFalse);
+    expect(sfxQuiet(idle: IdleLevel.sleep, thermal: ThermalLevel.none), isTrue);
+  });
+
+  test('발열 심함 이상이면 효과음 동시 수만 줄인다(끄지 않음)', () {
+    expect(sfxMaxTotal(thermal: ThermalLevel.moderate, normal: 6), 6);
+    expect(sfxMaxTotal(thermal: ThermalLevel.severe, normal: 6), 2);
+    expect(sfxMaxTotal(thermal: ThermalLevel.critical, normal: 6), greaterThanOrEqualTo(1));
   });
 
   test('Android 발열 값 → 단계(4 이상은 위험)', () {

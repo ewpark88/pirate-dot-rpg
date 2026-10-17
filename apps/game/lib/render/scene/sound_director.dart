@@ -62,6 +62,13 @@ class SoundDirector {
     if (a == null) return;
     final id = _fx.events[event]?.strOrNull('sfx');
     if (id == null) return;
+    if (clockMs < _tokenClock) {
+      // 장면 시계가 뒤로 갔다(장면을 새로 만들거나 기록을 처음부터) — 예전 '마지막 재생 시각'이 미래로 남아 효과음이 막히지 않게.
+      _lastMs.clear();
+      _lastThud = -1000000000;
+      _tokenClock = clockMs;
+      _tokens = 1;
+    }
     if (clockMs != _frameClock) {
       _frameClock = clockMs;
       _thisFrame = 0;
