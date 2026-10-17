@@ -75,15 +75,7 @@ sealed class GameEvent {
       ),
       'waveCleared' => WaveCleared(t, wave: j['wave'] as int),
       'bossSpawned' => BossSpawned(t, kind: j['kind'] as String, timeLimitTicks: j['timeLimitTicks'] as int),
-      'bossCleared' => BossCleared(
-        t,
-        stage: j['stage'] as int,
-        gems: j['gems'] as int,
-        crewDamage: {
-          for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),
-        },
-        mvp: j['mvp'] as String?,
-      ),
+      'bossCleared' => BossCleared.fromJson(t, j),
       'bossFailed' => BossFailed(t, stage: j['stage'] as int),
       _ => _metaEventFromJson(t, j),
     };
