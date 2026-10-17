@@ -67,16 +67,16 @@ void main() {
 
   test('3. extraChains는 연쇄 대상을 늘리고, noFalloff면 감쇠가 없다', () {
     final foes = [for (var i = 0; i < 6; i++) foe(100.0 + i * 15, 100)];
-    final volt = gun('volt', legend);
+    final orca = gun('orca', legend); // 연쇄는 물수제비 계열 본색(volt는 2026-10-17 충전 사격으로)
     final v = extendVolley(
-      volt,
+      orca,
       (x: 100, y: 100, hits: spread([foes.first], w)),
       foes,
       w,
       geometry: TopGeometry.of(w),
       rng: XorShiftRng(1),
     );
-    expect(v.hits, hasLength(1 + volt.legend!.extraChains));
+    expect(v.hits, hasLength(1 + orca.legend!.extraChains));
     expect(v.hits[1].factor, lessThan(1));
     final nar = gun('nar', legend);
     final pierced = (x: 100.0, y: 100.0, hits: spread(foes.take(4).toList(), w, falloff: true));
