@@ -890,5 +890,13 @@
         "type": "String"
       }
     }
+  },
+  "uiSlotDamage": "피해 {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }
