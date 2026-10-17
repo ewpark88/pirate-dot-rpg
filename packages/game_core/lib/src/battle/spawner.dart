@@ -194,3 +194,32 @@ double wallBossScale(WavesTable w, int stage) {
   if (b.has('midWallEvery') && stage % b.integer('midWallEvery') == 0) return b.number('midWallHpMultiplier');
   return 1;
 }
+
+/// 자동 보스 도전(설정 autoBoss, 방치형 — S3·S4 첫 15분 점검 2026-10-17 '실패 뒤 안 누르면 스테이지 3에 15분', S1 규칙):
+/// 보스 실패 뒤 파밍이 `waves.boss.autoBoss.cooldownSec` 지나고 그사이 배 부위 레벨 합이 `levelGain` 이상 올랐거나,
+/// 쿨다운의 2배가 지나면 다음 만남을 보스로 되돌린다(farming false). 튜토리얼 보스 단계(강화 2번 후 직접 도전)는 건너뛴다.
+/// 남은 틱은 [Field.autoBossLeft] → BattleView.autoBossTicksLeft. 센 값은 전장(Field)에만 — 세이브에 안 남는다.
+GameState autoBossTick(GameState s, Field f, GameTables t) {
+  final p = s.progress;
+  final tut = t.meta.raw.obj('tutorial').obj('steps').integer('boss');
+  if (!p.farming || !s.settings.autoBoss || s.tutorialStep == tut) {
+    f
+      ..farmTicks = 0
+      ..autoBossLeft = 0;
+    return s;
+  }
+  final a = t.waves.raw.obj('boss').obj('autoBoss');
+  final perSec = Duration.millisecondsPerSecond / t.waves.tickMs;
+  final cool = (a.number('cooldownSec') * perSec).round();
+  final levels = s.ship.parts.values.fold(0, (sum, v) => sum + v);
+  if (f.farmTicks == 0) f.failLevels = levels;
+  f.farmTicks += 1;
+  final gained = levels - f.failLevels >= a.integer('levelGain');
+  final due = gained ? cool : cool + cool;
+  f.autoBossLeft = due - f.farmTicks > 0 ? due - f.farmTicks : 0;
+  if (f.autoBossLeft > 0) return s;
+  f
+    ..farmTicks = 0
+    ..autoBossLeft = 0;
+  return s.copyWith(progress: p.copyWith(farming: false));
+}
