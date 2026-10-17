@@ -24,4 +24,24 @@ void main() {
     final r = 16 / (2 * gull.extent);
     expect(100 + gull.muzzle!.dx * r, lessThan(100), reason: '왼쪽 보기면 부리는 왼쪽');
   });
+
+  test('예고(windup)부터 차오르고, 쏘면 터진 뒤 사라짐; 못 쏘면 0.4초 뒤 사그라듦', () {
+    final m = HdMuzzle()
+      ..windup(1, 0, 400, boss: false)
+      ..windup(2, 0, 400, boss: true)
+      ..collect(1, 'gull', 0, 0, 16, right: false, now: 200)
+      ..collect(2, 'kraken', 0, 0, 56, right: false, now: 200);
+    expect(m.pending, 2);
+    m
+      ..paint(Canvas(PictureRecorder()))
+      ..fired(1, 400)
+      ..collect(1, 'gull', 0, 0, 16, right: false, now: 500)
+      ..collect(2, 'kraken', 0, 0, 56, right: false, now: 750); // 보스는 아직 못 쏨 — 늦은 사그라듦 안
+    expect(m.pending, 2);
+    m
+      ..paint(Canvas(PictureRecorder()))
+      ..collect(1, 'gull', 0, 0, 16, right: false, now: 700) // 터진 지 0.3초 — 끝
+      ..collect(2, 'kraken', 0, 0, 56, right: false, now: 790);
+    expect(m.pending, 1);
+  });
 }
