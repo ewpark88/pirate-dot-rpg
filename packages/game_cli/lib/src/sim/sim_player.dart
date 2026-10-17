@@ -125,11 +125,8 @@ class SimPlayer {
     }
     result.upgrades += _gold.decide(buyCheapest(engine, t, s), _online, s.progress, isFull: cargoBlocked(t, s));
     buyRebirthShop(engine, t, s);
-    // 수동 편성(ADR-0010): 가상 플레이어는 선원이 바뀔 때마다 ‘자동 편성’ 버튼을 누른다.
-    if (!identical(s.crews, _crewsSeen)) {
-      _crewsSeen = s.crews;
-      engine.enqueue(const AutoFleet());
-    }
+    if (!identical(s.crews, _crewsSeen)) engine.enqueue(const AutoFleet()); // 수동 편성(ADR-0010): 선원이 바뀌면 ‘자동 편성’
+    _crewsSeen = s.crews;
     // 튜토리얼: UI 확인 단계(첫 연출·소환 결과·마지막 말풍선)는 바로 넘긴다. 나머지는 코어가 판정.
     final step = s.tutorialStep;
     final acks = t.meta.raw.obj('tutorial').obj('steps').raw['ack'] as List;
