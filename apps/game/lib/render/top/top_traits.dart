@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/top/top_boss_traits.dart';
+import 'package:pirate_dot/render/top/top_traits2.dart';
 
 /// 선원 특성 연출 (S2 crew-traits, 사용자 2026-10-17): 엔진은 새 이벤트 없이 같은 선원의 Damage를 순서대로 낸다.
 /// - 연쇄 번개(arc.counts, pelly): 한 틱 그 선원의 맞은 적들을 순서대로 지그재그 번개가 50ms씩 튐 — 등급별 색·굵기, 마지막 적 작은 폭발.
@@ -25,6 +26,12 @@ class TopTraits {
   late final bossFx = TopBossTraits(_t);
 
   final List<_Chain> _chains = [];
+
+  /// 2차 특성 그림(부메랑·휩쓸기·속박·관통 가속·해적왕).
+  final fx2 = TraitFx2();
+
+  /// 배 자리(전장) — TopHits가 그릴 때마다 넣는다(부메랑·휩쓸기 기준).
+  Offset ship = Offset.zero;
   final List<(Offset, double, bool)> _bursts = []; // 자리, ms, 처형(아니면 충전)
   final _line = Paint()
     ..style = PaintingStyle.stroke
@@ -49,8 +56,14 @@ class TopTraits {
   void onTick(RecordedTick tick, int index, RecordingPlayer player, double now) {
     bossFx.onTick(tick, index, player, now);
     final byCrew = <String, List<Damage>>{};
+    final fired = <String, AttackFired>{};
     for (final e in tick.events) {
       if (e is Damage && e.crewId != null) (byCrew[e.crewId!] ??= []).add(e);
+      if (e is AttackFired) fired[e.crewId] = e;
+    }
+    for (final slot in tick.frame.fleet) {
+      final sw = fired[slot.crewId] == null ? null : legendOf(slot.crewId, slot.rarity)?.sweep;
+      if (sw != null) fx2.sweep(ship, Offset(fired[slot.crewId]!.x, fired[slot.crewId]!.y), sw.deg, sw.range, now);
     }
     if (byCrew.isEmpty) return;
     for (final slot in tick.frame.fleet) {
@@ -67,6 +80,7 @@ class TopTraits {
         final pts = [for (final d in hits) ?at(d.targetId)];
         if (pts.length >= 2 && _chains.length < 8) _chains.add(_Chain(pts, slot.rarity, now));
       }
+      _traits2(l, hits, at, player, index, now);
       if (l.execute != null || l.charge != null) {
         final seen = <int>{};
         for (final d in hits) {
@@ -76,6 +90,21 @@ class TopTraits {
           }
         }
       }
+    }
+  }
+
+  void _traits2(LegendDef l, List<Damage> hits, Offset? Function(int) at, RecordingPlayer p, int index, double now) {
+    final seen = <int>{};
+    var order = 0;
+    for (final d in hits) {
+      final first = seen.add(d.targetId);
+      final pos = at(d.targetId);
+      if (pos == null) continue;
+      if (!first && l.boomerang > 0) fx2.saw(pos, ship, now);
+      if (first && l.bindSec > 0) fx2.bind(d.targetId, l.bindSec, now);
+      if (first && l.pierceRamp > 0) fx2.pierce(pos, order++, now);
+      final boss = (p.enemyAt(index, d.targetId) ?? p.enemyAt(index - 1, d.targetId))?.boss ?? false;
+      if (!first && boss && l.bossBonus > 0) fx2.skull(d.targetId, now);
     }
   }
 
@@ -90,12 +119,14 @@ class TopTraits {
 
   void clear() {
     bossFx.clear();
+    fx2.clear();
     _chains.clear();
     _bursts.clear();
   }
 
   /// 적 위 층(전장 좌표). [poses]는 처형 표식용.
   void paint(Canvas c, double now, BattleView frame, List<EnemyPose> poses, int poseCount, {required bool lite}) {
+    fx2.paint(c, now, poses, poseCount);
     final below = executeBelow(frame);
     if (below > 0) {
       _line

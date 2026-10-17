@@ -221,7 +221,9 @@ class TopHits {
     final ship = s.topShip;
     juice.paint(c, now, lite: lite, fever: view.feverTicksLeft > 0);
     bestiary.paintOver(c, now);
-    traits?.paint(c, now, view, s.poses, s.poseCount, lite: lite);
+    traits
+      ?..ship = ship
+      ..paint(c, now, view, s.poses, s.poseCount, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);
