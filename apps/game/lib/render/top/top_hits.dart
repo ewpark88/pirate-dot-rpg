@@ -20,6 +20,7 @@ import 'package:pirate_dot/render/top/top_muzzle.dart';
 import 'package:pirate_dot/render/top/top_resupply.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
+import 'package:pirate_dot/render/top/top_traits.dart';
 
 /// 탑다운 배 충돌 연출 (사용자 '적들이 배에 부딪히지 않는다' — 엔진은 닿는데 눈에 안 보였다, S1):
 /// 때린 적이 배 쪽으로 툭 박고(돌진), 닿은 자리에 물보라·나뭇조각이 튄다. 엔진 무관 — ShipDamaged fromX/fromY.
@@ -32,6 +33,9 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
+  TopTraits? traits;
 
   /// 도감 v2 보스 패턴(먹물·삼키기·분열).
   final bestiary = TopBestiary();
@@ -202,6 +206,7 @@ class TopHits {
     final ship = s.topShip;
     juice.paint(c, now, lite: lite, fever: view.feverTicksLeft > 0);
     bestiary.paintOver(c, now);
+    traits?.paint(c, now, view, s.poses, s.poseCount, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);
@@ -239,6 +244,7 @@ class TopHits {
     slash.clear();
     emerges.clear();
     bestiary.clear();
+    traits?.clear();
     upgradeAt = -1000000000;
     shots.clear();
     _flashAt = -1000000000;
