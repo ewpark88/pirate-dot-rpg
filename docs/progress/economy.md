@@ -5,10 +5,18 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | bossBreak 마무리(king·walrus 게이지, balance crews ±10%) → 선체 즉시 반영 재측정 → 보스 HP·첫 도전·환생 지표 → 도감 v2 수치 → 야간 리포트 |
+| 바로 다음 할 일 | 근접·출격 정리(S1 승인 대기) → 밤: 100명 리포트·보스전 피해 25%·강화 간격·crew-traits-2 재적합·재생/호위 hpFactor |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 오후 · S2 · C8·특성 정리·보스 특성
+- C8(5edda672, main 8afa8ee9): 보스 HP ×80·공격 ×100·벽 ×2.3·초반 HP ×0.028·공격 ×0.02(새 키 earlyAttackMultiplier), bossDuel 켬, attackBase 7·goldBase 2.7, 돌격대 ×100·HP ×10, 선체 900, 화물칸 120·costRatio 0.2, 브레이크 수치, 선원 15명 powerScale(balance crews 0.91~1.085).
+  sim 5명×3시간: 스테이지 40 51.4분, 10단위 첫 도전 50%, 환생 첫 벽 0.82, 돌파 31분, 파밍 15% OK / 보스전 피해 19.5%·보통 첫 도전 85.4%·벽 침몰 41초·강화 간격 35~45 192초는 밤에.
+- 특성 중복 정리 1(crew-traits, main e820b80c): 연쇄 번개 pelly·처형 bones·충전 사격 volt·추적 깃털 polly. 정리 2(S5 crew-traits-2, 검토 OK, 재적합은 밤).
+- 보스 특성 7개(review/boss-traits bc033482·48524e7b·c0c96701): 엔진·표·hpFactor(회피 0.75·장갑 0.6·재생 0.8·반사막 0.78·분노 1·호위 0.85·가속 0.91), 장갑은 발사 간격 기준으로 재정의. sim --boss-trait.
+- 그 밖: 첫 무료 10연 = 영웅 1 + 희귀 이하 9, 피버 무리(review/fever-swarm, main), break-view, 현상금 CardGranted, bestUpgradePlan·금고 가득 지표, BALANCE.md.
+- 실수 기록: 미검증 bossBreak 수치를 첫 10연 커밋에 섞음(9caf3e18로 되돌림), 패키지 해석 안 된 worktree에서 dart format이 80칸으로 10개 파일을 바꿈(되돌림 — 새 worktree는 pub get 먼저), crews.json을 json.dumps로 한 줄로 만듦(되돌리고 값만 바꿈).
 
 ### 2026-10-17 · S2 · 피드백 P0·계약 2건·bossPreview
 - 커밋: 0504818a 분노 정리(레인 안)+sim --boss-break, ac6cca60·d64bf3ca·9e62fdba 환영 선원 bones(첫 강화 단계 넘는 틱·건너뛰기도, CardGranted starter, 0.17분)·startingCrews octo 하나·튜토리얼 보스 ×5·피버 처치 200 → 스테이지 40에 1000,

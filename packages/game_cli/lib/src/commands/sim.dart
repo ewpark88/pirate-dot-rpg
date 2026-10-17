@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:game_cli/src/sim/sim_boss_break.dart';
+import 'package:game_cli/src/sim/sim_boss_trait.dart';
 import 'package:game_cli/src/sim/sim_patch.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
@@ -30,6 +31,7 @@ class SimCommand extends Command<int> {
       ..addFlag('boss-ad', help: '보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지)')
       ..addMultiOption('set', splitCommas: false, help: '테이블 값 덮어쓰기(탐색용) — 예: --set meta.rebirth.minStage=30 (값은 JSON)')
       ..addFlag('boss-break', help: '보스 브레이크 계측(선원 한 명씩 보스전, 브레이크 끔·켬) — 다른 sim은 안 돈다')
+      ..addOption('boss-trait', help: '보스 특성 보정 계측(evade·armor·…) — 레벨은 --boss-break-level')
       ..addOption('boss-break-level', defaultsTo: '45', help: '--boss-break 선원 레벨(전설 46~60·신화 61~)')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로')
@@ -46,6 +48,11 @@ class SimCommand extends Command<int> {
   Future<int> run() async {
     final a = argResults!;
     final patched = patchTables(rawTables, a['set'] as List<String>);
+    final trait = a['boss-trait'] as String?;
+    if (trait != null) {
+      stdout.write(BossTraitProbe(patched, trait, level: int.parse(a['boss-break-level'] as String)).run());
+      return 0;
+    }
     if (a['boss-break'] as bool) {
       stdout.write(BossBreakProbe(patched, level: int.parse(a['boss-break-level'] as String)).run());
       return 0;
