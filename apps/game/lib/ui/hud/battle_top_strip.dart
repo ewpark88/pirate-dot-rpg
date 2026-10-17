@@ -69,15 +69,14 @@ class _Pills extends ConsumerWidget {
     if (bounty) {
       pills = const [BountyStrip()];
     } else {
-      final ranked = <Widget>[
-        if (challenge) const ChallengeStrip(),
-        if (sea) const SeaEventStrip(),
-        // 화물칸 가득 + 바로 '모두 강화' (한 칸으로 센다).
-        if (cargoFull)
-          const Row(mainAxisSize: MainAxisSize.min, children: [CargoFullPill(), SizedBox(width: 6), UpgradeAllPill()]),
-        if (rebirth) const RebirthReadyPill(),
+      // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸으로 세되, 좁으면 Wrap이 다음 줄로 넘긴다.
+      final ranked = <List<Widget>>[
+        if (challenge) const [ChallengeStrip()],
+        if (sea) const [SeaEventStrip()],
+        if (cargoFull) const [CargoFullPill(), UpgradeAllPill()],
+        if (rebirth) const [RebirthReadyPill()],
       ];
-      pills = [...ranked.take(fever ? 1 : 2), if (!challenge) const ChallengeStrip()];
+      pills = [...ranked.take(fever ? 1 : 2).expand((g) => g), if (!challenge) const ChallengeStrip()];
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
