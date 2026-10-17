@@ -189,7 +189,9 @@ bool starterGuarded(GameState s, GameTables t, String crewId) {
 /// [receiveCard] + CardGranted 이벤트 (렌더가 카드가 날아와 모이는 연출, S3 요청). [source]는 CardGranted 참고.
 GameState grantCard(GameState state, SystemContext ctx, String crewId, String cardRarity, String source) {
   final t = ctx.tables;
-  final rarity = starterGuarded(state, t, crewId) ? t.rarities.rarities.first.id : gateFirstLegend(state, t, cardRarity);
+  final rarity = starterGuarded(state, t, crewId)
+      ? t.rarities.rarities.first.id
+      : gateFirstLegend(state, t, cardRarity);
   ctx.emit(
     CardGranted(ctx.tick, crewId: crewId, rarity: rarity, source: source, isNew: !state.crews.containsKey(crewId)),
   );
