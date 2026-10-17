@@ -7,6 +7,8 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart' show BossPortrait;
 import 'package:pirate_dot/ui/hud/battle_hud_buttons.dart';
+import 'package:pirate_dot/ui/hud/boss_compare.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -39,13 +41,15 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final (show, stage, tick, flashOn) = ref.watch(
+    final (show, stage, tick, flashOn, canWin) = ref.watch(
       gameStateProvider.select(
         (s) => (
           s.progress.farming && !(s.battle?.bossActive ?? false),
           s.progress.stage,
           s.battle?.tick ?? 0,
           s.settings.flash,
+          // 보스 vs 나가 '여유'면 다시 붙을 때 (S3 첫 15분 점검 — 실패 뒤 재도전을 안 눌러 스테이지 3에 15분).
+          bossCompareOf(s, tables)?.level == 0,
         ),
       ),
     );
@@ -81,7 +85,7 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
                   behavior: HitTestBehavior.opaque,
                   onTap: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
                   child: Transform.scale(
-                    scale: 1 + 0.05 * pulse,
+                    scale: 1 + (canWin ? 0.12 : 0.05) * pulse,
                     child: SizedBox(
                       width: bossChallengeSize,
                       height: bossChallengeHeight,
@@ -153,6 +157,20 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
                 right: 0,
                 child: IgnorePointer(
                   child: HudBubble(key: const Key('boss.bubble'), text: l10n.uiBossRetryHint),
+                ),
+              )
+            // 이길 만하면 버튼 위에 금빛 '이길 수 있어요!'.
+            else if (canWin)
+              Positioned(
+                bottom: bossChallengeHeight + 2,
+                right: -6,
+                child: IgnorePointer(
+                  child: OutlineText(
+                    l10n.uiBossCanWin,
+                    key: const Key('boss.canWin'),
+                    size: 14,
+                    tone: OutlineTone.gold,
+                  ),
                 ),
               ),
           ],

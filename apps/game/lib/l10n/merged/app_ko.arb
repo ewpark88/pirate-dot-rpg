@@ -1402,5 +1402,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiBossCanWin": "이길 수 있어요!"
 }

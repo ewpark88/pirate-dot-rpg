@@ -1146,5 +1146,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiBossCanWin": "You can win!"
 }
