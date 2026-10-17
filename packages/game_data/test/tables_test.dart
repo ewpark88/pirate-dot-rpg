@@ -12,15 +12,15 @@ void main() {
     });
 
     test(
-      '한 파 마리 수 = min(14, 6 + floor(stage/10)) = 총량 기준 pool, 탑다운은 무리 32 + floor(stage/2) + 초반 덤(1에 28 → 20에 0) 최대 150',
+      '한 파 마리 수 = min(14, 6 + floor(stage/10)) = 총량 기준 pool, 탑다운은 무리 44 + floor(stage/2) + 초반 덤(1에 16 → 20에 0) 최대 150 — 평소 화면도 빽빽(실기기 2026-10-17)',
       () {
         final w = GameTables.load().waves;
         expect(w.mobCountAt(1), 6);
         expect(w.mobCountAt(37), 9);
         expect(w.mobCountAt(500), 14);
         expect(w.mobPoolAt(37), 9);
-        expect(w.topMobCountAt(1), 32 + 28);
-        expect(w.topMobCountAt(20), 32 + 10);
+        expect(w.topMobCountAt(1), 44 + 16);
+        expect(w.topMobCountAt(20), 44 + 10);
         expect(w.topMobCountAt(9999), 150);
       },
     );

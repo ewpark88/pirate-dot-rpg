@@ -130,7 +130,11 @@ class BattleSystem implements GameSystem {
     if (_field!.inScene) {
       return _project(sceneResolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
-    final resolved = autoBossTick(_resolve(next, _field!, ctx), _field!, ctx.tables);
+    final resolved = autoBossTick(
+      refillWave(_resolve(next, _field!, ctx), _field!, ctx, fast: _fast(next, ctx)),
+      _field!,
+      ctx.tables,
+    );
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
@@ -139,12 +143,15 @@ class BattleSystem implements GameSystem {
     return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
   }
 
+  bool _fast(GameState s, SystemContext ctx) =>
+      s.progress.rebirths > 0 && s.progress.stage <= (s.progress.bestStage * fastSailFraction(s, ctx.tables)).ceil();
+
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
     if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
     final w = ctx.tables.waves;
-    final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
+    final fast = _fast(s, ctx);
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
       startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
     } else {

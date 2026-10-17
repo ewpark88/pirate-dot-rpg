@@ -273,3 +273,23 @@ GameState autoBossTick(GameState s, Field f, GameTables t) {
 /// 재도전 판정용 힘 = 함대 DPS × 배 최대 HP(전투력 fleetPower와 같은 두 축, 지수 없이).
 double retryPower(GameState s, GameTables t) =>
     (fleetDps(s, t, activeFleet(s, t)) * shipMaxHp(t.shipParts, s.ship.level('hull'))).toDouble();
+
+/// 보충 파(사용자 목표 '우수수 쓸리는 쾌감' — 실기기 스테이지 30 파밍에 화면 적 1~2마리, S1 2026-10-17): 무리가 한 파의
+/// `top.refill.belowRatio`(최소 `min`마리) 아래로 줄면 다음 파를 바로 부르고, 앞 파를 '잡은 파'로 센다(파마다 한 번씩 — 남은 무리는
+/// 섞여서 계속 싸운다). 보스 차례 직전(다음이 보스)·보스전·피버(이미 빽빽)·장면 콘텐츠·빠른 항해·출항 대기 중엔 안 한다.
+GameState refillWave(GameState s, Field f, SystemContext ctx, {required bool fast}) {
+  final t = ctx.tables;
+  final w = t.waves;
+  final p = s.progress;
+  final left = f.waveFoes.length;
+  if (left == 0 || f.bossActive || f.inScene || f.fastSail != null || p.sailHold || feverOn(s)) return s;
+  final per = fast ? w.rebirthSkip.waves : w.wavesPerStage;
+  if (!p.farming && p.wave + 1 >= per) return s; // 이 파가 마지막 — 다 잡으면 보스
+  final r = w.raw.obj('top').obj('refill');
+  final below = math.max(r.integer('min'), (w.topMobCountAt(p.stage) * r.number('belowRatio')).round());
+  if (left > below) return s;
+  spawnWave(f, p.stage, ctx);
+  final wave = p.wave < per ? p.wave + 1 : p.wave;
+  ctx.emit(WaveCleared(ctx.tick, wave: wave));
+  return s.copyWith(progress: p.copyWith(wave: wave));
+}
