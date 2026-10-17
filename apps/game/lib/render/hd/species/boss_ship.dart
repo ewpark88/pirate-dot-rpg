@@ -23,7 +23,8 @@ typedef ShipLook = ({
 });
 
 void drawShipBoss(HdKit k, Canvas c, double r, double t, ShipLook look) {
-  final rock = k.wave(t, 1) * 0.04; // 좌우로 흔들
+  // 좌우 흔들림은 작게 — TopEnemies가 HD 시트에 ±0.06rad를 얹는다(합치면 술 취해 보임, S3).
+  final rock = k.wave(t, 1) * 0.02;
   final bob = k.wave(t, 1, 1.5) * r * 0.04;
   // extent 1.3(보스 칸의 1.15배 크게 — S1 '중간 보스가 작아 보인다'), 금관이 칸 안에 들게 조금 내려 그린다.
   c
@@ -31,17 +32,17 @@ void drawShipBoss(HdKit k, Canvas c, double r, double t, ShipLook look) {
     ..translate(0, bob + r * 0.1)
     ..rotate(rock);
   if (look.sub) {
-    _subTop(k, c, r, t, look);
+    shipSubTop(k, c, r, t, look);
   } else {
-    _sails(k, c, r, t, look);
+    shipSails(k, c, r, t, look);
   }
-  _hull(k, c, r, look);
+  shipHull(k, c, r, look);
   _face(k, c, r, t, look);
   c.restore();
 }
 
-/// 돛대 + 돛 2장(뒤 큰 돛·앞 작은 돛) + 깃발 + (보스) 돛대 끝 금관.
-void _sails(HdKit k, Canvas c, double r, double t, ShipLook look) {
+/// (공용 — 플레이어 배도 쓴다) 돛대 + 돛 2장(뒤 큰 돛·앞 작은 돛) + 깃발 + (보스) 돛대 끝 금관.
+void shipSails(HdKit k, Canvas c, double r, double t, ShipLook look) {
   final mast = Path()
     ..moveTo(-r * 0.05, r * 0.2)
     ..lineTo(-r * 0.05, -r * 1.02)
@@ -58,7 +59,7 @@ void _sails(HdKit k, Canvas c, double r, double t, ShipLook look) {
     ..quadraticBezierTo(0, r * 0.02 + billow, -r * 0.82 - billow, -r * 0.2)
     ..close();
   k.blob(c, big, look.ghost ? look.sail.withValues(alpha: 0.75) : look.sail, look.sailD);
-  _emblem(k, c, Offset(0, -r * 0.52), r * 0.24, look.emblem);
+  shipEmblem(k, c, Offset(0, -r * 0.52), r * 0.24, look.emblem);
   // 깃발(돛대 끝, 펄럭).
   final wave = k.wave(t, 2, 0.8) * r * 0.05;
   final flag = Path()
@@ -70,8 +71,8 @@ void _sails(HdKit k, Canvas c, double r, double t, ShipLook look) {
   if (look.crown) k.crown(c, Offset(0, -r * 0.9), r * 0.75); // 돛대 끝 큰 금관(깃발은 왼쪽으로 비켜) — 작으면 외곽선에 묻힌다
 }
 
-/// 잠수함 함교(둥근 탑) + 잠망경 + 앞 프로펠러 날 흔들.
-void _subTop(HdKit k, Canvas c, double r, double t, ShipLook look) {
+/// (공용) 잠수함 함교(둥근 탑) + 잠망경 + 앞 프로펠러 날 흔들.
+void shipSubTop(HdKit k, Canvas c, double r, double t, ShipLook look) {
   final scope = Path()
     ..moveTo(r * 0.12, -r * 0.7)
     ..lineTo(r * 0.12, -r * 1.15)
@@ -86,12 +87,12 @@ void _subTop(HdKit k, Canvas c, double r, double t, ShipLook look) {
       RRect.fromRectAndRadius(Rect.fromLTRB(-r * 0.42, -r * 0.82, r * 0.42, -r * 0.05), Radius.circular(r * 0.2)),
     );
   k.blob(c, tower, look.hull, look.hullD);
-  _emblem(k, c, Offset(0, -r * 0.45), r * 0.2, look.emblem);
+  shipEmblem(k, c, Offset(0, -r * 0.45), r * 0.2, look.emblem);
   if (look.crown) k.crown(c, Offset(-r * 0.05, -r * 0.8), r * 0.7);
 }
 
-/// 선체: 정면 3/4 — 위가 넓고 아래가 좁은 배 모양(잠수함은 둥근 통), 판자 줄 2개, 앞이 뾰족(충각 ram).
-void _hull(HdKit k, Canvas c, double r, ShipLook look) {
+/// (공용) 선체: 정면 3/4 — 위가 넓고 아래가 좁은 배 모양(잠수함은 둥근 통), 판자 줄 2개, 앞이 뾰족(충각 ram).
+void shipHull(HdKit k, Canvas c, double r, ShipLook look) {
   final Path hull;
   if (look.sub) {
     hull = Path()..addOval(Rect.fromCenter(center: Offset(0, r * 0.35), width: r * 2.1, height: r * 1.0));
@@ -157,8 +158,8 @@ void _face(HdKit k, Canvas c, double r, double t, ShipLook look) {
   }
 }
 
-/// 돛 문양(외곽선 얇게).
-void _emblem(HdKit k, Canvas c, Offset at, double s, ShipEmblem e) {
+/// (공용) 돛 문양(외곽선 얇게).
+void shipEmblem(HdKit k, Canvas c, Offset at, double s, ShipEmblem e) {
   final Path p;
   var light = const Color(0xFFFFFFFF);
   var dark = const Color(0xFFC8D0DC);
@@ -188,7 +189,11 @@ void _emblem(HdKit k, Canvas c, Offset at, double s, ShipEmblem e) {
       for (var i = 0; i < 3; i++) {
         final a = i * math.pi / 3 + math.pi / 2;
         final d = Offset(math.cos(a), math.sin(a)) * s;
+        // 작은 칸에서 선이 뭉치지 않게 외곽선 0.5배(S3).
+        final w = k.ink.strokeWidth;
+        k.ink.strokeWidth = w * 0.5;
         k.limb(c, Path()..addPolygon([at - d, at + d], false), const Color(0xFFE8F8FF), s * 0.2);
+        k.ink.strokeWidth = w;
       }
       return;
     case ShipEmblem.ghost:
