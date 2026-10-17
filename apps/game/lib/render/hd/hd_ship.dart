@@ -200,8 +200,6 @@ class HdShip {
         c.drawRect(Rect.fromCenter(center: Offset(x * hw, len * 0.36), width: hw * 0.14, height: len * 0.05), k.fill);
       }
     }
-    k
-      ..rim(c, hull, Color.lerp(col.rim, const Color(0xFFFFFFFF), 0.6)!.withValues(alpha: 0.6), width: 0.6)
-      ..shine2(c, hull.getBounds());
+    k.shine2(c, hull.getBounds()); // 림 라이트·첫 광택은 blob이
   }
 }

@@ -58,6 +58,7 @@ void _iceSlime(HdKit k, Canvas c, double r, double t) {
     ..color = HdKit.inkColor;
   k
     ..rim(c, body, const Color(0x99E8FFFF))
+    ..shine(c, body.getBounds())
     ..shine2(c, body.getBounds())
     // 속에 비치는 얼음 기포
     ..spots(c, r, const [(0.55, 0.2, 0.08), (0.7, -0.15, 0.05), (-0.65, 0.35, 0.06)], const Color(0x88FFFFFF));

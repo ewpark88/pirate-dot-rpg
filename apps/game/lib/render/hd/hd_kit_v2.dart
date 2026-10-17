@@ -17,9 +17,8 @@ extension HdKitV2 on HdKit {
       ..drawPath(p, ink); // 띠가 덮은 외곽선 안쪽 반을 다시
   }
 
-  /// 이중 광택: 왼쪽 위 큰 타원 + 작은 반짝 점 + 오른쪽 위 가는 둘째 광택(젤리·도자기처럼).
+  /// 둘째 광택: 오른쪽 위 가는 타원(blob 광택과 합쳐 이중 광택 — 젤리·도자기처럼).
   void shine2(Canvas c, Rect b) {
-    shine(c, b);
     fill.color = const Color(0x66FFFFFF);
     c.drawOval(
       Rect.fromCenter(

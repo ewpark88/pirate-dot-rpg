@@ -73,7 +73,6 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
     ..close();
   k
     ..blob(c, torso, skin, skinD)
-    ..rim(c, torso, const Color(0x99E8FFF8))
     // 손(삼지창 쥔 주먹)
     ..blob(
       c,
@@ -95,6 +94,7 @@ void _poseidon(HdKit k, Canvas c, double r, double t) {
   k
     ..blob(c, face, const Color(0xFFB4FFE8), skinD, gloss: false)
     ..rim(c, face, const Color(0x99E8FFF8))
+    ..shine(c, face.getBounds())
     ..shine2(c, face.getBounds());
   final beard = Path()
     ..moveTo(-r * 0.42, -r * 0.66)

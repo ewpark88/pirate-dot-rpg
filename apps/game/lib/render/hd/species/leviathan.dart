@@ -68,7 +68,6 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
     ..close();
   k
     ..blob(c, head, const Color(0xFFFF8A6A), redD)
-    ..rim(c, head, const Color(0x99FFE8C8))
     ..shine2(c, head.getBounds());
   // 불빛 눈(주황 + 세로 동공)
   for (final s in const [-1.0, 1.0]) {
