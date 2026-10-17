@@ -795,5 +795,62 @@
         "type": "int"
       }
     }
+  },
+  "uiRoleGuard": "배 지킴이",
+  "uiRoleBoss": "보스 킬러",
+  "uiRoleMob": "무리 청소",
+  "uiRoleControl": "제어",
+  "uiRoleSupport": "지원",
+  "uiNewMateHow": "이렇게 싸워요: {how}",
+  "uiNewMateDeploy": "출전시키기",
+  "uiNewMateDetail": "자세히 보기",
+  "uiNewMateLater": "나중에",
+  "uiNewMateDex": "도감 {owned}/{total} · 다음 보상까지 {left}명",
+  "uiNewMateDexAll": "도감 {owned}/{total}",
+  "uiNewMateDeployed": "{name} 출전!",
+  "@uiNewMateHow": {
+    "placeholders": {
+      "how": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiNewMateDex": {
+    "placeholders": {
+      "owned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiNewMateDexAll": {
+    "placeholders": {
+      "owned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiNewMateDeployed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uiFeverIn": "피버까지 {kills}마리",
+  "@uiFeverIn": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      }
+    }
   }
 }
