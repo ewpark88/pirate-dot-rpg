@@ -1562,5 +1562,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiLvLabel": "Lv",
+  "uiLvTip": "Higher Lv = more attack. Collect that crew's cards to level up!"
 }
