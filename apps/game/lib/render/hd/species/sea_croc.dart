@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
@@ -39,7 +38,7 @@ void _seaCroc(HdKit k, Canvas c, double r, double t) {
   _jaw(k, c, r, jaw);
   _head(k, c, r, t, jaw, wind: wind, down: down);
   c.restore();
-  if (down) _stars(k, c, r, t);
+  if (down) k.dizzyStars(c, Offset(0, -r * 1.35), r, t);
   c.restore();
 }
 
@@ -210,23 +209,5 @@ void _head(HdKit k, Canvas c, double r, double t, double jaw, {required bool win
       const Color(0xFFFF6A8A),
       r * 0.09,
     );
-  }
-}
-
-/// 쓰러짐: 머리 위를 도는 별 셋.
-void _stars(HdKit k, Canvas c, double r, double t) {
-  for (var i = 0; i < 3; i++) {
-    final a = 2 * math.pi * (t / HdKit.loopMs + i / 3);
-    final at = Offset(math.cos(a) * r * 0.5, -r * 1.35 + math.sin(a) * r * 0.12);
-    final s = r * 0.14;
-    final p = Path();
-    for (var j = 0; j < 10; j++) {
-      final rr = j.isEven ? s : s * 0.45;
-      final b = -math.pi / 2 + j * math.pi / 5;
-      final q = at + Offset(math.cos(b) * rr, math.sin(b) * rr);
-      j == 0 ? p.moveTo(q.dx, q.dy) : p.lineTo(q.dx, q.dy);
-    }
-    p.close();
-    k.blob(c, p, const Color(0xFFFFF4A0), const Color(0xFFFFC23A), gloss: false, line: 0.35);
   }
 }

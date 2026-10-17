@@ -74,4 +74,39 @@ extension HdKitV2 on HdKit {
     c.drawPath(sp, ink);
     ink.strokeWidth = w0;
   }
+
+  /// 공격 예고 눈: 보통 눈 위에 붉게 타는 눈동자(가운데 [at], 눈 크기 [s]).
+  void angerEye(Canvas c, Offset at, double s) {
+    fill.color = const Color(0xFFFF3A2A);
+    c.drawCircle(at + Offset(-s * 0.05, s * 0.1), s * 0.22, fill);
+    fill.color = const Color(0xFFFFE07A);
+    c.drawCircle(at + Offset(-s * 0.05, s * 0.1), s * 0.09, fill);
+  }
+
+  /// 쓰러짐: 머리 위 [at]을 도는 별 셋(크기 r 배수 0.14).
+  void dizzyStars(Canvas c, Offset at, double r, double t) {
+    for (var i = 0; i < 3; i++) {
+      final a = 2 * math.pi * (t / HdKit.loopMs + i / 3);
+      final o = at + Offset(math.cos(a) * r * 0.5, math.sin(a) * r * 0.12);
+      final s = r * 0.14;
+      final p = Path();
+      for (var j = 0; j < 10; j++) {
+        final rr = j.isEven ? s : s * 0.45;
+        final b = -math.pi / 2 + j * math.pi / 5;
+        final q = o + Offset(math.cos(b) * rr, math.sin(b) * rr);
+        j == 0 ? p.moveTo(q.dx, q.dy) : p.lineTo(q.dx, q.dy);
+      }
+      p.close();
+      blob(c, p, const Color(0xFFFFF4A0), const Color(0xFFFFC23A), gloss: false, line: 0.35);
+    }
+  }
+
+  /// 쓰러짐 자세: 바닥 [pivotY]를 축으로 기우뚱(그리기 전에 부르고 끝나면 restore).
+  void downTilt(Canvas c, double pivotY, double t) {
+    c
+      ..save()
+      ..translate(0, pivotY)
+      ..rotate(0.22 + wave(t, 1) * 0.03)
+      ..translate(0, -pivotY);
+  }
 }
