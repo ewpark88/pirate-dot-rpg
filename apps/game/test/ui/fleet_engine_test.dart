@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/crew/crew_preview.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -38,6 +39,7 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
       battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
       // 보스 대화창(시나리오)은 이 시험의 관심 밖 — 실제 엔진이 보스를 내도 뜨지 않게.
       storyEnabledProvider.overrideWithValue(false),
+      trialsEnabledProvider.overrideWithValue(false),
       crewPreviewPlayProvider.overrideWithValue(false),
     ],
   );

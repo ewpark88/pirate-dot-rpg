@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/hd/hd_opening.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart' show BossPortrait;
-import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -20,13 +22,44 @@ class OpeningScreen extends ConsumerStatefulWidget {
 
 class _OpeningScreenState extends ConsumerState<OpeningScreen> {
   int _i = 0;
+  Timer? _auto;
+
+  /// 컷이 바뀔 때마다 표의 한 컷 시간 뒤 저절로 다음(누르면 바로).
+  void _schedule(int count, Duration cutFor) {
+    _auto?.cancel();
+    _auto = Timer(cutFor, () {
+      if (!mounted) return;
+      if (_i + 1 < count) {
+        setState(() => _i++);
+        _schedule(count, cutFor);
+      } else {
+        unawaited(Navigator.of(context).maybePop());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _auto?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final cuts = ref.watch(storyScriptProvider).opening(l10n);
+    final script = ref.watch(storyScriptProvider);
+    final cuts = script.opening(l10n);
     final cut = cuts[_i];
-    void next() => _i + 1 < cuts.length ? setState(() => _i++) : Navigator.of(context).maybePop();
+    _auto ?? _schedule(cuts.length, script.cutFor);
+    void next() {
+      if (_i + 1 < cuts.length) {
+        setState(() => _i++);
+        _schedule(cuts.length, script.cutFor);
+      } else {
+        unawaited(Navigator.of(context).maybePop());
+      }
+    }
+
     return Scaffold(
       backgroundColor: Skin.night,
       body: GestureDetector(
@@ -57,7 +90,7 @@ class _OpeningScreenState extends ConsumerState<OpeningScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(cut.text, textAlign: TextAlign.center, style: Skin.bold(18)),
+                    Text(cut.lines.join('\n'), textAlign: TextAlign.center, style: Skin.bold(18)),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -101,42 +134,51 @@ class _OpeningScreenState extends ConsumerState<OpeningScreen> {
   }
 }
 
-/// 컷 그림 (임시 — 지금 있는 그림으로).
+/// 컷 그림: S3 HD 배경(HdOpeningBackdrop) 위에 컷마다 얹는 그림 — 0·4는 배경만(지도·출항 배가 그림 안).
 class _CutArt extends StatelessWidget {
   const _CutArt(this.art);
 
-  final OpeningArt art;
+  final int art;
 
   @override
   Widget build(BuildContext context) {
-    final center = switch (art) {
-      OpeningArt.sea => const Icon(Icons.map_rounded, size: 120, color: Color(0xFFFFD84A)),
-      OpeningArt.octo => Image.asset(pbCharacter('octo'), height: 300, fit: BoxFit.contain),
-      OpeningArt.bosses => const Wrap(
-        spacing: 12,
-        children: [
-          BossPortrait(bossId: 'kraken', size: 110),
-          BossPortrait(bossId: 'sea_croc', size: 90),
-        ],
+    final calm = MediaQuery.disableAnimationsOf(context);
+    final front = switch (art) {
+      // 낡은 배(화면 62% 높이) 위에 옥토.
+      1 => Align(
+        alignment: const Alignment(0, 0.02),
+        child: Image.asset(pbCharacter('octo'), height: 150, fit: BoxFit.contain),
       ),
-      OpeningArt.crew => Wrap(
-        spacing: 8,
-        children: [
-          for (final id in const ['octo', 'bones', 'pang', 'manta'])
-            ClipOval(child: Image.asset(pbPortrait(id), width: 72, height: 72, fit: BoxFit.cover)),
-        ],
+      // 촉수 앞에 해역 보스 초상 하나.
+      2 => const Align(
+        alignment: Alignment(0, 0.2),
+        child: BossPortrait(bossId: 'kraken', size: 96),
       ),
-      OpeningArt.sail => const ShipLookPreview(size: 200),
-    };
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1B2A5A), Color(0xFF2E6FB0), Color(0xFF123B6B)],
+      // 노을 갑판 위 동료들.
+      3 => Align(
+        alignment: const Alignment(0, 0.1),
+        child: Wrap(
+          spacing: 8,
+          children: [
+            for (final id in const ['octo', 'bones', 'pang', 'manta'])
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Skin.outline, width: 2.5),
+                ),
+                child: ClipOval(child: Image.asset(pbPortrait(id), width: 72, height: 72, fit: BoxFit.cover)),
+              ),
+          ],
         ),
       ),
-      child: Align(alignment: const Alignment(0, -0.25), child: center),
+      _ => const SizedBox.shrink(),
+    };
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        HdOpeningBackdrop(cut: art.clamp(0, 4), animate: !calm),
+        front,
+      ],
     );
   }
 }

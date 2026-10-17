@@ -306,11 +306,6 @@
   "opTraitDash": "Dash",
   "opTraitPattern": "Pattern",
   "opTraitSplit": "Split",
-  "opHudLayout": "HUD layout",
-  "opHudNow": "Now",
-  "opHudThumb": "Thumb",
-  "opHudFloating": "Floating",
-  "opHudSlim": "Slim dock",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -1486,15 +1481,8 @@
     }
   },
   "uiBossCanWin": "You can win!",
-  "uiStoryOpen1": "Far across the sea lay seven waters where treasure slept.",
-  "uiStoryOpen2": "Little Octo inherited Grandpa's old, creaky ship.",
-  "uiStoryOpen3": "But sea monsters and pirate bosses block the way!",
-  "uiStoryOpen4": "Gather mates, grow your ship, and complete the treasure map.",
-  "uiStoryOpen5": "Set sail! The ship fights on its own — you just make it stronger.",
   "uiStorySkip": "Skip",
   "uiStoryTapNext": "Tap for next",
-  "uiStoryBossTaunt": "Who dares sail into MY sea?!",
-  "uiStoryOctoReply": "Our ship won't lose! Crew, ready the cannons!",
   "uiShopTitle": "Shop",
   "uiShopNoAds": "No ads",
   "uiShopSubLeft": "Subscribed · {days} days left",
@@ -1557,6 +1545,34 @@
     }
   },
   "@uiShopDailyGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiLvLabel": "Lv",
+  "uiLvTip": "Higher Lv = more attack. Collect that crew's cards to level up!",
+  "uiTrialSpeedTitle": "Free 2× speed for 10 min!",
+  "uiTrialAutoTitle": "Free auto-upgrade for 10 min!",
+  "uiTrialSpeedCompare": "Speed ×1 → ×2 · Gold ×1 → ×2",
+  "uiTrialAutoCompare": "Upgrades your ship and merges crew for you",
+  "uiTrialTry": "Try it free",
+  "uiTrialLater": "Later",
+  "uiTrialEndTitle": "Trial ended",
+  "uiTrialEndAsk": "Liked it? Watch one ad for 10 more minutes!",
+  "uiTrialAdMore": "Watch ad · 10 more min",
+  "uiTrialBuy": "Keep it forever (Shop)",
+  "uiAutoBossIn": "Auto in {n}s",
+  "@uiAutoBossIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPromoteStageLocked": "Opens at stage {n}",
+  "@uiPromoteStageLocked": {
     "placeholders": {
       "n": {
         "type": "int"

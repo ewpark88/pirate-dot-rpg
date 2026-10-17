@@ -18,7 +18,6 @@ import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/fast_sail.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/hud/fleet_rejected_toast.dart';
-import 'package:pirate_dot/ui/hud/hud_layout.dart';
 import 'package:pirate_dot/ui/hud/save_failure_banner.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
@@ -182,7 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   Widget _layout(BuildContext context, BoxConstraints body, {required bool tutorial}) {
     final sheetH = _sheet.value * body.maxHeight;
     // 전장 상자는 시트(열림)나 도크(닫힘) 위에서 끝난다 — 렌더가 받은 상자를 채우므로 선원 줄·궁극기가 늘 그 바로 위에 붙는다.
-    final battleBottom = math.max(sheetH, dockHeightFor(ref.watch(hudLayoutProvider)));
+    final battleBottom = math.max(sheetH, kDockHeight);
     return Stack(
       children: [
         Positioned(

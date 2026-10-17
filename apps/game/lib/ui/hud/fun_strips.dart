@@ -276,7 +276,7 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
             Text(
               l10n.uiFeverIn(kills),
               key: Key(fever >= 0.8 ? 'fun.fever.near' : 'fun.fever.in'),
-              style: Skin.text(14, color: fever >= 0.8 ? const Color(0xFFFFD84A) : const Color(0xFFFFC27A)),
+              style: Skin.outlined(14, color: fever >= 0.8 ? const Color(0xFFFFD84A) : const Color(0xFFFFC27A)),
             ),
           const SizedBox(width: 3),
           SizedBox(

@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/crew/crew_pill.dart';
 import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/crew/crew_text.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
+import 'package:pirate_dot/ui/crew/promote_locked.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -70,8 +71,7 @@ class CrewDetailDialog extends ConsumerWidget {
     final color = rarityColor(rarity);
     const dim = TextStyle(color: PixelPalette.textDim);
 
-    // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본.
-    // 아이콘: 그림 경로(String) 또는 머티리얼 아이콘(IconData). 별은 등급만 뜻하므로 여기 쓰지 않는다.
+    // 정보 묶음 = 작은 판 (스킨 r2 다듬기). [tone]: 금색(전설 능력 열림) · 흐림(잠김) · 기본. 아이콘: 그림 경로(String) 또는 머티리얼 아이콘(IconData). 별은 등급만 뜻하므로 여기 쓰지 않는다.
     Widget section(String head, List<Widget> body, {Color? fill, Color? border, Object? icon}) => Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Container(
@@ -200,6 +200,7 @@ class CrewDetailDialog extends ConsumerWidget {
                 : null,
             child: Text(l10n.uiCrewPromote),
           ),
+        if (crew != null && status == PromoteStatus.stageLocked) PromoteLockedButton(crewId: def.id),
         // 출전 중이면 ‘바꾸기’(이 칸에 다른 선원)와 ‘내리기’.
         if (crew != null && deployed) ...[
           PixelButton(

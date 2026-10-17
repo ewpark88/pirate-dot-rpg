@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 
 /// Pirate Busters 카드 (S1 결정: 선원 그림 = PB 카드 일러스트, S3 import · assets/ui/cards/cards.json 규칙).
 /// 캔버스 252×358 (파일은 ×2 = 504×716), 카드 몸 (0,0)~(240,340)은 캔버스 (6,12)부터.
@@ -199,4 +201,44 @@ class PbBadge extends StatelessWidget {
     ),
     child: Text(text, style: Skin.outlined(19, color: ink)),
   );
+}
+
+/// 선원 카드 레벨 배지 (사용자 2026-10-17 'Lv가 뭐냐 — 잘 보이게 크게'): 작은 'Lv' + 큰 외곽선 숫자.
+/// 누르면 'Lv이 오르면 공격력이 세져요…' 한 줄 팁(카드 누름 = 상세 창과 따로).
+class LvBadge extends StatelessWidget {
+  const LvBadge({required this.level, super.key});
+
+  final int level;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      label: l10n.uiLevel(level),
+      button: true,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => showSkinToast(context, l10n.uiLvTip),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(8, 0, 10, 2),
+          decoration: BoxDecoration(
+            color: Skin.navyPanel,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Skin.outline, width: 2.5),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(l10n.uiLvLabel, style: Skin.outlined(20, color: const Color(0xFFFFD84A))),
+              const SizedBox(width: 3),
+              Text(level.toString(), style: Skin.outlined(40)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
