@@ -6,7 +6,6 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
-import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/power_badge.dart';
@@ -108,17 +107,9 @@ class TopBar extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               // 순풍·광고는 남는 폭 안에서만 (좁으면 줄여서 넣는다).
-              const Expanded(
-                flex: 2,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [TailwindBadge(), TailwindAdButton(), BossSupportAdButton(), AutoUpgradeChip()],
-                  ),
-                ),
-              ),
+              // 순풍 남은 시간은 위 막대에 그대로(줄이지 않음). 광고·자동 강화 칩은 게이지 아래 오른쪽(BuffChips — 크게).
+              const TailwindBadge(),
+              const Spacer(),
               PixelIconButton(
                 key: const Key('hud.settings'),
                 asset: UiSprites.gear,

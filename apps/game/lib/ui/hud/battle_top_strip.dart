@@ -6,6 +6,7 @@ import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_intro.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/hud/buff_chips.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/fast_sail.dart';
 import 'package:pirate_dot/ui/hud/fever_slot.dart';
@@ -33,6 +34,8 @@ class BattleTopStrip extends StatelessWidget {
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
       Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
+      // 광고 버프·보상 칩(크게, 오른쪽) — 없으면 자리 없음.
+      Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: BuffChips()),
       // 보스 등장 이름표 (2초).
       BossIntro(),
       BossFailNotice(),
