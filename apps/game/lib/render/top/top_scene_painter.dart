@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -150,6 +151,7 @@ class TopScenePainter {
         }
       }
       final sinking = _sink(c, m.sinkMs);
+      HdShip.load(_skinCfg); // HD 배 스킨 색(한 번만)
       final skinGlow = skins.frame(skinId, _skinCfg, sprites.bank, _shipKeys);
       scene.topHits.skinMuzzle = skins.muzzle; // 스킨별 포구 화염 색(배 스킨 v2)
       if (skins.changed) scene.topHits.loot.reward(clockMs, ship); // 새 배 스킨! 빛기둥·고리·별가루
