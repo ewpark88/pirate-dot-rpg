@@ -47,7 +47,13 @@ void main() {
     expect(gateFirstLegend(at(h, 10), t, 'rare'), 'rare');
     expect(gateFirstLegend(at(h, until), t, 'legend'), 'legend');
     expect(gateFirstLegend(at(h, 10, rebirths: 1), t, 'legend'), 'legend');
-    grantCard(at(h, 30), h.ctx, 'bones', 'legend', 'boss'); // 스테이지 20 전엔 초반 카드 문(earlyCards)이 희귀로 더 낮춘다 // 옥토는 시작 선원 보호로 일반이 된다(starter_guard_test)
+    grantCard(
+      at(h, 30),
+      h.ctx,
+      'bones',
+      'legend',
+      'boss',
+    ); // 스테이지 20 전엔 초반 카드 문(earlyCards)이 희귀로 더 낮춘다 // 옥토는 시작 선원 보호로 일반이 된다(starter_guard_test)
     expect(h.of<CardGranted>().single.rarity, 'hero');
   });
 
