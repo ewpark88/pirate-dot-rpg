@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/ui/hud/chest_edge.dart';
+import 'package:pirate_dot/ui/hud/chest_tap_hint.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -74,11 +75,10 @@ class ChestLayer extends ConsumerWidget {
                           if (reward != null)
                             Positioned(
                               top: _rewardOffset,
-                              child: Text(
-                                reward.format(),
-                                style: const TextStyle(color: PixelPalette.gold, fontWeight: FontWeight.bold),
-                              ),
+                              child: OutlineText(reward.format(), size: 15, tone: OutlineTone.gold),
                             ),
+                          // 처음 3번: '톡!'이 통통 (사용자 피드백 #6).
+                          const Positioned(top: _rewardOffset - 24, child: ChestTapHint()),
                         ],
                       ),
                     ),

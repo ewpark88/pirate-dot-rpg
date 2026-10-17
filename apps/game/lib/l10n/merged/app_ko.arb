@@ -1358,5 +1358,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiChestTap": "톡!"
 }
