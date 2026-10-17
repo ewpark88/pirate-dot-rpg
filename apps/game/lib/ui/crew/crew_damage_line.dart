@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/text/number_text.dart';
 
 /// 지난 보스 처치의 선원별 피해(BossCleared.crewDamage) — 보스 처치 창(BossDamageGate)이 채운다. 앱을 다시 켜면 비어 있다.
 class LastBossDamage extends Notifier<Map<String, BigNum>> {
@@ -33,8 +34,7 @@ class CrewDamageLine extends ConsumerWidget {
     String? bossText;
     if (mine != null) {
       final total = boss.values.fold(BigNum.zero, (a, b) => a + b);
-      final pct = total.isZero ? 0 : ((mine / total).toDouble() * 100).round();
-      bossText = l10n.uiCrewDamageBoss(mine.format(), '$pct%');
+      bossText = l10n.uiCrewDamageBoss(mine.format(), percentText(l10n, total.isZero ? 0 : (mine / total).toDouble()));
     }
     if (stage == null && bossText == null) return const SizedBox.shrink();
     return Padding(
