@@ -90,12 +90,14 @@ class TopDuel {
     // 머리: 결투 중이면 보스 쪽, 아니면 평소(피버 기울기) — 초당 turn까지만 돈다.
     final want = duel?.face ?? free.heading;
     final turning = turn > 0 && want != st.heading;
-    if (duel == null && !st.duelling && !turning) {
-      st.heading = free.heading;
-      return free;
+    // 결투도 복귀도 아니면 자리는 평소(피버 모션) 그대로 — 머리만 초당 turn까지(보스전 뒤 위로 돌아오는 중일 수 있다).
+    // 머리 회전만으로 '결투 중'(이동 속도 speed 제한)이 되면 피버 8자가 초당 speed로 묶인다(proto fever_motion 실패, 2026-10-17).
+    if (duel == null && !st.duelling) {
+      st.heading = turning ? _turnToward(st.heading, want, turn * dt) : free.heading;
+      return (x: free.x, y: free.y, heading: st.heading);
     }
     st
-      ..duelling = duel != null || d > max || turning
+      ..duelling = duel != null || d > max
       ..heading = turn > 0 ? _turnToward(st.heading, want, turn * dt) : (duel == null ? free.heading : 0);
     final next = d <= max ? to : (x: cur.x + dx / d * max, y: cur.y + dy / d * max);
     final kept = _keepOff(f, g, next);

@@ -16,5 +16,6 @@ export 'src/economy/offline.dart';
 export 'src/economy/rebirth.dart' show RebirthPreview, piecesFor, rebirthBonus, rebirthPreview;
 export 'src/economy/ship_stats.dart';
 export 'src/engine/core_engine.dart' show CoreEngine, defaultSystems;
+export 'src/engine/crew_preview.dart' show CrewPreview;
 export 'src/ports/xorshift_rng.dart';
 export 'src/save/save_codec.dart';

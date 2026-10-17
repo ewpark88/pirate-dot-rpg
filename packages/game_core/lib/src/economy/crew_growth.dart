@@ -59,3 +59,13 @@ CrewGrowthView? crewGrowth(GameState s, GameTables t, String crewId) {
     promoteGain: p == null ? 0 : g.promotionMultiplier - 1,
   );
 }
+
+/// 편성 칸 선원 바꾸기 비교(사용자 피드백 #34 '교체하려는 선원의 전투력 비교'): 지금 선원 `outId` → 새 선원 `inId`의
+/// 혼자 초당 피해(fleetDps)와 비율(새 ÷ 지금). 판정 문턱·이유 글은 화면이 정한다.
+typedef SwapCompareView = ({BigNum dpsOut, BigNum dpsIn, double ratio});
+
+SwapCompareView swapCompare(GameState s, GameTables t, String outId, String inId) {
+  final out = fleetDps(s, t, [outId]);
+  final inn = fleetDps(s, t, [inId]);
+  return (dpsOut: out, dpsIn: inn, ratio: out.isZero ? 1 : (inn / out).toDouble());
+}

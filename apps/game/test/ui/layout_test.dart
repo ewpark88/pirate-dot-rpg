@@ -58,13 +58,12 @@ void main() {
 
   testWidgets('접근성: 아이콘 버튼에는 설명(tooltip)이 있다', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'));
-    for (final (key, tip) in [('hud.settings', 'Settings'), ('daily.icon', 'Quests & Attendance')]) {
-      expect(
-        find.descendant(of: find.byKey(Key(key)), matching: find.byTooltip(tip)),
-        findsOneWidget,
-        reason: key,
-      );
-    }
+    expect(
+      find.descendant(of: find.byKey(const Key('hud.settings')), matching: find.byTooltip('Settings')),
+      findsOneWidget,
+    );
+    // 퀘스트는 도크 첫 칸(#9 A) — 툴팁 대신 아이콘 아래 글자가 늘 보인다.
+    expect(find.descendant(of: find.byKey(const Key('daily.icon')), matching: find.text('Quests')), findsOneWidget);
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   });
 }

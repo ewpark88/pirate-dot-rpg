@@ -22,6 +22,7 @@ class Progress {
     this.challengeInSec,
     this.dex = const DexState(),
     this.sailHold = false,
+    this.collectionClaimed = const [],
   });
 
   factory Progress.fromJson(Json j) => Progress(
@@ -43,6 +44,7 @@ class Progress {
     challengeInSec: (j['challengeInSec'] as num?)?.toDouble(),
     dex: j['dex'] == null ? const DexState() : DexState.fromJson(j['dex'] as Json),
     sailHold: j['sailHold'] as bool? ?? false,
+    collectionClaimed: (j['collectionClaimed'] as List?)?.cast<int>() ?? const [],
   );
 
   final int stage;
@@ -88,6 +90,9 @@ class Progress {
   /// StartVoyage가 푼다. 기본값이면 본문에 없다(옛 세이브 그대로).
   final bool sailHold;
 
+  /// 도감 수집 보상(meta.collectionRewards)을 받은 칸의 at(보유 선원 수). 선택 키 — 비면 본문에 없다(옛 세이브 그대로).
+  final List<int> collectionClaimed;
+
   Progress copyWith({
     int? stage,
     int? wave,
@@ -107,6 +112,7 @@ class Progress {
     double? challengeInSec,
     DexState? dex,
     bool? sailHold,
+    List<int>? collectionClaimed,
   }) => Progress(
     stage: stage ?? this.stage,
     wave: wave ?? this.wave,
@@ -124,6 +130,7 @@ class Progress {
     challengeInSec: challengeInSec ?? this.challengeInSec,
     dex: dex ?? this.dex,
     sailHold: sailHold ?? this.sailHold,
+    collectionClaimed: collectionClaimed ?? this.collectionClaimed,
   );
 
   Json toJson() => {
@@ -142,6 +149,7 @@ class Progress {
     if (challengeInSec != null) 'challengeInSec': challengeInSec,
     if (!dex.isEmpty) 'dex': dex.toJson(),
     if (sailHold) 'sailHold': true,
+    if (collectionClaimed.isNotEmpty) 'collectionClaimed': collectionClaimed,
   };
 }
 
