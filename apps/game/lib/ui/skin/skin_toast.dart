@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 
-/// 잠깐 뜨는 안내 (스킨 r1): 화면 아래쪽 잉크색 알약, [_show] 뒤 사라진다. 새 안내가 오면 앞의 것을 바꾼다.
+/// 잠깐 뜨는 안내 (k2): 위 막대 바로 아래로 미끄러져 내려오는 남색 판(모션 기준 #50), [_show] 뒤 사라진다. 새 안내가 오면 앞의 것을 바꾼다.
 const _show = Duration(milliseconds: 2200);
 
 /// 되돌리기처럼 누를 것이 있는 안내는 조금 더 오래.
@@ -18,17 +18,19 @@ void showSkinToast(BuildContext context, String text, {String? action, VoidCallb
     builder: (context) => Positioned(
       left: 24,
       right: 24,
-      bottom: 120,
+      // 위 막대(48dp) 바로 아래 — 도크·선원 줄·가이드 말풍선(아래쪽)과 겹치지 않게.
+      top: MediaQuery.paddingOf(context).top + 56,
       child: IgnorePointer(
         ignoring: action == null,
         child: Center(
           child: TweenAnimationBuilder<double>(
             tween: Tween(begin: 0, end: 1),
             duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutBack,
+            curve: Curves.easeOutCubic,
+            // 위에서 미끄러져 내려오며 선명해진다.
             builder: (_, t, child) => Opacity(
               opacity: t.clamp(0, 1).toDouble(),
-              child: Transform.scale(scale: 0.9 + 0.1 * t, child: child),
+              child: Transform.translate(offset: Offset(0, -28 * (1 - t)), child: child),
             ),
             child: Material(
               type: MaterialType.transparency,

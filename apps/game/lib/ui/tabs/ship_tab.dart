@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/rebirth/ship_skin.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/skin/rolling_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -181,9 +182,10 @@ class _PartRow extends ConsumerWidget {
                   Flexible(
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text(
+                      // 강화하면 효과 숫자가 굴러 오른다(모션 기준 #50).
+                      child: RollingText(
                         partEffectText(l10n, def, partEffect(def, level)),
-                        key: Key('ship.effect.${def.id}'),
+                        textKey: Key('ship.effect.${def.id}'),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
                       ),
                     ),

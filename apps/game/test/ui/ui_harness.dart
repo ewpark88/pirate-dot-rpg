@@ -12,6 +12,7 @@ import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/hud/chest_tap_hint.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -114,7 +115,8 @@ GameState withGuidesSeen(GameState s) {
     settings: Settings.fromJson({
       ...s.settings.toJson(),
       'battleView': s.settings.battleView,
-      'hints': [...s.settings.hints, ...guideIds],
+      // 상자 '톡!'(처음 3번, #6)도 본 것으로 — 그것을 시험하는 테스트만 guides: true로 빈 기록.
+      'hints': [...s.settings.hints, ...guideIds, ...chestTapHints],
     }),
   );
 }

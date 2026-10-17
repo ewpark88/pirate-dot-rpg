@@ -70,11 +70,15 @@ class HudPainter {
   /// 데미지 숫자: 도트 글꼴, 0.6초 동안 떠오름. 글자는 숫자가 바뀔 때만 다시 굽는다.
   /// [scale]: 탑다운은 전장 1단위가 옆모습 1도트보다 커서(S24 2.13 : 1.42dp) 숫자를 옆모습과 같은 화면 크기로 줄인다.
   void paintNumbers(Canvas c, {double scale = 1, Rect cull = Rect.largest}) {
-    final layer = scene.numbers;
     // 손맛 v4: 연쇄가 길수록 숫자가 커지고 색이 달아오른다(흰 → 연노랑 → 주황 → 분홍), 나올 때 톡 튀어 커졌다 자리 잡음.
     final combo = scene.combo.count(scene.clockMs);
     final tier = combo >= 50 ? 3 : (combo >= 25 ? 2 : (combo >= 10 ? 1 : 0));
     final grow = 1 + math.min(combo, 60) / 60 * 0.45;
+    // 쌓기 간격을 실제 그린 크기로(S5 실기기 '세로로 한 글자씩 쌓임'): 아틀라스 글자 배율 × 화면 배율(layout.dot/frame.dot —
+    // 기기 dpr마다 다르다) × 연쇄 키움. 안 곱하면 큰 글자가 작은 줄 간격으로 쌓여 겹쳤다.
+    final layer = scene.numbers
+      ..tall = (digits != null ? 2.3 : 1) * scale * grow
+      ..wide = (digits != null ? 1.5 : 1) * scale * grow;
     for (final n in layer.active) {
       if (!cull.contains(Offset(n.x, n.y))) continue;
       final text = (n.cache ??= _NumberText()) as _NumberText;
@@ -178,6 +182,9 @@ class HudPainter {
   void _comboAt(Canvas c, double y) {
     final v = scene.layout.viewDots;
     final now = scene.clockMs;
+    final fever = scene.frame.feverTicksLeft > 0;
+    // 사용자 2026-10-17 '콤보는 피버 타임에만': fx_map combo.feverOnly면 일반 전투에선 배너를 숨긴다(처치 숫자·POP은 그대로).
+    if (!fever && _fx.combo.raw['feverOnly'] == true) return;
     _banner.paint(
       c,
       (v.left + v.width / 2).floorToDouble(),
@@ -187,7 +194,7 @@ class HudPainter {
       scene.combo.lastAddMs,
       minKills: _fx.combo.integer('minKills'),
       baseColor: _comboColor,
-      fever: scene.frame.feverTicksLeft > 0,
+      fever: fever,
       onMilestone: (_) {
         scene.shake.trigger(scene.juice.shake['aoe']!);
         scene.sound.sfx('multiKill', clockMs: now);

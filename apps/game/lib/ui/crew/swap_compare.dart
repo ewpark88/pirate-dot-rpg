@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -106,6 +107,8 @@ class SwapCompareDialog extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SubRibbon(l10n.uiSwapTitle),
+              // 처음 볼 때 옥토 한 마디(가이드 v3).
+              OnceTip(id: 'tip.swap', text: l10n.uiTipSwap),
               const SizedBox(height: 8),
               Row(
                 children: [

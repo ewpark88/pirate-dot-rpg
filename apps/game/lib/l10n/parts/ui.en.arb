@@ -1121,5 +1121,30 @@
         "type": "String"
       }
     }
+  },
+  "uiChestTap": "Tap!",
+  "uiTalkBossTrait": "This boss has {trait}! {counters} crew work well.",
+  "uiTalkShipSkin": "You got a new ship skin! Try it in the Ship tab under 'Ship skin'.",
+  "uiTalkCollect": "A log reward is ready! Tap it in the Crew tab.",
+  "uiTipPreview": "Tap a rarity to preview how much stronger they get!",
+  "uiTipSwap": "Green means stronger. If you see 'Recommended', swap!",
+  "uiTipIronDeck": "Iron Deck cuts ship damage in boss fights. Get it first if bosses are tough!",
+  "@uiTalkBossTrait": {
+    "placeholders": {
+      "trait": {
+        "type": "String"
+      },
+      "counters": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPowerGain": "+{n}",
+  "@uiPowerGain": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }

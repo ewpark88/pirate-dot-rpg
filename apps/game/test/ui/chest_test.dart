@@ -151,4 +151,17 @@ void main() {
       });
     }
   });
+
+  testWidgets('처음 3번: 상자 위 톡! + MarkHint(chest.tap1) · 3번 다 봤으면 없음 (#6)', (tester) async {
+    // guides: true = 본 기록이 빈 샘플 그대로.
+    final log = await pumpGame(tester, _withChest(), openTab: false, guides: true);
+    await tester.pump();
+    expect(find.byKey(const Key('chest.tapHint')), findsOneWidget);
+    expect(log.hints.map((c) => c.id), contains('chest.tap1'));
+    await tester.pump(const Duration(seconds: 2));
+    // 기본 하네스는 chest.tap1~3을 본 것으로 둔다.
+    await pumpGame(tester, _withChest(), openTab: false);
+    await tester.pump();
+    expect(find.byKey(const Key('chest.tapHint')), findsNothing);
+  });
 }
