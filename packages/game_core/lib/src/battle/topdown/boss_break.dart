@@ -45,6 +45,7 @@ extension BossBreak on Round {
           ? (e.breakCooldownUntil - ctx.tick) / e.breakCooldownTicks
           : 0;
       if (ctx.tick < e.breakCooldownUntil) continue;
+      if (ctx.tick < e.staggerUntil) continue; // 층 깨짐 비틀 중엔 안 쌓인다(boss-feel — 겹쳐 녹는 것 막기)
       e.breakGauge = math.min(1, e.breakGauge + gained);
       if (e.breakGauge < 1) continue;
       final b = skills.obj('bossBreak');

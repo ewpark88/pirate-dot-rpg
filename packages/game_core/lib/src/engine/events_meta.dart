@@ -78,6 +78,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'bossSplit' ||
     'bomberBlast' ||
     'bossBroken' ||
+    'bossBarBroken' ||
     'bossTraitFired' => _bestiaryEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),

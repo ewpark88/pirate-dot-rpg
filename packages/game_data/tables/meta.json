@@ -93,6 +93,7 @@
   },
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
+  "captainSkill": { "killGain": 0.004, "bossDamageGain": 1.2, "rushSec": 3, "attackSpeedMul": 2 },
   "fever": { "weave": {"mode": "flow", "amp": 60, "ampY": 34, "periodSec": 6.0, "tiltDeg": 15, "drift": 1.0, "loopEvery": 0},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,

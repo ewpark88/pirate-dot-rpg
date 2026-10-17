@@ -30,6 +30,14 @@ GameEvent _bestiaryEventFromJson(int t, Json j) => switch (j['type'] as String) 
     trait: j['trait'] as String,
     ticks: j['ticks'] as int? ?? 0,
   ),
+  'bossBarBroken' => BossBarBroken(
+    t,
+    enemyId: j['enemyId'] as int,
+    bar: j['bar'] as int,
+    barsLeft: j['barsLeft'] as int,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
+  ),
   'bossBroken' => BossBroken(
     t,
     enemyId: j['enemyId'] as int,
@@ -126,6 +134,31 @@ class BomberBlast extends GameEvent {
   Json _fields() => {'enemyId': enemyId, 'x': x, 'y': y, 'radius': radius, 'onShip': onShip};
 }
 
+/// 보스 체력 층이 깨졌다(boss-feel, 사용자 '보스전 밋밋' 2026-10-17): [bar]번째 층(위에서부터 센 번호, 남은 층 수 기준)이 깨져
+/// [barsLeft]층 남음. 보스는 waves.boss.bars.staggerSec 동안 비틀(기절 + 받는 피해 × staggerDamageMul). 마지막 층(처치)은 없음.
+class BossBarBroken extends GameEvent {
+  const BossBarBroken(
+    super.tick, {
+    required this.enemyId,
+    required this.bar,
+    required this.barsLeft,
+    required this.x,
+    required this.y,
+  });
+
+  final int enemyId;
+  final int bar;
+  final int barsLeft;
+  final double x;
+  final double y;
+
+  @override
+  String get type => 'bossBarBroken';
+
+  @override
+  Json _fields() => {'enemyId': enemyId, 'bar': bar, 'barsLeft': barsLeft, 'x': x, 'y': y};
+}
+
 /// 보스 브레이크(사용자 결정 2026-10-17): 게이지가 가득 차 보스가 [ticks] 동안 쓰러졌다 — 그동안 받는 피해 × damageMul.
 class BossBroken extends GameEvent {
   const BossBroken(super.tick, {required this.enemyId, required this.ticks, required this.x, required this.y});
@@ -156,4 +189,21 @@ class BossTraitFired extends GameEvent {
 
   @override
   Json _fields() => {'enemyId': enemyId, 'trait': trait, if (ticks != 0) 'ticks': ticks};
+}
+
+// events.dart 300줄 — 궁극기 사용은 보스전 손맛(필살기 manual)과 함께 여기로(boss-feel).
+class UltimateCast extends GameEvent {
+  const UltimateCast(super.tick, {required this.crewId, required this.ultimateId, this.manual = false});
+
+  final String crewId;
+  final String ultimateId;
+
+  /// 선장 필살기 버튼으로 쓴 것(TriggerUltimate, 자동 필살기 끔). 피버 첫 일격·자동 사용은 false. 선택 키.
+  final bool manual;
+
+  @override
+  String get type => 'ultimateCast';
+
+  @override
+  Json _fields() => {'crewId': crewId, 'ultimateId': ultimateId, if (manual) 'manual': true};
 }
