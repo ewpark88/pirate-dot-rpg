@@ -27,6 +27,7 @@ GameState refillWave(GameState s, Field f, SystemContext ctx, {required bool fas
   final per = fast ? w.rebirthSkip.waves : w.wavesPerStage;
   if (!p.farming && p.wave + 1 >= per) return s; // 이 파가 마지막 — 다 잡으면 보스
   final r = w.raw.obj('top').obj('refill');
+  if (p.stage < (r.intOrNull('fromStage') ?? 0)) return s; // 초반(무리 60마리 덤)은 이미 빽빽 — 진행 속도 그대로
   final below = math.max(r.integer('min'), (w.topMobCountAt(p.stage) * r.number('belowRatio')).round());
   if (left > below) return s;
   spawnWave(f, p.stage, ctx);

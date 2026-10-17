@@ -3288,7 +3288,7 @@ const Map<String, String> rawTables = {
   "fever": { "weave": {"mode": "flow", "amp": 60, "ampY": 34, "periodSec": 6.0, "tiltDeg": 15, "drift": 1.0, "loopEvery": 0},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
-    "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring", "approachMul": 1.8 },
+    "swarm": { "countMul": 2.5, "max": 260, "pattern": "ring", "approachMul": 1.8 },
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
   "shipSkins": [{"id": "king", "nameKey": "shipSkinKing", "source": {"type": "collection", "value": 10}}, {"id": "fairy", "nameKey": "shipSkinFairy", "source": {"type": "bestStage", "value": 100}}, {"id": "frost", "nameKey": "shipSkinFrost", "source": {"type": "bountyTier", "value": 10}}, {"id": "lava", "nameKey": "shipSkinLava", "source": {"type": "bountyAll", "value": 5}}, {"id": "ghostship", "nameKey": "shipSkinGhostship", "source": {"type": "bestStage", "value": 300}}, {"id": "festival", "nameKey": "shipSkinFestival", "source": {"type": "collection", "value": 40}}, {"id": "abyss", "nameKey": "shipSkinAbyss", "source": {"type": "pieces", "value": 50}}],
@@ -3973,7 +3973,7 @@ const Map<String, String> rawTables = {
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
     "windupSec": 0.4,
-    "refill": { "belowRatio": 0.35, "min": 8 }, "mobCount": { "base": 44, "stagesPerExtra": 2, "max": 150, "earlyExtra": 16, "earlyStages": 20 },
+    "spawnFromView": true, "scatterSpanSec": 4, "refill": { "fromStage": 11, "belowRatio": 0.35, "min": 8 }, "mobCount": { "base": 57, "stagesPerExtra": 2, "max": 195, "earlyExtra": 21, "earlyStages": 20 },
     "swarmSpacing": 3,
     "bossSpawnRadius": 152,
     "chestMargin": 12,
