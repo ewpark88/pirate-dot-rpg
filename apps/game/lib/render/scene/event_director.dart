@@ -207,6 +207,7 @@ class EventDirector implements ReplayListener {
       );
     }
     _fx(e.crit ? 'critHit' : 'damage', tx, target.y);
+    if (target.boss && scene.isTop) scene.moments.bossHit(e.amount, scene.clockMs); // 보스전 누계 TOTAL
     if (e.crit) scene.haptic(HapticLevel.light);
 
     final family = _crewFamily[e.crewId];

@@ -85,6 +85,16 @@ class Moments {
   /// 심연의 탑 층 띠(S1): 층 시작 '12F' 1.6초, 클리어면 위에 'CLEAR!'.
   void onTowerFloor(int floor, {bool cleared = false}) => banner('${floor}F', sub: cleared ? 'CLEAR!' : '');
 
+  /// 보스전 누계(S1 '보스전도 핵앤슬래시' — 콤보는 피버 전용이라 보스전엔 'TOTAL'): 연속 타격 피해 합, 1.5초 끊기면 새로.
+  BigNum bossTotal = BigNum.zero;
+  double bossTotalAt = -1000000000;
+  static const bossTotalGapMs = 1500.0;
+  void bossHit(BigNum amount, double now) {
+    if (now - bossTotalAt > bossTotalGapMs || now < bossTotalAt) bossTotal = BigNum.zero;
+    bossTotal = bossTotal + amount;
+    bossTotalAt = now;
+  }
+
   /// 최근 처치 자리(최대 [_killMax]) — 무리 처치(MultiKill) 때 금화 터짐을 그 자리들에 뿌린다.
   final recentKills = <Offset>[];
   static const _killMax = 16;
