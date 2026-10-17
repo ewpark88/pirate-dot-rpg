@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 const rollFor = Duration(milliseconds: 260);
 
 class RollingText extends StatelessWidget {
-  const RollingText(this.text, {this.style, this.textKey, super.key});
+  const RollingText(this.text, {this.style, this.textKey, this.duration = rollFor, super.key});
 
   final String text;
   final TextStyle? style;
@@ -14,11 +14,14 @@ class RollingText extends StatelessWidget {
   /// 안쪽 Text의 key (테스트가 읽는 자리 그대로).
   final Key? textKey;
 
+  /// 굴러가는 시간 (전투력은 0.5초 — S1 '강화의 손맛').
+  final Duration duration;
+
   @override
   Widget build(BuildContext context) {
     final calm = MediaQuery.disableAnimationsOf(context);
     return AnimatedSwitcher(
-      duration: calm ? Duration.zero : rollFor,
+      duration: calm ? Duration.zero : duration,
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
       layoutBuilder: (current, previous) => Stack(

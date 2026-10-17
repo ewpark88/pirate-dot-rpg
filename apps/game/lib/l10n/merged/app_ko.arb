@@ -1375,5 +1375,13 @@
         "type": "String"
       }
     }
+  },
+  "uiPowerGain": "+{n}",
+  "@uiPowerGain": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }
