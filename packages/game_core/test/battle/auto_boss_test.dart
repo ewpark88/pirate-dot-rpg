@@ -49,9 +49,13 @@ void main() {
     expect(ticksUntilBoss(s), isNull);
   });
 
-  test('꺼져 있거나 튜토리얼 보스 단계면 계속 파밍(남은 틱 0)', () {
+  test('튜토리얼 보스 단계에서도 재도전한다(방치 플레이어가 멈추지 않게)', () {
     final tut = t.meta.raw.obj('tutorial').obj('steps').integer('boss');
-    for (final s0 in [farming(auto: false), farming(tutorialStep: tut)]) {
+    expect(ticksUntilBoss(farming(tutorialStep: tut)), cool + cool);
+  });
+
+  test('꺼져 있으면 계속 파밍(남은 틱 0)', () {
+    for (final s0 in [farming(auto: false)]) {
       final f = field();
       var s = s0;
       for (var i = 0; i < cool * 3; i++) {
