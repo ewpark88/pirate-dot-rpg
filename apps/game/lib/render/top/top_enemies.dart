@@ -114,7 +114,7 @@ class TopEnemies {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
         // HD v2 표정: 쓰러짐(브레이크) > 공격 예고(EnemyWindup) > 평소.
         final mood = !hd.moods
-            ? HdMood.idle
+            ? (hd.hits && flash ? HdMood.hit : HdMood.idle) // 잡몹 v2: 맞으면 찡긋
             : (scene.topHits.breaks.isDown(e.id, clock)
                   ? HdMood.down
                   : (scene.topHits.muzzle.charging(e.id, clock) ? HdMood.windup : HdMood.idle));

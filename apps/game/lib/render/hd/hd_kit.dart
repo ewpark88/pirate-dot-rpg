@@ -90,7 +90,7 @@ class HdKit {
 
   /// 큰 카툰 눈: 흰자 + 검은 눈동자 + 반짝 두 점 + 외곽선. [angry]면 눈썹, [look](-1 왼쪽 ~ 1 오른쪽)은 눈동자 방향.
   void eye(Canvas c, Offset at, double s, {bool angry = false, double look = 0}) {
-    if (mood == HdMood.down) return dizzyEye(c, at, s, 0); // v2 표정: 쓰러짐 = 소용돌이 눈, 예고 = 붉은 눈(아래)
+    if (mood == HdMood.down || mood == HdMood.hit) return moodEye(c, at, s); // 쓰러짐 소용돌이·맞음 찡긋, 예고 = 붉은 눈(아래)
     final white = Rect.fromCenter(center: at, width: s, height: s * 1.15);
     // 작은 눈은 선을 눈 크기에 맞춰 얇게(굵은 선에 흰자가 묻히지 않게) — 끝에 되돌린다.
     final w = ink.strokeWidth;
@@ -297,4 +297,4 @@ class HdKit {
 }
 
 /// HD v2 보스 표정 — 굽기가 줄마다 바꿔 넣는다.
-enum HdMood { idle, windup, down }
+enum HdMood { idle, windup, down, hit }

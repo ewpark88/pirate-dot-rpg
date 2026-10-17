@@ -82,6 +82,24 @@ extension HdKitV2 on HdKit {
     c.drawCircle(at + Offset(-s * 0.05, s * 0.1), s * 0.09, fill);
   }
 
+  /// HdKit.eye 표정 갈래: 쓰러짐 = 소용돌이 눈, 맞음 = 찡긋.
+  void moodEye(Canvas c, Offset at, double s) => mood == HdMood.hit ? squintEye(c, at, s) : dizzyEye(c, at, s, 0);
+
+  /// 맞을 때 찡긋(잡몹 v2 HdMood.hit): 굵은 > < — 몸 왼쪽 눈은 >, 오른쪽 눈은 <.
+  void squintEye(Canvas c, Offset at, double s) {
+    final d = at.dx <= 0 ? 1.0 : -1.0;
+    final w0 = ink.strokeWidth;
+    ink.strokeWidth = math.max(1.2, s * 0.2);
+    c.drawPath(
+      Path()
+        ..moveTo(at.dx - d * s * 0.32, at.dy - s * 0.32)
+        ..lineTo(at.dx + d * s * 0.3, at.dy)
+        ..lineTo(at.dx - d * s * 0.32, at.dy + s * 0.32),
+      ink,
+    );
+    ink.strokeWidth = w0;
+  }
+
   /// 쓰러짐: 머리 위 [at]을 도는 별 셋(크기 r 배수 0.14).
   void dizzyStars(Canvas c, Offset at, double r, double t) {
     for (var i = 0; i < 3; i++) {
