@@ -65,6 +65,10 @@ class Moments {
   /// 피버 시작 금빛 번쩍 남은 시간(ms).
   double feverFlashMs = 0;
 
+  /// 피버 시작·끝 시각(장면 시계 ms) — 'FEVER!' 글자가 가운데서 튀어나와 위 띠로, 'FEVER END' 작게.
+  double feverAt = -1000000000;
+  double feverEndAt = -1000000000;
+
   /// 무리전 침몰(배 HP 0, 엔진이 배를 고치고 파를 다시) 연출 남은 시간(ms): 앞 절반 기울며 가라앉고, 뒤 절반 고쳐져 떠오른다.
   double sinkMs = 0;
 

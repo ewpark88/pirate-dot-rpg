@@ -74,6 +74,33 @@ class TopOverlays {
     }
   }
 
+  /// 피버 시작 'FEVER!'(S1): 0~0.25초 가운데서 크게 튀어나옴 → 0.55초까지 머묾 → 0.9초까지 위 HUD 띠로 날아가며 작아짐.
+  /// 끝 'FEVER END': 위쪽 작게 0.9초.
+  void _feverWord(Canvas c, Size box) {
+    final now = scene.clockMs;
+    final top = scene.hudTopDp ?? scene.fx.raw.obj('topCam').number('hudTopDp');
+    final a = now - scene.moments.feverAt;
+    if (a >= 0 && a < 900) {
+      final mid = Offset(box.width / 2, box.height * 0.42);
+      final fly = a < 550 ? 0.0 : (a - 550) / 350;
+      final ease = fly * fly;
+      final pop = a < 250 ? 0.4 + 0.8 * a / 250 - (a > 180 ? 0.2 * (a - 180) / 70 : 0) : 1.0;
+      final at = Offset.lerp(mid, Offset(box.width / 2, top + 10), ease)!;
+      _label.draw(c, 'FEVER!', at, (box.height * 0.11 * pop * (1 - 0.6 * ease)).roundToDouble(), alpha: 1 - 0.6 * ease);
+    }
+    final e = now - scene.moments.feverEndAt;
+    if (e >= 0 && e < 900) {
+      _label.draw(
+        c,
+        'FEVER END',
+        Offset(box.width / 2, top + box.height * 0.08),
+        (box.height * 0.035).roundToDouble(),
+        alpha: e < 600 ? 1 : (900 - e) / 300,
+        color: const Color(0xFFFFE8B0),
+      );
+    }
+  }
+
   /// 보스 등장 첫 0.3초 화면 어둡게(30% → 0) — 보스만 빛나게.
   void _entryDim(Canvas c, Size box) {
     final m = scene.moments;
@@ -112,6 +139,7 @@ class TopOverlays {
       c.drawRect(Offset.zero & box, _flashPaint);
       edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
+    _feverWord(c, box);
     _entryDim(c, box);
     _tower(c, box);
     _bossTotal(c, box);

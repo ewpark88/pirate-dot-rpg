@@ -173,12 +173,15 @@ bool funEvent(BattleScene s, GameEvent e) {
       if (e.trait == 'enrage' || e.trait == 'dash') s.shake.trigger(s.juice.shake['aoe']!);
     case FeverStarted():
       // 화면 흔들기 없음(사용자 '화면이 좌우로 움직이면 조잡하다') — 시작 임팩트는 금빛 번쩍·충격파·'쑥' 가속(세로).
-      s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
+      s.moments
+        ..feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs')
+        ..feverAt = s.clockMs;
       s.haptic(HapticLevel.medium);
       s.topHits.glow.circle(s.clockMs, 90, 0xFFFFC23A); // 개편 ③ 피버 시작 큰 금빛 마법진
       _sfx(s, 'feverStarted', e);
       s.sound.fever(on: true, id: s.fx.raw.obj('topEvents').obj('fever').raw['bgm'] as String?);
     case FeverEnded():
+      s.moments.feverEndAt = s.clockMs;
       s.sound.fever(on: false);
     case GoldfishCaught(:final targetId, :final gold):
       final at = s.poseOf(targetId);
