@@ -233,14 +233,18 @@ class TopField {
     nearSpawn: nearSpawn,
   );
 
-  /// [e]의 원 반지름(보스는 크기 배율만큼).
-  double radiusOf(Foe e) => e.boss ? bossRadius * e.scale : mobRadius;
+  /// [e]의 판정 원 반지름(맞히기·범위 피해). 보스 크기 배율과 상관없이 그대로 — 커진 반경으로 범위 공격이 더 걸려
+  /// 보스전이 쉬워지지 않게(S2 smoke 2026-10-18: 반경을 키우자 보스 처치 16~18 → 11~19초).
+  double radiusOf(Foe e) => e.boss ? bossRadius : mobRadius;
 
-  /// [e]가 서는 원의 반지름(배 중심 기준). 큰 보스는 늘어난 반경 × standoffGrow만큼 멀리.
+  /// [e]의 그림 몸 반지름(배율만큼 — 호위 자리·분열 자리처럼 겹쳐 보이면 안 되는 배치에만).
+  double bodyOf(Foe e) => e.boss ? bossRadius * e.scale : mobRadius;
+
+  /// [e]가 서는 원의 반지름(배 중심 기준). 큰 보스는 늘어난 몸 반경 × standoffGrow만큼 멀리(그림이 배와 겹치지 않게).
   double standoffOf(Foe e) => bossStandoff + (e.boss ? bossRadius * (e.scale - 1) * standoffGrow : 0);
 
-  /// 큰 보스 가장자리가 멀어진 만큼(standoff 증가 − 반경 증가) — 보스 사거리(bossReach)에 더해 닿는 거리를 그대로 둔다.
-  double reachExtraOf(Foe e) => standoffOf(e) - bossStandoff - (radiusOf(e) - (e.boss ? bossRadius : mobRadius));
+  /// 큰 보스가 멀어진 만큼 — 사거리(reach·bossReach)에 더해 닿는 거리(= 보스전 시간)를 그대로 둔다.
+  double reachExtraOf(Foe e) => standoffOf(e) - bossStandoff;
 
   /// 원을 도는가(배율이 orbitMax 이하).
   bool orbits(Foe e) => e.scale <= orbitMax;

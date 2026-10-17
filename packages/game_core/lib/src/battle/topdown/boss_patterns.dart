@@ -174,7 +174,7 @@ extension BossPatterns on Round {
               id: field.nextId(),
               kind: e.kind,
               layer: e.layer,
-              x: e.x + g.top.radiusOf(e) / half,
+              x: e.x + g.top.bodyOf(e) / half,
               y: e.y,
               maxHp: e.maxHp,
               speed: e.speed,
