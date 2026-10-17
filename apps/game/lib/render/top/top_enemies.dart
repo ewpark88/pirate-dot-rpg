@@ -88,7 +88,9 @@ class TopEnemies {
       final _Spr spr;
       if (hd != null) {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
-        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading)), scale: hd.scale, hd: true);
+        final right = _facing(e.id, e.heading);
+        spr = (image: hd.image, src: hd.src(f, right: right), scale: hd.scale, hd: true);
+        if (!e.boss) scene.topHits.muzzle.collect(e.id, e.kind, e.drawX, e.drawY, hd.world, right: right, now: clock);
       } else {
         spr = (image: sheet.image, src: _cell(sheet, frame), scale: 1.0, hd: false);
       }
@@ -142,6 +144,7 @@ class TopEnemies {
       c.restore();
     }
     _squashed.clear();
+    if (!under) scene.topHits.muzzle.paint(c);
     _transitions(c, under: under, clock: clock, lite: lite);
   }
 
