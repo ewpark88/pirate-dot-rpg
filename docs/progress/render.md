@@ -556,3 +556,8 @@
 - 다음: S2가 regions.json 순환에 id 넣으면 장면 확인, S5 폰 gfx·p95 측정 결과 반영.
 - 남은 문제: 새 보스 컷인 초상(boss:<id> 도트)·도감 칸 그림은 HD 그림 경로 확인 필요(UI/S4).
 
+## 2026-10-18 (아침) — 카드 그림·큰 초상·바람·대군
+- 한 일: e4ff18af 상점 2배속 카드 그림·HdPortrait moods/silhouette · a125c281 바람 루프 wind.ogg(gen_wind.py) · cde44da9 HordeIncoming 'HORDE!' 띠 · 136ec29e 해골·망령·저주갈매기 찡긋.
+- 다음: S2 보스 18종 데이터 해시 오면 장면 확인, S5 폰 측정 반영.
+- 남은 문제: pubspec에 assets/audio/amb/ 등록(main 공유 — S1), test/ui 골든 10장(ui 레인).
+
