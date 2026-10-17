@@ -109,7 +109,7 @@ extension Flights on Round {
         final radius = geo.zoneRadius(f.attack);
         ctx.emit(BombletBurst(ctx.tick, crewId: f.gun.crewId, x: f.volley.x, y: f.volley.y, radius: radius));
       }
-      final v = _landing(geo, f);
+      final v = _landing(geo, f) ?? (f.volley.hits.isNotEmpty && missProof(f.gun, ctx.rng) ? _homing(geo, f) : null);
       if (v == null) {
         // 원형 탄막의 빈 탄(처음부터 노린 적 없음)은 MISS를 띄우지 않는다
         if (f.volley.hits.isNotEmpty) {
@@ -120,6 +120,15 @@ extension Flights on Round {
       land(f.gun, f.attack, v, f.base, crit: f.crit);
       if (f.afterHit && !isBomblet(f.attack)) legendAfterHit(this, f.gun, v, f.base, crit: f.crit);
     }
+  }
+
+  /// 추적 깃털(legend.noMiss): 빈자리에 떨어질 탄이 떨어진 자리에서 가장 가까운 적(조준 가능한 적)을 맞힌다.
+  Volley? _homing(TopGeometry geo, Flight f) {
+    final pool = geo.eligible(f.attack, field.foes);
+    if (pool.isEmpty) return null;
+    double d2(Foe e) => (e.x - f.volley.x) * (e.x - f.volley.x) + (e.y - f.volley.y) * (e.y - f.volley.y);
+    final e = pool.reduce((m, x) => d2(x) < d2(m) ? x : m);
+    return (x: e.x, y: e.y, hits: [(foe: e, factor: 1.0)]);
   }
 
   Volley? _landing(TopGeometry geo, Flight f) {

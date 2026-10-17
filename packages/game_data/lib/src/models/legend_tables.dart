@@ -29,8 +29,24 @@ class LegendDef {
               chance: j.obj('arc').numberOr('chance', 0),
               ratio: j.obj('arc').number('ratio'),
               stunSec: j.obj('arc').numberOr('stunSec', 0),
+              counts: j.obj('arc').has('counts')
+                  ? [for (final v in j.obj('arc').raw['counts'] as List) (v as num).toInt()]
+                  : null,
+              falloff: j.obj('arc').numberOr('falloff', 1),
             )
-          : null;
+          : null,
+      execute = j.has('execute')
+          ? (below: j.obj('execute').number('below'), mul: j.obj('execute').number('mul'))
+          : null,
+      charge = j.has('charge')
+          ? (
+              every: j.obj('charge').integer('every'),
+              mul: j.obj('charge').number('mul'),
+              stunSec: j.obj('charge').numberOr('stunSec', 0),
+            )
+          : null,
+      noMiss = j.raw['noMiss'] == true,
+      noMissChance = j.numberOr('noMissChance', 0);
 
   /// [raw]의 기본 값에 [mythic]이면 `mythic` 키들을 덮어쓴 능력.
   factory LegendDef.of(JsonReader raw, {required bool mythic}) => LegendDef.fromJson(
@@ -78,9 +94,22 @@ class LegendDef {
       a
         ..['count'] = c.floor()
         ..['chance'] = c - c.floor()
-        ..['stunSec'] = n(a, 'stunSec') * scale;
+        ..['stunSec'] = n(a, 'stunSec') * scale; // counts(등급별 연쇄 수)는 등급마다 정한 값이라 배율 없이 그대로
       out['arc'] = a;
     }
+    if (r['execute'] is Map) {
+      final e = Map<String, dynamic>.of(r['execute'] as Map<String, dynamic>);
+      e['mul'] = 1 + (n(e, 'mul') - 1) * scale;
+      out['execute'] = e;
+    }
+    if (r['charge'] is Map) {
+      final c = Map<String, dynamic>.of(r['charge'] as Map<String, dynamic>);
+      c
+        ..['mul'] = 1 + (n(c, 'mul') - 1) * scale
+        ..['stunSec'] = n(c, 'stunSec') * scale;
+      out['charge'] = c;
+    }
+    if (r['noMiss'] == true) out['noMissChance'] = scale;
     if (r['zone'] is Map) {
       final z = Map<String, dynamic>.of(r['zone'] as Map<String, dynamic>);
       if (z.containsKey('slow')) z['slow'] = n(z, 'slow') * scale;
@@ -102,6 +131,9 @@ class LegendDef {
     'shield',
     'arc',
     'fever',
+    'execute',
+    'charge',
+    'noMiss',
   };
 
   final int extraProjectiles;
@@ -125,7 +157,18 @@ class LegendDef {
   final ({double everySec, double durationSec, double hpRatio})? shield;
 
   /// 번개 연쇄(개성 v2 7.2, pelly): 떨어진 자리에서 가까운 적 count(+chance 확률로 1)마리에게 피해 × ratio, 기절 stunSec.
-  final ({int count, double chance, double ratio, double stunSec})? arc;
+  /// 연쇄 번개(사용자 2026-10-17): counts가 있으면 등급 순번별 마리 수(배율 없음)이고, 마지막에 맞은 적에서 다음으로 튀며 한 번마다 × falloff.
+  final ({int count, double chance, double ratio, double stunSec, List<int>? counts, double falloff})? arc;
+
+  /// 처형(bones, 2026-10-17): 맞은 뒤 HP가 below 아래인 적에게 피해 × (mul − 1)을 더.
+  final ({double below, double mul})? execute;
+
+  /// 충전 사격(volt): every번째 발사마다 맞은 적에게 피해 × (mul − 1)을 더하고 기절 stunSec.
+  final ({int every, double mul, double stunSec})? charge;
+
+  /// 추적 깃털(polly): 빗나가지 않는다 — 탄이 빈자리에 떨어지면 가까운 적을 쫓고, 보스 회피(evade 특성)도 무시. 전설 미만은 발마다 noMissChance.
+  final bool noMiss;
+  final double noMissChance;
 
   /// 피버 서포트(개성 v2 7.3, pumpum): 출전 중이면 피버 게이지 충전 × (1 + chargeBonus), 피버 지속 + extraSec초.
   final ({double chargeBonus, double extraSec})? fever;
