@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
+import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -105,26 +106,24 @@ class SettingsScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           for (final (key, label, value) in switches.where((e) => keys.contains(e.$1)))
-                            PixelListRow(
-                              onTap: () => set(key, !value),
-                              // 줄마다 아이콘 (설정 r2 최종 다듬기).
-                              leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
-                              title: key == 'flash'
-                                  ? Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(label),
-                                        Text(l10n.uiSettingsFlashSub, style: Skin.text(12, color: Skin.sub)),
-                                      ],
-                                    )
-                                  : Text(label),
-                              trailing: PixelToggle(
-                                key: Key('settings.$key'),
-                                value: value,
-                                semanticLabel: label,
-                                onChanged: (v) => set(key, v),
+                            if (key == 'flash')
+                              const FlashLevelRow()
+                            else ...[
+                              PixelListRow(
+                                onTap: () => set(key, !value),
+                                // 줄마다 아이콘 (설정 r2 최종 다듬기).
+                                leading: Icon(_settingIcon(key), size: 22, color: Skin.primaryEdge),
+                                title: Text(label),
+                                trailing: PixelToggle(
+                                  key: Key('settings.$key'),
+                                  value: value,
+                                  semanticLabel: label,
+                                  onChanged: (v) => set(key, v),
+                                ),
                               ),
-                            ),
+                              // 절전 모드 바로 아래: 절전 화면까지 시간.
+                              if (key == 'powerSave') const SleepAfterRow(),
+                            ],
                         ],
                       ),
                     ),
@@ -161,7 +160,6 @@ IconData _settingIcon(String key) => switch (key) {
   'sfx' => Icons.volume_up_rounded,
   'vibration' => Icons.vibration_rounded,
   'shake' => Icons.waves_rounded,
-  'flash' => Icons.flash_on_rounded,
   'powerSave' => Icons.battery_saver_rounded,
   'autoBoss' => Icons.military_tech_rounded,
   _ => Icons.notifications_rounded,
