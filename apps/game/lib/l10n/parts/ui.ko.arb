@@ -183,7 +183,7 @@
   "uiRebirthChestSummons": "영웅 이상 소환 ×{count}",
   "uiRebirthChestSkin": "새 배 스킨: {name}",
   "uiRebirthChestTitle": "새 칭호: {name}",
-  "uiRebirthSail": "항해 시작",
+  "uiRebirthSail": "출항!",
   "uiRebirthRowLocked": "조각 {count}개를 더 쓰면 열려요",
   "uiRebirthRow": "{row}줄",
   "uiRebirthShopPieces": "쓸 수 있는 조각 {count}개",
@@ -487,6 +487,26 @@
   "@uiBossBreakGauge": {
     "placeholders": {
       "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSailHint": "지도를 펼쳤다! 출항하면 빠른 항해 시작",
+  "uiFastSailProgress": "빠른 항해 {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFastSailStreak": "보스 연속 격파 {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }

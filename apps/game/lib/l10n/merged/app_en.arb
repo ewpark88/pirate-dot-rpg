@@ -392,7 +392,7 @@
   "uiRebirthChestSummons": "Hero+ summon ×{count}",
   "uiRebirthChestSkin": "New ship skin: {name}",
   "uiRebirthChestTitle": "New title: {name}",
-  "uiRebirthSail": "Set Sail",
+  "uiRebirthSail": "Set sail!",
   "uiRebirthRowLocked": "Spend {count} more pieces to unlock",
   "uiRebirthRow": "Row {row}",
   "uiRebirthShopPieces": "{count} pieces to spend",
@@ -696,6 +696,26 @@
   "@uiBossBreakGauge": {
     "placeholders": {
       "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSailHint": "Map ready! Set sail to start fast sailing",
+  "uiFastSailProgress": "Fast sail {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFastSailStreak": "Boss streak {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
         "type": "int"
       }
     }
