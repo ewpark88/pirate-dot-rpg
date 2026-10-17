@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/flight.dart';
 import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
+import 'package:game_core/src/battle/topdown/boss_traits.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
@@ -232,7 +233,8 @@ class Round {
       final g = guard(e, familyOf(crewId));
       if (g <= 0) continue; // 보호막: 피해 없음
       final vul = e.vulnerableTimer > 0 ? e.vulnerable : 0.0;
-      final amount = base.times(h.factor * g * (1 + vul));
+      final amount = traitHit(e, base.times(h.factor * g * (1 + vul)), crewId: crewId); // 보스 특성(boss_traits)
+      if (amount == null) continue;
       total = total + amount;
       if (crewId != null) field.creditDamage(crewId, e, amount > e.hp ? e.hp : amount);
       e.hp = e.hp - amount;

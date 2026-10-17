@@ -52,6 +52,7 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     crewId: j['crewId'] as String,
     x: (j['x'] as num).toDouble(),
     y: (j['y'] as num).toDouble(),
+    reason: j['reason'] as String?,
   ),
   _ => EnemyEmerging(
     t,
@@ -104,17 +105,20 @@ class EnemyEmerging extends GameEvent {
 
 /// 선원 탄이 도착했는데 맞을 적이 없다(선원 개성 v2 — 렌더 'MISS'). [x]·[y] = 떨어진 자리.
 class AttackMissed extends GameEvent {
-  const AttackMissed(super.tick, {required this.crewId, required this.x, required this.y});
+  const AttackMissed(super.tick, {required this.crewId, required this.x, required this.y, this.reason});
 
   final String crewId;
   final double x;
   final double y;
 
+  /// 왜 빗나갔나 — null = 탄이 빈자리에, 'evade' = 보스 특성 회피(S3 잔상 연출). 선택 키.
+  final String? reason;
+
   @override
   String get type => 'attackMissed';
 
   @override
-  Json _fields() => {'crewId': crewId, 'x': x, 'y': y};
+  Json _fields() => {'crewId': crewId, 'x': x, 'y': y, 'reason': ?reason};
 }
 
 /// 보호막 선원(개성 v2 7.1)이 배에 흡수막 [hp]를 [ticks] 동안 세웠다.
