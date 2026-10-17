@@ -2258,5 +2258,15 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeCombo": "연속 강화!",
+  "uiUpgradeLook": "외형 변경!",
+  "uiUpgradeGain": "+{p}%",
+  "@uiUpgradeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
   }
 }

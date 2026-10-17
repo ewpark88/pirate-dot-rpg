@@ -1844,5 +1844,15 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeCombo": "Upgrade combo!",
+  "uiUpgradeLook": "New look!",
+  "uiUpgradeGain": "+{p}%",
+  "@uiUpgradeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
   }
 }
