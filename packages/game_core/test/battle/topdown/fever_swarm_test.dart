@@ -16,7 +16,7 @@ void main() {
   ({Field f, List<Foe> foes}) wave(int stage, {required bool fever}) {
     final f = Field(stage: stage, shipHpMax: BigNum.one, shipHp: BigNum.one)
       ..geometry = geometryFor(t, stage)
-      ..feverSwarm = fever;
+      ..feverSwarm = feverSwarmPattern(t, fever: fever);
     final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(3), onEvent: (_) {});
     f.geometryOr(t.waves).spawnWave(f, stage, ctx, kind: 'crab');
     return (f: f, foes: f.foes);

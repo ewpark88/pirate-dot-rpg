@@ -147,9 +147,9 @@ class BattleSystem implements GameSystem {
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
       startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables), extraSec: bossExtraSec(s, ctx.tables));
     } else {
-      f.feverSwarm = feverOn(s);
+      f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
       spawnWave(f, p.stage, ctx);
-      f.feverSwarm = false;
+      f.feverSwarm = null;
     }
   }
 
