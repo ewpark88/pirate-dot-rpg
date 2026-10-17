@@ -1550,5 +1550,15 @@
     }
   },
   "uiLvLabel": "Lv",
-  "uiLvTip": "Lv이 오르면 공격력이 세져요. 같은 선원 카드를 모아 올려요!"
+  "uiLvTip": "Lv이 오르면 공격력이 세져요. 같은 선원 카드를 모아 올려요!",
+  "uiTrialSpeedTitle": "2배속 10분 무료 체험!",
+  "uiTrialAutoTitle": "자동 강화 10분 무료 체험!",
+  "uiTrialSpeedCompare": "속도 ×1 → ×2 · 골드 ×1 → ×2",
+  "uiTrialAutoCompare": "배 강화·선원 합성을 알아서 해 줘요",
+  "uiTrialTry": "무료로 써 보기",
+  "uiTrialLater": "나중에",
+  "uiTrialEndTitle": "체험이 끝났어요",
+  "uiTrialEndAsk": "마음에 들었나요? 광고 한 번이면 10분 더!",
+  "uiTrialAdMore": "광고 보고 10분 더",
+  "uiTrialBuy": "영구로 갖기 (상점)"
 }

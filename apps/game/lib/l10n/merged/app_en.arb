@@ -1557,5 +1557,15 @@
     }
   },
   "uiLvLabel": "Lv",
-  "uiLvTip": "Higher Lv = more attack. Collect that crew's cards to level up!"
+  "uiLvTip": "Higher Lv = more attack. Collect that crew's cards to level up!",
+  "uiTrialSpeedTitle": "Free 2× speed for 10 min!",
+  "uiTrialAutoTitle": "Free auto-upgrade for 10 min!",
+  "uiTrialSpeedCompare": "Speed ×1 → ×2 · Gold ×1 → ×2",
+  "uiTrialAutoCompare": "Upgrades your ship and merges crew for you",
+  "uiTrialTry": "Try it free",
+  "uiTrialLater": "Later",
+  "uiTrialEndTitle": "Trial ended",
+  "uiTrialEndAsk": "Liked it? Watch one ad for 10 more minutes!",
+  "uiTrialAdMore": "Watch ad · 10 more min",
+  "uiTrialBuy": "Keep it forever (Shop)"
 }

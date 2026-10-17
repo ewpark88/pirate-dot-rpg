@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:game_core/game_core.dart';
+
+import 'ui_harness.dart';
+
+// 맛보기 팝업 (사용자 2026-10-17, S2 meta.trials · ClaimTrial): 최고 스테이지 5 이상이면 '2배속 10분 무료 체험',
+// [무료로 써 보기] → ClaimTrial(speed), [나중에]는 이번 실행에서 다시 묻지 않음.
+
+GameState _at(int best) {
+  final s = loadFixture('stage37_midgame');
+  return s.copyWith(
+    progress: s.progress.copyWith(bestStage: best, bossFails: 0, trialsUsed: const []),
+  );
+}
+
+void main() {
+  testWidgets('스테이지 5 넘음 → 2배속 체험 팝업 → 무료로 써 보기 = ClaimTrial(speed)', (tester) async {
+    final log = await pumpGame(tester, _at(37), openTab: false, story: true);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('trial.offer.speed')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('trial.try')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(log.sent.whereType<ClaimTrial>().single.kind, 'speed');
+  });
+
+  testWidgets('나중에 → 같은 실행에선 다시 안 뜬다', (tester) async {
+    await pumpGame(tester, _at(37), openTab: false, story: true);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.byKey(const Key('trial.later')));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.byKey(const Key('trial.offer.speed')), findsNothing);
+  });
+
+  testWidgets('조건이 안 맞으면(최고 스테이지 1) 팝업 없음', (tester) async {
+    await pumpGame(tester, _at(1), openTab: false);
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.byKey(const Key('trial.offer.speed')), findsNothing);
+  });
+}

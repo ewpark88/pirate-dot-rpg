@@ -5,6 +5,7 @@ import 'package:pirate_dot/ui/crew/new_mate.dart';
 import 'package:pirate_dot/ui/guide/guide_layer.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/idle/idle_gate.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
 import 'package:pirate_dot/ui/rebirth/ship_skin_entries.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -42,7 +43,9 @@ class PirateDotApp extends ConsumerWidget {
       // 시나리오(오프닝·보스 대화)는 가이드 층 아래 — 대화 동안 가이드는 접힌다.
       home: const GuideLayer(
         child: StoryLayer(
-          child: NewMateGate(child: SkinUnlockGate(child: HomeScreen())),
+          child: NewMateGate(
+            child: SkinUnlockGate(child: TrialGate(child: HomeScreen())),
+          ),
         ),
       ),
     );
