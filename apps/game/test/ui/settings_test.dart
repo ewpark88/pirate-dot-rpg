@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/ui/settings/about_section.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/state/idle.dart';
@@ -117,5 +118,33 @@ void main() {
       (game.settings.shake, game.settings.flash, game.settings.vibration, game.settings.powerSave),
       (false, false, false, false),
     );
+  });
+
+  testWidgets('정보: 개인정보처리방침·이용약관·문의·버전 — 링크 열기 없으면 주소 복사 안내', (tester) async {
+    final opened = <Uri>[];
+    await pumpGame(
+      tester,
+      loadFixture('stage37_midgame'),
+      openTab: false,
+      size: const Size(400, 2400),
+      overrides: [
+        appLinkOpenerProvider.overrideWithValue((u) async {
+          opened.add(u);
+          return true;
+        }),
+      ],
+    );
+    await tester.tap(find.byKey(const Key('hud.settings')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('settings.version')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Version $appVersion'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('settings.privacyPolicy')));
+    await tester.tap(find.byKey(const Key('settings.contact')));
+    await tester.pump();
+    expect(opened.map((u) => u.toString()), [privacyPolicyUrl, startsWith('mailto:$contactEmail')]);
   });
 }

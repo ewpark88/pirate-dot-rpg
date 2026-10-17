@@ -20,6 +20,7 @@ import 'package:pirate_dot/render/top/top_marks.dart';
 import 'package:pirate_dot/render/top/top_overlays.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
+import 'package:pirate_dot/render/top/top_wake.dart';
 
 /// 탑다운 장면 (T2): 배 가운데 고정 카메라 → 바다(흐름) → 항적 → 물속 적 → 배(그림자·층·체력 막대) → 물 위·공중 적 → fx
 /// fx(발사체·폭발·코인·숫자 — 옆모습과 같은 그리기, 전장 좌표). 상자 dp 좌표 캔버스에 그린다.
@@ -60,14 +61,14 @@ class TopScenePainter {
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0);
     _lastMs = clockMs;
     // 보스전 카메라(TopBossCam): 배를 아래로 당기고 거리 따라 역동 줌 + 펀치, 안전 영역을 벗어나는 프레임만 깎는다.
-    final (zoom, target) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
+    final (zoom, target, shiftX) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
     final y = _shipY ?? target;
     // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
     _maxBoxH = math.max(_maxBoxH, frame.box.height); // 시트가 가리면(가장 컸던 높이 75% 미만) 가벼운 연출
     scene.topHits.lite = scene.settings.powerSave || frame.box.height < _maxBoxH * 0.75;
     final dpr = frame.dpr;
-    final sx = (frame.shipScreen.dx * dpr).roundToDouble() / dpr;
+    final sx = ((frame.shipScreen.dx + shiftX) * dpr).roundToDouble() / dpr;
     // 피버 질주: 카메라를 앞으로 조금(배가 6dp 아래로) + 시작 가속(0.4초 동안 배가 20dp 위로 '쑥').
     final sy = ((_shipY! + 6 * fever.level - 20 * fever.lunge()) * dpr).roundToDouble() / dpr;
     final dot = frame.dot * zoom;
@@ -97,7 +98,8 @@ class TopScenePainter {
     final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
-      ..boost = fever.level
+      ..boost = math
+          .max(fever.level, _turn.rush) // 빠를수록 항적 길게·속도선(S5 배 이동 v2)
       ..wakeTint = skins
           .wake // 스킨 항적 색(앞 프레임 값)
       ..wakeRainbow = skins.wakeRainbow
@@ -116,6 +118,7 @@ class TopScenePainter {
       ..translate(-cam.dx, -cam.dy);
     fever.weaveTrail(c, ship, clockMs, _sea.flowSpeed);
     _marks.zones(c);
+    _wake.paint(c, clockMs, ship, _turn, lite: scene.topHits.lite); // 배가 도는 항적·돌진 속도선(S5 배 이동 v2)
     _foes
       ..snap = dot * dpr
       ..bakeDensity =
@@ -170,7 +173,7 @@ class TopScenePainter {
         ..scale(_shipScale, _shipScale * (1 - 0.04 * fever.level));
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       // 피버 시작 금빛 잔상: 가속 동안 배 실루엣 3개가 뒤로 처진다.
-      final burst = fever.burst();
+      final burst = math.max(fever.burst(), _turn.rush > 0.7 ? (_turn.rush - 0.7) * 2 : 0); // 피버 시작·대시 잔상
       if (burst > 0) {
         for (var k = 3; k >= 1; k--) {
           _ghost.colorFilter = ColorFilter.mode(Color.fromRGBO(255, 216, 74, 0.55 * burst / k), BlendMode.srcIn);
@@ -237,10 +240,10 @@ class TopScenePainter {
 
   final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
-
   double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
   double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
   void dispose() => _foes.hdSheets.dispose(); // 장면을 버릴 때 HD 텍스처를 바로 놓는다
+  Map<String, Object> memory() => {..._foes.hdSheets.memory(), 'labels': _overlays.labels}; // 운영자 메모리 진단
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
   Offset worldToScreen(Offset world) => Offset(_camT.$1, _camT.$2) + (world - _camT.$4) * _camT.$3;
@@ -248,6 +251,7 @@ class TopScenePainter {
   Offset screenToWorld(Offset dp) => _camT.$4 + (dp - Offset(_camT.$1, _camT.$2)) / _camT.$3;
 
   late final _turn = ShipTurn(scene);
+  final _wake = TopWake();
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
   bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
 

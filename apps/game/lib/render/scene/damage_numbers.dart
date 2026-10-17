@@ -24,6 +24,7 @@ class DamageNumber {
   /// 따라갈 적 id(-1 = 제자리) — 맞은 적이 움직여도(보스 돌진·호 왕복) 숫자가 붙어 간다(S1 '숫자가 보스를 따라가야'),
   /// [ox]·[oy] = 생길 때 그 적과의 차이(쌓기 줄 포함). 적이 사라지면 그 자리에 남아 마저 떠오른다.
   int follow = -1;
+  bool boss = false; // 보스에 뜬 숫자는 1.35배(S1 '큰 피해 숫자는 보스 위에 크게')
   double ox = 0;
   double oy = 0;
 
@@ -53,6 +54,7 @@ class DamageNumbers {
   final int stackRows;
 
   final DamageNumberSpec spec;
+  final Map<int, BigNum> _bossMax = {};
   final Pool<DamageNumber> pool;
 
   List<DamageNumber> get active => pool.active;
@@ -63,6 +65,12 @@ class DamageNumbers {
   /// 3. 동시 상한을 넘으면 가장 오래된 둘을 하나로 합친다 → 합계 보존.
   /// [on] = 맞은 적의 지금 그림 자리 — 주면 숫자가 그 적을 따라간다.
   void add(BigNum amount, double x, double y, DamageKind kind, {int key = -1, EnemyPose? on}) {
+    // 보스에 뜬 작은 숫자(그 보스가 받은 가장 큰 타격의 1% 미만)는 생략 — 보스 위 잔숫자 뭉침(S1 z02). TOTAL엔 그대로 들어간다.
+    if (on != null && on.boss) {
+      final top = _bossMax[on.id];
+      if (top == null || amount > top) _bossMax[on.id] = amount;
+      if (top != null && amount < top.times(0.01)) return;
+    }
     final list = pool.active;
     if (key >= 0) {
       for (final n in list) {
@@ -111,6 +119,7 @@ class DamageNumbers {
       ..y = top
       ..ageMs = 0
       ..follow = on?.id ?? -1
+      ..boss = on?.boss ?? false
       ..ox = on == null ? 0 : x - on.drawX
       ..oy = on == null ? 0 : top - on.drawY;
   }
@@ -217,7 +226,7 @@ class DamageNumbers {
   /// 그리는 배율: 치명타는 생길 때 1.6배로 팍 튀어 0.15초에 1.0으로(S1 '임팩트').
   double scaleOf(DamageNumber n) {
     final pop = n.kind == DamageKind.crit && n.ageMs < _popMs ? 1 + 0.6 * (1 - n.ageMs / _popMs) : 1.0;
-    return _scaleOf(n.kind) * pop;
+    return _scaleOf(n.kind) * pop * (n.boss ? 1.35 : 1);
   }
 
   static const _popMs = 150.0;
@@ -231,5 +240,8 @@ class DamageNumbers {
 
   static const _shipColor = 0xFFFF5A5A;
 
-  void clear() => pool.clear();
+  void clear() {
+    pool.clear();
+    _bossMax.clear();
+  }
 }

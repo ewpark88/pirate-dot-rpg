@@ -337,6 +337,56 @@
   "opEntitlements": "권리 켜기/끄기",
   "opShopOpen": "상점 열기",
   "opCaptainSkillFake": "필살기 버튼(가짜 — 피버 게이지)",
+  "opBossBarsFake": "보스 여러 줄(가짜 — 3줄)",
+  "opSlotDebug": "칸 진단: 스테이지 {stage} · 최고 {best} · 환생 {rebirths} · fleetSlots {slots} · 전장 slotsOpen {open} · 출전 {fleet} · fleetInit {init}",
+  "@opSlotDebug": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      },
+      "rebirths": {
+        "type": "String"
+      },
+      "slots": {
+        "type": "String"
+      },
+      "open": {
+        "type": "String"
+      },
+      "fleet": {
+        "type": "String"
+      },
+      "init": {
+        "type": "String"
+      }
+    }
+  },
+  "opHudTopDp": "보스 카메라 위 여백 hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "이미지 캐시 {mb}MB · {live}장 살아 있음 · {count}장 보관",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opOpenPanel": "운영자 패널 열기",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -448,7 +498,7 @@
   "uiAdBossSupport": "피해 +{percent} · {seconds}초",
   "uiAdFreeSummon": "무료 소환 · 남은 {left}회",
   "uiOk": "확인",
-  "uiSettingsPrivacy": "개인정보 옵션",
+  "uiSettingsPrivacy": "개인정보처리방침",
   "uiRebirthDoneTitle": "보물지도를 펼쳤어요!",
   "uiRebirthDoneGain": "지도 조각 +{count} · 피해·골드 +{percent}",
   "uiRegionProgress": "{stage}/{total}",
@@ -461,7 +511,7 @@
   "uiDailyTooltip": "퀘스트·출석",
   "uiSaveFailedDiskFull": "저장 공간이 부족해 진행을 저장하지 못했어요. 공간을 비우면 자동으로 다시 저장해요.",
   "uiSaveFailedIo": "진행을 저장하지 못했어요. 잠시 뒤 다시 시도해요.",
-  "uiSettingsNotifications": "알림",
+  "uiSettingsNotifications": "알림 (복귀 보상 가득·도전권 가득)",
   "uiCrewCardBadge": "×{count}",
   "uiNumberScientific": "{mantissa} × 10^{exponent}",
   "uiSettingsHelp": "도움말",
@@ -1845,15 +1895,6 @@
       }
     }
   },
-  "uiWonSign": "₩",
-  "uiWonPrice": "{n}원",
-  "@uiWonPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
   "uiPassTitle": "항해 패스",
   "uiPassLevel": "{n}/{max}단계",
   "@uiPassLevel": {
@@ -2075,5 +2116,50 @@
   "uiRebirthGo": "항해 탭",
   "uiCaptainSkill": "선장 필살기",
   "uiCaptainSkillShort": "필살기",
-  "uiBackToExit": "한 번 더 누르면 종료돼요"
+  "uiBackToExit": "한 번 더 누르면 종료돼요",
+  "uiBossHpLine": "{name} · {now} / {max}",
+  "@uiBossHpLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossHpBars": "{name} · {now} / {max}  ×{bars}",
+  "@uiBossHpBars": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTalkUlt": "필살기 게이지가 꽉 찼어요! 오른쪽 아래 버튼을 눌러요!",
+  "uiSettingsAbout": "정보",
+  "uiSettingsTerms": "이용약관",
+  "uiSettingsContact": "문의하기",
+  "uiSettingsVersion": "버전 {v}",
+  "@uiSettingsVersion": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLinkCopied": "주소를 복사했어요 — 브라우저나 메일 앱에 붙여 넣어 주세요",
+  "uiContactSubject": "게임 문의"
 }

@@ -344,6 +344,56 @@
   "opEntitlements": "Entitlements on/off",
   "opShopOpen": "Open shop",
   "opCaptainSkillFake": "Ultimate button (fake — fever gauge)",
+  "opBossBarsFake": "Boss multi-bar (fake — 3 bars)",
+  "opSlotDebug": "Slots: stage {stage} · best {best} · rebirths {rebirths} · fleetSlots {slots} · battle slotsOpen {open} · fleet {fleet} · fleetInit {init}",
+  "@opSlotDebug": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      },
+      "rebirths": {
+        "type": "String"
+      },
+      "slots": {
+        "type": "String"
+      },
+      "open": {
+        "type": "String"
+      },
+      "fleet": {
+        "type": "String"
+      },
+      "init": {
+        "type": "String"
+      }
+    }
+  },
+  "opHudTopDp": "Boss camera top inset hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "Image cache {mb}MB · {live} live · {count} cached",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opOpenPanel": "Open operator panel",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -455,7 +505,7 @@
   "uiAdBossSupport": "Damage +{percent} · {seconds}s",
   "uiAdFreeSummon": "Free summon · {left} left",
   "uiOk": "OK",
-  "uiSettingsPrivacy": "Privacy Options",
+  "uiSettingsPrivacy": "Privacy policy",
   "uiRebirthDoneTitle": "The map is open!",
   "uiRebirthDoneGain": "+{count} map pieces · Damage·Gold +{percent}",
   "uiRegionProgress": "{stage}/{total}",
@@ -468,7 +518,7 @@
   "uiDailyTooltip": "Quests & Attendance",
   "uiSaveFailedDiskFull": "Not enough storage to save. Progress will save again once space is freed.",
   "uiSaveFailedIo": "Couldn't save progress. Will try again shortly.",
-  "uiSettingsNotifications": "Notifications",
+  "uiSettingsNotifications": "Notifications (offline reward full · tickets full)",
   "uiCrewCardBadge": "×{count}",
   "uiNumberScientific": "{mantissa} × 10^{exponent}",
   "uiSettingsHelp": "Help",
@@ -1852,15 +1902,6 @@
       }
     }
   },
-  "uiWonSign": "₩",
-  "uiWonPrice": "{n} KRW",
-  "@uiWonPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
   "uiPassTitle": "Voyage Pass",
   "uiPassLevel": "Level {n}/{max}",
   "@uiPassLevel": {
@@ -2082,5 +2123,50 @@
   "uiRebirthGo": "Voyage",
   "uiCaptainSkill": "Captain's ultimate",
   "uiCaptainSkillShort": "ULT",
-  "uiBackToExit": "Press back again to exit"
+  "uiBackToExit": "Press back again to exit",
+  "uiBossHpLine": "{name} · {now} / {max}",
+  "@uiBossHpLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossHpBars": "{name} · {now} / {max}  ×{bars}",
+  "@uiBossHpBars": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "bars": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTalkUlt": "Your ultimate is charged! Tap the button at the bottom right!",
+  "uiSettingsAbout": "About",
+  "uiSettingsTerms": "Terms of service",
+  "uiSettingsContact": "Contact us",
+  "uiSettingsVersion": "Version {v}",
+  "@uiSettingsVersion": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLinkCopied": "Link copied — paste it into your browser or mail app",
+  "uiContactSubject": "Game support"
 }

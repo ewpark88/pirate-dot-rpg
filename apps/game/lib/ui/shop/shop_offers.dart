@@ -62,7 +62,7 @@ class StarterOffer extends ConsumerWidget {
               key: const Key('shop.buy.starter_pack'),
               tone: SkinTone.gold,
               onPressed: () => buyProduct(ref, offer.product.id),
-              child: Text(l10n.uiShopBuy(shopPrice(l10n, offer.price))),
+              child: Text(l10n.uiShopBuy(offer.price)),
             ),
         ],
       ),

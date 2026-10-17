@@ -33,6 +33,7 @@ class TopOverlays {
 
   final _flashPaint = Paint();
   final _label = TopLabel();
+  int get labels => _label.cached;
 
   /// 큰 띠(심연의 탑 '12F'·보스 러시): 화면 가운데 보라(마지막 보스면 붉은) 띠가 펼쳐졌다 접히며 큰 글자 + 위 작은 글자.
   void _tower(Canvas c, Size box) {
@@ -80,10 +81,11 @@ class TopOverlays {
     final pop = age < 120 ? 1.15 - 0.15 * age / 120 : 1.0;
     final top = scene.hudTopDp ?? scene.fx.raw.obj('topCam').number('hudTopDp');
     final s = box.height * 0.045;
+    final y0 = top + 8; // 띠 아래 끝 + 8dp, 'TOTAL'과 숫자가 한 덩어리(S1 z02 — 띠 아래 깔림)
     final x = box.width * 0.2; // 보스(가운데)·보스 체력바와 안 겹치게 왼쪽 위
     _label
-      ..draw(c, 'TOTAL', Offset(x, top + s * 0.5), s * 0.5, alpha: fade, color: const Color(0xFFFF7A3A))
-      ..draw(c, m.bossTotal.format(), Offset(x, top + s * 1.5), (s * pop).roundToDouble(), alpha: fade);
+      ..draw(c, 'TOTAL', Offset(x, y0 + s * 0.3), s * 0.5, alpha: fade, color: const Color(0xFFFF7A3A))
+      ..draw(c, m.bossTotal.format(), Offset(x, y0 + s * 1.15), (s * pop).roundToDouble(), alpha: fade);
   }
 
   /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).

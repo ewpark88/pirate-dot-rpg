@@ -29,6 +29,8 @@ from thermal_log import app_cpu, app_pss_mb, battery, refresh_hz, thermal_status
 OUT = Path(__file__).resolve().parents[3] / "build" / "device" / "watch"
 P95_WARN_MS = 25.0
 TEMP_WARN_C = 40.0
+PSS_GROWTH = 1.5  # 첫 표본보다 이만큼 커지면 누수 의심
+PSS_FLOOR_MB = 100  # 막 켜진(재시작) 표본은 비교에서 뺀다
 
 
 def frame_intervals(frametimeline: str, package: str = PACKAGE) -> list[float]:
@@ -48,6 +50,19 @@ def frame_intervals(frametimeline: str, package: str = PACKAGE) -> list[float]:
 def pct(values: list[float], q: float) -> float:
     v = sorted(values)
     return v[min(len(v) - 1, int(q * len(v)))] if v else 0.0
+
+
+MEM_PARTS = (("Java Heap", "java"), ("Native Heap", "native"), ("Graphics", "gfx"), ("Code", "code"))
+
+
+def mem_parts(meminfo: str) -> dict[str, float]:
+    """dumpsys meminfo <패키지>의 App Summary → 항목별 PSS(MB): java·native·gfx(텍스처·GL)·code. 어디서 느는지(누수) 본다."""
+    out: dict[str, float] = {}
+    for label, key in MEM_PARTS:
+        m = re.search(rf"^\s*{label}:\s*(\d+)", meminfo, re.M)
+        if m:
+            out[key] = round(int(m.group(1)) / 1024, 1)
+    return out
 
 
 def crash_lines(log: str, package: str = PACKAGE) -> list[str]:
@@ -74,16 +89,24 @@ def warnings_for(row: dict) -> list[str]:
 
 def report(rows: list[dict], started: str) -> str:
     warns = [w for r in rows for w in warnings_for(r)]
+    pss = [(r["time"], r["pss"]) for r in rows if r.get("front") and (r.get("pss") or 0) > PSS_FLOOR_MB]
+    if len(pss) >= 2 and pss[-1][1] > pss[0][1] * PSS_GROWTH:
+        warns.append(f"PSS {pss[0][1]:.0f} → {pss[-1][1]:.0f}MB ({pss[0][0]} → {pss[-1][0]}) — 누수 의심(항목별 열에서 느는 곳)")
     lines = [f"# 기기 감시 {started} (읽기 전용 — 입력·캡처 없음)", ""]
     lines += ["## 경고", *(f"- {w}" for w in warns)] if warns else ["## 경고", "- 없음"]
-    lines += ["", "| 시각 | 앞 | fps | p50 / p95 / 최대 ms | 끊김(1.5주기+) | 온도 ℃ | 발열 | CPU % | PSS MB | Hz |", "| " + " | ".join(["---"] * 10) + " |"]
+    lines += [
+        "",
+        "| 시각 | 앞 | fps | p50 / p95 / 최대 ms | 끊김(1.5주기+) | 온도 ℃ | 발열 | CPU % | PSS MB | java / native / gfx / code MB | Hz |",
+        "| " + " | ".join(["---"] * 11) + " |",
+    ]
     for r in rows:
         if not r.get("front"):
-            lines.append(f"| {r['time']} | 건너뜀 | | | | {r.get('temp') or ''} | {r.get('thermal') if r.get('thermal') is not None else ''} | | | |")
+            lines.append(f"| {r['time']} | 건너뜀 | | | | {r.get('temp') or ''} | {r.get('thermal') if r.get('thermal') is not None else ''} | | | | |")
             continue
         lines.append(
             f"| {r['time']} | 우리 앱 | {r['fps']:.0f} | {r['p50']:.1f} / {r['p95']:.1f} / {r['max']:.1f} | {r['over']:.1f}% | "
-            f"{r.get('temp') or ''} | {r.get('thermal') if r.get('thermal') is not None else ''} | {r.get('cpu') or ''} | {r.get('pss') or ''} | {r.get('hz') or ''} |"
+            f"{r.get('temp') or ''} | {r.get('thermal') if r.get('thermal') is not None else ''} | {r.get('cpu') or ''} | {r.get('pss') or ''} | "
+            f"{' / '.join(str(r.get('mem', {}).get(k, '')) for _, k in MEM_PARTS)} | {r.get('hz') or ''} |"
         )
     crashes = [ln for r in rows for ln in r.get("crash", [])]
     if crashes:
@@ -131,7 +154,8 @@ def main(argv: list[str] | None = None) -> int:
                 p95=pct(gaps, 0.95),
                 max=max(gaps) if gaps else 0,
                 cpu=app_cpu(sh("top", "-b", "-n", "1")),
-                pss=app_pss_mb(sh("dumpsys", "meminfo", PACKAGE)),
+                pss=app_pss_mb(mem := sh("dumpsys", "meminfo", PACKAGE)),
+                mem=mem_parts(mem),
                 hz=refresh_hz(sh("dumpsys", "display")),
             )
             row["over"] = 100 * sum(g > frame_limit(row["hz"]) for g in gaps) / max(1, len(gaps))

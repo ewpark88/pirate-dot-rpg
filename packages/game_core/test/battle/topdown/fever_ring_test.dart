@@ -7,10 +7,12 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 피버 무리(meta.fever.swarm ring — S1 실기기 2026-10-18 '피버 무리가 가장자리에 몰려 배로 안 온다'):
 /// 화면(카메라) 테두리 바로 밖 사방에서 나와(필드 테두리·접근 원 206이 아니라) 피버 10초 안에 배로 조여 온다.
 void main() {
-  final t = GameTables.load();
+  final t = GameTables.load(stillShipRaw()); // 고리 자리(기하)만 — 순항은 피버 첫 틱 고리(S2 밀도 브랜치 babca986)가 들어온 뒤 함께
   final top = t.waves.raw.obj('top');
   final start = DateTime.utc(2026, 11, 2, 3);
 

@@ -8,10 +8,12 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 탑다운 모드로 엔진 전체를 돌린다(Settings.battleView = top, 탑다운 전환 T1).
 /// 경제(골드·처치·보스 클리어·진행)는 옆모습과 같은 코드가 한다 — 여기선 '돌아가고 이어지는가'와 모양만 본다.
 void main() {
-  final tables = GameTables.load();
+  final tables = GameTables.load(stillShipRaw());
   final top = tables.waves.top;
   final start = DateTime.utc(2026, 11);
 

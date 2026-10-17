@@ -1,5 +1,5 @@
 # 수용 기준(platform-boss-rush): 이번 주 보스 5마리를 연달아 잡으면 기록이 남고 본 전투로 돌아온다. 도전은 주 7회에서 1 줄어든다.
-# 담당: platform(S5). 신화 함대는 보스당 7~13초(DPS 상한 rushBossSec) — 2분 안에 끝난다.
+# 담당: platform(S5). 신화 함대는 보스당 13~25초(DPS 상한 rushBossSec × dpsHpRatio 1.6) — 4분 안에 끝난다.
 name: 보스 러시 — 5마리 연속 처치 기록
 seed: 5
 state: fixtures/states/all_crews_mythic.json
@@ -9,5 +9,5 @@ steps:
   - input: startRush
   - advance: 2t
   - expect: { rushActive: true, inScene: true }
-  - advance: 120s
-  - expect: { rushActive: false, rushCleared: true, rushTickets: 6, inScene: false, stage: 161 }  # 러시가 일찍 끝나 본 전투가 더 감(화면 밀도 2026-10-17)
+  - advance: 240s
+  - expect: { rushActive: false, rushCleared: true, rushTickets: 6, inScene: false }  # 끝난 뒤 본 전투가 이어져 스테이지는 오를 수 있다

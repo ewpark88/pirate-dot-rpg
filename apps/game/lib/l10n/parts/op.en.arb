@@ -86,5 +86,55 @@
   "opSimNone": "No purchase simulator in this build",
   "opEntitlements": "Entitlements on/off",
   "opShopOpen": "Open shop",
-  "opCaptainSkillFake": "Ultimate button (fake — fever gauge)"
+  "opCaptainSkillFake": "Ultimate button (fake — fever gauge)",
+  "opBossBarsFake": "Boss multi-bar (fake — 3 bars)",
+  "opSlotDebug": "Slots: stage {stage} · best {best} · rebirths {rebirths} · fleetSlots {slots} · battle slotsOpen {open} · fleet {fleet} · fleetInit {init}",
+  "@opSlotDebug": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      },
+      "rebirths": {
+        "type": "String"
+      },
+      "slots": {
+        "type": "String"
+      },
+      "open": {
+        "type": "String"
+      },
+      "fleet": {
+        "type": "String"
+      },
+      "init": {
+        "type": "String"
+      }
+    }
+  },
+  "opHudTopDp": "Boss camera top inset hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "Image cache {mb}MB · {live} live · {count} cached",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opOpenPanel": "Open operator panel"
 }

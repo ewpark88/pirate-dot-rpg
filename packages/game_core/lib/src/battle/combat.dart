@@ -9,14 +9,14 @@ import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/boss_traits.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
+import 'package:game_core/src/battle/topdown/top_knockback.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart';
 
-/// 한 틱 동안의 전투 계산. 지갑 변화는 [gold]에 모아 두고 BattleSystem이 상태에 반영한다.
-/// 스킬·장판은 battle/skills.dart의 확장.
+/// 한 틱 동안의 전투 계산. 지갑 변화는 [gold]에 모아 BattleSystem이 반영한다. 스킬·장판은 battle/skills.dart 확장.
 class Round {
   Round(this.field, this.ctx, this.stats, {this.invincible = false, this.zeroCooldown = false});
 
@@ -149,6 +149,7 @@ class Round {
       strike(v, base, crit: crit, crewId: g.crewId);
     }
     control(v.hits.map((h) => h.foe), knockback: a.knockback, stunSec: a.stunSec);
+    knockback(v.hits.map((h) => h.foe)); // 타격 손맛 넉백(#82)
   }
 
   /// 밀어내기·기절. 보스는 `bossControlFactor`만큼만 (설계서 4.10).

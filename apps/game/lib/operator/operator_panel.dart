@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart';
+import 'package:pirate_dot/operator/memory_line.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
 import 'package:pirate_dot/operator/platform_group.dart';
 import 'package:pirate_dot/operator/purchase_group.dart';
@@ -62,6 +63,28 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
       padding: const EdgeInsets.all(12),
       children: [
         Text(l10n.opPanelTitle, style: Theme.of(context).textTheme.titleLarge),
+        // 메모리(이미지 캐시 · 렌더 HD 시트) — 2초마다(폰 누수 추적).
+        const MemoryLine(),
+        // 출전 칸 진단(S1 2026-10-18 슬롯 버그 추적): 엔진 fleetSlots와 전장이 실어 보낸 slotsOpen을 나란히.
+        Consumer(
+          builder: (context, ref, _) {
+            final s = ref.watch(gameStateProvider);
+            final t = ref.watch(tablesProvider);
+            final p = s.progress;
+            return SelectableText(
+              l10n.opSlotDebug(
+                p.stage.toString(),
+                p.bestStage.toString(),
+                p.rebirths.toString(),
+                fleetSlots(s, t).toString(),
+                (s.battle?.slotsOpen ?? -1).toString(),
+                s.fleet.join(l10n.uiListSep),
+                s.fleetInit.toString(),
+              ),
+              key: const Key('op.slotDebug'),
+            );
+          },
+        ),
         _Group(l10n.opGroupSave, [SaveBackupGroup(sampleLabels: sampleLabels)]),
         _Group(l10n.opGroupToday, const [TodayGroup()]), // 오늘 새 기능(설계서 6.10 — 폰에서 바로 확인)
         _Group(l10n.opGroupBattle, [

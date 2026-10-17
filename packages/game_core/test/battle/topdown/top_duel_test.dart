@@ -6,12 +6,14 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 보스전 비켜서기 (사용자 피드백 #10, top_duel.dart): 보스가 배 둘레를 한 바퀴 도는 동안 보스·배가 카메라 안에 있다.
 void main() {
   final start = DateTime.utc(2026, 11);
 
   GameTables tables({Map<String, Object>? duel}) {
-    final raw = Map<String, String>.of(rawTables);
+    final raw = stillShipRaw();
     final waves = jsonDecode(raw['waves']!) as Map<String, dynamic>;
     final top = waves['top'] as Map<String, dynamic>;
     duel == null ? top.remove('bossDuel') : top['bossDuel'] = duel;
@@ -81,7 +83,7 @@ void main() {
   });
 
   test('v2(보스와 마주 보며 가운데서): 둘의 가운데 = 바다 가운데보다 rise 위, 배 머리는 보스 쪽, 회전 상한, 끝나면 제자리·위로', () {
-    final t = GameTables.load();
+    final t = GameTables.load(stillShipRaw());
     final cfg = t.waves.raw.obj('top').obj('bossDuel');
     expect(cfg.number('rise'), greaterThan(0), reason: '표가 v2');
     final rise = cfg.number('rise') * t.waves.raw.obj('top').number('viewHeight');
@@ -110,7 +112,7 @@ void main() {
   });
 
   test('v2: 보스전이 끝나면 같은 빠르기로 제자리·머리 위(0)로 돌아온다', () {
-    final t = GameTables.load();
+    final t = GameTables.load(stillShipRaw());
     final e =
         CoreEngine(
             tables: t,
@@ -139,7 +141,7 @@ void main() {
   });
 
   test('회귀(main 2df68598): 보스가 쓰러져(기절) 원 위로 다시 서지 않는 동안에도 배가 standoff 안으로 파고들지 않는다', () {
-    final t = GameTables.load();
+    final t = GameTables.load(stillShipRaw());
     final top = t.waves.top;
     final e =
         CoreEngine(

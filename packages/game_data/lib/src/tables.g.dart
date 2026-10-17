@@ -2453,8 +2453,8 @@ const Map<String, String> rawTables = {
     "sinkTilt": 0.35
   },
   "topCam": {
-    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(S4 띠 82dp + 여유 8 — 태블릿은 uiScale로 커서 UI가 BattleGame.hudTopDp로 잰 값을 넣는다) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
-    "hudTopDp": 90,
+    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(UI가 BattleGame.hudTopDp로 잰 값 — 없으면 hudTopDp — S4 실측 기준 전장 상자 위끝에서 보스전 약 90~100dp) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
+    "hudTopDp": 100,
     "sideDp": 12,
     "rightDp": 24,
     "bottomDp": 24,
@@ -3266,7 +3266,7 @@ const Map<String, String> rawTables = {
       {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
       {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
     ]},
-  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 0.8, "rushBossSec": 15, "perBossGems": 3,
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 1.6, "rushBossSec": 15, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
   "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 20, "cards": 1}, {"floor": 20, "gems": 35, "cards": 2}, {"floor": 30, "gems": 50, "cards": 3}]},
@@ -3412,7 +3412,7 @@ const Map<String, String> rawTables = {
 {
   "stagesPerRegion": 50,
   "midBossEvery": 25,
-  "bossTraits": {"evade": {"chance": 0.25, "areaChance": 0, "dodge": ["direct", "pierce", "skip", "air", "assault"], "counters": ["lob", "cluster", "ring", "shock", "laser"], "hpFactor": 0.75}, "armor": {"heavySec": 2.5, "factor": 0.4, "hpFactor": 0.6, "counters": ["assault", "cluster", "laser"]}, "regen": {"perSec": 0.015, "fadeSec": 40, "counters": ["shock", "underwater"], "hpFactor": 0.8}, "reflect": {"everySec": 8, "warnSec": 0.6, "sec": 2, "ratio": 0.1, "bypass": ["underwater", "air"], "counters": ["underwater", "air"], "hpFactor": 0.78}, "enrage": {"below": 0.3, "restMul": 0.6, "attackMul": 1.3, "counters": ["shock"], "hpFactor": 1.0}, "escort": {"count": 3, "at": [1.0, 0.5], "damageMul": 0.5, "counters": ["ring", "shock", "skip", "lob"], "hpFactor": 0.85}, "dash": {"everySec": 6, "sec": 1, "deg": 90, "counters": ["laser", "direct", "air"], "hpFactor": 0.91}},
+  "bossTraits": {"evade": {"chance": 0.25, "areaChance": 0, "dodge": ["direct", "pierce", "skip", "air", "assault"], "counters": ["lob", "cluster", "ring", "shock", "laser"], "hpFactor": 0.75}, "armor": {"heavySec": 2.5, "factor": 0.4, "hpFactor": 0.6, "counters": ["assault", "cluster", "laser"]}, "regen": {"perSec": 0.015, "fadeSec": 40, "counters": ["shock", "underwater"], "hpFactor": 0.8}, "reflect": {"everySec": 8, "warnSec": 0.6, "sec": 2, "ratio": 0.1, "maxShipHpPerSec": 0.04, "bypass": ["underwater", "air"], "counters": ["underwater", "air"], "hpFactor": 0.78}, "enrage": {"below": 0.3, "restMul": 0.6, "attackMul": 1.3, "counters": ["shock"], "hpFactor": 1.0}, "escort": {"count": 3, "at": [1.0, 0.5], "damageMul": 0.5, "counters": ["ring", "shock", "skip", "lob"], "hpFactor": 0.85}, "dash": {"everySec": 6, "sec": 1, "deg": 90, "counters": ["laser", "direct", "air"], "hpFactor": 0.91}},
   "wallEvery": 10, "rotationFromStage": 4,
   "speciesUnlock": {"steps": [{"at": 1, "count": 1}, {"at": 6, "count": 2}, {"at": 16, "count": 3}, {"at": 31, "count": 4}, {"at": 41, "count": 5}], "perRebirth": 1},
   "loopStages": 300,
@@ -4008,7 +4008,9 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
-    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
+    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 },
+    "knockback": { "dist": 7, "everySec": 0.3, "bossMul": 0.15 },
+    "cruise": { "speed": 55, "accel": 260, "decel": 150, "turnDegPerSec": 150, "headingTurnDegPerSec": 240, "maxTiltDeg": 55, "forwardFlow": 60, "slowRadius": 30, "arriveRadius": 10, "homeUp": 20, "wanderX": 45, "wanderY": 28, "wanderSec": 8, "rect": { "x": 58, "up": 110, "down": 50 }, "dashEverySec": 2, "dashJitterSec": 1, "jitterStep": 0.618, "dashSpeedMul": 2.4, "dashMaxSec": 0.9, "overshoot": 36, "clusterRadius": 40, "clusterMin": 3, "feverSpeedMul": 1.5, "feverDashMul": 0.6 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
     "nearSpawn": { "ratio": 0.3, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,

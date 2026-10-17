@@ -61,6 +61,13 @@ class Field {
   final List<Zone> zones = [];
   String? captainId;
   BigNum shipHpMax;
+
+  /// 반사(보스 특성 reflect)가 이번 틱([reflectTick])에 배에 준 피해 — maxShipHpPerSec 상한을 틱마다 센다.
+  BigNum reflected = BigNum.zero;
+  int reflectTick = -1;
+
+  /// 배 고정(OpSetShipStill): 순항을 끈다 — 미리보기 같은 보여 주기 장면.
+  bool shipStill = false;
   BigNum shipHp;
   bool bossActive = false;
   int bossTicksLeft = 0;

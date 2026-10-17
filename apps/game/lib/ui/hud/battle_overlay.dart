@@ -19,6 +19,7 @@ import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 선원 줄 오른쪽 끝 버튼 (layout-v2-brief 3, S3 좌표 약속 `battleFrameFor`):
 /// 보스 도전 = 파밍 중일 때만 도트 버튼(궁극기 버튼은 없앰 — 피버 첫 일격, 2026-10-17).
@@ -68,7 +69,7 @@ class BattleButtons extends ConsumerWidget {
             Positioned(
               right: bossChallengeEdge,
               top: f.slotBand.top - _hpBarAbove - bossChallengeGap - captainSkillSize,
-              child: const CaptainSkillButton(),
+              child: const TutorialSpot(id: 'captain.skill', child: CaptainSkillButton()),
             ),
             Positioned(
               right: bossChallengeEdge + (ref.watch(captainSkillProvider) == null ? 0 : captainSkillSize + 8),

@@ -137,7 +137,9 @@ class HdSheets {
     );
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
-    if (log) debugPrint('[hd] bake $key ${sheet.cell.toInt()}px×${sheet.image.height ~/ sheet.cell}행 → ${report()}');
+    if (log) {
+      debugPrint('[hd] bake $key ${sheet.cell.toInt()}px x${sheet.image.height ~/ sheet.cell} rows -> ${report()}');
+    }
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
     while (_bytes > budget && _ready.length > 1) {
       _evict(except: key);
@@ -183,11 +185,19 @@ class HdSheets {
     String mb(int b) => (b / 1048576).toStringAsFixed(1);
     final parts = [
       for (final MapEntry(:key, :value) in _ready.entries)
-        '$key ${value.cell.toInt()}px×${value.image.height ~/ value.cell}행 ${mb(_sizeOf(value))}',
+        '$key ${value.cell.toInt()}px x${value.image.height ~/ value.cell} rows ${mb(_sizeOf(value))}',
     ];
     final wait = _retired.fold(0, (a, r) => a + _sizeOf(r.$1));
-    return '캐시 ${mb(_bytes)}/${mb(budget)}MB(밀도 ${_density.toStringAsFixed(2)}, 칸 상한 ${_cap.toInt()}) 대기 ${mb(wait)}MB · ${parts.join(', ')}';
+    return 'cache ${mb(_bytes)}/${mb(budget)}MB (density ${_density.toStringAsFixed(2)}, cell cap ${_cap.toInt()}) retired ${mb(wait)}MB | ${parts.join(', ')}';
   }
+
+  /// 메모리 진단(운영자·시험): 캐시 종 수·바이트·버릴 대기.
+  Map<String, Object> memory() => {
+    'hdSheets': _ready.length,
+    'hdBytes': _bytes,
+    'hdRetired': retiredBytes,
+    'hdBudget': budget,
+  };
 
   /// 버릴 대기 바이트(시험).
   int get retiredBytes => _retired.fold(0, (a, r) => a + _sizeOf(r.$1));

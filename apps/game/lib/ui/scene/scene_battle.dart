@@ -256,7 +256,17 @@ class _ResultDialog extends StatelessWidget {
         for (final line in lines) Text(line, textAlign: TextAlign.center, style: Skin.text(16)),
         if (reward.isNotEmpty) ...[
           const SizedBox(height: 10),
-          RewardSparkle(child: OutlineText(reward, size: 22, tone: OutlineTone.gold, fit: true)),
+          RewardSparkle(
+            // 항목마다 따로(가운데 점 '·'은 굵은 테에 묻혀 동그라미로 보였다 — 영어 점검 2026-10-18).
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 14,
+              children: [
+                for (final part in reward.split(AppLocalizations.of(context).uiListSep))
+                  OutlineText(part, size: 22, tone: OutlineTone.gold),
+              ],
+            ),
+          ),
         ],
       ],
     ),

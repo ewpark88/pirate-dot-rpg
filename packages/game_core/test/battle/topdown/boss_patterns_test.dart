@@ -11,13 +11,15 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 보스 행동 v2 (docs/specs/platform-boss-patterns.md, 사용자 결정 예고 0.6초): 쉼 → 예고 → 동작, 순서대로.
 void main() {
   final start = DateTime.utc(2026, 11);
   const stage = 20;
 
   GameTables withPatterns(List<Map<String, Object?>> patterns, {double rest = 2, double? first}) {
-    final raw = Map<String, String>.of(rawTables);
+    final raw = stillShipRaw();
     final regions = jsonDecode(raw['regions']!) as Map<String, dynamic>;
     for (final b in (regions['bosses'] as List).cast<Map<String, dynamic>>()) {
       b['patterns'] = patterns;
@@ -59,7 +61,7 @@ void main() {
     return (f: f, events: events, boss: boss);
   }
 
-  final tick = rawTables.isEmpty ? 0 : GameTables.load(rawTables).waves.tickMs / 1000;
+  final tick = rawTables.isEmpty ? 0 : GameTables.load(stillShipRaw()).waves.tickMs / 1000;
   int ticks(double sec) => (sec / tick).round();
 
   test('패턴 없으면 지금처럼(BossPatternShown 없음, 기본 원거리 공격)', () {
@@ -142,7 +144,7 @@ void main() {
 
   test('바다 괴물(ambush): meta.seaEvents 패턴이 있으면 몸통에 붙지 않고 standoff에서 돌진·복귀(사용자 결정)', () {
     GameTables serpentWith(Map<String, Object?>? pattern) {
-      final raw = Map<String, String>.of(rawTables);
+      final raw = stillShipRaw();
       final meta = jsonDecode(raw['meta']!) as Map<String, dynamic>;
       for (final e in ((meta['seaEvents'] as Map<String, dynamic>)['events'] as List).cast<Map<String, dynamic>>()) {
         if (e['id'] != 'ambush') continue;

@@ -41,6 +41,7 @@ class BattleSystem implements GameSystem {
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
+  bool _still = false; // 배 고정(OpSetShipStill — 보여 주기 장면)
   bool _zeroCooldown = false;
 
   @override
@@ -86,6 +87,10 @@ class BattleSystem implements GameSystem {
         return _project(state, operatorBoss(_sync(state, ctx), state, ctx, command as OperatorCommand), ctx.tables);
       case OpSetInvincible(:final on):
         _invincible = on;
+        return state;
+      case OpSetShipStill(:final on):
+        _still = on;
+        _field?.shipStill = on;
         return state;
       case OpCastSkill(:final crewId):
         return _round(state, ctx, (r) {
@@ -221,7 +226,7 @@ class BattleSystem implements GameSystem {
         feverTicksLeft: old.feverTicksLeft,
       ),
     );
-    final nf = _sync(next, ctx)
+    final nf = _sync(next, ctx, from: f)
       ..travelLeft = t.waves.travelSec
       ..fastSail = f.fastSail; // 돌파 구간은 새 전장으로 이어간다
     return _project(next, nf, ctx.tables);
@@ -256,7 +261,7 @@ class BattleSystem implements GameSystem {
   }
 
   /// 내부 상태가 GameState.battle과 어긋나면(첫 틱, 상태 불러오기, 스테이지 이동) 새로 만든다.
-  Field _sync(GameState s, SystemContext ctx) {
+  Field _sync(GameState s, SystemContext ctx, {Field? from}) {
     final view = s.battle ?? BattleView.empty;
     final f = _field;
     if (f != null && f.matches(view, s.progress.stage)) {
@@ -269,7 +274,10 @@ class BattleSystem implements GameSystem {
     final nf = Field(stage: s.progress.stage, shipHpMax: stats.shipHp, shipHp: stats.shipHp.times(ratio))
       ..tick = view.tick
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables)
-      ..rebirths = s.progress.rebirths;
+      ..rebirths = s.progress.rebirths
+      // 옛 전장 모양을 넘겨 shapeField가 강화 때처럼 배 자리·결투·순항을 이어 받게 — 스테이지가 바뀔 때 배가 가운데로 순간이동하던 것.
+      ..geometry = (from ?? f)?.geometry
+      ..shipStill = _still;
     shapeField(nf, s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

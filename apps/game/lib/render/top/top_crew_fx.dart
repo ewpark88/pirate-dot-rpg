@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:game_core/game_core.dart' show BigNum, BigNumFormat;
 import 'package:pirate_dot/render/paint/pixel_glyphs.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
-import 'package:pirate_dot/render/top/top_label.dart';
 
 /// 선원 개성 v2 연출 (S5 crew-identity, S1):
 /// - 거북(turtle) 보호막: 배 둘레 반투명 육각 껍질(BattleView.shipShield 0~1만큼 진하게), 막이 받은 피격(ShipDamaged 0)은 물결,
@@ -26,7 +25,6 @@ class TopCrewFx {
   double brokenAt = -1000000000;
   final List<_Strike> _strikes = [];
   final List<(double, double, double, bool)> _misses = []; // x, y, ms, 막힘(BLOCK)
-  final _label = TopLabel();
   final List<double> _drums = [];
   double _lastFever = 0;
   double _lastDrum = -1000000000;
@@ -91,8 +89,10 @@ class TopCrewFx {
     }
   }
 
-  /// 빗나감 'MISS'(회색) · 막힘 'BLOCK'(파랑): 테두리 글자가 옆으로 튕기며 떠올라 사라진다.
+  /// 빗나감 'MISS'(회색) · 막힘 'BLOCK'(파랑): 테 두른 도트 글자가 옆으로 튕기며 떠올라 사라진다.
   void miss(double x, double y, double now, {bool block = false}) {
+    // 같은 자리(24단위 안)는 0.6초에 하나만 — 보스 위에 'MISS MISS'가 세로로 뭉치던 것(S1 z02).
+    if (_misses.any((m) => now - m.$3 < 600 && now >= m.$3 && (m.$1 - x).abs() < 24 && (m.$2 - y).abs() < 24)) return;
     if (_misses.length >= 16) _misses.removeAt(0);
     _misses.add((x, y, now, block));
   }
@@ -144,8 +144,9 @@ class TopCrewFx {
     for (final (x, y, at, block) in _misses) {
       final t = (now - at) / 700;
       final p = Offset(x + ((x * 7).floor().isEven ? 10 : -10) * math.sin(t * math.pi / 2), y - 10 - 10 * t);
-      final color = block ? const Color(0xFF4AA8FF) : const Color(0xFF8A94A4);
-      _label.draw(c, block ? 'BLOCK' : 'MISS', p, 8, alpha: t < 0.6 ? 1 : (1 - t) / 0.4, color: color);
+      final a = ((t < 0.6 ? 1 : (1 - t) / 0.4) * 0xFF).round() << 24;
+      final word = block ? 'BLOCK' : 'MISS'; // 도트 글자 + 어두운 테(글꼴 없이도 같은 그림)
+      drawPixelText(c, word, p.dx - word.length * 2, p.dy, a | (block ? 0x6AB8FF : 0xC8D0DC), outline: a | 0x1B2A4A);
     }
     _drums.removeWhere((d) => now - d > 500);
     for (final d in _drums) {
