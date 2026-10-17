@@ -2,6 +2,7 @@
   "crews": [
     {
       "id": "octo",
+      "role": "mob",
       "num": 1,
       "baseRarity": "common",
       "family": "lob",
@@ -36,6 +37,7 @@
     },
     {
       "id": "starry",
+      "role": "mob",
       "num": 2,
       "baseRarity": "common",
       "family": "cluster",
@@ -64,6 +66,7 @@
     },
     {
       "id": "crabs",
+      "role": "mob",
       "num": 3,
       "baseRarity": "rare",
       "family": "lob",
@@ -100,6 +103,7 @@
     },
     {
       "id": "uni",
+      "role": "mob",
       "num": 4,
       "baseRarity": "hero",
       "family": "ring",
@@ -128,6 +132,7 @@
     },
     {
       "id": "volke",
+      "role": "mob",
       "num": 5,
       "baseRarity": "legend",
       "family": "cluster",
@@ -156,6 +161,7 @@
     },
     {
       "id": "pang",
+      "role": "mob",
       "num": 6,
       "baseRarity": "common",
       "family": "direct",
@@ -191,6 +197,7 @@
     },
     {
       "id": "hippo",
+      "role": "boss",
       "num": 7,
       "baseRarity": "common",
       "family": "direct",
@@ -226,6 +233,7 @@
     },
     {
       "id": "bones",
+      "role": "mob",
       "num": 8,
       "baseRarity": "rare",
       "family": "direct",
@@ -261,6 +269,7 @@
     },
     {
       "id": "lion",
+      "role": "boss",
       "num": 9,
       "baseRarity": "hero",
       "family": "direct",
@@ -296,6 +305,7 @@
     },
     {
       "id": "volt",
+      "role": "control",
       "num": 10,
       "baseRarity": "legend",
       "family": "direct",
@@ -328,6 +338,7 @@
     },
     {
       "id": "sword",
+      "role": "mob",
       "num": 11,
       "baseRarity": "common",
       "family": "pierce",
@@ -358,6 +369,7 @@
     },
     {
       "id": "nar",
+      "role": "mob",
       "num": 12,
       "baseRarity": "rare",
       "family": "laser",
@@ -387,6 +399,7 @@
     },
     {
       "id": "walrus",
+      "role": "control",
       "num": 13,
       "baseRarity": "rare",
       "family": "pierce",
@@ -417,6 +430,7 @@
     },
     {
       "id": "saw",
+      "role": "mob",
       "num": 14,
       "baseRarity": "hero",
       "family": "pierce",
@@ -447,6 +461,7 @@
     },
     {
       "id": "moby",
+      "role": "control",
       "num": 15,
       "baseRarity": "legend",
       "family": "pierce",
@@ -477,6 +492,7 @@
     },
     {
       "id": "otter",
+      "role": "mob",
       "num": 16,
       "baseRarity": "common",
       "family": "skip",
@@ -517,6 +533,7 @@
     },
     {
       "id": "pingu",
+      "role": "control",
       "num": 17,
       "baseRarity": "rare",
       "family": "skip",
@@ -552,6 +569,7 @@
     },
     {
       "id": "sheldon",
+      "role": "mob",
       "num": 18,
       "baseRarity": "rare",
       "family": "skip",
@@ -587,6 +605,7 @@
     },
     {
       "id": "dolphy",
+      "role": "control",
       "num": 19,
       "baseRarity": "hero",
       "family": "skip",
@@ -622,6 +641,7 @@
     },
     {
       "id": "orca",
+      "role": "mob",
       "num": 20,
       "baseRarity": "legend",
       "family": "skip",
@@ -658,6 +678,7 @@
     },
     {
       "id": "puffer",
+      "role": "mob",
       "num": 21,
       "baseRarity": "common",
       "family": "ring",
@@ -686,6 +707,7 @@
     },
     {
       "id": "jelly",
+      "role": "control",
       "num": 22,
       "baseRarity": "rare",
       "family": "underwater",
@@ -720,6 +742,7 @@
     },
     {
       "id": "bara",
+      "role": "control",
       "num": 23,
       "baseRarity": "rare",
       "family": "underwater",
@@ -756,6 +779,7 @@
     },
     {
       "id": "moray",
+      "role": "control",
       "num": 24,
       "baseRarity": "hero",
       "family": "underwater",
@@ -792,6 +816,7 @@
     },
     {
       "id": "kraki",
+      "role": "control",
       "num": 25,
       "baseRarity": "legend",
       "family": "underwater",
@@ -826,6 +851,7 @@
     },
     {
       "id": "polly",
+      "role": "mob",
       "num": 26,
       "baseRarity": "common",
       "family": "air",
@@ -866,6 +892,7 @@
     },
     {
       "id": "gull",
+      "role": "mob",
       "num": 27,
       "baseRarity": "common",
       "family": "air",
@@ -902,6 +929,7 @@
     },
     {
       "id": "pelly",
+      "role": "control",
       "num": 28,
       "baseRarity": "rare",
       "family": "air",
@@ -940,6 +968,7 @@
     },
     {
       "id": "alba",
+      "role": "boss",
       "num": 29,
       "baseRarity": "hero",
       "family": "air",
@@ -976,6 +1005,7 @@
     },
     {
       "id": "manta",
+      "role": "control",
       "num": 30,
       "baseRarity": "legend",
       "family": "air",
@@ -1012,6 +1042,7 @@
     },
     {
       "id": "shark",
+      "role": "guard",
       "num": 31,
       "baseRarity": "common",
       "family": "assault",
@@ -1043,6 +1074,7 @@
     },
     {
       "id": "crabby",
+      "role": "guard",
       "num": 32,
       "baseRarity": "rare",
       "family": "assault",
@@ -1071,6 +1103,7 @@
     },
     {
       "id": "king",
+      "role": "guard",
       "num": 33,
       "baseRarity": "rare",
       "family": "assault",
@@ -1099,6 +1132,7 @@
     },
     {
       "id": "lobster",
+      "role": "guard",
       "num": 34,
       "baseRarity": "hero",
       "family": "assault",
@@ -1127,6 +1161,7 @@
     },
     {
       "id": "davy",
+      "role": "boss",
       "num": 35,
       "baseRarity": "legend",
       "family": "assault",
@@ -1157,6 +1192,7 @@
     },
     {
       "id": "turtle",
+      "role": "support",
       "num": 36,
       "baseRarity": "common",
       "family": "shock",
@@ -1184,6 +1220,7 @@
     },
     {
       "id": "pumpum",
+      "role": "support",
       "num": 37,
       "baseRarity": "common",
       "family": "shock",
@@ -1212,6 +1249,7 @@
     },
     {
       "id": "cook",
+      "role": "support",
       "num": 38,
       "baseRarity": "rare",
       "family": "shock",
@@ -1241,6 +1279,7 @@
     },
     {
       "id": "corey",
+      "role": "control",
       "num": 39,
       "baseRarity": "hero",
       "family": "shock",
@@ -1272,6 +1311,7 @@
     },
     {
       "id": "lamp",
+      "role": "support",
       "num": 40,
       "baseRarity": "legend",
       "family": "laser",
