@@ -22,7 +22,42 @@ class TopGlow {
     _circles.add(_Circle(now, r, color));
   }
 
-  void clear() => _circles.clear();
+  void clear() {
+    _circles.clear();
+    bossRiseAt = -1000000000;
+  }
+
+  /// 보스 등장 시각(장면 ms) — Moments.onBossSpawned가 넣는다. 그 자리에서 붉은·보라 빛기둥이 솟는다(이름 리본은 UI).
+  double bossRiseAt = -1000000000;
+  final _fill = Paint()..isAntiAlias = true;
+  static const _bossMs = 1100.0;
+
+  /// 보스 자리 [at](반지름 [r]) 빛기둥 — TopMarks가 보스 체력 막대 전에 부른다.
+  void paintBoss(Canvas c, double now, Offset at, double r) {
+    final age = now - bossRiseAt;
+    if (age < 0 || age > _bossMs) return;
+    final t = age / _bossMs;
+    final rise = math.min<double>(1, t * 3);
+    final fade = t < 0.6 ? 1.0 : 1 - (t - 0.6) / 0.4;
+    final h = 220 * rise;
+    for (final (w, col) in const [(2.2, 0xFFB43AFF), (1.4, 0xFFFF3A5A), (0.6, 0xFFFFE6F0)]) {
+      final rect = Rect.fromLTRB(at.dx - r * w * 0.5, at.dy - h, at.dx + r * w * 0.5, at.dy + r * 0.3);
+      _fill.shader = Gradient.linear(rect.bottomCenter, rect.topCenter, [
+        Color(col).withValues(alpha: 0.55 * fade),
+        Color(col).withValues(alpha: 0),
+      ]);
+      c.drawRect(rect, _fill);
+    }
+    _fill.shader = null;
+    // 바다 위 고리 두 겹
+    for (var k = 0; k < 2; k++) {
+      final u = ((t * 2) - k * 0.3).clamp(0.0, 1.0);
+      _line
+        ..strokeWidth = 3 * (1 - u) + 1
+        ..color = const Color(0xFFFF5AA0).withValues(alpha: (1 - u) * fade);
+      c.drawOval(Rect.fromCenter(center: at, width: r * (1.2 + 2.2 * u), height: r * (0.6 + 1.1 * u)), _line);
+    }
+  }
 
   /// 배([ship]) 밑 — 적보다 먼저 그린다. [lite]면 번지는 빛 겹을 뺀다.
   void paint(Canvas c, double now, Offset ship, {required bool lite}) {

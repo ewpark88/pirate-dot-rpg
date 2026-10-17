@@ -114,7 +114,7 @@ class TopBossLoot {
       final age = now - b.ms;
       if (age < 0) continue;
       if (b.style == LootStyle.chest) _bits.vBeams(c, b.at, age, sprites);
-      if (b.style == LootStyle.reward) _bits.pillar(c, b.at, age, wide: true);
+      if (b.style != LootStyle.chest) _bits.pillar(c, b.at, age, wide: true); // 보스 처치·광고 보상 금빛 기둥
       if (b.style == LootStyle.reward) _bits.stars(c, b.at, age);
       _rays(c, b, age);
       if (flash && age < 160) {

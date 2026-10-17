@@ -117,6 +117,7 @@ class TopMarks {
       final prev = _bossLag[e.id] ?? ratio;
       final lag = prev < ratio ? ratio : (prev - dt / _lagMs).clamp(ratio, 1.0);
       _bossLag[e.id] = lag;
+      scene.topHits.glow.paintBoss(c, scene.clockMs, Offset(e.drawX, e.drawY), r);
       final w = (r * 1.7).clamp(40.0, 72.0).roundToDouble() + 6; // 사용자 '보스 체력이 안 보인다' — 넓고 굵게
       var fill = _pill.colorFor(ratio);
       if (_pill.isLow(ratio) && (scene.clockMs / 250).floor().isEven) {
