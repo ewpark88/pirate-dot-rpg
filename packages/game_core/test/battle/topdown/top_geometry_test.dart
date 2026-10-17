@@ -203,7 +203,7 @@ void main() {
       final a = attack('assault');
       final edge = topField.shipRadius + topField.mobRadius;
       final front = mob(topField.shipX + edge + 3, topField.shipY);
-      final frontFar = mob(topField.shipX + edge + 30, topField.shipY + 4, id: 2);
+      final frontFar = mob(topField.shipX + edge + 15, topField.shipY + 4, id: 2); // 배 지킴이 reach 22 안
       final back = mob(topField.shipX - edge - 30, topField.shipY, id: 3);
       final hugging = mob(topField.shipX, topField.shipY - edge - 8, id: 4);
       final hits = geo.aimMany(a, 1, [front, frontFar, back, hugging], XorShiftRng(1)).single.hits.map((h) => h.foe);
@@ -266,7 +266,7 @@ void main() {
     test('8계열 모두 사방의 적을 맞힌다(옆모습처럼 오른쪽만이 아님)', () {
       final foes = [
         for (var i = 0; i < 8; i++)
-          mob(topField.shipX + math.cos(i * math.pi / 4) * 50, topField.shipY + math.sin(i * math.pi / 4) * 50, id: i),
+          mob(topField.shipX + math.cos(i * math.pi / 4) * 40, topField.shipY + math.sin(i * math.pi / 4) * 40, id: i),
       ];
       for (final fam in t.skills.families) {
         final hit = <Foe>{};
