@@ -57,7 +57,7 @@ void main() {
       scene.update(kFrameMs);
       painter.paintTop(warm, frame);
     }
-    expect(scene.moments.towerFloor, 12);
+    expect(scene.moments.bannerText, '12F');
     tester.view
       ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
       ..devicePixelRatio = 1;

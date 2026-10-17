@@ -127,6 +127,12 @@ bool funEvent(BattleScene s, GameEvent e) {
     case TowerFloorCleared(:final floor):
       s.moments.onTowerFloor(floor + 1, cleared: true);
       _sfx(s, 'bossCleared', e);
+    // 보스 러시: 시작·다음 보스·마지막 보스 띠
+    case RushStarted(:final bosses):
+      s.moments.onRushStarted(bosses.length);
+      _sfx(s, 'bossSpawned', e);
+    case RushBossDown(:final index):
+      s.moments.onRushBossDown(index);
     case BossTraitFired() when s.isTop:
       _sfx(s, 'bossTrait', e);
       s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);
