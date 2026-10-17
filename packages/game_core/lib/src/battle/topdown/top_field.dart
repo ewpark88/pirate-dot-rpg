@@ -38,6 +38,7 @@ class TopField {
     this.nearSpawn,
     this.standoffGrow = 0,
     this.orbitMax = double.infinity,
+    this.swayDeg = 0,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
        bossSpawnRadius = bossSpawnRadius ?? approachRadius,
@@ -67,6 +68,7 @@ class TopField {
       bossOrbitDegPerSec: j.numberOr('bossOrbitDegPerSec', 0),
       standoffGrow: j.has('bossScale') ? j.obj('bossScale').numberOr('standoffGrow', 0) : 0,
       orbitMax: j.has('bossScale') ? j.obj('bossScale').numberOr('orbitMax', double.infinity) : double.infinity,
+      swayDeg: j.has('bossScale') ? j.obj('bossScale').numberOr('swayDeg', 0) : 0,
       reachScale: d.reachScale,
       bossSpawnRadius: j.numberOr('bossSpawnRadius', d.approachRadius),
       swarmSpacing: j.numberOr('swarmSpacing', w.field.spawnSpacing),
@@ -168,6 +170,10 @@ class TopField {
   final double standoffGrow;
   final double orbitMax;
 
+  /// 원을 돌지 않는 큰 보스는 배 위쪽 ±swayDeg 호를 같은 각속도로 오간다 — 가만히 서면 탄이 다 맞아 보스전이 짧아진다
+  /// (탐침 2026-10-18: 대보스 처치 53.8 → 20.7초). 0이면 제자리.
+  final double swayDeg;
+
   /// 사거리 배율 (skills.json reach × 이 값).
   final double reachScale;
 
@@ -216,6 +222,7 @@ class TopField {
     bossOrbitDegPerSec: bossOrbitDegPerSec,
     standoffGrow: standoffGrow,
     orbitMax: orbitMax,
+    swayDeg: swayDeg,
     reachScale: reachScale,
     bossSpawnRadius: bossSpawnRadius,
     swarmSpacing: swarmSpacing,
