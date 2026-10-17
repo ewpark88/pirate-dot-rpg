@@ -68,7 +68,7 @@ void main() {
     final stats = CombatStats.of(s, t);
     for (var i = 0; i < (seconds * 1000 / t.waves.tickMs).round(); i++) {
       ctx.tick = i;
-      Round(f, ctx, stats, rage: 0)
+      Round(f, ctx, stats)
         ..moveFoes()
         ..fireGuns()
         ..topdownStep(s);

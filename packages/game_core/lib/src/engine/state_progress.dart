@@ -11,7 +11,6 @@ class Progress {
     this.bestStage = 1,
     this.farming = false,
     this.rebirths = 0,
-    this.rage = 0,
     this.mapPiecesEarned = 0,
     this.titles = const [],
     this.treasureSea,
@@ -30,7 +29,6 @@ class Progress {
     bestStage: j['bestStage'] as int,
     farming: j['farming'] as bool,
     rebirths: j['rebirths'] as int,
-    rage: (j['rage'] as num).toDouble(),
     mapPiecesEarned: j['mapPiecesEarned'] as int? ?? 0,
     titles: (j['titles'] as List?)?.cast<String>() ?? const [],
     treasureSea: j['treasureSea'] as int?,
@@ -54,9 +52,6 @@ class Progress {
   /// 보스 실패 후 제자리 항해 중.
   final bool farming;
   final int rebirths;
-
-  /// 함성 게이지 0~1.
-  final double rage;
 
   /// 모은 지도 조각 누계 (줄지 않음, 환생 보너스의 근거). 쓸 조각은 wallet.mapPieces (세이브 v6).
   final int mapPiecesEarned;
@@ -93,7 +88,6 @@ class Progress {
     int? bestStage,
     bool? farming,
     int? rebirths,
-    double? rage,
     int? mapPiecesEarned,
     List<String>? titles,
     int? treasureSea,
@@ -112,7 +106,6 @@ class Progress {
     bestStage: bestStage ?? this.bestStage,
     farming: farming ?? this.farming,
     rebirths: rebirths ?? this.rebirths,
-    rage: rage ?? this.rage,
     mapPiecesEarned: mapPiecesEarned ?? this.mapPiecesEarned,
     titles: titles ?? this.titles,
     treasureSea: clearTreasureSea ? null : treasureSea ?? this.treasureSea,
@@ -131,7 +124,6 @@ class Progress {
     'bestStage': bestStage,
     'farming': farming,
     'rebirths': rebirths,
-    'rage': rage,
     'mapPiecesEarned': mapPiecesEarned,
     'titles': titles,
     'treasureSea': treasureSea,

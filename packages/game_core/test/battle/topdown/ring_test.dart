@@ -61,7 +61,7 @@ void main() {
     final s = GameState.newGame(playerId: 'r', seed: 1, now: start);
     for (var i = 0; i < (seconds * 1000 / t.waves.tickMs).round(); i++) {
       ctx.tick = i;
-      Round(f, ctx, CombatStats.of(s, t), rage: 0)
+      Round(f, ctx, CombatStats.of(s, t))
         ..fireGuns()
         ..topdownStep(s);
     }

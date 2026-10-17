@@ -241,6 +241,18 @@ extension _TopEvents on EventDirector {
 
   /// 타격감 v3 처치: 잉크·조각이 튐(적 크기 8).
   void _juiceKill(Kill e) => scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
+
+  /// 탑다운 보스 처치(피드백 #18): 흔들림·슬로모션·가장자리 빛 + 보스 자리에서 보상 터짐(연쇄 폭발 → 금화·젬 → 배로).
+  void _topBossKill(Kill e) {
+    if (scene.slowMoMs > 0) return;
+    scene.shake.trigger(_juice.shake['bossKill']!);
+    scene
+      ..haptic(HapticLevel.medium)
+      ..slowMoMs = _juice.bossSlowMoMs;
+    if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
+    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: scene.topHits.lite || scene.settings.powerSave);
+    scene.numbers.add(e.gold, e.x, e.y - 18, DamageKind.crit);
+  }
 }
 
 /// 원거리 적 탄 색(EnemyFired.kind): 깃털·가시·물·눈·불씨.

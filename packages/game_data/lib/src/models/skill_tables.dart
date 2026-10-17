@@ -185,10 +185,7 @@ class SkillsTable {
       maxSameFamilyInFleet = j.integer('maxSameFamilyInFleet'),
       legendSkillScope = j.str('legendSkillScope'),
       bossControlFactor = j.number('bossControlFactor'),
-      ragePerKill = j.obj('rage').number('perKill'),
-      rageMax = j.obj('rage').number('max'),
-      rageAutoTrigger = j.obj('rage').boolean('autoTrigger'),
-      ultimateMultiplier = j.obj('rage').number('ultimateMultiplier'),
+      ultimateMultiplier = j.number('ultimateMultiplier'),
       critBurstDamage = j.number('critBurstDamage'),
       legends = {
         for (final e in (j.raw['legends'] as Map<String, dynamic>).entries) e.key: j.obj('legends').obj(e.key),
@@ -214,11 +211,8 @@ class SkillsTable {
 
   /// 보스가 받는 기절·밀어내기 비율 (설계서 4.10: 절반).
   final double bossControlFactor;
-  final double ragePerKill;
-  final double rageMax;
-  final bool rageAutoTrigger;
 
-  /// 궁극기 피해 = 기본 공격 피해 × 이 값.
+  /// 피버 첫 일격(궁극기 효과) 피해 = 기본 공격 피해 × 이 값.
   final double ultimateMultiplier;
 
   /// 전설 치명타 폭발 피해 비율.

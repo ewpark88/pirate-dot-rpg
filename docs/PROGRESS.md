@@ -116,6 +116,7 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 - 세션 새로 열림: S2 economy=pirate-dot-rpg-26, S3 render=-5d, S4 ui=-24, S5 platform=-e8 (각자 D:\Projects\pde-<레인>). 인계 1절의 레인별 할 일 그대로 배정, 무거운 작업은 S1에 slot 요청 후 하나씩.
 - main 07b7f035 check --full 실행. 폰 미연결(adb 장치 없음) → 설치·실측은 연결 뒤.
 - 사용자 피드백 21건(폰 20분 플레이) → 우선순위 P0/P1/P2로 정해 4레인 배정(계획 user-feedback-2026-10-17.md). 스토어 샷 굽기는 화면 변경 뒤로 보류. 브레이크 기준 = balance crews ±10% 유지(S2 (b)). 대보스 id 확정(kraken_titan), 튜토리얼 1~3 보스 enemy_ship 고정.
+- 머지: S4 fever-break UI·S3 idle.heat·S5 도감 v2 초안·S2 분노 정리. **481af1be check --full 빨강(UI 골든 66장 — S4 HUD 변경을 빠른 check만으로 커밋)** → S4 수정 중, HUD처럼 여러 화면 걸리는 변경은 커밋 전 --full 필수로 지시. rage 정리 1단계(1eea1777). S2 #21: 튜토리얼 2단계에 bones(희귀 5연사) 확정 지급(9초), 시작 선원 octo 하나·튜토리얼 건너뛰어도 지급(S1 결정). S5 선원별 피해 계약(BattleView.crewDamage·BossCleared.mvp) 승인.
 
 ### 2026-10-16 · S1 · 저녁: 사용자 퇴근 — 인계
 - 인계 문서: docs/plans/active/handoff-2026-10-16.md(오늘 사용자 요청 전체·상태·결정·머지 대기·재개 순서). 재개 시 이 문서부터.
