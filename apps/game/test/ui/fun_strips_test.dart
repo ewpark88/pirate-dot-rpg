@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
@@ -94,9 +95,16 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
   });
 
-  testWidgets('피버: 평소엔 작은 막대, 발동 중엔 큰 원형 게이지(남은 초)', (tester) async {
-    await pumpGame(tester, _with(fever: 0.5), openTab: false);
+  testWidgets('피버: 평소엔 "피버까지 n마리"(80% 넘으면 금빛 강조), 발동 중엔 큰 원형 게이지(남은 초)', (tester) async {
+    final t = GameTables.load();
+    final half = _with(fever: 0.5);
+    await pumpGame(tester, half, openTab: false);
     expect(find.byKey(const Key('fun.fever')), findsOneWidget);
+    final n = (0.5 * feverKillsAt(t, half.progress.stage)).ceil();
+    expect(find.text('Fever in $n'), findsOneWidget);
+    expect(find.byKey(const Key('fun.fever.near')), findsNothing);
+    await pumpGame(tester, _with(fever: 0.9), openTab: false);
+    expect(find.byKey(const Key('fun.fever.near')), findsOneWidget);
     await pumpGame(tester, _with(feverLeft: 140), openTab: false);
     expect(find.byKey(const Key('fun.fever.on')), findsOneWidget); // 큰 원형 게이지
     expect(find.descendant(of: find.byKey(const Key('fun.fever.on')), matching: find.text('7')), findsOneWidget);

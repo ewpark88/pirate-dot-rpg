@@ -28,32 +28,41 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 
 bool _claimable(QuestView q) => q.done && !q.claimed;
 
-/// 상단 바 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
+/// 받을 수 있는 퀘스트 + 오늘 출석 수(퀘스트·출석이 아직 없으면 −1). 늘 보이는 아이콘이 쓰므로 숫자만 구독한다
+/// — 상태 전체를 보면 엔진 틱마다 다시 짓는다(사용자 버그 2026-10-16 버벅임).
+int dailyClaimCount(WidgetRef ref) {
+  final questsOf = ref.watch(dailyQuestsProvider);
+  final attendanceOf = ref.watch(attendanceProvider);
+  final now = ref.watch(clockProvider).now();
+  return ref.watch(
+    gameStateProvider.select((s) {
+      final quests = questsOf(s);
+      final attendance = attendanceOf(s, now);
+      if (quests == null && attendance == null) return -1;
+      // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
+      return (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
+    }),
+  );
+}
+
+/// 퀘스트·출석 시트 열기(도크 '퀘스트' 칸 — 사용자 피드백 #9 A, 엄지 닿는 아래로).
+void openDailySheet(BuildContext context) =>
+    unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet()));
+
+/// 퀘스트·출석 아이콘 1개 (설계서 4.12). 받을 것이 있으면 빨간 점 (4.9: 지금 눌러서 이득일 때만).
 class DailyIcon extends ConsumerWidget {
   const DailyIcon({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     countBuild('dailyIcon');
-    // 상단 바에 늘 있으므로 받을 수(숫자)만 구독한다 — 상태 전체를 보면 엔진 틱마다 다시 짓는다(사용자 버그 2026-10-16 버벅임).
-    final questsOf = ref.watch(dailyQuestsProvider);
-    final attendanceOf = ref.watch(attendanceProvider);
-    final now = ref.watch(clockProvider).now();
-    final count = ref.watch(
-      gameStateProvider.select((s) {
-        final quests = questsOf(s);
-        final attendance = attendanceOf(s, now);
-        if (quests == null && attendance == null) return -1;
-        // 받을 수 있는 수 (스킨 r2 숫자 뱃지: 퀘스트 + 오늘 출석).
-        return (quests?.where(_claimable).length ?? 0) + (attendance != null && !attendance.claimedToday ? 1 : 0);
-      }),
-    );
+    final count = dailyClaimCount(ref);
     if (count < 0) return const SizedBox.shrink();
     final icon = PixelIconButton(
       key: const Key('daily.icon'),
       asset: UiSprites.quest,
       semanticLabel: AppLocalizations.of(context).uiDailyTooltip,
-      onPressed: () => unawaited(showPixelSheet<void>(context, builder: (_) => const DailySheet())),
+      onPressed: () => openDailySheet(context),
     );
     return count > 0 ? PixelDot(key: const Key('daily.dot'), count: count, child: icon) : icon;
   }

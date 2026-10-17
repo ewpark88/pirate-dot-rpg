@@ -35,7 +35,7 @@ void main() {
     await pumpGame(tester, _ready(), openTab: false);
     expect(find.byKey(const Key('rebirth.ready.pill')), findsOneWidget);
     expect(find.text('Rebirth ready!'), findsOneWidget);
-    expect(find.byKey(const Key('rebirth.ready.bubble')), findsOneWidget);
+    expect(find.byKey(const Key('rebirth.ready.bubble')), findsNothing); // 가이드 v3: 옥토 말로 합침
     expect(find.byKey(const Key('tab.dot.0')), findsOneWidget);
     expect(find.byKey(const Key('tutorial.spot.tab.voyage')), findsOneWidget);
 
@@ -57,11 +57,13 @@ void main() {
     await tester.pump(const Duration(seconds: 7));
   });
 
-  testWidgets('말풍선은 6초 뒤 닫힌다', (tester) async {
-    await pumpGame(tester, _ready(), openTab: false);
-    expect(find.byKey(const Key('rebirth.ready.bubble')), findsOneWidget);
+  testWidgets('첫 환생 안내는 옥토 말(guide.rebirth)로 — 항해 탭을 가리킨다', (tester) async {
+    final log = await pumpGame(tester, withGuidesSeenExcept(_ready(), 'guide.rebirth'), openTab: false, guides: true);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('You can rebirth!'), findsOneWidget);
+    expect(log.hints.map((c) => c.id), contains('guide.rebirth'));
     await tester.pump(const Duration(seconds: 7));
-    expect(find.byKey(const Key('rebirth.ready.bubble')), findsNothing);
   });
 
   testWidgets('두 번째 회차부터는 알약·점만', (tester) async {

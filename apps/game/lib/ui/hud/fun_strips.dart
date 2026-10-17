@@ -239,17 +239,26 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
 
   @override
   Widget build(BuildContext context) {
-    final (fever, left) = ref.watch(
-      gameStateProvider.select((s) => ((((s.battle?.fever ?? 0) * 20).round()) / 20, s.battle?.feverTicksLeft ?? 0)),
+    final t = ref.watch(tablesProvider);
+    // 피버까지 남은 처치 수(사용자 '피버 언제 오나') — 게이지 0~1 × 경제 feverKillsAt(스테이지). 수가 바뀔 때만 다시 그린다.
+    final (fever, left, kills) = ref.watch(
+      gameStateProvider.select((s) {
+        final f = s.battle?.fever ?? 0;
+        return (
+          (f * 20).round() / 20,
+          s.battle?.feverTicksLeft ?? 0,
+          ((1 - f) * feverKillsAt(t, s.progress.stage)).ceil().clamp(0, 1 << 30),
+        );
+      }),
     );
     if (left > _total) _total = left;
     if (left == 0) _total = 1;
     final l10n = AppLocalizations.of(context);
     final on = left > 0;
     final value = on ? left / _total : fever;
-    final mult = ref.watch(tablesProvider).meta.raw.obj('fever').number('damageMultiplier');
+    final mult = t.meta.raw.obj('fever').number('damageMultiplier');
     return Semantics(
-      label: on ? l10n.uiFeverChip(shortDecimal(mult)) : '${l10n.uiFever} ${(fever * 100).round()}%',
+      label: on ? l10n.uiFeverChip(shortDecimal(mult)) : l10n.uiFeverIn(kills),
       excludeSemantics: true,
       child: Row(
         key: Key(on ? 'fun.fever.meter.on' : 'fun.fever'),
@@ -263,11 +272,16 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
               child: Text(l10n.uiFeverChip(shortDecimal(mult)), style: Skin.text(10, color: Colors.white)),
             )
           else
-            Text(l10n.uiFever, style: Skin.text(11, color: const Color(0xFFFFC27A))),
+            // 가까우면(80% 넘음) 금빛으로 강조.
+            Text(
+              l10n.uiFeverIn(kills),
+              key: Key(fever >= 0.8 ? 'fun.fever.near' : 'fun.fever.in'),
+              style: Skin.text(14, color: fever >= 0.8 ? const Color(0xFFFFD84A) : const Color(0xFFFFC27A)),
+            ),
           const SizedBox(width: 3),
           SizedBox(
             width: 36,
-            height: on ? 6 : 4,
+            height: 6,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(3),
               child: LinearProgressIndicator(

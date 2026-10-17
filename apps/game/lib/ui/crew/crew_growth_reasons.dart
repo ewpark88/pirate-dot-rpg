@@ -77,7 +77,8 @@ class CrewGrowthReasons extends ConsumerWidget {
                 key: Key('crew.detail.merge.$crewId'),
                 tone: SkinTone.gold,
                 height: 56,
-                onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                // 이 선원만 합친다(S4 지적 — 다른 선원까지 합쳐지면 기대와 다르다).
+                onPressed: () => ref.read(commandSinkProvider).send(MergeAllCards(crewId: crewId)),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(l10n.uiCrewMergeNow(level, level + g.mergeLevels), style: Skin.text(18)),
