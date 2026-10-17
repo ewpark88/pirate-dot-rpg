@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/hd/hd_status_marks.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 
@@ -36,6 +37,19 @@ class TopStatus {
     final n = (e.stunned ? 1 : 0) + (e.burning ? 1 : 0) + (e.slowed ? 1 : 0) + (e.vulnerable ? 1 : 0);
     if (n == 0) return;
     final clock = scene.clockMs;
+    // HD 특성 표식(화상 꽃잎·감속 수정·취약 방울) — 절전이면 아이콘만.
+    if (!scene.topHits.lite && (e.burning || e.slowed || e.vulnerable)) {
+      _hd.paint(
+        c,
+        Offset(e.drawX, e.drawY),
+        r,
+        clock,
+        e.id,
+        burning: e.burning,
+        slowed: e.slowed,
+        vulnerable: e.vulnerable,
+      );
+    }
     final blink = scene.settings.flash;
     final odd = blink && (clock / 180).floor().isOdd;
     final top = (e.drawY - r - 7).roundToDouble();
@@ -50,6 +64,8 @@ class TopStatus {
     if (e.slowed) icon(_snow, _ice, _white);
     if (e.vulnerable) icon(_shield, _red, 0xFFFFB0A8);
   }
+
+  final _hd = HdStatusMarks();
 
   // 글자 그림 캐시(모양·색마다 한 번) — 무리 속 아이콘이 많아도 drawPicture 한 번씩(S1 성능 '모두 신화' 버벅임).
   final Map<String, Picture> _cache = {};
