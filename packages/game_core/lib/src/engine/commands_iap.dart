@@ -3,12 +3,13 @@ part of 'commands.dart';
 // 유료 상품 명령 (계약 platform-iap — 이름은 S5 요청서 그대로, 기획 docs/specs/economy-iap.md).
 // 앱이 스토어 결과를 명령으로 넣는다(결정론 밖은 포트에서 끝).
 
-const _iapTypes = {'grantPurchase', 'revokeEntitlement', 'op.setEntitlement', 'claimGemSub'};
+const _iapTypes = {'grantPurchase', 'revokeEntitlement', 'op.setEntitlement', 'claimGemSub', 'claimPassReward'};
 
 Command _iapCommandFromJson(String type, Json j) => switch (type) {
   'grantPurchase' => GrantPurchase(j['productId'] as String, j['token'] as String, DateTime.parse(j['at'] as String)),
   'revokeEntitlement' => RevokeEntitlement(j['id'] as String),
   'op.setEntitlement' => OpSetEntitlement(j['id'] as String, on: j['on'] as bool),
+  'claimPassReward' => ClaimPassReward(paid: j['paid'] as bool),
   _ => const ClaimGemSub(),
 };
 
@@ -61,4 +62,17 @@ class ClaimGemSub extends Command {
 
   @override
   String get type => 'claimGemSub';
+}
+
+/// 항해 패스 다음 단계 보상 받기 — [paid]면 유료 줄(pass 권리 필요). 그 단계에 닿지 않았으면 그대로.
+class ClaimPassReward extends Command {
+  const ClaimPassReward({required this.paid});
+
+  final bool paid;
+
+  @override
+  String get type => 'claimPassReward';
+
+  @override
+  Json _fields() => {'paid': paid};
 }

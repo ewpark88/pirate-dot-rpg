@@ -172,5 +172,200 @@
         }
       ]
     }
-  ]
+  ],
+  "pass": {
+    "season": "s1",
+    "xpPerLevel": 50,
+    "xp": {
+      "quest": 10,
+      "attendance": 10,
+      "stage": 2
+    },
+    "free": [
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "title": "passFlag"
+      }
+    ],
+    "paid": [
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "skins": [
+          "pass_s1"
+        ]
+      },
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "legendSummon": 1
+      }
+    ]
+  }
 }
