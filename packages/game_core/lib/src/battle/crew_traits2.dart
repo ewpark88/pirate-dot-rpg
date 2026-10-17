@@ -37,7 +37,9 @@ Volley _sweep(Gun g, Volley v, List<Foe> foes, BattleGeometry geo, ({double deg,
   if (ship == null) return v; // 옆모습은 그대로
   final first = v.hits.first.foe;
   final aim = math.atan2(first.y - ship.y, first.x - ship.x);
-  final reach = math.sqrt(math.pow(first.x - ship.x, 2) + math.pow(first.y - ship.y, 2)) + s.range;
+  final fx = first.x - ship.x;
+  final fy = first.y - ship.y;
+  final reach = math.sqrt(fx * fx + fy * fy) + s.range;
   final halfArc = s.deg * radiansPerDegree * half;
   final hit = [for (final h in v.hits) h.foe];
   for (final e in geo.eligible(g.attack, foes)) {

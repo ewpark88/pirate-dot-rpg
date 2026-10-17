@@ -78,9 +78,10 @@ void main() {
 
   test('휩쓸기(lobster): 첫 대상 쪽 부채꼴·거리 안 적만 더한다(뒤쪽·먼 적은 아님)', () {
     final g0 = geo();
-    final front = foe(g0.top.shipX, g0.top.shipY - 50);
-    final side = foe(g0.top.shipX + 15, g0.top.shipY - 50); // 앞쪽 약 17°
-    final behind = foe(g0.top.shipX, g0.top.shipY + 50);
+    // 강습 reach 22(배 둘레 기준, 배 지킴이) 안 — 앞·옆·뒤 모두 사거리 안, 부채꼴이 가른다.
+    final front = foe(g0.top.shipX, g0.top.shipY - 40);
+    final side = foe(g0.top.shipX + 12, g0.top.shipY - 40); // 앞쪽 약 17°
+    final behind = foe(g0.top.shipX, g0.top.shipY + 40);
     final far = foe(g0.top.shipX, g0.top.shipY - 160);
     final foes = [front, side, behind, far];
     round(foes);
