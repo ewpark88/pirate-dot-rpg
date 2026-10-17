@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 // 배 스킨 칸 (환생 v2 스펙 7장 ⑤ + 새 스킨 7종 docs/specs/economy-ship-skins.md) — 목록은 ship_skin_entries.dart.
 
@@ -29,22 +30,26 @@ class ShipSkinButton extends ConsumerWidget {
       button: true,
       label: l10n.uiShipSkin,
       excludeSemantics: true,
-      child: GestureDetector(
-        key: const Key('ship.skin'),
-        behavior: HitTestBehavior.opaque,
-        onTap: () => unawaited(showPixelSheet<void>(context, builder: (_) => const ShipSkinSheet())),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(6, 2, 12, 2),
-            decoration: Skin.inset(radius: 24),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ShipLookPreview(size: 40),
-                const SizedBox(width: 4),
-                Text(l10n.uiShipSkin, style: Skin.text(15)),
-              ],
+      // 가이드 '배 스킨' 안내가 가리키는 자리.
+      child: TutorialSpot(
+        id: 'ship.skin',
+        child: GestureDetector(
+          key: const Key('ship.skin'),
+          behavior: HitTestBehavior.opaque,
+          onTap: () => unawaited(showPixelSheet<void>(context, builder: (_) => const ShipSkinSheet())),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(6, 2, 12, 2),
+              decoration: Skin.inset(radius: 24),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ShipLookPreview(size: 40),
+                  const SizedBox(width: 4),
+                  Text(l10n.uiShipSkin, style: Skin.text(15)),
+                ],
+              ),
             ),
           ),
         ),

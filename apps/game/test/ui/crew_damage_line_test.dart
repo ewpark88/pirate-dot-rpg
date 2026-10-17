@@ -25,6 +25,9 @@ void main() {
       200,
       scrollable: find.descendant(of: find.byKey(const Key('sheet.panel')), matching: find.byType(Scrollable)).first,
     );
+    // 도감 카드(수집 보상 줄)로 카드가 시트 가장자리에 걸칠 수 있다 — 다 보이게 한 뒤 누른다.
+    await tester.ensureVisible(card);
+    await tester.pumpAndSettle();
     await tester.tap(card);
     await tester.pumpAndSettle();
     final line = find.byKey(const Key('crew.damage.octo'));

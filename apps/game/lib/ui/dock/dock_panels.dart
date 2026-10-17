@@ -4,6 +4,9 @@ import 'package:pirate_dot/ui/tabs/ship_tab.dart';
 import 'package:pirate_dot/ui/tabs/summon_tab.dart';
 import 'package:pirate_dot/ui/tabs/voyage_tab.dart';
 
+/// 도크의 탭 순서(왼쪽 → 오른쪽: 배·선원·소환·항해) — 슬라이드 방향을 정한다.
+const _dockOrder = [1, 2, 3, 0];
+
 /// 탭 내용 최대 폭(dp) — 태블릿에서 줄이 너무 길어지지 않게.
 const _tabMaxWidth = 640.0;
 
@@ -18,18 +21,24 @@ class DockPanels extends StatefulWidget {
 }
 
 class _DockPanelsState extends State<DockPanels> with SingleTickerProviderStateMixin {
-  // 패널을 바꾸면 새 내용이 옆에서 16dp 밀려 들어온다 (스킨 r2 ④, 180ms).
+  // 패널을 바꾸면 새 내용이 옆에서 40dp 밀려 들어온다 (모션 기준 #50: 탭 전환 슬라이드, 200ms) —
+  // 도크에서 오른쪽 탭이면 오른쪽에서, 왼쪽 탭이면 왼쪽에서.
   late final AnimationController _slide = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 180),
+    duration: const Duration(milliseconds: 200),
     value: 1,
   );
 
   @override
   void didUpdateWidget(DockPanels old) {
     super.didUpdateWidget(old);
-    if (old.tab != widget.tab) _slide.forward(from: 0).ignore();
+    if (old.tab == widget.tab) return;
+    _dir = _dockOrder.indexOf(widget.tab) >= _dockOrder.indexOf(old.tab) ? 1 : -1;
+    _slide.forward(from: 0).ignore();
   }
+
+  /// 밀려 들어오는 방향 (1 = 오른쪽에서).
+  double _dir = 1;
 
   @override
   void dispose() {
@@ -44,7 +53,7 @@ class _DockPanelsState extends State<DockPanels> with SingleTickerProviderStateM
       final t = 1 - Curves.easeOutCubic.transform(_slide.value);
       return Opacity(
         opacity: 1 - 0.4 * t,
-        child: Transform.translate(offset: Offset(16 * t, 0), child: child),
+        child: Transform.translate(offset: Offset(40 * t * _dir, 0), child: child),
       );
     },
     // 지금 탭 하나만 짓는다 — 숨은 탭도 엔진 틱(50ms)마다 상태를 구독·재계산하면 전투가 버벅인다(사용자 버그 2026-10-16).

@@ -8,6 +8,7 @@ import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/render/battle_game.dart' show BattleGame;
 import 'package:pirate_dot/render/preview/crew_preview_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -96,6 +97,8 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
         children: [
           // k2: 작은 리본 제목 + 굵은 외곽선 틀.
           SubRibbon(l10n.uiPreviewTitle),
+          // 처음 볼 때 옥토 한 마디: 등급 칸 누르기(가이드 v3).
+          if (widget.showTabs) OnceTip(id: 'tip.preview', text: l10n.uiTipPreview),
           const SizedBox(height: 4),
           Container(
             // 테두리를 장면 위에 그린다(장면이 가리지 않게).
