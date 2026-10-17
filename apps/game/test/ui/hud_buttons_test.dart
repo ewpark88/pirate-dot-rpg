@@ -58,6 +58,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('+Cannon Lv 53'), findsOneWidget);
+    // 배 체력 막대 위(선원 칸을 덮지 않게 — S1 실기기 2026-10-18).
+    expect(
+      tester.getRect(find.byKey(const Key('quick.upgrade.float'))).bottom,
+      lessThanOrEqualTo(tester.getRect(find.byKey(const Key('hud.shipHp'))).top),
+    );
     await tester.pump(const Duration(seconds: 1));
     expect(find.byKey(const Key('quick.upgrade.float')), findsNothing);
     final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
