@@ -245,6 +245,13 @@ class RegionsTable {
 
   List<String> get enemyIds => enemies.keys.toList();
 
+  /// 보스 크기 분류(S1 2026-10-18 핵앤슬래시 존재감 — waves.top.bossScale 키): 해역 대보스 'wall' · 해역 보스 'region' · 그 밖 'other'.
+  String bossClassOf(String id) {
+    if (regions.any((r) => r.wallBoss == id)) return 'wall';
+    if (regions.any((r) => r.regionBoss == id)) return 'region';
+    return 'other';
+  }
+
   /// 무한 항해를 반영한 해역 (301 → 1의 해역).
   RegionDef regionAt(int stage) {
     final s = (stage - 1) % loopStages + 1;

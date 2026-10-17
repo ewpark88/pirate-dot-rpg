@@ -109,8 +109,8 @@ class TopDuel {
   ({double x, double y}) _keepOff(Field f, TopGeometry g, ({double x, double y}) off) {
     var x = g.base.shipX + off.x;
     var y = g.base.shipY + off.y;
-    final r = g.top.bossStandoff;
     for (final e in f.foes) {
+      final r = g.top.standoffOf(e);
       // 돌진(패턴 steering)은 일부러 배에 박히는 공격이라 막지 않는다(피하면 돌진 피해·침몰이 사라진다).
       if (!e.boss || !e.alive || (e.plan?.steering ?? false)) continue;
       final dx = x - e.x;
@@ -136,8 +136,10 @@ class TopDuel {
     var n = 0;
     var cx = 0.0;
     var cy = 0.0;
+    var r = g.top.bossStandoff;
     for (final e in f.foes) {
       if (!e.boss || !e.alive) continue;
+      r = math.max(r, g.top.standoffOf(e)); // 큰 보스는 더 멀리 서니 배도 그만큼 비켜 둘 다 화면 안에
       n++;
       cx += e.x;
       cy += e.y;
@@ -147,7 +149,6 @@ class TopDuel {
     final uy = cy / n - g.top.shipY;
     final len = math.sqrt(ux * ux + uy * uy);
     if (len == 0) return null;
-    final r = g.top.bossStandoff;
     return (x: -ux / len * r * shift, y: -rise - uy / len * r * shiftY, face: math.atan2(ux, -uy));
   }
 }

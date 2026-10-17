@@ -158,7 +158,7 @@ class TopGeometry implements BattleGeometry {
     final dx = e.x - top.shipX;
     final dy = e.y - top.shipY;
     final d = math.sqrt(dx * dx + dy * dy);
-    if (e.standsOff ? d <= top.bossStandoff : _touching(e.x, e.y)) return true;
+    if (e.standsOff ? d <= top.standoffOf(e) : _touching(e.x, e.y)) return true;
     final ahead = forwardBoost > 0 && dy < 0 ? 1 + forwardBoost * (-dy / d) : 1.0; // 피버 전진
     final step =
         speed *
@@ -170,7 +170,7 @@ class TopGeometry implements BattleGeometry {
     // 잡몹은 선체 몸통(캡슐)에 닿는 곳까지, 보스는 standoff 원까지.
     final near = top.hullHalfLength + top.hullOffset.abs() + top.mobRadius; // 이보다 멀면 몸통에 닿을 수 없다(탐색 생략)
     final nd = e.standsOff
-        ? math.max(top.bossStandoff, d - step)
+        ? math.max(top.standoffOf(e), d - step)
         : (d - step > near ? d - step : math.max(_touchDist(dx / d, dy / d), d - step));
     e
       ..x = top.shipX + dx / d * nd
@@ -238,9 +238,11 @@ class TopGeometry implements BattleGeometry {
       }
     }
     for (final b in f.foes) {
-      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false);
-      if (!orbiting || _dist(b) > top.bossStandoff + 1) continue;
-      _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, top.bossStandoff);
+      // 큰 보스(배율 > orbitMax)는 돌지 않고 선 자리에 — 대보스 그림이 화면 폭에 가까워 옆으로 돌면 화면 밖.
+      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false) && top.orbits(b);
+      final r = top.standoffOf(b);
+      if (!orbiting || _dist(b) > r + 1) continue;
+      _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, r);
     }
   }
 

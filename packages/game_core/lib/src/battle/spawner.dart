@@ -8,6 +8,20 @@ import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
 import 'package:game_data/game_data.dart' show BossDef, GameTables, WavesTable;
 
+/// 보스 크기 배율(waves.top.bossScale[분류], 없으면 1) — 그림(S3)과 엔진(충돌·standoff)이 같은 값을 읽는다.
+double bossScaleOf(GameTables t, String bossId) {
+  final top = t.waves.raw.obj('top');
+  if (!top.has('bossScale')) return 1;
+  return top.obj('bossScale').numberOr(t.regions.bossClassOf(bossId), 1);
+}
+
+/// 그 보스가 서는 standoff 원 반지름(TopField.standoffOf와 같은 식 — 상태 보기·시나리오용).
+double bossStandoffFor(GameTables t, String bossId) {
+  final top = t.waves.raw.obj('top');
+  final grow = top.has('bossScale') ? top.obj('bossScale').numberOr('standoffGrow', 0) : 0;
+  return top.number('bossStandoff') + top.number('bossRadius') * (bossScaleOf(t, bossId) - 1) * grow;
+}
+
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
 
@@ -107,7 +121,9 @@ void startBoss(
     bossDef: def,
     tier: t.regions.tierAt(stage),
   );
-  boss.hp = boss.maxHp.times(hpRatio);
+  boss
+    ..hp = boss.maxHp.times(hpRatio)
+    ..scale = bossScaleOf(t, def.id);
   if (def.patterns.isNotEmpty) {
     int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
     final first = def.firstRestSec;

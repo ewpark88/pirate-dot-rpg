@@ -141,13 +141,14 @@ void main() {
     final start = math.sqrt(math.pow(boss0.x - top.shipX, 2) + math.pow(boss0.y - top.shipY, 2));
     expect(start, closeTo(tables.waves.raw.obj('top').number('bossSpawnRadius') + top.bossRadius, 5));
     expect(top.shipY - boss0.y, greaterThan(tables.waves.raw.obj('top').number('viewHeight') / 2));
+    final r = bossStandoffFor(tables, boss0.kind); // 큰 보스(bossScale)는 더 멀리 선다
     var reached = false;
     for (var i = 0; i < ticksFor(25) && e.state.battle!.bossActive; i++) {
       e.tick();
       if (!e.state.battle!.enemies.any((x) => x.boss)) break;
-      if (dist() <= top.bossStandoff + 1e-6) reached = true;
+      if (dist() <= r + 1e-6) reached = true;
       // 원 안으로는 들어오지 않고, 충격·강습에 밀려도 잠깐 바깥(밀린 만큼)이다.
-      if (reached) expect(dist(), inInclusiveRange(top.bossStandoff - 1e-6, top.bossStandoff + 20));
+      if (reached) expect(dist(), inInclusiveRange(r - 1e-6, r + 20));
     }
     expect(reached, isTrue);
   });
