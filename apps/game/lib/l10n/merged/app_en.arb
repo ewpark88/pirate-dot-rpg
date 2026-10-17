@@ -371,6 +371,14 @@
       }
     }
   },
+  "opHudTopDp": "Boss camera top inset hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
