@@ -25,3 +25,13 @@ cd ..\..
 - `--set table.key=값` — 테이블 값을 덮어써서 다시 빌드 없이 변형 비교(예: `--set growth.expToNext.legend=26`).
 - `--boss-ad` — 보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지).
 - `--out report.json` — 플레이어별 값·회차별 카드 수입 JSON.
+
+## 오늘 밤 실행 (2026-10-17, S1 시작 신호 뒤 — 사용자 '퇴근')
+- 기준: **main 최신**(미커밋 수치로는 안 돌린다, S1 결정). 그때 main에 bossBreak 수치가 있으면 넣은 상태, 없으면 뺀 상태다.
+- 어디서: S2 워크트리 `D:\Projects\pde-economy`에서 `git merge main`(작업 트리를 깨끗하게 — 미커밋은 패치로 빼 둠) → 아래.
+- 순서(한 번에 하나, 잠금 파일이 있으면 시작 안 함):
+  1. `python -I -B tool/nightly_sim.py` — 100명 × 30일 daily → `docs/balance/nightly-30d.md` (약 수십 분, 메모리 부족이면 자동으로 50명)
+  2. (시간 남으면) 위협·보스 후보 확정 5명 × 3시간 continuous, 시드 1, 후보마다 하나씩:
+     `%TEMP%\game_cli.exe sim --players 5 --hours 3 --set waves.monster.attackBase=9 --set waves.top.vanguard.attackMul=60 --set waves.top.vanguard.hpMul=10 --set waves.boss.attackMultiplier=35 --set waves.boss.hpMultiplier=40 --set waves.monster.goldBase=3.5 --set waves.boss.wallHpMultiplier=2.6 --out build/nightly/c5.json`
+     (C3 · C5 · hull base 900/1200 변형 — 결과 표는 docs/progress/economy.md)
+- 끝나면: 리포트 커밋(lane/economy) → S1에 '벗어남' 목록 + 전/후 표 보고, 잠금 파일이 지워졌는지 확인.
