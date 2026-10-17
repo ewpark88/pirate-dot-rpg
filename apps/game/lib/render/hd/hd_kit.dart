@@ -50,7 +50,8 @@ class HdKit {
   double wave(double t, int n, [double off = 0]) => math.sin(2 * math.pi * n * t / loopMs + off);
 
   /// 몸 덩어리: [light](위) → [dark](아래) 그라데이션 + 외곽선 + 왼쪽 위 광택.
-  void blob(Canvas c, Path p, Color light, Color dark, {bool gloss = true}) {
+  /// 작은 부품(부리·뿔·지느러미 끝)은 [line] 0.5~0.7로 선을 얇게 — 굵은 선에 색이 묻히지 않게.
+  void blob(Canvas c, Path p, Color light, Color dark, {bool gloss = true, double line = 1}) {
     final b = p.getBounds();
     // 셰이더 출력은 붓 색 알파를 곱한다 — 앞에서 남은 반투명 색을 지운다.
     fill
@@ -62,7 +63,10 @@ class HdKit {
       ).createShader(b);
     c.drawPath(p, fill);
     fill.shader = null;
+    final w = ink.strokeWidth;
+    ink.strokeWidth = w * line;
     c.drawPath(p, ink);
+    ink.strokeWidth = w;
     if (gloss) shine(c, b);
   }
 
