@@ -47,8 +47,9 @@ void main() {
     final p = TopBossPattern()..miss(const Offset(50, 50), 0);
     final rec = PictureRecorder();
     final c = Canvas(rec);
-    p.paint(c, 400, const Offset(50, 50), (_) => null, flash: false);
-    p.paint(c, 900, const Offset(50, 50), (_) => null, flash: false);
+    p
+      ..paint(c, 400, const Offset(50, 50), (_) => null, flash: false)
+      ..paint(c, 900, const Offset(50, 50), (_) => null, flash: false);
     rec.endRecording().dispose();
   });
 }
