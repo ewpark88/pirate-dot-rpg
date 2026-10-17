@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_loot_bits.dart';
 
 /// 보스 처치 보상 연출 (사용자 피드백 #18 '보스 처치 보상이 확실히 보이게', 2026-10-17):
@@ -20,7 +21,7 @@ class TopBossLoot {
   static const _maxBursts = 3;
 
   /// 끝까지 걸리는 시간(ms) — 테스트·정리용.
-  static const totalMs = 2600.0;
+  static const totalMs = 3600.0;
 
   /// 보스가 ([at])에서 쓰러졌다. [lite]면 조각 절반(절전·시트가 가림).
   void burst(double now, Offset at, {required bool lite, double size = 1.7}) =>
@@ -48,12 +49,17 @@ class TopBossLoot {
     b.gems = math.min(7, b.gems + math.max(3, (n / 3).ceil()));
   }
 
-  /// 카드(선원 초상·등급 색)를 가장 최근 터짐에 더한다 — 피드백 #17, 카드 이벤트가 오면 연결.
-  void card(String crewId, int color) {
-    if (_bursts.isEmpty) return;
+  /// 카드 획득(피드백 #17, CardGranted): 방금 터진 보스 보상(0.5초 안)에 붙고, 없으면 [fallback](배 앞)에서 금빛 기둥과 함께 솟는다.
+  /// [isNew](처음 얻은 동료)면 크게·오래 떠서 [newCrewText]를 띄우고, [special](첫 희귀 선원 환영)이면 더 크게.
+  void card(double now, Offset fallback, String crewId, int color, {bool isNew = false, bool special = false}) {
+    if (_bursts.isEmpty || now - _bursts.last.ms > 500) _add(_Burst(now, fallback, 0, 0, 1.2, style: LootStyle.chest));
     final b = _bursts.last;
-    if (b.cards.length < 5) b.cards.add((crewId, color));
+    if (b.cards.length < 5) b.cards.add((crewId, color, special ? 2 : (isNew ? 1 : 0)));
   }
+
+  /// 새 동료 문구(UI가 TopTexts.newCrew로 채운다).
+  String newCrewText = 'NEW CREW!';
+  final _label = TopLabel();
 
   bool get active => _bursts.isNotEmpty;
 
@@ -171,7 +177,8 @@ class TopBossLoot {
     final ang = kind == 0 ? i * golden : -math.pi / 2 + (i - (kind == 1 ? b.gems : b.cards.length) / 2 + 0.5) * 0.55;
     final dist = (kind == 0 ? 18 + (i * 13) % 30 : 30.0 + kind * 6) * b.size;
     final land = b.at + Offset(math.cos(ang) * dist, math.sin(ang) * dist);
-    final hold = _holdUntilMs + order * 22 + kind * 160;
+    final big = kind == 2 ? b.cards[i].$3 : 0;
+    final hold = _holdUntilMs + order * 22 + kind * 160 + big * 600;
     final flyT = (age - hold) / _flyMs;
     if (flyT >= 1) return flyT < 1 + 34 / _flyMs ? 1 : 0;
     Offset at;
@@ -216,9 +223,46 @@ class TopBossLoot {
         _bits.gem(c, Offset.zero, age);
         c.restore();
       default:
-        _bits.card(c, p, b.cards[i], age, sprites);
+        final grow = big == 0 ? 1.0 : (1 + 0.8 * big) * (flyT > 0 ? 1 - flyT * 0.6 : 1);
+        if (big > 0 && flyT < 0) _halo(c, p, age, big, b.cards[i].$2);
+        c
+          ..save()
+          ..translate(p.dx, p.dy)
+          ..scale(grow);
+        _bits.card(c, Offset.zero, (b.cards[i].$1, b.cards[i].$2), age, sprites, spin: big == 0 || flyT >= 0);
+        c.restore();
+        if (big > 0 && flyT < 0 && pop > _popMs * 0.6) {
+          _label.draw(
+            c,
+            newCrewText,
+            p + Offset(0, 13 * grow + 6),
+            9 + 2.0 * big,
+            alpha: math.min(1, (pop - _popMs * 0.6) / 200),
+          );
+        }
     }
     return 0;
+  }
+
+  /// 새 동료 카드 뒤 후광: 등급 색 빛줄기가 돌고 고리가 맥박친다.
+  void _halo(Canvas c, Offset p, double age, int big, int color) {
+    final r = 14 * (1 + 0.8 * big) + 14;
+    // 환영(2)은 금빛, 새 동료(1)는 등급 색 — 파란 바다에서도 보이게 알파를 넉넉히.
+    _paint.color = big >= 2 ? const Color(0x88FFD84A) : Color(color).withValues(alpha: 0.5);
+    _ray.reset();
+    for (var k = 0; k < 8; k++) {
+      final a = age / 600 + k * math.pi / 4;
+      _ray
+        ..moveTo(p.dx, p.dy)
+        ..lineTo(p.dx + math.cos(a - 0.14) * r, p.dy + math.sin(a - 0.14) * r)
+        ..lineTo(p.dx + math.cos(a + 0.14) * r, p.dy + math.sin(a + 0.14) * r)
+        ..close();
+    }
+    c.drawPath(_ray, _paint);
+    _ring
+      ..strokeWidth = 1.5
+      ..color = const Color(0xCCFFE27A);
+    c.drawCircle(p, r * (0.55 + 0.08 * math.sin(age / 90)), _ring);
   }
 
   /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
@@ -242,5 +286,5 @@ class _Burst {
   final int blasts;
   final double size;
   int gems = 0;
-  final List<(String, int)> cards = [];
+  final List<(String, int, int)> cards = []; // (선원 id, 등급 색, 크기 0 보통·1 새 동료·2 환영)
 }
