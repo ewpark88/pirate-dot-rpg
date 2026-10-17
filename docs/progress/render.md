@@ -536,3 +536,8 @@
 - 다음: S2 BossBarBroken(층 깨짐)·UltimateCast.manual(컷인·폭주 오라) 해시 오면 연출, S5 meminfo 항목별 결과로 누수 추적 계속.
 - 남은 문제: 폰 PSS 증가는 렌더 진단(12분 라이브)에선 재현 안 됨 — Graphics/Native 항목별 측정 대기.
 
+## 2026-10-17 (밤 2) — main 막힘 해결·히트스톱 거르기
+- 한 일: 8b724e71 — S5 배 순항 머지 뒤 render 시험 3개(배 고정 가정 → stillTables, 심연 기대값), 히트스톱 거르기(HitStopGate 초당 최대 1.5회), 엔진 넉백 켜지면 렌더 일반 넉백 끔, render 골든 일괄. test/render 337·test/ui 703 초록, 빠른 check 통과.
+- 다음: S2 BossBarBroken·UltimateCast.manual 연출, S5 meminfo 항목별 결과로 누수 추적.
+- 남은 문제: test/ui 골든 10장(crew_detail·design_k1)이 선원 미리보기 배 순항으로 바뀜 — ui 레인 소유라 S4 갱신 또는 S5 미리보기 순항 끔 필요(S1에 알림).
+
