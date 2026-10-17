@@ -1250,5 +1250,24 @@
       }
     }
   },
-  "uiLevelUpFx": "LEVEL UP!"
+  "uiLevelUpFx": "LEVEL UP!",
+  "uiCrewDamageStage": "이번 스테이지 피해 {value}",
+  "@uiCrewDamageStage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewDamageBoss": "지난 보스 {value} · {percent}",
+  "@uiCrewDamageBoss": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_damage_line.dart';
 import 'package:pirate_dot/ui/crew/crew_growth_reasons.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/crew_pill.dart';
@@ -148,6 +149,7 @@ class CrewDetailDialog extends ConsumerWidget {
             CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
             // 공격 미리보기(작은 전장 + 등급 탭) — 특색 아래(S4: 360 첫 화면에 '키울지·쓸지' 정보가 밀리지 않게).
             CrewPreviewPanel(def: def),
+            CrewDamageLine(crewId: def.id), // 이번 스테이지·지난 보스 피해(#13)
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else

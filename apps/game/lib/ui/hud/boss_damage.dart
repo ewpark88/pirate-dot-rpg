@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/crew/crew_damage_line.dart' show lastBossDamageProvider;
 import 'package:pirate_dot/ui/hud/reward_gate.dart' show rewardLite;
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -43,6 +44,7 @@ class _BossDamageGateState extends ConsumerState<BossDamageGate> {
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       for (final e in tick.events) {
         if (e is! BossCleared || e.crewDamage.isEmpty) continue;
+        ref.read(lastBossDamageProvider.notifier).value = e.crewDamage; // 선원 상세 피해 줄(#13)
         final b = tick.frame;
         if (b.fastSail != null || b.bounty != null) continue;
         // 보상 터짐(디자인 개편 ③): 같은 틱에 받은 젬·카드를 처치 창 전에 — 창 안 피해 순위는 덮지 않는다(S4).

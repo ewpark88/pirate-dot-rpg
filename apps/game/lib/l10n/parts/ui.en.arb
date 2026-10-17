@@ -994,5 +994,24 @@
       }
     }
   },
-  "uiLevelUpFx": "LEVEL UP!"
+  "uiLevelUpFx": "LEVEL UP!",
+  "uiCrewDamageStage": "This stage {value}",
+  "@uiCrewDamageStage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewDamageBoss": "Last boss {value} · {percent}",
+  "@uiCrewDamageBoss": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }
