@@ -121,6 +121,9 @@ void main() {
     await tester.tap(find.byKey(const Key('hud.settings')));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.byKey(const Key('settings.guideReplay')), 100);
+    // 설정 목록이 길어져(정보 묶음) 줄이 아래 끝에 걸칠 수 있다 — 가운데로.
+    await tester.ensureVisible(find.byKey(const Key('settings.guideReplay')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('settings.guideReplay')));
     expect(log.sent.whereType<ClearHints>().map((c) => c.prefix), ['guide.']);
     await tester.pump(const Duration(seconds: 5));

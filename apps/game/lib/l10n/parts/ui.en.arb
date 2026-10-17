@@ -84,7 +84,7 @@
   "uiAdBossSupport": "Damage +{percent} · {seconds}s",
   "uiAdFreeSummon": "Free summon · {left} left",
   "uiOk": "OK",
-  "uiSettingsPrivacy": "Privacy Options",
+  "uiSettingsPrivacy": "Privacy policy",
   "uiRebirthDoneTitle": "The map is open!",
   "uiRebirthDoneGain": "+{count} map pieces · Damage·Gold +{percent}",
   "uiRegionProgress": "{stage}/{total}",
@@ -97,7 +97,7 @@
   "uiDailyTooltip": "Quests & Attendance",
   "uiSaveFailedDiskFull": "Not enough storage to save. Progress will save again once space is freed.",
   "uiSaveFailedIo": "Couldn't save progress. Will try again shortly.",
-  "uiSettingsNotifications": "Notifications",
+  "uiSettingsNotifications": "Notifications (offline reward full · tickets full)",
   "uiCrewCardBadge": "×{count}",
   "uiNumberScientific": "{mantissa} × 10^{exponent}",
   "uiSettingsHelp": "Help",
@@ -1734,5 +1734,18 @@
       }
     }
   },
-  "uiTalkUlt": "Your ultimate is charged! Tap the button at the bottom right!"
+  "uiTalkUlt": "Your ultimate is charged! Tap the button at the bottom right!",
+  "uiSettingsAbout": "About",
+  "uiSettingsTerms": "Terms of service",
+  "uiSettingsContact": "Contact us",
+  "uiSettingsVersion": "Version {v}",
+  "@uiSettingsVersion": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLinkCopied": "Link copied — paste it into your browser or mail app",
+  "uiContactSubject": "Game support"
 }
