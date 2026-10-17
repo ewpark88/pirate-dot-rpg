@@ -49,6 +49,10 @@ bool funEvent(BattleScene s, GameEvent e) {
     case SaveRequested(reason: 'adReward') when s.isTop:
       s.topHits.loot.reward(s.clockMs, s.topShip);
       _sfx(s, 'adReward', e);
+    // 손맛 v4: 한꺼번에 5마리 이상 — 가장자리 금빛 + 작은 흔들림.
+    case MultiKill(:final count) when s.isTop && count >= 5:
+      if (s.settings.flash && s.screenFlashMs <= 0) s.screenFlashMs = 140;
+      s.shake.trigger(s.juice.shake['aoe']!);
     // 보스 브레이크(사용자 '잘 안 보여'): 충격파·조각·'BREAK!' 도장·기우뚱·별, 짧은 슬로모션·흔들림.
     case BossBroken(:final enemyId, :final ticks, :final x, :final y) when s.isTop:
       s.topHits.breaks.broken(enemyId, x, y, ticks * s.player.tickMs, s.clockMs);

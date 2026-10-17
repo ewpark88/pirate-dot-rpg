@@ -281,8 +281,8 @@ class EventDirector implements ReplayListener {
     if (_player.enemyAt(index - 1, e.targetId)?.boss ?? false) scene.isTop ? _topBossKill(e) : _bossKill();
   }
 
-  static const _coinLiftPx = 10.0;
-  static const _coinLiftJitterPx = 5.0;
+  static const _coinLiftPx = 18.0; // 손맛 v4: 짤랑 높이 튀었다 빨려 들어감
+  static const _coinLiftJitterPx = 8.0;
 
   void _bossKill() {
     if (scene.slowMoMs > 0) return;

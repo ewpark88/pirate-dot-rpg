@@ -234,7 +234,7 @@ class TopHits {
     final view = s.frame;
     final flash = s.settings.flash;
     final ship = s.topShip;
-    juice.paint(c, now, lite: lite);
+    juice.paint(c, now, lite: lite, fever: view.feverTicksLeft > 0);
     impact.paint(c, now, flash: flash, lite: lite);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);

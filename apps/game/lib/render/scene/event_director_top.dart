@@ -224,6 +224,8 @@ extension _TopEvents on EventDirector {
   void _juiceHit(Damage e, int index) {
     final en = _player.enemyAt(index, e.targetId);
     if (en == null) return;
+    if (!scene.topHits.lite) scene.topHits.juice.squash(e.targetId, scene.clockMs); // 손맛 v4 찌그러짐
+    if (e.crit) scene.topHits.juice.critStar(en.x, en.y, scene.clockMs);
     // 레이저가 켜진 선원의 피해: 맞은 자리 작은 불꽃.
     final crew = e.crewId;
     if (crew != null && scene.topHits.family.beaming(crew, scene.clockMs)) {
