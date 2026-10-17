@@ -276,7 +276,9 @@ extension _TopEvents on EventDirector {
       ..haptic(HapticLevel.medium)
       ..slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
-    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: scene.topHits.lite || scene.settings.powerSave);
+    final lite = scene.topHits.lite || scene.settings.powerSave;
+    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: lite);
+    scene.topHits.bossKilled(scene, e.targetId, Offset(e.x, e.y), lite: lite);
     scene.numbers.add(e.gold, e.x, e.y - 18, DamageKind.crit);
   }
 }

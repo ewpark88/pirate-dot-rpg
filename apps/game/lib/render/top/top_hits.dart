@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:game_core/game_core.dart' show bossScaleOf;
+import 'package:game_data/game_data.dart' show parseArgb;
+import 'package:pirate_dot/render/hd/hd_boss_shatter.dart';
 import 'package:pirate_dot/render/hd/hd_muzzle.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -38,6 +41,9 @@ class TopHits {
 
   /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
   TopTraits? traits;
+
+  /// 보스 처치 HD 터짐(카툰 섬광·몸 조각·연기).
+  final shatter = HdBossShatter();
 
   /// HD 원거리 적 발사 빛(쏘는 부위).
   final muzzle = HdMuzzle();
@@ -233,6 +239,7 @@ class TopHits {
     crew
       ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: now)
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
+    shatter.paint(c, now);
     loot.paint(c, now, ship, sprites, flash: flash);
     feverStrike.paintWorld(c, now, lite: lite);
     resupply.paint(c, now, ship);
@@ -245,7 +252,20 @@ class TopHits {
     feverStrike.paintScreen(c, box, now, sprites);
   }
 
+  /// HD 처치 터짐: 그 보스 색(fx_map bossLook.color)·크기(그림 칸 반 × waves.top.bossScale)로 조각·연기·섬광.
+  void bossKilled(BattleScene s, int id, Offset at, {required bool lite}) {
+    for (var k = 0; k < s.poseCount; k++) {
+      final p = s.poses[k];
+      if (p.id != id) continue;
+      final look = s.fx.bossLook[p.kind];
+      final r = (look?.number('w') ?? 56) / 2 * bossScaleOf(s.tables, p.kind);
+      shatter.burst(s.clockMs, at, r, parseArgb(look?.strOrNull('color') ?? '#B04A3A', 'bossLook.color'), lite: lite);
+      return;
+    }
+  }
+
   void clear() {
+    shatter.clear();
     family.clear();
     juice.clear();
     muzzles.clear();
