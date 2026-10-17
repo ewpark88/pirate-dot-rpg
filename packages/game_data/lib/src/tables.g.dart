@@ -1815,6 +1815,36 @@ const Map<String, String> rawTables = {
       "color": "#D5D8DC",
       "w": 52,
       "h": 52
+    },
+    "sea_croc": {
+      "color": "#4A8042",
+      "w": 72,
+      "h": 72
+    },
+    "monster_whale": {
+      "color": "#465476",
+      "w": 72,
+      "h": 72
+    },
+    "ice_slime": {
+      "color": "#82CCF0",
+      "w": 72,
+      "h": 72
+    },
+    "leviathan": {
+      "color": "#782C2C",
+      "w": 72,
+      "h": 72
+    },
+    "kraken_titan": {
+      "color": "#AA283C",
+      "w": 72,
+      "h": 72
+    },
+    "poseidon": {
+      "color": "#5AAAA0",
+      "w": 72,
+      "h": 72
     }
   },
   "bossLookDefault": "enemy_ship",

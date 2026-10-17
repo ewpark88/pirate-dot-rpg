@@ -32,7 +32,8 @@ void main() {
       final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
       final keys = [
         for (final e in r.enemies) 'td_enemy:$e',
-        for (final b in {r.boss, r.midBoss, r.regionBoss}) ...['boss:$b', 'td_boss:$b'],
+        // 도감 v2: 보통 보스 순환·10단위 대보스도(표에 들어오면 그림이 있어야 한다).
+        for (final b in {r.boss, r.midBoss, r.regionBoss, ...r.bossRotation, ?r.wallBoss}) ...['boss:$b', 'td_boss:$b'],
       ];
       for (final k in keys) {
         expect(paths[k], isNotNull, reason: '$k 경로 없음');
@@ -40,6 +41,16 @@ void main() {
       }
     });
   }
+
+  test('도감 v2 대보스 6종: 탑다운 2프레임 88도트 + 컷인 초상', () {
+    final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
+    for (final b in ['sea_croc', 'monster_whale', 'ice_slime', 'leviathan', 'kraken_titan', 'poseidon']) {
+      for (final k in ['td_boss:$b', 'boss:$b']) {
+        expect(paths[k], isNotNull, reason: '$k — fx_map bossLook에 없음');
+        expect(File('assets/${paths[k]}').existsSync(), isTrue, reason: '$k → assets/${paths[k]}');
+      }
+    }
+  });
 
   test('배 등급 탑다운 층 그림이 모두 있다 (t1~t4)', () {
     final paths = {for (final p in SpriteBank.manifest(tables)) p.key: p.path};
