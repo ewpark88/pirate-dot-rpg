@@ -35,7 +35,9 @@ class SwapCompareDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final t = ref.watch(tablesProvider);
-    final s = ref.watch(gameStateProvider);
+    // 두 선원 레벨이 바뀔 때만 다시 계산(S4 검토 ① — 전투 상태는 20Hz로 바뀐다, 발열 대책). 계산은 그때 상태로 한 번.
+    ref.watch(gameStateProvider.select((s) => '${s.crews[outId]?.level}/${s.crews[inId]?.level}'));
+    final s = ref.read(gameStateProvider);
     final cmp = swapCompare(s, t, outId, inId);
     final rarityOf = {
       for (final id in [outId, inId])
@@ -49,14 +51,18 @@ class SwapCompareDialog extends ConsumerWidget {
     final verdict = cmp.ratio >= _better
         ? SwapVerdict.better
         : (cmp.ratio <= _worse ? SwapVerdict.worse : SwapVerdict.similar);
-    final reasons = [
+    // 좋은 점 · 약한 점 순서(S4 검토 ③).
+    final strong = [
       if (verdict == SwapVerdict.better) l10n.uiSwapDpsUp,
-      if (verdict == SwapVerdict.worse) l10n.uiSwapDpsDown,
       if (a != null && b != null && b.area && !a.area) l10n.uiSwapMobStrong,
-      if (a != null && b != null && a.area && !b.area) l10n.uiSwapMobWeak,
       if (a != null && b != null && bossAims.contains(b.aim) && !bossAims.contains(a.aim)) l10n.uiSwapBossStrong,
+    ];
+    final weak = [
+      if (verdict == SwapVerdict.worse) l10n.uiSwapDpsDown,
+      if (a != null && b != null && a.area && !b.area) l10n.uiSwapMobWeak,
       if (a != null && b != null && bossAims.contains(a.aim) && !bossAims.contains(b.aim)) l10n.uiSwapBossWeak,
     ];
+    final reasons = [...strong, ...weak];
     final diffs = [
       if (a != null && b != null && a.aim != b.aim) l10n.uiSwapAim(aimText(l10n, a.aim), aimText(l10n, b.aim)),
       if (a != null && b != null && a.area != b.area)
@@ -68,8 +74,9 @@ class SwapCompareDialog extends ConsumerWidget {
         l10n.uiSwapRange(_rangeText(l10n, a.range), _rangeText(l10n, b.range)),
     ];
     final (chipText, chipColor) = switch (verdict) {
-      SwapVerdict.better => (l10n.uiSwapBetter, Skin.mint),
-      SwapVerdict.similar => (l10n.uiSwapSimilar, Skin.goldBottom),
+      // 옅은 바탕 + 진한 글자(S4 검토 ② — 흰 글자는 금·민트 바탕에서 대비 4.5:1 미만).
+      SwapVerdict.better => (l10n.uiSwapBetter, Skin.mintInk),
+      SwapVerdict.similar => (l10n.uiSwapSimilar, Skin.goldInk),
       SwapVerdict.worse => (l10n.uiSwapWorse, Skin.danger),
     };
     final width = MediaQuery.sizeOf(context).width;
@@ -122,8 +129,12 @@ class SwapCompareDialog extends ConsumerWidget {
                 child: Container(
                   key: Key('swap.verdict.${verdict.name}'),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                  decoration: BoxDecoration(color: chipColor, borderRadius: BorderRadius.circular(12)),
-                  child: Text(chipText, style: Skin.text(16, color: Colors.white)),
+                  decoration: BoxDecoration(
+                    color: chipColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: chipColor, width: 1.5),
+                  ),
+                  child: Text(chipText, style: Skin.text(16, color: chipColor)),
                 ),
               ),
               if (reasons.isNotEmpty) ...[
