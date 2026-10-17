@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/pass/pass_cells.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -116,6 +117,7 @@ class PassSheet extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SubRibbon(l10n.uiPassTitle),
+        OnceTip(id: 'tip.pass', text: l10n.uiTipPass),
         const SizedBox(height: 6),
         Row(
           children: [
