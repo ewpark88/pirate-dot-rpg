@@ -24,8 +24,8 @@ class ShipTurn {
   double speed = 0;
   Offset? _prevPos;
 
-  /// 질주 정도 0~1(60단위/초부터 180에 가득): 항적 길이·잔상·속도선(TopScenePainter).
-  double get rush => ((speed - 60) / 120).clamp(0.0, 1.0);
+  /// 질주 정도 0~1(40단위/초부터 130에 가득 — S5 순항 55·돌진 132): 항적 길이·잔상·속도선(TopScenePainter).
+  double get rush => ((speed - 40) / 90).clamp(0.0, 1.0);
 
   /// 피버 좌우 이동: x 변화로 뱅크(이동 방향으로 최대 15°, 부드럽게), 방향을 바꾸면 큰 물보라.
   void update(double x, double clockMs, double dt) {

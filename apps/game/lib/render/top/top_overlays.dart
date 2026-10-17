@@ -33,6 +33,7 @@ class TopOverlays {
 
   final _flashPaint = Paint();
   final _label = TopLabel();
+  int get labels => _label.cached;
 
   /// 큰 띠(심연의 탑 '12F'·보스 러시): 화면 가운데 보라(마지막 보스면 붉은) 띠가 펼쳐졌다 접히며 큰 글자 + 위 작은 글자.
   void _tower(Canvas c, Size box) {

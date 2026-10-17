@@ -189,6 +189,14 @@ class HdSheets {
     return 'cache ${mb(_bytes)}/${mb(budget)}MB (density ${_density.toStringAsFixed(2)}, cap ${_cap.toInt()}) retired ${mb(wait)}MB | ${parts.join(', ')}';
   }
 
+  /// 메모리 진단(운영자·시험): 캐시 종 수·바이트·버릴 대기.
+  Map<String, Object> memory() => {
+    'hdSheets': _ready.length,
+    'hdBytes': _bytes,
+    'hdRetired': retiredBytes,
+    'hdBudget': budget,
+  };
+
   /// 버릴 대기 바이트(시험).
   int get retiredBytes => _retired.fold(0, (a, r) => a + _sizeOf(r.$1));
 

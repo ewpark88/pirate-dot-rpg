@@ -20,6 +20,7 @@ import 'package:pirate_dot/render/top/top_marks.dart';
 import 'package:pirate_dot/render/top/top_overlays.dart';
 import 'package:pirate_dot/render/top/top_sea_painter.dart';
 import 'package:pirate_dot/render/top/top_ship_painter.dart';
+import 'package:pirate_dot/render/top/top_wake.dart';
 
 /// 탑다운 장면 (T2): 배 가운데 고정 카메라 → 바다(흐름) → 항적 → 물속 적 → 배(그림자·층·체력 막대) → 물 위·공중 적 → fx
 /// fx(발사체·폭발·코인·숫자 — 옆모습과 같은 그리기, 전장 좌표). 상자 dp 좌표 캔버스에 그린다.
@@ -117,6 +118,7 @@ class TopScenePainter {
       ..translate(-cam.dx, -cam.dy);
     fever.weaveTrail(c, ship, clockMs, _sea.flowSpeed);
     _marks.zones(c);
+    _wake.paint(c, clockMs, ship, _turn, lite: scene.topHits.lite); // 배가 도는 항적·돌진 속도선(S5 배 이동 v2)
     _foes
       ..snap = dot * dpr
       ..bakeDensity =
@@ -238,10 +240,10 @@ class TopScenePainter {
 
   final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
-
   double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
   double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
   void dispose() => _foes.hdSheets.dispose(); // 장면을 버릴 때 HD 텍스처를 바로 놓는다
+  Map<String, Object> memory() => {..._foes.hdSheets.memory(), 'labels': _overlays.labels}; // 운영자 메모리 진단
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
   Offset worldToScreen(Offset world) => Offset(_camT.$1, _camT.$2) + (world - _camT.$4) * _camT.$3;
@@ -249,6 +251,7 @@ class TopScenePainter {
   Offset screenToWorld(Offset dp) => _camT.$4 + (dp - Offset(_camT.$1, _camT.$2)) / _camT.$3;
 
   late final _turn = ShipTurn(scene);
+  final _wake = TopWake();
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
   bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
 
