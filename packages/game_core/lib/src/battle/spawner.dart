@@ -46,8 +46,11 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final t = ctx.tables;
   final w = t.waves;
   final species = t.regions.enemiesAt(stage, rebirths: f.rebirths); // 초반엔 1~2종, 진행·환생으로 늘어난다
-  final n = count ?? (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
-  final share = count == null || f.scenePooled ? w.mobPoolAt(stage) / n : 1.0; // 장면 파(던전)도 한 파 몫을 나눔
+  final n =
+      count ??
+      (f.hordeCount > 0 ? f.hordeCount : (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage)));
+  // 장면 파(던전)도 한 파 몫을 나눔. poolScale: 피버 보충 고리처럼 한 파 몫의 일부만(덤 — 진행·골드가 피버로 뛰지 않게).
+  final share = (count == null || f.scenePooled ? w.mobPoolAt(stage) / n : 1.0) * f.poolScale;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
   final gold = f.inScene ? BigNum.zero : stageCurve(w.goldBase, w.goldGrowth, stage).times(share); // 탑 등 장면 모드는 골드 없음
@@ -62,20 +65,20 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
         layer: def.layer,
         x: 0,
         y: 0,
-        maxHp: hp.times(def.hpScale * f.enemyHpScale * f.sceneHpMul / k),
+        maxHp: hp.times(def.hpScale * f.enemyHpScale * f.sceneHpMul * f.speedHpMul / k),
         speed: def.speed,
-        attack: attack.times(1 / k),
+        attack: attack.times(1 / (k * f.speedHpMul)),
         gold: gold.times(1 / k),
         def: def,
         tier: t.regions.tierAt(stage),
-      );
+      )..feverMob = f.feverSwarm != null && f.hordeCount == 0; // 피버 고리(대군 습격 고리는 아님)
       if (def.bomber != null) e.contactTimer = double.infinity; // 자폭: 접촉 공격 대신 박아 터진다(bestiary.dart)
       f.foes.add(e);
     }
   }
 }
 
-/// 피버 중 한 파 마리 수 = 평소 × countMul, 상한 max(평소 상한 150보다 크게). 표에 swarm이 없으면 평소 그대로.
+/// 피버 중 한 파 마리 수 = 평소 × countMul(바닥 min — 초반에도 화면 꽉, 실기기 6-2 피버에 8마리 2026-10-17), 상한 max. 표에 swarm이 없으면 평소 그대로.
 /// 몫(pool ÷ 마리 수)은 그대로 나뉘어 한 마리는 약해지고 파 총량(HP·골드·공격)은 변하지 않는다.
 /// 피버 중 무리 파의 자리 패턴(표 swarm.pattern). 피버가 아니거나 표에 swarm이 없으면 null.
 String? feverSwarmPattern(GameTables t, {required bool fever}) {
@@ -83,12 +86,21 @@ String? feverSwarmPattern(GameTables t, {required bool fever}) {
   return fever && f.has('swarm') ? f.obj('swarm').str('pattern') : null;
 }
 
+/// 대군 습격 마리 수(waves.top.horde {min, max, rampStage}): 스테이지 1에 min, rampStage에 max까지 곧게. 표에 없으면 0(끔).
+int hordeCountAt(GameTables t, int stage) {
+  final top = t.waves.raw.obj('top');
+  if (!top.has('horde')) return 0;
+  final h = top.obj('horde');
+  final k = math.min<double>(1, math.max(0, stage - 1) / math.max(1, h.integer('rampStage') - 1));
+  return (h.integer('min') + (h.integer('max') - h.integer('min')) * k).round();
+}
+
 int feverSwarmCount(GameTables t, int stage) {
   final n = t.waves.topMobCountAt(stage);
   final fever = t.meta.raw.obj('fever');
   if (!fever.has('swarm')) return n;
   final sw = fever.obj('swarm');
-  final m = (n * sw.number('countMul')).round();
+  final m = math.max((n * sw.number('countMul')).round(), sw.intOrNull('min') ?? 0);
   return m < sw.integer('max') ? m : sw.integer('max');
 }
 
@@ -120,9 +132,9 @@ void startBoss(
     layer: 'surface',
     x: x ?? 0,
     y: y ?? 0,
-    maxHp: maxHp ?? bossMaxHp(t, stage, def: def, hpScale: hpScale * f.enemyHpScale * f.sceneHpMul),
+    maxHp: maxHp ?? bossMaxHp(t, stage, def: def, hpScale: hpScale * f.enemyHpScale * f.sceneHpMul * f.speedHpMul),
     speed: w.bossSpeed,
-    attack: bossAttack(w, stage),
+    attack: bossAttack(w, stage).times(1 / f.speedHpMul),
     gold: gold ? stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier) : BigNum.zero,
     boss: true,
     bossDef: def,

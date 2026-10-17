@@ -178,7 +178,13 @@ class TopBounty {
   void _text(Canvas c, String s, Offset center, double size, {Color color = _ink, double alpha = 1, double scale = 1}) {
     final key = '$s|$size|${color.toARGB32()}';
     final pair = _texts.putIfAbsent(key, () {
-      if (_texts.length > 30) _texts.clear();
+      if (_texts.length > 30) {
+        for (final (a, b) in _texts.values) {
+          a.dispose();
+          b.dispose();
+        }
+        _texts.clear();
+      }
       TextPainter make(TextStyle style) => TextPainter(
         text: TextSpan(text: s, style: style),
         textDirection: TextDirection.ltr,
@@ -203,7 +209,10 @@ class TopBounty {
       ..translate(center.dx, center.dy)
       ..scale(scale);
     final at = Offset(-fill.width / 2, -fill.height / 2);
-    if (alpha < 1) c.saveLayer(null, Paint()..color = Color.fromRGBO(0, 0, 0, alpha.clamp(0, 1)));
+    // 글자 크기만큼의 레이어(화면 전체 레이어는 텍스처가 튄다 — S5 gfx)
+    final bounds = (at & Size(fill.width, fill.height)).inflate(fill.height * 0.3);
+    final veil = Paint()..color = Color.fromRGBO(0, 0, 0, alpha.clamp(0, 1));
+    if (alpha < 1) c.saveLayer(bounds, veil);
     outline.paint(c, at);
     fill.paint(c, at);
     if (alpha < 1) c.restore();

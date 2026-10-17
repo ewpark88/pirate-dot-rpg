@@ -13,12 +13,14 @@ import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
 import 'package:pirate_dot/ui/hud/captain_skill_button.dart';
 import 'package:pirate_dot/ui/hud/hp_bars.dart';
+import 'package:pirate_dot/ui/hud/upgrade_float.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 선원 줄 오른쪽 끝 버튼 (layout-v2-brief 3, S3 좌표 약속 `battleFrameFor`):
 /// 보스 도전 = 파밍 중일 때만 도트 버튼(궁극기 버튼은 없앰 — 피버 첫 일격, 2026-10-17).
@@ -53,6 +55,8 @@ class BattleButtons extends ConsumerWidget {
               height: _hpBarHeight,
               child: const ShipHpBar(),
             ),
+            // 빠른 강화 '+대포 Lv 9' — 배 체력 막대 바로 위 가운데(선원 칸을 덮지 않게).
+            Positioned(left: 0, right: 0, top: f.slotBand.top - _hpBarAbove - 28, child: const UpgradeFloatLabel()),
             // 보스가 쓰러지는 순간 보스 자리에 'BREAK!' (누름 통과).
             const Positioned.fill(child: BossBreakBurst()),
             // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
@@ -68,7 +72,7 @@ class BattleButtons extends ConsumerWidget {
             Positioned(
               right: bossChallengeEdge,
               top: f.slotBand.top - _hpBarAbove - bossChallengeGap - captainSkillSize,
-              child: const CaptainSkillButton(),
+              child: const TutorialSpot(id: 'captain.skill', child: CaptainSkillButton()),
             ),
             Positioned(
               right: bossChallengeEdge + (ref.watch(captainSkillProvider) == null ? 0 : captainSkillSize + 8),

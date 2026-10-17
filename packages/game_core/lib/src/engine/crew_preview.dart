@@ -26,6 +26,7 @@ class CrewPreview {
     _clock = _TickClock(start, Duration(milliseconds: tables.waves.tickMs));
     _engine = CoreEngine(tables: tables, clock: _clock, initial: state)
       ..enqueue(const OpSetInvincible(on: true))
+      ..enqueue(const OpSetShipStill(on: true)) // 배가 돌아다니면 공격 모양이 안 보인다(순항 끔)
       ..enqueue(OpSetWave(count: _cfg.integer('swarm')));
     _phaseTicks = (_cfg.number('phaseSec') / secondsPerMillisecond / tables.waves.tickMs).round();
   }

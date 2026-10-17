@@ -10,8 +10,8 @@ import 'top_recording.dart';
 /// 모션 v1 (사용자 '움직임이 자연스럽고 매끄럽게, 뚝뚝 끊김 0'): 20Hz 엔진 틱 사이를 렌더가 잇는다.
 void main() {
   test('배 자리·방향이 화면 프레임마다 이어진다(틱마다 계단처럼 멈췄다 뛰지 않음)', () {
-    final rec = topRecording(tables, ticks: 520, fever: 0.99);
-    final scene = BattleScene(tables, rec, loop: false);
+    final rec = topRecording(noHordeTables, ticks: 520, fever: 0.99); // 첫 파 대군 습격은 뺀다(배 경로 타이밍)
+    final scene = BattleScene(noHordeTables, rec, loop: false);
     while (scene.player.position < 200) {
       scene.update(kFrameMs);
     }

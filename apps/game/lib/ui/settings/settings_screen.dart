@@ -6,12 +6,15 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/save_transfer.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/operator/flags.dart';
+import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
+import 'package:pirate_dot/ui/settings/about_section.dart';
 import 'package:pirate_dot/ui/settings/save_transfer_section.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
@@ -160,6 +163,18 @@ class SettingsScreen extends ConsumerWidget {
                       key: const Key('settings.save'),
                       title: l10n.uiSaveTitle,
                       child: const SaveTransferSection(),
+                    ),
+                  // 정보: 개인정보처리방침 · 이용약관 · 문의하기 · 버전(출시 준비).
+                  _Group(key: const Key('settings.about'), title: l10n.uiSettingsAbout, child: const AboutSection()),
+                  // 운영자 빌드만: 패널 바로 열기(돈 알약 5번 탭은 안쪽 골드 칸이 먼저 받는다 — S1 2026-10-18).
+                  if (kOperator)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: OutlinedButton(
+                        key: const Key('settings.operator'),
+                        onPressed: () => unawaited(showOperatorPanel(context)),
+                        child: Text(l10n.opOpenPanel),
+                      ),
                     ),
                   // 도움말: 큰 수 단위 (계획 E11).
                   _Group(

@@ -11,4 +11,4 @@ steps:
   - advance: 2t
   - expect: { dungeonActive: true, inScene: true }
   - advance: 45s
-  - expect: { dungeonActive: false, dungeonBest: 1, dungeonTickets: 0, inScene: false, stage: 160 }
+  - expect: { dungeonActive: false, dungeonBest: 1, dungeonTickets: 0, inScene: false, stage: 161 }  # 던전이 일찍 끝나 본 전투가 한 스테이지 더 감(화면 밀도 2026-10-17)

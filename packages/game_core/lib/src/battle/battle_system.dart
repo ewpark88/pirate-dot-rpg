@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/fever_strike.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/battle/legend.dart';
+import 'package:game_core/src/battle/refill_wave.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/tailwind_speed.dart';
@@ -16,11 +17,10 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
-import 'package:game_core/src/economy/fever.dart' show feverOn, feverStep;
+import 'package:game_core/src/economy/fever.dart' show feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
-import 'package:game_core/src/economy/rebirth_shop.dart'
-    show ShipDressCache, beyondHonor, fastSailFraction, treasureHpMultiplier;
+import 'package:game_core/src/economy/rebirth_shop.dart' show ShipDressCache, beyondHonor, treasureHpMultiplier;
 import 'package:game_core/src/economy/sea_events.dart' show startSeaEvent, tapGoldfish;
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -38,9 +38,11 @@ class BattleSystem implements GameSystem {
   final _tailwind = TailwindSpeed();
   static const Map<String, int> Function(GameState, GameTables, int) _supply = fastSailSupplyLevels; // 빠른 항해 보급(S2)
   int _kills = 0;
+  int _gaugeKills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
+  bool _still = false; // 배 고정(OpSetShipStill — 보여 주기 장면)
   bool _zeroCooldown = false;
 
   @override
@@ -90,6 +92,10 @@ class BattleSystem implements GameSystem {
       case OpSetInvincible(:final on):
         _invincible = on;
         return state;
+      case OpSetShipStill(:final on):
+        _still = on;
+        _field?.shipStill = on;
+        return state;
       case OpCastSkill(:final crewId):
         return _round(state, ctx, (r) {
           final g = r.field.guns.where((g) => g.crewId == crewId).firstOrNull;
@@ -118,7 +124,7 @@ class BattleSystem implements GameSystem {
       r.feverStrike(state); // 피버가 시작되는 틱의 첫 일격(궁극기 효과)
       if (f.waveFoes.isEmpty && !f.bossActive && !f.inScene) {
         f.travelLeft -= r.dt;
-        if (f.travelLeft <= 0) _nextEncounter(f, state, ctx);
+        if (f.travelLeft <= 0) nextEncounter(f, state, ctx);
       }
       r
         ..moveFoes()
@@ -136,28 +142,17 @@ class BattleSystem implements GameSystem {
     if (_field!.inScene) {
       return _project(sceneResolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
-    final resolved = autoBossTick(_resolve(next, _field!, ctx), _field!, ctx.tables);
+    final resolved = autoBossTick(
+      refillWave(_resolve(next, _field!, ctx), _field!, ctx, fast: fastSailing(next, ctx)),
+      _field!,
+      ctx.tables,
+    );
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
     final sailing = f.fastSail != null; // 돌파 중엔 이벤트·도전·피버 없음
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
-    return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
-  }
-
-  /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
-  void _nextEncounter(Field f, GameState s, SystemContext ctx) {
-    final p = s.progress;
-    if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
-    final w = ctx.tables.waves;
-    final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
-    if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
-    } else {
-      f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
-      spawnWave(f, p.stage, ctx);
-      f.feverSwarm = null;
-    }
+    return sailing ? shown : feverStep(shown, ctx, kills: _gaugeKills, bossKilled: boss);
   }
 
   GameState _resolve(GameState s, Field f, SystemContext ctx) {
@@ -215,6 +210,8 @@ class BattleSystem implements GameSystem {
         hitStopTicks: old.hitStopTicks,
         speed: old.speed,
         chest: old.chest,
+        fever: old.fever, // 피버 중 보스를 잡아도 피버가 이어진다(전엔 여기서 조용히 끊겨 FeverEnded가 없었다)
+        feverTicksLeft: old.feverTicksLeft,
       ),
     );
     final nf = _sync(next, ctx, from: f)
@@ -243,6 +240,8 @@ class BattleSystem implements GameSystem {
     );
     body(r);
     _kills = r.kills;
+    _gaugeKills = r.kills - f.feverMobKills; // 피버 고리 적은 다음 피버 게이지에 안 센다
+    f.feverMobKills = 0;
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
     final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
     _fun.overflow(paid.lost, ctx);
@@ -267,7 +266,8 @@ class BattleSystem implements GameSystem {
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables)
       ..rebirths = s.progress.rebirths
       // 옛 전장 모양을 넘겨 shapeField가 강화 때처럼 배 자리·결투·순항을 이어 받게 — 스테이지가 바뀔 때 배가 가운데로 순간이동하던 것.
-      ..geometry = (from ?? f)?.geometry;
+      ..geometry = (from ?? f)?.geometry
+      ..shipStill = _still;
     shapeField(nf, s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

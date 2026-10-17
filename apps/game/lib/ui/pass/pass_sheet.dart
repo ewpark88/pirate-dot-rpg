@@ -177,7 +177,7 @@ class PassSheet extends ConsumerWidget {
                         onPressed: () => buyProduct(ref, offer.product.id),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Text(l10n.uiPassUnlock(shopPrice(l10n, offer.price))),
+                          child: Text(l10n.uiPassUnlock(offer.price)),
                         ),
                       ),
                   ],

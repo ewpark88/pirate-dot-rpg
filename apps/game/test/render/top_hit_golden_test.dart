@@ -41,10 +41,10 @@ void main() {
     const dpr = 2.8125;
     final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     const box = Size(384, 832 - 48 - 24 - 76);
-    final rec = withShipHit(topRecording(tables, ticks: 400));
+    final rec = withShipHit(topRecording(noHordeTables, ticks: 400)); // 첫 파 대군 습격은 뺀다(평소 피격 장면)
     // 주입한 틱(엔진이 스스로 내는 피격은 고르지 않는다 — 선원 개성 v2 등으로 시각이 바뀌어도 같은 장면).
     const at = 120;
-    final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+    final scene = BattleScene(noHordeTables, rec, loop: false)..layout = battleFrameFor(box, dpr);
     final painter = ScenePainter(scene)..sprites = bank;
     final frame = topFrameFor(box, dpr);
     final warm = Canvas(PictureRecorder());

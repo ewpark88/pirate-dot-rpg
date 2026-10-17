@@ -77,6 +77,17 @@ void main() {
   );
   // 최악 장면(S1 성능 점검): 150마리 + 피버 질주·꼬리·범위 임팩트·보스 패턴·낙뢰·보호막·적 탄·돌파 사격을 한꺼번에.
   testWidgets('탑다운 최악 장면(새 효과 전부)', (tester) => _measure(tester, 'top worst', _worst(), maxCalls: 1400));
+  // S2 대군(S1 '몬스터가 너무 적다'): 평소 동시 120·피버 260마리.
+  testWidgets('탑다운 평소 120마리', (tester) => _measure(tester, 'top 120', stressRecording(count: 120)));
+  testWidgets(
+    '탑다운 피버 260마리(최악 효과)',
+    (tester) => _measure(tester, 'top fever 260', _worst(count: 260), maxCalls: 1800),
+  );
+  // 피버 ×1.5(S1 — 최대 390마리) + 최악 효과: 붐빔 모드로도 그리기·시간이 버티는지.
+  testWidgets(
+    '탑다운 피버 390마리(최악 효과)',
+    (tester) => _measure(tester, 'top fever 390', _worst(count: 390), maxCalls: 1800),
+  );
   testWidgets(
     '탑다운 최악 장면 + 시트 열림(가벼운 연출)',
     (tester) => _measure(tester, 'top worst covered', _worst(), coverAt: 0.5),

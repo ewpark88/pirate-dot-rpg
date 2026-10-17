@@ -241,7 +241,7 @@ class TopHits {
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
     shatter.paint(c, now);
     loot.paint(c, now, ship, sprites, flash: flash);
-    feverStrike.paintWorld(c, now, lite: lite);
+    feverStrike.paintWorld(c, now, lite: lite, ship: ship);
     resupply.paint(c, now, ship);
   }
 

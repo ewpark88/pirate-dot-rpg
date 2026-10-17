@@ -85,10 +85,6 @@ final shopOffersProvider = Provider<Map<ShopSection, List<ShopOffer>>>((ref) {
   return out;
 });
 
-/// 스토어 가격 글 → 화면 글. 게임 글꼴에 '₩'가 없어(네모로 보임) '6,900원' 꼴로 바꾼다.
-String shopPrice(AppLocalizations l, String price) =>
-    price.startsWith(l.uiWonSign) ? l.uiWonPrice(price.substring(l.uiWonSign.length).trim()) : price;
-
 /// 상품 구성 줄('젬 600' · '영웅 카드 1장' · '광고 없이 보상' · '30일' …).
 List<String> offerLines(AppLocalizations l, IapProduct p, GameTables t) => [
   if (p.gems > 0) l.uiShopGemsN(p.gems),

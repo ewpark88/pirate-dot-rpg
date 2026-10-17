@@ -110,7 +110,11 @@ void main() {
   testWidgets('기준 5: 스테이지 이동 — 1 이상만', (tester) async {
     final log = await _pumpPanel(tester);
     FilledButton go() => tester.widget<FilledButton>(find.byKey(const Key('op.stage.go')));
-    await tester.ensureVisible(find.byKey(const Key('op.stage.input')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('op.stage.input')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(go().onPressed, isNull);
     await tester.enterText(find.byKey(const Key('op.stage.input')), '0');
     await tester.pump();

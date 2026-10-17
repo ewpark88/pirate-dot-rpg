@@ -65,6 +65,9 @@ class Field {
   /// 반사(보스 특성 reflect)가 이번 틱([reflectTick])에 배에 준 피해 — maxShipHpPerSec 상한을 틱마다 센다.
   BigNum reflected = BigNum.zero;
   int reflectTick = -1;
+
+  /// 배 고정(OpSetShipStill): 순항을 끈다 — 미리보기 같은 보여 주기 장면.
+  bool shipStill = false;
   BigNum shipHp;
   bool bossActive = false;
   int bossTicksLeft = 0;
@@ -126,6 +129,10 @@ class Field {
   int rushTicks = 0; // 필살기 폭주 남은 틱(공격 속도 × captainSkill.attackSpeedMul)
   bool ultRequested = false; // TriggerUltimate가 왔다(다음 틱에 쓴다)
   double lastBossRatio = 1; // 지난 틱 보스 HP 비율(게이지 bossDamageGain)
+  double speedHpMul = 1; // 유료 2배속 중 적 HP 배율(공격은 역수, iap purchasedSpeedHpMul — 진행 1.5배)
+  int feverMobKills = 0; // 이번 틱에 잡은 피버 고리 적(게이지에서 뺌 — battle_system)
+  int hordeCount = 0; // 다음 무리 파가 대군 습격이면 마리 수(nextEncounter — spawnWaveFoes)
+  double poolScale = 1; // 다음 무리 파의 몫 배율(피버 보충 고리 fever.swarm.refillPool — spawnWaveFoes)
   int slotsOpen = 0; // 열린 출전 칸(fleetSlots — 화면 잠금 칸 판정, BattleView.slotsOpen)
   double sceneHpMul = 1; // 장면 적 체력 배율(요일 던전 묶음 hpMul — 무리·보스)
   bool scenePooled = false; // 장면 무리 파도 평소 파처럼 한 파 몫(HP·공격·골드)을 마리 수로 나눈다(요일 던전)

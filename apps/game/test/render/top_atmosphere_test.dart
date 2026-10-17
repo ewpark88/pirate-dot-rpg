@@ -46,7 +46,7 @@ void main() {
     final a = atmo()..update(10 * sec, 'phantom', Offset.zero, 0, powerSave: false);
     expect(a.phaseId, 'night');
     a.update(10 * sec, 'abyss', Offset.zero, 0, powerSave: false);
-    expect(a.dim, greaterThan(0.2));
+    expect(a.dim, greaterThan(0.05)); // 심연은 늘 조금 더 어둡게(사용자 '탁하다' 뒤 0.3 → 0.1)
     final v = atmo()..update(10 * sec, 'volcano', Offset.zero, 0, powerSave: false);
     expect(v.ash, isTrue);
   });

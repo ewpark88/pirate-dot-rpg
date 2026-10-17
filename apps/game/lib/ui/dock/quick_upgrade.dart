@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/hud/upgrade_float.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -93,13 +94,6 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
   Timer? _repeat;
   StreamSubscription<RecordedTick>? _sub;
 
-  /// 누를 때마다 버튼 위로 떠오르는 '+대포 Lv 53' (사용자 지시: 업그레이드됐는지 보이게).
-  late final AnimationController _float = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  );
-  String? _floatText;
-
   @override
   void initState() {
     super.initState();
@@ -108,8 +102,8 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
         if (e is PartUpgraded && mounted) {
           final l10n = AppLocalizations.of(context);
           final name = tableText(l10n, ref.read(tablesProvider).shipParts.byId(e.part).nameKey);
-          setState(() => _floatText = l10n.uiQuickUpgradeDone(e.level, name));
-          _float.forward(from: 0).ignore();
+          // '+대포 Lv 53'(사용자 지시: 업그레이드됐는지 보이게) — 전장 배 체력 막대 위에 떠오른다(UpgradeFloatLabel).
+          ref.read(upgradeFloatProvider.notifier).show(l10n.uiQuickUpgradeDone(e.level, name));
         }
       }
     });
@@ -129,7 +123,6 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
   void dispose() {
     _stop();
     unawaited(_sub?.cancel());
-    _float.dispose();
     super.dispose();
   }
 
@@ -212,33 +205,6 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
                       ),
                     ),
                   ),
-                // '+대포 Lv 53' 떠오름.
-                Positioned(
-                  bottom: 64,
-                  child: IgnorePointer(
-                    child: AnimatedBuilder(
-                      animation: _float,
-                      builder: (context, _) {
-                        if (!_float.isAnimating || _floatText == null) return const SizedBox.shrink();
-                        final t = _float.value;
-                        return Transform.translate(
-                          offset: Offset(0, -26 * t),
-                          child: Opacity(
-                            opacity: (1 - t * t).clamp(0, 1).toDouble(),
-                            child: Text(
-                              _floatText!,
-                              key: const Key('quick.upgrade.float'),
-                              softWrap: false,
-                              style: Skin.text(15, color: const Color(0xFF146A43)).copyWith(
-                                shadows: const [Shadow(color: Colors.white, blurRadius: 4)],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

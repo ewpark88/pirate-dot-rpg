@@ -106,5 +106,28 @@
         "type": "String"
       }
     }
-  }
+  },
+  "opHudTopDp": "보스 카메라 위 여백 hudTopDp: {v}",
+  "@opHudTopDp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "opMemImages": "이미지 캐시 {mb}MB · {live}장 살아 있음 · {count}장 보관",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "opOpenPanel": "운영자 패널 열기"
 }
