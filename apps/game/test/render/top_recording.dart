@@ -324,9 +324,12 @@ List<RecordedTick> withChestOpen(List<RecordedTick> rec, {required int at, int? 
   ];
 }
 
-/// 카드 획득만 [at] 틱에 넣는다(피드백 #17 — 보스 없이: 환영 starter·오프라인·이벤트).
-List<RecordedTick> withCard(List<RecordedTick> rec, {required int at, required CardGranted Function(int tick) card}) =>
-    [
-      for (var i = 0; i < rec.length; i++)
-        i == at ? RecordedTick(rec[i].frame, [...rec[i].events, card(rec[i].frame.tick)]) : rec[i],
-    ];
+/// 카드 획득만 [at] 틱에 넣는다(피드백 #17 — 보스 없이: 환영 starter·오프라인·현상금 소탕은 한 틱에 수십 장).
+List<RecordedTick> withCard(
+  List<RecordedTick> rec, {
+  required int at,
+  required List<CardGranted Function(int tick)> cards,
+}) => [
+  for (var i = 0; i < rec.length; i++)
+    i == at ? RecordedTick(rec[i].frame, [...rec[i].events, for (final c in cards) c(rec[i].frame.tick)]) : rec[i],
+];

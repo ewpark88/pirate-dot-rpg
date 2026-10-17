@@ -89,46 +89,64 @@ void main() {
     });
   }
 
-  testWidgets('카드 골든 s24 starter (첫 희귀 선원 환영, 보스 없이 배 앞)', (tester) async {
-    const dpr = 2.8125;
-    final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
-    const box = Size(384, 832 - 48 - 24 - 76);
-    const at = 100;
-    final rec = withCard(
-      topRecording(tables, ticks: 200),
-      at: at,
-      card: (t) => CardGranted(t, crewId: 'bones', rarity: 'rare', source: 'starter', isNew: true),
-    );
-    final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
-    final painter = ScenePainter(scene)..sprites = bank;
-    final frame = topFrameFor(box, dpr);
-    final warm = Canvas(PictureRecorder());
-    while (scene.player.position < at + 1) {
-      scene.update(kFrameMs);
-      painter.paintTop(warm, frame);
-    }
-    final start = scene.clockMs;
-    while (scene.clockMs - start < 1300) {
-      scene.update(kFrameMs);
-      painter.paintTop(warm, frame);
-    }
-    tester.view
-      ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
-      ..devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    await tester.pumpWidget(
-      Center(
-        child: RepaintBoundary(
-          child: SizedBox(
-            width: (box.width * dpr).roundToDouble(),
-            height: (box.height * dpr).roundToDouble(),
-            child: CustomPaint(painter: _Painter(painter, frame, dpr)),
+  // 첫 희귀 선원 환영(보스 없이 배 앞) · 현상금 소탕(한 틱 30장 → 같은 선원 ×n, 4장 + '+n', 새 동료는 따로 크게).
+  for (final (name, cards) in [
+    ('starter', [(int t) => CardGranted(t, crewId: 'bones', rarity: 'rare', source: 'starter', isNew: true)]),
+    (
+      'sweep',
+      [
+        for (var k = 0; k < 30; k++)
+          (int t) => CardGranted(
+            t,
+            crewId: const ['pang', 'octo', 'sword', 'turtle', 'moray', 'pelly'][k % 6],
+            rarity: k % 5 == 0 ? 'rare' : 'common',
+            source: 'bounty',
+          ),
+        (int t) => CardGranted(t, crewId: 'bones', rarity: 'hero', source: 'bounty', isNew: true),
+      ],
+    ),
+  ]) {
+    testWidgets('카드 골든 s24 $name', (tester) async {
+      const dpr = 2.8125;
+      final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
+      const box = Size(384, 832 - 48 - 24 - 76);
+      const at = 100;
+      final rec = withCard(
+        topRecording(tables, ticks: 200),
+        at: at,
+        cards: cards,
+      );
+      final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+      final painter = ScenePainter(scene)..sprites = bank;
+      final frame = topFrameFor(box, dpr);
+      final warm = Canvas(PictureRecorder());
+      while (scene.player.position < at + 1) {
+        scene.update(kFrameMs);
+        painter.paintTop(warm, frame);
+      }
+      final start = scene.clockMs;
+      while (scene.clockMs - start < 1300) {
+        scene.update(kFrameMs);
+        painter.paintTop(warm, frame);
+      }
+      tester.view
+        ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        Center(
+          child: RepaintBoundary(
+            child: SizedBox(
+              width: (box.width * dpr).roundToDouble(),
+              height: (box.height * dpr).roundToDouble(),
+              child: CustomPaint(painter: _Painter(painter, frame, dpr)),
+            ),
           ),
         ),
-      ),
-    );
-    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_card_starter_s24.png'));
-  });
+      );
+      await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_card_${name}_s24.png'));
+    });
+  }
 
   // 보물상자 열림·광고 보상(피드백 #15): 금빛 기둥 + 금화 분수 / 배에서 고리·별가루.
   for (final (name, ms, ad) in const [('chest', 500.0, false), ('ad', 350.0, true)]) {
