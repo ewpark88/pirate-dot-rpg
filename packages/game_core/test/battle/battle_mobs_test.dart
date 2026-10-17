@@ -24,14 +24,17 @@ void main() {
     );
   });
 
-  test('탑다운 마리 = 무리 습격: 초반 핵앤슬래시 55~65(피드백 #4) → 스테이지 20에 45~60(평소 화면도 빽빽 — 실기기 2026-10-17), 중반 50~100, 상한 150', () {
-    expect(w.topMobCountAt(1), inInclusiveRange(55, 65));
-    expect(w.topMobCountAt(10), greaterThan(w.topMobCountAt(19)));
-    expect(w.topMobCountAt(20), inInclusiveRange(45, 60));
-    expect(w.topMobCountAt(60), inInclusiveRange(50, 100));
-    expect(w.topMobCountAt(100), inInclusiveRange(60, 100));
-    expect(w.topMobCountAt(9999), 150);
-  });
+  test(
+    '탑다운 마리 = 무리 습격: 초반 핵앤슬래시 72~85(피드백 #4 × 1.3 — 사용자 지시 몬스터 1.3배, 2026-10-17) → 스테이지 20에 58~78, 중반 65~130, 상한 195',
+    () {
+      expect(w.topMobCountAt(1), inInclusiveRange(72, 85));
+      expect(w.topMobCountAt(10), greaterThan(w.topMobCountAt(19)));
+      expect(w.topMobCountAt(20), inInclusiveRange(58, 78));
+      expect(w.topMobCountAt(60), inInclusiveRange(65, 130));
+      expect(w.topMobCountAt(100), inInclusiveRange(78, 130));
+      expect(w.topMobCountAt(9999), 195);
+    },
+  );
 
   for (final stage in [1, 10, 37, 120]) {
     test('스테이지 $stage 탑다운: 한 파 HP·공격·골드 합 = 단일 곡선 × pool (마리 수와 무관)', () {

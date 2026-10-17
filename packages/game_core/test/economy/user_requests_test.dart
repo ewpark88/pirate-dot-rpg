@@ -81,8 +81,8 @@ void main() {
     }
   });
 
-  test('#4 초반 핵앤슬래시: 스테이지 1 무리 60마리, 덤은 스테이지 20까지 줄어든다', () {
-    expect(t.waves.topMobCountAt(1), 60);
+  test('#4 초반 핵앤슬래시: 스테이지 1 무리 78마리(60 × 1.3 — 사용자 지시 몬스터 1.3배, 2026-10-17), 덤은 스테이지 20까지 줄어든다', () {
+    expect(t.waves.topMobCountAt(1), 78);
     expect(t.waves.topMobCountAt(1), greaterThan(t.waves.topMobCountAt(20)));
   });
 
