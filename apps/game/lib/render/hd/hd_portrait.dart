@@ -6,7 +6,8 @@ import 'package:pirate_dot/render/hd/hd_species.dart';
 
 /// HD 카툰 초상(UI용 — 도감 칸·보스 이름표·현상금·보스 도전 버튼): 전장과 같은 종 코드 벡터를 [size] 칸에 그린다.
 /// 굽지 않고 바로 그린다(초상은 한 화면 수십 장·정지 그림이라 시트보다 가볍다 — RepaintBoundary로 한 번만).
-/// [animate]면 0.8초 고리로 움직인다(도감 상세 등 크게 보일 때만 — 목록 칸은 정지).
+/// [animate]면 0.8초 고리로 움직인다(도감 상세 등 크게 보일 때만 — 목록 칸은 정지). 기기 '애니메이션 줄이기'면
+/// 스스로 멈추고, 절전·발열(보통 이상)일 때는 부르는 쪽이 animate: false로 넘긴다(S4 — UI 상태는 render가 모른다).
 /// HD 종이 아니면 [fallback](지금 도트 그림)을 그린다 — 종이 하나씩 HD로 바뀌어도 UI가 그대로 동작한다.
 class HdPortrait extends StatefulWidget {
   const HdPortrait({
@@ -42,8 +43,8 @@ class _HdPortraitState extends State<HdPortrait> with SingleTickerProviderStateM
   AnimationController? _loop;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _sync();
   }
 
@@ -53,11 +54,13 @@ class _HdPortraitState extends State<HdPortrait> with SingleTickerProviderStateM
     if (old.animate != widget.animate) _sync();
   }
 
+  bool get _moving => widget.animate && !(MediaQuery.maybeDisableAnimationsOf(context) ?? false);
+
   void _sync() {
-    if (widget.animate && _loop == null) {
+    if (_moving && _loop == null) {
       _loop = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
       unawaited(_loop!.repeat());
-    } else if (!widget.animate && _loop != null) {
+    } else if (!_moving && _loop != null) {
       _loop!.dispose();
       _loop = null;
     }
