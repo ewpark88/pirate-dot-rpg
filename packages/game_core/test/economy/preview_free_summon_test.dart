@@ -54,7 +54,7 @@ void main() {
   });
 
   group('첫 10연 무료', () {
-    test('튜토리얼 보스 뒤 summonsTotal 0이면 10연이 무료, 영웅 이상 1장 이상 확정, total += 10', () {
+    test('튜토리얼 보스 뒤 summonsTotal 0이면 10연이 무료, 영웅 정확히 1장 + 나머지 희귀 이하, total += 10', () {
       for (var seed = 1; seed <= 100; seed++) {
         final hs = EconomyHarness(seed: seed);
         final s0 = hs.newGame().copyWith(progress: const Progress(stage: 4, bestStage: 4));
@@ -64,8 +64,10 @@ void main() {
         expect(s.wallet.gems, 0);
         expect(s.summonsTotal, 10);
         final results = hs.of<CrewSummoned>().single.results;
-        final guarantee = rarityOrder.indexOf(t.meta.raw.obj('tutorial').str('firstTenGuarantee'));
-        expect(results.any((r) => rarityOrder.indexOf(r.rarity) >= guarantee), isTrue, reason: 'seed $seed');
+        final tut = t.meta.raw.obj('tutorial');
+        final max = rarityOrder.indexOf(tut.str('firstTenMaxRarity'));
+        expect(results.where((r) => r.rarity == tut.str('firstTenGuarantee')), hasLength(1), reason: 'seed $seed');
+        expect(results.where((r) => rarityOrder.indexOf(r.rarity) > max), hasLength(1), reason: 'seed $seed');
       }
     });
 

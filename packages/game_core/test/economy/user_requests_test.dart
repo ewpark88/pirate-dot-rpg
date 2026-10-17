@@ -47,6 +47,23 @@ void main() {
     }
   });
 
+  test('첫 무료 10연(폰 피드백 "왜 초반부터 전설이"): 영웅 정확히 1 + 희귀 이하 9, 전설·신화 없음 — 시드 200개', () {
+    for (var seed = 1; seed <= 200; seed++) {
+      final e = CoreEngine(
+        tables: t,
+        clock: ManualClock(start),
+        initial: GameState.newGame(playerId: 'req', seed: seed, now: start, crews: t.meta.startingCrews).copyWith(
+          progress: const Progress(stage: 4, bestStage: 4),
+        ),
+      )..enqueue(const Summon(count: 10));
+      e.tick();
+      final got = [...e.drainEvents().whereType<CrewSummoned>().single.results.map((r) => r.rarity)]..sort();
+      expect(got.where((r) => r == 'hero'), hasLength(1), reason: 'seed $seed');
+      expect(got.where((r) => r != 'hero'), everyElement(anyOf('common', 'rare')), reason: 'seed $seed');
+      expect(e.state.summonsTotal, 10);
+    }
+  });
+
   test('#2 피버 필요 처치: 스테이지 1 = 200, 점점 늘어 스테이지 40부터 1000', () {
     expect(feverKillsAt(t, 1), 200);
     for (var s = 2; s <= 40; s++) {

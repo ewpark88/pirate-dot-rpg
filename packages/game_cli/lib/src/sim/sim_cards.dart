@@ -1,3 +1,4 @@
+import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 
 /// 환생 회차 하나의 카드 수입. 보스 카드는 기댓값(장수 × `bossDropRates`)으로 센다 — 등급별 수입을
@@ -42,3 +43,7 @@ class RunCards {
     'repeatByRarity': repeatByRarity,
   };
 }
+
+/// 첫 무료 10연을 기다리는 중인가(튜토리얼이 10연으로 이끈다) — 그 전에 1회 소환을 하면 무료 10연(영웅 1 + 희귀 이하)이 사라진다.
+bool waitsForFreeTen(GameState s, GameTables t) =>
+    t.meta.raw.obj('tutorial').boolean('firstTenSummonFree') && s.summonsTotal == 0;
