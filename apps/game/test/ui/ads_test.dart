@@ -172,6 +172,8 @@ void main() {
     await tester.tap(find.byKey(const Key('offline.claim')));
     await tester.pump();
     expect(find.text('×2 · +4.82M'), findsOneWidget);
+    // 받은 뒤에도 같은 양 — '0 · 잘림'으로 다시 그려지지 않는다(S1 실기기 ①: 명령이 다음 틱에 처리됨).
+    expect(find.byKey(const Key('offline.cut')), findsNothing);
     await tester.tap(find.byKey(const Key('ad.offline')));
     await tester.pump();
     expect(log.sent.map((c) => c.type), ['claimOffline', 'grantAdReward']);

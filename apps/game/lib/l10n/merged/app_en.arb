@@ -1776,5 +1776,13 @@
       }
     }
   },
-  "uiListSep": " · "
+  "uiListSep": " · ",
+  "uiGoldOver": "+{n} extra",
+  "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  }
 }

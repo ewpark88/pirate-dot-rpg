@@ -1425,5 +1425,13 @@
       }
     }
   },
-  "uiListSep": " · "
+  "uiListSep": " · ",
+  "uiGoldOver": "+{n} 넘침",
+  "@uiGoldOver": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  }
 }
