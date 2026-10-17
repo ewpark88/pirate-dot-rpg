@@ -62,8 +62,9 @@ class TopEnemies {
           math.pi / 2 +
           math.sin(clock / 240 + e.id) * 0.08 +
           (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0);
-      final tx = (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble();
-      final ty = (e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy).roundToDouble();
+      // 기기 픽셀에 맞춤(모션 v1 — 전장 1단위 ≈ 4px로 반올림해 뚝뚝 떨리던 것).
+      final tx = ((e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx) * snap).roundToDouble() / snap;
+      final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
       final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
       if (sq != null) {
@@ -137,6 +138,9 @@ class TopEnemies {
   }
 
   final Map<String, String> _bossKeys = {};
+
+  /// 전장 1단위당 기기 픽셀(TopScenePainter가 프레임마다) — 위치를 이 격자에 맞춘다.
+  double snap = 1;
   static const _hugeW = 80;
   final _atlasPaint = Paint()
     ..isAntiAlias = false

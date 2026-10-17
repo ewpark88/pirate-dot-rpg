@@ -113,7 +113,9 @@ class TopScenePainter {
       ..translate(-cam.dx, -cam.dy);
     fever.weaveTrail(c, ship, clockMs, _sea.flowSpeed);
     _marks.zones(c);
-    _foes.paint(c, under: true, cull: visibleWorld);
+    _foes
+      ..snap = dot * dpr
+      ..paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
     _shipR = size == null ? 16 : size.width * _shipScale / 2;
