@@ -42,6 +42,8 @@ class ComboBanner {
     return to >= 200 && from ~/ 100 != to ~/ 100;
   }
 
+  static const _feverColors = [0xFFFF5AA0, 0xFF5AD8FF, 0xFFB45AFF, 0xFFFF6A3A]; // 금빛 피버 바탕에서 잘 보이는 색만
+
   /// 가운데 x [cx], 위 y [y]. [lastAddMs] = 마지막 처치 시각.
   void paint(
     Canvas c,
@@ -61,8 +63,10 @@ class ComboBanner {
     }
     _last = count;
     if (count < minKills) return;
-    final (s0, color) = look(count, (now / 100).floorToDouble() * 100, baseColor);
-    final scale = fever ? s0 + 1 : s0; // 피버 v2: 콤보 숫자 대형
+    final (s0, c0) = look(count, (now / 100).floorToDouble() * 100, baseColor);
+    // 피버: 콤보는 피버에만 나오니 더 크고 화려하게 — 한 단계 더 크게, 분홍·하늘·보라·주황이 0.1초마다 번갈아.
+    final scale = fever ? s0 + 2 : s0;
+    final color = fever ? _feverColors[(now / 100).floor() % _feverColors.length] : c0;
     _milestoneColor = color;
     _num.set('x$count', color, scale);
     _word.set('COMBO', color, math.max(2, scale - 2));

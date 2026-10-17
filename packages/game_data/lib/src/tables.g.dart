@@ -2253,7 +2253,8 @@ const Map<String, String> rawTables = {
     "minKills": 5,
     "windowMs": 1000,
     "y": 34,
-    "color": "#FFD23F"
+    "color": "#FFD23F",
+    "feverOnly": true
   },
   "hud": {
     "textColor": "#FFFFFF",
