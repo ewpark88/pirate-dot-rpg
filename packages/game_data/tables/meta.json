@@ -111,6 +111,7 @@
     "firstTenSummonFree": true,
     "firstTenCount": 10,
     "firstTenGuarantee": "hero",
+    "firstTenMaxRarity": "rare",
     "welcomeCrew": { "crewId": "bones", "rarity": "rare" },
     "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 1 }, "boss": 3, "merge": 5, "last": 6 }
   },

@@ -333,3 +333,24 @@ List<RecordedTick> withCard(
   for (var i = 0; i < rec.length; i++)
     i == at ? RecordedTick(rec[i].frame, [...rec[i].events, for (final c in cards) c(rec[i].frame.tick)]) : rec[i],
 ];
+
+/// 보스 브레이크를 [at] 틱에 넣는다: 그 전 60틱 동안 보스 게이지가 0 → 0.95로 차고, [at]에 BossBroken(60틱 쓰러짐).
+List<RecordedTick> withBossBreak(List<RecordedTick> rec, {required int at}) {
+  final boss = rec[at].frame.enemies.firstWhere((e) => e.boss, orElse: () => throw StateError('틱 $at에 보스가 없다'));
+  EnemyView gauge(EnemyView v, double r) => v.id == boss.id ? EnemyView.fromJson({...v.toJson(), 'breakRatio': r}) : v;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      if (i >= at - 60 && i < at)
+        RecordedTick(
+          rec[i].frame.copyWith(enemies: [for (final e in rec[i].frame.enemies) gauge(e, 0.95 * (i - at + 61) / 60)]),
+          rec[i].events,
+        )
+      else if (i == at)
+        RecordedTick(rec[i].frame, [
+          ...rec[i].events,
+          BossBroken(rec[i].frame.tick, enemyId: boss.id, ticks: 60, x: boss.x, y: boss.y),
+        ])
+      else
+        rec[i],
+  ];
+}

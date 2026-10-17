@@ -111,7 +111,7 @@ class SimPlayer {
       if (canPromote(s, t, id)) engine.enqueue(PromoteCrew(id));
     }
     for (final n in const [10, 1]) {
-      if (canSummon(s, t, n)) {
+      if (canSummon(s, t, n) && !(n == 1 && waitsForFreeTen(s, t))) {
         engine.enqueue(Summon(count: n));
         result.summons += n;
         result.cardsByRun.last.summons += n;

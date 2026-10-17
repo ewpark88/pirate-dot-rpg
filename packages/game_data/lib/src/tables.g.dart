@@ -1415,6 +1415,10 @@ const Map<String, String> rawTables = {
     "adReward": {
       "fx": null,
       "sfx": "promote"
+    },
+    "bossBroken": {
+      "fx": null,
+      "sfx": "ultimate"
     }
   },
   "projectiles": {
@@ -2701,6 +2705,7 @@ const Map<String, String> rawTables = {
     "firstTenSummonFree": true,
     "firstTenCount": 10,
     "firstTenGuarantee": "hero",
+    "firstTenMaxRarity": "rare",
     "welcomeCrew": { "crewId": "bones", "rarity": "rare" },
     "steps": { "ack": [1, 4, 6], "upgrade": { "step": 2, "part": "cannon", "level": 1 }, "boss": 3, "merge": 5, "last": 6 }
   },
