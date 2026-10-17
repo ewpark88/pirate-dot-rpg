@@ -79,6 +79,26 @@ class Field {
   double buffValue = 0;
   double buffLeft = 0;
 
+  /// 선원별 실제 피해(남은 HP로 자름, 선원 몫만 — 피버 오라·자폭·빠른 항해 제외, 사용자 피드백 #13·#14).
+  /// [crewDamage]는 이번 스테이지(Field가 새로 생기면 0), [bossDamage]는 이번 보스전(보스·분열 몸·촉수, startBoss에서 비움).
+  final crewDamage = <String, BigNum>{};
+  final bossDamage = <String, BigNum>{};
+
+  void creditDamage(String crewId, Foe e, BigNum dealt) {
+    crewDamage[crewId] = (crewDamage[crewId] ?? BigNum.zero) + dealt;
+    if (bossActive && (e.boss || e.ownerId != null)) bossDamage[crewId] = (bossDamage[crewId] ?? BigNum.zero) + dealt;
+  }
+
+  /// 보스전 MVP: 보스 피해가 가장 큰 선원(같으면 출전 칸 앞). 없으면 null.
+  String? get bossMvp {
+    String? best;
+    for (final g in guns) {
+      final d = bossDamage[g.crewId];
+      if (d != null && (best == null || d > bossDamage[best]!)) best = g.crewId;
+    }
+    return best;
+  }
+
   int bossTimerTicks = 0; // 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱
 
   BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
@@ -120,6 +140,10 @@ class Field {
   /// 즉석 도전용: 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
   int multiKill = 0;
 
+  /// 피버 무리(meta.fever.swarm, 사용자 폰 피드백 2026-10-17): null이 아니면 다음 무리 파가 countMul배, 자리는 이 패턴(ring = 사방에서 한꺼번에).
+  /// BattleSystem이 파를 부르기 전에 넣고 끝나면 지운다.
+  String? feverSwarm;
+
   /// 파를 이루는 살아 있는 적(돌발 이벤트 적 제외) — 파 끝·다음 파 판정.
   Iterable<Foe> get waveFoes => living.where((f) => f.eventKind == null);
 
@@ -153,5 +177,6 @@ class Field {
     },
     shipShield: shield?.ratio ?? 0,
     fastSail: fastSail?.view(),
+    crewDamage: crewDamage.isEmpty ? const {} : Map.unmodifiable(crewDamage),
   );
 }

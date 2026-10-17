@@ -16,6 +16,7 @@ export 'package:game_core/src/economy/boss_preview.dart';
 export 'package:game_core/src/economy/bounty.dart';
 export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
 export 'package:game_core/src/economy/crew_attack.dart';
+export 'package:game_core/src/economy/crew_growth.dart';
 export 'package:game_core/src/economy/dex.dart';
 export 'package:game_core/src/economy/fast_sail_supply.dart';
 export 'package:game_core/src/economy/fever.dart'
@@ -46,6 +47,7 @@ export 'package:game_core/src/economy/rebirth_shop.dart'
         treasureSeasUnlocked,
         upgradeCostMultiplier;
 export 'package:game_core/src/economy/sea_events.dart' show stormGoldMultiplier;
+export 'package:game_core/src/economy/upgrade_plan.dart';
 
 // 소환 비용·승급 판정·카드 받기 (설계서 4.3.1, 4.3.3). UI가 버튼 상태에 그대로 쓴다.
 

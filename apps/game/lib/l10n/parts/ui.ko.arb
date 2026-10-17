@@ -177,7 +177,7 @@
   "uiRebirthChestSummons": "영웅 이상 소환 ×{count}",
   "uiRebirthChestSkin": "새 배 스킨: {name}",
   "uiRebirthChestTitle": "새 칭호: {name}",
-  "uiRebirthSail": "항해 시작",
+  "uiRebirthSail": "출항!",
   "uiRebirthRowLocked": "조각 {count}개를 더 쓰면 열려요",
   "uiRebirthRow": "{row}줄",
   "uiRebirthShopPieces": "쓸 수 있는 조각 {count}개",
@@ -520,6 +520,108 @@
     }
   },
   "uiNewCrew": "새 동료!",
+  "uiBossDamageTitle": "보스 격파! 선원별 피해",
+  "uiBossDamageLine": "{damage} · {percent}",
+  "@uiBossDamageLine": {
+    "placeholders": {
+      "damage": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDamageTap": "누르면 닫혀요",
+  "uiSailHint": "보물 지도가 준비됐어요!\n출항하면 빠른 항해가 시작돼요",
+  "uiFastSailProgress": "빠른 항해 {n}/{m}",
+  "@uiFastSailProgress": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFastSailStreak": "보스 연속 격파 {count}",
+  "@uiFastSailStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewUpLevels": "+{count}",
+  "@uiCrewUpLevels": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewMergeAllCount": "일괄 합치기 · {count}명",
+  "@uiCrewMergeAllCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewWhyLevel": "레벨업하면 공격력 +{percent} (초당 {now} → {next})",
+  "@uiCrewWhyLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "now": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewCardsToLevel": "다음 레벨까지 일반 카드 {count}장",
+  "@uiCrewCardsToLevel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uiCrewPromoteIn": "승급까지 {count}레벨 — 승급하면 공격력 +{percent}",
+  "@uiCrewPromoteIn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewPromoteGain": "승급하면 공격력 +{percent}!",
+  "@uiCrewPromoteGain": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiCrewMergeNow": "지금 합치기 · Lv {from} → {to}",
+  "@uiCrewMergeNow": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDamageMvp": "MVP",
   "uiGuideStep1Title": "배가 알아서 싸워요",
   "uiGuideStep1Why": "가만히 있어도 괴물을 잡고 골드를 모아요.",
   "uiGuideStep2Title": "배를 강화해요",
@@ -555,5 +657,21 @@
   "uiGuideSkipKeep": "계속 보기",
   "uiGuideTapHere": "여기를 눌러요",
   "uiSettingsGuideReplay": "안내 다시 보기",
-  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요"
+  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요",
+  "uiSummonFirstTenFirst": "먼저 무료 10연({rarity} 확정)을 받아요",
+  "uiSummonFirstTenLater": "튜토리얼 보스를 이기면 무료 10연({rarity} 확정)!",
+  "@uiSummonFirstTenFirst": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSummonFirstTenLater": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/crew/crew_growth_reasons.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/crew_pill.dart';
 import 'package:pirate_dot/ui/crew/crew_text.dart';
@@ -157,6 +158,8 @@ class CrewDetailDialog extends ConsumerWidget {
                 // 이 선원 혼자의 초당 피해 (상단 바 함대 합계와 같은 계산 — 경제 fleetDps).
                 dps: ref.watch(gameStateProvider.select((s) => fleetDps(s, tables, [def.id]).format())),
               ),
+            // 레벨을 올리는 이유 + 합치기 버튼(피드백 #12·#16).
+            if (crew != null) CrewGrowthReasons(crewId: def.id),
             section(icon: UiSprites.flag, l10n.uiCrewType, [
               Text(tableText(l10n, family.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(shapeText(l10n, family.attack.shape), style: dim),

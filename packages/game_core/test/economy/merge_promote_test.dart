@@ -25,6 +25,18 @@ void main() {
     expect(h.of<SaveRequested>(), hasLength(1));
   });
 
+  test('crewId를 주면 그 해적만 합친다(선원 상세 지금 합치기, S4 발견 2026-10-17)', () {
+    final s0 = withCrews({'octo': const CrewState(exp: 5), 'turtle': const CrewState(exp: 5)});
+    final s = sys.handle(s0, const MergeAllCards(crewId: 'octo'), h.ctx)!;
+    expect(s.crews['octo']!.level, greaterThan(1));
+    expect(s.crews['turtle'], s0.crews['turtle']);
+    expect(
+      Command.fromJson(const MergeAllCards(crewId: 'octo').toJson()),
+      isA<MergeAllCards>().having((c) => c.crewId, 'crewId', 'octo'),
+    );
+    expect(const MergeAllCards().toJson().keys, isNot(contains('crewId')));
+  });
+
   test('canMergeAny: 일괄 합치기로 레벨이 오르는 선원이 있을 때만 true (UI 선원 탭 빨간 점, S4 요청)', () {
     expect(canMergeAny(withCrews({'octo': const CrewState()}), t), isFalse);
     expect(canMergeAny(withCrews({'octo': const CrewState(), 'turtle': const CrewState(exp: 1)}), t), isTrue);

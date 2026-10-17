@@ -54,6 +54,15 @@ void main() {
     expect(game.showHitboxes, isTrue);
   });
 
+  testWidgets('피드백 #22: 카드 연출 시작 등급 — 처음은 fx_map 값, 고르면 그 등급이 선택된다(BattleGame.cardFxMinRarity)', (tester) async {
+    await _pump(tester);
+    final seg = find.byKey(const Key('op.cardFxMin'));
+    expect(tester.widget<SegmentedButton<String>>(seg).selected, hasLength(1));
+    await tester.tap(find.descendant(of: seg, matching: find.text('Legend')));
+    await tester.pump();
+    expect(tester.widget<SegmentedButton<String>>(seg).selected, {'legend'});
+  });
+
   testWidgets('기준 11: 전장이 Flame 게임이 아니면 비활성', (tester) async {
     await _pump(tester, withBattle: false);
     expect(tester.widget<FilterChip>(find.byKey(const Key('op.hitboxes'))).onSelected, isNull);

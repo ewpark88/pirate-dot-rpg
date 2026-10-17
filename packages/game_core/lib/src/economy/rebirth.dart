@@ -103,6 +103,7 @@ GameState rebirth(GameState s, SystemContext ctx, {bool force = false}) {
       treasureRoute: route,
       bossFails: s.progress.bossFails,
       dex: s.progress.dex,
+      sailHold: t.waves.rebirthSkip.breakSec > 0, // 빠른 항해가 있으면 '출항!'(StartVoyage)까지 대기 — #19
       treasureSea:
           route != null && route <= treasureSeasUnlocked(s.copyWith(progress: s.progress.copyWith(rebirths: n)), t)
           ? route

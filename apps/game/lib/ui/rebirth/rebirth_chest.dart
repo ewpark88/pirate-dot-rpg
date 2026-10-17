@@ -17,16 +17,20 @@ import 'package:pirate_dot/ui/summon/summon_fx.dart';
 const _open = Duration(milliseconds: 700);
 const _itemEach = Duration(milliseconds: 260);
 
-/// 환생 상자 팝업 (스펙 platform-rebirth-v2 7장 ③): 상자를 누르면 뚜껑이 열리고 조각·젬·소환·스킨·칭호가 차례로 튀어나온다 → '항해 시작'.
+/// 환생 상자 팝업 (스펙 platform-rebirth-v2 7장 ③): 상자를 누르면 뚜껑이 열리고 조각·젬·소환·스킨·칭호가 차례로 튀어나온다 → '출항!'.
 /// 지급은 이미 끝났으므로(받기 버튼 없음) 언제 닫아도 잃는 것이 없다. 스킨을 얻었으면 새 배를 크게 보인다.
+/// '출항!'([onSail] = StartVoyage)을 눌러야 빠른 항해가 시작된다(사용자 피드백 #19). 바깥을 눌러 닫으면 전장 위 '출항' 버튼이 남는다.
 class RebirthChestDialog extends StatefulWidget {
-  const RebirthChestDialog({required this.chest, required this.pieces, required this.bonus, super.key});
+  const RebirthChestDialog({required this.chest, required this.pieces, required this.bonus, this.onSail, super.key});
 
   final ChestVm chest;
 
   /// 이번에 얻은 지도 조각과 바뀐 보너스 글('+35%').
   final int pieces;
   final String bonus;
+
+  /// '출항!'을 누르면(창을 닫기 전에) 부른다.
+  final VoidCallback? onSail;
 
   @override
   State<RebirthChestDialog> createState() => _RebirthChestDialogState();
@@ -150,7 +154,12 @@ class _RebirthChestDialogState extends State<RebirthChestDialog> with TickerProv
                       key: Key(opened ? 'rebirth.chest.sail' : 'rebirth.chest.open'),
                       tone: SkinTone.gold,
                       height: 54,
-                      onPressed: opened ? () => Navigator.of(context).pop() : () => _openChest(rewards.length),
+                      onPressed: opened
+                          ? () {
+                              widget.onSail?.call();
+                              Navigator.of(context).pop();
+                            }
+                          : () => _openChest(rewards.length),
                       child: Text(opened ? l10n.uiRebirthSail : l10n.uiRebirthChestOpen),
                     ),
                   ),

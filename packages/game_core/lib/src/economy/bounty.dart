@@ -1,6 +1,7 @@
 import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
-import 'package:game_core/src/economy/cards.dart' show receiveCard;
+import 'package:game_core/src/economy/cards.dart' show grantCard;
+import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/state_parts.dart';
 import 'package:game_core/src/ports/ports.dart';
@@ -67,8 +68,9 @@ BountyReward bountyReward(GameState s, GameTables t, String bossId, int tier, Rn
   }
 }
 
-/// 보상 지급. 지도 조각은 쓸 조각·모은 조각(환생 누계) 둘 다. 카드는 그 선원의 기본 등급 카드 amount장.
-GameState grantBountyReward(GameState s, GameTables t, BountyReward r) {
+/// 보상 지급. 지도 조각은 쓸 조각·모은 조각(환생 누계) 둘 다. 카드는 그 선원의 기본 등급 카드 amount장(장마다 CardGranted source 'bounty').
+GameState grantBountyReward(GameState s, SystemContext ctx, BountyReward r) {
+  final t = ctx.tables;
   switch (r.type) {
     case 'gems':
       return s.copyWith(wallet: s.wallet.copyWith(gems: s.wallet.gems + r.amount));
@@ -81,7 +83,7 @@ GameState grantBountyReward(GameState s, GameTables t, BountyReward r) {
       var next = s;
       final rarity = t.crews.byId(r.crewId!).baseRarity;
       for (var i = 0; i < r.amount; i++) {
-        next = receiveCard(next, t, r.crewId!, rarity);
+        next = grantCard(next, ctx, r.crewId!, rarity, 'bounty');
       }
       return next;
   }

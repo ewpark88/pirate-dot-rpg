@@ -12,6 +12,41 @@ PixelButton _button(WidgetTester tester, String key) => tester.widget<PixelButto
 void main() {
   final tables = GameTables.load();
 
+  // S2 발견 2026-10-17: 첫 무료 10연은 summonsTotal == 0일 때만 → 그 전엔 1회·광고 소환을 잠근다(UI 잠금).
+  GameState firstTen({required bool bossBeaten}) {
+    final s = loadFixture('stage37_midgame');
+    return s.copyWith(
+      summonsTotal: 0,
+      wallet: s.wallet.copyWith(gems: 1000),
+      progress: s.progress.copyWith(bestStage: bossBeaten ? tables.waves.tutorialFailStage + 1 : 1),
+    );
+  }
+
+  testWidgets('첫 무료 10연 전: 무료 10연만 활성, 1회는 잠금 + "먼저 무료 10연을 받아요"', (tester) async {
+    final log = await pumpGame(tester, firstTen(bossBeaten: true), tab: summonTab);
+    expect(find.byKey(const Key('summon.free')), findsOneWidget);
+    expect(_button(tester, 'summon.one').onPressed, isNull);
+    expect(find.textContaining('Claim your free 10-pull'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('summon.ten')));
+    expect(log.sent.map((c) => c.toJson()), [
+      {'type': 'summon', 'count': 10},
+    ]);
+  });
+
+  testWidgets('튜토리얼 보스 전(무료 10연 아직): 1회·10연 모두 잠금 + 조건 안내', (tester) async {
+    await pumpGame(tester, firstTen(bossBeaten: false), tab: summonTab);
+    expect(_button(tester, 'summon.one').onPressed, isNull);
+    expect(_button(tester, 'summon.ten').onPressed, isNull);
+    expect(find.textContaining('Beat the tutorial boss'), findsOneWidget);
+  });
+
+  testWidgets('골든: 첫 무료 10연 잠금 ko s24', (tester) async {
+    await loadGoldenFonts();
+    await pumpGame(tester, firstTen(bossBeaten: true), tab: summonTab, locale: const Locale('ko'));
+    await precacheImages(tester);
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_summon_first_ten_s24.png'));
+  });
+
   testWidgets('기준 6: 젬 140이면 1회만 활성, 누르면 Summon(1)', (tester) async {
     final log = await pumpGame(tester, loadFixture('stage37_midgame'), tab: summonTab);
     expect(find.text('${summonCost(tables.meta, 1)}'), findsOneWidget);

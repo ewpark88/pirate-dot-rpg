@@ -234,6 +234,7 @@ class Round {
       final vul = e.vulnerableTimer > 0 ? e.vulnerable : 0.0;
       final amount = base.times(h.factor * g * (1 + vul));
       total = total + amount;
+      if (crewId != null) field.creditDamage(crewId, e, amount > e.hp ? e.hp : amount);
       e.hp = e.hp - amount;
       ctx.emit(Damage(ctx.tick, targetId: e.id, amount: amount, crit: crit, crewId: crewId));
       if (!e.alive) _down(e);
