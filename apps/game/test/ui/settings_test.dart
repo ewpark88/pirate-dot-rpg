@@ -49,12 +49,12 @@ void main() {
     expect(log.sent.map((c) => c.toJson()), [const SetSetting('flashLevel', 'full').toJson()]);
   });
 
-  testWidgets('절전 화면까지 끔/1/3/5분: 5분 → SetSetting(sleepAfterSec, 300), 절전 모드 끔이면 못 고름', (tester) async {
+  testWidgets('절전 화면까지 1/5/10/20/30분(기본 10): 30분 → SetSetting(sleepAfterSec, 1800), 절전 모드 끔이면 못 고름', (tester) async {
     final log = await _openSettings(tester, loadFixture('stage37_midgame'));
     final row = find.byKey(const Key('settings.sleepAfter'));
     await tester.scrollUntilVisible(row, 100);
-    await tester.tap(find.descendant(of: row, matching: find.text('5 min')));
-    expect(log.sent.map((c) => c.toJson()), [const SetSetting('sleepAfterSec', 300).toJson()]);
+    await tester.tap(find.descendant(of: row, matching: find.text('30 min')));
+    expect(log.sent.map((c) => c.toJson()), [const SetSetting('sleepAfterSec', 1800).toJson()]);
 
     final off = await _openSettings(tester, _withSetting(loadFixture('stage37_midgame'), 'powerSave', false));
     await tester.scrollUntilVisible(row, 100);
@@ -62,10 +62,12 @@ void main() {
     expect(off.sent, isEmpty);
   });
 
-  test('절전 화면 시간: 절전 모드 켬 + 0초 아님일 때만', () {
+  test('절전 화면 시간: 절전 모드 켬일 때만, 옛 값은 가장 가까운 선택지(180 → 5분, 0 → 1분), 기본 10분', () {
     expect(sleepAfterOf(powerSave: true, sec: 60), const Duration(minutes: 1));
-    expect(sleepAfterOf(powerSave: true, sec: 0), isNull);
+    expect(sleepAfterOf(powerSave: true, sec: 180), const Duration(minutes: 5));
+    expect(sleepAfterOf(powerSave: true, sec: 0), const Duration(minutes: 1));
     expect(sleepAfterOf(powerSave: false, sec: 180), isNull);
+    expect(sleepAfterDefault, const Duration(minutes: 10));
   });
 
   testWidgets('세이브 v4: 알림 끄기 → SetSetting(notifications, false)', (tester) async {
