@@ -18,9 +18,9 @@ void main() {
   late List<GameEvent> events;
   setUp(() => events = []);
 
-  GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
+  GameState game({int stage = 1, Map<String, CrewState> crews = const {}}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
-        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        progress: Progress(stage: stage, bestStage: stage),
         crews: crews,
       );
   SystemContext ctx([int seed = 1]) =>
@@ -47,7 +47,7 @@ void main() {
       Field(stage: 1, shipHpMax: BigNum.from(100), shipHp: BigNum.from(100))..foes.addAll(foes);
   String crewOf(String family, [int nth = 0]) => tables.crews.crews.where((c) => c.family == family).elementAt(nth).id;
   Gun gun(String crewId, {int rarity = 0}) => Gun.of(tables, crewId, power: 1, rarity: rarity);
-  Round round(Field f, {GameState? s}) => Round(f, ctx(), CombatStats.of(s ?? game(), tables), rage: 0);
+  Round round(Field f, {GameState? s}) => Round(f, ctx(), CombatStats.of(s ?? game(), tables));
 
   test('1. 스킬 쿨타임이 차면 자동 시전, 실제 쿨타임은 skillCooldownMinSec 아래로 내려가지 않는다', () {
     final g = gun(crewOf('lob'))..skillCooldown = 0;
@@ -97,7 +97,7 @@ void main() {
     final f = field([mob, boss])
       ..guns = [gun(crewOf('shock'))]
       ..captainId = crewOf('shock');
-    final r = Round(f, ctx(), CombatStats.of(game(), tables), rage: tables.skills.rageMax)..castUltimate();
+    Round(f, ctx(), CombatStats.of(game(), tables)).castUltimate();
     final ult = tables.skills.byId('shock').ultimate;
     // 탑다운: 배 중심에서 바깥쪽(방사)으로 밀린다.
     final top = tables.waves.top;
@@ -107,7 +107,6 @@ void main() {
     expect(dist(boss), closeTo(d0 + ult.knockback * tables.skills.bossControlFactor, 1e-9));
     expect(mob.stunTimer, closeTo(ult.stunSec, 1e-9));
     expect(boss.stunTimer, closeTo(ult.stunSec * tables.skills.bossControlFactor, 1e-9));
-    expect(r.rage, 0);
   });
 
   test('6. 사다리: 투척 신화는 폭탄 3개, 서로 다른 대상, 한 발 = 1/3', () {

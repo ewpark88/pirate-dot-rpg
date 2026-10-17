@@ -56,7 +56,7 @@ void main() {
   List<GameEvent> run(Field f, double seconds, {int seed = 1}) {
     final events = <GameEvent>[];
     final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(seed), onEvent: events.add);
-    final r = Round(f, ctx, CombatStats.of(s, t), rage: 0);
+    final r = Round(f, ctx, CombatStats.of(s, t));
     for (var i = 0; i < (seconds / r.dt).round(); i++) {
       ctx.tick = i;
       for (final e in f.foes) {

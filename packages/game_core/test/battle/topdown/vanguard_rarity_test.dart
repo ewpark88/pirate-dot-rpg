@@ -87,7 +87,7 @@ void main() {
       final e = f.foes.first;
       final g = f.geometry! as TopGeometry;
       final s = GameState.newGame(playerId: 'v', seed: 1, now: start);
-      final r = Round(f, c, CombatStats.of(s, t), rage: 0);
+      final r = Round(f, c, CombatStats.of(s, t));
       final before = (x: e.x, y: e.y);
       r.control([e], knockback: 50, stunSec: 3);
       g.pull(e, e.x + 30, e.y, 30);
@@ -95,7 +95,7 @@ void main() {
       expect(e.stunned, isFalse);
       for (var i = 0; i < 400 && events.whereType<ShipDamaged>().isEmpty; i++) {
         c.tick = i;
-        Round(f, c, CombatStats.of(s, t), rage: 0).moveFoes();
+        Round(f, c, CombatStats.of(s, t)).moveFoes();
       }
       final hit = events.whereType<ShipDamaged>().first;
       expect(hit.amount.toDouble(), lessThanOrEqualTo(1000 * t.waves.raw.number('shipHitCap') + 1e-6));
@@ -139,7 +139,7 @@ void main() {
       f.foes.addAll([foe(1, 0, -70), foe(2, 8, -74), foe(3, 60, -70)]);
       final events = <GameEvent>[];
       final c = ctx(events);
-      Round(f, c, CombatStats.of(GameState.newGame(playerId: 'm', seed: 1, now: start), t), rage: 0).fireGuns();
+      Round(f, c, CombatStats.of(GameState.newGame(playerId: 'm', seed: 1, now: start), t)).fireGuns();
       expect(events.whereType<AttackFired>().single.splashRadius, 14);
       final dmg = {for (final d in events.whereType<Damage>()) d.targetId: d.amount.toDouble()};
       expect(dmg.keys.toSet(), {1, 2}, reason: '옆 8px만 폭발에, 60px은 아님');
