@@ -120,7 +120,7 @@ class EventDirector implements ReplayListener {
           _m3.onSkill(e);
           _flashSlot(tick.frame, e.crewId);
         case Damage():
-          _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
+          _damage(e, tick, index, number: e.crit || (!_inVolley(events, i) && f.fastSail == null));
         case AoeDamageSum():
           _aoe(e, tick, index);
         case Kill():

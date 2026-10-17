@@ -206,14 +206,15 @@ class TopSeaPainter {
   /// 배 기준 좌표(뱃머리 위, 고물 = +[stern], 뱃머리 = −[bow])로 그린다.
   void wake(Canvas c, double stern, double bow, double halfWidth, double clockMs) {
     // 점들을 알파 4단계 묶음으로 모아 drawRawPoints 몇 번(S1 배터리 — 전에는 점마다 drawRect 약 90번).
-    final length = (60 + 160 * boost).round();
+    // 질주 때 길이·벌어짐을 줄였다(피드백 #20 — V자 두 줄이 화면 끝까지 그어져 조잡해 보였다).
+    final length = (60 + 90 * boost).round();
     for (final b in _wakeBuckets) {
       b.n = 0;
     }
     final phase = (clockMs / 50) % 6;
     for (var i = 0; i < length; i += 2) {
       final fade = 1 - i / length;
-      final spread = halfWidth * 0.7 + i * (0.6 + 0.5 * boost);
+      final spread = halfWidth * 0.7 + i * (0.6 + 0.2 * boost);
       final y = stern + i + 1;
       if ((i + phase).floor() % 6 < 4) {
         _wakeBuckets[(fade * 3.99).floor()]
@@ -230,22 +231,24 @@ class TopSeaPainter {
     }
     // 뱃머리 물보라: 양옆 짧은 흰 줄
     final spray = 0.5 + 0.5 * math.sin(clockMs / 120);
-    // 질주: 뱃머리 흰 파도 벽(물을 가르는 V자) — 두 줄로 두껍게, 2배 이상 길게.
-    final sprays = 5 + (26 * boost).round();
+    // 질주: 뱃머리 흰 파도 벽(물을 가르는 V자) — 두 줄로 두껍게. 바깥으로 갈수록 옅어지고 배 폭 3배쯤에서 끝난다
+    // (피드백 #20 — 전에는 화면 끝까지 그어져 조잡해 보였다).
+    final sprays = 5 + (14 * boost).round();
     for (var k = 0; k < sprays; k++) {
-      final y = -bow + 10 + k * (2 + 2.6 * boost);
-      final x = halfWidth * 0.55 + k * (1.2 + 5 * boost) + spray;
+      final y = -bow + 10 + k * (2 + 2.2 * boost);
+      final x = halfWidth * 0.55 + k * (1.2 + 2.6 * boost) + spray;
+      final tone = (3.99 * (1 - k / (sprays + 2))).floor();
       if (boost > 0.5) {
-        _wakeBuckets[2]
+        _wakeBuckets[math.max(0, tone - 1)]
           ..add(-x - 6, y + 2)
           ..add(x + 6, y + 2);
       }
       if (boost > 0.3) {
-        _wakeBuckets[3]
+        _wakeBuckets[tone]
           ..add(-x - 3, y + 1)
           ..add(x + 3, y + 1);
       }
-      _wakeBuckets[3]
+      _wakeBuckets[tone]
         ..add(-x - 1, y)
         ..add(x + 1, y);
     }

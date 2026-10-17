@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_loot_bits.dart';
 
 /// 보스 처치 보상 연출 (사용자 피드백 #18 '보스 처치 보상이 확실히 보이게', 2026-10-17):
@@ -18,9 +19,10 @@ class TopBossLoot {
   static const _holdUntilMs = 1050.0;
   static const _flyMs = 420.0;
   static const _maxBursts = 3;
+  static const _maxCards = 4;
 
   /// 끝까지 걸리는 시간(ms) — 테스트·정리용.
-  static const totalMs = 2600.0;
+  static const totalMs = 3600.0;
 
   /// 보스가 ([at])에서 쓰러졌다. [lite]면 조각 절반(절전·시트가 가림).
   void burst(double now, Offset at, {required bool lite, double size = 1.7}) =>
@@ -48,12 +50,32 @@ class TopBossLoot {
     b.gems = math.min(7, b.gems + math.max(3, (n / 3).ceil()));
   }
 
-  /// 카드(선원 초상·등급 색)를 가장 최근 터짐에 더한다 — 피드백 #17, 카드 이벤트가 오면 연결.
-  void card(String crewId, int color) {
-    if (_bursts.isEmpty) return;
+  /// 카드 획득(피드백 #17, CardGranted): 방금 터진 보스 보상(0.5초 안)에 붙고, 없으면 [fallback](배 앞)에서 금빛 기둥과 함께 솟는다.
+  /// [isNew](처음 얻은 동료)면 크게·오래 떠서 [newCrewText]를 띄우고, [special](첫 희귀 선원 환영)이면 더 크게.
+  void card(double now, Offset fallback, String crewId, int color, {bool isNew = false, bool special = false}) {
+    if (_bursts.isEmpty || now - _bursts.last.ms > 500) _add(_Burst(now, fallback, 0, 0, 1.2, style: LootStyle.chest));
     final b = _bursts.last;
-    if (b.cards.length < 5) b.cards.add((crewId, color));
+    final big = special ? 2 : (isNew ? 1 : 0);
+    // 한 번에 여러 장(현상금 소탕은 한 틱에 수십 장): 같은 선원 보통 카드는 '×n' 한 장으로, 보통 카드는 4장까지 날리고 나머지는 '+n'.
+    // 새 동료·환영은 묶지 않고 따로 크게.
+    if (big == 0) {
+      for (final k in b.cards) {
+        if (k.crewId == crewId && k.big == 0) {
+          k.count++;
+          return;
+        }
+      }
+      if (b.cards.where((k) => k.big == 0).length >= _maxCards) {
+        b.extraCards++;
+        return;
+      }
+    }
+    if (b.cards.length < _maxCards + 3) b.cards.add(_Card(crewId, color, big));
   }
+
+  /// 새 동료 문구(UI가 TopTexts.newCrew로 채운다).
+  String newCrewText = 'NEW CREW!';
+  final _label = TopLabel();
 
   bool get active => _bursts.isNotEmpty;
 
@@ -93,7 +115,7 @@ class TopBossLoot {
       for (var i = 0; i < b.cards.length; i++) {
         arrivals += _piece(c, b, i, age, ship, sprites, kind: 2);
       }
-      if (arrivals > 0) _absorb(c, ship, arrivals);
+      if (arrivals > 0) _bits.absorb(c, ship, arrivals);
     }
   }
 
@@ -171,7 +193,8 @@ class TopBossLoot {
     final ang = kind == 0 ? i * golden : -math.pi / 2 + (i - (kind == 1 ? b.gems : b.cards.length) / 2 + 0.5) * 0.55;
     final dist = (kind == 0 ? 18 + (i * 13) % 30 : 30.0 + kind * 6) * b.size;
     final land = b.at + Offset(math.cos(ang) * dist, math.sin(ang) * dist);
-    final hold = _holdUntilMs + order * 22 + kind * 160;
+    final big = kind == 2 ? b.cards[i].big : 0;
+    final hold = _holdUntilMs + order * 22 + kind * 160 + big * 600;
     final flyT = (age - hold) / _flyMs;
     if (flyT >= 1) return flyT < 1 + 34 / _flyMs ? 1 : 0;
     Offset at;
@@ -216,17 +239,31 @@ class TopBossLoot {
         _bits.gem(c, Offset.zero, age);
         c.restore();
       default:
-        _bits.card(c, p, b.cards[i], age, sprites);
+        final grow = big == 0 ? 1.0 : (1 + 0.8 * big) * (flyT > 0 ? 1 - flyT * 0.6 : 1);
+        final card = b.cards[i];
+        if (big > 0 && flyT < 0) _bits.halo(c, p, age, big, card.color);
+        c
+          ..save()
+          ..translate(p.dx, p.dy)
+          ..scale(grow);
+        _bits.card(c, Offset.zero, (card.crewId, card.color), age, sprites, spin: big == 0 || flyT >= 0);
+        c.restore();
+        if (flyT < 0 && pop > _popMs * 0.6) {
+          final last = b.extraCards > 0 && big == 0 && i == b.cards.lastIndexWhere((k) => k.big == 0);
+          if (card.count > 1) _label.draw(c, '×${card.count}', p + const Offset(7, 9), 7);
+          if (last) _label.draw(c, '+${b.extraCards}', p + const Offset(16, 0), 8);
+        }
+        if (big > 0 && flyT < 0 && pop > _popMs * 0.6) {
+          _label.draw(
+            c,
+            newCrewText,
+            p + Offset(0, 13 * grow + 6),
+            9 + 2.0 * big,
+            alpha: math.min(1, (pop - _popMs * 0.6) / 200),
+          );
+        }
     }
     return 0;
-  }
-
-  /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
-  void _absorb(Canvas c, Offset ship, int n) {
-    _ring
-      ..strokeWidth = math.min(4, 1 + n * 0.5)
-      ..color = const Color(0xCCFFE27A);
-    c.drawCircle(ship, 14 + math.min(8, n * 1.0), _ring);
   }
 }
 
@@ -242,5 +279,17 @@ class _Burst {
   final int blasts;
   final double size;
   int gems = 0;
-  final List<(String, int)> cards = [];
+  final List<_Card> cards = [];
+
+  /// 날리지 않고 숫자로만 보인 카드 수('+n').
+  int extraCards = 0;
+}
+
+/// 날아가는 카드 한 장: 선원·등급 색·크기(0 보통·1 새 동료·2 환영)·묶인 장수.
+class _Card {
+  _Card(this.crewId, this.color, this.big);
+  final String crewId;
+  final int color;
+  final int big;
+  int count = 1;
 }

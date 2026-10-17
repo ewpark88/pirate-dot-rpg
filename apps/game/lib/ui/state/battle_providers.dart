@@ -68,6 +68,8 @@ BattleGame withTopTexts(BattleGame game, BuildContext context) {
     // 현상금 B3 연출(S3): 수배 포스터 머리말 · 실패 문구.
     wanted: l10n.uiBountyWanted,
     fled: l10n.uiBountyFled,
+    // 카드 획득 연출(S3 #17): 첫 선원 '새 동료!'.
+    newCrew: l10n.uiNewCrew,
   );
   return game;
 }

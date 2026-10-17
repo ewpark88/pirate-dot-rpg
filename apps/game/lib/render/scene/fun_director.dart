@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart' show parseArgb;
 import 'package:pirate_dot/render/fx/transients.dart';
 import 'package:pirate_dot/render/juice/juice_settings.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -48,6 +49,21 @@ bool funEvent(BattleScene s, GameEvent e) {
     case SaveRequested(reason: 'adReward') when s.isTop:
       s.topHits.loot.reward(s.clockMs, s.topShip);
       _sfx(s, 'adReward', e);
+    // 카드 획득(피드백 #17): 보스 보상 터짐에 붙거나 배 앞에서 솟아 배로. 첫 동료는 크게 '새 동료!', 환영(starter)은 더 크게.
+    case CardGranted(:final crewId, :final rarity, :final source, :final isNew) when s.isTop:
+      final rs = s.tables.rarities.rarities;
+      final r = rs.firstWhere((x) => x.id == rarity, orElse: () => rs.first);
+      final special = source == 'starter';
+      s.topHits.loot.card(
+        s.clockMs,
+        s.topShip - const Offset(0, 52),
+        crewId,
+        parseArgb(r.color, 'rarities.color'),
+        isNew: isNew,
+        special: special,
+      );
+      if (isNew || special) s.haptic(HapticLevel.medium);
+      _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
