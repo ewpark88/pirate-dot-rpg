@@ -12,8 +12,7 @@ import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 /// 그릴 그림 한 칸: 이미지·원본 칸·배율(HD는 world/cell)·HD 여부(부드러운 확대).
 typedef _Spr = ({Image image, Rect src, double scale, bool hd});
 
-/// 탑다운 적 그리기 (TopScenePainter에서 뺌): 그림별 drawAtlas 묶음, 헤엄 흔들림, 배를 때린 적의 돌진, 돌발 이벤트 그림.
-/// HD 카툰 종(개편 ④, hd_species.dart)은 굽힌 HD 시트로 — 돌리지 않고 좌우만 뒤집는다. 나머지는 도트.
+/// 탑다운 적 그리기: 그림별 drawAtlas 묶음·헤엄 흔들림·돌진·돌발 이벤트. HD 종은 굽힌 시트(돌리지 않고 좌우만 뒤집기).
 class TopEnemies {
   TopEnemies(this.scene, this.sprites);
 
@@ -40,8 +39,7 @@ class TopEnemies {
     return (sprites.sheet(key)?.frameW ?? 12) / 2;
   }
 
-  /// 적을 그림(종류)별로 묶어 drawAtlas 한 번씩 — 150마리여도 그리기 몇 번(S1 부하: 100~150마리 60fps).
-  /// 맞은 적(흰 번쩍임)은 흰 실루엣 묶음으로 따로, 물속은 반투명 붓으로.
+  /// 그림(종류)별로 묶어 drawAtlas 한 번씩(150마리 60fps), 맞은 적은 흰 실루엣 묶음·물속은 반투명 붓.
   void paint(Canvas c, {required bool under, required Rect cull}) {
     for (final b in _batches.values.followedBy(_flashBatches.values).followedBy(_hotBatches.values)) {
       b.clear();
@@ -68,9 +66,8 @@ class TopEnemies {
       final hd = key.startsWith('td_e') || key.startsWith('td_b')
           ? hdSheets.sheet(e.kind, boss: e.boss, world: sheet.frameW, density: snap)
           : null;
-      // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
+      // 보스는 프레임 300ms·숨쉬기 3%, 큰 보스(대보스 88도트)는 350ms(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
-      // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
       final period = huge ? 350 : (e.boss ? 300 : 220);
       final phase = scene.clockMs / period + e.id;
       final frame = phase.floor() % sheet.frames;
@@ -96,12 +93,20 @@ class TopEnemies {
       final _Spr spr;
       if (hd != null) {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
-        final right = _facing(e.id, e.heading);
-        spr = (image: hd.image, src: hd.src(f, right: right), scale: hd.scale, hd: true);
-        if (!e.boss) scene.topHits.muzzle.collect(e.id, e.kind, e.drawX, e.drawY, hd.world, right: right, now: clock);
+        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading)), scale: hd.scale, hd: true);
       } else {
         spr = (image: sheet.image, src: _cell(sheet, frame), scale: 1.0, hd: false);
       }
+      // 쏘기 직전 빛(EnemyWindup → EnemyFired): HD는 쏘는 부위, 도트는 몸 가운데.
+      scene.topHits.muzzle.collect(
+        e.id,
+        e.kind,
+        e.drawX,
+        e.drawY,
+        hd?.world ?? sheet.frameW,
+        right: hd != null && (_right[e.id] ?? false),
+        now: clock,
+      );
       // 기기 픽셀에 맞춤(모션 v1 — 전장 1단위 ≈ 4px로 반올림해 뚝뚝 떨리던 것).
       final tx = ((e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx) * snap).roundToDouble() / snap;
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
@@ -165,8 +170,7 @@ class TopEnemies {
   final Map<int, (_Spr, double, double, double)> _lastOver = {};
   final List<(_Spr, double, double, double, double)> _dying = [];
 
-  /// HD 카툰 시트(개편 ④).
-  final hdSheets = HdSheets();
+  final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
 
   /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
@@ -189,8 +193,7 @@ class TopEnemies {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
 
-  /// 모션 v1 사망·등장 전환: 지난 프레임에 있다 사라진 잡몹은 0.16초 동안 납작하게 찌그러지며(흰 실루엣 → 작아짐) 사라지고,
-  /// 막 나타난 잡몹 자리엔 물 고리가 퍼진다. 절전·시트가 가리면 없음.
+  /// 모션 v1 사망·등장 전환: 사라진 잡몹은 0.16초 납작하게 찌그러지며 사라지고, 막 나타난 자리엔 물 고리(절전이면 없음).
   void _transitions(Canvas c, {required bool under, required double clock, required bool lite}) {
     final last = under ? _lastUnder : _lastOver;
     if (!lite) {

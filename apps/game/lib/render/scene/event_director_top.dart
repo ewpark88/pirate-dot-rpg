@@ -49,6 +49,7 @@ extension _TopEvents on EventDirector {
 
   /// 보스 포탄(BossFired): 엔진 피해 시각(index)에 배에 닿도록 비행 시간만큼 앞서 띄운다. 색은 보스 모양 색(fx bossLook).
   void _bossShot(BossFired e, int index, BattleView frame) {
+    scene.topHits.muzzle.firedBosses(scene.clockMs); // 쏘기 직전 빛 → 터짐
     final tickMs = _player.tickMs;
     final flightTicks = math.min(_bossFlightMs / tickMs, _juice.lookaheadTicks.toDouble());
     final speed = math.max(1, frame.speed);
