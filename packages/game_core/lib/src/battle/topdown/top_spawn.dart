@@ -11,23 +11,27 @@ const double turn = math.pi / half;
 /// 탑다운 스폰 자리: 화면 밖 어디서, 어떤 대열로 나오는가 (스폰 패턴 — 사용자 지시 '스폰 패턴 섞기', S2 표).
 /// 수치(마리 수·HP·골드)는 spawnWaveFoes가 정하고, 여기서는 자리와 등장 시각만 정한다.
 class TopSpawn {
-  TopSpawn(this.top, this.spawnSpacing);
+  TopSpawn(this.top, this.spawnSpacing) : camera = top;
 
   TopField top; // 지금 배 자리(TopGeometry.weave)
+
+  /// 바다 가운데 = 카메라 가운데(배가 순항·피버로 옮겨져도 그대로). 무리 출현 자리(테두리까지 거리 toView·toBorder)는 이 기준 —
+  /// 배 기준이면 배가 비킨 반대쪽 출현점이 카메라 안으로 들어왔다(S2 밀도 브랜치 scene_spawn 실패, 2026-10-17).
+  final TopField camera;
 
   /// 옆모습 무리 간격(waves.field.spawnSpacing) — swarmSpacing이 없을 때.
   final double spawnSpacing;
 
-  /// 배 중심에서 [angle] 방향으로 보이는 테두리까지의 거리.
+  /// 카메라 가운데에서 [angle] 방향으로 보이는 테두리까지의 거리.
   double toBorder(double angle) {
     final c = math.cos(angle);
     final s = math.sin(angle);
-    final tx = c > 0 ? (top.width - top.shipX) / c : (c < 0 ? -top.shipX / c : double.infinity);
-    final ty = s > 0 ? (top.height - top.shipY) / s : (s < 0 ? -top.shipY / s : double.infinity);
+    final tx = c > 0 ? (top.width - camera.shipX) / c : (c < 0 ? -camera.shipX / c : double.infinity);
+    final ty = s > 0 ? (top.height - camera.shipY) / s : (s < 0 ? -camera.shipY / s : double.infinity);
     return math.min(tx, ty);
   }
 
-  /// 배 중심에서 [angle] 방향으로 카메라 사각형(viewWidth × viewHeight) 테두리까지의 거리.
+  /// 카메라 가운데에서 [angle] 방향으로 카메라 사각형(viewWidth × viewHeight) 테두리까지의 거리.
   double toView(double angle) {
     final c = math.cos(angle).abs();
     final s = math.sin(angle).abs();
@@ -36,10 +40,18 @@ class TopSpawn {
     return math.min(tx, ty);
   }
 
+  /// 배 중심에서 [angle]·[distance] 자리(몸통 닿기·보스 돌기·밀기).
   void place(Foe e, double angle, double distance) {
     e
       ..x = top.shipX + math.cos(angle) * distance
       ..y = top.shipY + math.sin(angle) * distance;
+  }
+
+  /// 카메라 가운데에서 [angle]·[distance] 자리(무리 출현 — toView·toBorder와 같은 기준).
+  void placeOut(Foe e, double angle, double distance) {
+    e
+      ..x = camera.shipX + math.cos(angle) * distance
+      ..y = camera.shipY + math.sin(angle) * distance;
   }
 
   /// 카메라 가운데([cx], [cy]) 기준 [angle]·[distance] 자리에 두되 몸 반경만큼 카메라 안으로 당긴다(보스 촉수 — 조준되게).
@@ -108,7 +120,7 @@ class TopSpawn {
     final gap = top.swarmSpacing > 0 ? top.swarmSpacing : spawnSpacing;
     for (var i = 0; i < added.length; i++) {
       final angle = heads[i % groups] + (rng.nextDouble() - half) * spread;
-      place(added[i], angle, startDistance(added[i], angle) + (i ~/ groups) * gap);
+      placeOut(added[i], angle, startDistance(added[i], angle) + (i ~/ groups) * gap);
     }
   }
 
@@ -122,7 +134,11 @@ class TopSpawn {
       final row = i ~/ perRow;
       final inRow = math.min(perRow, added.length - row * perRow);
       final angle = offset + (i % perRow) * turn / inRow + row * half * turn / perRow;
-      place(added[i], angle, toView(angle) + top.spawnMargin + top.radiusOf(added[i]) + row * (top.mobRadius / half));
+      placeOut(
+        added[i],
+        angle,
+        toView(angle) + top.spawnMargin + top.radiusOf(added[i]) + row * (top.mobRadius / half),
+      );
     }
   }
 
@@ -135,7 +151,7 @@ class TopSpawn {
       final batch = 1 + rng.nextInt(1 + 1); // 1~2마리
       for (var k = 0; k < batch && i < added.length; k++, i++) {
         final angle = heading(rng);
-        place(added[i], angle, startDistance(added[i], angle));
+        placeOut(added[i], angle, startDistance(added[i], angle));
         added[i].holdSec = wait;
       }
       wait += top.scatterGapMin + rng.nextDouble() * (top.scatterGapMax - top.scatterGapMin);
@@ -159,7 +175,7 @@ class TopSpawn {
       final inRow = math.min(perRow, added.length - row * perRow);
       final u = inRow == 1 ? half : (i % perRow) / (inRow - 1);
       final angle = head + (u - half) * spread;
-      place(added[i], angle, startDistance(added[i], angle) + row * (top.mobRadius / half));
+      placeOut(added[i], angle, startDistance(added[i], angle) + row * (top.mobRadius / half));
     }
   }
 }
