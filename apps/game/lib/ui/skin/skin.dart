@@ -113,7 +113,8 @@ abstract final class Skin {
   /// 외곽선 글자 (흰 글씨 + 두꺼운 검은 테, k2): 여덟 방향 그림자로 테를 그리고, 같은 색 그림자로 획을 굵게 한다.
   static TextStyle outlined(double size, {Color color = Colors.white, double? stroke}) {
     final s = stroke ?? (size * 0.11).clamp(1.4, 2.6);
-    return text(size, color: color).copyWith(shadows: [...outlineShadows(s), ..._thicken(color, size)]);
+    // 같은 색 굵히기는 빼고 테만 — 획 사이가 좁은 글자('템' 등)가 흰 덩어리로 메워졌다(태블릿 설정 점검 2026-10-18).
+    return text(size, color: color).copyWith(shadows: outlineShadows(s));
   }
 
   /// 굵은 글자 (진한 글씨, 테 없음) — Jua는 굵기가 하나라 같은 색 그림자로 획을 굵게 한다(버튼 글자).

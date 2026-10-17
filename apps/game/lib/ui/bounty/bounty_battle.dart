@@ -16,25 +16,6 @@ import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
 // 현상금 전투 중 UI (기획 6절 ③④): 위쪽 '현상금' 글(떠 있는 띠 안 — SceneStrip), 후퇴 버튼(보스 도전 자리), 끝나면 결과 작은 창.
 
-/// 후퇴 버튼 (선원 줄 오른쪽, 궁극기 옆 = 보스 도전 자리) → RetreatBounty. 현상금 전투 중에만.
-class BountyRetreatButton extends ConsumerWidget {
-  const BountyRetreatButton({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final active = ref.watch(bountyProvider.select((v) => v.active != null));
-    if (!active) return const SizedBox.shrink();
-    return FittedBox(
-      child: SkinButton(
-        key: const Key('bounty.retreat'),
-        tone: SkinTone.plain,
-        onPressed: ref.read(bountyCommandsProvider).retreat,
-        child: Text(AppLocalizations.of(context).uiBountyRetreat),
-      ),
-    );
-  }
-}
-
 /// 결과 작은 창: 성공 = 보상(반짝임) / 실패 = '티켓은 돌려받았어요 · 피해 n%' (이유와 상관없이).
 class BountyResultGate extends ConsumerStatefulWidget {
   const BountyResultGate({required this.child, super.key});

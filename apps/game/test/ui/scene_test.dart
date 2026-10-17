@@ -86,6 +86,10 @@ void main() {
     expect(find.text('Abyss F12 · wave 2/3'), findsOneWidget);
     expect(find.byKey(const Key('boss.challenge')), findsNothing);
     expect(find.byKey(const Key('fun.fever.chip')), findsNothing);
+    // 후퇴는 띠 안 — 배 체력 막대·선원 줄과 안 겹친다(사용자 2026-10-18).
+    final retreat = tester.getRect(find.byKey(const Key('scene.retreat')));
+    expect(retreat.overlaps(tester.getRect(find.byKey(const Key('hud.shipHp')))), isFalse);
+    expect(retreat.bottom, lessThanOrEqualTo(tester.getRect(find.byKey(const Key('hud.gauge'))).bottom));
     await tester.tap(find.byKey(const Key('scene.retreat')));
     await tester.pump();
     expect(log.sent.whereType<RetreatTower>(), hasLength(1));

@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_marks.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/hud/chest_tap_hint.dart';
 import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
@@ -209,3 +210,8 @@ Future<void> showInSheet(WidgetTester tester, String key) async {
   await tester.scrollUntilVisible(find.byKey(Key(key)), 200, scrollable: scrollable);
   await tester.pump();
 }
+
+/// 엔진 없이 상태를 바꾼다(엔진이 다음 틱에 낸 상태처럼).
+void replaceState(WidgetTester tester, GameState s) => ProviderScope.containerOf(
+  tester.element(find.byType(HomeScreen)),
+).read(gameStateProvider.notifier).replace(s);
