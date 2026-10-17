@@ -6,7 +6,7 @@ import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
 
 /// 효과음·배경음 (스펙 platform-m4 d). 파일 규칙 `sfx/<id>.ogg`·`sfx/<id>_<n>.ogg`·`bgm/<id>.ogg`.
 /// 없는 파일은 무음 — 음원을 사람이 고르기 전에도 그대로 돈다.
-class AudioAdapter implements AudioPort {
+class AudioAdapter implements AudioPort, AudioMixPort {
   AudioAdapter._(this._sdk, this._files, this._nowMs);
 
   /// 목록을 못 읽으면 빈 목록(전부 무음).
@@ -42,6 +42,9 @@ class AudioAdapter implements AudioPort {
   /// 배경음 기본 믹스 — 효과음 대비 0.7배(약 −3dB, S3 사운드 점검: 타격음이 산다). 설정 음량에 곱한다.
   static const bgmMix = 0.7;
 
+  /// 환경음 층(바람 등)은 배경음 음량의 이만큼 — 곡 밑에 깔린다.
+  static const ambientMix = 0.5;
+
   final AudioSdk _sdk;
   final Set<String> _files;
   final _active = <String, int>{};
@@ -54,6 +57,8 @@ class AudioAdapter implements AudioPort {
   String? _bgmId;
   bool _bgmPlaying = false;
   int _fadeGen = 0; // 페이드가 겹치면 앞의 것을 버린다
+  double _rate = 1; // 배경음 재생 속도(AudioMixPort.setBgmRate)
+  String? _ambientId; // 지금 깔린 환경음(파일이 있어 튼 경우만)
 
   /// 지금 동시 재생 상한(발열이 심하면 main이 줄인다 — power_policy sfxMaxTotal).
   int maxTotal = maxTotalSfx;
@@ -72,6 +77,7 @@ class AudioAdapter implements AudioPort {
     _suspended = true;
     _fire(_sdk.stopAllSfx());
     if (_bgmPlaying) _fire(_sdk.pauseBgm());
+    if (_ambientId != null) _fire(_sdk.pauseAmbient());
   }
 
   /// 광고가 닫히면 다시 (배경음은 울리던 경우만 이어서).
@@ -79,6 +85,29 @@ class AudioAdapter implements AudioPort {
     if (!_suspended) return;
     _suspended = false;
     if (_bgmPlaying) _fire(_sdk.resumeBgm());
+    if (_ambientId != null) _fire(_sdk.resumeAmbient());
+  }
+
+  @override
+  void setBgmRate(double rate) {
+    if (rate == _rate) return;
+    _rate = rate;
+    if (_bgmPlaying) _fire(_sdk.setBgmRate(rate));
+  }
+
+  @override
+  void playAmbient(String id) {
+    final path = 'amb/$id.ogg';
+    if (_ambientId == id || !_files.contains(path)) return;
+    _ambientId = id;
+    _fire(_sdk.playAmbient(path, volume: _bgm * ambientMix));
+  }
+
+  @override
+  void stopAmbient() {
+    if (_ambientId == null) return;
+    _ambientId = null;
+    _fire(_sdk.stopAmbient());
   }
 
   @override
@@ -151,12 +180,19 @@ class AudioAdapter implements AudioPort {
     } else {
       _startBgm();
     }
+    if (_ambientId != null) _fire(_sdk.setAmbientVolume(_bgm * ambientMix));
   }
 
   /// 백그라운드로 갈 때·돌아올 때 (main.dart의 생명주기에서).
-  void pauseBgm() => _fire(_sdk.pauseBgm());
+  void pauseBgm() {
+    _fire(_sdk.pauseBgm());
+    if (_ambientId != null) _fire(_sdk.pauseAmbient());
+  }
 
-  void resumeBgm() => _fire(_sdk.resumeBgm());
+  void resumeBgm() {
+    _fire(_sdk.resumeBgm());
+    if (_ambientId != null) _fire(_sdk.resumeAmbient());
+  }
 
   /// 지금 곡(_bgmId)을 [volume](없으면 설정 음량)으로 튼다. 틀었으면 true.
   bool _startBgm({double? volume}) {
@@ -165,7 +201,9 @@ class AudioAdapter implements AudioPort {
     final path = 'bgm/$id.ogg';
     if (!_files.contains(path)) return false;
     _bgmPlaying = true;
-    _fire(_sdk.playBgm(path, volume: volume ?? _bgm));
+    final rate = _rate;
+    // 곡이 바뀌어도 2배속 칩 속도 유지 — 재생이 시작된 뒤에 건다
+    _fire(_sdk.playBgm(path, volume: volume ?? _bgm).then((_) => rate == 1 ? null : _sdk.setBgmRate(rate)));
     return true;
   }
 
