@@ -53,9 +53,18 @@
   "opGroupToday": "Today's new features",
   "opTodayFever": "Fever soon (99%)",
   "opTodayBreak": "Fill boss break",
-  "opTodayBossPick": "Pick a special boss",
+  "opTodayBossPick": "Pick a boss (traits)",
   "opTodayBoss": "Spawn picked boss",
   "opTodayArc": "Chain lightning test (pelly legend)",
   "opTodaySail": "Sail-hold state",
-  "opTodayFirstTen": "Free first 10x again"
+  "opTodayFirstTen": "Free first 10x again",
+  "opTraitEvade": "Evade",
+  "opTraitArmor": "Armor",
+  "opTraitRegen": "Regen",
+  "opTraitReflect": "Reflect",
+  "opTraitEnrage": "Enrage",
+  "opTraitEscort": "Escort",
+  "opTraitDash": "Dash",
+  "opTraitPattern": "Pattern",
+  "opTraitSplit": "Split"
 }

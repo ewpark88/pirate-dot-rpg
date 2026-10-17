@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -27,11 +28,8 @@ class _TodayGroupState extends ConsumerState<TodayGroup> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final t = ref.watch(tablesProvider);
-    // 특징이 있는 보스(해역 보스 패턴·분열). 보스 특성(S2 boss-traits)이 BossDef에 들어오면 여기에 더한다.
-    final special = [
-      for (final b in t.regions.bosses.values)
-        if (b.mechanic != null || b.splitAt.isNotEmpty) b,
-    ];
+    // 모든 보스(해역 보스 + 순환 보통 보스 23종) — 특징(특성·패턴·분열)이 있는 보스가 위로. 항목마다 특징 아이콘·이름.
+    final bosses = [...t.regions.bosses.values]..sort((a, b) => _features(b).length.compareTo(_features(a).length));
     final legend = t.rarities.rarities.firstWhere((r) => r.id == 'legend').levelMin;
     return Wrap(
       spacing: 8,
@@ -48,15 +46,42 @@ class _TodayGroupState extends ConsumerState<TodayGroup> {
           onPressed: () => _send(const OpBossBreak()),
           child: Text(l10n.opTodayBreak),
         ),
-        DropdownButton<String>(
-          key: const Key('op.today.bossPick'),
-          value: _boss,
-          hint: Text(l10n.opTodayBossPick),
-          items: [
-            for (final b in special) DropdownMenuItem(value: b.id, child: Text(tableText(l10n, b.nameKey))),
-          ],
-          onChanged: (id) => setState(() => _boss = id),
+        // 좁은 폰에서도 넘치지 않게 폭을 정하고, 항목은 이름(줄임) + 특징 아이콘만 — 특징 이름은 고른 뒤 아래 줄에.
+        SizedBox(
+          width: 260,
+          child: DropdownButton<String>(
+            key: const Key('op.today.bossPick'),
+            isExpanded: true,
+            value: _boss,
+            hint: Text(l10n.opTodayBossPick),
+            items: [
+              for (final b in bosses)
+                DropdownMenuItem(
+                  value: b.id,
+                  child: Row(
+                    children: [
+                      Flexible(child: Text(tableText(l10n, b.nameKey), overflow: TextOverflow.ellipsis)),
+                      for (final f in _features(b)) ...[const SizedBox(width: 4), Icon(_icons[f], size: 16)],
+                    ],
+                  ),
+                ),
+            ],
+            onChanged: (id) => setState(() => _boss = id),
+          ),
         ),
+        if (_boss case final id?)
+          Wrap(
+            key: const Key('op.today.bossTraits'),
+            spacing: 6,
+            children: [
+              for (final f in _features(t.regions.bosses[id]!))
+                Chip(
+                  avatar: Icon(_icons[f], size: 16),
+                  label: Text(_featureName(l10n, f)),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
         FilledButton.tonal(
           key: const Key('op.today.boss'),
           onPressed: _boss == null ? null : () => _send(OpSpawnBoss(bossId: _boss)),
@@ -88,3 +113,34 @@ class _TodayGroupState extends ConsumerState<TodayGroup> {
     );
   }
 }
+
+/// 보스 특징: 특성(BossDef.traits — evade·armor·regen·reflect·enrage·escort·dash) + 패턴(mechanic·patterns) + 분열.
+List<String> _features(BossDef b) => [
+  for (final tr in b.traits) tr.type,
+  if (b.mechanic != null || b.patterns.isNotEmpty) 'pattern',
+  if (b.splitAt.isNotEmpty) 'split',
+];
+
+const Map<String, IconData> _icons = {
+  'evade': Icons.air,
+  'armor': Icons.shield,
+  'regen': Icons.healing,
+  'reflect': Icons.flip,
+  'enrage': Icons.local_fire_department,
+  'escort': Icons.groups,
+  'dash': Icons.double_arrow,
+  'pattern': Icons.auto_awesome,
+  'split': Icons.call_split,
+};
+
+String _featureName(AppLocalizations l10n, String f) => switch (f) {
+  'evade' => l10n.opTraitEvade,
+  'armor' => l10n.opTraitArmor,
+  'regen' => l10n.opTraitRegen,
+  'reflect' => l10n.opTraitReflect,
+  'enrage' => l10n.opTraitEnrage,
+  'escort' => l10n.opTraitEscort,
+  'dash' => l10n.opTraitDash,
+  'split' => l10n.opTraitSplit,
+  _ => l10n.opTraitPattern,
+};
