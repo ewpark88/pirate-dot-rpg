@@ -80,6 +80,7 @@ class Moments {
 
   void banner(String text, {String sub = '', double ms = 1600, bool hot = false, double y = 0.36}) {
     bannerY = y;
+    bannerGold = false;
     bannerText = text;
     bannerSub = sub;
     bannerMs = bannerTotal = ms;
@@ -144,6 +145,15 @@ class Moments {
     glowMs = scene.fx.raw.obj('shipParts').number('glowMs');
     final fx = scene.fx.fxFor('shipLookChanged');
     if (fx != null) scene.spawnEffect(fx, scene.shipCenter.dx, scene.shipCenter.dy - 8);
+  }
+
+  /// 보스 처치 피니시(S1): 'BOSS DOWN!' 큰 띠(대보스는 금빛 'VICTORY!') + 카메라 줌 펀치(TopBossCam).
+  double finishAt = -1000000000;
+  bool bannerGold = false;
+  void onBossDown({required bool big}) {
+    finishAt = scene.clockMs;
+    banner(big ? 'VICTORY!' : 'BOSS DOWN!', ms: 1400, y: 0.78); // 배 아래 — 보스 폭발·배를 가리지 않게
+    bannerGold = big;
   }
 
   /// 해역 보스 첫 등장이면 컷인.

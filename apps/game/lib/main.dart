@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pirate_dot/adapters/ad_aware_lifecycle.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/google_ads_sdk.dart';
+import 'package:pirate_dot/adapters/analytics/deferred_analytics.dart';
 import 'package:pirate_dot/adapters/analytics/firebase_sdk.dart';
 import 'package:pirate_dot/adapters/analytics/game_event_analytics.dart';
 import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
@@ -90,15 +91,10 @@ Future<void> main() async {
       );
   final host = EngineHost(tables: tables, initial: initial, clock: clock, store: store);
   // 어댑터 (platform-m4): 실패해도 던지지 않는다 — google-services.json이 없으면 Noop, 음원 목록 실패면 무음.
-  final analytics = await startAnalytics(() async {
-    final sdk = await initFirebase(collectCrashes: kReleaseMode && !kOperator).timeout(_sdkTimeout);
-    // 비치명 오류(광고·전원·알림·세이브·오디오가 잡은 예외)도 Crashlytics로 — 사유마다 실행당 1회(crash-anr.md 2절)
-    nonFatalSink = (e, s, reason) => unawaited(sdk.recordNonFatal(e, s, reason: reason));
-    return sdk;
-  });
-  step('analytics');
-  final audio = await AudioAdapter.load(FlameAudioSdk(), timeout: _sdkTimeout);
-  step('audio');
+  // 첫 프레임을 막지 않게(docs/store/cold-start.md): 분석(Firebase)은 runApp 뒤에 붙이고 그 전 호출은 쌓아 둔다,
+  // 음원 목록도 기다리지 않는다(오면 그때 배경음). 예전엔 둘 다 최대 3초씩 runApp 앞에서 기다렸다.
+  final analytics = DeferredAnalytics();
+  final audio = AudioAdapter.later(FlameAudioSdk(), timeout: _sdkTimeout);
   late final ProviderContainer container;
   final notifier = OfflineFullNotifier(
     sdk: LocalNotificationsSdk(),
@@ -225,6 +221,18 @@ Future<void> main() async {
     },
   );
   runApp(UncontrolledProviderScope(container: container, child: const PirateDotApp()));
+  WidgetsBinding.instance.addPostFrameCallback((_) => step('firstFrame')); // 콜드 스타트 목표 2초(cold-start.md)
+  unawaited(
+    startAnalytics(() async {
+      final sdk = await initFirebase(collectCrashes: kReleaseMode && !kOperator).timeout(_sdkTimeout);
+      // 비치명 오류(광고·전원·알림·세이브·오디오가 잡은 예외)도 Crashlytics로 — 사유마다 실행당 1회(crash-anr.md 2절)
+      nonFatalSink = (e, s, reason) => unawaited(sdk.recordNonFatal(e, s, reason: reason));
+      return sdk;
+    }).then((a) {
+      analytics.attach(a);
+      step('analytics');
+    }),
+  );
   step('runApp');
   // UMP 동의 폼은 화면이 있어야 뜬다 → 첫 프레임 뒤에 광고 시작.
   WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(ads.start()));

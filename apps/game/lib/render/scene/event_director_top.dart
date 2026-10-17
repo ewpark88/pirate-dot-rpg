@@ -279,7 +279,9 @@ extension _TopEvents on EventDirector {
       ..slowMoMs = _juice.bossSlowMoMs;
     if (_juice.bossFlash && scene.settings.flash) scene.screenFlashMs = _juice.flashFrames * kFrameMs * 2;
     final lite = scene.topHits.lite || scene.settings.powerSave;
-    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: lite);
+    final big = bossScaleOf(scene.tables, scene.poseOf(e.targetId)?.kind ?? '') >= 1.4; // 대보스: 금빛 VICTORY·금화 폭포 크게
+    scene.moments.onBossDown(big: big);
+    scene.topHits.loot.burst(scene.clockMs, Offset(e.x, e.y), lite: lite, size: big ? 2.2 : 1.7);
     scene.topHits.bossKilled(scene, e.targetId, Offset(e.x, e.y), lite: lite);
     scene.numbers.add(e.gold, e.x, e.y - 18, DamageKind.crit);
   }

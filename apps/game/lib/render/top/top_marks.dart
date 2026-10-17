@@ -122,8 +122,8 @@ class TopMarks {
       final w = (r * 1.7).clamp(40.0, 72.0).roundToDouble() + 6; // 사용자 '보스 체력이 안 보인다' — 넓고 굵게
       // 체력 층(S1 '여러 줄'): 지금 층만 막대에 차고 위 층은 색이 다르다, 오른쪽에 'x남은 층'.
       final b = scene.topHits.breaks;
-      final layer = b.layerOf(ratio);
-      final within = b.withinLayer(ratio);
+      final layer = b.layerOf(ratio, e.bossBars); // 엔진 층 수(S2 boss-feel waves.boss.bars)
+      final within = b.withinLayer(ratio, e.bossBars);
       var fill = layer > 1 ? _layerColors[(layer - 2) % _layerColors.length] : _pill.colorFor(within);
       if (_pill.isLow(ratio) && (scene.clockMs / 250).floor().isEven) {
         fill = Color.lerp(Color(fill), const Color(0xFFFFFFFF), 0.35)!.toARGB32();
@@ -135,7 +135,7 @@ class TopMarks {
         w: w,
         h: 9,
         ratio: within,
-        lag: lag > ratio && b.layerOf(lag) == layer ? b.withinLayer(lag) : within,
+        lag: lag > ratio && b.layerOf(lag, e.bossBars) == layer ? b.withinLayer(lag, e.bossBars) : within,
         fill: fill,
         skull: true,
       );
