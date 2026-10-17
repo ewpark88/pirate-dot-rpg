@@ -68,7 +68,12 @@ sealed class GameEvent {
         radius: d('radius'),
         ticks: j['ticks'] as int,
       ),
-      'ultimateCast' => UltimateCast(t, crewId: j['crewId'] as String, ultimateId: j['ultimateId'] as String),
+      'ultimateCast' => UltimateCast(
+        t,
+        crewId: j['crewId'] as String,
+        ultimateId: j['ultimateId'] as String,
+        manual: j['manual'] as bool? ?? false,
+      ),
       'hitStop' => HitStop(t, ticks: j['ticks'] as int, reason: j['reason'] as String),
       'shipDamaged' => ShipDamaged(
         t,
@@ -267,19 +272,6 @@ class ZoneSpawned extends GameEvent {
 
   @override
   Json _fields() => {'crewId': crewId, 'x': x, 'y': y, 'radius': radius, 'ticks': ticks};
-}
-
-class UltimateCast extends GameEvent {
-  const UltimateCast(super.tick, {required this.crewId, required this.ultimateId});
-
-  final String crewId;
-  final String ultimateId;
-
-  @override
-  String get type => 'ultimateCast';
-
-  @override
-  Json _fields() => {'crewId': crewId, 'ultimateId': ultimateId};
 }
 
 /// 히트스톱: 시뮬과 화면이 [ticks]만큼 함께 멈춘다. [reason]은 juice.json hitStopMs 키.

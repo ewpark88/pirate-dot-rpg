@@ -1,4 +1,5 @@
 import 'package:game_core/src/battle/bosses.dart';
+import 'package:game_core/src/battle/captain_skill.dart';
 import 'package:game_core/src/battle/combat.dart';
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/fast_sail.dart';
@@ -37,6 +38,7 @@ class BattleSystem implements GameSystem {
   final _tailwind = TailwindSpeed();
   static const Map<String, int> Function(GameState, GameTables, int) _supply = fastSailSupplyLevels; // 빠른 항해 보급(S2)
   int _kills = 0;
+  int _gaugeKills = 0;
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
@@ -56,6 +58,9 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, hpScale: earlyBossScale(state, ctx.tables)); // 초반 감쇠도 같게
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case TriggerUltimate():
+        _sync(state, ctx).ultRequested = true; // 선장 필살기 버튼 — 게이지가 가득이면 다음 틱에(captain_skill.dart)
+        return state;
       case StartVoyage():
         final p = state.progress;
         return p.sailHold ? state.copyWith(progress: p.copyWith(sailHold: false)) : state;
@@ -128,9 +133,11 @@ class BattleSystem implements GameSystem {
         ..castSkills()
         ..tickZones()
         ..topdownStep(state)
+        ..tickBossBars() // 체력 층 깨짐 → 비틀(boss-feel)
         ..tickStatus()
         ..tickCombo()
-        ..breakthrough(state); // 빠른 항해 돌파(fast_sail.dart)
+        ..breakthrough(state) // 빠른 항해 돌파(fast_sail.dart)
+        ..tickCaptainSkill(state); // 선장 필살기 게이지·자동/버튼·폭주
     });
     if (_field!.inScene) {
       return _project(sceneResolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
@@ -145,7 +152,7 @@ class BattleSystem implements GameSystem {
     final after = sailing ? resolved : _fun.step(resolved, f, ctx, kills: _kills);
     final boss = after.progress.stage > next.progress.stage; // 보스 처치 = 스테이지가 올랐다
     final shown = _tailwind.apply(_project(closeFastSail(after, f, ctx, supply: _supply), f, ctx.tables), ctx);
-    return sailing ? shown : feverStep(shown, ctx, kills: _kills, bossKilled: boss);
+    return sailing ? shown : feverStep(shown, ctx, kills: _gaugeKills, bossKilled: boss);
   }
 
   GameState _resolve(GameState s, Field f, SystemContext ctx) {
@@ -233,6 +240,8 @@ class BattleSystem implements GameSystem {
     );
     body(r);
     _kills = r.kills;
+    _gaugeKills = r.kills - f.feverMobKills; // 피버 고리 적은 다음 피버 게이지에 안 센다
+    f.feverMobKills = 0;
     final counted = r.kills > 0 ? addQuestProgress(state, ctx.tables, 'kill', r.kills) : state;
     final paid = addGold(counted, ctx.tables, r.gold); // 화물칸 용량까지
     _fun.overflow(paid.lost, ctx);

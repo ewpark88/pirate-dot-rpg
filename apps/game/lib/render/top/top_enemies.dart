@@ -97,7 +97,7 @@ class TopEnemies {
       // 모션 v1 등장: 처음 보인 적은 0.24초 동안 0.3 → 1.12 → 1로 톡 커지며 물 고리(갑자기 나타나지 않게).
       final born = _born.putIfAbsent(e.id, () => clock);
       final bk = (clock - born) / _bornMs;
-      final pop = bk >= 1 || e.boss ? 1.0 : (bk < 0.6 ? 0.3 + 0.82 * bk / 0.6 : 1.12 - 0.12 * (bk - 0.6) / 0.4);
+      final pop = e.boss ? _rise(clock) : _bornPop(bk);
       if (bk == 0 && !lite && !crowd && !e.boss && _rings.length < 24) _rings.add((e.drawX, e.drawY, clock));
       // HD 보스는 그림 안에서 숨쉰다(굽힌 8장).
       final breathe =

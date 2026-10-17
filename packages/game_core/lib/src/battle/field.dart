@@ -125,7 +125,12 @@ class Field {
   DungeonRun? dungeon; // 진행 중인 요일 던전(top_dungeon.dart)
   List<String>? sceneFleet; // 장면 중 임시 출전(요일 던전 — 세이브 fleet는 그대로)
   String? scenePattern; // 장면 무리 파의 자리 패턴(요일 던전: arc·ring·scatter…)
+  double captainGauge = 0; // 선장 필살기 게이지 0~1(captain_skill.dart, BattleView.captainGauge)
+  int rushTicks = 0; // 필살기 폭주 남은 틱(공격 속도 × captainSkill.attackSpeedMul)
+  bool ultRequested = false; // TriggerUltimate가 왔다(다음 틱에 쓴다)
+  double lastBossRatio = 1; // 지난 틱 보스 HP 비율(게이지 bossDamageGain)
   double speedHpMul = 1; // 유료 2배속 중 적 HP 배율(공격은 역수, iap purchasedSpeedHpMul — 진행 1.5배)
+  int feverMobKills = 0; // 이번 틱에 잡은 피버 고리 적(게이지에서 뺌 — battle_system)
   int hordeCount = 0; // 다음 무리 파가 대군 습격이면 마리 수(nextEncounter — spawnWaveFoes)
   double poolScale = 1; // 다음 무리 파의 몫 배율(피버 보충 고리 fever.swarm.refillPool — spawnWaveFoes)
   int slotsOpen = 0; // 열린 출전 칸(fleetSlots — 화면 잠금 칸 판정, BattleView.slotsOpen)
@@ -200,6 +205,7 @@ class Field {
     feverTicksLeft: prev.feverTicksLeft,
     autoBossTicksLeft: autoBossLeft,
     slotsOpen: slotsOpen,
+    captainGauge: captainGauge,
     retryWinnable: retryWinnable,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,

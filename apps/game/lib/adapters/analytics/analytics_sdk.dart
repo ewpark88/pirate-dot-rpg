@@ -19,4 +19,7 @@ abstract interface class AnalyticsSdk {
 /// 앱이 쓰는 분석 포트 + 동의 연결.
 abstract interface class AppAnalytics implements AnalyticsPort {
   void setCollection({required bool enabled});
+
+  /// Crashlytics 커스텀 키(충돌 보고서 맥락 — S4 CrashContextGate가 장면·피버·적 수 등을 바뀔 때만 건다).
+  void setCrashKey(String key, Object value);
 }

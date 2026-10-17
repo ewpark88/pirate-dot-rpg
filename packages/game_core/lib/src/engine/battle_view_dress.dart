@@ -6,6 +6,7 @@ extension BattleViewDress on BattleView {
   BattleView withShipDress({String? tierLook, String? skin, int? treasureSea}) => BattleView(
     tick: tick,
     slotsOpen: slotsOpen,
+    captainGauge: captainGauge,
     shipHp: shipHp,
     shipHpMax: shipHpMax,
     bossActive: bossActive,

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pirate_dot/render/hd/hd_species.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 
 import 'helpers.dart';
@@ -33,7 +34,9 @@ void main() {
       final keys = [
         for (final e in r.enemies) 'td_enemy:$e',
         // 도감 v2: 보통 보스 순환·10단위 대보스도(표에 들어오면 그림이 있어야 한다).
-        for (final b in {r.boss, r.midBoss, r.regionBoss, ...r.bossRotation, ?r.wallBoss}) ...['boss:$b', 'td_boss:$b'],
+        // HD 전용 보스(순환 v2 18종 — 도트 없음)는 HD 종 그림이 있으면 된다(전장·컷인·초상 모두 HD).
+        for (final b in {r.boss, r.midBoss, r.regionBoss, ...r.bossRotation, ?r.wallBoss})
+          if (!hdBosses.containsKey(b) || paths.containsKey('td_boss:$b')) ...['boss:$b', 'td_boss:$b'],
       ];
       for (final k in keys) {
         expect(paths[k], isNotNull, reason: '$k 경로 없음');

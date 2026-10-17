@@ -4,15 +4,21 @@ import 'dart:ui';
 import 'package:pirate_dot/render/hd/hd_pass_decor.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/top/skin_decor.dart';
+import 'package:pirate_dot/render/top/top_deck_crew.dart';
 
 /// 탑다운 내 배 (T2): 층 시트(tools/art/gen_topdown_ships.py) 6장을 이 순서로 겹친다 — 바탕 · 선체 · 화물 · 대포 · 돛 · 망루.
 /// 부위 단계 = BattleView.shipLook (0단계는 1단계 그림). 아래에 바다 그림자(뱃머리 반대·오른쪽 아래로 비낀 어두운 실루엣).
 /// 배 기준 좌표(가운데 (0,0), 뱃머리 위, 단위)로 그린다 — 부르는 쪽이 배 자리로 옮기고 진행 방향으로 돌려 둔다.
 class TopShipPainter {
-  TopShipPainter(this.sprites);
+  TopShipPainter(this.sprites, [this.scene]);
 
   final SpriteDraw sprites;
+
+  /// 전장 장면(있으면 갑판 선원 HD 미니 캐릭터 — 배 미리보기는 없음).
+  final BattleScene? scene;
+  final _deck = TopDeckCrew();
 
   /// HD 카툰 배(개편 ④ — 위에서 본 코드 벡터). false면 옛 도트 층 시트.
   bool hd = true;
@@ -58,22 +64,25 @@ class TopShipPainter {
         ..translate(0, live ? math.sin(now / 700) * 0.5 : 0)
         ..rotate(live ? math.sin(now / 900) * 0.026 : 0);
       if (decor != null) _decor.under(c, decor, size, now);
-      _hd.paint(
-        c,
-        size,
-        look,
-        HdShip.skins[skin] ?? HdShip.tierColors(tierId),
-        glowPart: glowPart,
-        glow: glow,
-        recoil: recoil,
-        billow: live ? math.max(billow, 0.15 + 0.1 * math.sin(now / 240)) : billow,
-        flash: flash,
-        alpha: SkinDecor.alphaOf(decor),
-        rainbow: HdShip.rainbowSkins.contains(skin),
-        now: now,
-        tier: tierId,
-      );
+      _hd
+        ..deck = scene != null
+        ..paint(
+          c,
+          size,
+          look,
+          HdShip.skins[skin] ?? HdShip.tierColors(tierId),
+          glowPart: glowPart,
+          glow: glow,
+          recoil: recoil,
+          billow: live ? math.max(billow, 0.15 + 0.1 * math.sin(now / 240)) : billow,
+          flash: flash,
+          alpha: SkinDecor.alphaOf(decor),
+          rainbow: HdShip.rainbowSkins.contains(skin),
+          now: now,
+          tier: tierId,
+        );
       if (decor != null) _decor.over(c, decor, size, now);
+      if (scene case final s?) _deck.paint(c, sprites, s, size, (look['hull'] ?? 1).clamp(1, 7), now); // 갑판 선원
       if (skin != null && HdPassDecor.ids.contains(skin)) _pass.over(c, skin, size, now); // 패스·상점 스킨 장식
       c.restore();
       return true;

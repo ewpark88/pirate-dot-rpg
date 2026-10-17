@@ -163,9 +163,8 @@ class Round {
     }
   }
 
-  /// 피버 첫 일격(사용자 결정 2026-10-17 — 궁극기·분노 게이지 제거, fever_strike.dart가 피버 시작 틱에 부른다):
-  /// 선장 계열 궁극기 효과로 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과.
-  bool castUltimate() {
+  /// 피버 첫 일격(사용자 결정 2026-10-17 — 궁극기·분노 게이지 제거, fever_strike.dart가 피버 시작 틱에 부른다): 선장 계열 궁극기 효과로 보이는 화면(카메라 사각형) 전체 피해 + 계열별 추가 효과.
+  bool castUltimate({bool manual = false}) {
     final captain = field.captainId;
     if (captain == null) return false;
     final gun = field.guns.firstWhere((g) => g.crewId == captain);
@@ -174,7 +173,7 @@ class Round {
       for (final e in field.foes)
         if (e.alive && geo.onScreen(e)) e,
     ];
-    ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id));
+    ctx.emit(UltimateCast(ctx.tick, crewId: captain, ultimateId: ult.id, manual: manual));
     hitStop('ultimate');
     if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
@@ -287,6 +286,7 @@ class Round {
     ctx.emit(Kill(ctx.tick, targetId: e.id, gold: g, x: e.x, y: e.y));
     field
       ..comboKills += 1
+      ..feverMobKills += e.feverMob ? 1 : 0
       ..comboGold = field.comboGold + g
       ..comboTimer = w.multiKillWindowSec;
   }

@@ -12,4 +12,7 @@ class NoopAnalytics implements AppAnalytics {
 
   @override
   void setCollection({required bool enabled}) {}
+
+  @override
+  void setCrashKey(String key, Object value) {}
 }

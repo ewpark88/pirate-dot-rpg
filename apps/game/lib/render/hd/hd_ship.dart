@@ -16,6 +16,9 @@ typedef HdShipColors = ({Color rim, Color rimD, Color deck, Color deckD, Color s
 /// 칸 size = 지금 도트 배 칸(맞는 자리·체력 막대 위치 그대로). 부위 단계 = shipLook(hull 7·cannon 7·cargo 7·sail 5·crowsnest 6).
 class HdShip {
   final _k = HdKit();
+
+  /// 갑판 선원을 TopDeckCrew가 그리면 true(머리 점 셋을 안 그림).
+  bool deck = false;
   final _layer = Paint();
 
   static const HdShipColors _wood = (

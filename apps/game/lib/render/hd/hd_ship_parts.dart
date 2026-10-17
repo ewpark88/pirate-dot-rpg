@@ -70,6 +70,7 @@ extension _HdShipParts on HdShip {
 
   /// 갑판 위 선원 머리 셋(귀엽게 — 두건 색 다르게).
   void _crew(Canvas c, double len, double hw) {
+    if (deck) return; // 전장에선 갑판 선원 미니 캐릭터(TopDeckCrew)가 대신
     for (final (x, y, band) in const [
       (-0.32, 0.02, Color(0xFFE8403A)),
       (0.3, -0.06, Color(0xFF3A8AE8)),

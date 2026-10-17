@@ -40,6 +40,7 @@ class BattleView {
     this.feverTicksLeft = 0,
     this.autoBossTicksLeft = 0,
     this.slotsOpen = 0,
+    this.captainGauge = 0,
     this.retryWinnable = false,
     this.seaEvent,
     this.challenge,
@@ -119,6 +120,9 @@ class BattleView {
   /// 열린 출전 칸 수(game_core fleetSlots — 평생 최고 스테이지 기준, 환생해도 안 줄어듦). 0 = 옛 기록(배 등급으로 추정).
   final int slotsOpen;
 
+  /// 선장 필살기 게이지 0~1(boss-feel — 1이면 버튼이 빛남, 탭 = TriggerUltimate; 자동 필살기면 차는 즉시 사용). 선택 키.
+  final double captainGauge;
+
   /// 진행 중인 돌발 이벤트·즉석 도전 (없으면 null).
   final SeaEventView? seaEvent;
   final ChallengeView? challenge;
@@ -160,6 +164,7 @@ class BattleView {
     int? feverTicksLeft,
     int? autoBossTicksLeft,
     int? slotsOpen,
+    double? captainGauge,
     bool? retryWinnable,
     SeaEventView? seaEvent,
     bool clearSeaEvent = false,
@@ -198,6 +203,7 @@ class BattleView {
     feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
     autoBossTicksLeft: autoBossTicksLeft ?? this.autoBossTicksLeft,
     slotsOpen: slotsOpen ?? this.slotsOpen,
+    captainGauge: captainGauge ?? this.captainGauge,
     retryWinnable: retryWinnable ?? this.retryWinnable,
     seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
     challenge: clearChallenge ? null : challenge ?? this.challenge,
@@ -247,6 +253,7 @@ class BattleView {
     if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
     if (autoBossTicksLeft != 0) 'autoBossTicksLeft': autoBossTicksLeft,
     if (slotsOpen != 0) 'slotsOpen': slotsOpen,
+    if (captainGauge != 0) 'captainGauge': captainGauge,
     if (retryWinnable) 'retryWinnable': true,
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),

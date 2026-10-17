@@ -79,6 +79,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'bossSplit' ||
     'bomberBlast' ||
     'bossBroken' ||
+    'bossBarBroken' ||
     'hordeIncoming' ||
     'bossTraitFired' => _bestiaryEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
