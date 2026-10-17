@@ -49,7 +49,12 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
     AdPlacement.tailwind => _saved(addTailwind(s, t, now, Duration(seconds: reward.integer('durationSec'))), ctx),
     AdPlacement.offline => _saved(
       // 광고 ×2도 복귀 보상과 같은 한도(화물칸 × offline.capMultiplier)
-      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!, capScale: offlineCapScale(ctx.tables)),
+      grantGold(
+        s.copyWith(clearLastOfflineGold: true),
+        ctx,
+        s.lastOfflineGold!,
+        capScale: offlineCapScale(ctx.tables, s),
+      ),
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),

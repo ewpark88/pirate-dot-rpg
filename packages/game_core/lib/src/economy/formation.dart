@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/fleet.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -11,9 +13,12 @@ export 'package:game_core/src/battle/fleet.dart' show autoFleet;
 // 수동 편성 (사용자 결정 2026-10-15, ADR-0010): 출전은 사용자가 고르고, ‘자동 편성’ 버튼으로 한 번에 채운다.
 
 /// 출전 슬롯 수 — 한 번 연 칸은 영구(평생 최고 스테이지의 배 등급 기준, 사용자 버그 2026-10-17 '환생하니 4번째 칸이 다시 잠김').
-/// bestStage는 환생해도 유지된다.
+/// bestStage는 환생해도 유지된다. 한 번이라도 환생했으면 환생 조건 스테이지(meta.rebirth.minStage)까지는 간 것이니
+/// 그 등급 칸이 바닥(폰 재현 2026-10-17 — 세이브의 bestStage가 어긋나도 칸이 다시 잠기지 않게).
 int fleetSlots(GameState s, GameTables t) {
-  final n = t.shipTiers.tierAt(s.progress.bestStage).slots + fleetSlotBonus(s, t);
+  final p = s.progress;
+  final reached = p.rebirths > 0 ? math.max(p.bestStage, t.meta.rebirth.integer('minStage')) : p.bestStage;
+  final n = t.shipTiers.tierAt(reached).slots + fleetSlotBonus(s, t);
   final max = t.meta.rebirth.integer('fleetSlotsMax');
   return n > max ? max : n;
 }

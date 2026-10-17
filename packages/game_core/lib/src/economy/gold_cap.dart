@@ -22,7 +22,41 @@ bool goldNearFull(GameState s, GameTables t) =>
     s.wallet.gold >= goldCapacity(s, t).times(t.meta.raw.obj('cargo').number('warnRatio'));
 
 /// 오프라인 보상(복귀·광고 ×2)이 넘어도 되는 용량 배수(meta.offline.capMultiplier, 없으면 1).
-double offlineCapScale(GameTables t) => t.meta.raw.obj('offline').numberOr('capMultiplier', 1);
+/// [s]를 주면 바닥값: 다음 강화 meta.offline.floorUpgrades번(가장 싼 부위부터) 값까지는 담는다 — 환생 직후 화물칸이 작아
+/// 8시간 복귀가 302골드·13.2K 잘림이던 것(실기기 2026-10-17). 지금 가진 골드는 빼지 않는다(용량 × 배수와 같은 기준).
+double offlineCapScale(GameTables t, [GameState? s]) {
+  final scale = t.meta.raw.obj('offline').numberOr('capMultiplier', 1);
+  final n = t.meta.raw.obj('offline').intOrNull('floorUpgrades') ?? 0;
+  if (s == null || n <= 0) return scale;
+  final cap = goldCapacity(s, t);
+  if (cap.isZero) return scale;
+  final floor = nextUpgradesCost(s, t, n);
+  final need = (floor / cap).toDouble();
+  return need > scale ? need : scale;
+}
+
+/// 가장 싼 부위부터 [n]번 강화하는 골드 합(최대 레벨인 부위는 건너뜀).
+BigNum nextUpgradesCost(GameState s, GameTables t, int n) {
+  final lv = {for (final d in t.shipParts.parts) d.id: s.ship.level(d.id)};
+  var sum = BigNum.zero;
+  for (var i = 0; i < n; i++) {
+    ShipPartDef? best;
+    BigNum? cost;
+    for (final d in t.shipParts.parts) {
+      final max = d.maxLevel;
+      if (max != null && lv[d.id]! >= max) continue;
+      final c = partCost(d, lv[d.id]!);
+      if (cost == null || c < cost) {
+        best = d;
+        cost = c;
+      }
+    }
+    if (best == null) break;
+    sum = sum + cost!;
+    lv[best.id] = lv[best.id]! + 1;
+  }
+  return sum;
+}
 
 /// [amount]를 용량까지 더한다. 실제로 들어간 양과 넘친 양.
 ({GameState state, BigNum added, BigNum lost}) addGold(
