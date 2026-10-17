@@ -29,6 +29,7 @@ BattleView _viewFromJson(Json j) => BattleView(
   fever: (j['fever'] as num?)?.toDouble() ?? 0,
   feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
   autoBossTicksLeft: j['autoBossTicksLeft'] as int? ?? 0,
+  retryWinnable: j['retryWinnable'] == true,
   seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
   challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
   bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),

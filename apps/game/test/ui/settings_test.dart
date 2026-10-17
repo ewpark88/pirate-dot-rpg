@@ -90,14 +90,14 @@ void main() {
     tester.platformDispatcher.localesTestValue = const [Locale('ko')];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await pumpGame(tester, _withSetting(loadFixture('stage37_midgame'), 'lang', 'en'), locale: null);
-    expect(find.text('Ship'), findsOneWidget);
+    expect(find.bySemanticsLabel('Ship'), findsOneWidget);
   });
 
   testWidgets('기준 8: settings.lang = system이면 OS 언어(한국어)', (tester) async {
     tester.platformDispatcher.localesTestValue = const [Locale('ko')];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await pumpGame(tester, loadFixture('stage37_midgame'), locale: null);
-    expect(find.text('배'), findsOneWidget);
+    expect(find.bySemanticsLabel('배'), findsOneWidget);
   });
 
   testWidgets('기준 9: 설정이 바뀌면 전장 JuiceSettings가 따라온다', (tester) async {

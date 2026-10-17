@@ -27,4 +27,13 @@ void main() {
     await pumpGame(tester, weak, openTab: false);
     expect(find.byKey(const Key('boss.canWin')), level == 0 ? findsOneWidget : findsNothing);
   });
+
+  testWidgets('자동 재도전(S2 autoBossTicksLeft) 중이면 버튼에 금빛 링 + 자동 도전 n초', (tester) async {
+    final f = farming(loadFixture('stage37_midgame'));
+    final s = f.copyWith(battle: BattleView.fromJson({...f.battle!.toJson(), 'autoBossTicksLeft': 200}));
+    await pumpGame(tester, s, openTab: false);
+    expect(find.byKey(const Key('boss.autoRing')), findsOneWidget);
+    final sec = (200 * t.waves.tickMs / 1000).ceil();
+    expect(find.text('Auto in ${sec}s'), findsOneWidget);
+  });
 }

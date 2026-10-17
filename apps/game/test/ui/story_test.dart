@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/story/story_data.dart';
 
@@ -48,17 +50,36 @@ GameState _seenOpening(GameState s) => withGuidesSeen(s).copyWith(
   }),
 );
 
+final _t = GameTables.load();
+
 void main() {
-  testWidgets('오프닝: 처음이면 컷 5장, 톡 → 다음 컷, 마지막 톡 → 닫힘 · 건너뛰기 → 바로 닫힘', (tester) async {
+  test('story.json의 대사 키가 모두 글로 바뀐다(story_text)', () async {
+    final l = await AppLocalizations.delegate.load(const Locale('ko'));
+    final script = TableStoryScript(_t);
+    expect(script.opening(l), hasLength(_t.story.opening.length));
+    for (final id in _t.regions.bosses.keys) {
+      script
+        ..bossIntro(l, id, 1)
+        ..bossIntro(l, id, 7);
+    }
+  });
+
+  testWidgets('오프닝: 처음이면 컷 5장, 톡 → 다음 컷, 한 컷 시간 뒤 저절로 다음 · 건너뛰기 → 바로 닫힘', (tester) async {
+    // 배경 그림이 움직여 pumpAndSettle은 시간을 계속 흘린다(컷이 저절로 넘어감) — 정해진 시간만 흘린다.
     await _pump(tester, loadFixture('new_player'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byKey(const Key('opening')), findsOneWidget);
     expect(find.byKey(const Key('opening.cut.0')), findsOneWidget);
     await tester.tap(find.byKey(const Key('opening')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.byKey(const Key('opening.cut.1')), findsOneWidget);
+    await tester.pump(TableStoryScript(_t).cutFor);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byKey(const Key('opening.cut.2')), findsOneWidget, reason: '한 컷 시간 뒤 저절로 다음');
     await tester.tap(find.byKey(const Key('opening.skip')));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(const Key('opening')), findsNothing);
   });
 
@@ -68,9 +89,13 @@ void main() {
     await tester.pumpAndSettle();
     feed.add(RecordedTick(s.battle!, const [BossSpawned(1, kind: 'sea_croc', timeLimitTicks: 600)]));
     await tester.pump();
-    expect(find.text('Who dares sail into MY sea?!'), findsOneWidget);
-    await tester.pump(storyLineFor);
-    expect(find.text("Our ship won't lose! Crew, ready the cannons!"), findsOneWidget);
+    // 대본은 story.json(S2): 고유 대사가 없으면 첫 특성의 공용 대사.
+    final l = await AppLocalizations.delegate.load(const Locale('en'));
+    final lines = TableStoryScript(_t).bossIntro(l, 'sea_croc', s.progress.stage);
+    expect(lines.length, greaterThanOrEqualTo(2));
+    expect(find.text(lines[0].text), findsOneWidget);
+    await tester.pump(TableStoryScript(_t).lineFor);
+    expect(find.text(lines[1].text), findsOneWidget);
     await tester.tap(find.byKey(const Key('story.dialogue')));
     await tester.pump();
     expect(find.byKey(const Key('story.dialogue')), findsNothing);
@@ -81,8 +106,9 @@ void main() {
     testWidgets('골든: 오프닝 첫 컷 · 보스 대화창 ko $name', (tester) async {
       await loadGoldenFonts();
       await _pump(tester, loadFixture('new_player'), size: size, dpr: dpr, locale: const Locale('ko'));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 400));
       await precacheImages(tester);
+      await tester.pump(const Duration(milliseconds: 100));
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_story_opening_$name.png'));
 
       final s = _seenOpening(loadFixture('stage37_midgame'));

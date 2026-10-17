@@ -117,7 +117,7 @@ void main() {
       expect(claimed.lastOfflineGold, isNotNull);
       final doubled = sys.handle(claimed, const GrantAdReward(AdPlacement.offline), h.ctx)!;
       final want = claimed.wallet.gold + claimed.lastOfflineGold!;
-      final cap = goldCapacity(claimed, t); // 광고 ×2도 화물칸 용량까지
+      final cap = goldCapacity(claimed, t).times(offlineCapScale(t)); // 광고 ×2도 복귀 보상과 같은 한도
       expect(doubled.wallet.gold.closeTo(want < cap ? want : cap), isTrue);
       expect(doubled.lastOfflineGold, isNull);
       expect(sys.handle(doubled, const GrantAdReward(AdPlacement.offline), h.ctx)!.wallet.gold, doubled.wallet.gold);

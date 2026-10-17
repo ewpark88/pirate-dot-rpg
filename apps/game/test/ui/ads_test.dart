@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -59,6 +60,7 @@ Future<CommandLog> _pump(WidgetTester tester, GameState state, AdsPort ads, {int
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        trialsEnabledProvider.overrideWithValue(false),
         initialGameStateProvider.overrideWithValue(withGuidesSeen(state)),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),
@@ -152,6 +154,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          trialsEnabledProvider.overrideWithValue(false),
           initialGameStateProvider.overrideWithValue(withGuidesSeen(state)),
           commandSinkProvider.overrideWithValue(log),
           adsPortProvider.overrideWithValue(_FakeAds()),
@@ -177,7 +180,10 @@ void main() {
   testWidgets('광고가 준비 안 됐으면 받기 → 바로 닫힘(기존 흐름)', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [initialGameStateProvider.overrideWithValue(_base())],
+        overrides: [
+          trialsEnabledProvider.overrideWithValue(false),
+          initialGameStateProvider.overrideWithValue(_base()),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -207,6 +213,7 @@ void main() {
     final audio = _FakeAudio();
     final container = ProviderContainer(
       overrides: [
+        trialsEnabledProvider.overrideWithValue(false),
         initialGameStateProvider.overrideWithValue(_base()),
         audioPortProvider.overrideWithValue(audio),
       ],

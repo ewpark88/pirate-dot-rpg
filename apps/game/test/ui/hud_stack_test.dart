@@ -30,7 +30,7 @@ GameState _busy() {
 const _top = [
   'hud.gauge',
   'boss.weak',
-  'fun.sea.goldfish',
+  // 돌발 이벤트(fun.sea.*)는 hud.gauge 안 아이콘이라 따로 세지 않는다.
   'fun.challenge.kills',
   'bounty.strip',
   'fun.fever.on',
@@ -92,16 +92,19 @@ void main() {
     testWidgets('한꺼번에 떠도 겹치지 않음 $name', (tester) async {
       await _pumpBusy(tester, size, dpr);
       expect(tester.takeException(), isNull);
-      // 피버 중엔 알약 하나만(우선순위: 현상금 > 도전 > 돌발 이벤트) — 도전이 남고 돌발 이벤트는 피버 뒤로.
+      // 알약은 한 묶음(우선순위: 현상금 > 도전 > 화물칸) — 돌발 이벤트는 띠 안 작은 아이콘(실기기 ④).
       expect(find.byKey(const Key('fun.challenge.kills')), findsOneWidget);
-      expect(find.byKey(const Key('fun.sea.goldfish')), findsNothing);
+      expect(
+        find.descendant(of: find.byKey(const Key('hud.gauge')), matching: find.byKey(const Key('fun.sea.goldfish'))),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('fun.fever.on')), findsOneWidget);
       _expectNoOverlap(tester, name);
       await tester.pump(const Duration(seconds: 10));
     });
   }
 
-  testWidgets('피버가 끝나면 돌발 이벤트 알약이 돌아온다', (tester) async {
+  testWidgets('피버가 아니어도 돌발 이벤트는 띠 안 아이콘 · 도전 알약', (tester) async {
     final s = _busy();
     await pumpGame(tester, s.copyWith(battle: s.battle!.copyWith(feverTicksLeft: 0)), openTab: false);
     expect(find.byKey(const Key('fun.sea.goldfish')), findsOneWidget);

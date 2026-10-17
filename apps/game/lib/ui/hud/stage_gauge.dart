@@ -10,7 +10,7 @@ import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/hp_bars.dart';
-import 'package:pirate_dot/ui/hud/hud_layout.dart';
+import 'package:pirate_dot/ui/hud/sea_event_icon.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -85,17 +85,12 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
             child: Container(
               key: const Key('hud.gauge'),
               padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
-              // 배치 안 '떠 있는 띠'면 판 없이 글자·막대만(외곽선이 읽히게 한다).
-              decoration: ref.watch(hudLayoutProvider) == HudLayout.floating
-                  ? BoxDecoration(
-                      color: Skin.navyPanel.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(14),
-                    )
-                  : BoxDecoration(
-                      color: Skin.navyPanel.withValues(alpha: 0.94),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
-                    ),
+              // 떠 있는 띠(사용자 2026-10-17 배치 확정): 판 없이 글자·막대만(외곽선이 읽히게) — 전장을 덜 가린다.
+              decoration: BoxDecoration(
+                // 밝은 바다 위에서도 글자 대비(WCAG 4.5)가 나오게 반투명 — 판보다 가볍게.
+                color: Skin.navyPanel.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -119,6 +114,8 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           child: Text(l10n.uiFarming, style: Skin.text(11, color: Skin.goldInk)),
                         ),
                       ],
+                      // 돌발 이벤트(폭풍 등)는 띠 안 작은 아이콘(실기기 ④).
+                      const SeaEventIcon(),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

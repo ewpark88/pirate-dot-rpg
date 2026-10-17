@@ -108,38 +108,6 @@ class FunCountdown {
 int _seconds(WidgetRef ref, int ticks) =>
     (ticks * ref.read(tablesProvider).waves.tickMs / Duration.millisecondsPerSecond).ceil();
 
-/// 돌발 이벤트 띠 (전장 위, 게이지 아래 왼쪽): 아이콘 + 이름 + 남은 막대.
-class SeaEventStrip extends ConsumerStatefulWidget {
-  const SeaEventStrip({super.key});
-
-  @override
-  ConsumerState<SeaEventStrip> createState() => _SeaEventStripState();
-}
-
-class _SeaEventStripState extends ConsumerState<SeaEventStrip> {
-  final _countdown = FunCountdown();
-
-  @override
-  Widget build(BuildContext context) {
-    final ev = ref.watch(gameStateProvider.select((s) => s.battle?.seaEvent));
-    if (ev == null) return const SizedBox.shrink();
-    final l10n = AppLocalizations.of(context);
-    final (icon, text) = switch (ev.id) {
-      'goldfish' => (UiSprites.coin, l10n.uiSeaGoldfish),
-      'merchant' => (UiSprites.gem, l10n.uiSeaMerchant),
-      'ambush' => (UiSprites.flag, l10n.uiSeaAmbush),
-      'bottle' => (UiSprites.quest, l10n.uiSeaBottle),
-      _ => (UiSprites.tailwind, l10n.uiSeaStorm),
-    };
-    return _Strip(
-      key: Key('fun.sea.${ev.id}'),
-      icon: icon,
-      text: text,
-      left: _countdown.ratio(ev.id, ev.ticksLeft),
-    );
-  }
-}
-
 /// 보상 요약 문자열('gold:1.2e5', 'gems:2', 'fever:0.3', 'tailwind:600') → 짧은 글.
 String rewardText(AppLocalizations l, String? reward) {
   if (reward == null) return '';
@@ -276,7 +244,7 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
             Text(
               l10n.uiFeverIn(kills),
               key: Key(fever >= 0.8 ? 'fun.fever.near' : 'fun.fever.in'),
-              style: Skin.text(14, color: fever >= 0.8 ? const Color(0xFFFFD84A) : const Color(0xFFFFC27A)),
+              style: Skin.outlined(14, color: fever >= 0.8 ? const Color(0xFFFFD84A) : const Color(0xFFFFC27A)),
             ),
           const SizedBox(width: 3),
           SizedBox(
