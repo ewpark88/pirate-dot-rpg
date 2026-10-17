@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 
 part 'battle_view_items.dart';
 part 'battle_view_json.dart';
+part 'battle_view_dress.dart';
 part 'battle_view_scenes.dart';
 
 /// 전장 좌표계: 논리 화면 320×180 중 전장 0~148(설계서 10장) — 렌더가 두 틱 사이로 보간해 그린다, 세이브에 안 들어감.
@@ -38,6 +39,7 @@ class BattleView {
     this.fever = 0,
     this.feverTicksLeft = 0,
     this.autoBossTicksLeft = 0,
+    this.slotsOpen = 0,
     this.retryWinnable = false,
     this.seaEvent,
     this.challenge,
@@ -114,6 +116,9 @@ class BattleView {
   final int autoBossTicksLeft;
   final bool retryWinnable;
 
+  /// 열린 출전 칸 수(game_core fleetSlots — 평생 최고 스테이지 기준, 환생해도 안 줄어듦). 0 = 옛 기록(배 등급으로 추정).
+  final int slotsOpen;
+
   /// 진행 중인 돌발 이벤트·즉석 도전 (없으면 null).
   final SeaEventView? seaEvent;
   final ChallengeView? challenge;
@@ -154,6 +159,7 @@ class BattleView {
     double? fever,
     int? feverTicksLeft,
     int? autoBossTicksLeft,
+    int? slotsOpen,
     bool? retryWinnable,
     SeaEventView? seaEvent,
     bool clearSeaEvent = false,
@@ -191,6 +197,7 @@ class BattleView {
     fever: fever ?? this.fever,
     feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
     autoBossTicksLeft: autoBossTicksLeft ?? this.autoBossTicksLeft,
+    slotsOpen: slotsOpen ?? this.slotsOpen,
     retryWinnable: retryWinnable ?? this.retryWinnable,
     seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
     challenge: clearChallenge ? null : challenge ?? this.challenge,
@@ -239,6 +246,7 @@ class BattleView {
     if (fever != 0) 'fever': fever,
     if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
     if (autoBossTicksLeft != 0) 'autoBossTicksLeft': autoBossTicksLeft,
+    if (slotsOpen != 0) 'slotsOpen': slotsOpen,
     if (retryWinnable) 'retryWinnable': true,
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),
@@ -249,43 +257,4 @@ class BattleView {
     if (fastSail != null) 'fastSail': fastSail!.toJson(),
     if (crewDamage.isNotEmpty) 'crewDamage': {for (final e in crewDamage.entries) e.key: e.value.toJson()},
   };
-
-  /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
-  BattleView withShipDress({String? tierLook, String? skin, int? treasureSea}) => BattleView(
-    tick: tick,
-    shipHp: shipHp,
-    shipHpMax: shipHpMax,
-    bossActive: bossActive,
-    bossTicksLeft: bossTicksLeft,
-    enemies: enemies,
-    fleet: fleet,
-    captainId: captainId,
-    hitStopTicks: hitStopTicks,
-    speed: speed,
-    stage: stage,
-    chest: chest,
-    wave: wave,
-    gold: gold,
-    shipLook: shipLook,
-    mode: mode,
-    shipX: shipX,
-    shipY: shipY,
-    shipHeading: shipHeading,
-    shipTierLook: tierLook,
-    shipSkin: skin,
-    treasureSea: treasureSea,
-    shipShield: shipShield,
-    fever: fever,
-    feverTicksLeft: feverTicksLeft,
-    autoBossTicksLeft: autoBossTicksLeft,
-    retryWinnable: retryWinnable,
-    seaEvent: seaEvent,
-    challenge: challenge,
-    bounty: bounty,
-    tower: tower,
-    rush: rush,
-    dungeon: dungeon,
-    fastSail: fastSail,
-    crewDamage: crewDamage,
-  );
 }
