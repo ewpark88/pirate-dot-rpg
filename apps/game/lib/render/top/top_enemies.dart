@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/top/top_enemy_death.dart';
 
 part 'top_enemies_fx.dart';
 
@@ -138,7 +139,7 @@ class TopEnemies {
       final tx = ((e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx) * snap).roundToDouble() / snap;
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
-      if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
+      if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation, e.kind);
       final sq = _squashed.length >= (crowd ? 8 : _maxSquash)
           ? null
           : _soft(scene.topHits.juice.squashOf(e.id, clock), e.boss);
@@ -197,13 +198,13 @@ class TopEnemies {
   }
 
   static const _bornMs = 240.0;
-  static const _dieMs = 160.0;
   final Map<int, double> _born = {};
   final List<(double, double, double)> _rings = []; // 등장 물 고리 x, y, ms
-  final Map<int, (_Spr, double, double, double)> _seen = {};
-  final Map<int, (_Spr, double, double, double)> _lastUnder = {};
-  final Map<int, (_Spr, double, double, double)> _lastOver = {};
-  final List<(_Spr, double, double, double, double)> _dying = [];
+  final Map<int, (_Spr, double, double, double, String)> _seen = {};
+  final Map<int, (_Spr, double, double, double, String)> _lastUnder = {};
+  final Map<int, (_Spr, double, double, double, String)> _lastOver = {};
+  final List<(_Spr, double, double, double, double, String)> _dying = [];
+  final TopEnemyDeath _death = TopEnemyDeath();
 
   final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
