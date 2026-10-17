@@ -121,5 +121,19 @@
         "type": "String"
       }
     }
+  },
+  "opMemImages": "Image cache {mb}MB · {live} live · {count} cached",
+  "@opMemImages": {
+    "placeholders": {
+      "mb": {
+        "type": "String"
+      },
+      "live": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }
