@@ -36,13 +36,52 @@ class IapProduct {
   final int? limit;
 }
 
+/// 항해 패스 한 단계 보상(무료·유료 줄). 비어 있는 값은 0.
+typedef PassReward = ({
+  int gems,
+  int summons,
+  int pieces,
+  int heroCards,
+  int legendSummon,
+  List<String> skins,
+  String? title,
+});
+
+PassReward _reward(JsonReader j) => (
+  gems: j.intOrNull('gems') ?? 0,
+  summons: j.intOrNull('summons') ?? 0,
+  pieces: j.intOrNull('pieces') ?? 0,
+  heroCards: j.intOrNull('heroCards') ?? 0,
+  legendSummon: j.intOrNull('legendSummon') ?? 0,
+  skins: j.has('skins') ? j.strs('skins') : const <String>[],
+  title: j.raw['title'] as String?,
+);
+
+/// 항해 패스(시즌 30일, economy-iap.md 3절): 경험치 [xp](출처별) → [xpPerLevel]마다 한 단계, 무료 줄은 누구나·유료 줄은 pass 권리.
+class PassTable {
+  PassTable.fromJson(JsonReader j)
+    : season = j.str('season'),
+      xpPerLevel = j.integer('xpPerLevel'),
+      xp = {for (final k in j.obj('xp').raw.keys) k: j.obj('xp').integer(k)},
+      free = j.objs('free').map(_reward).toList(),
+      paid = j.objs('paid').map(_reward).toList();
+
+  /// 시즌 id — 바뀌면 진행이 처음부터.
+  final String season;
+  final int xpPerLevel;
+  final Map<String, int> xp;
+  final List<PassReward> free;
+  final List<PassReward> paid;
+}
+
 class IapTable {
   IapTable.fromJson(JsonReader j)
     : gemSubDaily = j.integer('gemSubDaily'),
       firstBuyMultiplier = j.integer('firstBuyMultiplier'),
       offlineHours = j.integer('offlineHours'),
       speedMultiplier = j.integer('speedMultiplier'),
-      products = {for (final p in j.objs('products').map(IapProduct.fromJson)) p.id: p};
+      products = {for (final p in j.objs('products').map(IapProduct.fromJson)) p.id: p},
+      pass = PassTable.fromJson(j.obj('pass'));
 
   /// 월간 젬: 구독 중 하루 한 번 받는 젬.
   final int gemSubDaily;
@@ -56,6 +95,7 @@ class IapTable {
   /// speed 권리가 있으면 전투 배속(순풍과 겹치면 이 값 그대로 — 곱하지 않음).
   final int speedMultiplier;
   final Map<String, IapProduct> products;
+  final PassTable pass;
 
   static const kinds = {'consumable', 'nonConsumable', 'subscription'};
   static const rights = {'noAds', 'speed', 'gemSub', 'offline12', 'pass'};
@@ -66,6 +106,11 @@ class IapTable {
       e,
       that: gemSubDaily > 0 && offlineHours > 0 && speedMultiplier > 1,
       message: 'iap: gemSubDaily·offlineHours > 0, speedMultiplier > 1',
+    );
+    expect(
+      e,
+      that: pass.free.length == pass.paid.length && pass.xpPerLevel > 0,
+      message: 'iap: pass 무료·유료 줄 길이가 같고 xpPerLevel > 0',
     );
     for (final p in products.values) {
       expect(e, that: kinds.contains(p.kind), message: 'iap: ${p.id} kind ${p.kind}');

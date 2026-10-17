@@ -35,3 +35,32 @@ class Entitlement {
     if (count != 1) 'count': count,
   };
 }
+
+/// 항해 패스 진행(세이브 선택 키 `pass`): 시즌 [season]의 경험치 [xp], 경험치를 준 최고 스테이지 [best], 받은 단계 수(무료 [free]·유료 [paid]).
+class PassState {
+  const PassState({required this.season, this.xp = 0, this.best = 0, this.free = 0, this.paid = 0});
+
+  factory PassState.fromJson(Json j) => PassState(
+    season: j['season'] as String,
+    xp: j['xp'] as int? ?? 0,
+    best: j['best'] as int? ?? 0,
+    free: j['free'] as int? ?? 0,
+    paid: j['paid'] as int? ?? 0,
+  );
+
+  final String season;
+  final int xp;
+  final int best;
+  final int free;
+  final int paid;
+
+  PassState copyWith({int? xp, int? best, int? free, int? paid}) => PassState(
+    season: season,
+    xp: xp ?? this.xp,
+    best: best ?? this.best,
+    free: free ?? this.free,
+    paid: paid ?? this.paid,
+  );
+
+  Json toJson() => {'season': season, 'xp': xp, 'best': best, 'free': free, 'paid': paid};
+}

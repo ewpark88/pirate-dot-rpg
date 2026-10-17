@@ -34,6 +34,7 @@ class GameState {
     this.collection = const {},
     this.entitlements = const {},
     this.purchaseTokens = const [],
+    this.pass,
     this.settings = const Settings(),
     this.operator = false,
     this.battle,
@@ -87,6 +88,7 @@ class GameState {
       for (final e in ((j['entitlements'] as Json?) ?? const {}).entries) e.key: Entitlement.fromJson(e.value as Json),
     },
     purchaseTokens: (j['purchaseTokens'] as List?)?.cast<String>() ?? const [],
+    pass: j['pass'] == null ? null : PassState.fromJson(j['pass'] as Json),
     settings: Settings.fromJson(j['settings'] as Json),
     battle: j['battle'] == null ? null : BattleView.fromJson(j['battle'] as Json),
   );
@@ -150,6 +152,9 @@ class GameState {
 
   /// 지급한 영수증 토큰(최근 [purchaseTokenKeep]개) — 같은 토큰이 다시 오면 지급하지 않는다.
   final List<String> purchaseTokens;
+
+  /// 항해 패스 진행(선택 키, 무료 줄은 누구나). null = 아직 시작 전(첫 틱에 만든다).
+  final PassState? pass;
   final Settings settings;
 
   /// 운영자 모드로 바뀐 적이 있는 세이브. 랭킹에 제출하지 않는다.
@@ -185,6 +190,7 @@ class GameState {
     Set<String>? collection,
     Map<String, Entitlement>? entitlements,
     List<String>? purchaseTokens,
+    PassState? pass,
     Settings? settings,
     bool? operator,
     BattleView? battle,
@@ -213,6 +219,7 @@ class GameState {
     collection: collection ?? this.collection,
     entitlements: entitlements ?? this.entitlements,
     purchaseTokens: purchaseTokens ?? this.purchaseTokens,
+    pass: pass ?? this.pass,
     settings: settings ?? this.settings,
     operator: operator ?? this.operator,
     battle: battle ?? this.battle,
@@ -242,6 +249,7 @@ class GameState {
     'collection': collection.toList()..sort(),
     if (entitlements.isNotEmpty) 'entitlements': {for (final e in entitlements.entries) e.key: e.value.toJson()},
     if (purchaseTokens.isNotEmpty) 'purchaseTokens': purchaseTokens,
+    if (pass != null) 'pass': pass!.toJson(),
     'settings': settings.toJson(),
     if (includeBattle && battle != null) 'battle': battle!.toJson(),
   };
