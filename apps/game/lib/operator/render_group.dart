@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
 import 'package:pirate_dot/ui/hud/hud_layout.dart';
+import 'package:pirate_dot/ui/shop/shop_sheet.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -93,6 +96,12 @@ class _RenderGroupState extends ConsumerState<RenderGroup> {
           ],
           selected: {ref.watch(hudLayoutProvider)},
           onSelectionChanged: (s) => ref.read(hudLayoutProvider.notifier).pick(s.single),
+        ),
+        // 유료 상점 골격(결제 전 가짜 목록) — 운영자만 연다.
+        OutlinedButton(
+          key: const Key('op.shop'),
+          onPressed: () => unawaited(showShop(context)),
+          child: Text(l10n.uiShopOpen),
         ),
       ],
     );

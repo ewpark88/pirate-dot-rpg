@@ -1156,5 +1156,73 @@
   "uiStorySkip": "건너뛰기",
   "uiStoryTapNext": "톡 하면 다음",
   "uiStoryBossTaunt": "누가 감히 내 바다에 들어왔지?!",
-  "uiStoryOctoReply": "우리 배는 안 져요! 다들, 포탄 준비!"
+  "uiStoryOctoReply": "우리 배는 안 져요! 다들, 포탄 준비!",
+  "uiShopTitle": "상점",
+  "uiShopNoAds": "광고 없음",
+  "uiShopSubLeft": "구독 {days}일 남음",
+  "uiShopBuy": "{price}",
+  "uiShopPrice": "{n}원",
+  "uiShopOff": "{pct}% 할인",
+  "uiShopBest": "인기",
+  "uiShopGemsS": "젬 한 줌",
+  "uiShopGemsM": "젬 상자",
+  "uiShopGemsL": "젬 보물함",
+  "uiShopStarter": "스타터 팩",
+  "uiShopNoAdsName": "광고 제거",
+  "uiShopSubName": "선장 구독 30일",
+  "uiShopGemsN": "젬 {n}",
+  "uiShopSummonN": "소환 {n}회",
+  "uiShopDailyGems": "매일 젬 {n}",
+  "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
+  "uiShopLater": "나중에",
+  "uiShopOpen": "상점 (운영자)",
+  "@uiShopSubLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopBuy": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopPrice": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiShopOff": {
+    "placeholders": {
+      "pct": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopGemsN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopSummonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiShopDailyGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }
