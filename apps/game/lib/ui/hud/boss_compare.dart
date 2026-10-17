@@ -47,7 +47,7 @@ BossCompareView? bossCompareOf(GameState s, GameTables t) {
   );
 }
 
-/// 진행 게이지 안 둘째 줄(다음 목표 자리): [⚔] 보스 체력 1.2M · 약 15초 / 20초 · 한 방 12% · 여유/빠듯/어려움.
+/// 진행 게이지 안 둘째 줄(다음 목표 자리): [⚔] 약 15초에 처치 · 한 방 8% · 여유/빠듯/어려움 (체력 숫자는 위 보스 체력 막대).
 /// 보스전·파밍이 아니면 [fallback](다음 목표). 높이를 늘리지 않아 전장 가운데를 덮지 않는다.
 class BossCompare extends ConsumerWidget {
   const BossCompare({required this.fallback, super.key});
@@ -80,7 +80,7 @@ class BossCompare extends ConsumerWidget {
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(
-              l10n.uiBossCompare(v.hp, v.killSec, v.limitSec, v.hitPct),
+              l10n.uiBossCompare(v.killSec, v.hitPct),
               key: const Key('boss.compare'),
               maxLines: 1,
               style: Skin.text(13, color: Colors.white),

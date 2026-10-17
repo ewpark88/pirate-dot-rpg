@@ -29,7 +29,7 @@ void main() {
     await pumpGame(tester, s, openTab: false);
     final v = bossCompareOf(s.copyWith(clearTutorial: true), t)!;
     expect(find.byKey(Key('boss.compare.${v.level}')), findsOneWidget);
-    expect(find.textContaining('Boss HP'), findsOneWidget);
+    expect(find.textContaining('Down in'), findsOneWidget);
     // 게이지 안(다음 목표 자리) — 높이를 늘리지 않는다.
     final gauge = tester.getRect(find.byKey(const Key('hud.gauge')));
     expect(gauge.contains(tester.getCenter(find.byKey(Key('boss.compare.${v.level}')))), isTrue);
