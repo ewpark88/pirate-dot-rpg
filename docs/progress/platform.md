@@ -1,5 +1,18 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 늦은 밤 · S5 · 사용자 폰 버그 3건, 선원 정리 2안, 운영자 오늘 기능, 도감 v2 순환 23종
+- **현재 위치**: 머지 대기 — review/sfx-stuck 4e8b681b(소리 버그, S3 OK) · review/fever-motion-2 5627db41 · review/damage-label e2821c3a · review/crew-traits-2(EnemyView.rooted 포함, 밤 재적합과) · review/hud-layout 4f098cfc(골든·--full slot) · review/rotation-bosses 0e5f5f98(boss-traits bc033482 위, smoke slot 요청).
+- 한 일
+  - 소리 버그(가끔 타격음 없음): 원인 = 내 power_policy가 방치(60초 무입력)에 효과음을 껐다. 절전 화면만 끔 + 발열 심함은 동시 수만 줄임 + 재생 자리 2초 반환·고장 플레이어 교체·장면 시계 되돌림 리셋. 회귀 테스트.
+  - 피버 모션 진정(원 없음·기울기 15°·넓고 긴 S자), 선원 칸 '피해 12K'+칼.
+  - 선원 정리 2안 엔진(관통 가속·부메랑·물기 속박·휩쓸기·해적왕 강타) + 설명 + EnemyView.rooted.
+  - 운영자 '오늘 새 기능' 6개(main 머지) — 그때 main에 bossBreak 표가 없어 브레이크가 꺼져 있던 것 발견(S2 C8로 해결).
+  - 도감 v2 보통 보스 23종 라이브(순환·특성·이름). 검토: S2 boss-traits(삼키기가 호위 먹음·분열 몸 특성 상태 미상속 지적).
+- 배운 것
+  - '조용히' 같은 정책은 게임 성격(보면서 두는 게임)부터 확인 — 방치를 '안 듣는 중'으로 보면 안 된다.
+  - 테스트 이름에 작은따옴표를 넣으면 셸·파이썬 치환에서 깨진다 → 따옴표 없는 이름으로.
+  - 표에 값이 없으면 기능이 조용히 꺼진다 — 운영자 버튼·점검 테스트로 드러난다.
+
 ## 2026-10-17 밤 · S5 · 통합 --full 머지, 피버 v2(#24 배 모션·#23 음악), #13·#14 UI, 검토 4건
 - **현재 위치**: #24·#23 main 머지됨(청취는 다음 폰 빌드). 머지·slot 대기: review/hud-layout 4f098cfc(#9 A·C·D·#26 + 상세 '지금 합치기' → MergeAllCards(crewId)) — 골든 일괄 갱신·--full은 slot(S4 lane/ui 머지 뒤), E는 그 뒤. review/crew-traits-2 f25e3497(선원 정리 2안 엔진 + 설명 + 요청서 EnemyView.rooted, S2 검토 OK). review/operator-today 0d980567(운영자 '오늘 새 기능' 6개). 발견: main skills.json에 bossBreak 표가 없어 브레이크가 꺼져 있음 — S1에 알림.
 - 한 일
