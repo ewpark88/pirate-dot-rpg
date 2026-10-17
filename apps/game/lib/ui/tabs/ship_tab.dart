@@ -144,6 +144,7 @@ class _PartRow extends ConsumerWidget {
               children: [
                 // k2: 부위 색 네모 칸 + 왼쪽 위 Lv 배지 (쿵푸할매 장비 화면처럼).
                 IconCell(
+                  size: 50,
                   color: partCellColors[ref.read(tablesProvider).shipParts.parts.indexOf(def) % partCellColors.length],
                   level: l10n.uiLevel(level),
                   levelKey: Key('ship.lv.${def.id}'),
@@ -175,11 +176,17 @@ class _PartRow extends ConsumerWidget {
                   ),
                 ),
                 // 화물칸 효과는 이름 아래 줄('최대 a → b') — 오른쪽은 비운다.
+                // 좁으면(360·신화 큰 수) 글자째 줄인다.
                 if (def.stat != 'capacity')
-                  Text(
-                    partEffectText(l10n, def, partEffect(def, level)),
-                    key: Key('ship.effect.${def.id}'),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        partEffectText(l10n, def, partEffect(def, level)),
+                        key: Key('ship.effect.${def.id}'),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: PixelPalette.accent),
+                      ),
+                    ),
                   ),
                 const SizedBox(width: 8),
                 // 비용 글자 길이와 상관없이 버튼 폭을 맞춘다(줄마다 오른쪽 끝 정렬).

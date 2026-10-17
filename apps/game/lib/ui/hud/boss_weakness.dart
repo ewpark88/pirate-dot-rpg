@@ -82,8 +82,10 @@ class WeakChips extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // 특성 카운터까지 합치면 칩이 많다 — 좁으면 다음 줄로.
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runSpacing: 2,
       children: [
         Text(l10n.uiBossWeak, style: labelStyle),
         // 약점 = 표의 약점 + 특성 카운터 계열 (#25).
