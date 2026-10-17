@@ -3059,7 +3059,7 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
-    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 },
+    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
     "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
