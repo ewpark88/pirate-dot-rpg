@@ -105,7 +105,7 @@ class CargoFullPill extends ConsumerWidget {
           decoration: BoxDecoration(
             color: const Color(0xE6B3122E),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white, width: 2),
+            border: Border.all(color: Skin.outline, width: 2),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -117,7 +117,7 @@ class CargoFullPill extends ConsumerWidget {
                   l10n.uiCargoFull,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Skin.text(13, color: Colors.white),
+                  style: Skin.outlined(13),
                 ),
               ),
             ],
@@ -181,7 +181,7 @@ class _AutoUpgradeChipState extends ConsumerState<AutoUpgradeChip> {
         key: const Key('autoUpgrade.on'),
         padding: const EdgeInsets.fromLTRB(4, 3, 8, 3),
         decoration: BoxDecoration(
-          color: const Color(0xFFE8F0FF),
+          color: Skin.insetFill,
           borderRadius: BorderRadius.circular(16),
           boxShadow: Skin.shadowSmall,
         ),

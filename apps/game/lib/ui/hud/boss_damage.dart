@@ -169,7 +169,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(l10n.uiBossDamageMvp, style: Skin.text(16, color: Skin.goldTop)),
-                            Text(shortCrewName(l10n, mvp), style: Skin.text(20, color: Colors.white)),
+                            Text(shortCrewName(l10n, mvp), style: Skin.outlined(20)),
                             Text(
                               l10n.uiBossDamageLine(widget.damage[mvp.id]!.format(), pct(widget.damage[mvp.id]!)),
                               style: Skin.text(16, color: Colors.white70),
@@ -200,12 +200,12 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
                                       shortCrewName(l10n, crews.byId(id)),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: Skin.text(15, color: Colors.white),
+                                      style: Skin.outlined(15),
                                     ),
                                   ),
                                   Text(
                                     l10n.uiBossDamageLine(v.format(), pct(v)),
-                                    style: Skin.text(15, color: Colors.white),
+                                    style: Skin.outlined(15),
                                   ),
                                 ],
                               ),

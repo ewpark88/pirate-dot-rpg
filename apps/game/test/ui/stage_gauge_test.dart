@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
+import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
@@ -25,7 +26,9 @@ Color _segColor(WidgetTester tester, int i) {
   final box = tester.widget<AnimatedContainer>(
     find.descendant(of: find.byKey(Key('hud.gauge.wave.$i')), matching: find.byType(AnimatedContainer)),
   );
-  return (box.decoration! as BoxDecoration).color!;
+  // 채운 칸은 그라데이션(k2 광택) — 아래쪽 색을 칸 색으로.
+  final d = box.decoration! as BoxDecoration;
+  return d.color ?? d.gradient!.colors.last;
 }
 
 void main() {
@@ -33,7 +36,7 @@ void main() {
     await pumpGame(tester, _at(), openTab: false);
     expect(find.text('37-2'), findsOneWidget);
     expect(_segColor(tester, 0), isNot(_segColor(tester, _n - 1)));
-    final region = tester.widget<LinearProgressIndicator>(find.byKey(const Key('hud.gauge.region')));
+    final region = tester.widget<SkinBar>(find.byKey(const Key('hud.gauge.region')));
     expect(region.value, closeTo(37 / 50, 1e-9));
     expect(find.byKey(const Key('hud.gauge.skull.hot')), findsNothing);
   });

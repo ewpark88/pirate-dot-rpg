@@ -196,7 +196,7 @@ class _SummonResultDialogState extends ConsumerState<SummonResultDialog> with Ti
                   child: Column(
                     children: [
                       const SizedBox(height: 16),
-                      Text(l10n.uiSummonResultTitle, style: Skin.text(24, color: Colors.white)),
+                      Text(l10n.uiSummonResultTitle, style: Skin.outlined(24)),
                       Expanded(child: _grid(l10n, tables, tiers, hint)),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

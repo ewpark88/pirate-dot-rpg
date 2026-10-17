@@ -131,7 +131,7 @@ class _SlotButton extends ConsumerWidget {
             l10n.uiFleetSlotStage(stage),
             key: Key('fleet.locked.label.$slot'),
             maxLines: 1,
-            style: Skin.text(11, color: Colors.white).copyWith(
+            style: Skin.outlined(11).copyWith(
               shadows: const [Shadow(color: Color(0xCC000000), blurRadius: 3)],
             ),
           ),
@@ -181,7 +181,7 @@ class _SlotDamage extends ConsumerWidget {
                 Text(
                   AppLocalizations.of(context).uiSlotDamage(text),
                   maxLines: 1,
-                  style: Skin.text(12, color: Colors.white),
+                  style: Skin.outlined(12),
                 ),
               ],
             ),

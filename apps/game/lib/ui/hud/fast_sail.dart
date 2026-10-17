@@ -88,7 +88,7 @@ class FastSailBanner extends ConsumerWidget {
                       builder: (_, v, _) => Text(
                         l10n.uiFastSailProgress(v.round(), total),
                         key: const Key('fastSail.stage'),
-                        style: Skin.text(17, color: Colors.white),
+                        style: Skin.outlined(17),
                       ),
                     ),
                   ],
@@ -112,7 +112,7 @@ class FastSailBanner extends ConsumerWidget {
                     key: const Key('fastSail.combo'),
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(color: feverOrange, borderRadius: BorderRadius.circular(10)),
-                    child: Text(l10n.uiFastSailStreak(run.combo), style: Skin.text(13, color: Colors.white)),
+                    child: Text(l10n.uiFastSailStreak(run.combo), style: Skin.outlined(13)),
                   ),
                 ),
               ],
@@ -125,7 +125,7 @@ class FastSailBanner extends ConsumerWidget {
                     onPressed: () => ref.read(commandSinkProvider).send(const SkipFastSail()),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Text(l10n.uiFastSailSkip, style: Skin.text(14, color: Colors.white)),
+                      child: Text(l10n.uiFastSailSkip, style: Skin.outlined(14)),
                     ),
                   ),
                 ),

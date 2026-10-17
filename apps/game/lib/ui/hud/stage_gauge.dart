@@ -97,7 +97,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                       Text(
                         l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
                         key: const Key('hud.gauge.stage'),
-                        style: Skin.text(14, color: Colors.white),
+                        style: Skin.outlined(14),
                       ),
                       // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
                       if (g.farming && !g.boss) ...[
@@ -119,7 +119,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           children: [
                             SizedBox(
                               // 보스전: 보스 타이머 대신 굵은 보스 체력 막대(사용자 2026-10-17 — 타이머는 엔진에서 없어짐).
-                              height: g.boss ? 20 : 12,
+                              height: g.boss ? 20 : 16, // k2: 배 HP 막대와 같은 굵기
                               child: g.boss
                                   ? const TutorialSpot(id: 'boss.hp', child: BossHpBar())
                                   : Row(
@@ -143,16 +143,12 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                               const TutorialSpot(id: 'boss.gauge', child: BossBreakBar()),
                             ],
                             const SizedBox(height: 3),
-                            // 해역 진행 (얇게).
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(2),
-                              child: LinearProgressIndicator(
-                                key: const Key('hud.gauge.region'),
-                                value: g.inRegion / g.per,
-                                minHeight: 3,
-                                color: Skin.goldTop,
-                                backgroundColor: Colors.white24,
-                              ),
+                            // 해역 진행 (k2: 외곽선 막대).
+                            SkinBar(
+                              key: const Key('hud.gauge.region'),
+                              value: g.inRegion / g.per,
+                              color: Skin.goldTop,
+                              height: 7,
                             ),
                           ],
                         ),
@@ -246,10 +242,18 @@ class _Segment extends StatelessWidget {
     };
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
+      // k2: 굵은 외곽선 + 채운 칸은 위가 밝은 광택.
       decoration: BoxDecoration(
-        color: state == 1 ? Colors.white24 : color,
-        borderRadius: BorderRadius.circular(4),
-        border: state == 1 ? Border.all(color: color, width: 1.5) : null,
+        color: state == 2 ? null : const Color(0xFF3B3F74),
+        gradient: state == 2
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color.lerp(color, Colors.white, 0.4)!, color],
+              )
+            : null,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: state == 1 ? Colors.white : Skin.outline, width: 2),
       ),
     );
   }

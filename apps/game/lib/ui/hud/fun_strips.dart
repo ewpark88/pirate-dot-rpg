@@ -269,7 +269,7 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
               key: const Key('fun.fever.chip'),
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
               decoration: BoxDecoration(color: const Color(0xFFFF8A2A), borderRadius: BorderRadius.circular(6)),
-              child: Text(l10n.uiFeverChip(shortDecimal(mult)), style: Skin.text(10, color: Colors.white)),
+              child: Text(l10n.uiFeverChip(shortDecimal(mult)), style: Skin.outlined(10)),
             )
           else
             // 가까우면(80% 넘음) 금빛으로 강조.

@@ -63,7 +63,7 @@ class GuideTalkBubble extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFFBFE6FF),
-        border: Border.all(color: Colors.white, width: 3),
+        border: Border.all(color: Skin.outline, width: 3),
         boxShadow: Skin.shadow,
       ),
       clipBehavior: Clip.antiAlias,

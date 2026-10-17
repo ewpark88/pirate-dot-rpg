@@ -37,7 +37,7 @@ class SailStartButton extends ConsumerWidget {
                   l10n.uiSailHint,
                   key: const Key('sail.hint'),
                   textAlign: TextAlign.center,
-                  style: Skin.text(15, color: Colors.white),
+                  style: Skin.outlined(15),
                 ),
               ),
               const SizedBox(height: 10),

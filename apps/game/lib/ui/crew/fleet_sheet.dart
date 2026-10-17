@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
@@ -101,7 +102,7 @@ class _FleetPicker extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(l10n.uiFleetSlotTitle(slot + 1), style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(child: SubRibbon(l10n.uiFleetSlotTitle(slot + 1))),
             // 마지막 출전 선원은 비울 수 없다.
             if (slot < slots.length && slots[slot] != null && slots.whereType<String>().length > 1)
               PixelButton(key: const Key('fleet.clear'), onPressed: () => pick(null), child: Text(l10n.uiFleetClear)),
@@ -145,7 +146,7 @@ class _SwapPicker extends ConsumerWidget {
       key: const Key('fleet.swap'),
       padding: const EdgeInsets.all(8),
       children: [
-        Text(l10n.uiFleetSwapTitle, style: Theme.of(context).textTheme.titleMedium),
+        SubRibbon(l10n.uiFleetSwapTitle),
         const SizedBox(height: 8),
         for (final (i, id) in slots.indexed)
           if (id != null)

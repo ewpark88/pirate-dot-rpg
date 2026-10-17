@@ -249,14 +249,14 @@ class PixelDot extends StatelessWidget {
                   colors: [Color(0xFFE23A50), Color(0xFFC0122E)],
                 ),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: Skin.outline, width: 2),
                 boxShadow: const [BoxShadow(color: Color(0x40F0384F), blurRadius: 4, offset: Offset(0, 1))],
               ),
               child: label == null
                   ? null
                   : Text(
                       label,
-                      style: Skin.text(11, color: Colors.white, weight: FontWeight.bold),
+                      style: Skin.outlined(11),
                     ),
             ),
           ),

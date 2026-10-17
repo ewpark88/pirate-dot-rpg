@@ -99,7 +99,7 @@ class _BossCutInNameState extends ConsumerState<BossCutInName> with SingleTicker
                       children: [
                         Text(
                           bossName(AppLocalizations.of(context), ref, kind),
-                          style: Skin.text(20, color: Colors.white),
+                          style: Skin.outlined(20),
                         ),
                         if (ref.read(tablesProvider).regions.bosses[kind] case final def?)
                           BossTraitLine(boss: def, tables: ref.read(tablesProvider), size: 14),

@@ -69,7 +69,7 @@ class _FeverRing extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(seconds.toString(), style: Skin.text(24, color: feverGold)),
-            Text(AppLocalizations.of(context).uiFever, style: Skin.text(10, color: Colors.white)),
+            Text(AppLocalizations.of(context).uiFever, style: Skin.outlined(10)),
           ],
         ),
       ),

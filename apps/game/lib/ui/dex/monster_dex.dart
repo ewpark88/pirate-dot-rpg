@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/dex/monster_dex_data.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
@@ -45,7 +46,7 @@ class MonsterDexCard extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Text(l10n.uiDexTitle, style: Theme.of(context).textTheme.titleMedium)),
+                      Expanded(child: SubRibbon(l10n.uiDexTitle)),
                       Text(l10n.uiDexCount(done, all.length), key: const Key('dex.count'), style: Skin.text(15)),
                     ],
                   ),

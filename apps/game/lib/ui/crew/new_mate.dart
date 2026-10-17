@@ -185,7 +185,7 @@ class NewMateDialog extends ConsumerWidget {
                             children: [
                               Icon(roleIcon(role), size: 14, color: const Color(0xFFFFD84A)),
                               const SizedBox(width: 4),
-                              Text(roleText(l10n, role), style: Skin.text(13, color: Colors.white)),
+                              Text(roleText(l10n, role), style: Skin.outlined(13)),
                             ],
                           ),
                         ),

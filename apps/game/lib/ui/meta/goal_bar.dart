@@ -58,7 +58,7 @@ class GoalBar extends ConsumerWidget {
                 text,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Skin.text(12, color: Colors.white),
+                style: Skin.outlined(12),
               ),
             ),
             const SizedBox(width: 6),
