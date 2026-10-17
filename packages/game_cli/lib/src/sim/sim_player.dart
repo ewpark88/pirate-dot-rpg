@@ -130,9 +130,7 @@ class SimPlayer {
     if (step != null && acks.contains(step)) engine.enqueue(TutorialAck(step));
 
     if (_shouldRebirth(s)) {
-      engine
-        ..enqueue(const Rebirth())
-        ..enqueue(const StartVoyage()); // 환생 지도 '출항!'을 바로 누른다(#19 — 지금 결과와 같게)
+      const <Command>[Rebirth(), StartVoyage()].forEach(engine.enqueue); // '출항!'도 바로 누른다(#19)
       _endWall();
       _farmSince = null;
       _recovering = (at: _online, stage: (s.progress.stage * t.meta.rebirth.number('recoverTargetRatio')).ceil());
