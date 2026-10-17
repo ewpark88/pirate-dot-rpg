@@ -238,11 +238,24 @@ class TopGeometry implements BattleGeometry {
       }
     }
     for (final b in f.foes) {
-      // 큰 보스(배율 > orbitMax)는 돌지 않고 선 자리에 — 대보스 그림이 화면 폭에 가까워 옆으로 돌면 화면 밖.
-      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false) && top.orbits(b);
+      final orbiting = b.standsOff && b.alive && !b.stunned && !(b.plan?.steering ?? false);
       final r = top.standoffOf(b);
       if (!orbiting || _dist(b) > r + 1) continue;
-      _spawn.place(b, _angle(b) + top.bossOrbitDegPerSec * radiansPerDegree * dt, r);
+      final step = top.bossOrbitDegPerSec * radiansPerDegree * dt;
+      if (top.orbits(b)) {
+        _spawn.place(b, _angle(b) + step, r);
+        continue;
+      }
+      // 큰 보스(배율 > orbitMax): 옆으로 돌면 그림이 화면 밖 → 배 위쪽 ±swayDeg 호를 오간다(끝에서 방향을 바꿈).
+      final arc = top.swayDeg * radiansPerDegree;
+      if (arc <= 0) continue;
+      const up = -math.pi * half;
+      var a = _angle(b) + step * b.swayDir;
+      if ((a - up).abs() >= arc) {
+        a = up + arc * (a > up ? 1 : -1);
+        b.swayDir = -b.swayDir;
+      }
+      _spawn.place(b, a, r);
     }
   }
 
