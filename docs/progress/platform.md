@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤 늦게 · S5 · HD 굽기 성능·폰 확인표
+- **현재 위치**: 내 몫 끝 — hd-portrait main 머지, hd-bake-perf(ea854ae0)는 S3 lane/render 6b7833b6에 포함(미리 굽기·저사양 384 얹음), device-check c3168345 S1 대기.
+- 한 일: HD 굽기 측정(밀도 4: 40종 430ms·37MB, 밀도 6: 84MB, 보스 1.6~7MB) → 캐시 상한 14장 → 48MB. 폰 확인표 22줄(docs/plans/active/device-check-2026-10-17.md).
+- 배운 것: 텍스처 캐시는 장 수가 아니라 바이트로 — 종마다 크기가 30배 다르다.
+- 다음: S1 지시 대기. rotation smoke는 S2 밸런스 검진이 대신(생략).
+
 ## 2026-10-18 밤 · S5 · HD 초상(UI)
 - **현재 위치**: review/hd-portrait 7aa98f42 — S4(UI 두 파일)·S3(렌더) 검토 대기. hd-bosses-a는 main 머지됨.
 - 한 일: HdPortrait(render) — 종 그림을 UI 칸에 바로(정지/animate, HD 아니면 도트 fallback). 도감 MonsterSprite·BossPortrait(현상금·도감 보스·이름표·보스 도전)·보스 컷인 연결.
