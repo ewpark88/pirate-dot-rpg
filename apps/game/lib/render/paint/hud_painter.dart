@@ -98,7 +98,8 @@ class HudPainter {
     final f = scene.frame;
     final v = scene.layout.viewDots;
     if (top) {
-      _comboAt(c, v.top + v.height * _topComboAt);
+      // 빠른 항해 돌파 중엔 콤보 배너를 쉰다 — 격파 스탬프의 ×N이 같은 숫자를 맡는다(피드백 #20 '조잡하지 않게').
+      if (f.fastSail == null) _comboAt(c, v.top + v.height * _topComboAt);
       return;
     }
     if (f.stage != _stageShown || f.wave != _waveShown) {
