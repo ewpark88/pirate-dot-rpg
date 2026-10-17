@@ -14,7 +14,7 @@ import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
 import 'package:game_core/src/economy/challenge.dart';
 import 'package:game_core/src/economy/daily.dart' show addQuestProgress;
-import 'package:game_core/src/economy/fever.dart' show feverStep;
+import 'package:game_core/src/economy/fever.dart' show feverOn, feverStep;
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/gold_cap.dart' show addGold;
 import 'package:game_core/src/economy/rebirth_shop.dart'
@@ -27,10 +27,8 @@ import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
-/// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 함성 게이지·궁극기, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
+/// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 피버·브레이크, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
 class BattleSystem implements GameSystem {
-  BattleSystem();
-
   Field? _field;
   Object? _crewsSeen;
   Object? _fleetSeen;
@@ -151,7 +149,9 @@ class BattleSystem implements GameSystem {
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
       startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables), extraSec: bossExtraSec(s, ctx.tables));
     } else {
+      f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
       spawnWave(f, p.stage, ctx);
+      f.feverSwarm = null;
     }
   }
 

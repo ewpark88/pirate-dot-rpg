@@ -84,6 +84,9 @@ bool funEvent(BattleScene s, GameEvent e) {
       s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
       s.haptic(HapticLevel.medium);
       _sfx(s, 'feverStarted', e);
+      s.sound.fever(on: true, id: s.fx.raw.obj('topEvents').obj('fever').raw['bgm'] as String?);
+    case FeverEnded():
+      s.sound.fever(on: false);
     case GoldfishCaught(:final targetId, :final gold):
       final at = s.poseOf(targetId);
       final (x, y) = at == null ? (s.topShip.dx, s.topShip.dy - 30) : (at.drawX, at.drawY);

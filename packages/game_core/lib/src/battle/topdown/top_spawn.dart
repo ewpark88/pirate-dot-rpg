@@ -66,10 +66,12 @@ class TopSpawn {
     return p.keys.last;
   }
 
-  /// [added] 적들의 자리(와 scatter면 등장 대기 시간)를 패턴대로 정한다.
-  void arrange(List<Foe> added, Rng rng) {
+  /// [added] 적들의 자리(와 scatter면 등장 대기 시간)를 패턴대로 정한다. [pattern]이 있으면 추첨하지 않는다(피버 무리 'ring').
+  void arrange(List<Foe> added, Rng rng, {String? pattern}) {
     if (added.isEmpty) return;
-    switch (pick(rng)) {
+    switch (pattern ?? pick(rng)) {
+      case 'ring':
+        _ring(added, rng);
       case 'scatter':
         _scatter(added, rng);
       case 'arc':
@@ -88,6 +90,19 @@ class TopSpawn {
     for (var i = 0; i < added.length; i++) {
       final angle = heads[i % groups] + (rng.nextDouble() - half) * spread;
       place(added[i], angle, startDistance(added[i], angle) + (i ~/ groups) * gap);
+    }
+  }
+
+  /// 포위(피버 무리): 사방에 고르게 한꺼번에, 한 바퀴에 다 못 들어가면 한 줄 더 바깥에.
+  void _ring(List<Foe> added, Rng rng) {
+    final out = startDistance(added.first, 0);
+    final perRow = math.max(1, (turn * out / (top.mobRadius / half)).floor());
+    final offset = rng.nextDouble() * turn;
+    for (var i = 0; i < added.length; i++) {
+      final row = i ~/ perRow;
+      final inRow = math.min(perRow, added.length - row * perRow);
+      final angle = offset + (i % perRow) * turn / inRow + row * half * turn / perRow;
+      place(added[i], angle, startDistance(added[i], angle) + row * (top.mobRadius / half));
     }
   }
 
