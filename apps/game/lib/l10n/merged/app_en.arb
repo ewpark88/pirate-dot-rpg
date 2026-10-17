@@ -620,7 +620,6 @@
   "uiSkinEquipped": "Equipped",
   "uiTitle": "Title",
   "uiTitleNone": "No title",
-  "uiTitleLocked": "Rebirth ×{count}",
   "uiShopFxLevels": "+{n} lv",
   "uiShopFxDown": "-{n}%",
   "uiShopFxSec": "+{n}s",
@@ -2168,5 +2167,27 @@
     }
   },
   "uiLinkCopied": "Link copied — paste it into your browser or mail app",
-  "uiContactSubject": "Game support"
+  "uiContactSubject": "Game support",
+  "uiTitleProgressRebirth": "Rebirths {now}/{need}",
+  "@uiTitleProgressRebirth": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTitleProgressPass": "Voyage Pass {now}/{need}",
+  "@uiTitleProgressPass": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  }
 }

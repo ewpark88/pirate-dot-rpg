@@ -613,7 +613,6 @@
   "uiSkinEquipped": "장착 중",
   "uiTitle": "칭호",
   "uiTitleNone": "칭호 없음",
-  "uiTitleLocked": "환생 {count}회",
   "uiShopFxLevels": "+{n}레벨",
   "uiShopFxDown": "-{n}%",
   "uiShopFxSec": "+{n}초",
@@ -2161,5 +2160,27 @@
     }
   },
   "uiLinkCopied": "주소를 복사했어요 — 브라우저나 메일 앱에 붙여 넣어 주세요",
-  "uiContactSubject": "게임 문의"
+  "uiContactSubject": "게임 문의",
+  "uiTitleProgressRebirth": "환생 {now}/{need}회",
+  "@uiTitleProgressRebirth": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTitleProgressPass": "항해 패스 {now}/{need}단계",
+  "@uiTitleProgressPass": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  }
 }
