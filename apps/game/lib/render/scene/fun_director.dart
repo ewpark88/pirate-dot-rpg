@@ -104,6 +104,7 @@ bool funEvent(BattleScene s, GameEvent e) {
         stars: rs.indexOf(r) + 1,
         reveal: from >= 0 && rs.indexOf(r) >= from,
       );
+      s.topHits.cardsShown++;
       if (isNew || special) s.haptic(HapticLevel.medium);
       _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);
     case GoldOverflow():

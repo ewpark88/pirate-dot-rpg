@@ -52,8 +52,7 @@ class TopBossLoot {
   }
 
   /// 카드 획득(피드백 #17, CardGranted): 방금 터진 보스 보상(0.5초 안)에 붙고, 없으면 [fallback](배 앞)에서 금빛 기둥과 함께 솟는다.
-  /// [isNew](처음 얻은 동료)면 크게·오래 떠서 [newCrewText]를 띄우고, [special](첫 희귀 선원 환영)이면 더 크게.
-  /// [stars] = 등급 칸 + 1, [reveal]이면 앞면 공개 연출(피드백 #22 — 기준 등급 이상).
+  /// [isNew]면 크게·오래 [newCrewText], [special](환영)이면 더 크게. [stars] = 등급 칸 + 1, [reveal]이면 앞면 공개(#22).
   void card(
     double now,
     Offset fallback,
@@ -67,9 +66,10 @@ class TopBossLoot {
     if (_bursts.isEmpty || now - _bursts.last.ms > 500) _add(_Burst(now, fallback, 0, 0, 1.2, style: LootStyle.chest));
     final b = _bursts.last;
     final big = special ? 2 : (isNew ? 1 : 0);
-    // 한 번에 여러 장(현상금 소탕은 한 틱에 수십 장): 같은 선원 보통 카드는 '×n' 한 장으로, 보통 카드는 4장까지 날리고 나머지는 '+n'.
-    // 새 동료·환영은 묶지 않고 따로 크게.
-    if (big == 0 && !reveal) {
+    // 앞면 공개는 한 터짐에 2장까지(모든 등급 공개 — S1 폰 신고). 한 번에 여러 장(현상금 소탕은 한 틱에 수십 장)이면 나머지는
+    // 같은 선원 '×n' 한 장으로, 4장까지 날리고 나머지는 '+n'. 새 동료·환영은 묶지 않고 따로 크게.
+    final open = reveal && b.cards.where((k) => k.reveal && k.big == 0).length < 2;
+    if (big == 0 && !open) {
       for (final k in b.cards) {
         if (k.crewId == crewId && k.big == 0 && !k.reveal) {
           k.count++;
@@ -82,7 +82,7 @@ class TopBossLoot {
       }
     }
     if (b.cards.length >= _maxCards + 3) return;
-    b.cards.add(LootCard(crewId, color, big, stars: stars, reveal: reveal || big > 0));
+    b.cards.add(LootCard(crewId, color, big, stars: stars, reveal: open || big > 0));
   }
 
   /// 새 동료 문구(UI가 TopTexts.newCrew로 채운다).

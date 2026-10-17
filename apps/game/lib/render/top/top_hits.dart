@@ -38,6 +38,9 @@ class TopHits {
   /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
   TopTraits? traits;
 
+  /// 지금까지 띄운 카드 수(CardGranted → 연출, 실제 흐름 회귀 테스트가 센다).
+  int cardsShown = 0;
+
   /// 배 스킨 포구 화염 색(TopScenePainter가 프레임마다, 없으면 등급 색).
   int? skinMuzzle;
 
