@@ -5,11 +5,13 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/adapters/power/power_channel.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/power_policy.dart';
+import 'package:pirate_dot/render/battle_game.dart' show BattleGame;
 import 'package:pirate_dot/render/preview/crew_preview_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/state/idle.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
 
@@ -25,9 +27,15 @@ final crewPreviewPlayProvider = Provider<bool>((_) => true);
 /// (지금 / 다음 / 전설 / 신화 — 같은 등급은 한 번만). 지금 탭은 보유면 지금 레벨, 아니면 기본 등급 첫 레벨, 나머지는 그 등급 첫 레벨.
 /// 장면은 공용 하네스(CrewPreview — 저장·진행에 안 닿음). 창이 닫히면 위젯과 함께 멈춘다.
 class CrewPreviewPanel extends ConsumerStatefulWidget {
-  const CrewPreviewPanel({required this.def, super.key});
+  const CrewPreviewPanel({required this.def, this.aspectRatio = 16 / 9, this.showTabs = true, super.key});
 
   final CrewDef def;
+
+  /// 창 비율(폭 ÷ 높이). 작은 카드(예: '새 동료!')는 2 이상으로 낮게.
+  final double aspectRatio;
+
+  /// false면 등급 탭 없이 지금 등급만(작은 카드용).
+  final bool showTabs;
 
   @override
   ConsumerState<CrewPreviewPanel> createState() => _CrewPreviewPanelState();
@@ -35,6 +43,28 @@ class CrewPreviewPanel extends ConsumerStatefulWidget {
 
 class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
   var _tab = 0;
+
+  /// 상세 창이 전장을 덮는 동안 본 전투는 절전(30fps·가벼운 연출)으로 — 미리보기와 동시 부하를 줄인다(S3 제안).
+  /// 닫히면 원래 절전 값으로 되돌린다.
+  BattleGame? _game;
+  bool? _savedPowerSave;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!ref.read(hasBattleGameProvider)) return;
+    final game = ref.read(battleGameProvider);
+    _game = game;
+    _savedPowerSave = game.settings.powerSave;
+    game.settings = game.settings.copyWith(powerSave: true);
+  }
+
+  @override
+  void dispose() {
+    final game = _game;
+    if (game != null) game.settings = game.settings.copyWith(powerSave: _savedPowerSave);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +98,7 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: AspectRatio(
-              aspectRatio: 16 / 9,
+              aspectRatio: widget.aspectRatio,
               child: CrewPreviewView(
                 key: Key('crew.preview.${widget.def.id}'),
                 tables: tables,
@@ -76,32 +106,36 @@ class _CrewPreviewPanelState extends ConsumerState<CrewPreviewPanel> {
                 level: pick.$2,
                 sprites: sprites,
                 lite: lite,
-                play: ref.watch(crewPreviewPlayProvider),
+                // 방치(1분 입력 없음)면 멈춘다(S4 — 발열). 시험 하네스가 끈 경우엔 방치 상태를 구독하지 않는다.
+                play: ref.watch(crewPreviewPlayProvider) && ref.watch(idleLevelProvider) == IdleLevel.active,
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          Wrap(
-            spacing: 6,
-            runSpacing: 4,
-            children: [
-              for (final (i, (rarity, _, isNow)) in tabs.indexed)
-                ChoiceChip(
-                  key: Key('crew.preview.tab.${rarities[rarity].id}'),
-                  label: Text(
-                    isNow
-                        ? '${l10n.uiPreviewNow} · ${tableText(l10n, rarities[rarity].nameKey)}'
-                        : tableText(l10n, rarities[rarity].nameKey),
-                    style: Skin.text(13),
+          if (widget.showTabs) ...[
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final (i, (rarity, _, isNow)) in tabs.indexed)
+                  ChoiceChip(
+                    key: Key('crew.preview.tab.${rarities[rarity].id}'),
+                    label: Text(
+                      isNow
+                          ? '${l10n.uiPreviewNow} · ${tableText(l10n, rarities[rarity].nameKey)}'
+                          : tableText(l10n, rarities[rarity].nameKey),
+                      // 고른 칩은 굵은 글·2dp 테두리(S4 — 일반·희귀 옅은 색은 바탕 차이만으론 약하다).
+                      style: Skin.text(13, weight: pick == tabs[i] ? FontWeight.w800 : FontWeight.normal),
+                    ),
+                    selected: pick == tabs[i],
+                    selectedColor: rarityColor(rarities[rarity]).withValues(alpha: 0.3),
+                    side: BorderSide(color: rarityColor(rarities[rarity]), width: pick == tabs[i] ? 2 : 1),
+                    showCheckmark: false,
+                    onSelected: (_) => setState(() => _tab = i),
                   ),
-                  selected: pick == tabs[i],
-                  selectedColor: rarityColor(rarities[rarity]).withValues(alpha: 0.3),
-                  side: BorderSide(color: rarityColor(rarities[rarity])),
-                  showCheckmark: false,
-                  onSelected: (_) => setState(() => _tab = i),
-                ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );

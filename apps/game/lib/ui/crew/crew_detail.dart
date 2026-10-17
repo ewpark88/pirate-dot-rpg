@@ -146,9 +146,10 @@ class CrewDetailDialog extends ConsumerWidget {
                 ),
               ],
             ),
-            CrewPreviewPanel(def: def), // 공격 미리보기(작은 전장 + 등급 탭)
             // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
             CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
+            // 공격 미리보기(작은 전장 + 등급 탭) — 특색 아래(S4: 360 첫 화면에 '키울지·쓸지' 정보가 밀리지 않게).
+            CrewPreviewPanel(def: def),
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
