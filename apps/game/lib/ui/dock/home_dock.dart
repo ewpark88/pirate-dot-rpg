@@ -47,8 +47,15 @@ class HomeDock extends ConsumerWidget {
     final glow = ref.watch(rebirthReadyProvider)
         ? ref.watch(gameStateProvider.select((s) => ((s.battle?.tick ?? 0) ~/ 10).isEven))
         : null;
-    return SizedBox(
+    // k1: 짙은 남색 띠 + 위 굵은 외곽선.
+    return Container(
       height: kDockHeight,
+      decoration: const BoxDecoration(
+        color: Skin.navyPanel,
+        border: Border(
+          top: BorderSide(color: Skin.outline, width: Skin.outlineWidth),
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -131,17 +138,24 @@ class _DockIcon extends StatelessWidget {
                 show: badge,
                 dotKey: dotKey,
                 count: count,
+                // k1: 네모 칸 — 고른 칸만 노랗게 크게.
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOutBack,
-                  width: selected ? 54 : 50,
-                  height: selected ? 54 : 50,
+                  width: selected ? 58 : 48,
+                  height: selected ? 52 : 46,
                   decoration: BoxDecoration(
-                    color: selected ? Skin.skyDeep : Skin.card,
-                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: selected
+                          ? const [Skin.ribbonTop, Skin.goldBottom]
+                          : const [Skin.navyPanelTop, Skin.skyDeep],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: glow != null ? Skin.goldBottom : (selected ? Skin.primaryBottom : Colors.white),
-                      width: glow != null ? 3 : 2.5,
+                      color: glow != null ? Skin.goldBottom : Skin.outline,
+                      width: glow != null ? 3 : Skin.outlineWidth,
                     ),
                     boxShadow: switch (glow) {
                       null => Skin.shadow,
@@ -158,7 +172,7 @@ class _DockIcon extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              Text(label, maxLines: 1, style: Skin.text(12, color: selected ? Skin.primaryEdge : Skin.ink)),
+              Text(label, maxLines: 1, style: Skin.outlined(selected ? 13 : 12, stroke: 1.2)),
             ],
           ),
         ),

@@ -35,9 +35,17 @@ Future<T?> showSkinDialog<T>(
   builder: (context) => SkinPopIn(child: builder(context)),
 );
 
-/// 창 (스킨 r1): 둥근 흰 판 안에 [icon] · 제목 · 내용 · 오른쪽 아래 버튼 줄.
+/// 창 (스킨 k1): 노란 리본 제목 띠(흰 외곽선 글자) + 오른쪽 위 노란 X + 연보라 판에 [icon] · 내용 · 오른쪽 아래 버튼 줄.
+/// 제목이 없으면 띠 없이 판만. [showClose]가 false면 X 없음(받기 버튼으로만 닫는 창).
 class PixelDialog extends StatelessWidget {
-  const PixelDialog({required this.content, this.title, this.icon, this.actions = const [], super.key});
+  const PixelDialog({
+    required this.content,
+    this.title,
+    this.icon,
+    this.actions = const [],
+    this.showClose = true,
+    super.key,
+  });
 
   final Widget? icon;
   final String? title;
@@ -45,24 +53,17 @@ class PixelDialog extends StatelessWidget {
 
   /// 보통 `PixelButton`들. 오른쪽 정렬, 좁으면 다음 줄로.
   final List<Widget> actions;
+  final bool showClose;
 
   @override
-  Widget build(BuildContext context) => Dialog(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    insetPadding: popupInset,
-    constraints: popupConstraints(context),
-    child: PixelFrame(
-      padding: 9,
+  Widget build(BuildContext context) {
+    final body = Padding(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (icon case final i?) ...[Center(child: i), const SizedBox(height: 8)],
-          if (title case final t?) ...[
-            Text(t, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-          ],
           // 본문 16sp (팝업 기준).
           Flexible(
             child: DefaultTextStyle.merge(style: const TextStyle(fontSize: 16), child: content),
@@ -72,6 +73,113 @@ class PixelDialog extends StatelessWidget {
             Wrap(alignment: WrapAlignment.end, spacing: 8, runSpacing: 8, children: actions),
           ],
         ],
+      ),
+    );
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: popupInset,
+      constraints: popupConstraints(context),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Skin.card, Skin.cardBottom],
+              ),
+              borderRadius: BorderRadius.circular(Skin.radiusCard),
+              border: Border.all(color: Skin.outline, width: 3),
+              boxShadow: Skin.shadowDepth,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(Skin.radiusCard - 3),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (title case final t?) RibbonHeader(title: t, padRight: showClose ? 44 : 12),
+                  Flexible(child: body),
+                ],
+              ),
+            ),
+          ),
+          if (showClose)
+            Positioned(
+              top: -10,
+              right: -8,
+              child: CloseX(onTap: () => Navigator.of(context).maybePop()),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 창 머리 노란 리본 띠: 위가 밝은 금빛 + 광택 + 아래 진한 선, 가운데 흰 외곽선 제목.
+class RibbonHeader extends StatelessWidget {
+  const RibbonHeader({required this.title, this.padRight = 12, super.key});
+
+  final String title;
+  final double padRight;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    key: const Key('dialog.ribbon'),
+    padding: EdgeInsets.fromLTRB(padRight, 10, padRight, 10),
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Skin.ribbonTop, Skin.ribbonBottom],
+      ),
+      border: Border(bottom: BorderSide(color: Skin.outline, width: 2.5)),
+    ),
+    child: Text(
+      title,
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      style: Skin.outlined(22, stroke: 2),
+    ),
+  );
+}
+
+/// 오른쪽 위 노란 X 버튼 (누름 영역 48dp).
+class CloseX extends StatelessWidget {
+  const CloseX({required this.onTap, super.key});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: MaterialLocalizations.of(context).closeButtonLabel,
+    child: GestureDetector(
+      key: const Key('dialog.close'),
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: Center(
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Skin.ribbonTop, Skin.goldBottom],
+              ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Skin.outline, width: 2.5),
+              boxShadow: Skin.shadowSmall,
+            ),
+            child: const Icon(Icons.close_rounded, size: 26, color: Skin.outline, weight: 900),
+          ),
+        ),
       ),
     ),
   );
