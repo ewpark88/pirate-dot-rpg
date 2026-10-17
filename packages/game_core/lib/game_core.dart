@@ -6,6 +6,8 @@ export 'src/battle/fleet.dart' show autoFleet;
 export 'src/battle/gun.dart' show Gun; // UI 상세가 선원 실제 공격(aim·등급 덮어쓰기)을 읽게(S4)
 export 'src/battle/spawner.dart' show bossScaleOf, bossStandoffFor; // 보스 크기 배율(렌더 그림·시나리오)
 export 'src/battle/topdown/geometry.dart' show inCamera; // 화면 안 적 세기(밀도 탐침·UI)
+export 'src/economy/achievements.dart'
+    show AchievementSystem, AchievementView, achievementValue, achievementsClaimable, achievementsView; // 업적 시트(UI)
 export 'src/economy/ads.dart' show canWatchAd, tailwindRemaining;
 export 'src/economy/cards.dart';
 export 'src/economy/chest.dart' show chestReward;
