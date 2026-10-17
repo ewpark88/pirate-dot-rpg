@@ -42,7 +42,12 @@ void main() {
     expect(t.regions.bossAt(20).id, 'giant_hermit');
     expect(t.regions.bossAt(25).id, t.regions.regions.first.midBoss);
     expect(t.regions.bossAt(50).id, t.regions.regions.first.regionBoss);
-    final plain = GameTables.load(rawTables);
+    // 키 없으면 지금 그대로: 라이브 표(순환 있음)에서 순환 키를 뺀 것.
+    final plain = patch((r) {
+      for (final region in (r['regions'] as List).cast<Map<String, dynamic>>()) {
+        region.remove('bossRotation');
+      }
+    });
     expect({for (var s = 1; s <= 9; s++) plain.regions.bossAt(s).id}, {plain.regions.regions.first.boss});
   });
 
