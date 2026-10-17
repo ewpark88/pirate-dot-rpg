@@ -7,6 +7,7 @@ import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -140,8 +141,8 @@ class _ShipLookCelebrationGateState extends ConsumerState<ShipLookCelebrationGat
     if (_open || !mounted) return;
     _open = true;
     unawaited(
-      showDialog<void>(
-        context: context,
+      showSkinDialog<void>(
+        context,
         builder: (_) => ShipLookCelebration(part: e.part, stage: e.stage),
       ).whenComplete(() => _open = false),
     );
@@ -184,9 +185,9 @@ class _ShipLookCelebrationState extends ConsumerState<ShipLookCelebration> with 
     return Dialog(
       key: const Key('ship.look.celebrate'),
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: popupInset,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 380),
+        constraints: popupConstraints(context),
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
           decoration: BoxDecoration(

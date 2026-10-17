@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/chest_paint.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
@@ -76,9 +77,9 @@ class _RebirthChestDialogState extends State<RebirthChestDialog> with TickerProv
     return Dialog(
       key: const Key('rebirth.chest'),
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(16),
+      insetPadding: popupInset,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
+        constraints: popupConstraints(context),
         child: AnimatedBuilder(
           animation: Listenable.merge([_lid, _items]),
           builder: (context, _) {

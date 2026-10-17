@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
@@ -91,7 +92,7 @@ class CrewCard extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: Skin.mint,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(color: Skin.outline, width: 2),
                           boxShadow: [
                             BoxShadow(color: Skin.mint.withValues(alpha: 0.7), blurRadius: 8, spreadRadius: 1),
                             ...Skin.shadowSmall,
@@ -101,7 +102,7 @@ class CrewCard extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
-                            Text(l10n.uiCrewUpLevels(up), style: Skin.text(13, color: Colors.white)),
+                            OutlineText(l10n.uiCrewUpLevels(up), size: 13),
                           ],
                         ),
                       ),

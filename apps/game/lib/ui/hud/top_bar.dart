@@ -11,8 +11,6 @@ import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/coin_arrival.dart';
 import 'package:pirate_dot/ui/hud/power_badge.dart';
 import 'package:pirate_dot/ui/hud/tailwind_badge.dart';
-import 'package:pirate_dot/ui/meta/daily_sheet.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -23,7 +21,7 @@ import 'package:pirate_dot/ui/text/big_num_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 상단 바 (전장 밖, layout-v2-brief 1): 왼쪽 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원),
-/// 오른쪽 퀘스트·설정 그림 버튼. 누르는 영역이 48dp라 바 높이도 48dp.
+/// 오른쪽 설정 그림 버튼(퀘스트는 도크 첫 칸으로 — 사용자 피드백 #9 A). 누르는 영역이 48dp라 바 높이도 48dp.
 class TopBar extends ConsumerWidget {
   const TopBar({super.key});
 
@@ -36,7 +34,13 @@ class TopBar extends ConsumerWidget {
     final cap = ref.watch(gameStateProvider.select((s) => goldCapacity(s, tables).format()));
     final money = Container(
       padding: const EdgeInsets.fromLTRB(6, 4, 12, 4),
-      decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(18), boxShadow: Skin.shadowSmall),
+      // k1: 짙은 남색 알약 + 외곽선, 흰 외곽선 숫자.
+      decoration: BoxDecoration(
+        color: Skin.navyPanel,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Skin.outline, width: 2),
+        boxShadow: Skin.shadowSmall,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -58,12 +62,12 @@ class TopBar extends ConsumerWidget {
                   BigNumText(
                     gold,
                     key: const Key('top.gold'),
-                    style: const TextStyle(color: PixelPalette.gold),
+                    style: Skin.outlined(16, color: const Color(0xFFFFD84A)),
                   ),
                   Text(
                     ' / $cap',
                     key: const Key('top.goldCap'),
-                    style: Skin.text(11, color: Skin.sub),
+                    style: Skin.text(14, color: const Color(0xFFB8BAE6)), // 노인 사용자 — 최대도 읽히게(#7·#9)
                   ),
                 ],
               ),
@@ -73,7 +77,7 @@ class TopBar extends ConsumerWidget {
           const SizedBox(width: 10),
           const PixelSprite(UiSprites.gem, dots: 8, frames: 3),
           const SizedBox(width: 4),
-          Text(gems.toString(), key: const Key('top.gems')),
+          Text(gems.toString(), key: const Key('top.gems'), style: Skin.outlined(16)),
           const SizedBox(width: 8),
           const PowerBadge(),
         ],
@@ -115,7 +119,6 @@ class TopBar extends ConsumerWidget {
                   ),
                 ),
               ),
-              const DailyIcon(),
               PixelIconButton(
                 key: const Key('hud.settings'),
                 asset: UiSprites.gear,

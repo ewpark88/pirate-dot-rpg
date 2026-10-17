@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
@@ -65,118 +66,128 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
     return _PulseOnEnter(
       active: preBoss,
       controller: _pulseCtl,
-      child: IgnorePointer(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 2, 10, 0),
-          child: Container(
-            key: const Key('hud.gauge'),
-            padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
-            decoration: BoxDecoration(
-              color: Skin.ink.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
-                      key: const Key('hud.gauge.stage'),
-                      style: Skin.text(14, color: Colors.white),
-                    ),
-                    // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
-                    if (g.farming && !g.boss) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        key: const Key('hud.farming'),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8C766),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(l10n.uiFarming, style: Skin.text(11, color: Skin.goldInk)),
+      // 게이지(스테이지 '37-2')를 누르면 항해 지도(도크 항해 패널)가 열린다(사용자 피드백 #9 A — 항해는 도크 끝으로 옮김).
+      // 안의 글(스테이지·보스 막대 등)은 따로 읽히게 explicitChildNodes, 누름은 이 노드 하나가 맡는다.
+      child: Semantics(
+        container: true,
+        explicitChildNodes: true,
+        button: true,
+        label: l10n.uiGaugeOpenVoyage,
+        onTap: () => ref.read(dockTabRequestProvider.notifier).open(voyageTab),
+        child: GestureDetector(
+          key: const Key('hud.gauge.tap'),
+          behavior: HitTestBehavior.opaque,
+          excludeFromSemantics: true,
+          onTap: () => ref.read(dockTabRequestProvider.notifier).open(voyageTab),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 2, 10, 0),
+            child: Container(
+              key: const Key('hud.gauge'),
+              padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
+              decoration: BoxDecoration(
+                color: Skin.navyPanel.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
+                        key: const Key('hud.gauge.stage'),
+                        style: Skin.outlined(14),
                       ),
-                    ],
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            // 보스전: 보스 타이머 대신 굵은 보스 체력 막대(사용자 2026-10-17 — 타이머는 엔진에서 없어짐).
-                            height: g.boss ? 20 : 12,
-                            child: g.boss
-                                ? const TutorialSpot(id: 'boss.hp', child: BossHpBar())
-                                : Row(
-                                    children: [
-                                      for (var i = 0; i < g.waves; i++) ...[
-                                        if (i > 0) const SizedBox(width: 3),
-                                        Expanded(
-                                          child: _Segment(
-                                            key: Key('hud.gauge.wave.$i'),
-                                            state: i < g.wave ? 2 : (i == g.wave && !g.farming ? 1 : 0),
-                                            farming: g.farming,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
+                      // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
+                      if (g.farming && !g.boss) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          key: const Key('hud.farming'),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8C766),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          // 보스전: 브레이크 막대(기절·둔화·취약·밀림이 쌓임 — 가득이면 쓰러짐).
-                          if (g.boss) ...[
-                            const SizedBox(height: 4),
-                            const TutorialSpot(id: 'boss.gauge', child: BossBreakBar()),
-                          ],
-                          const SizedBox(height: 3),
-                          // 해역 진행 (얇게).
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(2),
-                            child: LinearProgressIndicator(
+                          child: Text(l10n.uiFarming, style: Skin.text(11, color: Skin.goldInk)),
+                        ),
+                      ],
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              // 보스전: 보스 타이머 대신 굵은 보스 체력 막대(사용자 2026-10-17 — 타이머는 엔진에서 없어짐).
+                              height: g.boss ? 20 : 16, // k2: 배 HP 막대와 같은 굵기
+                              child: g.boss
+                                  ? const TutorialSpot(id: 'boss.hp', child: BossHpBar())
+                                  : Row(
+                                      children: [
+                                        for (var i = 0; i < g.waves; i++) ...[
+                                          if (i > 0) const SizedBox(width: 3),
+                                          Expanded(
+                                            child: _Segment(
+                                              key: Key('hud.gauge.wave.$i'),
+                                              state: i < g.wave ? 2 : (i == g.wave && !g.farming ? 1 : 0),
+                                              farming: g.farming,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                            ),
+                            // 보스전: 브레이크 막대(기절·둔화·취약·밀림이 쌓임 — 가득이면 쓰러짐).
+                            if (g.boss) ...[
+                              const SizedBox(height: 4),
+                              const TutorialSpot(id: 'boss.gauge', child: BossBreakBar()),
+                            ],
+                            const SizedBox(height: 3),
+                            // 해역 진행 (k2: 외곽선 막대).
+                            SkinBar(
                               key: const Key('hud.gauge.region'),
                               value: g.inRegion / g.per,
-                              minHeight: 3,
                               color: Skin.goldTop,
-                              backgroundColor: Colors.white24,
+                              height: 7,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    AnimatedBuilder(
-                      animation: _pulseCtl,
-                      builder: (context, _) {
-                        final t = _pulseCtl.isAnimating ? math.sin(_pulseCtl.value * math.pi * _pulses).abs() : 0.0;
-                        return Transform.scale(
-                          scale: 1 + 0.25 * t,
-                          child: CustomPaint(
-                            key: Key(preBoss ? 'hud.gauge.skull.hot' : 'hud.gauge.skull'),
-                            size: const Size(22, 22),
-                            painter: SkullPainter(
-                              color: g.boss || preBoss
-                                  ? Color.lerp(const Color(0xFFFFD6DB), Skin.danger, preBoss ? 0.4 + 0.6 * t : 1)!
-                                  : Colors.white70,
+                      const SizedBox(width: 6),
+                      AnimatedBuilder(
+                        animation: _pulseCtl,
+                        builder: (context, _) {
+                          final t = _pulseCtl.isAnimating ? math.sin(_pulseCtl.value * math.pi * _pulses).abs() : 0.0;
+                          return Transform.scale(
+                            scale: 1 + 0.25 * t,
+                            child: CustomPaint(
+                              key: Key(preBoss ? 'hud.gauge.skull.hot' : 'hud.gauge.skull'),
+                              size: const Size(22, 22),
+                              painter: SkullPainter(
+                                color: g.boss || preBoss
+                                    ? Color.lerp(const Color(0xFFFFD6DB), Skin.danger, preBoss ? 0.4 + 0.6 * t : 1)!
+                                    : Colors.white70,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다). 보스전·파밍 중엔 그 자리에 '보스 vs 나'(피드백 #5).
-                const Padding(
-                  padding: EdgeInsets.only(top: 3),
-                  child: Row(
-                    children: [
-                      Expanded(child: BossCompare(fallback: GoalBar(compact: true))),
-                      SizedBox(width: 8),
-                      // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
-                      TutorialSpot(id: 'fever.meter', child: FeverMeter()),
+                          );
+                        },
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다). 보스전·파밍 중엔 그 자리에 '보스 vs 나'(피드백 #5).
+                  const Padding(
+                    padding: EdgeInsets.only(top: 3),
+                    child: Row(
+                      children: [
+                        Expanded(child: BossCompare(fallback: GoalBar(compact: true))),
+                        SizedBox(width: 8),
+                        // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
+                        TutorialSpot(id: 'fever.meter', child: FeverMeter()),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -231,10 +242,18 @@ class _Segment extends StatelessWidget {
     };
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
+      // k2: 굵은 외곽선 + 채운 칸은 위가 밝은 광택.
       decoration: BoxDecoration(
-        color: state == 1 ? Colors.white24 : color,
-        borderRadius: BorderRadius.circular(4),
-        border: state == 1 ? Border.all(color: color, width: 1.5) : null,
+        color: state == 2 ? null : const Color(0xFF3B3F74),
+        gradient: state == 2
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color.lerp(color, Colors.white, 0.4)!, color],
+              )
+            : null,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: state == 1 ? Colors.white : Skin.outline, width: 2),
       ),
     );
   }

@@ -125,7 +125,7 @@ class SummonRevealCard extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: Skin.text(11, color: Colors.white),
+                            style: Skin.outlined(11),
                           ),
                         ],
                       ),
@@ -156,7 +156,7 @@ class _SmallBadge extends StatelessWidget {
     decoration: BoxDecoration(
       color: Skin.goldBottom,
       borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.white, width: 1.5),
+      border: Border.all(color: Skin.outline, width: 1.5),
     ),
     child: Text(text, style: Skin.text(11, color: Skin.goldInk)),
   );

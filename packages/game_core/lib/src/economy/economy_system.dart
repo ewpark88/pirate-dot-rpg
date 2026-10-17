@@ -11,6 +11,7 @@ import 'package:game_core/src/economy/operator.dart';
 import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/sea_events.dart' show pickBottle;
+import 'package:game_core/src/economy/ship_skins.dart' show buySkin, unlockShipSkins;
 import 'package:game_core/src/economy/summon.dart';
 import 'package:game_core/src/economy/tutorial.dart';
 import 'package:game_core/src/economy/upgrade.dart';
@@ -58,6 +59,7 @@ class EconomySystem implements GameSystem {
     final OpSetRebirths c => opSetRebirths(state, c),
     final PickBottle c => pickBottle(state, c, ctx),
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
+    final BuySkin c => buySkin(state, c, ctx),
     final ClaimCollectionReward c => claimCollectionReward(state, c, ctx),
     ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
@@ -74,7 +76,10 @@ class EconomySystem implements GameSystem {
     tickChest(
       bountyTick(
         tutorialTick(
-          rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+          unlockShipSkins(
+            rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+            ctx,
+          ),
           ctx,
         ),
         ctx,

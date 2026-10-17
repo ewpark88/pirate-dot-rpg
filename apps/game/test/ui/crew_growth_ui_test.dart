@@ -40,6 +40,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getSize(merge).height, greaterThanOrEqualTo(56));
     await tester.tap(merge);
-    expect(log.sent.whereType<MergeAllCards>(), hasLength(1));
+    expect(log.sent.whereType<MergeAllCards>().single.crewId, 'pang', reason: '이 선원만');
   });
 }

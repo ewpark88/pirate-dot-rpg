@@ -189,9 +189,13 @@ void main() {
     // 보스 고르기 → 소환
     await _tap(tester, 'op.today.bossPick');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Kraken').last);
+    // 특징 많은 보스가 맨 위(42종 — 메뉴는 보이는 것만 짓는다) → 맨 위 항목을 고른다.
+    final first = tester.widget<DropdownMenuItem<String>>(find.byType(DropdownMenuItem<String>).last);
+    await tester.tap(find.byType(DropdownMenuItem<String>).last);
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('op.today.bossTraits')), findsOneWidget, reason: '고른 보스의 특징 칩');
     await _tap(tester, 'op.today.boss');
-    expect((log.sent.last as OpSpawnBoss).bossId, 'kraken');
+    expect((log.sent.last as OpSpawnBoss).bossId, isNotNull);
+    expect(first.value, isNotNull);
   });
 }

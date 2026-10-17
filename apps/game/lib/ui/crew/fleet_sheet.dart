@@ -8,10 +8,13 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/crew/swap_compare.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
@@ -81,8 +84,13 @@ class _FleetPicker extends ConsumerWidget {
       ...queried.where((c) => !slots.contains(c.id)),
       ...queried.where((c) => slots.contains(c.id)),
     ];
-    void pick(String? id) {
+    Future<void> pick(String? id) async {
       final swap = id != null && slots.contains(id) && slots.indexOf(id) != slot;
+      // 찬 칸을 쉬는 선원으로 바꿀 때는 먼저 비교 창(사용자 피드백 #34) — 취소면 그대로.
+      final current = slot < slots.length ? slots[slot] : null;
+      if (id != null && current != null && current != id && !slots.contains(id)) {
+        if (!await showSwapCompare(context, current, id) || !context.mounted) return;
+      }
       ref.read(fleetCommandsProvider).setSlot(slot, id);
       Navigator.of(context).pop();
       if (swap) showSkinToast(context, l10n.uiFleetSwapped);
@@ -94,7 +102,7 @@ class _FleetPicker extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text(l10n.uiFleetSlotTitle(slot + 1), style: Theme.of(context).textTheme.titleMedium)),
+            Expanded(child: SubRibbon(l10n.uiFleetSlotTitle(slot + 1))),
             // 마지막 출전 선원은 비울 수 없다.
             if (slot < slots.length && slots[slot] != null && slots.whereType<String>().length > 1)
               PixelButton(key: const Key('fleet.clear'), onPressed: () => pick(null), child: Text(l10n.uiFleetClear)),
@@ -138,7 +146,7 @@ class _SwapPicker extends ConsumerWidget {
       key: const Key('fleet.swap'),
       padding: const EdgeInsets.all(8),
       children: [
-        Text(l10n.uiFleetSwapTitle, style: Theme.of(context).textTheme.titleMedium),
+        SubRibbon(l10n.uiFleetSwapTitle),
         const SizedBox(height: 8),
         for (final (i, id) in slots.indexed)
           if (id != null)
@@ -146,7 +154,9 @@ class _SwapPicker extends ConsumerWidget {
               def: tables.crews.byId(id),
               level: levels[id] ?? 1,
               deployed: true,
-              onTap: () {
+              onTap: () async {
+                // 이 칸 선원 → 새 선원 비교(#34) — 취소면 그대로.
+                if (!await showSwapCompare(context, id, crewId) || !context.mounted) return;
                 ref.read(fleetCommandsProvider).setSlot(i, crewId);
                 Navigator.of(context).pop();
               },
@@ -209,8 +219,16 @@ class _CrewRow extends ConsumerWidget {
                       '${l10n.uiLevel(level)} · ${tableText(l10n, tables.skills.byId(def.family).nameKey)}',
                       style: dim,
                     ),
-                    // 특색 아이콘 4개(개성 v2) — 고를 때 성향이 보이게.
-                    CrewIdentityIcons(crewId: def.id, size: 12),
+                    // 특색 아이콘 4개(개성 v2) — 고를 때 성향이 보이게. 다음 보스에게 잘 먹히는 계열이면 '보스 약점' 칩(#25).
+                    Wrap(
+                      spacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        CrewIdentityIcons(crewId: def.id, size: 12),
+                        if (ref.watch(bossCounterFamiliesProvider).contains(def.family))
+                          CounterChip(key: Key('fleet.counter.${def.id}')),
+                      ],
+                    ),
                   ],
                 ),
               ),

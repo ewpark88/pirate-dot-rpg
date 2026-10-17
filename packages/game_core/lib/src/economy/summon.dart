@@ -78,11 +78,12 @@ GameState summonCards(
         ? rollSummonRarity(t.rarities, ctx.rng, pity: true, minRarity: guarantee)
         : rollSummonRarity(t.rarities, ctx.rng, pity: s.pityCount + 1 >= t.rarities.pityCount);
     if (rarityOrder.indexOf(rarity) >= guaranteeIndex) guaranteed = true;
+    final got = gateFirstLegend(s, t, rarity); // 첫 전설 유예 — 천장 판정은 굴린 등급 그대로
     final crewId = t.crews.crews[ctx.rng.nextInt(t.crews.crews.length)].id;
     final pityCount = rarityOrder.indexOf(rarity) >= minIndex ? 0 : s.pityCount + 1;
-    shown.add(SummonResult(crewId: crewId, rarity: rarity, isNew: !s.crews.containsKey(crewId)));
-    s = receiveCard(s, t, crewId, rarity).copyWith(pityCount: pityCount);
-    results.add((crewId: crewId, rarity: rarity));
+    shown.add(SummonResult(crewId: crewId, rarity: got, isNew: !s.crews.containsKey(crewId)));
+    s = receiveCard(s, t, crewId, got).copyWith(pityCount: pityCount);
+    results.add((crewId: crewId, rarity: got));
   }
   ctx
     ..emit(CrewSummoned(ctx.tick, results: results))

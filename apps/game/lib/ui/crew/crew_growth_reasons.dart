@@ -43,11 +43,7 @@ class CrewGrowthReasons extends ConsumerWidget {
       width: double.infinity,
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.fromLTRB(10, 6, 10, 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F8EF),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Skin.mint, width: 1.5),
-      ),
+      decoration: Skin.inset(fill: const Color(0xFFDDF5E8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -77,7 +73,8 @@ class CrewGrowthReasons extends ConsumerWidget {
                 key: Key('crew.detail.merge.$crewId'),
                 tone: SkinTone.gold,
                 height: 56,
-                onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
+                // 이 선원만 합친다(S4 지적 — 다른 선원까지 합쳐지면 기대와 다르다).
+                onPressed: () => ref.read(commandSinkProvider).send(MergeAllCards(crewId: crewId)),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(l10n.uiCrewMergeNow(level, level + g.mergeLevels), style: Skin.text(18)),

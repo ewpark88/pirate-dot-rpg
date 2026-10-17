@@ -24,6 +24,15 @@ void main() {
     expect(v.treasureSea, 2);
   });
 
+  test('도감·진행 스킨(meta.shipSkins, S3 v3 그림)도 같은 길로 BattleView.shipSkin에 실린다', () {
+    for (final id in [for (final k in t.meta.raw.objs('shipSkins')) k.str('id')]) {
+      final s = h.newGame().copyWith(
+        ship: ShipState(skin: id, skinsOwned: {id}),
+      );
+      expect(viewOf(s).shipSkin, id, reason: id);
+    }
+  });
+
   test('기본(명예 0, 스킨 없음, 보통 바다): 지금 등급 그림, JSON에 skin·treasureSea 없음', () {
     final v = viewOf(h.newGame());
     expect(v.shipTierLook, t.shipTiers.tierAt(1).id);

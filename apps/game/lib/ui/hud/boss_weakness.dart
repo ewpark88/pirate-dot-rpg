@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -27,23 +28,44 @@ class BossWeakness extends ConsumerWidget {
       }),
     );
     final boss = bossId == null ? null : tables.regions.bosses[bossId];
-    if (boss == null || boss.weakFamilies.isEmpty) return const SizedBox.shrink();
+    if (boss == null || (bossCounters(boss).isEmpty && boss.traits.isEmpty)) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Skin.ink);
 
-    // 전장 바로 아래 한 줄 띠 (전장을 가리지 않게, layout-v2-brief 2).
-    return Container(
-      key: const Key('boss.weak'),
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      color: const Color(0xFFFFF0F2),
-      child: Wrap(
-        spacing: 8,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(tableText(l10n, boss.nameKey), style: small?.copyWith(fontWeight: FontWeight.bold)),
-          WeakChips(boss: boss, labelStyle: small),
-        ],
+    // 왼쪽 위 작은 알약 하나(사용자 피드백 #9 C — 전폭 띠 대신, 보스 이름은 등장 이름표가 보여 준다). 누름 통과.
+    return IgnorePointer(
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          key: const Key('boss.weak'),
+          margin: const EdgeInsets.fromLTRB(10, 4, 10, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: const Color(0xEEFFF0F2),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: Skin.shadowSmall,
+          ),
+          child: Semantics(
+            label: tableText(l10n, boss.nameKey),
+            child: Wrap(
+              spacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                // 보스 특성(#25) + 약점 = 표 약점 ∪ 특성 카운터.
+                for (final t in boss.traits)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(traitIcon(t.type), size: 14, color: Skin.ink),
+                      const SizedBox(width: 2),
+                      Text(traitName(l10n, t), style: small),
+                    ],
+                  ),
+                if (bossCounters(boss).isNotEmpty) WeakChips(boss: boss, labelStyle: small),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -60,11 +82,14 @@ class WeakChips extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // 특성 카운터까지 합치면 칩이 많다 — 좁으면 다음 줄로.
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      runSpacing: 2,
       children: [
         Text(l10n.uiBossWeak, style: labelStyle),
-        for (final f in boss.weakFamilies) ...[
+        // 약점 = 표의 약점 + 특성 카운터 계열 (#25).
+        for (final f in bossCounters(boss)) ...[
           const SizedBox(width: 4),
           // 약점 칩: 도트 프레임 (누르는 것 아님).
           PixelFrame(

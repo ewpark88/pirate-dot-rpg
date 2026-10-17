@@ -18,6 +18,7 @@ import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/text/outline_digits.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
@@ -84,6 +85,9 @@ class BattleGame extends FlameGame with _UiLinks {
   bool get useSprites => _useSprites;
   set useSprites(bool v) => painter.useSprites = _useSprites = v;
 
+  /// 읽은 아트 팩 — 선원 공격 미리보기 창이 같은 그림을 다시 읽지 않고 빌려 쓴다. 아직 못 읽었으면 null.
+  SpriteBank? get spriteBank => _sprites;
+
   /// 읽은 스프라이트 수 (0이면 전부 플레이스홀더).
   int get spriteCount => _sprites?.length ?? 0;
 
@@ -118,10 +122,6 @@ class BattleGame extends FlameGame with _UiLinks {
 
   /// 방치·발열 중엔 사용자 설정 위에 절전·흔들림 끔을 덮는다(설정 값 자체는 그대로).
   JuiceSettings get _effective => idle.lite ? _settings.copyWith(shake: false, powerSave: true) : _settings;
-
-  /// 절전 화면까지 초(사용자 설정 sleepAfterSec 0/60/180/300, 0 = 끔 — S4가 넣는다). 기본은 fx_map frameCap.dimSec.
-  double get sleepAfterSec => idle.dimMs / 1000;
-  set sleepAfterSec(double sec) => idle.dimMs = sec * 1000;
 
   void _applyIdle() {
     scene.settings = _effective;
@@ -226,7 +226,9 @@ class BattleGame extends FlameGame with _UiLinks {
     if (loadSprites) {
       images.prefix = 'assets/';
       _sprites = await SpriteBank.load(images, _tables);
-      painter.sprites = _sprites;
+      painter
+        ..sprites = _sprites
+        ..digits = await OutlineDigits.load(devicePixelRatio: 3); // 테두리 피해 숫자
     }
   }
 

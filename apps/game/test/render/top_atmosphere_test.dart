@@ -92,8 +92,12 @@ void main() {
       }
       final r = PictureRecorder();
       final c = Canvas(r)..scale(dpr);
+      painter.paintTop(Canvas(PictureRecorder()), frame);
+      // 등장 팝인(모션 v1, 0.24초)이 끝난 뒤 — 적이 제 크기로 그려진 장면에서 비교한다.
+      for (var i = 0; i < 20; i++) {
+        scene.update(kFrameMs);
+      }
       painter
-        ..paintTop(Canvas(PictureRecorder()), frame)
         ..top.atmosphere.offsetMs = offset
         ..paintTop(c, frame);
       final img = await r.endRecording().toImage((box.width * dpr).round(), (box.height * dpr).round());

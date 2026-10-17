@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
+import '../ui/ui_harness.dart';
 import 'helpers.dart';
 import 'top_recording.dart';
 
@@ -32,6 +33,7 @@ class _Painter extends CustomPainter {
 }
 
 void main() {
+  setUpAll(loadGoldenFonts);
   // strike_*: 피버 첫 일격(UltimateCast) — 선장 컷인(0.15초)·금빛 번개(0.7초).
   for (final (name, afterMs, strike) in const [
     ('start', 250.0, false),

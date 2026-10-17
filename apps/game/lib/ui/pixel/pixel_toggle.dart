@@ -43,8 +43,9 @@ class PixelToggle extends StatelessWidget {
               child: Container(
                 width: _h - 6,
                 height: _h - 6,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
+                  border: Border.all(color: Skin.outline, width: 2),
                   shape: BoxShape.circle,
                   boxShadow: Skin.shadowSmall,
                 ),
