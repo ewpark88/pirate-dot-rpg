@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-17 저녁 · S3 · 골든 일괄 갱신·특성·보스 특성 wip·근접 베기 v2
+- 3b5c900 main 7a4b32b 머지 + render 골든 일괄 갱신(손맛 v4·피버 v2·특성·C8·보스전 비킴). check --full: test/proto fever_motion 4장만 실패(platform 레인 — S1이 main에서 갱신).
+- a3ec94d(lane에 합침) 선원 특성: 연쇄 번개·처형·충전·추적 휨. e1de208 도감 v2 보스 패턴(먹물·삼키기·분열·자폭). 근접 베기 v2(등급별 초승달 궤적·신화 360°). sfx-stuck(S5) 검토 OK.
+- wip 브랜치(엔진 들어오면 합침): wip/render-traits2(saw·lobster·bara·sword·davy, rooted 연결 남음), wip/render-boss-traits c87474d(회피·장갑·재생·반사막·분노·호위·가속).
+- 다음: 출격(공중 air 5·강습 assault 5) 연출 제거 — 엔진 변경과 함께 근접 베기 v2·일반 탄으로. crew-traits-2·boss-traits 머지 시 wip 합치고 골든.
+
 ### 2026-10-17 오후 · S3 · #20·#6·브레이크·첫 일격·#22·손맛 v4·피버 v2·보급·보통 보스 23종
 - 60e5be0 #20 빠른 항해 정리(콤보 배너 쉼·일반 숫자 없음·흰 속도선·파도 벽/항적 V자 짧게). 8db78be 카드 묶기(×n·+n). c174653 #6 상자(빛줄기·반사·들썩·반짝 줄). 84e27d1 대보스 움직임. a821bf7 보스 브레이크(충격파·조각·BREAK! 도장·기우뚱·별·노란 게이지). d2ade4c 피버 첫 일격(선장 컷인·금빛 번개 12). 42dd438 #22 카드 앞면 공개(cardFx.minRarity, BattleGame.cardFxMinRarity).
 - 85348dd·5089af5 손맛 v4(squash&stretch·파스텔 별/하트·흰 충격파·POP!·치명 별·숫자 overshoot/연쇄 색·코인 튐·5↑ 가장자리) + 피버 v2(전체 금빛·무지개 항적·파편 14·콤보 대형·8자 모션 x·y 항적·꺾임 물보라), 부하 피버 200마리. c0f592f 보급 낙하산 상자. e5f71eb 보통 보스 23종(gen_topdown_rotation_bosses.py). ef85d6c 보스 숨쉬기 공통.
