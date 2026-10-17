@@ -94,7 +94,8 @@ class TopEnemies {
       final breathe =
           (e.boss ? (hd != null ? 1 : 1 + 0.03 * math.sin(clock / 420 + e.id)) * (angry ? 1.08 : 1) : 1.0) * pop;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
-      final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
+      final flash = e.boss && hd != null ? _bossFlash(e.id, now: clock, on: e.flash) : e.flash;
+      final hot = !flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0.0;
       // HD: 정면 3/4 그림이라 진행 방향으로 돌리지 않고 살짝 흔들기만(좌우는 시트 행으로).
       final rotation = hd != null
@@ -124,12 +125,12 @@ class TopEnemies {
       if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
       final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
       if (sq != null) {
-        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
+        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash, hot));
         continue;
       }
-      final batch = (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
+      final batch = (flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
         spr.image,
-        () => _Batch(spr.image, flash: e.flash, boss: e.boss, hd: spr.hd),
+        () => _Batch(spr.image, flash: flash, boss: e.boss, hd: spr.hd),
       );
       // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
       final xf = RSTransform.fromComponents(
@@ -185,6 +186,7 @@ class TopEnemies {
 
   final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
+  final Map<int, double> _bossFlashAt = {};
 
   /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
   bool _facing(int id, double heading) {
