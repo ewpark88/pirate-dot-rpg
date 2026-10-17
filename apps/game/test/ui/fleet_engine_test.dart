@@ -92,6 +92,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(Key('fleet.swap.$out')));
     await tester.pumpAndSettle();
+    // 비교 창(#34)에서 교체.
+    expect(find.byKey(const Key('swap.compare')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('swap.confirm')));
+    await tester.pumpAndSettle();
 
     await _run(tester, host, 2);
     expect(host.state.fleet, contains('starry'), reason: 'fleet ${host.state.fleet}');
@@ -149,6 +153,8 @@ void main() {
       final rows = find.byWidgetPredicate((w) => '${w.key}'.contains('fleet.pick.'));
       expect('${tester.widget(rows.first).key}', contains('starry'));
       await tester.tap(find.byKey(const Key('fleet.pick.starry')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('swap.confirm'))); // 비교 창(#34)
       await tester.pumpAndSettle();
 
       await _run(tester, host, 2);

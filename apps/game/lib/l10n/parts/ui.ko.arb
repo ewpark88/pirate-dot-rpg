@@ -780,5 +780,59 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiSwapTitle": "선원 바꾸기",
+  "uiSwapDps": "초당 공격력 {delta}",
+  "@uiSwapDps": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAim": "조준: {from} → {to}",
+  "@uiSwapAim": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapArea": "공격: {from} → {to}",
+  "@uiSwapArea": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapRange": "사거리: {from} → {to}",
+  "@uiSwapRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAreaWide": "범위",
+  "uiSwapAreaSingle": "단일",
+  "uiSwapBetter": "추천",
+  "uiSwapSimilar": "비슷",
+  "uiSwapWorse": "비추천",
+  "uiSwapMobStrong": "무리 처리 강함",
+  "uiSwapMobWeak": "무리 처리 약함",
+  "uiSwapBossStrong": "보스전 강함",
+  "uiSwapBossWeak": "보스전 약함",
+  "uiSwapConfirm": "교체",
+  "uiSwapDpsUp": "공격력 높음",
+  "uiSwapDpsDown": "공격력 낮음"
 }
