@@ -2505,5 +2505,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiNotifyAskTitle": "알림 받을까요?",
+  "uiNotifyAskBody": "돌아오면 알려 줄까요? 화물칸이 가득 차면 선장님을 부를게요!",
+  "uiNotifyAskLater": "나중에",
+  "uiNotifyAskYes": "좋아요"
 }

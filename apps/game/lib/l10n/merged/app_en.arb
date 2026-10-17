@@ -2512,5 +2512,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiNotifyAskTitle": "Get a heads-up?",
+  "uiNotifyAskBody": "Want a ping when you can come back? I'll call you when the cargo hold is full!",
+  "uiNotifyAskLater": "Later",
+  "uiNotifyAskYes": "Sure!"
 }
