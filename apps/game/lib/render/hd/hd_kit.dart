@@ -225,6 +225,61 @@ class HdKit {
     }
   }
 
+  /// 수중 종(regions layer underwater): 몸 [body] 모양 안에서만 아래 30%가 물빛으로 옅어진다 — 외곽선은 다시 그어 또렷하게.
+  void underwater(Canvas c, Path body) {
+    final box = body.getBounds();
+    c
+      ..save()
+      ..clipPath(body);
+    fill
+      ..color = const Color(0xFFFFFFFF)
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0x002F9FD4), Color(0x002F9FD4), Color(0x662F9FD4)],
+        stops: [0, 0.7, 1],
+      ).createShader(box);
+    c.drawRect(box, fill);
+    fill.shader = null;
+    c
+      ..restore()
+      ..drawPath(body, ink);
+  }
+
+  /// 오르는 거품 3개(수중 종) — [at] 오른쪽 위로, 한 고리에 한 번 올라가 이어진다.
+  void bubbles(Canvas c, double r, double t, {Offset at = Offset.zero}) {
+    _stroke
+      ..strokeWidth = math.max(1.5, r * 0.04)
+      ..color = const Color(0xCCFFFFFF);
+    for (var i = 0; i < 3; i++) {
+      final u = (t / loopMs + i / 3) % 1;
+      c.drawCircle(
+        at + Offset(r * (0.55 + i * 0.18), -r * (0.3 + u * 0.9)),
+        r * (0.06 + i * 0.025) * (1 - u * 0.4),
+        _stroke,
+      );
+    }
+  }
+
+  /// 펼친 날개(공중 종): 뿌리 [root]에서 방향 [angle](0 = 오른쪽)으로 길이 [len], 깃 끝 3갈래. [flap] 0~1 = 접힘~펼침(k.wave로).
+  void wing(Canvas c, Offset root, double len, double angle, double flap, Color light, Color dark) {
+    c
+      ..save()
+      ..translate(root.dx, root.dy)
+      ..rotate(angle - (1 - flap) * 0.6);
+    final h = len * (0.3 + 0.25 * flap);
+    final p = Path()
+      ..moveTo(0, -h * 0.35)
+      ..quadraticBezierTo(len * 0.55, -h * 1.1, len, -h * 0.45)
+      ..quadraticBezierTo(len * 0.9, -h * 0.05, len * 0.82, h * 0.05)
+      ..quadraticBezierTo(len * 0.74, h * 0.35, len * 0.6, h * 0.25)
+      ..quadraticBezierTo(len * 0.5, h * 0.55, len * 0.36, h * 0.38)
+      ..quadraticBezierTo(len * 0.18, h * 0.5, 0, h * 0.3)
+      ..close();
+    blob(c, p, light, dark, gloss: false);
+    c.restore();
+  }
+
   /// 바다 위 그림자 — 굽기가 종마다 자동으로 깐다.
   void shadow(Canvas c, double r, double ground) {
     fill.color = const Color(0x40061A30);
