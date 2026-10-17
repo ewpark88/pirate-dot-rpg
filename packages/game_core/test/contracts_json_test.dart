@@ -77,6 +77,8 @@ void main() {
     const PartMilestone(9, part: 'cannon', level: 25),
     const CrewSummoned(9, results: [(crewId: 'octo', rarity: 'common')]),
     const CrewPromoted(9, crewId: 'octo', rarity: 'rare'),
+    const CardGranted(9, crewId: 'bones', rarity: 'rare', source: 'starter', isNew: true),
+    const CardGranted(9, crewId: 'octo', rarity: 'common', source: 'boss'),
     const ChestSpawned(10, x: 200, y: 90),
     ChestOpened(10, gold: BigNum.from(100)),
     OfflineReward(0, gold: BigNum.parse('1e9'), cards: 3, seconds: 28800),
