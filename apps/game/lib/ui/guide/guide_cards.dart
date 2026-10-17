@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/guide/guide_moments.dart';
 import 'package:pirate_dot/ui/hud/captain_skill_button.dart' show captainSkillReady;
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
+
+export 'package:pirate_dot/ui/guide/guide_moments.dart' show GuideHold, guideHoldProvider;
 
 // 가이드 v3 (S1 승인 2026-10-17, 스토리보드 docs/specs/ui-guide-v3/): 옥토 선장이 말풍선으로 한 마디씩 — 짧은 해요체 대화.
 // ① 첫 6단계 = 코어 tutorialStep 그대로(누름은 밝은 곳만, 어둡게는 첫 두 단계만). 한 단계 안에서도 화면 상태(시트 열림·파밍)에 맞는 말을 고른다.
@@ -30,6 +33,7 @@ const guideIds = [
   'guide.shipSkin',
   'guide.scenes', 'guide.pass', // 탑·러시·던전 열림 · 패스 첫 단계
   'guide.ult', // 선장 필살기 게이지가 처음 가득
+  'guide.horde', 'guide.achievement', 'guide.speed', // 오늘 생긴 기능(한 실행 하나 — guide_moments)
 ];
 
 /// 예전 말풍선의 본 기록 → 같은 안내로 본다(옛 세이브에서 다시 뜨지 않게).
@@ -54,10 +58,11 @@ const guideSpots = {
   'guide.scenes': ['tab.voyage', 'tower.card'],
   'guide.pass': ['tab.voyage', 'pass.card'],
   'guide.ult': ['captain.skill'],
+  'guide.achievement': ['tab.voyage', 'ach.open'],
 };
 
 /// 전투 중에 뜨는 안내 — 어둡게 하지 않고 손가락 없이 말만, 3초 뒤 초상만 남게 접힌다. 그 상황이 끝나면 닫힌다.
-const battleGuideIds = {'guide.boss', 'guide.bossTrait', 'guide.fever', 'guide.ult'};
+const battleGuideIds = {'guide.boss', 'guide.bossTrait', 'guide.fever', 'guide.ult', 'guide.horde', 'guide.speed'};
 
 /// '안내 다시 보기'(ClearHints 접두어).
 const guideHintPrefix = 'guide.';
@@ -84,6 +89,7 @@ List<String> activeGuides(GameState s, GameTables t) {
     if (s.tower != null) 'guide.scenes', // 탑·러시·던전은 함께 열린다(환생 1 또는 스테이지 60)
     if (passLevel(s, t) > 0) 'guide.pass',
     if (captainSkillReady(s)) 'guide.ult',
+    if (achievementsClaimable(s, t) > 0) 'guide.achievement',
   ];
 }
 
@@ -104,7 +110,8 @@ bool _rebirthReady(GameState s, GameTables t) {
 /// 조건이 맞는 id들 — 쉼표로 이은 글(20Hz 상태에서 값이 같으면 다시 계산하지 않게).
 final _activeProvider = Provider<String>((ref) {
   final t = ref.watch(tablesProvider);
-  return ref.watch(gameStateProvider.select((s) => activeGuides(s, t).join(',')));
+  final moments = ref.watch(guideMomentsProvider);
+  return ref.watch(gameStateProvider.select((s) => [...activeGuides(s, t), ...moments].join(',')));
 });
 
 /// 처음 만나는 시스템 안내를 켤지 (테스트 하네스가 끈다 — 가이드를 시험하는 테스트만 켠다).
@@ -127,7 +134,12 @@ class GuideQueue extends Notifier<String?> {
     final cur = _current;
     // 전투 안내·상황 안내(보스 다시 도전)는 그 상황이 끝나면 닫힌다. 나머지는 닫을 때까지 남는다.
     if (cur != null && (!_situational.contains(cur) || active.contains(cur))) return cur;
-    _current = guideIds.where((id) => active.contains(id) && !wasSeen(id) && !_shown.contains(id)).firstOrNull;
+    // 오늘 생긴 기능 안내는 한 실행에 하나.
+    final featureSpent = _shown.any(featureGuideIds.contains);
+    _current = guideIds
+        .where((id) => active.contains(id) && !wasSeen(id) && !_shown.contains(id))
+        .where((id) => !(featureSpent && featureGuideIds.contains(id)))
+        .firstOrNull;
     if (_current case final id?) {
       _shown.add(id);
       // 띄우는 순간 본 것으로 남긴다(앱을 꺼도 다시 안 뜬다). 빌드 중 명령을 보내지 않게 한 박자 뒤.
@@ -237,6 +249,9 @@ GuideTalk? guideTalkFor(AppLocalizations l, {required GuideScene scene, int? ste
     'guide.scenes' => l.uiTalkScenes,
     'guide.pass' => l.uiTalkPass,
     'guide.ult' => l.uiTalkUlt,
+    'guide.horde' => l.uiTalkHorde,
+    'guide.achievement' => l.uiTalkAchievement,
+    'guide.speed' => l.uiTalkSpeed,
     'guide.fever' => l.uiTalkFever,
     'guide.chest' => l.uiTalkChest,
     'guide.bossRetry' => l.uiTalkBossRetry,
@@ -256,32 +271,6 @@ GuideTalk? guideTalkFor(AppLocalizations l, {required GuideScene scene, int? ste
     battle: battleGuideIds.contains(id),
     dim: false,
   );
-}
-
-/// 가이드 말 잠깐 멈춤 (환영 카드 순간 — S3 카드 연출이 전장 가운데에서 끝날 때까지, S3 c12ced0a).
-final guideHoldProvider = NotifierProvider<GuideHold, bool>(GuideHold.new);
-
-class GuideHold extends Notifier<bool> {
-  Timer? _end;
-
-  @override
-  bool build() {
-    ref.onDispose(() => _end?.cancel());
-    return false;
-  }
-
-  /// 타이머를 멈춘다(접은 쪽 화면이 사라질 때 — 타이머가 남지 않게). 화면 정리 중이라 상태는 바꾸지 않는다.
-  void release() {
-    _end?.cancel();
-    _end = null;
-  }
-
-  /// [duration] 동안 말을 접는다.
-  void hold(Duration duration) {
-    _end?.cancel();
-    state = true;
-    _end = Timer(duration, () => state = false);
-  }
 }
 
 /// 지금 가리킬 수 있는 id들 (TutorialSpot이 자리를 등록한다 — 말에 따라 그중 보이는 것만 밝힌다). 튜토리얼 단계가 먼저.

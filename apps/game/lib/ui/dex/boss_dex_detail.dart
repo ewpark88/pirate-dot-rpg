@@ -7,6 +7,7 @@ import 'package:pirate_dot/render/hd/hd_portrait.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart' show BossPortrait, bossName;
 import 'package:pirate_dot/ui/dex/monster_dex_data.dart';
 import 'package:pirate_dot/ui/guide/guide_marks.dart' show guideMotionProvider;
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -130,6 +131,8 @@ class BossDexDialog extends ConsumerWidget {
           if (bossCounters(def).isNotEmpty) ...[
             const SizedBox(height: 8),
             WeakChips(boss: def),
+            // 처음 연 보스 상세에만 옥토 한 마디.
+            OnceTip(id: 'tip.bossDex', text: l10n.uiTipBossDex),
           ],
           if (def.patterns.isNotEmpty) ...[
             const SizedBox(height: 8),

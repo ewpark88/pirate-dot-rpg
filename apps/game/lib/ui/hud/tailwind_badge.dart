@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart' show audioPortProvider;
+import 'package:pirate_dot/ui/guide/guide_moments.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -64,6 +65,7 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
           text = l10n.uiSpeedOnPaid(shortDecimal(t.iap.speedMultiplier.toDouble()));
         }
         if (text == null) return;
+        ref.read(guideMomentsProvider.notifier).flash('guide.speed');
         showSkinToast(context, text);
         ref.read(audioPortProvider)?.playSfx('skill', pitch: 1.2);
       },

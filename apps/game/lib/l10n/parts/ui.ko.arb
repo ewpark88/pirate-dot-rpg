@@ -1977,5 +1977,23 @@
     }
   },
   "uiShopSpeedOff": "보통",
-  "uiShopSpeedOn": "×2"
+  "uiShopSpeedOn": "×2",
+  "uiTalkHorde": "몰려와요! 우수수 쓸어 버려요!",
+  "uiTalkAchievement": "업적 보상을 받을 수 있어요! 항해 탭 '업적'을 눌러요!",
+  "uiTalkSpeed": "2배속이 켜졌어요! 전투가 두 배로 빨라져요. 남은 시간은 위 칩에서 봐요!",
+  "uiTipBossDex": "약점 칩의 계열 선원으로 편성하면 훨씬 빨리 잡아요!",
+  "uiHelpTower": "심연의 탑",
+  "uiHelpTowerBody": "한 층씩 올라가는 도전이에요(스테이지 60 또는 환생 1번이면 열려요). 높이 오를수록 보상이 커지고, 이미 깬 층은 한 번에 소탕할 수 있어요.",
+  "uiHelpRush": "보스 러시",
+  "uiHelpRushBody": "보스 5마리를 연달아 상대해요. 모두 잡으면 보상, 빨리 잡을수록 젬과 지도 조각을 더 받아요.",
+  "uiHelpDungeon": "요일 던전",
+  "uiHelpDungeonBody": "요일마다 다른 계열의 선원 카드를 주는 던전이에요. 하루 입장권으로 도전하고, 깬 단계는 소탕으로 빠르게 받아요.",
+  "uiHelpAchievements": "업적",
+  "uiHelpAchievementsBody": "처치·보스·스테이지 같은 기록이 목표에 닿으면 젬을 받아요. 항해 탭 '업적'에서 받아요.",
+  "uiHelpPass": "항해 패스",
+  "uiHelpPassBody": "플레이하며 패스 단계를 올리면 단계마다 보상을 받아요.",
+  "uiHelpUltimate": "선장 필살기",
+  "uiHelpUltimateBody": "싸우면 필살기 게이지가 차요. 가득 차면 오른쪽 아래 버튼으로 화면 전체를 쓸어 버려요.",
+  "uiHelpFever": "피버",
+  "uiHelpFeverBody": "적을 잡으면 피버 게이지가 차요. 가득 차면 잠깐 동안 공격과 골드가 늘고 적이 우르르 몰려와요."
 }
