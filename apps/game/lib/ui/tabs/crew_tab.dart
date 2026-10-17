@@ -4,6 +4,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/crew/crew_header.dart';
+import 'package:pirate_dot/ui/crew/weak_fleet.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -50,6 +51,9 @@ class CrewTab extends ConsumerWidget {
       children: [
         // 머리 한 줄: 도감 · 보상 · 자동 편성 · 일괄 합치기 (열자마자 카드 첫 줄이 보이게, S1 실기기 ③).
         CrewHeader(mergeCount: mergeCount),
+        const SizedBox(height: 6),
+        // 다음 보스 · 약점 계열 · [약점 편성](S1 2026-10-18).
+        const NextBossStrip(),
         const SizedBox(height: 6),
         // 합치기 가능 n명 · 정렬 · 보유 · 특성 필터.
         const CrewQueryBar(),

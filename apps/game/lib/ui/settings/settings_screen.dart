@@ -10,6 +10,7 @@ import 'package:pirate_dot/operator/flags.dart';
 import 'package:pirate_dot/operator/operator_gate.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/offline/notify_ask.dart' show requestNotify;
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
@@ -49,7 +50,11 @@ class SettingsScreen extends ConsumerWidget {
       }),
     );
     final ads = ref.watch(adsPortProvider);
-    void set(String key, Object value) => ref.read(commandSinkProvider).send(SetSetting(key, value));
+    void set(String key, Object value) {
+      ref.read(commandSinkProvider).send(SetSetting(key, value));
+      // 알림을 켜면 시스템 권한도 묻는다(Android 13+, 이미 허락이면 창 없이 지나간다).
+      if (key == 'notifications' && value == true) unawaited(requestNotify(context));
+    }
 
     final switches = [
       ('bgm', l10n.uiSettingsBgm, bgm),

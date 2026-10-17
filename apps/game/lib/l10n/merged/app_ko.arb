@@ -2455,5 +2455,73 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiStatAttack": "공격력",
+  "uiStatSpeed": "공격 속도",
+  "uiStatRange": "사거리",
+  "uiStatTrait": "특성",
+  "uiStatPerSec": "초당 {n}발",
+  "@uiStatPerSec": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeakFleet": "약점 편성",
+  "uiWeakFleetSame": "이미 약점 편성이에요",
+  "uiWeakFleetDone": "약점 계열로 편성했어요!",
+  "uiWeakBadge": "약점!",
+  "uiNextBoss": "다음 보스: {name}",
+  "@uiNextBoss": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uiNewRecord": "NEW RECORD!",
+  "uiSceneSoClose": "아깝다! 다음엔 약점 편성으로",
+  "uiTowerFloorBig": "{n}층",
+  "@uiTowerFloorBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPrevRecord": "이전 기록 {v}",
+  "@uiPrevRecord": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonStepBig": "{n}단계",
+  "@uiDungeonStepBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiNotifyAskTitle": "알림 받을까요?",
+  "uiNotifyAskBody": "돌아오면 알려 줄까요? 화물칸이 가득 차면 선장님을 부를게요!",
+  "uiNotifyAskLater": "나중에",
+  "uiNotifyAskYes": "좋아요",
+  "uiLogTitle": "항해 기록",
+  "uiLogKills": "처치한 적",
+  "uiLogBosses": "처치한 보스",
+  "uiLogBestStage": "최고 스테이지",
+  "uiLogRebirths": "환생",
+  "uiLogTower": "탑 최고 층",
+  "uiLogRush": "러시 최고 기록",
+  "uiLogCollection": "모은 선원",
+  "uiLogSummons": "소환",
+  "uiLogFevers": "피버",
+  "uiLogUltimates": "필살기",
+  "uiLogBounties": "현상금 성공",
+  "uiLogDungeon": "던전 단계",
+  "uiLogShip": "배 강화 합계"
 }

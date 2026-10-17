@@ -2462,5 +2462,73 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiStatAttack": "Attack",
+  "uiStatSpeed": "Attack speed",
+  "uiStatRange": "Range",
+  "uiStatTrait": "Trait",
+  "uiStatPerSec": "{n}/s",
+  "@uiStatPerSec": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeakFleet": "Weak-spot crew",
+  "uiWeakFleetSame": "Already a weak-spot lineup",
+  "uiWeakFleetDone": "Lined up crew it's weak to!",
+  "uiWeakBadge": "Weak!",
+  "uiNextBoss": "Next boss: {name}",
+  "@uiNextBoss": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "uiNewRecord": "NEW RECORD!",
+  "uiSceneSoClose": "So close! Try a weak-spot lineup next",
+  "uiTowerFloorBig": "Floor {n}",
+  "@uiTowerFloorBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPrevRecord": "Previous {v}",
+  "@uiPrevRecord": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonStepBig": "Step {n}",
+  "@uiDungeonStepBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiNotifyAskTitle": "Get a heads-up?",
+  "uiNotifyAskBody": "Want a ping when you can come back? I'll call you when the cargo hold is full!",
+  "uiNotifyAskLater": "Later",
+  "uiNotifyAskYes": "Sure!",
+  "uiLogTitle": "Voyage log",
+  "uiLogKills": "Enemies defeated",
+  "uiLogBosses": "Bosses defeated",
+  "uiLogBestStage": "Best stage",
+  "uiLogRebirths": "Rebirths",
+  "uiLogTower": "Tower best floor",
+  "uiLogRush": "Best rush time",
+  "uiLogCollection": "Crew collected",
+  "uiLogSummons": "Summons",
+  "uiLogFevers": "Fevers",
+  "uiLogUltimates": "Ultimates",
+  "uiLogBounties": "Bounties won",
+  "uiLogDungeon": "Dungeon steps",
+  "uiLogShip": "Ship upgrade total"
 }

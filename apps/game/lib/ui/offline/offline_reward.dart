@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
+import 'package:pirate_dot/ui/offline/notify_ask.dart';
 import 'package:pirate_dot/ui/offline/offline_fx.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -76,6 +77,8 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
       builder: (_) => OfflineRewardDialog(preview: preview),
     );
     _open = false;
+    // 복귀 보상을 받은 직후가 알림 권한을 묻기 좋은 때(첫 실행 즉시가 아니라 — S1 2026-10-18).
+    if (mounted) await maybeAskNotify(context);
   }
 
   @override

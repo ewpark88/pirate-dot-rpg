@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/dex/monster_dex.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/achievements.dart';
+import 'package:pirate_dot/ui/meta/logbook.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pass/pass_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -51,6 +52,7 @@ class VoyageTab extends ConsumerWidget {
           children: [
             Flexible(child: TitleChip()),
             Spacer(),
+            LogbookButton(),
             AchievementsButton(),
           ],
         ),

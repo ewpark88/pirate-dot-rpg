@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,11 +10,10 @@ import 'package:pirate_dot/ui/bounty/bounty_card.dart' show bossName;
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/scene/scene_result.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
-import 'package:pirate_dot/ui/skin/outline_text.dart';
-import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
-import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 // 탑·러시 전투 중 UI (S5 계약): 위쪽 띠('심연 12층 · 2/3파' / '보스 3/5 · 1:42'), 후퇴(보스 도전 자리), 끝나면 결과 창,
@@ -112,11 +112,18 @@ class SceneGate extends ConsumerStatefulWidget {
 class _SceneGateState extends ConsumerState<SceneGate> {
   StreamSubscription<RecordedTick>? _sub;
 
+  /// 끝나기 전 최고 기록(이벤트가 올 때 상태는 이미 새 기록이라 — 신기록 도장·이전 기록 줄 긋기용).
+  late int _towerBest = ref.read(gameStateProvider).tower?.best ?? 0;
+  late int? _rushBest = ref.read(gameStateProvider).rush?.bestTicks;
+  late Map<String, int> _dungeonBest = {...?ref.read(gameStateProvider).dungeon?.cleared};
+
   @override
   void initState() {
     super.initState();
     _sub = ref.read(battleFeedProvider)?.listen((tick) => tick.events.forEach(_on));
   }
+
+  void _show(Widget dialog) => unawaited(showSkinDialog<void>(context, builder: (_) => dialog));
 
   void _on(GameEvent e) {
     if (!mounted) return;
@@ -127,36 +134,35 @@ class _SceneGateState extends ConsumerState<SceneGate> {
       // 탑·던전 소탕은 보상 터짐(RewardGate)이 보여 준다(모든 받기 같은 연출 — S1 2026-10-18).
       case TowerSwept() || DungeonCleared(swept: true):
         break;
-      case DungeonCleared(:final step, :final gems, :final cards):
-        unawaited(
-          showSkinDialog<void>(
-            context,
-            builder: (_) => _ResultDialog(
-              key: const Key('dungeon.result'),
-              title: l10n.uiDungeonClear(step),
-              lines: const [],
-              reward: sceneReward(l10n, gems: gems, cards: cards.length),
-            ),
+      case DungeonCleared(:final group, :final step, :final gems, :final cards):
+        final prev = _dungeonBest[group] ?? 0;
+        _dungeonBest = {..._dungeonBest, group: math.max(prev, step)};
+        _show(
+          SceneResultDialog(
+            key: const Key('dungeon.result'),
+            title: l10n.uiDungeonClear(step),
+            big: (value: step, text: l10n.uiDungeonStepBig),
+            record: step > prev,
+            previous: prev > 0 ? l10n.uiPrevRecord(l10n.uiDungeonStepBig(prev)) : null,
+            rewards: sceneRewardItems(l10n, gems: gems, cards: cards.length),
           ),
         );
       case DungeonFailed(:final step, :final reason):
-        unawaited(
-          showSkinDialog<void>(
-            context,
-            builder: (_) => _ResultDialog(
-              key: const Key('dungeon.fail'),
-              title: l10n.uiDungeonFail(step),
-              lines: [
-                switch (reason) {
-                  'retreat' => l10n.uiTowerEndRetreat,
-                  'timeout' => l10n.uiDungeonTimeout,
-                  'interrupted' => l10n.uiTowerEndInterrupted,
-                  _ => l10n.uiTowerEndSunk,
-                },
-                l10n.uiDungeonTicketBack,
-              ],
-              reward: '',
-            ),
+        _show(
+          SceneResultDialog(
+            key: const Key('dungeon.fail'),
+            title: l10n.uiDungeonFail(step),
+            big: null,
+            failed: reason == 'sunk' || reason == 'timeout',
+            lines: [
+              switch (reason) {
+                'retreat' => l10n.uiTowerEndRetreat,
+                'timeout' => l10n.uiDungeonTimeout,
+                'interrupted' => l10n.uiTowerEndInterrupted,
+                _ => l10n.uiTowerEndSunk,
+              },
+              l10n.uiDungeonTicketBack,
+            ],
           ),
         );
       // 아무것도 못 했으면(앱이 꺼져 0층·0마리로 끝남) 빈 결과 창을 띄우지 않는다(S1 실기기 '0/5 처치' 빈 창).
@@ -164,9 +170,11 @@ class _SceneGateState extends ConsumerState<SceneGate> {
       case RushEnded(killed: 0, gems: 0, pieces: 0):
         break;
       case TowerEnded():
-        unawaited(showSkinDialog<void>(context, builder: (_) => TowerResultDialog(end: e)));
+        _show(TowerResultDialog(end: e, previousBest: _towerBest));
+        _towerBest = math.max(_towerBest, e.floor);
       case RushEnded():
-        unawaited(showSkinDialog<void>(context, builder: (_) => RushResultDialog(end: e)));
+        _show(RushResultDialog(end: e, previousTicks: _rushBest));
+        if (e.best) _rushBest = e.ticks;
       default:
     }
   }
@@ -181,11 +189,14 @@ class _SceneGateState extends ConsumerState<SceneGate> {
   Widget build(BuildContext context) => widget.child;
 }
 
-/// 탑 결과: 'n층까지!' · 끝난 이유 · 처치 수 · 상자(반짝임).
+/// 탑 결과: 도달 층 굴림(신기록이면 도장·이전 기록 줄 긋기) · 끝난 이유 · 처치 수 · 상자. 가라앉음·시간 초과는 약점 편성 바로가기.
 class TowerResultDialog extends StatelessWidget {
-  const TowerResultDialog({required this.end, super.key});
+  const TowerResultDialog({required this.end, this.previousBest = 0, super.key});
 
   final TowerEnded end;
+
+  /// 이번 탑 전 최고 층.
+  final int previousBest;
 
   @override
   Widget build(BuildContext context) {
@@ -196,30 +207,45 @@ class TowerResultDialog extends StatelessWidget {
       'timeout' => l10n.uiTowerEndTimeout(end.floor),
       _ => l10n.uiTowerEndSunk,
     };
-    return _ResultDialog(
+    return SceneResultDialog(
       key: const Key('tower.result'),
       title: l10n.uiTowerReached(end.floor),
+      big: (value: end.floor, text: l10n.uiTowerFloorBig),
+      record: end.floor > previousBest,
+      previous: previousBest > 0 ? l10n.uiPrevRecord(l10n.uiTowerFloorBig(previousBest)) : null,
       lines: [why, l10n.uiSceneKills(end.kills)],
-      reward: sceneReward(l10n, gems: end.chestGems, cards: end.chestCards),
+      rewards: sceneRewardItems(l10n, gems: end.chestGems, cards: end.chestCards),
+      failed: end.reason == 'sunk' || end.reason == 'timeout',
     );
   }
 }
 
-/// 러시 결과: 다 잡았으면 '5마리 모두! m:ss'(+ 새 기록), 아니면 'n/5 처치' · 보상.
+/// 러시 결과: 다 잡았으면 걸린 시간 굴림(+ 새 기록 도장·이전 기록), 아니면 처치 수 · 보상.
 class RushResultDialog extends ConsumerWidget {
-  const RushResultDialog({required this.end, super.key});
+  const RushResultDialog({required this.end, this.previousTicks, super.key});
 
   final RushEnded end;
+
+  /// 이번 러시 전 최고 기록(틱).
+  final int? previousTicks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final t = ref.watch(tablesProvider);
     final total = t.meta.raw.obj('rush').strs('lineup').length;
-    final time = sceneClock(l10n, end.ticks, t.waves.tickMs);
-    return _ResultDialog(
+    final cleared = end.reason == 'cleared';
+    final prev = previousTicks;
+    return SceneResultDialog(
       key: const Key('rush.result'),
-      title: end.reason == 'cleared' ? l10n.uiRushCleared(time) : l10n.uiRushPartial(end.killed, total),
+      title: cleared
+          ? l10n.uiRushCleared(sceneClock(l10n, end.ticks, t.waves.tickMs))
+          : l10n.uiRushPartial(end.killed, total),
+      big: cleared
+          ? (value: end.ticks, text: (v) => sceneClock(l10n, v, t.waves.tickMs))
+          : (value: end.killed, text: (v) => '$v / $total'),
+      record: end.best,
+      previous: prev != null ? l10n.uiPrevRecord(sceneClock(l10n, prev, t.waves.tickMs)) : null,
       lines: [
         if (end.best) l10n.uiRushNewBest,
         switch (end.reason) {
@@ -230,47 +256,15 @@ class RushResultDialog extends ConsumerWidget {
           _ => l10n.uiTowerEndSunk,
         },
       ].where((t) => t.isNotEmpty).toList(),
-      reward: sceneReward(l10n, gems: end.gems, pieces: end.pieces),
+      rewards: sceneRewardItems(l10n, gems: end.gems, pieces: end.pieces),
+      failed: !cleared && (end.reason == 'sunk' || end.reason == 'timeout'),
     );
   }
 }
 
-class _ResultDialog extends StatelessWidget {
-  const _ResultDialog({required this.title, required this.lines, required this.reward, super.key});
-
-  final String title;
-  final List<String> lines;
-  final String reward;
-
-  @override
-  Widget build(BuildContext context) => PixelDialog(
-    title: title,
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final line in lines) Text(line, textAlign: TextAlign.center, style: Skin.text(16)),
-        if (reward.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          RewardSparkle(
-            // 항목마다 따로(가운데 점 '·'은 굵은 테에 묻혀 동그라미로 보였다 — 영어 점검 2026-10-18).
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 14,
-              children: [
-                for (final part in reward.split(AppLocalizations.of(context).uiListSep))
-                  OutlineText(part, size: 22, tone: OutlineTone.gold),
-              ],
-            ),
-          ),
-        ],
-      ],
-    ),
-    actions: [
-      SkinButton(
-        key: const Key('scene.result.ok'),
-        onPressed: () => Navigator.of(context).pop(),
-        child: Text(AppLocalizations.of(context).uiOk),
-      ),
-    ],
-  );
-}
+/// 보상 칸(아이콘 + 글, 0인 것은 빼고) — [확인]을 누르면 아이콘이 위 막대로 날아간다.
+List<SceneRewardItem> sceneRewardItems(AppLocalizations l, {int gems = 0, int cards = 0, int pieces = 0}) => [
+  if (gems > 0) (icon: UiSprites.gem, text: l.uiSceneGems(gems)),
+  if (cards > 0) (icon: UiSprites.cardBack, text: l.uiSceneCards(cards)),
+  if (pieces > 0) (icon: UiSprites.tabMap, text: l.uiScenePieces(pieces)),
+];
