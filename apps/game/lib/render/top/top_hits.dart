@@ -230,7 +230,7 @@ class TopHits {
     traits
       ?..ship = ship
       ..paint(c, now, view, s.poses, s.poseCount, lite: lite);
-    impact.paint(c, now, flash: flash, lite: lite);
+    impact.paint(c, now, flash: flash, lite: lite, ship: ship);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);
     fast.paintWorld(c, now, ship);

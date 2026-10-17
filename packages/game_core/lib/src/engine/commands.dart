@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 part 'commands_bounty.dart';
 part 'commands_fun.dart';
 part 'commands_rebirth.dart';
+part 'commands_tower.dart';
 part 'operator_commands.dart';
 
 /// 플레이어 입력. UI는 버튼을 누르면 Command만 보낸다. 엔진은 다음 틱에 적용한다.
@@ -53,6 +54,11 @@ sealed class Command {
       'startBounty' => StartBounty(j['bossId'] as String, j['tier'] as int),
       'sweepBounty' => SweepBounty(j['bossId'] as String, j['count'] as int),
       'retreatBounty' => const RetreatBounty(),
+      'startTower' => const StartTower(),
+      'sweepTower' => const SweepTower(),
+      'retreatTower' => const RetreatTower(),
+      'startRush' => const StartRush(),
+      'retreatRush' => const RetreatRush(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       'markHint' => MarkHint(j['id'] as String),
       'buySkin' => BuySkin(j['id'] as String),

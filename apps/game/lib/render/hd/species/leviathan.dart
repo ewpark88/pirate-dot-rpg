@@ -66,9 +66,7 @@ void _leviathan(HdKit k, Canvas c, double r, double t) {
     ..quadraticBezierTo(r * 0.3, r * 0.42, 0, r * 0.45)
     ..quadraticBezierTo(-r * 0.3, r * 0.42, -r * 0.48, r * 0.05)
     ..close();
-  k
-    ..blob(c, head, const Color(0xFFFF8A6A), redD)
-    ..shine2(c, head.getBounds());
+  k.blob(c, head, const Color(0xFFFF8A6A), redD);
   // 불빛 눈(주황 + 세로 동공)
   for (final s in const [-1.0, 1.0]) {
     final at = Offset(s * r * 0.24, -r * 0.08);

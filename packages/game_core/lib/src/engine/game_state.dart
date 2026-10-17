@@ -21,6 +21,8 @@ class GameState {
     this.fleetInit = false,
     this.rebirthShop = const {},
     this.bounty,
+    this.tower,
+    this.rush,
     this.tokens = 0,
     this.pityCount = 0,
     this.summonsTotal = 0,
@@ -69,6 +71,8 @@ class GameState {
     fleetInit: j['fleetInit'] as bool? ?? false,
     rebirthShop: (j['rebirthShop'] as Map?)?.cast<String, int>() ?? const {},
     bounty: j['bounty'] == null ? null : BountyState.fromJson(j['bounty'] as Json),
+    tower: j['tower'] == null ? null : TowerState.fromJson(j['tower'] as Json),
+    rush: j['rush'] == null ? null : RushState.fromJson(j['rush'] as Json),
     tokens: j['tokens'] as int,
     pityCount: (j['summon'] as Json)['pityCount'] as int,
     summonsTotal: (j['summon'] as Json)['total'] as int,
@@ -104,6 +108,12 @@ class GameState {
 
   /// 현상금 사냥 (docs/specs/platform-content-bounty.md 4절, 세이브 v6 키 그대로). null = 아직 없음(경제가 첫 틱에 채운다).
   final BountyState? bounty;
+
+  /// 심연의 탑(platform-content-v2 4절, 선택 키). null = 아직 없음(열리면 경제가 채운다).
+  final TowerState? tower;
+
+  /// 보스 러시(platform-boss-rush, 선택 키). null = 아직 없음.
+  final RushState? rush;
 
   /// 해적의 증표.
   final int tokens;
@@ -146,6 +156,8 @@ class GameState {
     bool? fleetInit,
     Map<String, int>? rebirthShop,
     BountyState? bounty,
+    TowerState? tower,
+    RushState? rush,
     int? tokens,
     int? pityCount,
     int? summonsTotal,
@@ -173,6 +185,8 @@ class GameState {
     fleetInit: fleetInit ?? this.fleetInit,
     rebirthShop: rebirthShop ?? this.rebirthShop,
     bounty: bounty ?? this.bounty,
+    tower: tower ?? this.tower,
+    rush: rush ?? this.rush,
     tokens: tokens ?? this.tokens,
     pityCount: pityCount ?? this.pityCount,
     summonsTotal: summonsTotal ?? this.summonsTotal,
@@ -201,6 +215,8 @@ class GameState {
     'fleetInit': fleetInit,
     'rebirthShop': rebirthShop,
     'bounty': bounty?.toJson(),
+    if (tower != null) 'tower': tower!.toJson(),
+    if (rush != null) 'rush': rush!.toJson(),
     'tokens': tokens,
     'summon': {'pityCount': pityCount, 'total': summonsTotal},
     'tutorialStep': tutorialStep,

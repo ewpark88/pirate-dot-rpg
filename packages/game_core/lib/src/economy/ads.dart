@@ -1,7 +1,9 @@
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/gold_cap.dart';
+import 'package:game_core/src/economy/rush.dart' show rushAdTicket;
 import 'package:game_core/src/economy/summon.dart';
+import 'package:game_core/src/economy/tower.dart' show towerAdTicket;
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -24,6 +26,8 @@ bool canWatchAd(GameState state, GameTables t, AdPlacement placement) {
     AdPlacement.chest => state.battle?.chest != null,
     AdPlacement.offline => state.lastOfflineGold != null,
     AdPlacement.bountyTicket => state.bounty != null,
+    AdPlacement.towerTicket => state.tower != null,
+    AdPlacement.rushTicket => state.rush != null,
     _ => true,
   };
 }
@@ -42,7 +46,8 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
           : openChest(s, ctx, gold: chestReward(s, t).times(reward.number('value'))),
     AdPlacement.tailwind => _saved(addTailwind(s, t, now, Duration(seconds: reward.integer('durationSec'))), ctx),
     AdPlacement.offline => _saved(
-      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!), // 광고 ×2도 화물칸 용량까지
+      // 광고 ×2도 복귀 보상과 같은 한도(화물칸 × offline.capMultiplier)
+      grantGold(s.copyWith(clearLastOfflineGold: true), ctx, s.lastOfflineGold!, capScale: offlineCapScale(ctx.tables)),
       ctx,
     ),
     AdPlacement.freeSummon => summonCards(s, ctx, reward.integer('value'), reason: command.type),
@@ -55,6 +60,8 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
       ),
       ctx,
     ),
+    AdPlacement.towerTicket => _saved(towerAdTicket(s, reward.integer('value'), now), ctx), // 탑 도전권 +1(하루 1)
+    AdPlacement.rushTicket => _saved(rushAdTicket(s, reward.integer('value'), now), ctx), // 러시 도전 +1(하루 1)
     // 함포 지원: 경제가 종료 시각을 채우고, 피해 보너스는 전투가 Buffs.bossSupportUntil을 읽어 적용한다.
     AdPlacement.bossSupport => _saved(
       s.copyWith(

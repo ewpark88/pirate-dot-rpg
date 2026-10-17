@@ -121,7 +121,6 @@ void _body(HdKit k, Canvas c, double r) {
     c.drawLine(Offset(-r * 0.3, y), Offset(r * 0.3, y), k.ink);
   }
   k.ink.strokeWidth = w;
-  k.shine2(c, body.getBounds());
 }
 
 void _jaw(HdKit k, Canvas c, double r, double jaw) {
@@ -158,9 +157,7 @@ void _head(HdKit k, Canvas c, double r, double t, double jaw, {required bool win
     ..clipPath(head);
   k.scales(c, Rect.fromLTRB(-r * 0.6, -r * 1.2, r * 0.6, -r * 0.6), r * 0.14, const Color(0x44194A1E));
   c.restore();
-  k
-    ..shine2(c, head.getBounds())
-    ..spots(c, r, const [(-0.12, -0.56, 0.045), (0.12, -0.56, 0.045)], HdKit.inkColor);
+  k.spots(c, r, const [(-0.12, -0.56, 0.045), (0.12, -0.56, 0.045)], HdKit.inkColor);
   // 콧김(평소엔 가끔, 예고 땐 붉은 김이 계속)
   final puff = wind ? 1.0 : (k.wave(t, 1, -1.5) + 1) / 2;
   if (puff > 0.55 && !down) {

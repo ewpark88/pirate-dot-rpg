@@ -66,6 +66,38 @@ class Moments {
   /// 무리전 침몰(배 HP 0, 엔진이 배를 고치고 파를 다시) 연출 남은 시간(ms): 앞 절반 기울며 가라앉고, 뒤 절반 고쳐져 떠오른다.
   double sinkMs = 0;
 
+  /// 큰 띠(심연의 탑 '12F'·보스 러시 'BOSS RUSH'·'LAST BOSS!'): 가운데 보라 띠 + 큰 글자 + 위 작은 글자.
+  String bannerText = '';
+  String bannerSub = '';
+  double bannerMs = 0;
+  double bannerTotal = 1600;
+  bool bannerHot = false; // 붉은 띠(마지막 보스)
+
+  void banner(String text, {String sub = '', double ms = 1600, bool hot = false}) {
+    bannerText = text;
+    bannerSub = sub;
+    bannerMs = bannerTotal = ms;
+    bannerHot = hot;
+  }
+
+  /// 심연의 탑 층 띠(S1): 층 시작 '12F' 1.6초, 클리어면 위에 'CLEAR!'.
+  void onTowerFloor(int floor, {bool cleared = false}) => banner('${floor}F', sub: cleared ? 'CLEAR!' : '');
+
+  /// 보스 러시(S5): 시작 'BOSS RUSH 1/n', 보스 하나 쓰러질 때마다 다음 번호 짧게, 마지막(대보스) 앞은 붉은 'LAST BOSS!' 길게.
+  int rushTotal = 0;
+  void onRushStarted(int total) {
+    rushTotal = total;
+    banner('BOSS RUSH', sub: '1/$total', ms: 1500);
+  }
+
+  void onRushBossDown(int index) {
+    final next = index + 2; // 다음 보스 번호(1부터)
+    if (rushTotal <= 0 || next > rushTotal) return;
+    next == rushTotal
+        ? banner('LAST BOSS!', sub: '$next/$rushTotal', ms: 2200, hot: true)
+        : banner('$next/$rushTotal', sub: 'NEXT!', ms: 1000);
+  }
+
   void onShipSunk() {
     if (sinkMs > 0) return;
     sinkMs = scene.fx.raw.obj('shipHp').number('sinkMs');
@@ -93,6 +125,7 @@ class Moments {
   void resetSeenBosses() => _seenBosses.clear();
 
   void update(double dtMs) {
+    if (bannerMs > 0) bannerMs -= dtMs;
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
     if (glowMs > 0) glowMs -= dtMs;

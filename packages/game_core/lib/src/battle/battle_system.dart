@@ -10,7 +10,7 @@ import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/tailwind_speed.dart';
 import 'package:game_core/src/battle/topdown/operator_boss.dart';
-import 'package:game_core/src/battle/topdown/top_bounty.dart';
+import 'package:game_core/src/battle/topdown/scene_mode.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
 import 'package:game_core/src/economy/challenge.dart';
@@ -67,8 +67,8 @@ class BattleSystem implements GameSystem {
           s = _bossCleared(s, _field!, ctx);
         }
         return _project(closeFastSail(s, _field!, ctx, skipped: true, supply: _supply), _field!, ctx.tables);
-      case RetreatBounty():
-        return _project(TopBounty.retreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
+      case RetreatBounty() || RetreatTower() || RetreatRush():
+        return _project(sceneRetreat(state, _sync(state, ctx), ctx), _field!, ctx.tables);
       case OpJumpStage(:final stage):
         _field = null;
         final p = state.progress;
@@ -106,13 +106,13 @@ class BattleSystem implements GameSystem {
 
   @override
   GameState update(GameState state, SystemContext ctx) {
-    final fresh = _field == null; // 앱을 켜 세이브를 불러온 첫 틱 — 남은 현상금 active는 중단 처리
-    final early = TopBounty.prepare(state, _sync(state, ctx), ctx, fresh: fresh);
+    final fresh = _field == null; // 앱을 켜 세이브를 불러온 첫 틱 — 남은 현상금·탑 active는 중단 처리
+    final early = scenePrepare(state, _sync(state, ctx), ctx, fresh: fresh);
     if (early != null) return _project(early, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx.tables);
     final next = _round(state, ctx, (r) {
       final f = r.field;
       r.feverStrike(state); // 피버가 시작되는 틱의 첫 일격(궁극기 효과)
-      if (f.waveFoes.isEmpty && !f.bossActive) {
+      if (f.waveFoes.isEmpty && !f.bossActive && !f.inScene) {
         f.travelLeft -= r.dt;
         if (f.travelLeft <= 0) _nextEncounter(f, state, ctx);
       }
@@ -127,8 +127,8 @@ class BattleSystem implements GameSystem {
         ..tickCombo()
         ..breakthrough(state); // 빠른 항해 돌파(fast_sail.dart)
     });
-    if (_field!.bounty != null) {
-      return _project(TopBounty.resolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
+    if (_field!.inScene) {
+      return _project(sceneResolve(next, _field!..tick = (state.battle?.tick ?? 0) + 1, ctx), _field!, ctx.tables);
     }
     final resolved = autoBossTick(_resolve(next, _field!, ctx), _field!, ctx.tables);
     final f = _field!..tick = (state.battle?.tick ?? 0) + 1;
