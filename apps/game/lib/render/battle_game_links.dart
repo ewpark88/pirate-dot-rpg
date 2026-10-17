@@ -67,6 +67,9 @@ mixin _UiLinks on FlameGame {
   /// 해역 보스 컷인 (UI가 kind·진행률을 보고 이름을 얹는다). 꺼져 있으면 active false.
   CutInState get cutIn => scene.moments.cutIn;
 
+  /// 보스 등장 연출 남은 ms — UI 보스 대화창은 이게 0이 된 뒤에 띄운다(S1 '대화창과 겹치지 않게').
+  double get bossEntryMs => scene.moments.entryMs;
+
   /// 운영자: 컷인 다시 보기.
   void resetSeenBosses() => scene.moments.resetSeenBosses();
 

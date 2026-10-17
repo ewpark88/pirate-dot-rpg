@@ -42,7 +42,7 @@ class TopOverlays {
     final t = 1 - m.bannerMs / m.bannerTotal;
     final open = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1.0);
     final h = box.height * 0.085 * open;
-    final cy = box.height * 0.36;
+    final cy = box.height * m.bannerY;
     _flashPaint.shader = Gradient.linear(
       Offset(0, cy - h),
       Offset(0, cy + h),
@@ -70,6 +70,15 @@ class TopOverlays {
         color: const Color(0xFF7AFFB0),
       );
     }
+  }
+
+  /// 보스 등장 첫 0.3초 화면 어둡게(30% → 0) — 보스만 빛나게.
+  void _entryDim(Canvas c, Size box) {
+    final m = scene.moments;
+    final age = m.entryTotal - m.entryMs;
+    if (m.entryMs <= 0 || age > 300) return;
+    _flashPaint.color = Color.fromRGBO(10, 6, 24, 0.3 * (1 - age / 300));
+    c.drawRect(Offset.zero & box, _flashPaint);
   }
 
   /// 보스전 누계 'TOTAL 1.2M': 위 HUD 띠 바로 아래 왼쪽 큰 금 글자, 맞을 때마다 1.15배 팝, 끊기면(1.5초) 0.3초에 사라짐.
@@ -101,6 +110,7 @@ class TopOverlays {
       c.drawRect(Offset.zero & box, _flashPaint);
       edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
+    _entryDim(c, box);
     _tower(c, box);
     _bossTotal(c, box);
     final l = atmosphere.lightning(ms);

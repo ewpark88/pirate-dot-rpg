@@ -20,6 +20,11 @@ class FakeAnalyticsSdk implements AnalyticsSdk {
 
   @override
   Future<void> setCollection({required bool enabled}) async => collection = enabled;
+
+  final nonFatal = <String>[];
+
+  @override
+  Future<void> recordNonFatal(Object error, StackTrace? stack, {required String reason}) async => nonFatal.add(reason);
 }
 
 void main() {

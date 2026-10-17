@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:game_core/contracts.dart';
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
 
 /// 효과음·배경음 (스펙 platform-m4 d). 파일 규칙 `sfx/<id>.ogg`·`sfx/<id>_<n>.ogg`·`bgm/<id>.ogg`.
@@ -17,8 +18,8 @@ class AudioAdapter implements AudioPort, AudioMixPort {
     try {
       final listing = sdk.listAssets();
       files = await (timeout == null ? listing : listing.timeout(timeout));
-    } on Object catch (e) {
-      debugPrint('audio: asset list failed — silent ($e)');
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'audio: asset list failed — silent');
     }
     final clock = Stopwatch()..start();
     return AudioAdapter._(sdk, files, nowMs ?? () => clock.elapsedMilliseconds);

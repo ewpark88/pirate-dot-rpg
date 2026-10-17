@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_chest.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_cinematic.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_shop.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
@@ -257,17 +258,24 @@ class _RebirthDoneGateState extends ConsumerState<RebirthDoneGate> {
       final chest = e != null && e.rebirths == after.$1
           ? (gems: e.gems, summons: e.summons, title: e.title, skin: e.skin)
           : chestFor(after.$1);
+      final pieces = e != null && e.rebirths == after.$1 ? e.gain : gain;
       final open = ref.read(rebirthChestOpenProvider.notifier)..opened();
+      // 환생 연출(금빛 감김·지도 비·새 돛 출항·보상 카드) → 상자 창.
       unawaited(
-        showSkinDialog<void>(
-          context,
-          builder: (_) => RebirthChestDialog(
-            chest: chest,
-            pieces: e != null && e.rebirths == after.$1 ? e.gain : gain,
-            bonus: percentText(AppLocalizations.of(context), bonus),
-            onSail: () => ref.read(commandSinkProvider).send(const StartVoyage()),
-          ),
-        ).whenComplete(open.closed),
+        showRebirthCinematic(context, pieces: pieces, chest: chest).then((_) {
+          if (!mounted) return open.closed();
+          unawaited(
+            showSkinDialog<void>(
+              context,
+              builder: (_) => RebirthChestDialog(
+                chest: chest,
+                pieces: pieces,
+                bonus: percentText(AppLocalizations.of(context), bonus),
+                onSail: () => ref.read(commandSinkProvider).send(const StartVoyage()),
+              ),
+            ).whenComplete(open.closed),
+          );
+        }),
       );
     });
   }
