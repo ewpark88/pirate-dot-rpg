@@ -54,7 +54,12 @@ class TopEnemies {
       // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
       final huge = e.boss && sheet.frameW >= _hugeW;
       // 보스는 모두(S1 '23종도 2프레임 차이가 작다') 프레임 300ms·숨쉬기 3%, 큰 보스는 350ms.
-      final frame = ((scene.clockMs / (huge ? 350 : (e.boss ? 300 : 220))).floor() + e.id) % sheet.frames;
+      final period = huge ? 350 : (e.boss ? 300 : 220);
+      final phase = scene.clockMs / period + e.id;
+      final frame = phase.floor() % sheet.frames;
+      // 모션 v1: 2프레임 깜빡임 대신 프레임 끝 30% 동안 다음 프레임으로 서서히 겹쳐 넘어간다(절전이면 끔).
+      final u = phase - phase.floor();
+      final blend = !lite && sheet.frames > 1 && u > 0.7 ? (u - 0.7) / 0.3 : 0.0;
       final angry = e.boss && (scene.topHits.traits?.bossFx.enraged(e.id) ?? false); // 분노: 8% 크게
       // 모션 v1 등장: 처음 보인 적은 0.24초 동안 0.3 → 1.12 → 1로 톡 커지며 물 고리(갑자기 나타나지 않게).
       final born = _born.putIfAbsent(e.id, () => clock);
@@ -79,31 +84,32 @@ class TopEnemies {
         _squashed.add((sheet, frame, rotation, tx, ty, sq.$1, sq.$2, e.flash, hot));
         continue;
       }
-      (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
-          sheet,
-          () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
-        )
-        ..xf.add(
-          RSTransform.fromComponents(
-            // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation: rotation,
-            scale: key == _merchant ? _merchantScale : breathe,
-            anchorX: sheet.frameW / 2,
-            anchorY: sheet.frameH / 2,
-            translateX: tx,
-            translateY: ty,
-          ),
-        )
-        ..src.add(Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH));
+      final batch = (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
+        sheet,
+        () => _Batch(sheet.image, flash: e.flash, boss: e.boss),
+      );
+      // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
+      final xf = RSTransform.fromComponents(
+        rotation: rotation,
+        scale: key == _merchant ? _merchantScale : breathe,
+        anchorX: sheet.frameW / 2,
+        anchorY: sheet.frameH / 2,
+        translateX: tx,
+        translateY: ty,
+      );
+      batch.add(xf, Rect.fromLTWH(frame * sheet.frameW, 0, sheet.frameW, sheet.frameH), 1 - blend * 0.5);
+      if (blend > 0) {
+        batch.add(xf, Rect.fromLTWH((frame + 1) % sheet.frames * sheet.frameW, 0, sheet.frameW, sheet.frameH), blend);
+      }
     }
     for (final b in _batches.values.followedBy(_flashBatches.values)) {
       if (b.xf.isEmpty) continue;
       // 흰 실루엣은 보스만(강), 보통 명중은 금빛 색 번쩍(사용자 '흰 번쩍임 눈 아프다').
       final paint = b.flash ? (b.boss ? _flashPaint : _tintPaint) : (under ? _underPaint : _atlasPaint);
-      c.drawAtlas(b.image, b.xf, b.src, null, null, null, paint);
+      c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, paint);
     }
     for (final b in _hotBatches.values) {
-      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, null, null, null, _hotPaint);
+      if (b.xf.isNotEmpty) c.drawAtlas(b.image, b.xf, b.src, b.colors, BlendMode.modulate, null, _hotPaint);
     }
     for (final (sheet, frame, rot, tx, ty, sx, sy, flash, hot) in _squashed) {
       final w = sheet.frameW;
@@ -231,9 +237,18 @@ class _Batch {
   final bool boss;
   final xf = <RSTransform>[];
   final src = <Rect>[];
+  final colors = <Color>[];
+
+  /// [alpha] = 겹침 투명도(프레임 넘김 섞기).
+  void add(RSTransform t, Rect r, double alpha) {
+    xf.add(t);
+    src.add(r);
+    colors.add(Color.fromRGBO(255, 255, 255, alpha));
+  }
 
   void clear() {
     xf.clear();
     src.clear();
+    colors.clear();
   }
 }
