@@ -32,8 +32,7 @@ const _hotRatio = 0.8;
 
 /// 보스 시간 막대 아래 브레이크 막대 (사용자 결정 2026-10-17, 폰 피드백으로 v2): 왼쪽 ⚡BREAK 칩 + 두꺼운 막대.
 /// 오르면 잠깐 반짝, 80% 넘으면 살짝 흔들림(전투 틱으로 — 반복 애니메이션 없음), 쓰러진 동안은 금빛 가득 + 'BREAK!'.
-/// 일어난 뒤 게이지가 0인 동안은 회색 + 자물쇠(엔진 쿨다운 — 계약에 없어 '쓰러졌다 일어난 뒤 0'으로 본다, S1 2026-10-17.
-/// S2 EnemyView.breakCooldown이 오면 그 값으로 차오르는 시계를 그린다).
+/// 일어난 뒤 쿨다운(EnemyView.breakCooldown) 동안은 회색 + 자물쇠 + 차오르는 시계.
 /// 번쩍임 끔·동작 줄이기면 반짝·흔들림 없이 색만.
 class BossBreakBar extends ConsumerStatefulWidget {
   const BossBreakBar({super.key});
@@ -46,25 +45,29 @@ class _BossBreakBarState extends ConsumerState<BossBreakBar> {
   double _last = 0;
   int _rose = -_shineTicks;
 
-  /// 쓰러졌다 일어난 뒤 아직 다시 오르지 않았다(쿨다운으로 보임).
-  bool _cooling = false;
-
   @override
   Widget build(BuildContext context) {
-    final (ratio, broken, tick, flash) = ref.watch(
+    final (ratio, broken, cooldown, tick, flash) = ref.watch(
       gameStateProvider.select((s) {
         final t = s.battle?.tick ?? 0;
         for (final e in s.battle?.enemies ?? const <EnemyView>[]) {
-          if (e.boss) return ((e.breakRatio * 50).round() / 50, e.broken, t, s.settings.flash);
+          if (e.boss) {
+            return (
+              (e.breakRatio * 50).round() / 50,
+              e.broken,
+              (e.breakCooldown * 50).round() / 50,
+              t,
+              s.settings.flash,
+            );
+          }
         }
-        return (0.0, false, t, s.settings.flash);
+        return (0.0, false, 0.0, t, s.settings.flash);
       }),
     );
     if (ratio > _last + 0.001) _rose = tick;
     _last = ratio;
-    if (broken) _cooling = true;
-    if (ratio > 0) _cooling = false;
-    final locked = _cooling && !broken;
+    // 쿨다운(S2 EnemyView.breakCooldown, 남은 비율 1 → 0): 회색 + 자물쇠 + 차오르는 시계, 막대는 다시 쌓일 때까지 회색으로 차오른다.
+    final locked = cooldown > 0 && !broken;
     final calm = !flash || MediaQuery.disableAnimationsOf(context);
     final shine = calm ? 0.0 : (1 - (tick - _rose) / _shineTicks).clamp(0.0, 1.0);
     final hot = broken || ratio >= _hotRatio;
@@ -78,7 +81,7 @@ class _BossBreakBarState extends ConsumerState<BossBreakBar> {
         child: Row(
           key: Key(hot ? 'hud.break.hot' : 'hud.break'),
           children: [
-            _Chip(label: broken ? l10n.uiBossBreak : l10n.uiBossBreakTag, locked: locked),
+            _Chip(label: broken ? l10n.uiBossBreak : l10n.uiBossBreakTag, locked: locked, ready: 1 - cooldown),
             const SizedBox(width: 5),
             Expanded(
               child: Container(
@@ -103,7 +106,7 @@ class _BossBreakBarState extends ConsumerState<BossBreakBar> {
                       FractionallySizedBox(
                         key: Key(broken ? 'hud.break.full' : (locked ? 'hud.break.locked' : 'hud.break.fill')),
                         alignment: Alignment.centerLeft,
-                        widthFactor: broken || locked ? 1 : ratio.clamp(0.0, 1.0),
+                        widthFactor: broken ? 1 : (locked ? (1 - cooldown).clamp(0.0, 1.0) : ratio.clamp(0.0, 1.0)),
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             gradient: locked
@@ -111,7 +114,7 @@ class _BossBreakBarState extends ConsumerState<BossBreakBar> {
                                 : LinearGradient(
                                     colors: broken ? const [_breakTo, _breakTo] : const [_breakFrom, _breakTo],
                                   ),
-                            color: locked ? _locked.withValues(alpha: 0.55) : null,
+                            color: locked ? _locked : null,
                           ),
                         ),
                       ),
@@ -133,12 +136,15 @@ class _BossBreakBarState extends ConsumerState<BossBreakBar> {
   }
 }
 
-/// 막대 왼쪽 '⚡BREAK' 칩 (쓰러진 동안 'BREAK!', 쿨다운이면 회색 + 자물쇠).
+/// 막대 왼쪽 '⚡BREAK' 칩 (쓰러진 동안 'BREAK!', 쿨다운이면 회색 + 자물쇠 + 차오르는 시계).
 class _Chip extends StatelessWidget {
-  const _Chip({required this.label, required this.locked});
+  const _Chip({required this.label, required this.locked, required this.ready});
 
   final String label;
   final bool locked;
+
+  /// 쿨다운이 끝나 가는 정도 0~1 (시계가 차오른다).
+  final double ready;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -153,6 +159,19 @@ class _Chip extends StatelessWidget {
       children: [
         Icon(locked ? Icons.lock_rounded : Icons.bolt_rounded, size: 13, color: _outline),
         Text(label, style: Skin.text(11, color: _outline)),
+        if (locked) ...[
+          const SizedBox(width: 3),
+          SizedBox.square(
+            dimension: 11,
+            child: CircularProgressIndicator(
+              key: const Key('hud.break.clock'),
+              value: ready.clamp(0.0, 1.0),
+              strokeWidth: 2.5,
+              color: Colors.white,
+              backgroundColor: _outline.withValues(alpha: 0.35),
+            ),
+          ),
+        ],
       ],
     ),
   );

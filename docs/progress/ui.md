@@ -3,12 +3,20 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/user-feedback-2026-10-17.md`(S1 재배정 순서) · 가이드 v2 스펙 `docs/specs/ui-guide-v2.md`(승인) |
-| 상태 | 93b4ca4d까지 lane/ui. 2026-10-17: fever-break UI·idle/thermal 연결·#1 패배 안내 v2·골든 71장·도감 진짜 값·첫 처치 토스트 |
-| 다음 | #5 보스 공격력 비교·보스/배 체력 상시 · #7 골드 현재/최대 → #3 가이드 v2 구현(10개 카드, 튜토리얼 중 누름 막기) → #12 · #11/16 → #14·#13(S5 crewDamage 계약 뒤) · #21 · #9·#6. #19·#20은 S5(review/sail-ui) — 검토만 |
-| 기다리는 것 | S2 ClearHints(prefix)(설정 '안내 다시 보기') · S5 BattleView.crewDamage·BossCleared.mvp · S3 hud_painter 궁극기 원 그림 삭제 |
+| 계획 | `docs/plans/active/user-feedback-2026-10-17.md`(S1 재배정) · 가이드 v2 `docs/specs/ui-guide-v2.md`(승인·구현됨) |
+| 상태 | lane/ui 02a85945 — S1 머지 대기(test/ui 전체 + --full은 slot 순번 S2 → S3 → S4) |
+| 다음 | slot 받으면 최신 main 머지 → test/ui 전체·--full → 해시 보고. S2 crew-traits 문구 review 검토. S5 hud-layout(#9)이 stage_gauge·fun_strips·battle_top_strip을 내 커밋 뒤에 손댐 |
+| 기다리는 것 | slot · S5 '지금 합치기'(MergeAllCards 전체 합치기) 문구/명령 결정 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 오후 · S4 · 가이드 v2 · 브레이크 v2 · 모두 강화 · #5 · 피버 v2 UI · 새 화면 점검
+- 0a9836e4·44cca20d·d213ab80 보스 브레이크: 궁극기 제거 → 막대 v2(12dp·외곽선·하늘→노랑·⚡칩·반짝·80% 흔들림·쓰러짐 금빛) → 쿨다운(EnemyView.breakCooldown) 회색+자물쇠+시계.
+- e27c43c2 가이드 v2(카드·밝은 곳·손가락·튜토리얼 누름 막기·시스템 카드 9+출항·안내 다시 보기). 하네스 guidesEnabledProvider(guides: true만 카드), withGuidesSeen.
+- 60de2b09 #1 패배 안내 v2 · 93b4ca4d 도감 진짜 값 + 첫 처치 토스트 · 60384272 설정 번쩍임 3단계 · a8409e9a 절전 1/5/10/20/30분(기본 10).
+- f6f7ff9f 첫 무료 10연 잠금 · 91922d4f #22 카드 연출(crewName·운영자 시작 등급) · 모두 강화(bestUpgradePlan) · a65379ff/0decfa19 #5 보스 vs 나(게이지 안 다음 목표 자리) + 피버 v2(남은 시간 막대·FEVER ×n·끝 요약 n마리) · 02a85945 새 화면 4기기×ko·en 점검 40개(넘침 1건 고침).
+- 교훈: TutorialSpot처럼 여러 화면에 감싸는 위젯은 Stack fit(passthrough/loose)이 배치를 바꾼다 — 골든 대량 차이로 바로 드러남. 전투 중 안내 카드는 연출('FEVER!')을 가리지 않게 도크 위.
+- 남은 문제: 피버 끝 요약은 위쪽 알약 자리(FeverSlot) — S3 끝 연출과 실기기에서 겹침 확인 필요.
 
 ### 2026-10-17 · S4 · fever-break UI · 방치/발열 연결 · 패배 안내 v2 · 도감 진짜 값
 - 0a9836e4 궁극기 버튼·함성 게이지 제거, 보스 브레이크 막대(상단 게이지 보스 시간 막대 아래 — S1 승인, 보스 그림 반지름을 UI가 몰라 머리 위 대신)·BossBroken 'BREAK!'.

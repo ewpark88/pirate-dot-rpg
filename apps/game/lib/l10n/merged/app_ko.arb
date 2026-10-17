@@ -890,5 +890,112 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeAll": "모두 강화",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiGuideSailTitle": "출항!",
+  "uiGuideSailWhy": "환생으로 더 강해졌어요. 출항하면 지나온 바다를 빠르게 지나가요.",
+  "uiBossCompare": "보스 체력 {hp} · 약 {kill}초 / {limit}초 · 한 방 {hit}%",
+  "uiBossCompareEasy": "여유",
+  "uiBossCompareTight": "빠듯",
+  "uiBossCompareHard": "어려움",
+  "@uiBossCompare": {
+    "placeholders": {
+      "hp": {
+        "type": "String"
+      },
+      "kill": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "hit": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "피버 끝 · {kills}마리 · 골드 +{amount}",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendChainLightning": "연쇄 번개: 적 {count}마리까지 이어짐 (튈 때마다 피해 {falloff})",
+  "uiLegendExecute": "처형: 체력 {below} 아래 적에게 피해 ×{mul}",
+  "uiLegendCharge": "충전 사격: {every}번째 사격마다 피해 ×{mul} + 기절 {sec}초",
+  "uiLegendNoMiss": "추적 깃털: 빗나가지 않음 (회피하는 보스에 강함)",
+  "uiLegendNoMissChance": "추적 깃털: {percent} 확률로 빗나가지 않음",
+  "uiHitHoming": "추적",
+  "@uiLegendChainLightning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "falloff": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendExecute": {
+    "placeholders": {
+      "below": {
+        "type": "String"
+      },
+      "mul": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendCharge": {
+    "placeholders": {
+      "every": {
+        "type": "int"
+      },
+      "mul": {
+        "type": "String"
+      },
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendNoMissChance": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSlotDamage": "피해 {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

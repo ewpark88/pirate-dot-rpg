@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
+import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 import 'ui_harness.dart';
@@ -31,6 +32,30 @@ const List<(String, Size, double)> _devices = [
 ];
 
 void main() {
+  testWidgets('모두 강화(사용자 2026-10-17): 화물칸 가득 알약 옆 → 경제 bestUpgradePlan대로 부위마다 UpgradePart(times) + 토스트', (
+    tester,
+  ) async {
+    final s = _filled(1);
+    final plan = bestUpgradePlan(s, _t);
+    expect(plan.levels, isNotEmpty);
+    final log = await pumpGame(tester, s, openTab: false);
+    await tester.tap(find.byKey(const Key('upgradeAll.pill')));
+    await tester.pump();
+    final sent = log.sent.whereType<UpgradePart>().toList();
+    expect({for (final c in sent) c.part: c.times}, plan.levels);
+    expect(find.byKey(const Key('skin.toast')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('배 탭 위 큰 "모두 강화"(56dp) — 살 것이 없으면 흐림', (tester) async {
+    final s = _filled(1);
+    await pumpGame(tester, s, tab: shipTab);
+    expect(tester.getSize(find.byKey(const Key('upgradeAll'))).height, greaterThanOrEqualTo(56));
+    final broke = s.copyWith(wallet: s.wallet.copyWith(gold: BigNum.zero));
+    await pumpGame(tester, broke, tab: shipTab);
+    expect(tester.widget<SkinButton>(find.byKey(const Key('upgradeAll'))).onPressed, isNull);
+  });
+
   testWidgets('골드 = 현재 / 최대(화물칸 상한, 피드백 #7)', (tester) async {
     final s = _filled(0.5);
     await pumpGame(tester, s, openTab: false);

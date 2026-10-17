@@ -897,5 +897,112 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeAll": "Upgrade all",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiGuideSailTitle": "Set sail!",
+  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared.",
+  "uiBossCompare": "Boss HP {hp} · ~{kill}s / {limit}s · hit {hit}%",
+  "uiBossCompareEasy": "Easy",
+  "uiBossCompareTight": "Close",
+  "uiBossCompareHard": "Tough",
+  "@uiBossCompare": {
+    "placeholders": {
+      "hp": {
+        "type": "String"
+      },
+      "kill": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "hit": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "Fever over · {kills} defeated · +{amount} gold",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendChainLightning": "Chain lightning: jumps to up to {count} enemies ({falloff} damage per jump)",
+  "uiLegendExecute": "Execute: ×{mul} damage to enemies below {below} HP",
+  "uiLegendCharge": "Charged shot: every {every}th shot deals ×{mul} and stuns {sec}s",
+  "uiLegendNoMiss": "Homing feathers: never miss (great vs evasive bosses)",
+  "uiLegendNoMissChance": "Homing feathers: {percent} chance to never miss",
+  "uiHitHoming": "Homing",
+  "@uiLegendChainLightning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "falloff": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendExecute": {
+    "placeholders": {
+      "below": {
+        "type": "String"
+      },
+      "mul": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendCharge": {
+    "placeholders": {
+      "every": {
+        "type": "int"
+      },
+      "mul": {
+        "type": "String"
+      },
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendNoMissChance": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSlotDamage": "DMG {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

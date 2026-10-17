@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 처음 만나는 시스템 카드 id (보이는 우선순위 순). 세이브 Settings.hints에 이 id가 남는다.
 const guideIds = [
+  'guide.sail',
   'guide.boss',
   'guide.fever',
   'guide.chest',
@@ -24,8 +25,9 @@ const guideIds = [
   'guide.summon',
 ];
 
-/// 카드마다 가리킬 곳(TutorialSpot id). 출항 카드(guide.sail · 'sail.start')는 S5 sail-hold가 main에 들어오면 켠다.
+/// 카드마다 가리킬 곳(TutorialSpot id).
 const guideSpots = {
+  'guide.sail': ['sail.start'],
   'guide.boss': ['boss.gauge', 'boss.timer'],
   'guide.fever': ['fever.meter'],
   'guide.chest': ['chest'],
@@ -46,6 +48,7 @@ const guideHintPrefix = 'guide.';
 List<String> activeGuides(GameState s, GameTables t) {
   final b = s.battle;
   return [
+    if (s.progress.sailHold) 'guide.sail',
     if (b?.bossActive ?? false) 'guide.boss',
     if ((b?.feverTicksLeft ?? 0) > 0) 'guide.fever',
     if (b?.chest != null) 'guide.chest',
@@ -151,6 +154,7 @@ GuideCard? guideCardFor(AppLocalizations l, {int? step, String? id}) {
   }
   if (id == null) return null;
   final (icon, title, why) = switch (id) {
+    'guide.sail' => (Icons.sailing_rounded, l.uiGuideSailTitle, l.uiGuideSailWhy),
     'guide.boss' => (Icons.sports_martial_arts_rounded, l.uiGuideBossTitle, l.uiGuideBossWhy),
     'guide.fever' => (Icons.local_fire_department_rounded, l.uiGuideFeverTitle, l.uiGuideFeverWhy),
     'guide.chest' => (Icons.redeem_rounded, l.uiGuideChestTitle, l.uiGuideChestWhy),

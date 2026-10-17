@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
+import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_intro.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
@@ -68,13 +69,14 @@ class _Pills extends ConsumerWidget {
     if (bounty) {
       pills = const [BountyStrip()];
     } else {
-      final ranked = <Widget>[
-        if (challenge) const ChallengeStrip(),
-        if (sea) const SeaEventStrip(),
-        if (cargoFull) const CargoFullPill(),
-        if (rebirth) const RebirthReadyPill(),
+      // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸으로 세되, 좁으면 Wrap이 다음 줄로 넘긴다.
+      final ranked = <List<Widget>>[
+        if (challenge) const [ChallengeStrip()],
+        if (sea) const [SeaEventStrip()],
+        if (cargoFull) const [CargoFullPill(), UpgradeAllPill()],
+        if (rebirth) const [RebirthReadyPill()],
       ];
-      pills = [...ranked.take(fever ? 1 : 2), if (!challenge) const ChallengeStrip()];
+      pills = [...ranked.take(fever ? 1 : 2).expand((g) => g), if (!challenge) const ChallengeStrip()];
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

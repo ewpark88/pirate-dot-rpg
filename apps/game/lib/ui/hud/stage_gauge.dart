@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
+import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
@@ -179,12 +180,12 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                     ],
                   ],
                 ),
-                // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다).
+                // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다). 보스전·파밍 중엔 그 자리에 '보스 vs 나'(피드백 #5).
                 const Padding(
                   padding: EdgeInsets.only(top: 3),
                   child: Row(
                     children: [
-                      Expanded(child: GoalBar(compact: true)),
+                      Expanded(child: BossCompare(fallback: GoalBar(compact: true))),
                       SizedBox(width: 8),
                       // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
                       TutorialSpot(id: 'fever.meter', child: FeverMeter()),
