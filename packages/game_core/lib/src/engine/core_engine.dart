@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:game_core/src/battle/battle_system.dart';
+import 'package:game_core/src/economy/achievements.dart';
 import 'package:game_core/src/economy/economy_system.dart';
 import 'package:game_core/src/engine/battle_view.dart';
 import 'package:game_core/src/engine/commands.dart';
@@ -11,8 +12,12 @@ import 'package:game_core/src/ports/ports.dart';
 import 'package:game_core/src/ports/xorshift_rng.dart';
 import 'package:game_data/game_data.dart';
 
-/// 기본 시스템 순서: 경제(명령 대부분) → 전투(틱 대부분). 전투는 시뮬 내부 상태를 가지므로 엔진마다 새로 만든다.
-List<GameSystem> defaultSystems() => [const EconomySystem(), BattleSystem()];
+/// 기본 시스템 순서: 경제(명령 대부분) → 전투(틱 대부분) → 업적(이번 틱 이벤트 누계 — 맨 끝). 전투는 시뮬 내부 상태를 가지므로 엔진마다 새로 만든다.
+List<GameSystem> defaultSystems() => [
+  const EconomySystem(),
+  BattleSystem(),
+  const AchievementSystem(),
+]; // 업적은 맨 끝(이벤트 누계)
 
 /// [GameEngine] 구현. 명령 큐·틱·히트스톱·운영자 공통 명령만 직접 다루고,
 /// 게임 규칙은 [GameSystem]에 맡긴다.
@@ -76,6 +81,7 @@ class CoreEngine implements GameEngine {
         .where((e) => e.tick == _ctx.tick)
         .fold(0, (m, e) => e.ticks > m ? e.ticks : m);
     _setBattle(_copyBattle(_battle, tick: _battle.tick + 1, hitStopTicks: stop));
+    _ctx.recent.clear(); // 이번 틱 이벤트는 시스템들이 다 봤다(업적 누계)
   }
 
   @override

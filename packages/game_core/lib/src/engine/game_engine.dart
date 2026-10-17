@@ -51,5 +51,11 @@ class SystemContext {
   /// 지금 처리 중인 틱 번호.
   int tick = 0;
 
-  void emit(GameEvent event) => onEvent(event);
+  /// 이번 틱(명령 처리 + 시스템 갱신)에 나온 이벤트 — 마지막 시스템(업적 누계)이 읽는다. 엔진이 틱 끝에 비운다.
+  final List<GameEvent> recent = [];
+
+  void emit(GameEvent event) {
+    recent.add(event);
+    onEvent(event);
+  }
 }

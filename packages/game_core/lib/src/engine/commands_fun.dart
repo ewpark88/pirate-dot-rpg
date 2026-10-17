@@ -114,3 +114,16 @@ class ClaimCollectionReward extends Command {
   @override
   Json _fields() => {'at': at};
 }
+
+/// 업적 받기(요청 ui-achievements.md 4절): 업적 [id]의 다음 단계 목표에 닿았으면 그 단계 젬을 주고 받은 단계 +1. 아니면 무시.
+class ClaimAchievement extends Command {
+  const ClaimAchievement(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'claimAchievement';
+
+  @override
+  Json _fields() => {'id': id};
+}
