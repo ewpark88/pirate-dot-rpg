@@ -1099,5 +1099,59 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiSwapTitle": "Swap crew",
+  "uiSwapDps": "Attack/s {delta}",
+  "@uiSwapDps": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAim": "Aim: {from} → {to}",
+  "@uiSwapAim": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapArea": "Attack: {from} → {to}",
+  "@uiSwapArea": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapRange": "Range: {from} → {to}",
+  "@uiSwapRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAreaWide": "Area",
+  "uiSwapAreaSingle": "Single",
+  "uiSwapBetter": "Better",
+  "uiSwapSimilar": "Similar",
+  "uiSwapWorse": "Worse",
+  "uiSwapMobStrong": "Better vs swarms",
+  "uiSwapMobWeak": "Weaker vs swarms",
+  "uiSwapBossStrong": "Better vs bosses",
+  "uiSwapBossWeak": "Weaker vs bosses",
+  "uiSwapConfirm": "Swap",
+  "uiSwapDpsUp": "Stronger attack",
+  "uiSwapDpsDown": "Weaker attack"
 }
