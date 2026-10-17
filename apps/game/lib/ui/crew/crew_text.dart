@@ -79,5 +79,11 @@ List<String> legendLines(AppLocalizations l10n, LegendDef d, {int rarity = 0}) {
     if (d.noMiss) l10n.uiLegendNoMiss,
     if (!d.noMiss && d.noMissChance > 0) l10n.uiLegendNoMissChance(percentText(l10n, d.noMissChance)),
     if (d.fever case final f?) l10n.uiLegendFever(percentText(l10n, f.chargeBonus), shortDecimal(f.extraSec)),
+    // 선원 정리 2안(BALANCE.md 4절): 관통 가속 · 부메랑 · 물기 속박 · 휩쓸기 · 해적왕 강타.
+    if (d.pierceRamp > 0) l10n.uiLegendPierceRamp(percentText(l10n, d.pierceRamp)),
+    if (d.boomerang > 0) l10n.uiLegendBoomerang(percentText(l10n, d.boomerang)),
+    if (d.bindSec > 0) l10n.uiLegendBind(shortDecimal(d.bindSec)),
+    if (d.sweep case final sw?) l10n.uiLegendSweep(sw.deg.round()),
+    if (d.bossBonus > 0) l10n.uiLegendBossBonus(percentText(l10n, d.bossBonus)),
   ];
 }

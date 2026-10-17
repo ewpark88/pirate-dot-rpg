@@ -1036,5 +1036,45 @@
         "type": "String"
       }
     }
+  },
+  "uiLegendPierceRamp": "Pierce rush: +{percent} damage per enemy pierced",
+  "@uiLegendPierceRamp": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBoomerang": "Boomerang: hits again on the way back ({percent})",
+  "@uiLegendBoomerang": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBind": "Binding bite: bitten enemies can't move for {sec}s",
+  "@uiLegendBind": {
+    "placeholders": {
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendSweep": "Sweep: cuts every enemy in a {deg}° arc ahead",
+  "@uiLegendSweep": {
+    "placeholders": {
+      "deg": {
+        "type": "int"
+      }
+    }
+  },
+  "uiLegendBossBonus": "Pirate king strike: +{percent} boss damage",
+  "@uiLegendBossBonus": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   }
 }
