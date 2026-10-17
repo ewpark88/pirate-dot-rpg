@@ -27,6 +27,13 @@ class HdMuzzle {
     _glows[id] = (g ?? _Glow(now, now, boss: boss))..firedAt = now;
   }
 
+  /// 보스 기본 포탄(BossFired — 적 id가 없다): 차오르던 보스 빛을 모두 터뜨린다.
+  void firedBosses(double now) {
+    for (final g in _glows.values) {
+      if (g.boss && g.firedAt == null) g.firedAt = now;
+    }
+  }
+
   void _trim(double now) {
     if (_glows.length > 64) _glows.removeWhere((_, g) => g.done(now));
   }
@@ -44,6 +51,9 @@ class HdMuzzle {
     final m = sp?.muzzle ?? Offset.zero;
     _now.add((x + (right ? -m.dx : m.dx) * r, y + m.dy * r, g.level(now), g.boss));
   }
+
+  /// 예고·터짐 중인 적 수(시험).
+  int get active => _glows.length;
 
   /// 이번 프레임에 모인 빛 수(시험).
   int get pending => _now.length;
