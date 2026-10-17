@@ -1,5 +1,20 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 새벽 · S5 · 통합 run 머지, 디자인 개편(쿵푸할매 스타일) ② HD 아이콘 시작
+- **현재 위치**: 디자인 개편 최우선(docs/plans/active/design-kungfu-style.md). 내 몫 ② HD 아이콘 — 시안 S1 확인 대기.
+  생성기·시안은 scratchpad/icons(gen_hd_icons.py — 37개: 재화·탭·부위·상자·체크·계열 11종, compare_all.png·fam.png, icon-map.md).
+- 한 일
+  - 통합 run(hud-layout + lane/ui + swap-compare + crew-preview + crew-traits-2 + lane/economy) check --full 초록 → main e8a2720f.
+  - 운영자 보스 소환 목록 42종·특징 아이콘·칩(review/operator-bosses 81bf28f9, 시험 통과 — 머지 대기).
+  - 선원 역할 키(review/crew-role 5dbeb75e, S2 검토 반영 — S2 재적합과 맞춰 나중에 머지).
+- 재개 지점(중단한 작업)
+  - 폰 확인표 docs/plans/active/device-check-2026-10-17.md — 아직 안 씀(S1 요청 ②). 첫 할 일: 오늘 main 머지 목록(git log --since 2026-10-17 main) → 기능마다 '어디서·무엇을' 한 줄.
+  - rotation+duel smoke(5명×1시간) — slot 받으면.
+  - HD 아이콘: 확인받으면 tools/art/gen_hd_icons.py로 옮기기 → assets/ui/hd(1x 32·2.0x 64·3.0x 96) → UiSprites 교체 → SkinIcon FilterQuality → LICENSES OWN → 4기기 골든.
+- 배운 것
+  - 통합 run 전에 머지할 브랜치를 모두 미리 합쳐 두면 slot 시간이 테스트에만 쓰인다.
+  - 같은 작업 폴더에서 --full이 도는 동안 브랜치를 바꾸면 안 된다 — 그동안은 scratchpad에서 읽기·생성만.
+
 ## 2026-10-17 심야 · S5 · 보스전 v2·고침 2건, 공격 미리보기, hud-layout 다시 맞춤
 - **현재 위치**: main 머지됨 — 보스전 v2·duel-fix(기절 중 standoff 파고듦)·proto-fix(피버 8자가 초당 30으로 묶이던 내 v2 버그). slot 대기(S2 → 나): review/hud-layout 9dd036cc(최신 main + lane/ui 30ef8463, #9 C 환생 말풍선 뺌, 배 체력 막대 전폭·보스 버튼 막대 위) → test/ui·proto 골든 일괄 + --full → 해시. 검토 대기: review/crew-preview 8ccf2134(S3 렌더·S4 UI), review/swap-compare 7638613c(S4 지적 3건 반영). 그 뒤 rotation+duel smoke(5명×1시간).
 - 한 일
