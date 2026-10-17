@@ -104,7 +104,8 @@ class TopEnemies {
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final flash = e.boss && hd != null ? _bossFlash(e.id, now: clock, on: e.flash) : e.flash;
       final hot = !flash && hotAt != null && hotAt!(e.drawX, e.drawY);
-      final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0.0;
+      final crack = e.boss ? _crack(e, clock) : 1e9; // 보스 체력 25%마다 '부서짐'(조각·비틀·어지러운 눈 0.45초)
+      final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) + _crackTilt(crack) : 0.0;
       // HD: 정면 3/4 그림이라 진행 방향으로 돌리지 않고 살짝 흔들기만(좌우는 시트 행으로).
       final rotation = hd != null
           ? math.sin(clock / 240 + e.id) * 0.06 + tilt
@@ -115,7 +116,7 @@ class TopEnemies {
         // HD v2 표정: 쓰러짐(브레이크) > 공격 예고(EnemyWindup) > 평소.
         final mood = !hd.moods
             ? (hd.hits && flash ? HdMood.hit : HdMood.idle) // 잡몹 v2: 맞으면 찡긋
-            : (scene.topHits.breaks.isDown(e.id, clock)
+            : (scene.topHits.breaks.isDown(e.id, clock) || crack < 450
                   ? HdMood.down
                   : (scene.topHits.muzzle.charging(e.id, clock) ? HdMood.windup : HdMood.idle));
         spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading), mood: mood), scale: hd.scale, hd: true);
@@ -137,9 +138,9 @@ class TopEnemies {
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
       if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
-      final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
+      final sq = _squashed.length >= _maxSquash ? null : _soft(scene.topHits.juice.squashOf(e.id, clock), e.boss);
       if (sq != null) {
-        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash, hot));
+        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash ? (e.boss ? _hdFlash : _tintPaint) : null, hot));
         continue;
       }
       final batch = (flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
@@ -184,7 +185,7 @@ class TopEnemies {
         ..translate(tx, ty)
         ..rotate(rot)
         ..scale(sx, sy);
-      _draw(c, spr, flash ? _tintPaint : (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)));
+      _draw(c, spr, flash ?? (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)));
       c.restore();
     }
     _squashed.clear();
@@ -204,6 +205,7 @@ class TopEnemies {
   final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
   final Map<int, double> _bossFlashAt = {};
+  final Map<int, (int, double)> _quarter = {}; // 보스 id → (체력 4분의 몇, 부서진 시각)
 
   /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
   bool _facing(int id, double heading) {
@@ -225,7 +227,7 @@ class TopEnemies {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
 
-  final List<(_Spr, double, double, double, double, double, bool, bool)> _squashed = [];
+  final List<(_Spr, double, double, double, double, double, Paint?, bool)> _squashed = []; // 맞음 붓(없으면 평소)
   static const _maxSquash = 20;
 
   final Map<Image, _Batch> _batches = {};

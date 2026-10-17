@@ -13,6 +13,34 @@ extension _EnemyTransitions on TopEnemies {
     return now - at < 70;
   }
 
+  /// 보스 체력 25% 칸을 넘으면 '부서짐'(S1 보스전 손맛): 조각 터짐·작은 흔들림. 부서진 뒤 지난 ms(없으면 큰 값).
+  double _crack(EnemyPose e, double clock) {
+    final q = (e.hpRatio * 4).ceil();
+    final prev = _quarter[e.id];
+    if (prev != null && q < prev.$1 && q > 0) {
+      _quarter[e.id] = (q, clock);
+      scene.topHits.shatter.burst(
+        clock,
+        Offset(e.drawX, e.drawY),
+        radiusOf(e) * 0.6,
+        0xFFEDE4D2,
+        lite: scene.topHits.lite,
+      );
+      scene.shake.triggerPx(3, 220);
+    } else if (prev == null || q > prev.$1) {
+      _quarter[e.id] = (q, -1e9);
+    }
+    final at = _quarter[e.id]!.$2;
+    return clock >= at ? clock - at : 1e9;
+  }
+
+  /// 부서진 뒤 0.45초 비틀(좌우로 흔들리며 잦아듦).
+  double _crackTilt(double age) => age < 450 ? math.sin(age / 40) * 0.14 * (1 - age / 450) : 0;
+
+  /// 보스 출렁임은 잡몹의 35%(큰 그림이 과하게 늘어나지 않게).
+  (double, double)? _soft((double, double)? s, bool boss) =>
+      s == null || !boss ? s : (1 + (s.$1 - 1) * 0.35, 1 + (s.$2 - 1) * 0.35);
+
   /// 모션 v1 사망·등장 전환: 사라진 잡몹은 0.16초 납작하게 찌그러지며 사라지고, 막 나타난 자리엔 물 고리(절전이면 없음).
   void _transitions(Canvas c, {required bool under, required double clock, required bool lite}) {
     final last = under ? _lastUnder : _lastOver;

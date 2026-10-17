@@ -68,7 +68,10 @@ class TopJuice {
   }
 
   /// 손맛 v4: 적 [id]가 맞았다 — 납작하게 찌그러졌다가 길쭉하게 튀고 돌아온다(그리기만).
-  void squash(int id, double now) {
+  /// [keep]이면(보스 — 매 타격) 출렁이는 중엔 다시 시작하지 않는다(쉴 새 없이 맞아도 출렁임이 보이게).
+  void squash(int id, double now, {bool keep = false}) {
+    final t0 = _squash[id];
+    if (keep && t0 != null && now >= t0 && now - t0 < _squashMs) return;
     if (_squash.length > 96) _squash.removeWhere((_, t) => now - t > _squashMs);
     _squash[id] = now;
   }
