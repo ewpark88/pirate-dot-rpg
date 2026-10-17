@@ -14,6 +14,7 @@ import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/adapters/ads/google_ads_sdk.dart';
 import 'package:pirate_dot/adapters/analytics/firebase_sdk.dart';
 import 'package:pirate_dot/adapters/analytics/game_event_analytics.dart';
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 import 'package:pirate_dot/adapters/analytics/sdk_analytics.dart';
 import 'package:pirate_dot/adapters/audio/audio_adapter.dart';
 import 'package:pirate_dot/adapters/audio/flame_audio_sdk.dart';
@@ -88,9 +89,12 @@ Future<void> main() async {
       );
   final host = EngineHost(tables: tables, initial: initial, clock: clock, store: store);
   // 어댑터 (platform-m4): 실패해도 던지지 않는다 — google-services.json이 없으면 Noop, 음원 목록 실패면 무음.
-  final analytics = await startAnalytics(
-    () => initFirebase(collectCrashes: kReleaseMode && !kOperator).timeout(_sdkTimeout),
-  );
+  final analytics = await startAnalytics(() async {
+    final sdk = await initFirebase(collectCrashes: kReleaseMode && !kOperator).timeout(_sdkTimeout);
+    // 비치명 오류(광고·전원·알림·세이브·오디오가 잡은 예외)도 Crashlytics로 — 사유마다 실행당 1회(crash-anr.md 2절)
+    nonFatalSink = (e, s, reason) => unawaited(sdk.recordNonFatal(e, s, reason: reason));
+    return sdk;
+  });
   step('analytics');
   final audio = await AudioAdapter.load(FlameAudioSdk(), timeout: _sdkTimeout);
   step('audio');
@@ -167,7 +171,8 @@ Future<void> main() async {
       purchaseBridgeProvider.overrideWithValue(bridge),
       simBillingProvider.overrideWithValue(sim),
       saveImportProvider.overrideWithValue(host.replace), // 설정 '세이브 옮기기'(코드 가져오기)
-      exitSaveProvider.overrideWithValue(host.save), // 뒤로 두 번 종료 직전 저장(S4 back_to_exit)
+      // 뒤로 두 번 종료 직전 저장(S4 back_to_exit) — 느린 기기에서 종료가 멈춰 보이지 않게 1초까지만 기다린다(crash-anr.md 3절)
+      exitSaveProvider.overrideWithValue(() => host.save().timeout(const Duration(seconds: 1), onTimeout: () {})),
       audioPortProvider.overrideWithValue(audio),
       analyticsPortProvider.overrideWithValue(analytics),
       notifierProvider.overrideWithValue(notifier),

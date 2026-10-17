@@ -9,6 +9,9 @@ abstract interface class AnalyticsSdk {
   /// Crashlytics 커스텀 키 (충돌 보고서에 붙는다).
   Future<void> setCrashKey(String key, Object value);
 
+  /// 비치명 오류 보고(Crashlytics recordError fatal: false) — [reason]은 보고서 이유 줄.
+  Future<void> recordNonFatal(Object error, StackTrace? stack, {required String reason});
+
   /// Analytics 수집 켜기/끄기 — UMP 동의에 묶는다(스펙 결정 ②).
   Future<void> setCollection({required bool enabled});
 }

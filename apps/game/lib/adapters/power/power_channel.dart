@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:pirate_dot/adapters/analytics/non_fatal.dart';
 
 // 발열 대책(사용자 실기기 2026-10-17 S24: 10분에 배터리 45℃·발열 SEVERE, CPU 184% + 오디오 56%, 120Hz — S1).
 // Android 쪽은 MainActivity.kt(pirate_dot/power·pirate_dot/thermal).
@@ -26,8 +27,8 @@ class PowerChannel {
     try {
       await _method.invokeMethod<void>('setFrameRate', hz);
       debugPrint('power: frame rate $hz');
-    } on Object catch (e) {
-      debugPrint('power: setFrameRate failed ($e)');
+    } on Object catch (e, s) {
+      reportNonFatal(e, s, 'power: setFrameRate failed');
     }
   }
 
