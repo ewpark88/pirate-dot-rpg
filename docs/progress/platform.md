@@ -1,7 +1,7 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
 ## 2026-10-17 오후 · S5 · S1 배정 4건 → 사용자 피드백 21건 재배정(#13·14·10·19)
-- **현재 위치**: S1 머지·slot 대기. 셋 다 main e1f4258b(rage 정리) 위로 merge, dart 테스트 통과 — review/crew-damage b70f09eb · review/boss-duel 502dff7a(sim 비교 2회 slot 순번 4번째) · review/sail-hold 86516d1f(#19 승인·구현, game_cli sim 한 줄은 S2 확인). lane/platform 0093dff0.
+- **현재 위치**: S1 머지·slot 대기. 셋 다 main e1f4258b(rage 정리) 위로 merge, dart 테스트 통과 — review/crew-damage b70f09eb · review/boss-duel 502dff7a(sim 비교 2회 slot 순번 4번째) · review/sail-hold 86516d1f(#19 승인·구현, game_cli sim 한 줄은 S2 확인) · review/sail-ui 27683b45(#19 출항 버튼·#20 우상단 패널, S4 검토 대기). lane/platform 0093dff0.
 - 한 일
   - 도감 이벤트 소비처: 엔진은 DexSeen·DexFirstKill을 이미 냄, 소비처 없었음 → 분석 dex_seen·dex_first_kill(0392cda). 화면 쪽은 S4.
   - 도감 v2 보스 42종 초안 docs/specs/platform-bestiary-v2-regions.draft.json + 덧대기 검사 테스트(bestiary_draft_test). kraken_titan(S3 확정), 튜토리얼 1~3 enemy_ship 고정 → regions 선택 키 rotationFromStage(bossAt, battle 경로 3줄). 수치는 S2, 보통 보스 23 id는 S1이 S3에 전달.
@@ -10,7 +10,7 @@
   - #13·14 선원별 피해: Damage.crewId로 거의 되지만 넘친 피해·보스 추적·확정값 때문에 계약 추가(요청서 platform-crew-damage, 승인) → BattleView.crewDamage·BossCleared.crewDamage/mvp.
   - #10 보스 잘림: 원인 standoff 100 > 카메라 반폭 90. 배가 보스 반대쪽으로 standoff×0.5 비켜 섬(40/초, 피버 pose 길 재사용, 카메라 그대로), waves.top.bossDuel.
   - #19 미리 시작: Rebirth 다음 틱에 breakthrough가 바로 구간을 엶(엔진에 출항 전 상태 없음) → Progress.sailHold·StartVoyage(승인·구현, hold 중 무리·보스·돌파 없음).
-- **다음 할 일**: ① slot 오면 boss-duel sim 비교(기본 vs --set waves.top.bossDuel.shift=0, 20명×3시간) ② S1 rage 커밋 뒤 crew-damage rebase → check --full ③ S4 '출항!' 버튼 연결 확인 ④ 스토어 6세트 굽기는 피드백 반영 뒤 ⑤ 폰 작업은 S1 지시 뒤.
+- **다음 할 일**: ① slot 오면 boss-duel sim 비교(기본 vs --set waves.top.bossDuel.shift=0, 20명×3시간) ② S1 rage 커밋 뒤 crew-damage rebase → check --full ③ S4 검토(sail-ui) 반영, 골든 '확인 창 ko'·'배 스킨 ko' 실패가 기준에서도 나는지 slot 때 확인 ④ 스토어 6세트 굽기는 피드백 반영 뒤 ⑤ 폰 작업은 S1 지시 뒤.
 - 남은 문제: 도감 초안 수치(S2)·보통 보스 그림(S3). boss-duel 앱 골든(렌더)은 안 돌림.
 - 배운 것: shapeField는 한 틱에 두 번 불린다(TopBounty.prepare와 _round 둘 다 _sync) — 상태를 가진 이동은 Field.tick으로 한 걸음만.
 
