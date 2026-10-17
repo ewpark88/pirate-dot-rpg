@@ -4,9 +4,9 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui 3a28d9d3 — 슬롯 진단 줄·보스 여러 줄(임시)·퀘스트 시트 자동 접기·태블릿 점검 끝, test/ui 702 초록 |
+| 상태 | lane/ui deb344aa — 운영자 hudTopDp 줄, 빠른 check 다시 통과, test/ui 703 초록 |
 | 다음 | S2 필살기·보스 여러 줄 계약(captainGauge·TriggerUltimate·autoUltimate·bossBarsLeft) main 반영 → 어댑터 교체·설정 '자동 필살기' 토글 · trialsReady export |
-| 기다리는 것 | S2 필살기·보스 줄 계약 · S3 render/hd/hd_sheets.dart 하드코딩 문구(빠른 check 멈춤) |
+| 기다리는 것 | S2 필살기·보스 줄 계약 · S3 painter.top.memory()(운영자 메모리 진단 줄) |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
 - 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
@@ -18,7 +18,7 @@
 
 ### 2026-10-18 밤 · S4 · 사용자 요청 묶음
 - f3af95bc 운영자 맨 위 출전 칸 진단 줄(UI·렌더 모두 fleetSlots 기준 확인) · 보스 여러 줄 임시 어댑터. a2003ad7 퀘스트 시트 자동 접기. 3a28d9d3 태블릿 40장 점검.
-- 남은 문제: 빠른 check가 main의 S3 hd_sheets.dart 하드코딩 문구에서 멈춤 — 내 변경은 analyze·test/ui로 확인.
+- deb344aa 운영자 hudTopDp 줄(S3와 battle.area 기준 확인). S3 hd_sheets 고침 머지 → 빠른 check 다시 통과.
 - 15a04ba3 후퇴 띠 안·시트 자동 접기·환생 안내(띠 '환생까지 n'·알약 우선·두 번째 회차 토스트)·세이브 옮기기·외곽선 굵히기 뺌.
 - 46b506d3 필살기 버튼(임시 어댑터). e7b31830 빈 러시 결과 창·창 하나 규칙·칸 자동 출전·손가락 위치·뒤로 두 번 종료.
 - 교훈: dart fix --apply가 pubspec에 의존성을 넣을 수 있다 — 커밋 전 pubspec diff 확인.
