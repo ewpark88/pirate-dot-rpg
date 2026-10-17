@@ -90,7 +90,8 @@ class ShipSkins {
     final pattern = patternOf(skin);
     for (final key in keys) {
       final s = bank[key];
-      if (s == null) continue;
+      // 은행(앱 하나에 공유)에 이미 있으면 다시 만들지 않는다 — 장면을 새로 만들 때마다 사본을 덮어써 옛 이미지가 새던 것(S5 PSS).
+      if (s == null || bank['$key@$skinId'] != null) continue;
       bank.put('$key@$skinId', await recolor(s.image, map, pattern: pattern), frames: s.frames);
     }
     _made.add(skinId);

@@ -7,7 +7,7 @@ import 'helpers.dart';
 import 'top_recording.dart';
 
 void main() {
-  final rec = topRecording(tables);
+  final rec = topRecording(stillTables); // 배 고정(순항 끔) — 발사체·코인이 배에서·배로
 
   test('T1 엔진 탑다운 기록: mode top, 적은 사방에서, 발사가 있다', () {
     expect(rec.last.frame.mode, 'top');
@@ -15,7 +15,7 @@ void main() {
   });
 
   test('탑다운 장면: 발사체는 배(포구)에서 출발, 코인은 배로, 적 방향이 포즈에 실린다', () {
-    final s = BattleScene(tables, rec);
+    final s = BattleScene(stillTables, rec);
     final ship = s.topShip;
     var launched = 0;
     var headed = 0;

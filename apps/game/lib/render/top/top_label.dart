@@ -6,10 +6,21 @@ class TopLabel {
   static const _gold = Color(0xFFFFD84A);
   static const _navy = Color(0xFF1B2A4A);
 
+  /// 캐시한 글자 수(메모리 진단·시험).
+  int get cached => _texts.length;
+
+  void clear() {
+    for (final (a, b) in _texts.values) {
+      a.dispose();
+      b.dispose();
+    }
+    _texts.clear();
+  }
+
   void draw(Canvas c, String s, Offset center, double size, {double alpha = 1, Color color = _gold}) {
     final key = '$s|$size|${color.toARGB32()}';
     final pair = _texts.putIfAbsent(key, () {
-      if (_texts.length > 40) _texts.clear();
+      if (_texts.length > 40) clear(); // 글자가 계속 바뀌는 TOTAL 등 — 버릴 때 문단(네이티브)을 바로 놓는다(S5 PSS 누수)
       TextPainter make(TextStyle style) => TextPainter(
         text: TextSpan(text: s, style: style),
         textDirection: TextDirection.ltr,

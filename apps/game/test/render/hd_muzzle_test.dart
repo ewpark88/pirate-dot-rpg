@@ -51,14 +51,14 @@ void main() {
   });
 
   test('EnemyWindup이 장면까지 이어진다: 예고 틱에 그 적 빛이 켜짐(렌더 이벤트 경로)', () {
-    final base = topRecording(tables, ticks: 140);
+    final base = topRecording(stillTables, ticks: 140); // 배 고정(순항 끔)
     final at = base.indexWhere((t) => t.frame.enemies.isNotEmpty, 60);
     final id = base[at].frame.enemies.first.id;
     final rec = [
       for (final (i, t) in base.indexed)
         i == at ? RecordedTick(t.frame, [...t.events, EnemyWindup(i, enemyId: id, atTicks: 8, kind: 'ranged')]) : t,
     ];
-    final scene = BattleScene(tables, rec, loop: false);
+    final scene = BattleScene(stillTables, rec, loop: false);
     while (scene.player.position < at + 1) {
       scene.update(16);
     }

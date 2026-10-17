@@ -4,7 +4,10 @@ import 'package:game_core/game_core.dart';
 import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 
+import 'helpers.dart' show stillTables, tables;
+
 /// 탑다운(T1 엔진, Settings.battleView 'top') 실제 전투 기록 — 렌더 T2 테스트·시안용. 같은 시드면 같은 기록.
+/// 장면 골든은 연출을 재므로 기본은 배 고정(순항 끔 — [stillTables]); [cruise]면 S5 배 순항 그대로.
 List<RecordedTick> topRecording(
   GameTables t, {
   int ticks = 240,
@@ -12,6 +15,7 @@ List<RecordedTick> topRecording(
   int bossAt = -1,
   double fever = 0,
   Map<String, int> levels = const {'octo': 30, 'pang': 28, 'sword': 26, 'turtle': 24},
+  bool cruise = false,
 }) {
   final start = DateTime.utc(2026, 11);
   final state = GameState.newGame(playerId: 'top', seed: 2026, now: start).copyWith(
@@ -20,7 +24,11 @@ List<RecordedTick> topRecording(
     crews: {for (final MapEntry(:key, :value) in levels.entries) key: CrewState(level: value)},
     collection: levels.keys.toSet(),
   );
-  final engine = CoreEngine(tables: t, clock: ManualClock(start), initial: state);
+  final engine = CoreEngine(
+    tables: cruise || !identical(t, tables) ? t : stillTables,
+    clock: ManualClock(start),
+    initial: state,
+  );
   final out = <RecordedTick>[];
   for (var i = 0; i < ticks; i++) {
     if (i == bossAt) engine.enqueue(const OpSpawnBoss());

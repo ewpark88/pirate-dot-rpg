@@ -255,11 +255,7 @@ extension _TopEvents on EventDirector {
     final strong = en.boss;
     final ship = scene.topShip;
     final at = Offset(en.x, en.y);
-    // 일반 피격도 작은 넉백(S1 '임팩트' — 적 쪽에서 크게), 치명은 '쨍'
-    if (!strong && !e.crit) {
-      if (!scene.topHits.lite) scene.topHits.juice.knock(e.targetId, at, ship, scene.clockMs, units: 2);
-      return;
-    }
+    if (!strong && !e.crit) return _softKnock(e.targetId, at, ship); // 일반 피격: 작은 넉백(엔진 넉백이 켜졌으면 안 함)
     if (e.crit) scene.sound.ting(scene.clockMs);
     scene.topHits.juice
       ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake, crit: e.crit)
