@@ -2453,13 +2453,12 @@ const Map<String, String> rawTables = {
     "sinkTilt": 0.35
   },
   "topCam": {
-    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(S4 띠 82dp + 여유 8 — 태블릿은 uiScale로 커서 UI가 BattleGame.hudTopDp로 잰 값을 넣는다) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 다 들어오게 줌(최대 maxZoom).",
+    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(S4 띠 82dp + 여유 8 — 태블릿은 uiScale로 커서 UI가 BattleGame.hudTopDp로 잰 값을 넣는다) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
     "hudTopDp": 90,
     "sideDp": 12,
     "rightDp": 24,
     "bottomDp": 24,
-    "topPad": 22,
-    "maxZoom": 1.3
+    "topPad": 22
   },
   "topShip": {
     "stages": {

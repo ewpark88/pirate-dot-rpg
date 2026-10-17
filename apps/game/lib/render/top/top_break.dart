@@ -37,6 +37,9 @@ class TopBreak {
   }
 
   /// 지금 쓰러져 있나.
+  /// 마지막 브레이크 시각(장면 ms) — 보스 카메라 줌 펀치.
+  double get brokenAt => _at;
+
   bool isDown(int id, double now) => id == _id && now - _at < _ms;
 
   /// 쓰러진 보스의 기울기(라디안): 확 기울었다가 천천히 흔들리며, 끝 0.3초에 바로 선다.
