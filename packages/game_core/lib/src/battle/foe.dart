@@ -35,7 +35,7 @@ class Foe {
   final double speed;
 
   /// 배에 닿았을 때 접촉 1회 피해.
-  final BigNum attack;
+  BigNum attack; // 분노(보스 특성 enrage)가 키운다
 
   /// 처치 골드 (화물칸·동시 처치 보너스 전).
   final BigNum gold;
@@ -55,7 +55,7 @@ class Foe {
   final BossDef? bossDef;
 
   /// 크라켄 촉수처럼 보스에 딸린 적이면 그 보스의 id.
-  final int? ownerId;
+  int? ownerId; // 호위(보스 특성 escort)는 소환 뒤 넣는다
 
   /// 무한 항해 등급 테두리 (0 없음).
   final int tier;
@@ -78,6 +78,10 @@ class Foe {
   double breakPull = 0;
   double breakGauge = 0;
   int brokenUntil = 0;
+
+  /// 보스 특성 타이머(boss_traits.dart): reflectAt·reflectUntil·dashAt·dashUntil·escorts(소환한 차례 수) 틱/횟수, 분노했나.
+  final traitTicks = <String, int>{};
+  bool enraged = false;
   int breakCooldownUntil = 0; // 일어난 뒤 이 틱까지 게이지가 안 쌓인다(bossBreak.cooldownSec)
   int breakCooldownTicks = 0; // 그 쿨다운 전체 길이
   double breakCooldownRatio = 0; // 남은 비율(EnemyView.breakCooldown) — tickBossBreak가 갱신

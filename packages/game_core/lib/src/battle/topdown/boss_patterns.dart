@@ -14,7 +14,7 @@ class BossPlan {
   BossPlan(this.patterns, this.restTicks, {int? firstTicks}) : ticksLeft = firstTicks ?? restTicks;
 
   final List<BossPatternDef> patterns;
-  final int restTicks;
+  int restTicks; // 분노(보스 특성 enrage)가 줄인다
   int index = 0;
 
   /// rest(기본 원거리 공격) · warn(예고) · charge(돌진 중) · back(standoff로 돌아감).

@@ -63,7 +63,12 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'dexSeen' => DexSeen(t, id: j['id'] as String, boss: j['boss'] as bool),
     'dexFirstKill' => DexFirstKill(t, id: j['id'] as String, boss: j['boss'] as bool, gems: j['gems'] as int),
     'fastSailStarted' || 'breakthroughStrike' || 'fastSailEnded' || 'shipResupplied' => _fastEventFromJson(t, j),
-    'inkCloud' || 'bossSwallowed' || 'bossSplit' || 'bomberBlast' || 'bossBroken' => _bestiaryEventFromJson(t, j),
+    'inkCloud' ||
+    'bossSwallowed' ||
+    'bossSplit' ||
+    'bomberBlast' ||
+    'bossBroken' ||
+    'bossTraitFired' => _bestiaryEventFromJson(t, j),
     'saveRequested' => SaveRequested(t, reason: j['reason'] as String),
     final other => throw FormatException('알 수 없는 이벤트', other),
   };
