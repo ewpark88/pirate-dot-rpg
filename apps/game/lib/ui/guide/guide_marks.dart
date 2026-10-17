@@ -127,7 +127,11 @@ class _GuideFingerState extends State<GuideFinger> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final at = widget.at;
-    final below = at.bottom + _fingerSize + 8 <= MediaQuery.sizeOf(context).height;
+    // 아래에 둘 자리: 시스템 내비게이션 바 위까지만, 그리고 화면 아래 1/4(도크) 대상은 늘 위에서 아래로 가리킨다
+    // (S1 실기기 2026-10-18 — 항해 탭을 가리킬 때 손가락이 내비게이션 바 위에 그려졌다).
+    final h = MediaQuery.sizeOf(context).height;
+    final below =
+        at.bottom + _fingerSize + 8 <= h - MediaQuery.viewPaddingOf(context).bottom && at.center.dy < h * 0.75;
     // 손끝(아이콘 왼쪽 위 1/4 지점)이 대상에 닿는 자리.
     // 아래 자리가 없으면(도크 아이콘) 위에서 아래를 가리킨다(뒤집은 손가락) — 화면 밖으로 나가지 않게.
     final tip = below ? Offset(at.center.dx, at.bottom - 2) : Offset(at.center.dx, at.top + 2);

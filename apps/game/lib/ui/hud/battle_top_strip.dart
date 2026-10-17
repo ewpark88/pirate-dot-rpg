@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pirate_dot/ui/crew/fleet_auto_fill.dart';
 import 'package:pirate_dot/ui/dock/sheet_auto_close.dart';
 import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
@@ -46,6 +47,7 @@ class BattleTopStrip extends StatelessWidget {
       BossFailNotice(sheetOpen: sheetOpen),
       const RebirthReadyNotice(),
       SheetAutoClose(open: sheetOpen, tab: sheetTab),
+      const FleetAutoFill(),
     ],
   );
 }

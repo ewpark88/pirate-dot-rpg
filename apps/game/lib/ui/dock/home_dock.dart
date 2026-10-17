@@ -15,6 +15,9 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 도크 높이(dp) — 전장 상자는 이 위에서 끝난다(시트가 닫혔을 때).
+/// 시트 최대 폭(dp) — 태블릿에서 가운데.
+const sheetMaxWidth = 720.0;
+
 const double kDockHeight = 58; // 얇은 도크(사용자 2026-10-17 배치 확정 — 고른 탭만 이름)
 
 /// 아래 엄지 자리 도크 (사용자 결정: 도크 + 끌어올리는 시트): 동그란 아이콘 5개 + 빠른 강화.

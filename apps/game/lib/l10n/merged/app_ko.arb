@@ -2074,5 +2074,6 @@
   "uiRebirthReadyAgain": "환생할 수 있어요! 항해 탭에서 언제든지.",
   "uiRebirthGo": "항해 탭",
   "uiCaptainSkill": "선장 필살기",
-  "uiCaptainSkillShort": "필살기"
+  "uiCaptainSkillShort": "필살기",
+  "uiBackToExit": "한 번 더 누르면 종료돼요"
 }
