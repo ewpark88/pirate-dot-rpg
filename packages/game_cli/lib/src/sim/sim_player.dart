@@ -35,7 +35,6 @@ class SimPlayer {
   late final Duration farmRetry;
 
   Duration _elapsed = Duration.zero;
-
   Duration _online = Duration.zero;
   Duration? _farmSince;
   int _upgradesAtFarm = 0;
@@ -215,6 +214,8 @@ class SimPlayer {
         case ShipLookChanged(:final part, :final stage):
           _recordLook(result.lookDay1, const Duration(days: 1), part, stage);
           _recordLook(result.lookWeek1, const Duration(days: 7), part, stage);
+        case CrewSummoned(:final results) when results.length == 1 && result.summons == 0: // 환영 선원
+          result.welcomeCrew ??= _elapsed;
         case BossFailed(:final stage):
           result.firstBossFail ??= _elapsed;
           result.firstBossFailStage ??= stage;

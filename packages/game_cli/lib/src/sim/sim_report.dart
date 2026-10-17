@@ -90,6 +90,7 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
   return [
     c('firstBossFailMin', '첫 보스 실패', (r) => _min(r.firstBossFail), '분'),
     c('firstSummonMin', '첫 소환 가능', (r) => _min(r.firstSummonReady), '분'),
+    c('welcomeCrewMin', '환영 선원', (r) => _min(r.welcomeCrew), '분'),
     c('stage10Min', '스테이지 10', (r) => _min(r.stage10), '분'),
     c('stage40DayHours', '스테이지 40 (첫날 안, 하루 일정 경과)', (r) => _hours(r.stage40), '시간'),
     c('stage40OnlineMin', '스테이지 40 (계속 접속, 20분 이상)', (r) => _min(r.stage40), '분', within: Duration.zero),
@@ -270,6 +271,7 @@ Map<String, Object?> reportJson(List<SimResult> rs, List<SimCheck> checks) {
           'bestStage': r.bestStage,
           'firstBossFailMin': _min(r.firstBossFail),
           'firstSummonMin': _min(r.firstSummonReady),
+          'welcomeCrewMin': _min(r.welcomeCrew),
           'stage10Min': _min(r.stage10),
           'stage40Hours': _hours(r.stage40),
           'wallMaxMin': _min(r.wallMax),

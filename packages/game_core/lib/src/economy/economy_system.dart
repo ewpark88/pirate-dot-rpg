@@ -72,7 +72,7 @@ class EconomySystem implements GameSystem {
       bountyTick(
         tutorialTick(
           rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
-          ctx.tables,
+          ctx,
         ),
         ctx,
       ),

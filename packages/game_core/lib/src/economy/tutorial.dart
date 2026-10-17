@@ -1,4 +1,8 @@
+import 'package:game_core/src/economy/cards.dart' show receiveCard;
+import 'package:game_core/src/economy/formation.dart' show fleetSlots;
 import 'package:game_core/src/engine/commands.dart';
+import 'package:game_core/src/engine/events.dart';
+import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
@@ -8,18 +12,40 @@ import 'package:game_data/game_data.dart';
 JsonReader _steps(GameTables t) => t.meta.raw.obj('tutorial').obj('steps');
 
 /// 매 틱: upgrade 단계 → 부위 레벨 달성, boss 단계 → 튜토리얼 보스 스테이지(`waves.boss.tutorialFailStage`)를 넘음.
-GameState tutorialTick(GameState s, GameTables t) {
+GameState tutorialTick(GameState s, SystemContext ctx) {
+  final t = ctx.tables;
   final step = s.tutorialStep;
   if (step == null) return s;
   final st = _steps(t);
   final up = st.obj('upgrade');
   if (step == up.integer('step') && s.ship.level(up.str('part')) >= up.integer('level')) {
-    return s.copyWith(tutorialStep: step + 1);
+    return _welcome(s.copyWith(tutorialStep: step + 1), ctx);
   }
   if (step == st.integer('boss') && s.progress.bestStage > t.waves.tutorialFailStage) {
     return s.copyWith(tutorialStep: step + 1);
   }
   return s;
+}
+
+/// 환영 선원(사용자 피드백 #21 '1분 안에 연사 특성 희귀 선원 확정'): 첫 강화 단계를 넘는 순간 `meta.tutorial.welcomeCrew` 한 명을
+/// 그 등급으로 보유 + 첫 빈 출전 칸에 앉힌다. 받는 화면·카드 연출은 소환과 같은 CrewSummoned(한 장). 이미 있으면 주지 않는다.
+GameState _welcome(GameState s, SystemContext ctx) {
+  final tut = ctx.tables.meta.raw.obj('tutorial');
+  if (!tut.has('welcomeCrew')) return s;
+  final w = tut.obj('welcomeCrew');
+  final id = w.str('crewId');
+  if (s.crews.containsKey(id)) return s;
+  final got = receiveCard(s, ctx.tables, id, w.str('rarity'));
+  final fleet = [...got.fleet];
+  final slots = fleetSlots(got, ctx.tables);
+  final at = fleet.indexOf(null);
+  if (at >= 0 && at < slots) {
+    fleet[at] = id;
+  } else if (fleet.length < slots) {
+    fleet.add(id);
+  }
+  ctx.emit(CrewSummoned(ctx.tick, results: [(crewId: id, rarity: w.str('rarity'))]));
+  return got.copyWith(fleet: fleet);
 }
 
 /// UI 확인 단계만 넘긴다. 마지막 단계 다음은 끝(null). 지금 단계와 다르면 무시.
