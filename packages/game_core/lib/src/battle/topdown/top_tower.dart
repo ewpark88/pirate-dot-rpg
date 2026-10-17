@@ -64,11 +64,12 @@ abstract final class TopTower {
   static GameState retreat(GameState s, Field f, SystemContext ctx) =>
       f.tower == null || s.tower?.active == null ? s : _end(s, f, ctx, 'retreat');
 
-  /// 이 층 기준 스테이지: max(1, floor(최고 스테이지 × stageRatio)) + 층 × floorStageMul — 층마다 적 HP·공격이 함께 올라
-  /// 센 함대도 언젠가 가라앉는다(S2 2026-10-18: 신화 함대가 끝없이 늘어지던 것).
+  /// 이 층 기준 스테이지: max(1, floor(최고 × stageRatio)) + 층 + max(0, 층 − floorStageFrom) × (floorStageMul − 1)
+  /// — floorStageFrom층까지는 층마다 +1, 그 뒤로는 +floorStageMul씩 올라 센 함대도 끝난다(S2 2026-10-18, 한 판 10~15분 목표).
   static int _stage(GameState s, SystemContext ctx, int floor) {
     final c = towerCfg(ctx.tables);
-    return math.max(1, (s.progress.bestStage * c.number('stageRatio')).floor()) + floor * c.integer('floorStageMul');
+    final steep = math.max(0, floor - c.integer('floorStageFrom')) * (c.integer('floorStageMul') - 1);
+    return math.max(1, (s.progress.bestStage * c.number('stageRatio')).floor()) + floor + steep;
   }
 
   static void _nextWave(GameState s, Field f, SystemContext ctx) {
