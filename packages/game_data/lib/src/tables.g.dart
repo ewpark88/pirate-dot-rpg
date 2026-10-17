@@ -3323,7 +3323,7 @@ const Map<String, String> rawTables = {
   "earlyCards": { "untilStage": 30, "maxRarity": "rare" },
   "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3, "floorUpgrades": 30 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
