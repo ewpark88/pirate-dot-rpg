@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/widgets/reward_burst.dart';
+import 'package:pirate_dot/ui/widgets/reward_fly.dart';
 
 import 'ui_harness.dart';
 
@@ -54,5 +57,21 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Voyage Pass level 2!'), findsOneWidget);
     await tester.pump(const Duration(seconds: 4));
+  });
+
+  testWidgets('끝맺음: 창이 닫히면 젬이 위 막대 젬 자리로 날아가 꽂힌다(통통 수 +1)', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = loadFixture('stage37_midgame');
+    await pumpGame(tester, s, openTab: false, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    feed.add(RecordedTick(s.battle!, const [PassRewardClaimed(1, level: 1, paid: false, gems: 20)]));
+    await tester.pump();
+    // 터짐 2초 + 머묾 1.2초 → 창 닫힘 → 날기 0.65초.
+    for (var i = 0; i < 50; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.byType(RewardBurst), findsNothing);
+    expect(c.read(rewardBumpProvider)[RewardSlot.gem], 1);
   });
 }
