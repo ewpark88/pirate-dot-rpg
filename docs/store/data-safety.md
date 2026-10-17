@@ -7,7 +7,8 @@
   - AdMob: https://developers.google.com/admob/android/privacy/play-data-disclosure
   - Firebase(Crashlytics): https://firebase.google.com/docs/android/play-data-disclosure
   - Google Analytics for Firebase: https://support.google.com/analytics/answer/11582702
-- SDK 버전·기능(예: 인앱 결제, 랭킹, Remote Config)이 바뀌면 이 문서·개인정보처리방침 2항·`content-rating.md`를 같이 고친다(platform 레인).
+- 2026-10-18 추가: 유료 상품(in_app_purchase 3.3.1, review/iap) — '구매 내역' 줄. 결제 빌드를 올리기 전에 콘솔 답을 다시 넣는다.
+- SDK 버전·기능(예: 랭킹, Remote Config)이 바뀌면 이 문서·개인정보처리방침 2항·`content-rating.md`를 같이 고친다(platform 레인).
 
 ## 1. 앱이 실제로 보내는 것 (코드 기준)
 | 무엇 | 어디서 | 언제 |
@@ -37,7 +38,8 @@
 | 앱 정보 및 성능 > **비정상 종료 로그** | 예 | 아니요 | 분석(앱 안정성) | Crashlytics 스택 추적(Google = 서비스 제공자) |
 | 앱 정보 및 성능 > **진단** | 예 | 예 | 광고, 분석, 사기 방지·보안 | AdMob '진단 정보'(실행 시간·멈춤 비율·전력) 수집 및 공유 · Crashlytics 기기 메타데이터 |
 | 기기 또는 기타 ID | 예 | 예 | 광고, 분석, 사기 방지·보안 | AdMob 광고 ID·앱 세트 ID(수집 및 공유) · Analytics 앱 인스턴스 ID·광고 ID · Crashlytics 설치 UUID |
-| 개인 정보(이름·이메일·주소·전화 등) · 금융 · 건강 · 메시지 · 사진·동영상 · 오디오 · 파일 · 캘린더 · 연락처 · 웹 기록 · 기타 앱 활동(검색 등) | 아니요 | 아니요 | — | 입력·로그인·검색 기능 없음 |
+| 금융 정보 > **구매 내역** (유료 상품을 넣은 빌드부터) | 예 | 아니요 | 분석, 앱 기능 | Google Play 결제(in_app_purchase)로 산 기록을 앱이 기기 안 세이브에 남기고(권리·영수증 토큰), Google Analytics for Firebase가 인앱 구매 이벤트(상품 ID·이름·가격)를 자동 수집한다(GA 공개 문서). 카드 번호 등 결제 수단은 Google Play가 처리 — 앱은 받지 않는다 |
+| 개인 정보(이름·이메일·주소·전화 등) · 금융(결제 수단·신용 정보) · 건강 · 메시지 · 사진·동영상 · 오디오 · 파일 · 캘린더 · 연락처 · 웹 기록 · 기타 앱 활동(검색 등) | 아니요 | 아니요 | — | 입력·로그인·검색 기능 없음 |
 
 ### 2.3 유형마다 묻는 추가 질문
 | 질문 | 답 |
