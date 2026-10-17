@@ -152,6 +152,7 @@ class Foe {
     breakRatio: boss ? breakGauge : 0,
     broken: brokenUntil > 0,
     breakCooldown: boss ? breakCooldownRatio : 0,
+    rooted: rootTimer > 0,
     eventKind: eventKind,
   );
 }
