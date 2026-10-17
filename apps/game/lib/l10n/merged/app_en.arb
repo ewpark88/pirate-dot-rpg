@@ -2189,5 +2189,33 @@
         "type": "int"
       }
     }
+  },
+  "uiAchKills": "Monster Hunter",
+  "uiAchBosses": "Boss Hunter",
+  "uiAchStage": "Into the Deep",
+  "uiAchRebirths": "Set Sail Again",
+  "uiAchCollection": "Crew Collector",
+  "uiAchTower": "Abyss Conqueror",
+  "uiAchShipLevel": "Shipwright",
+  "uiAchTitle": "Achievements",
+  "uiAchClaim": "Claim +{gems}",
+  "@uiAchClaim": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchDone": "Done",
+  "uiAchProgress": "{value} / {target}",
+  "@uiAchProgress": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
   }
 }

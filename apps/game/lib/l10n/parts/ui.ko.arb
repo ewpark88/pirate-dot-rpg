@@ -1768,5 +1768,33 @@
         "type": "int"
       }
     }
+  },
+  "uiAchKills": "몬스터 사냥꾼",
+  "uiAchBosses": "보스 사냥꾼",
+  "uiAchStage": "먼 바다로",
+  "uiAchRebirths": "다시 출항",
+  "uiAchCollection": "선원 수집가",
+  "uiAchTower": "심연 정복",
+  "uiAchShipLevel": "배 장인",
+  "uiAchTitle": "업적",
+  "uiAchClaim": "받기 +{gems}",
+  "@uiAchClaim": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchDone": "완료",
+  "uiAchProgress": "{value} / {target}",
+  "@uiAchProgress": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
   }
 }
