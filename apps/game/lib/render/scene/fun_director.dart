@@ -133,6 +133,13 @@ bool funEvent(BattleScene s, GameEvent e) {
       _sfx(s, 'bossSpawned', e);
     case RushBossDown(:final index):
       s.moments.onRushBossDown(index);
+    // 부위 마일스톤(8레벨마다 효과 ×2): 빛기둥·×2!·그 부위 빛, 흔들림·진동
+    case PartMilestone(:final part) when s.isTop:
+      s.topHits.glow.milestoneAt = s.clockMs;
+      s.moments.onPartUp(part);
+      s.shake.trigger(s.juice.shake['aoe']!);
+      s.haptic(HapticLevel.medium);
+      _sfx(s, 'partMilestone', e);
     case BossTraitFired() when s.isTop:
       _sfx(s, 'bossTrait', e);
       s.topHits.traits?.bossFx.fired(e, s.player.tickMs, s.clockMs);

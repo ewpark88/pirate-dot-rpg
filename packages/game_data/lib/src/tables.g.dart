@@ -17,7 +17,7 @@ const Map<String, String> rawTables = {
     { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
     { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
     { "id": "dungeonTicket", "dailyLimit": 1, "reward": { "type": "dungeonTicket", "value": 1 } },
-    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
+    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 2, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }

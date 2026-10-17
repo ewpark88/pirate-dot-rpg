@@ -182,6 +182,9 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '| 한 파 소요(처음 10분 / 전체) | ${_fmt(m((r) => r.waveSecFirst10Min), '초')} / ${_fmt(m((r) => r.waveSecAll), '초')} |',
     )
     ..writeln(
+      '| 탑 층당 · 한 판 · 러시 한 판 | ${_fmt(m((r) => r.towerFloorSec), '초')} · ${_fmt(m((r) => r.towerRunMin), '분')} · ${_fmt(m((r) => r.rushSec), '초')} |',
+    )
+    ..writeln(
       '| 오프라인 추정 ÷ 실제 초당 골드(마지막 10분) | '
       '${_fmt(m((r) => r.goldPerSecActual.isZero ? null : (r.goldPerSecEstimated / r.goldPerSecActual).toDouble()))} |',
     )
