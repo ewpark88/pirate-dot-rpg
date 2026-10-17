@@ -566,3 +566,8 @@
 - 다음: boss-feel main 머지 뒤 패치 적용·골든, S5 폰 측정 반영.
 - 남은 문제: test/ui 골든 10장(선원 미리보기 — 이번 갑판 선원으로 또 바뀜, ui 레인), pubspec amb 등록(S1).
 
+## 2026-10-18 (낮) — 스토어 도우미·오프닝
+- 한 일: 63d74006 스토어 2차 전투 장면 도우미(store_scenes.dart) · c6c24a93 오프닝 5컷 배경 디테일.
+- 다음: boss-feel main 머지 뒤 패치(scratchpad bossfeel_render.patch) 적용·골든, S5 폰 측정 반영.
+- 남은 문제: test/ui 골든 10장(ui 레인), pubspec amb 등록(S1).
+
