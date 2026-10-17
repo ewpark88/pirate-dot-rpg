@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 
+part 'hd_opening_detail.dart';
 part 'hd_opening_parts.dart';
 
 /// 오프닝 5컷 배경(S4 요청 — ui/story/opening_screen.dart의 _CutArt 바탕): HD 카툰 결 코드 그림, 천천히 움직인다.
@@ -62,26 +63,33 @@ class _OpeningPainter extends CustomPainter {
         _sky(c, s, const [Color(0xFF2A3A7A), Color(0xFFF08AA0), Color(0xFFFFD08A)]);
         _sun(c, Offset(s.width * 0.7, s.height * 0.42), s.width * 0.12, const Color(0xFFFFE7A0));
         _clouds(c, s, const Color(0xFFFFF4F0));
+        _islands(c, s, s.height * 0.5, const Color(0xFF6A5A8A));
         _sea(c, s, s.height * 0.5, const Color(0xFF3A8FD8), const Color(0xFF1A4A8A));
+        _glitter(c, s, Offset(s.width * 0.7, 0), s.height * 0.5, const Color(0xFFFFF0C0));
         _gulls(c, s);
         _map(c, Offset(s.width * 0.5, s.height * 0.72), s.width * 0.26);
       case 1:
         _sky(c, s, const [Color(0xFF6AB8F0), Color(0xFFA8E0FF), Color(0xFFE8F8FF)]);
         _clouds(c, s, const Color(0xFFFFFFFF));
+        _islands(c, s, s.height * 0.55, const Color(0xFF5A9A7A), palm: true);
         _sea(c, s, s.height * 0.55, const Color(0xFF4AA8E8), const Color(0xFF1E5AA0));
+        _fish(c, s, s.height * 0.55);
         _oldBoat(c, Offset(s.width * 0.5, s.height * 0.62), s.width * 0.34);
       case 2:
         _sky(c, s, const [Color(0xFF120A24), Color(0xFF2A1A4A), Color(0xFF4A2A5A)]);
         _lightning(c, s);
         _sea(c, s, s.height * 0.58, const Color(0xFF2A3A6A), const Color(0xFF0E1630));
         _tentacles(c, s);
+        _rain(c, s, s.height * 0.58);
       case 3:
         _sky(c, s, const [Color(0xFFFF8A5A), Color(0xFFFFB86A), Color(0xFFFFE0A0)]);
         _deck(c, s);
         _bunting(c, s);
+        _deckProps(c, s);
         _sparkles(c, s, const Color(0xFFFFF4C0));
       default:
         _sky(c, s, const [Color(0xFF3A2A6A), Color(0xFFE06A7A), Color(0xFFFFB45A)]);
+        _sunRays(c, s, Offset(s.width * 0.5, s.height * 0.5));
         _sun(c, Offset(s.width * 0.5, s.height * 0.5), s.width * 0.18, const Color(0xFFFFD45A));
         _sea(c, s, s.height * 0.52, const Color(0xFFE0806A), const Color(0xFF3A2A6A));
         _lightPath(c, s);

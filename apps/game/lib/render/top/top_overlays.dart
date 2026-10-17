@@ -46,7 +46,9 @@ class TopOverlays {
     _flashPaint.shader = Gradient.linear(
       Offset(0, cy - h),
       Offset(0, cy + h),
-      m.bannerHot
+      m.bannerGold
+          ? const [Color(0xEE7A4A08), Color(0xEEE0A020), Color(0xEE7A4A08)]
+          : m.bannerHot
           ? const [Color(0xEE5A0A14), Color(0xEEB02A2A), Color(0xEE5A0A14)]
           : const [Color(0xEE2A1450), Color(0xEE5A2A8A), Color(0xEE2A1450)],
       const [0, 0.5, 1],

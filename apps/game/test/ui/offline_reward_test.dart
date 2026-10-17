@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart' show guidesEnabledProvider;
 import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/offline/offline_reward.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
@@ -32,6 +33,7 @@ Future<CommandLog> _pump(WidgetTester tester, Duration away, {bool fake = true})
     ProviderScope(
       overrides: [
         trialsEnabledProvider.overrideWithValue(false),
+        guidesEnabledProvider.overrideWithValue(false), // 처음 만나는 안내(업적 등)가 끼지 않게
         initialGameStateProvider.overrideWithValue(state),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
