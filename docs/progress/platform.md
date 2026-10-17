@@ -1,5 +1,19 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 심야 · S5 · 보스전 v2·고침 2건, 공격 미리보기, hud-layout 다시 맞춤
+- **현재 위치**: main 머지됨 — 보스전 v2·duel-fix(기절 중 standoff 파고듦)·proto-fix(피버 8자가 초당 30으로 묶이던 내 v2 버그). slot 대기(S2 → 나): review/hud-layout 9dd036cc(최신 main + lane/ui 30ef8463, #9 C 환생 말풍선 뺌, 배 체력 막대 전폭·보스 버튼 막대 위) → test/ui·proto 골든 일괄 + --full → 해시. 검토 대기: review/crew-preview 8ccf2134(S3 렌더·S4 UI), review/swap-compare 7638613c(S4 지적 3건 반영). 그 뒤 rotation+duel smoke(5명×1시간).
+- 한 일
+  - 보스전 v2: 배가 화면 가운데 높이로 올라가 보스와 마주 보며 반대편 궤도, 머리 초당 180°, 끝나면 제자리(waves.top.bossDuel shiftY·rise·turnDegPerSec). 프레임 띠 골든.
+  - duel-fix: 보스 기절 중 배가 standoff 안으로 → 배가 보스와 standoff보다 가까워지지 않게(돌진 중 보스는 제외). boss_clear_advances 젬 160.
+  - proto-fix: 머리 회전만으로 '결투 중'이 되어 피버 이동이 묶임 → 결투·복귀가 아니면 자리는 그대로. proto 골든 글꼴(BREAK!).
+  - 공격 미리보기: 공용 하네스 game_core CrewPreview(앱 엔진과 따로, 무리 ↔ 보스 5초 번갈아, 결정론) + 렌더 CrewPreviewView(가상 상자 폭 400단위) + 상세 패널·등급 탭 + 시험.
+  - 검토: S2 melee-guard OK.
+- 배운 것
+  - '상태 플래그'에 부수 조건(머리 회전)을 섞으면 다른 기능(피버 이동)이 조용히 묶인다 — 이동 제한과 회전 제한은 따로.
+  - dart test 증분 캐시가 낡으면 `part of` 오류가 남는다 → .dart_tool/test 지우고 다시.
+  - 끝없는 애니메이션 위젯은 UI 시험 하네스에서 끌 스위치(Provider)를 처음부터 둔다(pumpAndSettle).
+  - 보고 전 출력 끝줄을 직접 확인(game_cli '통과'를 잘못 보고했다가 정정).
+
 ## 2026-10-17 늦은 밤 · S5 · 사용자 폰 버그 3건, 선원 정리 2안, 운영자 오늘 기능, 도감 v2 순환 23종
 - **현재 위치**: 머지 대기 — review/sfx-stuck 4e8b681b(소리 버그, S3 OK) · review/fever-motion-2 5627db41 · review/damage-label e2821c3a · review/crew-traits-2(EnemyView.rooted 포함, 밤 재적합과) · review/hud-layout 4f098cfc(골든·--full slot) · review/rotation-bosses 0e5f5f98(boss-traits bc033482 위, smoke slot 요청).
 - 한 일
