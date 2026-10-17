@@ -46,29 +46,42 @@ class _TodayGroupState extends ConsumerState<TodayGroup> {
           onPressed: () => _send(const OpBossBreak()),
           child: Text(l10n.opTodayBreak),
         ),
-        DropdownButton<String>(
-          key: const Key('op.today.bossPick'),
-          value: _boss,
-          hint: Text(l10n.opTodayBossPick),
-          items: [
-            for (final b in bosses)
-              DropdownMenuItem(
-                value: b.id,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(tableText(l10n, b.nameKey)),
-                    for (final f in _features(b)) ...[
-                      const SizedBox(width: 6),
-                      Icon(_icons[f], size: 16),
-                      Text(_featureName(l10n, f), style: const TextStyle(fontSize: 11)),
+        // 좁은 폰에서도 넘치지 않게 폭을 정하고, 항목은 이름(줄임) + 특징 아이콘만 — 특징 이름은 고른 뒤 아래 줄에.
+        SizedBox(
+          width: 260,
+          child: DropdownButton<String>(
+            key: const Key('op.today.bossPick'),
+            isExpanded: true,
+            value: _boss,
+            hint: Text(l10n.opTodayBossPick),
+            items: [
+              for (final b in bosses)
+                DropdownMenuItem(
+                  value: b.id,
+                  child: Row(
+                    children: [
+                      Flexible(child: Text(tableText(l10n, b.nameKey), overflow: TextOverflow.ellipsis)),
+                      for (final f in _features(b)) ...[const SizedBox(width: 4), Icon(_icons[f], size: 16)],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-          ],
-          onChanged: (id) => setState(() => _boss = id),
+            ],
+            onChanged: (id) => setState(() => _boss = id),
+          ),
         ),
+        if (_boss case final id?)
+          Wrap(
+            key: const Key('op.today.bossTraits'),
+            spacing: 6,
+            children: [
+              for (final f in _features(t.regions.bosses[id]!))
+                Chip(
+                  avatar: Icon(_icons[f], size: 16),
+                  label: Text(_featureName(l10n, f)),
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
         FilledButton.tonal(
           key: const Key('op.today.boss'),
           onPressed: _boss == null ? null : () => _send(OpSpawnBoss(bossId: _boss)),
