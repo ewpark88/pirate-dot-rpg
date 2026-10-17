@@ -128,6 +128,28 @@ class DamageNumbers {
         ..x = p.drawX + n.ox
         ..y = p.drawY + n.oy;
     }
+    _separate();
+  }
+
+  /// 따라가다 겹친 숫자(탑 실기기 '87.1.65K'): 나중 숫자를 앞 숫자 바로 위 줄로 비킨다(따라가는 차이도 같이).
+  void _separate() {
+    final list = pool.active;
+    for (var j = 1; j < list.length; j++) {
+      final b = list[j];
+      final line = lineHeight(scaleOf(b)) * tall;
+      final width = textWidth(b.text, scaleOf(b)) * wide;
+      for (var i = 0; i < j; i++) {
+        final a = list[i];
+        final wa = textWidth(a.text, scaleOf(a)) * wide;
+        final top = a.y - riseOf(a);
+        final yb = b.y - riseOf(b);
+        if ((a.x - b.x).abs() >= (wa + width) / 2 + _gapX || (top - yb).abs() >= line) continue;
+        final dy = top - line - yb;
+        b
+          ..y += dy
+          ..oy += dy;
+      }
+    }
   }
 
   /// 합친 숫자를 새로 띄운다: 지금 그려지는 높이를 새 기준으로 삼아(아래로 떨어져 위 숫자와 겹치지 않게) 수명만 처음부터.

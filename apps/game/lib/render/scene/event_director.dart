@@ -176,9 +176,7 @@ class EventDirector implements ReplayListener {
       BossFailed() => 'bossFailed',
       _ => null,
     };
-    if (key == null) return;
-    final salt = e is Damage ? e.targetId : 0;
-    scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: salt);
+    if (key != null) scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: e is Damage ? e.targetId : 0);
   }
 
   /// 엔진은 범위 한 발의 Damage(·Kill)들 바로 뒤에 AoeDamageSum을 낸다 → 그 묶음이면 true.
@@ -256,6 +254,7 @@ class EventDirector implements ReplayListener {
     final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;
+    final near = scene.isTop && (Offset(e.x, e.y) - scene.topShip).distance < 48; // 배 근처 금화는 튀지 않고 바로 흡수(뭉침 방지)
     for (var c = 0; c < n; c++) {
       if (scene.coins.active.length >= _juice.maxCoins) {
         // 상한: 새 코인 대신 마지막 코인에 금액을 더한다(합계 보존, 화면은 덜 붐빈다).
@@ -270,10 +269,10 @@ class EventDirector implements ReplayListener {
         ..toX = tx
         ..toY = ty
         ..spread = spread
-        ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
+        ..lift = near ? 0 : _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
         ..fallPx = 0
         ..ageMs = 0
-        ..flyMs = _juice.coinFlyMs
+        ..flyMs = _juice.coinFlyMs * (near ? 0.5 : 1)
         ..amount = share
         ..x = e.x
         ..y = e.y;

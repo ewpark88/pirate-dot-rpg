@@ -2571,7 +2571,7 @@ const Map<String, String> rawTables = {
       "storm": { "base": "#2B3E52", "deep": "#213042", "shallow": "#384D63", "wave": "#94A3B3" },
       "glacier": { "base": "#3F8FC8", "deep": "#3279B0", "shallow": "#62AEE0", "wave": "#F4FCFF" },
       "volcano": { "base": "#33355A", "deep": "#272846", "shallow": "#43446C", "wave": "#E0A890" },
-      "abyss": { "base": "#152E5A", "deep": "#0F2246", "shallow": "#1E3C6E", "wave": "#6E8FD0" },
+      "abyss": { "base": "#1C3C72", "deep": "#112A5C", "shallow": "#2A5290", "wave": "#8CB0F0" },
       "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
     },
     "props": {

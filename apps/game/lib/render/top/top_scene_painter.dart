@@ -120,9 +120,37 @@ class TopScenePainter {
       ..snap = dot * dpr
       ..bakeDensity =
           frame.dot *
-          dpr // 굽기 밀도는 보스 카메라 줌 빼고(줌 1.6이면 텍스처 2.56배 — S5 PSS)
+          dpr // 굽기 밀도는 보스 카메라 줌 빼고(줌 1.6이면 텍스처 2.56배)
       ..paint(c, under: true, cull: visibleWorld);
+    _marks.chest(c, clockMs);
+    scene.topHits.paint(
+      c,
+      clockMs,
+      flash: scene.settings.flash,
+      powerSave: scene.settings.powerSave,
+      ship: scene.topShip,
+    );
+    _foes
+      ..hotAt = fever.level > 0 ? _hot : null
+      ..paint(c, under: false, cull: visibleWorld);
+    fever.embers(c, scene.topShip);
+    scene.topHits.paintOver(c, scene, clockMs, _shipR, _bossAt);
+    _marks
+      ..enemies(c, visibleWorld, _foes.radiusOf)
+      ..bosses(c, _foes.radiusOf);
+    if (view.seaEvent?.id == 'bottle') {
+      final b = scene.bottleAt;
+      sprites.draw(
+        c,
+        'td_event:bottle',
+        b.dx.roundToDouble(),
+        b.dy.roundToDouble(),
+        frame: (clockMs / 400).floor() % 2,
+      );
+    }
+    fx(c);
     c.restore();
+    // 배는 늘 맨 위 층(사용자 '배가 보이지도 않는다' — 착탄·칼질·적·금화가 배를 덮지 않게).
     final size = _ship.sizeOf(tier);
     _shipR = size == null ? 16 : size.width * _shipScale / 2;
     if (size != null) {
@@ -187,37 +215,6 @@ class TopScenePainter {
       }
       c.restore();
     }
-    c
-      ..save()
-      ..translate(-cam.dx, -cam.dy);
-    _marks.chest(c, clockMs);
-    scene.topHits.paint(
-      c,
-      clockMs,
-      flash: scene.settings.flash,
-      powerSave: scene.settings.powerSave,
-      ship: scene.topShip,
-    );
-    _foes
-      ..hotAt = fever.level > 0 ? _hot : null
-      ..paint(c, under: false, cull: visibleWorld);
-    fever.embers(c, scene.topShip);
-    scene.topHits.paintOver(c, scene, clockMs, _shipR, _bossAt);
-    _marks
-      ..enemies(c, visibleWorld, _foes.radiusOf)
-      ..bosses(c, _foes.radiusOf);
-    if (view.seaEvent?.id == 'bottle') {
-      final b = scene.bottleAt;
-      sprites.draw(
-        c,
-        'td_event:bottle',
-        b.dx.roundToDouble(),
-        b.dy.roundToDouble(),
-        frame: (clockMs / 400).floor() % 2,
-      );
-    }
-    fx(c);
-    c.restore();
     atmosphere.paintOver(c, viewRect, clockMs, powerSave: scene.settings.powerSave);
     if (view.feverTicksLeft > 0) _overlays.feverCoins(c, viewRect, clockMs);
     c.restore();
