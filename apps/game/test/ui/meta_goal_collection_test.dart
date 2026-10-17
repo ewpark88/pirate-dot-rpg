@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -20,6 +21,7 @@ Future<void> _pump(WidgetTester tester, {NextGoal? goal, CollectionBonus? bonus,
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        trialsEnabledProvider.overrideWithValue(false),
         initialGameStateProvider.overrideWithValue(state),
         battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),
         clockProvider.overrideWithValue(FixedClock(state.savedAt)),

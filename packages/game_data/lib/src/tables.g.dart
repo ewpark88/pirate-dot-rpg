@@ -14,6 +14,8 @@ const Map<String, String> rawTables = {
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
+    { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
+    { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
     { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
@@ -2734,6 +2736,184 @@ const Map<String, String> rawTables = {
   "tokenExchangeCost": 10
 }
 ''',
+  'iap': r'''
+{
+  "gemSubDaily": 100,
+  "firstBuyMultiplier": 2,
+  "offlineHours": 12,
+  "speedMultiplier": 2,
+  "products": [
+    {
+      "id": "no_ads_30d",
+      "nameKey": "econIapNoAds30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "noAds",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "no_ads",
+      "nameKey": "econIapNoAds",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        }
+      ]
+    },
+    {
+      "id": "speed_30d",
+      "nameKey": "econIapSpeed30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "speed",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "nameKey": "econIapSpeed",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "captain_pack",
+      "nameKey": "econIapCaptainPack",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        },
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "starter_pack",
+      "nameKey": "econIapStarterPack",
+      "kind": "nonConsumable",
+      "gems": 600,
+      "heroCards": 1,
+      "skins": [
+        "sprout"
+      ],
+      "limit": 1
+    },
+    {
+      "id": "gem_120",
+      "nameKey": "econIapGem120",
+      "kind": "consumable",
+      "gems": 120,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_650",
+      "nameKey": "econIapGem650",
+      "kind": "consumable",
+      "gems": 650,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_1400",
+      "nameKey": "econIapGem1400",
+      "kind": "consumable",
+      "gems": 1400,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_4200",
+      "nameKey": "econIapGem4200",
+      "kind": "consumable",
+      "gems": 4200,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_9000",
+      "nameKey": "econIapGem9000",
+      "kind": "consumable",
+      "gems": 9000,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_monthly",
+      "nameKey": "econIapGemMonthly",
+      "kind": "subscription",
+      "gems": 300,
+      "entitlements": [
+        {
+          "id": "gemSub",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "voyage_pass",
+      "nameKey": "econIapVoyagePass",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "pass",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "skin_golden_galleon",
+      "nameKey": "econIapSkinGoldenGalleon",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon"
+      ]
+    },
+    {
+      "id": "skin_jolly_flag",
+      "nameKey": "econIapSkinJollyFlag",
+      "kind": "nonConsumable",
+      "skins": [
+        "jolly_flag"
+      ]
+    },
+    {
+      "id": "skin_coral_yacht",
+      "nameKey": "econIapSkinCoralYacht",
+      "kind": "nonConsumable",
+      "skins": [
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "skin_bundle",
+      "nameKey": "econIapSkinBundle",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon",
+        "jolly_flag",
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "offline_12h",
+      "nameKey": "econIapOffline12h",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "offline12"
+        }
+      ]
+    }
+  ]
+}
+''',
   'juice': r'''
 {
   "hitStopMs": {
@@ -2866,6 +3046,10 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 5,
+    "brackets": [{"sec": 300, "gems": 30}, {"sec": 180, "gems": 60, "pieces": 5}, {"sec": 120, "gems": 100, "pieces": 10}]},
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
@@ -2920,7 +3104,7 @@ const Map<String, String> rawTables = {
   "earlyCards": { "untilStage": 30, "maxRarity": "rare" },
   "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -2941,13 +3125,23 @@ const Map<String, String> rawTables = {
     "wallEvery": 10,
     "cargoBuyFull": 0.9,
     "buyCostWeight": { "cannon": 1, "hull": 1, "sail": 1, "crowsnest": 1, "cargo": 1 },
+    "guard": {
+      "stage10Min": { "min": 4, "max": 12 },
+      "stage40OnlineMin": { "min": 35, "max": 90 },
+      "waveSecAll": { "min": 8, "max": 30 },
+      "farmWaveDamagePct": { "min": 0.5, "max": 40 },
+      "bossKillSec": { "min": 10, "max": 60 },
+      "bossFightDamagePct": { "min": 8, "max": 70 },
+      "bossFailSec": { "min": 20, "max": 90 },
+      "upgradeGapStage10Sec": { "min": 8, "max": 60 }
+    },
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "welcomeCrewMin": { "min": 0, "max": 1 },
       "stage10Min": { "min": 7, "max": 9 },
       "stage40DayHours": { "min": 0, "max": 8.67, "schedule": "daily" },
-      "stage40OnlineMin": { "min": 45, "max": 55, "schedule": "continuous" },
+      "stage40OnlineMin": { "min": 55, "max": 70, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
       "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
@@ -3089,7 +3283,7 @@ const Map<String, String> rawTables = {
     {"id": "hull", "stat": "hp", "formula": "exp", "base": 900, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
     {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 11, 30], "nameKey": "shipPartSail"},
     {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 12, 26, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 120, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.2, "costBase": 0, "costGrowth": 1}
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 200, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.2, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -3562,7 +3756,7 @@ const Map<String, String> rawTables = {
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
-  "boss": { "hpMultiplier": 270, "wallEvery": 10, "wallHpMultiplier": 2.8, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 20, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "levelGain": 1 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.015, "earlyAttackMultiplier": 0.035 },
+  "boss": { "hpMultiplier": 400, "wallEvery": 10, "wallHpMultiplier": 1.9, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 26, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "levelGain": 1 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.01, "earlyAttackMultiplier": 0.027 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {

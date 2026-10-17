@@ -104,8 +104,8 @@ class BattleScene {
   set audio(AudioPort? v) => sound.audio = v;
   List<String> get audioLog => sound.log;
 
-  /// 선원 슬롯 발사 번쩍임 남은 시간(ms), 슬롯 순서.
-  final slotFlashMs = List<double>.filled(kMaxSlots, 0);
+  final slotFlashMs = List<double>.filled(kMaxSlots, 0); // 선원 슬롯 발사 번쩍임 남은 ms(슬롯 순서)
+  Map<String, int> crewLevels = const {}; // 선원 칸 Lv(UI가 BattleGame.crewLevels로 — 계약에 레벨이 없다)
   double shipFlashMs = 0;
   final topHits = TopHits(); // 탑다운 배 충돌 연출(돌진·물보라).
 

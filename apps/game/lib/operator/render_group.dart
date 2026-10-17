@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_game.dart';
-import 'package:pirate_dot/ui/hud/hud_layout.dart';
 import 'package:pirate_dot/ui/shop/shop_sheet.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -83,19 +82,6 @@ class _RenderGroupState extends ConsumerState<RenderGroup> {
                   _cardFx = s.single;
                   g.cardFxMinRarity = s.single;
                 }),
-        ),
-        // HUD 배치 안(사용자 '상태바·메뉴바 위치 검토') — 폰에서 바로 바꿔 본다.
-        Text(l10n.opHudLayout),
-        SegmentedButton<HudLayout>(
-          key: const Key('op.hudLayout'),
-          segments: [
-            ButtonSegment(value: HudLayout.now, label: Text(l10n.opHudNow)),
-            ButtonSegment(value: HudLayout.thumb, label: Text(l10n.opHudThumb)),
-            ButtonSegment(value: HudLayout.floating, label: Text(l10n.opHudFloating)),
-            ButtonSegment(value: HudLayout.slim, label: Text(l10n.opHudSlim)),
-          ],
-          selected: {ref.watch(hudLayoutProvider)},
-          onSelectionChanged: (s) => ref.read(hudLayoutProvider.notifier).pick(s.single),
         ),
         // 유료 상점 골격(결제 전 가짜 목록) — 운영자만 연다.
         OutlinedButton(

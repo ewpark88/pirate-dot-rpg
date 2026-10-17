@@ -45,6 +45,9 @@ mixin _UiLinks on FlameGame {
     scene.topHits.loot.crewName = v.crewName;
   }
 
+  /// 선원 칸 큰 Lv(사용자 'Lv 크게' — S4 카드와 같은 기준): UI가 선원 id → 레벨을 넣는다. 비면 Lv 안 그림.
+  set crewLevels(Map<String, int> v) => scene.crewLevels = v;
+
   /// 카드 앞면 공개 연출을 몇 등급부터 할지(rarities.json id, 피드백 #22 — 기본 fx_map cardFx.minRarity). 운영자·설정이 넣는다.
   set cardFxMinRarity(String rarityId) {
     scene.topHits.loot.revealFrom = scene.tables.rarities.rarities.indexWhere((r) => r.id == rarityId);

@@ -20,6 +20,7 @@ class HdImpact {
     ..strokeCap = StrokeCap.round
     ..strokeJoin = StrokeJoin.round;
   static const _lifeMs = 520.0;
+  final _veil = Paint()..color = const Color(0x73FFFFFF); // 배 위 착탄 45%
   static const _upright = {'underwater', 'laser', 'skip'};
   static const _max = 14;
 
@@ -40,7 +41,8 @@ class HdImpact {
 
   void clear() => _hits.clear();
 
-  void paint(Canvas c, double now, {required bool lite}) {
+  /// [ship] 가까운 착탄(배 반경 [shipR] 안)은 반투명 — 피버 붐빔에도 배가 묻히지 않게(S1 가독성).
+  void paint(Canvas c, double now, {required bool lite, Offset? ship, double shipR = 32}) {
     _hits.removeWhere((h) => now - h.at >= _lifeMs || now < h.at - 2000);
     for (final h in _hits) {
       final age = now - h.at;
@@ -49,6 +51,8 @@ class HdImpact {
       // 일반·희귀도 바다 위에서 약하지 않게 최소 1.3배·굵은 선(S1 핵앤슬래시 손맛), 등급마다 +0.1
       final r = h.radius * h.jitter * (1.3 + 0.1 * h.rarity);
       _k.ink.strokeWidth = math.max<double>(1.4, r * 0.09);
+      final near = ship != null && (h.pos - ship).distance < shipR + r * 0.5;
+      if (near) c.saveLayer(Rect.fromCircle(center: h.pos, radius: r * 2.5), _veil);
       c
         ..save()
         ..translate(h.pos.dx, h.pos.dy)
@@ -79,6 +83,7 @@ class HdImpact {
       }
       if (h.rarity >= 5) _rainbowRim(c, r, t);
       c.restore();
+      if (near) c.restore();
     }
   }
 }

@@ -43,6 +43,7 @@ BigNum bountyBossHp(GameTables t, String bossId, int tier) {
 bool canStartBounty(GameState s, GameTables t, DateTime now, String bossId, int tier, {int? weekday}) {
   final b = s.bounty;
   if (b == null || b.tickets < 1 || b.active != null) return false;
+  if (s.tower?.active != null || s.rush?.active != null) return false; // 탑·러시 중엔 안 됨
   if (!bountyBosses(t).contains(bossId)) return false;
   final today = bountyBossOn(t, weekday ?? now.weekday);
   if (today != anyBoss && today != bossId) return false;

@@ -238,6 +238,24 @@
   "econTitleCaptain": "바다의 선장",
   "econTitleAdmiral": "전설의 제독",
   "econTitleSeaKing": "일곱 바다의 왕",
+  "econIapNoAds30d": "광고 제거 30일",
+  "econIapNoAds": "광고 제거 영구",
+  "econIapSpeed30d": "2배속 30일",
+  "econIapSpeed": "2배속 영구",
+  "econIapCaptainPack": "선장 패키지",
+  "econIapStarterPack": "스타터 팩",
+  "econIapGem120": "젬 한 줌",
+  "econIapGem650": "젬 주머니",
+  "econIapGem1400": "젬 상자",
+  "econIapGem4200": "젬 보물궤",
+  "econIapGem9000": "젬 해적왕 금고",
+  "econIapGemMonthly": "월간 젬",
+  "econIapVoyagePass": "항해 패스",
+  "econIapSkinGoldenGalleon": "황금 갈레온",
+  "econIapSkinJollyFlag": "해골 깃발",
+  "econIapSkinCoralYacht": "산호 요트",
+  "econIapSkinBundle": "배 스킨 3종 묶음",
+  "econIapOffline12h": "넉넉한 화물 지도",
   "opPanelTitle": "운영자 모드",
   "opGroupSave": "저장",
   "opGroupBattle": "전장",
@@ -299,11 +317,6 @@
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
   "opTraitSplit": "분열",
-  "opHudLayout": "HUD 배치 안",
-  "opHudNow": "지금",
-  "opHudThumb": "엄지",
-  "opHudFloating": "떠 있는 띠",
-  "opHudSlim": "얇은 도크",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -1479,15 +1492,8 @@
     }
   },
   "uiBossCanWin": "이길 수 있어요!",
-  "uiStoryOpen1": "아주 먼 바다에, 보물이 잠든 일곱 해역이 있었어요.",
-  "uiStoryOpen2": "작은 문어 옥토는 할아버지의 낡은 배를 물려받았죠.",
-  "uiStoryOpen3": "그런데 바다 괴물과 해적 보스들이 바닷길을 막고 있어요!",
-  "uiStoryOpen4": "동료를 모으고 배를 키워 보물 지도를 완성해요.",
-  "uiStoryOpen5": "자, 출항! 배는 알아서 싸우니 선장님은 키우기만 하면 돼요.",
   "uiStorySkip": "건너뛰기",
   "uiStoryTapNext": "톡 하면 다음",
-  "uiStoryBossTaunt": "누가 감히 내 바다에 들어왔지?!",
-  "uiStoryOctoReply": "우리 배는 안 져요! 다들, 포탄 준비!",
   "uiShopTitle": "상점",
   "uiShopNoAds": "광고 없음",
   "uiShopSubLeft": "구독 {days}일 남음",
@@ -1550,6 +1556,34 @@
     }
   },
   "@uiShopDailyGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiLvLabel": "Lv",
+  "uiLvTip": "Lv이 오르면 공격력이 세져요. 같은 선원 카드를 모아 올려요!",
+  "uiTrialSpeedTitle": "2배속 10분 무료 체험!",
+  "uiTrialAutoTitle": "자동 강화 10분 무료 체험!",
+  "uiTrialSpeedCompare": "속도 ×1 → ×2 · 골드 ×1 → ×2",
+  "uiTrialAutoCompare": "배 강화·선원 합성을 알아서 해 줘요",
+  "uiTrialTry": "무료로 써 보기",
+  "uiTrialLater": "나중에",
+  "uiTrialEndTitle": "체험이 끝났어요",
+  "uiTrialEndAsk": "마음에 들었나요? 광고 한 번이면 10분 더!",
+  "uiTrialAdMore": "광고 보고 10분 더",
+  "uiTrialBuy": "영구로 갖기 (상점)",
+  "uiAutoBossIn": "자동 도전 {n}초",
+  "@uiAutoBossIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPromoteStageLocked": "스테이지 {n}에서 열림",
+  "@uiPromoteStageLocked": {
     "placeholders": {
       "n": {
         "type": "int"

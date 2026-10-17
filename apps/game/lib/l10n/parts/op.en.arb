@@ -66,10 +66,5 @@
   "opTraitEscort": "Escort",
   "opTraitDash": "Dash",
   "opTraitPattern": "Pattern",
-  "opTraitSplit": "Split",
-  "opHudLayout": "HUD layout",
-  "opHudNow": "Now",
-  "opHudThumb": "Thumb",
-  "opHudFloating": "Floating",
-  "opHudSlim": "Slim dock"
+  "opTraitSplit": "Split"
 }

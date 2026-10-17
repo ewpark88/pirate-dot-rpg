@@ -48,6 +48,17 @@ void main() {
     const OpSpawnChest(),
     const OpSetTutorial(null),
     const OpGrantTailwind(Duration(minutes: 30)),
+    const StartTower(),
+    const SweepTower(),
+    const RetreatTower(),
+    const GrantAdReward(AdPlacement.towerTicket),
+    const StartRush(),
+    const RetreatRush(),
+    const GrantAdReward(AdPlacement.rushTicket),
+    GrantPurchase('gem_650', 'tok-1', DateTime.utc(2026, 11, 2)),
+    const RevokeEntitlement('noAds'),
+    const OpSetEntitlement('speed', on: true),
+    const ClaimGemSub(),
   ];
 
   test('모든 명령 JSON 왕복', () {
@@ -57,6 +68,8 @@ void main() {
   });
 
   final events = <GameEvent>[
+    const PurchaseGranted(1, productId: 'starter_pack', gems: 600, heroCards: 1, skins: ['sprout'], rights: ['noAds']),
+    const EntitlementChanged(1, id: 'speed', active: true),
     const AttackFired(1, crewId: 'octo', family: 'lob', targetIds: [1, 2], x: 10, y: 20),
     Damage(1, targetId: 1, amount: BigNum.from(12), crit: true, crewId: 'pang'),
     AoeDamageSum(1, total: BigNum.from(40), x: 1, y: 2),
@@ -89,6 +102,13 @@ void main() {
     const BossTraitFired(12, enemyId: 7, trait: 'reflect', ticks: 40),
     const BossTraitFired(12, enemyId: 7, trait: 'enrage'),
     const AttackMissed(12, crewId: 'octo', x: 1, y: 2, reason: 'evade'),
+    const TowerStarted(13, floor: 1),
+    const TowerFloorCleared(13, floor: 5, gems: 10, cards: 1),
+    const TowerEnded(14, floor: 4, reason: 'sunk', kills: 120, chestGems: 20),
+    const TowerSwept(15, floor: 3, chestGems: 20),
+    const RushStarted(16, bosses: ['kraken', 'sea_croc']),
+    const RushBossDown(16, index: 0, bossId: 'kraken', ticks: 300),
+    const RushEnded(17, killed: 5, ticks: 2400, reason: 'cleared', gems: 115, pieces: 15, best: true),
   ];
 
   test('모든 이벤트 JSON 왕복', () {

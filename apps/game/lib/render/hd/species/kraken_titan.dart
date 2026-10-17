@@ -59,7 +59,6 @@ void _krakenTitan(HdKit k, Canvas c, double r, double t) {
     ..close();
   k
     ..blob(c, head, const Color(0xFFFF9A8A), redD)
-    ..shine2(c, head.getBounds())
     ..spots(c, r, const [
       (-0.4, -0.6, 0.11),
       (0.45, -0.35, 0.09),

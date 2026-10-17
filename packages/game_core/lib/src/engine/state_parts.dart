@@ -3,6 +3,8 @@ import 'package:meta/meta.dart';
 
 export 'package:game_core/src/engine/state_bounty.dart';
 export 'package:game_core/src/engine/state_progress.dart';
+export 'package:game_core/src/engine/state_rush.dart';
+export 'package:game_core/src/engine/state_tower.dart';
 
 // 세이브 스키마 v1(docs/GAME_DESIGN.md 5.2)의 조각들. 모두 불변이고 JSON과 1:1.
 

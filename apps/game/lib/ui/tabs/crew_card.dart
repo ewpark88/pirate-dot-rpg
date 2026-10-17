@@ -70,7 +70,8 @@ class CrewCard extends ConsumerWidget {
                   rarity: rarity,
                   name: shortCrewName(l10n, def),
                   silhouette: !owned,
-                  topLeft: level == null ? null : PbBadge(l10n.uiLevel(level), key: Key('crew.level.${def.id}')),
+                  // Lv = 공격력 — 크게(작은 'Lv' + 큰 숫자), 누르면 한 줄 팁.
+                  topLeft: level == null ? null : LvBadge(level: level, key: Key('crew.level.${def.id}')),
                   topRight: cards == null || cards == 0
                       ? null
                       : PbBadge(

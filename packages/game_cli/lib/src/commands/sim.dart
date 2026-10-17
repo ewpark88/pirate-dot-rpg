@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:game_cli/src/sim/sim_boss_break.dart';
 import 'package:game_cli/src/sim/sim_boss_trait.dart';
+import 'package:game_cli/src/sim/sim_guard.dart';
 import 'package:game_cli/src/sim/sim_patch.dart';
 import 'package:game_cli/src/sim/sim_player.dart';
 import 'package:game_cli/src/sim/sim_report.dart';
@@ -33,6 +34,7 @@ class SimCommand extends Command<int> {
       ..addFlag('boss-break', help: '보스 브레이크 계측(선원 한 명씩 보스전, 브레이크 끔·켬) — 다른 sim은 안 돈다')
       ..addOption('boss-trait', help: '보스 특성 보정 계측(evade·armor·…) — 레벨은 --boss-break-level')
       ..addOption('boss-break-level', defaultsTo: '45', help: '--boss-break 선원 레벨(전설 46~60·신화 61~)')
+      ..addFlag('guard', help: '3자 균형 경계(meta.sim.guard) — 벗어나면 종료 코드 1(check 밸런스 스모크, --players 3과 같이)')
       ..addFlag('smoke', help: 'check.dart 밸런스 스모크(가상 플레이어 1명 × 2시간), 벗어나면 경고만')
       ..addOption('out', help: 'JSON 리포트 경로')
       ..addOption('report', help: '사람이 읽는 표(마크다운) 저장 경로 — 예: docs/balance/nightly-30d.md');
@@ -85,6 +87,16 @@ class SimCommand extends Command<int> {
     final out = a['out'] as String?;
     if (out != null) {
       File(out).writeAsStringSync(const JsonEncoder.withIndent('  ').convert(reportJson(results, checks)));
+    }
+    final guard = a['guard'] as bool ? balanceGuard(t, checks, results) : const <GuardLine>[];
+    if (guard.isNotEmpty) {
+      stdout.writeln('\n${formatGuard(guard)}');
+    }
+    if (guard.any((l) => !l.ok)) {
+      stderr.writeln(
+        '3자 균형 경계를 벗어남 — ${guard.where((l) => !l.ok).map((l) => l.label).join(', ')} (BALANCE.md 1절 고정 목표 확인)',
+      );
+      return 1;
     }
     final missed = checks.where((c) => !c.ok(results.first.played)).toList();
     if (missed.isEmpty) return 0;

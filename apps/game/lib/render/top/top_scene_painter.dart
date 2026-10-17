@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
 import 'package:pirate_dot/render/top/ship_turn.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
+import 'package:pirate_dot/render/top/top_boss_cam.dart';
 import 'package:pirate_dot/render/top/top_enemies.dart';
 import 'package:pirate_dot/render/top/top_fever.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
@@ -55,14 +56,8 @@ class TopScenePainter {
     final clockMs = scene.clockMs;
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0);
     _lastMs = clockMs;
-    // 보스전 카메라(사용자 '보스전이 박진감 넘치게'): 0.6초에 걸쳐 배를 화면 아래 78%로 당기고 1.08배, 등장 순간 줌 펀치.
-    final boss = scene.frame.bossActive;
-    if (dt > 0) _bossCam += ((boss ? 1 : 0) - _bossCam) * math.min(1, dt / 200);
-    if (boss && !_wasBoss) _punchAt = clockMs;
-    _wasBoss = boss;
-    final punchT = (clockMs - _punchAt) / 300;
-    final zoom = 1 + 0.08 * _bossCam + (punchT >= 0 && punchT < 1 ? 0.06 * (1 - punchT) * (1 - punchT) : 0);
-    final target = frame.shipScreen.dy + (0.78 - TopFrame.kShipAt) * frame.fieldDp.height * _bossCam;
+    // 보스전 카메라(TopBossCam): 배를 아래로 당기고 배·보스가 보이는 전장 높이 58% 안에 꽉 차게 줌 + 등장 펀치.
+    final (zoom, target) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
     final y = _shipY ?? target;
     // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
     _shipY = dt <= 0 ? target : y + (target - y) * math.min(1, dt / _followMs * 3);
@@ -96,6 +91,7 @@ class TopScenePainter {
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
     visibleWorld = viewRect.shift(cam).inflate(_cullMargin);
     fever.update(clockMs);
+    final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
       ..boost = fever.level
@@ -103,12 +99,12 @@ class TopScenePainter {
           .wake // 스킨 항적 색(앞 프레임 값)
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
-      ..paint(c, viewRect, clockMs, region: scene.tables.regions.regionAt(view.stage).id);
+      ..paint(c, viewRect, clockMs, region: region);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
       ..storm = view.seaEvent?.id == 'storm'
-      ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, 0, powerSave: powerSave)
+      ..update(clockMs, region, _sea.flow, 0, powerSave: powerSave)
       ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
     // 전장 좌표로: 카메라(바다 가운데·배 높이)가 원점.
     c
@@ -235,9 +231,7 @@ class TopScenePainter {
   double _maxBoxH = 0;
   final _ghost = Paint();
 
-  double _bossCam = 0;
-  bool _wasBoss = false;
-  double _punchAt = -1000000000;
+  final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
