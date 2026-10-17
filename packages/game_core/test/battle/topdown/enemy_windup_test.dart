@@ -25,7 +25,7 @@ void main() {
       tables: t,
       clock: ManualClock(start),
       initial: GameState.newGame(playerId: 'w', seed: 7, now: start).copyWith(
-        progress: const Progress(stage: 8, bestStage: 8),
+        progress: const Progress(stage: 8, bestStage: 8, rebirths: 3), // 종 해금: 원거리 잡몹(갈매기)까지 열기
       ),
     );
     final events = <GameEvent>[];

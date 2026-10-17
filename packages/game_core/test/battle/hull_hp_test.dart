@@ -13,7 +13,7 @@ void main() {
       tables: t,
       clock: ManualClock(start),
       initial: GameState.newGame(playerId: 'h', seed: 1, now: start).copyWith(
-        progress: const Progress(stage: 10, bestStage: 10),
+        progress: const Progress(stage: 10, bestStage: 10, rebirths: 3), // 종 해금: 해역 무리 전부(원거리 포함 — 맞게)
         ship: const ShipState(parts: {'cannon': 5, 'hull': 3, 'sail': 0, 'crowsnest': 0, 'cargo': 0}),
       ),
     )..advance(200); // 맞아서 체력이 조금 깎인 상태
