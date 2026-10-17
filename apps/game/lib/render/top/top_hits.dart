@@ -7,6 +7,7 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_boss_loot.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_bounty.dart';
+import 'package:pirate_dot/render/top/top_break.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
 import 'package:pirate_dot/render/top/top_family_v3.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
@@ -27,6 +28,9 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 보스 브레이크 쓰러짐(BossBroken).
+  final breaks = TopBreak();
 
   /// 보스 처치 보상 터짐(피드백 #18).
   final loot = TopBossLoot();
@@ -249,6 +253,7 @@ class TopHits {
     impact.clear();
     boss.clear();
     loot.clear();
+    breaks.clear();
     slash.clear();
     _emerges.clear();
     upgradeAt = -1000000000;

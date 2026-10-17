@@ -12,7 +12,7 @@ void main() {
     expect(Settings.fromJson(oldSave(flash: true)).flashLevel, 'soft');
     expect(Settings.fromJson(oldSave(flash: false)).flashLevel, 'off');
     expect(Settings.fromJson(oldSave(flash: true)).sleepAfterSec, Settings.defaultSleepAfterSec);
-    expect(Settings.defaultSleepAfterSec, 180);
+    expect(Settings.defaultSleepAfterSec, 600); // 사용자 2026-10-17: 절전 기본 10분
   });
 
   test('기본값이면 본문이 옛 세이브와 같다(새 키를 쓰지 않음), 바꾸면 쓰고 되읽는다', () {

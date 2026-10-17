@@ -190,7 +190,7 @@ class Settings {
   );
 
   /// 자동 절전 화면 기본(초) — S4 '발열·배터리·OLED'.
-  static const defaultSleepAfterSec = 180;
+  static const defaultSleepAfterSec = 600;
 
   /// `system` | `ko` | `en`.
   final String lang;
