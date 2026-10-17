@@ -1,5 +1,16 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 오후 · S5 · HD 몬스터 묶음 A 10종
+- **현재 위치**: review/hd-a d8808e0c(lane/render 95cc784e 위) — S3 검토·S1 머지 대기. review/k-windows-s5 7dcb0e53(창 개편 + 보상 연출)은 S4 UI run 대기.
+- 한 일
+  - 설계 노트 docs/specs/platform-hd-monsters-a.md(S2 노트 B와 같은 형식·실루엣 규칙 같은 문구).
+  - S3 HdKit 새 구조(옆모습·0.8초 고리·species/<kind>.dart)로 10종: 갈매기·폭풍갈매기·눈갈매기(공용 seabird), 성게, 날치, 복어, 얼음게·작은 얼음게(반 크기), 펭귄, 물범. 확인 골든 hd_trial_a.
+  - 공용 부품: S2 underwater·bubbles·wing을 같은 글자로, 내 spikes·birdWing은 hd_kit_parts.dart.
+- 다음 할 일: S3 검토 반영, 원거리 '쏘기 전 밝아짐'(TopEnemies muzzle 제안) 답 기다림. rotation+duel smoke, 폰 확인표.
+- 배운 것
+  - 공용 부품 이름이 겹칠 땐 한쪽 것을 같은 글자로 맞춰 넣으면 합칠 때 충돌이 없다.
+  - 0.8초 고리 그림에서는 몇 초 주기 상태(쏘기 직전)를 표현할 수 없다 — 렌더 이벤트 쪽 몫.
+
 ## 2026-10-18 · S5 · 디자인 개편(쿵푸할매 스타일) — HD 아이콘·바다 v2·보상 연출·창 개편
 - **현재 위치**: main 머지됨 — sea-v2(해역 팔레트·외곽선 소품). S4 UI run 대기 — review/k-windows-s5 7dcb0e53(창 개편 S5 몫 + reward-fx-wire). HD 아이콘(review/hd-icons f2c2abb4)은 S4 run에 포함. 다음: HD 몬스터 절반(코랄·폭풍·빙하 잡몹 약 13종) — S3 기준서·공용 벡터 도구 기다림.
 - 한 일
