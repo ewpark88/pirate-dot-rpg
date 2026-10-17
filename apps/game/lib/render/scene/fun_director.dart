@@ -60,6 +60,8 @@ bool funEvent(BattleScene s, GameEvent e) {
     case CardGranted(:final crewId, :final rarity, :final source, :final isNew) when s.isTop:
       final rs = s.tables.rarities.rarities;
       final r = rs.firstWhere((x) => x.id == rarity, orElse: () => rs.first);
+      final loot = s.topHits.loot;
+      final from = loot.revealFrom ??= rs.indexWhere((x) => x.id == s.fx.raw.obj('cardFx').str('minRarity'));
       final special = source == 'starter';
       s.topHits.loot.card(
         s.clockMs,
@@ -68,6 +70,8 @@ bool funEvent(BattleScene s, GameEvent e) {
         parseArgb(r.color, 'rarities.color'),
         isNew: isNew,
         special: special,
+        stars: rs.indexOf(r) + 1,
+        reveal: from >= 0 && rs.indexOf(r) >= from,
       );
       if (isNew || special) s.haptic(HapticLevel.medium);
       _sfx(s, isNew || special ? 'crewPromoted' : 'coinArrive', e);

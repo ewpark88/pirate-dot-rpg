@@ -32,12 +32,18 @@ class _Painter extends CustomPainter {
 }
 
 void main() {
-  for (final (name, afterMs) in const [('start', 250.0), ('mid', 3000.0)]) {
+  // strike_*: 피버 첫 일격(UltimateCast) — 선장 컷인(0.15초)·금빛 번개(0.7초).
+  for (final (name, afterMs, strike) in const [
+    ('start', 250.0, false),
+    ('mid', 3000.0, false),
+    ('strike_cut', 150.0, true),
+    ('strike_bolt', 700.0, true),
+  ]) {
     testWidgets('피버 골든 s24 $name', (tester) async {
       const dpr = 2.8125;
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       const box = Size(384, 832 - 48 - 24 - 76);
-      final rec = withFever(topRecording(tables, ticks: 400));
+      final rec = withFever(topRecording(tables, ticks: 400), strike: strike);
       final at = rec.indexWhere((t) => t.events.any((e) => e is FeverStarted));
       expect(at, greaterThan(0), reason: '기록에 피버 시작이 있어야 한다');
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
@@ -52,7 +58,7 @@ void main() {
         scene.update(kFrameMs);
         painter.paintTop(warm, frame);
       }
-      expect(painter.top.fever.level, greaterThan(0.5));
+      if (afterMs >= 250) expect(painter.top.fever.level, greaterThan(0.5));
       tester.view
         ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
         ..devicePixelRatio = 1;

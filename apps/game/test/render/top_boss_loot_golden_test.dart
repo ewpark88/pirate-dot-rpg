@@ -54,9 +54,11 @@ void main() {
         cards: [
           if (cards) (t) => CardGranted(t, crewId: 'pang', rarity: 'common', source: 'boss'),
           if (cards) (t) => CardGranted(t, crewId: 'moray', rarity: 'hero', source: 'boss', isNew: true),
+          if (cards) (t) => CardGranted(t, crewId: 'turtle', rarity: 'legend', source: 'boss'),
         ],
       );
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+      scene.topHits.loot.crewName = (id) => const {'moray': '모레이', 'turtle': '거북 선장'}[id] ?? id;
       final painter = ScenePainter(scene)..sprites = bank;
       final frame = topFrameFor(box, dpr);
       final warm = Canvas(PictureRecorder());
