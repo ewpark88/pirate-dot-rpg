@@ -93,6 +93,23 @@ void main() {
     expect((a.boss.hp / a.boss.maxHp).toDouble(), closeTo(0.5 + perTick, 1e-9));
   });
 
+  test('재생은 fadeSec 동안 1 → 0으로 줄어 끝나지 않는 보스전이 없다(실기기 6-2 해파리 여왕)', () {
+    final a = arena(const ['regen']);
+    final fade = a.boss.bossDef!.trait('regen')!.cfg.numberOr('fadeSec', 0);
+    expect(fade, greaterThan(0), reason: '표에 fadeSec');
+    a.boss.hp = a.boss.maxHp.times(0.5);
+    a.r.tickBossTraits(); // 시작 틱 — 아직 전부
+    final half = a.ctx.tick + (fade / 2 / a.r.dt).round();
+    a.ctx.tick = half;
+    final before = (a.boss.hp / a.boss.maxHp).toDouble();
+    a.r.tickBossTraits();
+    expect((a.boss.hp / a.boss.maxHp).toDouble() - before, closeTo(0.015 * a.r.dt * 0.5, 1e-9), reason: '절반 지나면 절반');
+    a.ctx.tick += (fade / a.r.dt).round();
+    final late = (a.boss.hp / a.boss.maxHp).toDouble();
+    a.r.tickBossTraits();
+    expect((a.boss.hp / a.boss.maxHp).toDouble(), late, reason: 'fadeSec 뒤엔 재생 0');
+  });
+
   test('반사막: everySec마다 예고(BossTraitFired) 뒤 sec 동안 피해 0 + 배에 반사, 수중은 통과', () {
     final a = arena(const ['reflect']);
     a.r.tickBossTraits(); // 첫 주기 예약
