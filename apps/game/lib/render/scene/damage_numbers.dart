@@ -214,7 +214,13 @@ class DamageNumbers {
 
   static const _bounceEnd = 0.35;
 
-  double scaleOf(DamageNumber n) => _scaleOf(n.kind);
+  /// 그리는 배율: 치명타는 생길 때 1.6배로 팍 튀어 0.15초에 1.0으로(S1 '임팩트').
+  double scaleOf(DamageNumber n) {
+    final pop = n.kind == DamageKind.crit && n.ageMs < _popMs ? 1 + 0.6 * (1 - n.ageMs / _popMs) : 1.0;
+    return _scaleOf(n.kind) * pop;
+  }
+
+  static const _popMs = 150.0;
 
   int colorOf(DamageNumber n) => switch (n.kind) {
     DamageKind.normal => spec.normalColor,

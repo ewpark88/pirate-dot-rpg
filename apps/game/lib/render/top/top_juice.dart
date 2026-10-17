@@ -31,10 +31,10 @@ class TopJuice {
   }
 
   /// 중(범위·치명)·강(보스·궁극기) 명중: 히트스톱 + 방향 흔들림. [dir] = 배 → 맞은 곳 방향(단위 벡터 아니어도 됨).
-  void hit(double now, Offset dir, {required bool strong, required bool shake}) {
-    // 멈춤은 강(보스·궁극기)만, 0.6초에 한 번 — 범위·치명마다 멈추면 '몬스터가 다 멈춘다'(사용자 첫 불만)로 돌아간다.
-    if (strong && now - _lastFreezeAt >= 600) {
-      _freeze = 50;
+  void hit(double now, Offset dir, {required bool strong, required bool shake, bool crit = false}) {
+    // 멈춤은 강(보스·궁극기) 50ms·치명 40ms, 0.6초에 한 번 — 치명마다 멈추면 '몬스터가 다 멈춘다'(사용자 첫 불만)로 돌아간다.
+    if ((strong || crit) && now - _lastFreezeAt >= 600) {
+      _freeze = strong ? 50 : 40;
       _lastFreezeAt = now;
     }
     if (!shake) return;
