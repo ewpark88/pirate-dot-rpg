@@ -14,7 +14,7 @@ const Map<String, String> rawTables = {
     { "id": "bossSupport", "dailyLimit": 10, "reward": { "type": "buff", "durationSec": 30, "damageBonus": 0.3 } },
     { "id": "freeSummon", "dailyLimit": 5, "reward": { "type": "summon", "value": 1 } },
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
-    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9 } }
+    { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
 }
@@ -2917,6 +2917,7 @@ const Map<String, String> rawTables = {
   },
   "collection": { "every": 5, "attackBonus": 0.03 },
   "firstLegend": { "untilStage": 45, "downgradeTo": "hero" },
+  "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
   "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300 },
   "autoUpgradeUnlockStage": 20,
