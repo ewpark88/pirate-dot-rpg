@@ -198,7 +198,8 @@ double tutorialBossScale(GameState s, GameTables t) {
   final early = earlyBossScale(s, t);
   // 튜토리얼 실패 보스(3단계)는 감쇠 없이 × tutorialFailHpMultiplier — 한 번은 꼭 진다(설계서 4.12).
   final step = t.meta.raw.obj('tutorial').obj('steps').integer('boss'); // 단계 번호와 스테이지 번호는 따로 바뀔 수 있다
-  final fail = s.tutorialStep == step && s.progress.stage == w.tutorialFailStage;
+  // 첫 만남(보스 실패 0번)만 — 실패 뒤 자동 보스·재도전은 일반 보스(안 그러면 방치 플레이어가 튜토리얼 보스에 영원히 진다).
+  final fail = s.tutorialStep == step && s.progress.stage == w.tutorialFailStage && s.progress.bossFails == 0;
   return fail ? w.tutorialFailHpMultiplier : early;
 }
 
@@ -214,12 +215,11 @@ double wallBossScale(WavesTable w, int stage) {
 
 /// 자동 보스 도전(설정 autoBoss, 방치형 — S3·S4 첫 15분 점검 2026-10-17 '실패 뒤 안 누르면 스테이지 3에 15분', S1 규칙):
 /// 보스 실패 뒤 파밍이 `waves.boss.autoBoss.cooldownSec` 지나고 그사이 배 부위 레벨 합이 `levelGain` 이상 올랐거나,
-/// 쿨다운의 2배가 지나면 다음 만남을 보스로 되돌린다(farming false). 튜토리얼 보스 단계(강화 2번 후 직접 도전)는 건너뛴다.
+/// 쿨다운의 2배가 지나면 다음 만남을 보스로 되돌린다(farming false). 튜토리얼 보스 단계도 — 재도전은 일반 보스(tutorialBossScale).
 /// 남은 틱은 [Field.autoBossLeft] → BattleView.autoBossTicksLeft. 센 값은 전장(Field)에만 — 세이브에 안 남는다.
 GameState autoBossTick(GameState s, Field f, GameTables t) {
   final p = s.progress;
-  final tut = t.meta.raw.obj('tutorial').obj('steps').integer('boss');
-  if (!p.farming || !s.settings.autoBoss || s.tutorialStep == tut) {
+  if (!p.farming || !s.settings.autoBoss) {
     f
       ..farmTicks = 0
       ..autoBossLeft = 0;
