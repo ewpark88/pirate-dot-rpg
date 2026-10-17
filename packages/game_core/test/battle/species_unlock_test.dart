@@ -26,7 +26,9 @@ void main() {
   (Set<String>, Set<String>) run({required int stage, int rebirths = 0}) {
     final start = DateTime.utc(2026, 11);
     var s = GameState.newGame(playerId: 'u', seed: 3, now: start);
-    s = s.copyWith(progress: s.progress.copyWith(stage: stage, bestStage: stage, rebirths: rebirths));
+    s = s.copyWith(
+      progress: s.progress.copyWith(stage: stage, bestStage: stage, rebirths: rebirths),
+    );
     final e = CoreEngine(tables: t, clock: ManualClock(start), initial: s)..enqueue(const OpSetInvincible(on: true));
     final seen = <String>{};
     for (var i = 0; i < 900; i++) {

@@ -36,6 +36,8 @@ class TopField {
     this.scatterGapMax = 0,
     this.arcSpreadDeg = 0,
     this.nearSpawn,
+    this.standoffGrow = 0,
+    this.orbitMax = double.infinity,
   }) : hullHalfWidth = hullHalfWidth ?? shipRadius,
        hullHalfLength = hullHalfLength ?? shipRadius,
        bossSpawnRadius = bossSpawnRadius ?? approachRadius,
@@ -63,6 +65,8 @@ class TopField {
       separation: j.numberOr('separation', 1),
       bossStandoff: d.bossStandoff,
       bossOrbitDegPerSec: j.numberOr('bossOrbitDegPerSec', 0),
+      standoffGrow: j.has('bossScale') ? j.obj('bossScale').numberOr('standoffGrow', 0) : 0,
+      orbitMax: j.has('bossScale') ? j.obj('bossScale').numberOr('orbitMax', double.infinity) : double.infinity,
       reachScale: d.reachScale,
       bossSpawnRadius: j.numberOr('bossSpawnRadius', d.approachRadius),
       swarmSpacing: j.numberOr('swarmSpacing', w.field.spawnSpacing),
@@ -159,6 +163,11 @@ class TopField {
   final double bossStandoff;
   final double bossOrbitDegPerSec;
 
+  /// 큰 보스(Foe.scale > 1): standoff가 늘어난 반경 × 이만큼 더 멀어진다(그림이 배와 겹치지 않게) · 배율이 [orbitMax]를 넘으면
+  /// 원을 돌지 않고 배 위쪽에 선다(대보스 그림이 화면 폭에 가까워 옆으로 돌면 화면 밖으로 나간다). waves.top.bossScale.
+  final double standoffGrow;
+  final double orbitMax;
+
   /// 사거리 배율 (skills.json reach × 이 값).
   final double reachScale;
 
@@ -205,6 +214,8 @@ class TopField {
     separation: separation,
     bossStandoff: bossStandoff,
     bossOrbitDegPerSec: bossOrbitDegPerSec,
+    standoffGrow: standoffGrow,
+    orbitMax: orbitMax,
     reachScale: reachScale,
     bossSpawnRadius: bossSpawnRadius,
     swarmSpacing: swarmSpacing,
@@ -222,6 +233,15 @@ class TopField {
     nearSpawn: nearSpawn,
   );
 
-  /// [e]의 원 반지름.
-  double radiusOf(Foe e) => e.boss ? bossRadius : mobRadius;
+  /// [e]의 원 반지름(보스는 크기 배율만큼).
+  double radiusOf(Foe e) => e.boss ? bossRadius * e.scale : mobRadius;
+
+  /// [e]가 서는 원의 반지름(배 중심 기준). 큰 보스는 늘어난 반경 × standoffGrow만큼 멀리.
+  double standoffOf(Foe e) => bossStandoff + (e.boss ? bossRadius * (e.scale - 1) * standoffGrow : 0);
+
+  /// 큰 보스 가장자리가 멀어진 만큼(standoff 증가 − 반경 증가) — 보스 사거리(bossReach)에 더해 닿는 거리를 그대로 둔다.
+  double reachExtraOf(Foe e) => standoffOf(e) - bossStandoff - (radiusOf(e) - (e.boss ? bossRadius : mobRadius));
+
+  /// 원을 도는가(배율이 orbitMax 이하).
+  bool orbits(Foe e) => e.scale <= orbitMax;
 }

@@ -97,6 +97,8 @@ Map<String, Object?> observe(GameState s, [GameTables? t]) => {
   if (t != null) ...topObservations(s, t),
 };
 
+bool _atStandoff(double d, double r) => d >= r - 1e-6 && d <= r + 20; // 큰 보스는 standoff가 더 멀다(bossScale)
+
 /// 탑다운 관찰값. 옆모습이면 비어 있다.
 Map<String, Object?> topObservations(GameState s, GameTables t) {
   final b = s.battle;
@@ -109,7 +111,7 @@ Map<String, Object?> topObservations(GameState s, GameTables t) {
   return {
     'quadrants': {for (final e in b.enemies.where((e) => !e.boss)) (e.x >= cx ? 1 : 0) + (e.y >= cy ? 2 : 0)}.length,
     // 원 안으로 들어오지 않고, 밀려도 standoff + 20 안(옆모습 시나리오처럼 숫자 대신 규칙으로 — 표 값이 바뀌어도 그대로).
-    'bossAtStandoff': boss != null && dist(boss) >= top.bossStandoff - 1e-6 && dist(boss) <= top.bossStandoff + 20,
+    'bossAtStandoff': boss != null && _atStandoff(dist(boss), bossStandoffFor(t, boss.kind)),
   };
 }
 

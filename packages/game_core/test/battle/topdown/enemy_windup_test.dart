@@ -51,7 +51,8 @@ void main() {
     }
     expect(matched, greaterThan(0), reason: '예고 뒤 정확히 atTicks에 쏜 원거리 잡몹');
     // 보스는 정지 지점을 도는 동안 접촉 타이머가 틱마다 고르게 줄지 않는다(이동·패턴 쉼) — 예고 뒤 발사가 몇 틱 늦을 수 있다.
-    // 규칙: 예고보다 일찍 쏘지 않고, 대부분 예고한 틱 ±1에 쏜다.
+    // 규칙: 예고보다 일찍 쏘지 않고, 대부분 예고 길이(atTicks) 안에 늦게라도 쏜다(큰 보스는 더 멀리 서서 더 늦을 수 있다 — bossScale).
+    // 렌더는 EnemyFired·BossFired에서 빛을 끝내므로 늦어도 어긋나 보이지 않는다.
     final shots = bossFired.toList()..sort();
     var near = 0;
     final boss = windups.where((w) => w.kind == 'boss').toList();
@@ -59,10 +60,14 @@ void main() {
       final next = shots.where((t) => t > w.tick).firstOrNull;
       if (next == null) continue;
       expect(next, greaterThanOrEqualTo(w.tick + w.atTicks - 1), reason: '보스 예고 ${w.tick}+${w.atTicks} 뒤 발사 $next');
-      if ((next - w.tick - w.atTicks).abs() <= 1) near++;
+      if (next - w.tick - w.atTicks <= w.atTicks) near++;
     }
     expect(boss, isNotEmpty);
-    expect(near, greaterThan(0));
+    expect(
+      near * 2,
+      greaterThanOrEqualTo(boss.length),
+      reason: '보스 예고 ${[for (final w in boss) '${w.tick}+${w.atTicks}']} 발사 $shots',
+    );
   });
 
   test('예고를 꺼도 상태는 같다 — 발사·피해·진행 불변(sim 불변)', () {

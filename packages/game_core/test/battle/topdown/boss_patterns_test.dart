@@ -47,6 +47,7 @@ void main() {
     final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: events.add);
     startBoss(f, stage, ctx, emit: false, x: g.top.shipX, y: g.top.shipY - g.top.bossStandoff);
     final boss = f.foes.firstWhere((e) => e.boss);
+    boss.y = g.top.shipY - g.top.standoffOf(boss); // 큰 보스(bossScale)는 standoff가 더 멀다
     onBoss?.call(boss);
     final stats = CombatStats.of(s, t);
     for (var i = 0; i < (seconds * 1000 / t.waves.tickMs).round(); i++) {
@@ -100,7 +101,7 @@ void main() {
     final after = r.events.whereType<BossPatternShown>().firstWhere((e) => e.kind == 'blast' && e.phase == 'warn');
     expect(after.tick, greaterThan(hit.tick));
     final d = math.sqrt(math.pow(after.x - g.top.shipX, 2) + math.pow(after.y - g.top.shipY, 2));
-    expect(d, closeTo(g.top.bossStandoff, 2), reason: '돌진 뒤 standoff로 돌아왔다');
+    expect(d, closeTo(g.top.standoffOf(r.boss), 2), reason: '돌진 뒤 standoff로 돌아왔다');
     expect(after.radius, closeTo(g.top.shipRadius * 2, 1e-9));
   });
 
@@ -124,6 +125,7 @@ void main() {
     final ctx = SystemContext(tables: t, clock: ManualClock(start), rng: XorShiftRng(1), onEvent: events.add);
     startBoss(f, stage, ctx, emit: false, x: g.top.shipX, y: g.top.shipY - g.top.bossStandoff);
     final boss = f.foes.firstWhere((e) => e.boss);
+    boss.y = g.top.shipY - g.top.standoffOf(boss); // 큰 보스(bossScale)는 standoff가 더 멀다
     for (var i = 0; i < ticks(3.5); i++) {
       ctx.tick = i;
       if (i == warn.tick + 1) boss.stunTimer = 1;
@@ -133,10 +135,9 @@ void main() {
     }
     final shown = events.whereType<BossPatternShown>().map((e) => '${e.kind}:${e.phase}').toList();
     expect(shown.take(2), ['blast:warn', 'blast:cancel']);
-    expect(
-      events.whereType<ShipDamaged>().where((e) => e.fromX == boss.x && e.tick <= warn.tick + ticks(0.6)),
-      isEmpty,
-    );
+    // 취소된 장판은 터지지 않는다 — 예고가 끝났을 틱(장판이 터졌을 때)에 배 피해 없음. 기본 포탄 피해는 따로 온다(보스 x가 같아
+    // 예전 걸러내기 fromX == boss.x는 보스가 원을 돌아 x가 바뀔 때만 비어 있었다 — 큰 보스는 돌지 않는다, bossScale).
+    expect(events.whereType<ShipDamaged>().where((e) => e.tick == warn.tick + ticks(0.6)), isEmpty);
   });
 
   test('바다 괴물(ambush): meta.seaEvents 패턴이 있으면 몸통에 붙지 않고 standoff에서 돌진·복귀(사용자 결정)', () {

@@ -3154,6 +3154,7 @@ const Map<String, String> rawTables = {
     "mobRadius": 6,
     "bossRadius": 24,
     "bossStandoff": 100,
+    "bossScale": {"wall": 1.8, "region": 1.4, "other": 1.2, "standoffGrow": 1.25, "orbitMax": 1.5},
     "spawnMargin": 12,
     "approachRadius": 206,
     "approachBoost": 5,

@@ -65,7 +65,7 @@ class TopAim {
             !blinds.any((b) => (e.x - b.x) * (e.x - b.x) + (e.y - b.y) * (e.y - b.y) <= b.r * b.r) &&
             onScreen(e) &&
             !a.excludeLayers.contains(e.layer) &&
-            (reach == null || edge(e) <= ((e.boss || e.ownerId != null) ? bossReach! : reach)))
+            (reach == null || edge(e) <= ((e.boss || e.ownerId != null) ? bossReach! : reach) + top.reachExtraOf(e)))
           e,
     ];
   }

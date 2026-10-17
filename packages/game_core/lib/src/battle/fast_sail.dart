@@ -87,7 +87,7 @@ extension FastSailRound on Round {
       if (g is TopGeometry) {
         boss
           ..x = g.top.shipX
-          ..y = g.top.shipY - g.top.bossStandoff; // 걸어오지 않고 standoff 원에 바로
+          ..y = g.top.shipY - g.top.standoffOf(boss); // 걸어오지 않고 standoff 원에 바로(큰 보스는 더 멀리)
       }
     }
     if (boss.alive) {
