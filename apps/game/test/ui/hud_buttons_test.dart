@@ -37,7 +37,10 @@ void main() {
     final button = tester.getRect(find.byKey(const Key('boss.challenge')));
     final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(button.width, greaterThanOrEqualTo(56));
-    expect(screen.width - button.right, closeTo(8, 1), reason: '#26 오른쪽 가장자리에 붙임');
+    // 오른쪽 끝은 선장 필살기 원(S2 boss-feel, 전투 중 늘 보임) — 보스 도전은 그 바로 왼쪽, 겹치지 않게.
+    final skill = tester.getRect(find.byKey(const Key('captain.skill')));
+    expect(screen.width - skill.right, lessThan(16), reason: '#26 필살기 원이 오른쪽 가장자리');
+    expect(button.right, lessThanOrEqualTo(skill.left + 1), reason: '보스 도전은 필살기 왼쪽');
     // 배 체력 막대는 전폭(버튼에 끊기지 않음), 버튼은 막대 바로 위(겹치지 않게 — S1 2026-10-17).
     final hp = tester.getRect(find.byKey(const Key('hud.shipHp')));
     final screenW = screen.width;

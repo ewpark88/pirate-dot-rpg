@@ -140,22 +140,6 @@ extension _TopEvents on EventDirector {
     _flashSlot(frame, e.crewId);
   }
 
-  /// 보스 행동 v2(BossPatternShown): warn → 예고 그림, act → 동작(돌진 자국·장판 폭발 + 큰 흔들림), cancel → 지움.
-  void _bossPattern(BossPatternShown e, BattleView frame) {
-    final b = scene.topHits.boss;
-    final now = scene.clockMs;
-    switch (e.phase) {
-      case 'warn':
-        final warnMs = e.warnTicks * _player.tickMs / math.max(1, frame.speed);
-        b.warn(e.enemyId, e.kind, e.x, e.y, e.angle, e.count, e.radius, now, warnMs);
-      case 'act':
-        b.act(e.enemyId, now);
-        if (e.kind == 'blast' || e.kind == 'charge') scene.shake.trigger(_juice.shake['ultimate']!);
-      case 'cancel':
-        b.cancel(e.enemyId);
-    }
-  }
-
   /// 범위 피해 합: 합계 숫자 + 흔들림, 탑다운은 임팩트 v2(반경 = 이번 틱 같은 선원이 맞힌 적 중 가장 먼 거리 + 6).
   void _aoe(AoeDamageSum e, RecordedTick tick, int index) {
     scene.numbers.add(e.total, e.x, e.y - kNumberLiftPx * 2, DamageKind.sum);

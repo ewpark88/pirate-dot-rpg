@@ -35,7 +35,7 @@ class TopFever {
   double _lastMs = 0;
   bool _was = false;
   static const _fadeInMs = 500.0;
-  static const _fadeOutMs = 1200.0;
+  static const _fadeOutMs = 600.0; // S1 끝나면 바다 원래 색 0.6초
   static const _ringMs = 650.0;
 
   /// 프레임마다 한 번: 세기·시작 시각 갱신.

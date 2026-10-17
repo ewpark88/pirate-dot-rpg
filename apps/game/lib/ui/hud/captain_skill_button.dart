@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:game_core/game_core.dart' show GameState;
+import 'package:game_core/game_core.dart' show GameState, TriggerUltimate;
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
@@ -31,19 +31,29 @@ class CaptainSkillFake extends Notifier<bool> {
   void toggle() => state = !state;
 }
 
-/// 지금 필살기 값(없으면 버튼을 숨긴다). S2 계약(BattleView 필살기 게이지)이 오면 여기만 바꾼다.
+/// 지금 필살기 값(전투가 없으면 버튼을 숨긴다) — S2 BattleView.captainGauge(da9ac0fc). 운영자 '필살기(가짜)'면 피버 게이지를 빌린다.
 final captainSkillProvider = Provider<CaptainSkillView?>((ref) {
-  if (!ref.watch(captainSkillFakeProvider)) return null;
-  final g = ref.watch(gameStateProvider.select((s) => ((s.battle?.fever ?? 0) * 20).round() / 20));
+  final fake = ref.watch(captainSkillFakeProvider);
+  // 20칸으로 끊어 구독한다(20Hz 상태에서 매번 다시 그리지 않게).
+  final g = ref.watch(
+    gameStateProvider.select((s) {
+      final b = s.battle;
+      if (b == null) return null;
+      return ((fake ? b.fever : b.captainGauge) * 20).round() / 20;
+    }),
+  );
+  if (g == null) return null;
   return (gauge: g.clamp(0, 1).toDouble(), ready: g >= 1);
 });
 
-/// 필살기가 가득 찼나(가이드 'guide.ult' — 처음 가득 찰 때 옥토 한 마디). S2 계약(BattleView.captainGauge)이 오면
-/// `(s.battle?.captainGauge ?? 0) >= 1`로 바꾼다 — 그전엔 늘 false.
-bool captainSkillReady(GameState s) => false;
+/// 필살기가 가득 찼고 직접 눌러야 하나(가이드 'guide.ult' — 처음 가득 찰 때 옥토 한 마디). 자동 필살기면 차는 즉시 터지므로 안내하지 않는다.
+bool captainSkillReady(GameState s) => !s.settings.autoUltimate && (s.battle?.captainGauge ?? 0) >= 1;
 
-/// 누르면 할 일(계약 전엔 화면 연출만). S2 UseCaptainSkill이 오면 명령을 보낸다.
-final captainSkillUseProvider = Provider<void Function()>((_) => () {});
+/// 누르면 할 일: TriggerUltimate(가득 아니면 엔진이 무시).
+final captainSkillUseProvider = Provider<void Function()>(
+  (ref) =>
+      () => ref.read(commandSinkProvider).send(const TriggerUltimate()),
+);
 
 class CaptainSkillButton extends ConsumerStatefulWidget {
   const CaptainSkillButton({super.key});

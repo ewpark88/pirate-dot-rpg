@@ -35,6 +35,13 @@ void main() {
     expect(s.shake.peak, 0);
   });
 
+  test('피버 시작·끝 시각(FEVER! 글자가 가운데서 위로, FEVER END 작게)', () {
+    final s = run([const FeverStarted(10, untilTick: 100)]);
+    expect(s.clockMs - s.moments.feverAt, inInclusiveRange(0, 60));
+    final e = run([const FeverEnded(10)]);
+    expect(e.clockMs - e.moments.feverEndAt, inInclusiveRange(0, 60));
+  });
+
   test('황금 물고기 잡힘: 금 숫자 + 금화가 배로(금액 그대로)', () {
     final s = run([GoldfishCaught(10, targetId: 7, gold: BigNum.from(500))]);
     expect(s.numbers.active.any((n) => n.kind == DamageKind.crit && n.amount.toDouble() == 500), isTrue);
