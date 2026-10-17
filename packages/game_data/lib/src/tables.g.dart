@@ -2360,7 +2360,7 @@ const Map<String, String> rawTables = {
     "mythicInner": "#FFD447"
   },
   "cardFx": {
-    "minRarity": "hero"
+    "minRarity": "common"
   },
   "coinFx": {
     "sizeDp": 18,
