@@ -257,3 +257,17 @@ class BountyView {
 
   Json toJson() => {'bossId': bossId, 'tier': tier, 'ticksLeft': ticksLeft};
 }
+
+/// 탑 진행(HUD '심연 12층 · 2/3파'): 지금 층·이 층의 파(1부터)·층당 파 수.
+class TowerView {
+  const TowerView({required this.floor, required this.wave, required this.waves});
+
+  factory TowerView.fromJson(Json j) =>
+      TowerView(floor: j['floor'] as int, wave: j['wave'] as int, waves: j['waves'] as int);
+
+  final int floor;
+  final int wave;
+  final int waves;
+
+  Json toJson() => {'floor': floor, 'wave': wave, 'waves': waves};
+}

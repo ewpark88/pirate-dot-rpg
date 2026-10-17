@@ -2,6 +2,7 @@ import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/gold_cap.dart';
 import 'package:game_core/src/economy/summon.dart';
+import 'package:game_core/src/economy/tower.dart' show towerAdTicket;
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -24,6 +25,7 @@ bool canWatchAd(GameState state, GameTables t, AdPlacement placement) {
     AdPlacement.chest => state.battle?.chest != null,
     AdPlacement.offline => state.lastOfflineGold != null,
     AdPlacement.bountyTicket => state.bounty != null,
+    AdPlacement.towerTicket => state.tower != null,
     _ => true,
   };
 }
@@ -55,6 +57,7 @@ GameState grantAdReward(GameState state, GrantAdReward command, SystemContext ct
       ),
       ctx,
     ),
+    AdPlacement.towerTicket => _saved(towerAdTicket(s, reward.integer('value'), now), ctx), // 탑 도전권 +1(하루 1)
     // 함포 지원: 경제가 종료 시각을 채우고, 피해 보너스는 전투가 Buffs.bossSupportUntil을 읽어 적용한다.
     AdPlacement.bossSupport => _saved(
       s.copyWith(
