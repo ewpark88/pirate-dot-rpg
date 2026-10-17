@@ -6,6 +6,7 @@ export 'src/models/battle_tables.dart';
 export 'src/models/common.dart' show JsonReader, TableFormatException, TableValidationException;
 export 'src/models/crew_tables.dart';
 export 'src/models/economy_tables.dart';
+export 'src/models/iap_tables.dart';
 export 'src/models/legend_tables.dart';
 export 'src/models/region_tables.dart';
 export 'src/models/render_tables.dart';

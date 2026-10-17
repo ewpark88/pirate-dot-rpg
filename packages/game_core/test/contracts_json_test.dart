@@ -55,6 +55,10 @@ void main() {
     const StartRush(),
     const RetreatRush(),
     const GrantAdReward(AdPlacement.rushTicket),
+    GrantPurchase('gem_650', 'tok-1', DateTime.utc(2026, 11, 2)),
+    const RevokeEntitlement('noAds'),
+    const OpSetEntitlement('speed', on: true),
+    const ClaimGemSub(),
   ];
 
   test('모든 명령 JSON 왕복', () {
@@ -64,6 +68,8 @@ void main() {
   });
 
   final events = <GameEvent>[
+    const PurchaseGranted(1, productId: 'starter_pack', gems: 600, heroCards: 1, skins: ['sprout'], rights: ['noAds']),
+    const EntitlementChanged(1, id: 'speed', active: true),
     const AttackFired(1, crewId: 'octo', family: 'lob', targetIds: [1, 2], x: 10, y: 20),
     Damage(1, targetId: 1, amount: BigNum.from(12), crit: true, crewId: 'pang'),
     AoeDamageSum(1, total: BigNum.from(40), x: 1, y: 2),

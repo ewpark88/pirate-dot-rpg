@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 
 part 'commands_bounty.dart';
 part 'commands_fun.dart';
+part 'commands_iap.dart';
 part 'commands_rebirth.dart';
 part 'commands_tower.dart';
 part 'operator_commands.dart';
@@ -67,6 +68,7 @@ sealed class Command {
       'clearHints' => ClearHints(j['prefix'] as String? ?? ''),
       'skipFastSail' => const SkipFastSail(),
       'startVoyage' => const StartVoyage(),
+      _ when _iapTypes.contains(type) => _iapCommandFromJson(type, j),
       _ when type.startsWith('op.') => OperatorCommand._fromJson(type, j),
       _ => throw FormatException('알 수 없는 명령', type),
     };

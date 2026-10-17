@@ -236,7 +236,12 @@ GameState ensureRebirthRewards(GameState s, GameTables t) {
 double upgradeCostMultiplier(GameState s, GameTables t) => 1 - shopEffect(s, t, 'discount');
 
 /// 오프라인 보상 최대 시간(초) = meta.offline.maxSec + offline 효과. 오프라인 보상·상자 추정·platform 알림이 같은 값을 쓴다.
-int offlineMaxSec(GameState s, GameTables t) => t.meta.offlineMaxSec + shopEffect(s, t, 'offline').round();
+int offlineMaxSec(GameState s, GameTables t) {
+  // 유료 '넉넉한 화물 지도'(offline12, 영구): 기본 상한을 iap.offlineHours로(상점 효과는 그 위에 더한다).
+  final bought = s.entitlements['offline12']?.activeAt(s.savedAt) ?? false;
+  final base = bought ? t.iap.offlineHours * Duration.secondsPerHour : t.meta.offlineMaxSec;
+  return (base > t.meta.offlineMaxSec ? base : t.meta.offlineMaxSec) + shopEffect(s, t, 'offline').round();
+}
 
 /// 빠른 항해 범위 (waves.rebirthSkip.fraction + fastSail).
 double fastSailFraction(GameState s, GameTables t) => t.waves.rebirthSkip.fraction + shopEffect(s, t, 'fastSail');
