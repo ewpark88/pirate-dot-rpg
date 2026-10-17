@@ -37,6 +37,7 @@ class BattleView {
     this.fever = 0,
     this.feverTicksLeft = 0,
     this.autoBossTicksLeft = 0,
+    this.retryWinnable = false,
     this.seaEvent,
     this.challenge,
     this.bounty,
@@ -71,6 +72,7 @@ class BattleView {
     fever: (j['fever'] as num?)?.toDouble() ?? 0,
     feverTicksLeft: j['feverTicksLeft'] as int? ?? 0,
     autoBossTicksLeft: j['autoBossTicksLeft'] as int? ?? 0,
+    retryWinnable: j['retryWinnable'] == true,
     seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
     challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
     bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
@@ -139,8 +141,9 @@ class BattleView {
   final double fever;
   final int feverTicksLeft;
 
-  /// 자동 보스 재도전까지 남은 틱(파밍 중 settings.autoBoss, 0 = 없음) — 도전 버튼의 '자동 재도전 n초' 링.
+  /// 자동 보스(파밍 중 settings.autoBoss): 재도전까지 남은 틱(0 = 없음, 도전 버튼 '자동 재도전 n초' 링) · 강화로 '이길 만함'(실패 팝업 신호).
   final int autoBossTicksLeft;
+  final bool retryWinnable;
 
   /// 진행 중인 돌발 이벤트·즉석 도전 (없으면 null).
   final SeaEventView? seaEvent;
@@ -175,6 +178,7 @@ class BattleView {
     double? fever,
     int? feverTicksLeft,
     int? autoBossTicksLeft,
+    bool? retryWinnable,
     SeaEventView? seaEvent,
     bool clearSeaEvent = false,
     ChallengeView? challenge,
@@ -205,6 +209,7 @@ class BattleView {
     fever: fever ?? this.fever,
     feverTicksLeft: feverTicksLeft ?? this.feverTicksLeft,
     autoBossTicksLeft: autoBossTicksLeft ?? this.autoBossTicksLeft,
+    retryWinnable: retryWinnable ?? this.retryWinnable,
     seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
     challenge: clearChallenge ? null : challenge ?? this.challenge,
     bounty: clearBounty ? null : bounty ?? this.bounty,
@@ -249,6 +254,7 @@ class BattleView {
     if (fever != 0) 'fever': fever,
     if (feverTicksLeft != 0) 'feverTicksLeft': feverTicksLeft,
     if (autoBossTicksLeft != 0) 'autoBossTicksLeft': autoBossTicksLeft,
+    if (retryWinnable) 'retryWinnable': true,
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),
     if (bounty != null) 'bounty': bounty!.toJson(),
@@ -284,6 +290,7 @@ class BattleView {
     fever: fever,
     feverTicksLeft: feverTicksLeft,
     autoBossTicksLeft: autoBossTicksLeft,
+    retryWinnable: retryWinnable,
     seaEvent: seaEvent,
     challenge: challenge,
     bounty: bounty,
