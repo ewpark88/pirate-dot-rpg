@@ -2,6 +2,17 @@ part of 'top_enemies.dart';
 
 /// TopEnemies 사망·등장 전환(300줄 한도로 나눔).
 extension _EnemyTransitions on TopEnemies {
+  /// HD 보스 맞음 흰빛은 0.25초에 한 번 0.07초만(계속 맞으면 늘 창백하던 것 — 첫 15분 점검).
+  bool _bossFlash(int id, {required double now, required bool on}) {
+    if (!on) return false;
+    final at = _bossFlashAt[id];
+    if (at == null || now - at > 250 || now < at) {
+      _bossFlashAt[id] = now;
+      return true;
+    }
+    return now - at < 70;
+  }
+
   /// 모션 v1 사망·등장 전환: 사라진 잡몹은 0.16초 납작하게 찌그러지며 사라지고, 막 나타난 자리엔 물 고리(절전이면 없음).
   void _transitions(Canvas c, {required bool under, required double clock, required bool lite}) {
     final last = under ? _lastUnder : _lastOver;
