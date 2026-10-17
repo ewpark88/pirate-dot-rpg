@@ -27,10 +27,8 @@ import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
-/// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 함성 게이지·궁극기, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
+/// 전투 규칙: 무리 생성·이동, 자동 발사, 피해, 동시 처치, 피버·브레이크, 보스 타이머, 파밍 (docs/specs/battle-m1-core.md).
 class BattleSystem implements GameSystem {
-  BattleSystem();
-
   Field? _field;
   Object? _crewsSeen;
   Object? _fleetSeen;

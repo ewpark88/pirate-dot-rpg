@@ -89,8 +89,22 @@ class SoundDirector {
     if (log.length > _logMax) log.removeAt(0);
   }
 
-  /// 해역 배경음. 같은 곡이면 그대로.
+  /// 해역 배경음. 같은 곡이면 그대로. 피버 중이면 기억만 했다가 피버가 끝나면 튼다.
   void bgm(String? id) {
+    _region = id;
+    if (!_fever) _play(id);
+  }
+
+  /// 피버 전용 곡(사용자 피드백 #23): 켜면 [id](fx_map topEvents.fever.bgm), 끄면 해역 곡으로. 바꿀 때 어댑터가 페이드한다.
+  void fever({required bool on, String? id}) {
+    _fever = on && id != null;
+    _play(_fever ? id : _region);
+  }
+
+  String? _region;
+  bool _fever = false;
+
+  void _play(String? id) {
     final a = audio;
     if (a == null || id == null || id == _bgm) return;
     _bgm = id;

@@ -8,6 +8,10 @@
       "source": "Juhani Junkala \"4 Chiptunes (Adventure) — 1. Stage 1\" https://opengameart.org/content/4-chiptunes-adventure (CC0, 받은 날 2026-10-15)",
       "license": "CC0-1.0"
     },
+    "audio/bgm/bgm_fever.ogg": {
+      "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (bgm/bgm_fever.wav, 피버 전용 — 사용자 피드백 #23)",
+      "license": "OWN"
+    },
     "audio/bgm/bgm_glacier.ogg": {
       "source": "Pirate Busters 자체 IP → tools/art/audio/gen_audio.py 칩튠 합성 (bgm/bgm_glacier.wav)",
       "license": "OWN"

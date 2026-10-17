@@ -31,6 +31,10 @@ class AudioAdapter implements AudioPort {
   static const maxTotalSfx = 6;
   static const sameSfxGapMs = 60;
 
+  /// 배경음을 다른 곡으로 바꿀 때 페이드 아웃·인 각각의 시간과 단계 수(피버 전용 곡 전환, 사용자 피드백 #23 — 해역 이동도 같이 부드럽게).
+  static const bgmFadeMs = 400;
+  static const bgmFadeSteps = 8;
+
   final AudioSdk _sdk;
   final Set<String> _files;
   final _active = <String, int>{};
@@ -42,6 +46,7 @@ class AudioAdapter implements AudioPort {
   double _bgm = 1;
   String? _bgmId;
   bool _bgmPlaying = false;
+  int _fadeGen = 0; // 페이드가 겹치면 앞의 것을 버린다
 
   bool hasSfx(String id) => _files.contains(_sfxPath(id));
 
@@ -89,12 +94,36 @@ class AudioAdapter implements AudioPort {
   @override
   void playBgm(String id) {
     if (_bgmId == id && _bgmPlaying) return;
+    final switching = _bgmPlaying && _bgmId != null && !_suspended;
     _bgmId = id;
-    _startBgm();
+    if (switching) {
+      unawaited(_crossfade());
+    } else {
+      _fadeGen++;
+      _startBgm();
+    }
+  }
+
+  /// 지금 곡을 [bgmFadeMs] 동안 줄이고 → 새 곡을 0에서 시작해 [bgmFadeMs] 동안 키운다.
+  Future<void> _crossfade() async {
+    final gen = ++_fadeGen;
+    const step = Duration(milliseconds: bgmFadeMs ~/ bgmFadeSteps);
+    for (var i = bgmFadeSteps - 1; i >= 0; i--) {
+      await Future<void>.delayed(step);
+      if (gen != _fadeGen) return;
+      _fire(_sdk.setBgmVolume(_bgm * i / bgmFadeSteps));
+    }
+    if (!_startBgm(volume: 0)) return;
+    for (var i = 1; i <= bgmFadeSteps; i++) {
+      await Future<void>.delayed(step);
+      if (gen != _fadeGen) return;
+      _fire(_sdk.setBgmVolume(_bgm * i / bgmFadeSteps));
+    }
   }
 
   @override
   void stopBgm() {
+    _fadeGen++;
     _bgmId = null;
     _bgmPlaying = false;
     _fire(_sdk.stopBgm());
@@ -116,13 +145,15 @@ class AudioAdapter implements AudioPort {
 
   void resumeBgm() => _fire(_sdk.resumeBgm());
 
-  void _startBgm() {
+  /// 지금 곡(_bgmId)을 [volume](없으면 설정 음량)으로 튼다. 틀었으면 true.
+  bool _startBgm({double? volume}) {
     final id = _bgmId;
-    if (id == null || _bgm <= 0) return;
+    if (id == null || _bgm <= 0) return false;
     final path = 'bgm/$id.ogg';
-    if (!_files.contains(path)) return;
+    if (!_files.contains(path)) return false;
     _bgmPlaying = true;
-    _fire(_sdk.playBgm(path, volume: _bgm));
+    _fire(_sdk.playBgm(path, volume: volume ?? _bgm));
+    return true;
   }
 
   static String _sfxPath(String name) => 'sfx/$name.ogg';
