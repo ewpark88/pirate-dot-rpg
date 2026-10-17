@@ -24,6 +24,7 @@ class DamageNumber {
   /// 따라갈 적 id(-1 = 제자리) — 맞은 적이 움직여도(보스 돌진·호 왕복) 숫자가 붙어 간다(S1 '숫자가 보스를 따라가야'),
   /// [ox]·[oy] = 생길 때 그 적과의 차이(쌓기 줄 포함). 적이 사라지면 그 자리에 남아 마저 떠오른다.
   int follow = -1;
+  bool boss = false; // 보스에 뜬 숫자는 1.35배(S1 '큰 피해 숫자는 보스 위에 크게')
   double ox = 0;
   double oy = 0;
 
@@ -111,6 +112,7 @@ class DamageNumbers {
       ..y = top
       ..ageMs = 0
       ..follow = on?.id ?? -1
+      ..boss = on?.boss ?? false
       ..ox = on == null ? 0 : x - on.drawX
       ..oy = on == null ? 0 : top - on.drawY;
   }
@@ -217,7 +219,7 @@ class DamageNumbers {
   /// 그리는 배율: 치명타는 생길 때 1.6배로 팍 튀어 0.15초에 1.0으로(S1 '임팩트').
   double scaleOf(DamageNumber n) {
     final pop = n.kind == DamageKind.crit && n.ageMs < _popMs ? 1 + 0.6 * (1 - n.ageMs / _popMs) : 1.0;
-    return _scaleOf(n.kind) * pop;
+    return _scaleOf(n.kind) * pop * (n.boss ? 1.35 : 1);
   }
 
   static const _popMs = 150.0;

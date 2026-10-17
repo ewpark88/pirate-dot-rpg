@@ -97,7 +97,8 @@ class TopScenePainter {
     final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
-      ..boost = fever.level
+      ..boost = math
+          .max(fever.level, _turn.rush) // 빠를수록 항적 길게·속도선(S5 배 이동 v2)
       ..wakeTint = skins
           .wake // 스킨 항적 색(앞 프레임 값)
       ..wakeRainbow = skins.wakeRainbow
@@ -170,7 +171,7 @@ class TopScenePainter {
         ..scale(_shipScale, _shipScale * (1 - 0.04 * fever.level));
       _sea.wake(c, size.height / 2 - 4, size.height / 2, size.width / 2 * 0.6, clockMs);
       // 피버 시작 금빛 잔상: 가속 동안 배 실루엣 3개가 뒤로 처진다.
-      final burst = fever.burst();
+      final burst = math.max(fever.burst(), _turn.rush > 0.7 ? (_turn.rush - 0.7) * 2 : 0); // 피버 시작·대시 잔상
       if (burst > 0) {
         for (var k = 3; k >= 1; k--) {
           _ghost.colorFilter = ColorFilter.mode(Color.fromRGBO(255, 216, 74, 0.55 * burst / k), BlendMode.srcIn);

@@ -9,6 +9,8 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 피버 좌우 이동 (사용자 지시 '피버 때 배가 고정으로 있지 않고 좌우로 멋지게', meta.fever.weave).
 void main() {
   final start = DateTime.utc(2026, 11);
@@ -17,7 +19,7 @@ void main() {
   const period = 2.0;
 
   GameTables withWeave({bool on = true}) {
-    final raw = Map<String, String>.of(rawTables);
+    final raw = stillShipRaw();
     final meta = jsonDecode(raw['meta']!) as Map<String, dynamic>;
     final fever = meta['fever'] as Map<String, dynamic>;
     if (on) {
@@ -119,7 +121,7 @@ void main() {
     const surge = 8.0;
     const tilt = 25.0;
     final zt = () {
-      final raw = Map<String, String>.of(rawTables);
+      final raw = stillShipRaw();
       final meta = jsonDecode(raw['meta']!) as Map<String, dynamic>;
       (meta['fever'] as Map<String, dynamic>)['weave'] = {
         'mode': 'zigzag',

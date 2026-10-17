@@ -20,8 +20,16 @@ class ShipTurn {
   double _vx = 0;
   double _sprayAt = -1000000000;
 
+  /// 배 빠르기(단위/초, 부드럽게) — S5 배 이동 v2(돌진·대시)를 엔진 키 없이 자리 변화로 읽는다.
+  double speed = 0;
+  Offset? _prevPos;
+
+  /// 질주 정도 0~1(60단위/초부터 180에 가득): 항적 길이·잔상·속도선(TopScenePainter).
+  double get rush => ((speed - 60) / 120).clamp(0.0, 1.0);
+
   /// 피버 좌우 이동: x 변화로 뱅크(이동 방향으로 최대 15°, 부드럽게), 방향을 바꾸면 큰 물보라.
   void update(double x, double clockMs, double dt) {
+    _speed(clockMs, dt);
     if (_prevX.isNaN || dt <= 0) {
       _prevX = x;
       return;
@@ -49,5 +57,21 @@ class ShipTurn {
       scene.topHits.impact.add(at.dx, at.dy, 18, 0xFFE6F6FF, clockMs, water: true);
     }
     _bank += ((heading != 0 ? 0 : target) - _bank) * math.min(1, dt / 120);
+  }
+
+  /// 빠르기를 재고, 질주가 시작되는 순간(0.5를 넘을 때) 고물 양옆에 큰 물보라.
+  void _speed(double clockMs, double dt) {
+    final p = scene.topShip;
+    final prev = _prevPos;
+    _prevPos = p;
+    if (prev == null || dt <= 0) return;
+    final was = rush;
+    final v = (p - prev).distance / dt * Duration.millisecondsPerSecond;
+    speed += ((v > 600 ? speed : v) - speed) * math.min(1, dt / 150); // 순간이동(장면 바뀜)은 무시
+    if (was < 0.5 && rush >= 0.5) {
+      for (final s in const [-1.0, 1.0]) {
+        scene.topHits.impact.add(p.dx + s * 14, p.dy + 12, 34, 0xFFE6F6FF, clockMs, water: true);
+      }
+    }
   }
 }
