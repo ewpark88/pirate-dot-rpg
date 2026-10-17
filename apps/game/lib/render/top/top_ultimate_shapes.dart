@@ -62,15 +62,18 @@ extension _UltimateShapes on TopUltimate {
       }
       _line
         ..strokeWidth = 10.2 * _k
-        ..color = Color.fromRGBO(120, 220, 255, 0.75 * e);
+        ..color = Color.fromRGBO(120, 220, 255, 0.5 * e); // 반투명 — 몬스터 외곽선이 보이게
       c.drawPath(_path, _line);
     }
+    // 둘레 납작한 파문(세로 물기둥은 몬스터를 가려 뺌 — 사용자)
     for (var k = 0; k < (lite ? 3 : 6); k++) {
       final a = k * math.pi / 3;
       final p = o + Offset(math.cos(a) * 140, math.sin(a) * 90);
-      final h = 60 * math.sin(math.min(1, t * 1.6) * math.pi);
-      _fill.color = Color.fromRGBO(200, 245, 255, 0.6 * e);
-      c.drawRRect(RRect.fromLTRBR(p.dx - 7, p.dy - h, p.dx + 7, p.dy, const Radius.circular(7)), _fill);
+      final u = (t * 1.6 + k * 0.1) % 1;
+      _line
+        ..strokeWidth = 3 * (1 - u) * _k + 1
+        ..color = Color.fromRGBO(190, 245, 255, 0.6 * e * (1 - u));
+      c.drawOval(Rect.fromCenter(center: p, width: 20 + 50 * u, height: 8 + 20 * u), _line);
     }
   }
 
