@@ -4,6 +4,7 @@ import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart' show armField;
 import 'package:game_core/src/battle/spawner.dart' show bossMaxHp, bossStandoffFor, spawnWave, stageCurve, startBoss;
 import 'package:game_core/src/battle/topdown/scene_hp.dart';
+import 'package:game_core/src/battle/topdown/scene_spawn.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/dungeon.dart';
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
@@ -107,15 +108,7 @@ abstract final class TopDungeon {
       kind: kinds.isEmpty || layer == null ? null : kinds[ctx.rng.nextInt(kinds.length)],
     );
     f.sceneHpMul = hpMul;
-    final geo = f.geometry;
-    if (geo is TopGeometry) {
-      final mul = c.number('spawnDistanceMul'); // 화면 가장자리 바로 밖에서(탑과 같음)
-      for (final e in f.foes.skip(before)) {
-        e
-          ..x = geo.top.shipX + (e.x - geo.top.shipX) * mul
-          ..y = geo.top.shipY + (e.y - geo.top.shipY) * mul;
-      }
-    }
+    sceneSpawnAtView(f, before); // 화면 가장자리 바로 밖에서(탑과 같음)
     run.wave += 1;
   }
 

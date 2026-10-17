@@ -3255,7 +3255,7 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.75, "stepStage": 5, "fillFleet": true, "bossHpMul": 0.3, "dpsHpRatio": 0.8, "stepBaseSec": 8, "stepSec": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.6, "stepStage": 5, "fillFleet": true, "bossHpMul": 0.3, "dpsHpRatio": 1.6, "stepBaseSec": 8, "stepSec": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
     "groups": [
       {"id": "mon", "hpMul": 0.8, "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
       {"id": "tue", "hpMul": 1.0, "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
@@ -3267,7 +3267,7 @@ const Map<String, String> rawTables = {
     ]},
   "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 0.8, "rushBossSec": 15, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 20, "cards": 1}, {"floor": 20, "gems": 35, "cards": 2}, {"floor": 30, "gems": 50, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
