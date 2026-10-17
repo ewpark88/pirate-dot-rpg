@@ -135,5 +135,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "opOpenPanel": "Open operator panel"
 }

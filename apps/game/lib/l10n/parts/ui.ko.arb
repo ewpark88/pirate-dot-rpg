@@ -84,7 +84,7 @@
   "uiAdBossSupport": "피해 +{percent} · {seconds}초",
   "uiAdFreeSummon": "무료 소환 · 남은 {left}회",
   "uiOk": "확인",
-  "uiSettingsPrivacy": "개인정보 옵션",
+  "uiSettingsPrivacy": "개인정보처리방침",
   "uiRebirthDoneTitle": "보물지도를 펼쳤어요!",
   "uiRebirthDoneGain": "지도 조각 +{count} · 피해·골드 +{percent}",
   "uiRegionProgress": "{stage}/{total}",
@@ -97,7 +97,7 @@
   "uiDailyTooltip": "퀘스트·출석",
   "uiSaveFailedDiskFull": "저장 공간이 부족해 진행을 저장하지 못했어요. 공간을 비우면 자동으로 다시 저장해요.",
   "uiSaveFailedIo": "진행을 저장하지 못했어요. 잠시 뒤 다시 시도해요.",
-  "uiSettingsNotifications": "알림",
+  "uiSettingsNotifications": "알림 (복귀 보상 가득·도전권 가득)",
   "uiCrewCardBadge": "×{count}",
   "uiNumberScientific": "{mantissa} × 10^{exponent}",
   "uiSettingsHelp": "도움말",
@@ -1734,5 +1734,18 @@
       }
     }
   },
-  "uiTalkUlt": "필살기 게이지가 꽉 찼어요! 오른쪽 아래 버튼을 눌러요!"
+  "uiTalkUlt": "필살기 게이지가 꽉 찼어요! 오른쪽 아래 버튼을 눌러요!",
+  "uiSettingsAbout": "정보",
+  "uiSettingsTerms": "이용약관",
+  "uiSettingsContact": "문의하기",
+  "uiSettingsVersion": "버전 {v}",
+  "@uiSettingsVersion": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLinkCopied": "주소를 복사했어요 — 브라우저나 메일 앱에 붙여 넣어 주세요",
+  "uiContactSubject": "게임 문의"
 }
