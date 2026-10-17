@@ -14,6 +14,9 @@ import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 
+// 환생 뒤 출항 버튼(빠른 항해의 시작, #19) — 홈 화면이 이 파일 하나로 둘 다 가져간다(home_screen 300줄).
+export 'package:pirate_dot/ui/hud/sail_start.dart' show SailStartButton;
+
 // 빠른 항해 돌파 UI (기획 platform-fast-sail-breakthrough 'UI (S4)', 사용자 결정 2026-10-16):
 // 큰 스테이지 카운터(차르르) + 연속 격파 수 · 2회차부터 건너뛰기 · 끝 요약 창(돌파 스테이지·골드·젬·'더 강해진 당신').
 
@@ -117,8 +120,7 @@ class FastSailBanner extends ConsumerWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: SkinButton(
-                    key: const Key('fastSail.skip'),
-                    height: 36,
+                    key: const Key('fastSail.skip'), // 기본 높이 48 = 최소 누름(S4 검토), 글자만 작게
                     onPressed: () => ref.read(commandSinkProvider).send(const SkipFastSail()),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
