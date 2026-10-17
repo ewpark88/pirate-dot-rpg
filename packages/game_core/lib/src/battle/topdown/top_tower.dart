@@ -109,6 +109,7 @@ abstract final class TopTower {
       ctx,
       emit: false,
       bossDef: ctx.tables.regions.bosses[id],
+      hpScale: towerCfg(ctx.tables).number('bossHpMul'), // 층 보스는 가볍게 — 보스 층이 다른 층의 2배 걸리던 것(S2)
       gold: false,
       x: top?.shipX,
       y: top == null ? null : top.shipY - bossStandoffFor(ctx.tables, id) - top.bossRadius,

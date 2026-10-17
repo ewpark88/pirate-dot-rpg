@@ -55,6 +55,10 @@ void main() {
     const StartRush(),
     const RetreatRush(),
     const GrantAdReward(AdPlacement.rushTicket),
+    const StartDungeon(1),
+    const SweepDungeon(1),
+    const RetreatDungeon(),
+    const GrantAdReward(AdPlacement.dungeonTicket),
   ];
 
   test('모든 명령 JSON 왕복', () {
@@ -103,6 +107,9 @@ void main() {
     const RushStarted(16, bosses: ['kraken', 'sea_croc']),
     const RushBossDown(16, index: 0, bossId: 'kraken', ticks: 300),
     const RushEnded(17, killed: 5, ticks: 2400, reason: 'cleared', gems: 115, pieces: 15, best: true),
+    const DungeonStarted(18, group: 'mon', step: 1, crewIds: ['octo']),
+    const DungeonCleared(19, group: 'mon', step: 1, cards: ['octo'], gems: 2),
+    const DungeonFailed(20, group: 'tue', step: 2, reason: 'timeout'),
   ];
 
   test('모든 이벤트 JSON 왕복', () {

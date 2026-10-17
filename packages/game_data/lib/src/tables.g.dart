@@ -16,6 +16,7 @@ const Map<String, String> rawTables = {
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
     { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
     { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
+    { "id": "dungeonTicket", "dailyLimit": 1, "reward": { "type": "dungeonTicket", "value": 1 } },
     { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
@@ -2868,9 +2869,19 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 2,
+    "groups": [
+      {"id": "mon", "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
+      {"id": "tue", "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
+      {"id": "wed", "weekday": 3, "families": ["air", "lob"], "pattern": "swarm", "layer": "air"},
+      {"id": "thu", "weekday": 4, "families": ["direct", "ring"], "pattern": "ring"},
+      {"id": "fri", "weekday": 5, "families": ["skip", "cluster"], "pattern": "scatter"},
+      {"id": "sat", "weekday": 6, "families": ["assault"], "pattern": "swarm"},
+      {"id": "sun", "weekday": 7, "families": [], "pattern": "swarm"}
+    ]},
   "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,

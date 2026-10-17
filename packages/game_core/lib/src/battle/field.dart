@@ -115,9 +115,12 @@ class Field {
   ({String bossId, int tier})? bounty; // 진행 중인 현상금 전투(top_bounty.dart), 타이머는 bossTicksLeft
   TowerRun? tower; // 진행 중인 탑(top_tower.dart)
   RushRun? rush; // 진행 중인 보스 러시(top_rush.dart)
+  DungeonRun? dungeon; // 진행 중인 요일 던전(top_dungeon.dart)
+  List<String>? sceneFleet; // 장면 중 임시 출전(요일 던전 — 세이브 fleet는 그대로)
+  String? scenePattern; // 장면 무리 파의 자리 패턴(요일 던전: arc·ring·scatter…)
 
   /// 본 전투를 멈춘 장면 모드(현상금·탑 — scene_mode.dart) 중인가.
-  bool get inScene => bounty != null || tower != null || rush != null;
+  bool get inScene => bounty != null || tower != null || rush != null || dungeon != null;
 
   Object? shipSeen; // [geometry]를 만든 배 상태(shapeField가 바뀔 때만 다시 만든다)
 
@@ -187,6 +190,9 @@ class Field {
     bounty: bounty == null ? null : BountyView(bossId: bounty!.bossId, tier: bounty!.tier, ticksLeft: bossTicksLeft),
     tower: tower == null ? null : TowerView(floor: tower!.floor, wave: tower!.wave, waves: tower!.waves),
     rush: rush == null ? null : RushView(index: rush!.index, total: rush!.bosses.length, ticks: rush!.ticks),
+    dungeon: dungeon == null
+        ? null
+        : DungeonView(group: dungeon!.group, step: dungeon!.step, wave: dungeon!.wave, waves: dungeon!.waves),
     shipX: geometry?.viewShip?.x,
     shipY: geometry?.viewShip?.y,
     shipHeading: switch (geometry) {
@@ -218,4 +224,16 @@ class RushRun {
   final List<String> bosses;
   int index;
   int ticks;
+}
+
+/// 요일 던전 한 판의 진행(전장에만 — 세이브엔 dungeon.active {group, step}).
+class DungeonRun {
+  DungeonRun({required this.group, required this.step, required this.waves});
+
+  final String group;
+  final int step;
+  final int waves;
+  int wave = 0;
+  bool boss = false;
+  int ticks = 0; // 이 단계에서 지난 틱(stepTimeLimitSec)
 }
