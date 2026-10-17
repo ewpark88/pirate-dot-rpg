@@ -12,6 +12,7 @@ import 'package:pirate_dot/render/top/top_frame.dart';
 
 import '../render/helpers.dart';
 import '../render/top_recording.dart';
+import '../ui/ui_harness.dart';
 
 /// 보스전 v2(배가 화면 가운데로 올라가 보스와 마주 보며 돎) — 실제 엔진 보스전을 렌더로 그린 프레임 띠, 4기기.
 /// 보스 등장 뒤 0.3·1·2·4·6·8초. 한 장 = 프레임 6개 가로.
@@ -25,6 +26,7 @@ const List<(String, Size, double)> _devices = [
 ];
 
 void main() {
+  setUpAll(loadGoldenFonts); // BREAK! 도장 등 글자가 흰 상자로 나오지 않게(S3)
   final rec = topRecording(tables, ticks: 260, stage: 120, bossAt: 10); // 120: 보스가 몇 초 버틴다
   final start = rec.indexWhere((t) => t.events.any((e) => e is BossSpawned));
   final tickSec = tables.waves.tickMs / 1000;
