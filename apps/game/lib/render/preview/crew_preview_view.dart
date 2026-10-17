@@ -49,6 +49,9 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   var _tickAccum = 0.0;
   var _liteAccum = 0.0;
 
+  /// 열자마자 보이는 장면까지 미리 돌리는 시간(초).
+  static const _warmSec = 1.5;
+
   double get _tickMs => widget.tables.waves.tickMs.toDouble();
 
   @override
@@ -64,11 +67,16 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
     _painter = ScenePainter(_scene)..sprites = widget.sprites;
     _tickAccum = 0;
     _liteAccum = 0;
-    // 첫 화면부터 배·적이 보이게 미리 몇 틱(재생기 앞보기만큼).
+    // 첫 화면부터 배·적·공격이 보이게 [_warmSec]초를 미리 돌린다(멈춘 첫 장면 — UI 시험·골든 — 도 빈 바다가 아니게).
     for (var i = 0; i <= _scene.juice.lookaheadTicks; i++) {
       _scene.push(_engine.step());
     }
-    _scene.update(0);
+    final warm = (_warmSec * Duration.millisecondsPerSecond / _tickMs).round();
+    for (var i = 0; i < warm; i++) {
+      _scene
+        ..push(_engine.step())
+        ..update(_tickMs);
+    }
   }
 
   @override
