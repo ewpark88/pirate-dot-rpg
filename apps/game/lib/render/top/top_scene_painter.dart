@@ -59,7 +59,7 @@ class TopScenePainter {
     final clockMs = scene.clockMs;
     final dt = (clockMs - _lastMs).clamp(0.0, 100.0);
     _lastMs = clockMs;
-    // 보스전 카메라(TopBossCam): 배를 아래로 당기고 배·보스가 안전 영역 안에 잘리지 않게 줌 + 등장 펀치.
+    // 보스전 카메라(TopBossCam): 배를 아래로 당기고 거리 따라 역동 줌 + 펀치, 안전 영역을 벗어나는 프레임만 깎는다.
     final (zoom, target) = _bossCam.update(scene, frame, clockMs, dt, _foes.radiusOf);
     final y = _shipY ?? target;
     // 시계가 안 가면(전투 멈춤·한 번만 다시 그리기) 따라가기 대신 바로 제자리 — 시트를 연 뒤 배가 옛 자리(선원 줄 밑)에 남던 것(S5 스토어 03_ship).
@@ -238,8 +238,8 @@ class TopScenePainter {
   final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
 
-  /// 적 그림 반지름(단위, HD 칸 = 그림 경계) — 보스 카메라·시험.
-  double radiusOf(EnemyPose e) => _foes.radiusOf(e);
+  double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
+  double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
   Offset worldToScreen(Offset world) => Offset(_camT.$1, _camT.$2) + (world - _camT.$4) * _camT.$3;
