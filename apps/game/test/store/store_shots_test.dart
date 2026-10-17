@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flame/cache.dart';
@@ -8,6 +9,8 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/ui/crew/crew_detail.dart';
+import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/crew/new_mate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 
@@ -69,15 +72,23 @@ void main() {
   }) async {
     bank ??= (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
     final painter = ScenePainter(m.play(tables))..sprites = bank;
-    await pumpShot(tester, m.state, locale: Locale(lang!), tab: tab, painter: painter, device: device, extra: extra);
+    await pumpShot(
+      tester,
+      m.state,
+      locale: Locale(lang!),
+      tab: tab,
+      painter: painter,
+      device: device,
+      extra: [previewSpritesProvider.overrideWithValue(bank), ...extra],
+    );
     if (act != null) await act();
     await precacheImages(tester);
     await saveShot(tester, '../../build/store/screens/${device.dir}$lang/$file.png', device);
   }
 
   /// 창이 뜨는 애니메이션(미리보기 전장·0.8초 고리 그림은 끝없이 돈다 — pumpAndSettle 대신 시간만 흘린다).
-  Future<void> settle(WidgetTester tester) async {
-    for (var i = 0; i < 12; i++) {
+  Future<void> settle(WidgetTester tester, {int steps = 12}) async {
+    for (var i = 0; i < steps; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }
@@ -133,10 +144,11 @@ void main() {
         act: () async {
           final context = tester.element(find.byKey(const Key('tab.$voyageTab')));
           // 창은 닫을 때까지 열려 있다 — 기다리지 않는다.
-          // ignore: unawaited_futures
-          showSkinDialog<void>(
-            context,
-            builder: (_) => const NewMateDialog(crewId: 'volt', rarityId: 'legend'),
+          unawaited(
+            showSkinDialog<void>(
+              context,
+              builder: (_) => const NewMateDialog(crewId: 'volt', rarityId: 'legend'),
+            ),
           );
           await settle(tester);
         },
@@ -151,11 +163,10 @@ void main() {
         late(270),
         tab: crewTab,
         act: () async {
-          final card = find.byKey(const Key('crew.card.volt'));
-          final list = find.descendant(of: find.byKey(const Key('sheet.panel')), matching: find.byType(Scrollable));
-          await tester.scrollUntilVisible(card, 200, scrollable: list.first);
-          await tester.tap(card);
-          await settle(tester);
+          // 선원 탭 배경 위에 상세 창을 바로 연다(카드를 눌러 여는 것과 같은 창 — 목록 스크롤은 시트 높이에 따라 흔들린다).
+          final context = tester.element(find.byKey(const Key('tab.$crewTab')));
+          unawaited(showCrewDetail(context, tables.crews.byId('volt')));
+          await settle(tester, steps: 80); // 미리보기 전장에 무리가 들어와 번개가 튈 때까지(8초)
         },
       );
     });
