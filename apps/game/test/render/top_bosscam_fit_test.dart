@@ -38,9 +38,15 @@ void main() {
         final canvas = ui.Canvas(ui.PictureRecorder());
         var checked = 0;
         var worst = 0.0;
+        var zMin = 9.0;
+        var zMax = 0.0;
         while (scene.player.position < 390) {
           scene.update(kFrameMs);
           painter.paintTop(canvas, frame);
+          if (scene.frame.bossActive) {
+            zMin = math.min(zMin, painter.top.camZoom); // 등장 줌인부터 보스전 내내
+            zMax = math.max(zMax, painter.top.camZoom);
+          }
           if (!scene.frame.bossActive || scene.player.position < 40) continue; // 카메라가 다 당겨진 뒤(2초)
           final field = TopBossCam.safeRect(scene, frame).inflate(2); // 안전 영역(위 HUD 띠 아래 ~ 선원 줄 위, 좌우 12dp)
           ui.Rect toScreen(ui.Offset c, double r) => ui.Rect.fromPoints(
@@ -66,6 +72,12 @@ void main() {
         }
         expect(checked, greaterThan(20), reason: '보스전 프레임을 충분히 봤다');
         expect(worst, lessThanOrEqualTo(0), reason: '배·보스 상자가 화면 밖으로 ${worst.toStringAsFixed(1)}dp 나감');
+        // 역동성 회귀(사용자 '줌인·아웃하며 움직이던 게 좋았다'): 보스전 동안 줌이 0.3 이상 오간다.
+        expect(
+          zMax - zMin,
+          greaterThanOrEqualTo(0.3),
+          reason: '줌 ${zMin.toStringAsFixed(2)}~${zMax.toStringAsFixed(2)}',
+        );
       });
     }
   }

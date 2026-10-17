@@ -13,6 +13,7 @@ import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/hud/sea_event_icon.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
+import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/scene/scene_battle.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -65,6 +66,8 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
     final per = tables.regions.stagesPerRegion;
     final g = ref.watch(gameStateProvider.select((s) => _select(s, waves, per)));
     final preBoss = !g.boss && !g.farming && g.wave >= g.waves;
+    // 탑·러시·던전·현상금 중: 스테이지 글 대신 장면 글 + 후퇴, 파밍·돌발·환생 꼬리표는 뺀다(한 줄에 들어가게).
+    final scene = ref.watch(sceneLabelProvider);
     final l10n = AppLocalizations.of(context);
     return _PulseOnEnter(
       active: preBoss,
@@ -99,8 +102,9 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                   Row(
                     children: [
                       // 탑·러시·던전·현상금 중엔 그 글(띠 아래 줄 대신, 사용자 2026-10-18).
-                      if (ref.watch(sceneLabelProvider))
-                        const Flexible(flex: 3, child: SceneStrip())
+                      // 후퇴는 스테이지 글 자리(배 체력 막대를 가리지 않게), 장면 글은 아래 줄.
+                      if (scene)
+                        const SceneRetreatButton()
                       else
                         Text(
                           l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
@@ -108,7 +112,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           style: Skin.outlined(14),
                         ),
                       // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
-                      if (g.farming && !g.boss) ...[
+                      if (g.farming && !g.boss && !scene) ...[
                         const SizedBox(width: 6),
                         Container(
                           key: const Key('hud.farming'),
@@ -121,7 +125,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                         ),
                       ],
                       // 돌발 이벤트(폭풍 등)는 띠 안 작은 아이콘(실기기 ④).
-                      const SeaEventIcon(),
+                      if (!scene) const SeaEventIcon(),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -185,14 +189,19 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                     ],
                   ),
                   // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다). 보스전·파밍 중엔 그 자리에 '보스 vs 나'(피드백 #5).
-                  const Padding(
-                    padding: EdgeInsets.only(top: 3),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3),
                     child: Row(
                       children: [
-                        Expanded(child: BossCompare(fallback: GoalBar(compact: true))),
-                        SizedBox(width: 8),
+                        Expanded(
+                          // 해금 10스테이지 전부터는 목표 자리에 '환생까지 n'(띠 안이라 보스전에도 안 가린다 — 사용자 2026-10-18).
+                          child: scene
+                              ? const SceneStrip()
+                              : const BossCompare(fallback: RebirthCountdown(fallback: GoalBar(compact: true))),
+                        ),
+                        const SizedBox(width: 8),
                         // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
-                        TutorialSpot(id: 'fever.meter', child: FeverMeter()),
+                        const TutorialSpot(id: 'fever.meter', child: FeverMeter()),
                       ],
                     ),
                   ),

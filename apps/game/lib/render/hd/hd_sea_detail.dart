@@ -15,7 +15,8 @@ class HdSeaDetail {
   final _band = Path();
 
   void paint(Canvas c, Rect view, double now, double scroll, String region, {bool lite = false, double fever = 0}) {
-    if (fever > 0.6) return; // 피버 금빛 바다는 그대로
+    if (fever > 0) _feverSea(c, view, now, fever, lite: lite);
+    if (fever > 0.6) return; // 피버 금빛 바다엔 해역 디테일 대신 피버 빛
     final dim = 1 - fever;
     c
       ..save()
@@ -59,6 +60,35 @@ class HdSeaDetail {
         _mist(c, view, now, dim);
     }
     c.restore();
+  }
+
+  /// 피버 금빛 바다 v2: 배 둘레 밝은 금빛 → 가장자리 짙은 호박색(적이 노랑에 묻히지 않게) + 배에서 퍼지는 박동 고리
+  /// (0.6초) + 금빛 4갈래 반짝임.
+  void _feverSea(Canvas c, Rect v, double now, double f, {required bool lite}) {
+    final ship = Offset(v.center.dx, v.top + v.height * 0.72);
+    _p.shader = Gradient.radial(
+      ship,
+      v.height * 0.8,
+      [
+        Color.fromRGBO(255, 255, 230, 0.35 * f),
+        const Color.fromRGBO(255, 210, 90, 0),
+        Color.fromRGBO(190, 70, 20, 0.5 * f),
+      ],
+      const [0, 0.35, 1],
+    );
+    c.drawRect(v, _p);
+    _p.shader = null;
+    for (var i = 0; i < 2; i++) {
+      final u = (now / 600 + i * 0.5) % 1;
+      _stroke
+        ..strokeWidth = 3 * (1 - u) + 0.5
+        ..color = Color.fromRGBO(255, 250, 210, 0.65 * (1 - u) * f);
+      c.drawOval(
+        Rect.fromCenter(center: ship, width: v.width * (0.2 + 1.1 * u), height: v.width * (0.14 + 0.8 * u)),
+        _stroke,
+      );
+    }
+    _glints(c, v, now, now * 0.12, const Color(0xFFFFFBE0), lite ? 8 : 18, f);
   }
 
   /// 햇빛 일렁임: 화면을 가로지르는 넓은 물결 띠 3개가 천천히 흐르고 출렁인다.

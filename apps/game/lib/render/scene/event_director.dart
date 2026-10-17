@@ -16,6 +16,7 @@ import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/top/top_traits.dart';
 
 part 'event_director_top.dart';
+part 'event_director_zero.dart';
 part 'event_director_v3.dart';
 
 /// 기록의 이벤트를 연출로 바꾼다 (GAME_DESIGN 4.4, juice·fx_map): onAhead = 발사체·슬롯 번쩍, onNow = 피격·숫자·이펙트·흔들림·코인.
@@ -163,7 +164,6 @@ class EventDirector implements ReplayListener {
       ..detectShieldBreak(tick, index);
   }
 
-  /// 이벤트 → fx_map 효과음 키.
   void _sound(GameEvent e) {
     final key = switch (e) {
       Damage(:final crit) => crit ? 'critHit' : 'damage',
@@ -176,9 +176,7 @@ class EventDirector implements ReplayListener {
       BossFailed() => 'bossFailed',
       _ => null,
     };
-    if (key == null) return;
-    final salt = e is Damage ? e.targetId : 0;
-    scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: salt);
+    if (key != null) scene.sound.sfx(key, clockMs: scene.clockMs, tick: e.tick, salt: e is Damage ? e.targetId : 0);
   }
 
   /// 엔진은 범위 한 발의 Damage(·Kill)들 바로 뒤에 AoeDamageSum을 낸다 → 그 묶음이면 true.
@@ -198,16 +196,18 @@ class EventDirector implements ReplayListener {
     if (target == null) return;
     final tx = target.boss ? scene.layout.clampBossX(target.x) : target.x;
     final down = target.boss && scene.topHits.breaks.isDown(e.targetId, scene.clockMs);
-    if (number || down) {
+    if ((number || down) && !_missed(e, tx, target)) {
       scene.numbers.add(
         e.amount,
         tx,
         target.y - kNumberLiftPx,
         e.crit || down ? DamageKind.crit : DamageKind.normal,
         key: e.targetId,
+        on: scene.poseOf(e.targetId), // 맞은 적을 따라간다
       );
     }
     _fx(e.crit ? 'critHit' : 'damage', tx, target.y);
+    if (target.boss && scene.isTop) scene.moments.bossHit(e.amount, scene.clockMs); // 보스전 누계 TOTAL
     if (e.crit) scene.haptic(HapticLevel.light);
 
     final family = _crewFamily[e.crewId];
@@ -248,14 +248,14 @@ class EventDirector implements ReplayListener {
     if (scene.isTop) _juiceKill(e);
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
-    // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
-    final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
+    final fever = scene.isTop && scene.frame.feverTicksLeft > 0; // 피버: 처치 불꽃·코인 2배(사용자 '피버 임펙트')
     if (fever) _fx('kill', e.x + 3, e.y - 3);
     // 화물칸 가득(S2 GoldOverflow): 코인 대신 회색 '+0'.
     if (scene.isTop && scene.topHits.crew.full(scene.clockMs)) return scene.topHits.crew.zero(e.x, e.y, scene.clockMs);
     final n = _juice.coinCount * (fever ? 2 : 1);
     final share = n <= 1 ? e.gold : e.gold.times(1 / n);
     final (tx, ty) = scene.coinTo;
+    final near = scene.isTop && (Offset(e.x, e.y) - scene.topShip).distance < 48; // 배 근처 금화는 튀지 않고 바로 흡수(뭉침 방지)
     for (var c = 0; c < n; c++) {
       if (scene.coins.active.length >= _juice.maxCoins) {
         // 상한: 새 코인 대신 마지막 코인에 금액을 더한다(합계 보존, 화면은 덜 붐빈다).
@@ -270,10 +270,10 @@ class EventDirector implements ReplayListener {
         ..toX = tx
         ..toY = ty
         ..spread = spread
-        ..lift = _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
+        ..lift = near ? 0 : _coinLiftPx + (c.isEven ? _coinLiftJitterPx : 0)
         ..fallPx = 0
         ..ageMs = 0
-        ..flyMs = _juice.coinFlyMs
+        ..flyMs = _juice.coinFlyMs * (near ? 0.5 : 1)
         ..amount = share
         ..x = e.x
         ..y = e.y;

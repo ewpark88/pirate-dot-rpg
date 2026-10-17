@@ -31,10 +31,10 @@ class TopJuice {
   }
 
   /// 중(범위·치명)·강(보스·궁극기) 명중: 히트스톱 + 방향 흔들림. [dir] = 배 → 맞은 곳 방향(단위 벡터 아니어도 됨).
-  void hit(double now, Offset dir, {required bool strong, required bool shake}) {
-    // 멈춤은 강(보스·궁극기)만, 0.6초에 한 번 — 범위·치명마다 멈추면 '몬스터가 다 멈춘다'(사용자 첫 불만)로 돌아간다.
-    if (strong && now - _lastFreezeAt >= 600) {
-      _freeze = 50;
+  void hit(double now, Offset dir, {required bool strong, required bool shake, bool crit = false}) {
+    // 멈춤은 강(보스·궁극기) 50ms·치명 40ms, 0.6초에 한 번 — 치명마다 멈추면 '몬스터가 다 멈춘다'(사용자 첫 불만)로 돌아간다.
+    if ((strong || crit) && now - _lastFreezeAt >= 600) {
+      _freeze = strong ? 50 : 40;
       _lastFreezeAt = now;
     }
     if (!shake) return;
@@ -68,7 +68,10 @@ class TopJuice {
   }
 
   /// 손맛 v4: 적 [id]가 맞았다 — 납작하게 찌그러졌다가 길쭉하게 튀고 돌아온다(그리기만).
-  void squash(int id, double now) {
+  /// [keep]이면(보스 — 매 타격) 출렁이는 중엔 다시 시작하지 않는다(쉴 새 없이 맞아도 출렁임이 보이게).
+  void squash(int id, double now, {bool keep = false}) {
+    final t0 = _squash[id];
+    if (keep && t0 != null && now >= t0 && now - t0 < _squashMs) return;
     if (_squash.length > 96) _squash.removeWhere((_, t) => now - t > _squashMs);
     _squash[id] = now;
   }
@@ -137,6 +140,26 @@ class TopJuice {
     _stars.clear();
   }
 
+  /// 카툰 연기 구름(HD 처치 '펑'): 뭉게 4개가 부풀며 잉크 테와 함께 옅어진다.
+  void _puff(Canvas c, double x, double y, double size, double k) {
+    final grow = 1 - (1 - k) * (1 - k);
+    final a = 1 - k;
+    for (var j = 0; j < 4; j++) {
+      final ang = j * math.pi / 2 + x * 0.07;
+      final o = Offset(x + math.cos(ang) * size * 0.55 * grow, y + math.sin(ang) * size * 0.45 * grow - 3 * grow);
+      final r = size * (0.45 + 0.55 * grow) * (j.isEven ? 1 : 0.8);
+      _fill
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.6
+        ..color = Color.fromRGBO(26, 20, 36, 0.55 * a);
+      c.drawCircle(o, r, _fill);
+      _fill
+        ..style = PaintingStyle.fill
+        ..color = Color.fromRGBO(255, 255, 255, 0.85 * a);
+      c.drawCircle(o, r, _fill);
+    }
+  }
+
   static const _popMs = 560.0;
   static const _pastel = [0xFFFF6FB5, 0xFF5FD8FF, 0xFFFFD23A, 0xFF7CF06A, 0xFFB98CFF, 0xFFFF9A3C];
   final _star = Path();
@@ -161,6 +184,7 @@ class TopJuice {
         _fill.color = const Color(0xE6FFFFFF);
         c.drawCircle(Offset(x, y), size * 0.9, _fill);
       }
+      if (!lite && t < 0.42) _puff(c, x, y, size.toDouble(), t / 0.42);
       if (t < 0.3) {
         final k = t / 0.3;
         _fill

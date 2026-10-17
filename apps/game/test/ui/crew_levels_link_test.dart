@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -23,5 +25,20 @@ void main() {
     );
     c.read(gameStateProvider.notifier).replace(up);
     expect(game.scene.crewLevels[id], s.crews[id]!.level + 1);
+  });
+
+  testWidgets('띠 아래 끝 + 8dp를 전장 hudTopDp로(S3 보스 카메라 안전 영역)', (tester) async {
+    await pumpGame(
+      tester,
+      loadFixture('stage37_midgame'),
+      openTab: false,
+      overrides: [hasBattleGameProvider.overrideWithValue(true)],
+    );
+    await tester.pump();
+    final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    final gauge = tester.getRect(find.byKey(const Key('hud.gauge')));
+    final area = tester.getRect(find.byKey(const Key('battle.area')));
+    // 띠는 바깥 여백(위 2dp)까지 재므로 상자 아래 끝 − 전장 위 + 8과 같다.
+    expect(c.read(battleGameProvider).scene.hudTopDp, closeTo(gauge.bottom - area.top + 8, 0.5));
   });
 }

@@ -78,5 +78,6 @@
   "opSimReplay": "마지막 구매 다시 보내기",
   "opSimNone": "결제 흉내가 없는 빌드예요",
   "opEntitlements": "권리 켜기/끄기",
-  "opShopOpen": "상점 열기"
+  "opShopOpen": "상점 열기",
+  "opCaptainSkillFake": "필살기 버튼(가짜 — 피버 게이지)"
 }

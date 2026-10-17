@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 
 import 'helpers.dart';
@@ -68,5 +69,51 @@ void main() {
       ..add(BigNum.from(40), 100, 80, DamageKind.crit, key: 3);
     expect(n.active.map((d) => d.kind), [DamageKind.normal, DamageKind.crit]);
     expect(n.active.last.y, lessThan(80));
+  });
+
+  test('숫자가 맞은 적을 따라간다(보스 이동·돌진) — 상대 위치 유지, 죽으면 그 자리에 남음', () {
+    final nums = fresh();
+    final boss = EnemyPose()
+      ..id = 7
+      ..boss = true
+      ..drawX = 100
+      ..drawY = 50;
+    nums.add(BigNum.from(999), 100, 40, DamageKind.crit, key: 7, on: boss);
+    final rel = [for (final n in nums.active) (n.x - boss.drawX, n.y - boss.drawY)];
+    EnemyPose? at(int id) => id == 7 ? boss : null;
+    for (var i = 0; i < 20; i++) {
+      boss
+        ..drawX += 9
+        ..drawY += 4;
+      nums.update(16, at);
+      for (final (k, n) in nums.active.indexed) {
+        expect((n.x - boss.drawX, n.y - boss.drawY), rel[k]);
+      }
+    }
+    final last = [for (final n in nums.active) (n.x, n.y)];
+    nums.update(16, (_) => null); // 죽음
+    boss.drawX += 50;
+    nums.update(16, at);
+    expect([for (final n in nums.active) (n.x, n.y)], last);
+  });
+
+  test('따라가다 서로 겹치면 나중 숫자를 위 줄로 비킨다(탑 실기기 87.1.65K)', () {
+    final nums = fresh();
+    final a = EnemyPose()
+      ..id = 1
+      ..drawX = 0
+      ..drawY = 0;
+    final b = EnemyPose()
+      ..id = 2
+      ..drawX = 200
+      ..drawY = 0;
+    nums
+      ..add(BigNum.from(87), 0, -10, DamageKind.normal, key: 1, on: a)
+      ..add(BigNum.from(1650), 200, -10, DamageKind.normal, key: 2, on: b);
+    b.drawX = 4; // 두 적이 한자리로 모임
+    nums.update(16, (id) => id == 1 ? a : b);
+    final [n1, n2] = nums.active;
+    final line = DamageNumbers.lineHeight(nums.scaleOf(n2)) * nums.tall;
+    expect(((n1.y - nums.riseOf(n1)) - (n2.y - nums.riseOf(n2))).abs(), greaterThanOrEqualTo(line - 1e-6));
   });
 }

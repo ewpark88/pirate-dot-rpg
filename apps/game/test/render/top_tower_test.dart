@@ -75,4 +75,44 @@ void main() {
     );
     await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_tower_s24.png'));
   });
+
+  // 회귀(사용자 '이펙트가 조잡하고 배가 보이지도 않는다' — 탑 1층 2/3파 캡처): 적이 배에 붙어 칼질·착탄·금화가 몰려도
+  // 배가 맨 위 층으로 또렷이 보이고, 심연 바다가 너무 어둡지 않다.
+  testWidgets('심연의 탑 붐빔 — 배가 보인다 s24', (tester) async {
+    const dpr = 2.8125;
+    final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
+    final digits = (await tester.runAsync(() => OutlineDigits.load(devicePixelRatio: dpr)))!;
+    const box = Size(384, 832 - 48 - 24 - 76);
+    final base = topRecording(tables, ticks: 320, stage: 12);
+    final rec = [
+      for (final t in base)
+        RecordedTick(t.frame.copyWith(tower: const TowerView(floor: 1, wave: 2, waves: 3)), t.events),
+    ];
+    final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+    final painter = ScenePainter(scene)
+      ..sprites = bank
+      ..digits = digits;
+    final frame = topFrameFor(box, dpr);
+    final warm = Canvas(PictureRecorder());
+    while (scene.player.position < 300) {
+      scene.update(kFrameMs);
+      painter.paintTop(warm, frame);
+    }
+    tester.view
+      ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      Center(
+        child: RepaintBoundary(
+          child: SizedBox(
+            width: (box.width * dpr).roundToDouble(),
+            height: (box.height * dpr).roundToDouble(),
+            child: CustomPaint(painter: _Painter(painter, frame, dpr)),
+          ),
+        ),
+      ),
+    );
+    await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_tower_crowd_s24.png'));
+  });
 }

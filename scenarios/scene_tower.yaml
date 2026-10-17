@@ -1,0 +1,15 @@
+# 수용 기준(platform-content-v2 4절 · 계약 platform-tower): 탑은 도전권 1장을 쓰고 장면을 연다 — 장면 중엔 본 진행이 멈추고,
+# 그만두면 깬 층이 기록되고 같은 스테이지로 돌아온다. 담당: platform(S5). 신화 샘플(최고 160 — 열림 조건 스테이지 60 넘음).
+name: 심연의 탑 — 도전권·장면·그만두기 기록
+seed: 5
+state: fixtures/states/all_crews_mythic.json
+steps:
+  - advance: 1t
+  - expect: { towerTickets: 1, towerActive: false, stage: 160 }
+  - input: startTower
+  - advance: 2t
+  - expect: { towerActive: true, towerTickets: 0, inScene: true }
+  - advance: 40s           # 신화 함대면 1층(10~15초)은 넘는다
+  - input: retreatTower
+  - advance: 1t
+  - expect: { towerActive: false, inScene: false, stage: 160 }

@@ -1654,5 +1654,62 @@
   "uiTipTower": "Every floor has more foes. How far can you go? Sweep floors you've cleared.",
   "uiTipRush": "Beat this week's 5 bosses faster for bigger rewards. Records reset weekly.",
   "uiTipDungeon": "Each weekday has its own families — fight with those crews and earn their cards.",
-  "uiTipPass": "Top row is free, bottom row is the pass. Rewards are claimed in order."
+  "uiTipPass": "Top row is free, bottom row is the pass. Rewards are claimed in order.",
+  "uiSaveTitle": "Move your save",
+  "uiSaveHelp": "Move your progress to a new device with a code. Auto backup (Google) is also on — it restores on a new device with the same account.",
+  "uiSaveCopy": "Copy code",
+  "uiSaveCopied": "Code copied — paste it somewhere safe",
+  "uiSavePaste": "Paste a code",
+  "uiSavePasteHint": "Paste the code here",
+  "uiSaveFromClipboard": "From clipboard",
+  "uiSaveCheck": "Check",
+  "uiSaveBad": "That code doesn't work — copy and paste it again",
+  "uiSaveCompare": "Now / incoming",
+  "uiSaveStage": "Best stage {now} → {next}",
+  "@uiSaveStage": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSaveCrews": "Crew {now} → {next}",
+  "@uiSaveCrews": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSaveSavedAt": "Saved at {at}",
+  "@uiSaveSavedAt": {
+    "placeholders": {
+      "at": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSaveOverwrite": "Overwrite with this",
+  "uiSaveSure": "Really overwrite? Your current progress will be gone for good.",
+  "uiSaveSureYes": "Overwrite",
+  "uiSaveDone": "Progress imported!",
+  "uiRebirthIn": "Rebirth in {n} stages",
+  "@uiRebirthIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthReadyAgain": "You can rebirth now! Any time from the Voyage tab.",
+  "uiRebirthGo": "Voyage",
+  "uiCaptainSkill": "Captain's ultimate",
+  "uiCaptainSkillShort": "ULT",
+  "uiBackToExit": "Press back again to exit"
 }

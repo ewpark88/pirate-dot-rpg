@@ -110,4 +110,13 @@ void main() {
     expect((m.bannerText, m.bannerHot), ('FAILED', true));
     expect(scene.topHits.impact.hotFamilies, isEmpty);
   });
+
+  test('보스전 누계 TOTAL: 연속 타격을 더하고 1.5초 끊기면 새로', () {
+    final m = BattleScene(tables, null).moments
+      ..bossHit(BigNum.from(100), 0)
+      ..bossHit(BigNum.from(50), 1000);
+    expect(m.bossTotal.toDouble(), 150);
+    m.bossHit(BigNum.from(7), 2600);
+    expect(m.bossTotal.toDouble(), 7);
+  });
 }

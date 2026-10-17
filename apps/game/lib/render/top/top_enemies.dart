@@ -67,7 +67,7 @@ class TopEnemies {
           final f => f * (boss ? _boost(k, boss: true) : 1),
         },
       )
-      ..step(snap);
+      ..step(bakeDensity);
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -81,7 +81,7 @@ class TopEnemies {
               e.kind,
               boss: e.boss,
               world: sheet.frameW * _boost(e.kind, boss: e.boss),
-              density: snap,
+              density: bakeDensity,
             )
           : null;
       // 보스는 프레임 300ms·숨쉬기 3%, 큰 보스(대보스 88도트)는 350ms(S1 '대보스 존재감').
@@ -104,7 +104,8 @@ class TopEnemies {
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final flash = e.boss && hd != null ? _bossFlash(e.id, now: clock, on: e.flash) : e.flash;
       final hot = !flash && hotAt != null && hotAt!(e.drawX, e.drawY);
-      final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0.0;
+      final crack = e.boss ? _crack(e, clock) : 1e9; // 보스 체력 25%마다 '부서짐'(조각·비틀·어지러운 눈 0.45초)
+      final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) + _crackTilt(crack) : 0.0;
       // HD: 정면 3/4 그림이라 진행 방향으로 돌리지 않고 살짝 흔들기만(좌우는 시트 행으로).
       final rotation = hd != null
           ? math.sin(clock / 240 + e.id) * 0.06 + tilt
@@ -114,8 +115,8 @@ class TopEnemies {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
         // HD v2 표정: 쓰러짐(브레이크) > 공격 예고(EnemyWindup) > 평소.
         final mood = !hd.moods
-            ? HdMood.idle
-            : (scene.topHits.breaks.isDown(e.id, clock)
+            ? (hd.hits && flash ? HdMood.hit : HdMood.idle) // 잡몹 v2: 맞으면 찡긋
+            : (scene.topHits.breaks.isDown(e.id, clock) || crack < 450
                   ? HdMood.down
                   : (scene.topHits.muzzle.charging(e.id, clock) ? HdMood.windup : HdMood.idle));
         spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading), mood: mood), scale: hd.scale, hd: true);
@@ -137,9 +138,9 @@ class TopEnemies {
       final ty = ((e.drawY + math.cos(clock / 190 + e.id * 2.3) * 0.7 + lunge.dy) * snap).roundToDouble() / snap;
       // 손맛 v4: 막 맞은 적은 찌그러졌다 튐 — 가로·세로 배율이 달라 drawAtlas 대신 하나씩(프레임당 [_maxSquash]마리까지).
       if (!e.boss) _seen[e.id] = (spr, tx, ty, rotation);
-      final sq = huge || _squashed.length >= _maxSquash ? null : scene.topHits.juice.squashOf(e.id, clock);
+      final sq = _squashed.length >= _maxSquash ? null : _soft(scene.topHits.juice.squashOf(e.id, clock), e.boss);
       if (sq != null) {
-        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash, hot));
+        _squashed.add((spr, rotation, tx, ty, sq.$1, sq.$2, flash ? (e.boss ? _hdFlash : _tintPaint) : null, hot));
         continue;
       }
       final batch = (flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
@@ -184,7 +185,7 @@ class TopEnemies {
         ..translate(tx, ty)
         ..rotate(rot)
         ..scale(sx, sy);
-      _draw(c, spr, flash ? _tintPaint : (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)));
+      _draw(c, spr, flash ?? (hot ? _hotPaint : (under ? _underPaint : _atlasPaint)));
       c.restore();
     }
     _squashed.clear();
@@ -204,6 +205,7 @@ class TopEnemies {
   final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
   final Map<int, double> _bossFlashAt = {};
+  final Map<int, (int, double)> _quarter = {}; // 보스 id → (체력 4분의 몇, 부서진 시각)
 
   /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
   bool _facing(int id, double heading) {
@@ -225,7 +227,7 @@ class TopEnemies {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
 
-  final List<(_Spr, double, double, double, double, double, bool, bool)> _squashed = [];
+  final List<(_Spr, double, double, double, double, double, Paint?, bool)> _squashed = []; // 맞음 붓(없으면 평소)
   static const _maxSquash = 20;
 
   final Map<Image, _Batch> _batches = {};
@@ -249,6 +251,7 @@ class TopEnemies {
 
   /// 전장 1단위당 기기 픽셀(TopScenePainter가 프레임마다) — 위치를 이 격자에 맞춘다.
   double snap = 1;
+  double bakeDensity = 1; // HD 굽기 밀도(줌 뺀 단위당 px)
   static const _hugeW = 80;
   final _atlasPaint = Paint()
     ..isAntiAlias = false

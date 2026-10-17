@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:game_core/game_core.dart' show BigNumFormat;
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
 import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
@@ -69,6 +71,21 @@ class TopOverlays {
     }
   }
 
+  /// 보스전 누계 'TOTAL 1.2M': 위 HUD 띠 바로 아래 왼쪽 큰 금 글자, 맞을 때마다 1.15배 팝, 끊기면(1.5초) 0.3초에 사라짐.
+  void _bossTotal(Canvas c, Size box) {
+    final m = scene.moments;
+    final age = scene.clockMs - m.bossTotalAt;
+    if (m.bossTotal.isZero || age < 0 || age > Moments.bossTotalGapMs) return;
+    final fade = age > Moments.bossTotalGapMs - 300 ? (Moments.bossTotalGapMs - age) / 300 : 1.0;
+    final pop = age < 120 ? 1.15 - 0.15 * age / 120 : 1.0;
+    final top = scene.hudTopDp ?? scene.fx.raw.obj('topCam').number('hudTopDp');
+    final s = box.height * 0.045;
+    final x = box.width * 0.2; // 보스(가운데)·보스 체력바와 안 겹치게 왼쪽 위
+    _label
+      ..draw(c, 'TOTAL', Offset(x, top + s * 0.5), s * 0.5, alpha: fade, color: const Color(0xFFFF7A3A))
+      ..draw(c, m.bossTotal.format(), Offset(x, top + s * 1.5), (s * pop).roundToDouble(), alpha: fade);
+  }
+
   /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).
   void paint(Canvas c, Size box, double ms) {
     final flash = scene.settings.flash;
@@ -83,6 +100,7 @@ class TopOverlays {
       edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
     _tower(c, box);
+    _bossTotal(c, box);
     final l = atmosphere.lightning(ms);
     // 폭풍 번개: 전체 흰 번쩍 대신 옅은 하늘색 가장자리.
     if (l > 0 && flash) edgeVignette(c, Offset.zero & box, const Color(0xFFCFE6FF), 0.22 * l);

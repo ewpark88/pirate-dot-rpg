@@ -22,7 +22,8 @@
 1. 시작 화면 → 전투 2분(초반 무리·콤보·카드 연출·체력 숫자)
 2. 아래 탭 5개 + 대표 창(배 강화·모두 강화·선원 상세·교체 비교·소환·도감·설정·퀘스트)
 3. 운영자 '오늘 새 기능'으로 피버·보스 브레이크·특성 보스·연쇄 번개·출항 대기를 불러 확인
-4. 각 단계 화면 캡처 → `build/device/loop/<시각>/`, `logcat -b crash`, SurfaceFlinger 프레임·온도(thermal_log)
+4. 각 단계 화면 캡처 → `build/device/loop/<시각>/`, `logcat -b crash`
+5. 설치할 때마다 읽기 전용 감시를 백그라운드로 켠다: `python -I -B docs/store/device/device_watch.py --minutes 120 --every 300` → `build/device/watch/<시각>.md`(앱이 맨 앞일 때만 프레임 p50/p95·끊김·온도·CPU·PSS·크래시, 경고는 맨 위). 사용자가 직접 플레이하는 동안의 문제도 이걸로 잡는다.
 
 ## 4. 찾는 것 (캡처마다 체크)
 - 넘침·잘림·겹침·글자 안 읽힘(4.0:1 미만)·버튼 48dp 미만·화면 밖 그림

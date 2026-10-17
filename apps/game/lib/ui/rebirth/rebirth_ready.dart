@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 
@@ -26,6 +27,64 @@ final rebirthReadyProvider = Provider<bool>((ref) {
     }),
   );
 });
+
+/// 띠 안 목표 줄 '환생까지 n스테이지' — 해금(meta.rebirth.minStage) 10스테이지 전부터 해금 전까지, 아니면 [fallback](다음 목표).
+class RebirthCountdown extends ConsumerWidget {
+  const RebirthCountdown({required this.fallback, super.key});
+
+  final Widget fallback;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final min = ref.watch(tablesProvider).meta.rebirth.integer('minStage');
+    final stage = ref.watch(gameStateProvider.select((s) => s.progress.stage));
+    if (stage >= min || stage < min - 10) return fallback;
+    return Row(
+      key: const Key('hud.rebirthIn'),
+      children: [
+        const SkinIcon(UiSprites.rebirth, size: 14),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            AppLocalizations.of(context).uiRebirthIn(min - stage),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Skin.outlined(12, color: const Color(0xFFFFE27A)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 두 번째 환생부터: 환생 가능이 되는 순간 토스트 + [항해 탭] (첫 환생은 가이드 말풍선 guide.rebirth가 맡는다).
+class RebirthReadyNotice extends ConsumerStatefulWidget {
+  const RebirthReadyNotice({super.key});
+
+  @override
+  ConsumerState<RebirthReadyNotice> createState() => _RebirthReadyNoticeState();
+}
+
+class _RebirthReadyNoticeState extends ConsumerState<RebirthReadyNotice> {
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(rebirthReadyProvider, (was, now) {
+      if (was != false || !now || !mounted) return;
+      if (ref.read(gameStateProvider).progress.rebirths == 0) return;
+      final l10n = AppLocalizations.of(context);
+      showSkinToast(
+        context,
+        l10n.uiRebirthReadyAgain,
+        action: l10n.uiRebirthGo,
+        onAction: () => ref.read(dockTabRequestProvider.notifier).open(voyageTab),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
 
 /// 아직 한 번도 환생하지 않았고 지금 할 수 있으며, 환생 창을 아직 안 열었다(세이브에 남음) → 손가락으로 길 안내.
 final rebirthGuideProvider = Provider<bool>((ref) {
