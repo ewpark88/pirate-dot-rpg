@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_damage_line.dart';
+import 'package:pirate_dot/ui/crew/crew_detail_hero.dart';
 import 'package:pirate_dot/ui/crew/crew_growth_reasons.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/crew/crew_pill.dart';
@@ -18,7 +19,6 @@ import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
-import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -28,8 +28,6 @@ import 'package:pirate_dot/ui/text/crew_name.dart';
 import 'package:pirate_dot/ui/text/number_text.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/widgets/rarity_color.dart';
-
-const _cardWidth = 132.0; // 상세 카드 폭(dp)
 
 /// 승급 버튼을 보이는 상태 = 승급 문 앞.
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
@@ -104,49 +102,49 @@ class CrewDetailDialog extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _BigPortrait(def: def, rarity: rarity, owned: crew != null, name: shortCrewName(l10n, def)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            // 머리판(HD 개편): 계열 색 배경 · 등급 색 테 · 숨쉬기 카드 + 전체 이름·등급·출전.
+            CrewHero(
+              def: def,
+              rarity: rarity,
+              owned: crew != null,
+              name: shortCrewName(l10n, def),
+              info: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(tableText(l10n, def.nameKey), style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 4),
+                  // 등급 알약(등급 색 테두리·옅은 바탕·진한 글 — 일반의 회색도 읽힌다) · 출전 알약.
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
                     children: [
-                      Text(tableText(l10n, def.nameKey), style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 4),
-                      // 등급 알약(등급 색 테두리·옅은 바탕·진한 글 — 일반의 회색도 읽힌다) · 출전 알약.
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
-                        children: [
-                          CrewPill(
-                            fill: color.withValues(alpha: 0.18),
-                            border: color,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // 등급 별은 카드 리본에만(한 의미 한 자리) — 알약은 등급 이름만.
-                                Text(tableText(l10n, rarity.nameKey), style: Skin.text(13)),
-                              ],
-                            ),
-                          ),
-                          if (deployed)
-                            CrewPill(
-                              fill: const Color(0xFFDDF7EA),
-                              border: Skin.mint,
-                              child: Text(l10n.uiCrewDeployed, style: Skin.text(13, color: Skin.mintInk)),
-                            ),
-                        ],
+                      CrewPill(
+                        fill: color.withValues(alpha: 0.18),
+                        border: color,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // 등급 별은 카드 리본에만(한 의미 한 자리) — 알약은 등급 이름만.
+                            Text(tableText(l10n, rarity.nameKey), style: Skin.text(13)),
+                          ],
+                        ),
                       ),
+                      if (deployed)
+                        CrewPill(
+                          fill: const Color(0xFFDDF7EA),
+                          border: Skin.mint,
+                          child: Text(l10n.uiCrewDeployed, style: Skin.text(13, color: Skin.mintInk)),
+                        ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            // 능력치 막대(다음 레벨·등급 미리보기 초록) · 등급 사다리.
+            CrewStatBars(def: def, rarityIndex: rarityIndex),
+            RarityLadder(rarityIndex: rarityIndex),
             // 특색 (선원 개성 v2): 한 줄 + 조준·연사·범위·명중.
             CrewIdentityPanel(crewId: def.id, rarity: rarityIndex),
-            CrewPreviewPanel(def: def), // 공격 미리보기 — 특색 아래(S4: 360 첫 화면에 '키울지·쓸지'가 밀리지 않게)
             if (crew == null)
               section(l10n.uiCrewNotOwned, [Text(l10n.uiCrewHowToGet, key: const Key('crew.detail.howTo'))])
             else
@@ -187,6 +185,8 @@ class CrewDetailDialog extends ConsumerWidget {
                     Text(l10n.uiCrewTraitFull, key: const Key('crew.detail.traitFull'), style: dim),
                 ],
               ),
+            // 공격 미리보기는 맨 아래(HD 개편 — 위는 머리판·능력치).
+            CrewPreviewPanel(def: def),
           ],
         ),
       ),
@@ -281,20 +281,4 @@ class _Growth extends StatelessWidget {
       ),
     );
   }
-}
-
-/// 큰 카드 (Pirate Busters 카드, 미보유는 실루엣).
-class _BigPortrait extends StatelessWidget {
-  const _BigPortrait({required this.def, required this.rarity, required this.owned, required this.name});
-
-  final CrewDef def;
-  final RarityDef rarity;
-  final bool owned;
-  final String name;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    width: _cardWidth,
-    child: PbCardFront(crew: def, rarity: rarity, name: name, silhouette: !owned),
-  );
 }

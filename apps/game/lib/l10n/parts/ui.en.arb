@@ -2008,5 +2008,17 @@
         "type": "String"
       }
     }
+  },
+  "uiStatAttack": "Attack",
+  "uiStatSpeed": "Attack speed",
+  "uiStatRange": "Range",
+  "uiStatTrait": "Trait",
+  "uiStatPerSec": "{n}/s",
+  "@uiStatPerSec": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }

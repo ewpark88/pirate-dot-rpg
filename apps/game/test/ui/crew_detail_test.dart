@@ -214,8 +214,27 @@ void main() {
       (w) => w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/ui/star.png',
     );
     expect(starImages, findsNothing);
-    expect(find.text('Common'), findsOneWidget);
+    // 등급 이름은 알약 하나 + 등급 사다리 칸 하나(HD 개편).
+    expect(find.text('Common'), findsNWidgets(2));
+    expect(
+      find.descendant(of: find.byKey(const Key('crew.ladder.now')), matching: find.text('Common')),
+      findsOneWidget,
+    );
     // 상단 바 알림 배지 '1'은 별개 — 상세 안에서만 본다.
     expect(find.descendant(of: find.byKey(const Key('crew.detail.octo')), matching: find.text('1')), findsNothing);
+  });
+
+  // HD 개편(S1 2026-10-18): 머리판 · 능력치 막대(특성은 다음 등급 초록 꼬리) · 등급 사다리 지금 칸 · 미리보기는 맨 아래.
+  testWidgets('HD 머리판 · 능력치 막대 · 등급 사다리', (tester) async {
+    await pumpGame(tester, loadFixture('stage37_midgame'), tab: crewTab);
+    await _openDetail(tester, 'octo');
+    expect(find.byKey(const Key('crew.hero')), findsOneWidget);
+    expect(find.byKey(const Key('crew.stats')), findsOneWidget);
+    expect(find.text('Attack'), findsOneWidget);
+    expect(find.text('Attack speed'), findsOneWidget);
+    expect(find.byKey(const Key('crew.ladder.now')), findsOneWidget);
+    final hero = tester.getRect(find.byKey(const Key('crew.hero')));
+    final stats = tester.getRect(find.byKey(const Key('crew.stats')));
+    expect(stats.top, greaterThan(hero.bottom - 1));
   });
 }

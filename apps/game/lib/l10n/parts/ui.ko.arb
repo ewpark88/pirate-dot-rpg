@@ -2008,5 +2008,17 @@
         "type": "String"
       }
     }
+  },
+  "uiStatAttack": "공격력",
+  "uiStatSpeed": "공격 속도",
+  "uiStatRange": "사거리",
+  "uiStatTrait": "특성",
+  "uiStatPerSec": "초당 {n}발",
+  "@uiStatPerSec": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }
