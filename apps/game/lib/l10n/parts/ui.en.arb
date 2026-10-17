@@ -673,5 +673,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiTabQuest": "Quests",
+  "uiGaugeOpenVoyage": "Open the voyage map"
 }
