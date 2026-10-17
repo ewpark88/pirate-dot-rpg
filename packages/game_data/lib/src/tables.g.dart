@@ -3593,10 +3593,10 @@ const Map<String, String> rawTables = {
   "seaEvents": {
     "intervalSec": [60, 120], "minStage": 5,
     "events": [
-      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 2, "autoCatchRatio": 0.3 },
+      { "id": "goldfish", "weight": 30, "durationSec": 6, "count": [8, 12], "perFish": 6, "autoCatchRatio": 0.3 },
       { "id": "merchant", "weight": 20, "durationSec": 20, "passMargin": 40, "passSpread": 20, "hpMultiplier": 6, "gems": 3, "cards": 1 },
-      { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 0.5, "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.0, "capMul": 2}], "restSec": 2.5 },
-      { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 3 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
+      { "id": "ambush", "weight": 20, "durationSec": 25, "bossHpRatio": 0.4, "goldBossRatio": 1.5, "patterns": [{"type": "charge", "warnSec": 0.6, "speedMul": 4, "damageRatio": 1.0, "capMul": 2}], "restSec": 2.5 },
+      { "id": "bottle", "weight": 20, "durationSec": 10, "choices": [{ "type": "gold", "minutesOfKills": 6 }, { "type": "tailwind", "sec": 600 }, { "type": "gift", "gems": 5 }] },
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
@@ -3708,9 +3708,9 @@ const Map<String, String> rawTables = {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },
       "welcomeCrewMin": { "min": 0, "max": 1 },
-      "stage10Min": { "min": 7, "max": 9 },
+      "stage10Min": { "min": 5, "max": 8 },
       "stage40DayHours": { "min": 0, "max": 8.67, "schedule": "daily" },
-      "stage40OnlineMin": { "min": 55, "max": 70, "schedule": "continuous" },
+      "stage40OnlineMin": { "min": 35, "max": 50, "schedule": "continuous" },
       "wallMaxMin": { "min": 0, "max": 20 },
       "offline8hUpgrades": { "min": 3, "max": 8 },
       "adSummonsPerGemAd": { "min": 1, "max": 1.5 },
