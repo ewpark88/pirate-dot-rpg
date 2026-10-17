@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/story/opening_screen.dart';
 import 'package:pirate_dot/ui/story/story_data.dart';
+import 'package:pirate_dot/ui/text/crew_name.dart';
 
 // 시나리오 층 (사용자 2026-10-17): ① 처음 시작하면 오프닝 컷(한 번) ② 보스가 처음 나오면 아래쪽 작은 대화창 —
 // 보스·옥토 초상 + 리본 이름표 + 글, 2.8초마다 저절로 넘어가고 톡 하면 바로 다음, [건너뛰기]. 전투는 그동안 계속(누름은
@@ -73,17 +74,19 @@ class _StoryLayerState extends ConsumerState<StoryLayer> {
     if (!mounted || _talk != null) return;
     final hint = storyBossHint(bossId);
     if (ref.read(gameStateProvider).settings.hints.contains(hint)) return;
-    final lines = ref.read(storyScriptProvider).bossIntro(AppLocalizations.of(context), bossId);
+    final lines = ref
+        .read(storyScriptProvider)
+        .bossIntro(AppLocalizations.of(context), bossId, ref.read(gameStateProvider).progress.stage);
     if (lines.isEmpty) return;
     ref.read(commandSinkProvider).send(MarkHint(hint));
-    _hold.hold(storyLineFor * lines.length);
+    _hold.hold(ref.read(storyScriptProvider).lineFor * lines.length);
     setState(() => _talk = (bossId, lines, 0));
     _schedule();
   }
 
   void _schedule() {
     _next?.cancel();
-    _next = Timer(storyLineFor, _advance);
+    _next = Timer(ref.read(storyScriptProvider).lineFor, _advance);
   }
 
   void _advance() {
@@ -173,9 +176,16 @@ class _DialogueBox extends ConsumerWidget {
       alignment: Alignment.center,
       child: boss
           ? BossPortrait(bossId: bossId)
-          : Image.asset(pbPortrait('octo'), fit: BoxFit.cover, width: 64, height: 64),
+          : Image.asset(pbPortrait(line.who.name), fit: BoxFit.cover, width: 64, height: 64),
     );
-    final name = boss ? bossName(l10n, ref, bossId) : l10n.uiTalkName;
+    // 해설은 초상·이름표 없이 글만.
+    final narrator = line.who == Speaker.narrator;
+    final name = switch (line.who) {
+      Speaker.boss => bossName(l10n, ref, bossId),
+      Speaker.octo => l10n.uiTalkName,
+      Speaker.bones => shortCrewName(l10n, ref.read(tablesProvider).crews.byId('bones')),
+      Speaker.narrator => '',
+    };
     final body = Expanded(
       child: Container(
         padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
@@ -216,29 +226,32 @@ class _DialogueBox extends ConsumerWidget {
               padding: const EdgeInsets.only(top: 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: boss ? [body, const SizedBox(width: 6), face] : [face, const SizedBox(width: 6), body],
+                children: narrator
+                    ? [body]
+                    : (boss ? [body, const SizedBox(width: 6), face] : [face, const SizedBox(width: 6), body]),
               ),
             ),
-            // 리본 이름표 (말하는 쪽 위).
-            Positioned(
-              top: 0,
-              left: boss ? null : 76,
-              right: boss ? 76 : null,
-              child: Container(
-                key: const Key('story.name'),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Skin.ribbonTop, Skin.ribbonBottom],
+            // 리본 이름표 (말하는 쪽 위). 해설은 없음.
+            if (!narrator)
+              Positioned(
+                top: 0,
+                left: boss ? null : 76,
+                right: boss ? 76 : null,
+                child: Container(
+                  key: const Key('story.name'),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Skin.ribbonTop, Skin.ribbonBottom],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Skin.outline, width: 2),
                   ),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Skin.outline, width: 2),
+                  child: OutlineText(name, size: 14),
                 ),
-                child: OutlineText(name, size: 14),
               ),
-            ),
           ],
         ),
       ),
