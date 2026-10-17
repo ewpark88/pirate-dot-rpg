@@ -58,6 +58,9 @@ android {
 
     buildTypes {
         release {
+            // 네이티브 디버그 심볼은 함수 이름표만(SYMBOL_TABLE) — FULL이면 aab 안 BUNDLE-METADATA가 26MB(사용자에겐 안 내려가지만
+            // 업로드·보관이 무겁다). Play·Crashlytics 네이티브 스택의 함수 이름은 그대로 나온다(docs/store/app-size.md).
+            ndk.debugSymbolLevel = "SYMBOL_TABLE"
             // R8 예외 규칙(WorkManager의 Room 구현 클래스) — 없으면 릴리스가 실행 즉시 종료된다(proguard-rules.pro).
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig =
