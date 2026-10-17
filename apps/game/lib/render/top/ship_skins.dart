@@ -19,7 +19,7 @@ class ShipSkins {
   static const _stripeSrc = [0xFFD64038];
 
   final Set<String> _made = {};
-  String? _loading;
+  final Map<String, Future<void>> _loading = {};
 
   /// 지금 스킨의 항적·포구 색(fx_map skinPreview wake·muzzle — 'rainbow'면 무지개). 스킨 없으면 null.
   int? wake;
@@ -59,8 +59,16 @@ class ShipSkins {
 
   /// [skin] = {hull: [...], sail: [...], flag: [...]} 색 문자열. 이미 만들었거나 만드는 중이면 그대로.
   Future<void> prepare(String skinId, JsonReader skin, SpriteBank bank, Iterable<String> keys) async {
-    if (_made.contains(skinId) || _loading == skinId) return;
-    _loading = skinId;
+    // 같은 스킨을 동시에 부르면(배 탭 미리보기 여러 칸) 먼저 시작한 굽기를 같이 기다린다 — 예전엔 바로 돌아가
+    // 그 칸이 기본 배 색으로 남았다(S4 신고).
+    if (_made.contains(skinId)) return;
+    final going = _loading[skinId];
+    if (going != null) return going;
+    await (_loading[skinId] = _make(skinId, skin, bank, keys));
+    _loading.removeWhere((k, _) => k == skinId);
+  }
+
+  Future<void> _make(String skinId, JsonReader skin, SpriteBank bank, Iterable<String> keys) async {
     final map = <int, int>{};
     void pair(List<int> src, String part) {
       if (!skin.has(part)) return;
@@ -86,7 +94,6 @@ class ShipSkins {
       bank.put('$key@$skinId', await recolor(s.image, map, pattern: pattern), frames: s.frames);
     }
     _made.add(skinId);
-    _loading = null;
   }
 
   /// 스킨 무늬(배 스킨 v2, 사용자 #8): rainbowSail = 돛을 줄마다 무지개로(돛 그늘·밝은 색은 어둡게·밝게),

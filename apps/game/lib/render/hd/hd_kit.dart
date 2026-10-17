@@ -88,6 +88,9 @@ class HdKit {
   /// 큰 카툰 눈: 흰자 + 검은 눈동자 + 반짝 두 점 + 외곽선. [angry]면 눈썹, [look](-1 왼쪽 ~ 1 오른쪽)은 눈동자 방향.
   void eye(Canvas c, Offset at, double s, {bool angry = false, double look = 0}) {
     final white = Rect.fromCenter(center: at, width: s, height: s * 1.15);
+    // 작은 눈은 선을 눈 크기에 맞춰 얇게(굵은 선에 흰자가 묻히지 않게) — 끝에 되돌린다.
+    final w = ink.strokeWidth;
+    ink.strokeWidth = math.min(w, s * 0.16);
     fill.color = const Color(0xFFFFFFFF);
     c
       ..drawOval(white, fill)
@@ -102,6 +105,7 @@ class HdKit {
       ..drawCircle(at + Offset(-s * 0.08 + look * s * 0.15, -s * 0.08), s * 0.14, fill)
       ..drawCircle(at + Offset(s * 0.12 + look * s * 0.15, s * 0.2), s * 0.06, fill);
     if (angry) c.drawLine(at + Offset(-s * 0.55, -s * 0.85), at + Offset(s * 0.45, -s * 0.55), ink);
+    ink.strokeWidth = w;
   }
 
   /// 웃는 입(아래로 휜 선) — 가운데 [at], 폭 [w].
