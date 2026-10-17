@@ -233,6 +233,7 @@ class HudPainter {
       ..save()
       ..translate(layout.bandOrigin.dx, layout.bandOrigin.dy)
       ..scale(layout.bandScale);
+    _skin.digits = digits;
     if (_skin.paint(c)) {
       c.restore();
       return;
