@@ -10,6 +10,20 @@ import 'package:pirate_dot/adapters/audio/audio_sdk.dart';
 class AudioAdapter implements AudioPort, AudioMixPort {
   AudioAdapter._(this._sdk, this._files, this._nowMs);
 
+  /// 기다리지 않고 바로 쓰는 어댑터(docs/store/cold-start.md — 첫 프레임을 음원 목록 읽기로 막지 않는다): 목록이 오기 전엔
+  /// 무음이고, 오면 그 사이 정한 배경음·환경음을 그때 튼다. 목록 읽기 실패·[timeout]이면 계속 무음.
+  factory AudioAdapter.later(AudioSdk sdk, {Duration? timeout, int Function()? nowMs}) {
+    final clock = Stopwatch()..start();
+    final a = AudioAdapter._(sdk, <String>{}, nowMs ?? () => clock.elapsedMilliseconds);
+    final listing = sdk.listAssets();
+    unawaited(
+      (timeout == null ? listing : listing.timeout(timeout)).then(a._filesArrived).catchError((Object e) {
+        debugPrint('audio: asset list failed — silent ($e)');
+      }),
+    );
+    return a;
+  }
+
   /// 목록을 못 읽으면 빈 목록(전부 무음).
   /// [timeout]: 목록 읽기가 이보다 오래 걸리면 무음으로 시작한다(첫 프레임을 막지 않게).
   /// [nowMs]: 같은 소리 간격을 잴 시계(테스트가 넣는다, 기본 앱 시작부터 ms).
@@ -23,6 +37,16 @@ class AudioAdapter implements AudioPort, AudioMixPort {
     }
     final clock = Stopwatch()..start();
     return AudioAdapter._(sdk, files, nowMs ?? () => clock.elapsedMilliseconds);
+  }
+
+  void _filesArrived(Set<String> files) {
+    _files.addAll(files);
+    if (!_bgmPlaying && !_suspended) _startBgm();
+    final amb = _ambientId;
+    if (amb == null) {
+      final want = _ambientWanted;
+      if (want != null) playAmbient(want);
+    }
   }
 
   /// 같은 효과음 동시 재생 상한 (많은 처치가 겹칠 때 소리 뭉침 방지).
@@ -60,6 +84,7 @@ class AudioAdapter implements AudioPort, AudioMixPort {
   int _fadeGen = 0; // 페이드가 겹치면 앞의 것을 버린다
   double _rate = 1; // 배경음 재생 속도(AudioMixPort.setBgmRate)
   String? _ambientId; // 지금 깔린 환경음(파일이 있어 튼 경우만)
+  String? _ambientWanted; // 목록이 오기 전에 요청된 환경음(later)
 
   /// 지금 동시 재생 상한(발열이 심하면 main이 줄인다 — power_policy sfxMaxTotal).
   int maxTotal = maxTotalSfx;
@@ -99,6 +124,7 @@ class AudioAdapter implements AudioPort, AudioMixPort {
   @override
   void playAmbient(String id) {
     final path = 'amb/$id.ogg';
+    _ambientWanted = id;
     if (_ambientId == id || !_files.contains(path)) return;
     _ambientId = id;
     _fire(_sdk.playAmbient(path, volume: _bgm * ambientMix));
@@ -106,6 +132,7 @@ class AudioAdapter implements AudioPort, AudioMixPort {
 
   @override
   void stopAmbient() {
+    _ambientWanted = null;
     if (_ambientId == null) return;
     _ambientId = null;
     _fire(_sdk.stopAmbient());
