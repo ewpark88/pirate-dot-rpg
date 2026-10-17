@@ -1,6 +1,8 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/skin_decor.dart';
 
 /// 탑다운 내 배 (T2): 층 시트(tools/art/gen_topdown_ships.py) 6장을 이 순서로 겹친다 — 바탕 · 선체 · 화물 · 대포 · 돛 · 망루.
 /// 부위 단계 = BattleView.shipLook (0단계는 1단계 그림). 아래에 바다 그림자(뱃머리 반대·오른쪽 아래로 비낀 어두운 실루엣).
@@ -38,6 +40,7 @@ class TopShipPainter {
     double recoil = 0,
     String? skin,
     double billow = 0,
+    double now = 0,
   }) {
     final size = sizeOf(tierId);
     if (size == null) return false;
@@ -52,6 +55,14 @@ class TopShipPainter {
         _shadow,
       );
     }
+    // 모션 v1: 늘 파도 따라 ±0.5 위아래·±1.5° 기울기, 돛은 바람에 은은히 펄럭(피버면 크게 — 부르는 쪽 billow).
+    c
+      ..save()
+      ..translate(0, math.sin(now / 700) * 0.5)
+      ..rotate(math.sin(now / 900) * 0.026);
+    final sailBillow = math.max(billow, 0.15 + 0.1 * math.sin(now / 240));
+    final decor = skin != null && SkinDecor.ids.contains(skin) ? skin : null;
+    if (decor != null) _decor.under(c, decor, size, now);
     for (final layer in layers) {
       final base = 'td:$tierId:$layer';
       // 환생 스킨: 색 바꾼 사본(<key>@<skin>)이 있으면 그것으로.
@@ -64,7 +75,7 @@ class TopShipPainter {
       // 대포 반동(사용자 '손맛'): 발사 순간 대포 층을 가로로 살짝 좁혀 양옆 포가 선체 쪽으로 밀렸다 돌아온다.
       final kick = layer == 'cannon' && recoil > 0;
       // 피버 질주: 돛이 바람에 부풀며 펄럭(가로로 부풀고 앞으로 살짝).
-      final puff = layer == 'sail' && billow > 0;
+      final puff = layer == 'sail' && sailBillow > 0;
       if (kick) {
         c
           ..save()
@@ -72,10 +83,20 @@ class TopShipPainter {
       } else if (puff) {
         c
           ..save()
-          ..translate(0, -2 * billow)
-          ..scale(1 + 0.12 * billow, 1 + 0.05 * billow);
+          ..translate(0, -2 * sailBillow)
+          ..scale(1 + 0.12 * sailBillow, 1 + 0.05 * sailBillow);
       }
-      sprites.draw(c, key, 0, 0, frame: frame, w: size.width, h: size.height, flash: flash);
+      sprites.draw(
+        c,
+        key,
+        0,
+        0,
+        frame: frame,
+        w: size.width,
+        h: size.height,
+        flash: flash,
+        alpha: SkinDecor.alphaOf(decor),
+      );
       if (kick || puff) c.restore();
       if (glowPart == layer && glow > 0) {
         // 축하(사용자 '바뀐 부위가 커졌다 돌아오며 빛나게'): 그 층을 조금 크게 한 번 더 흰빛으로.
@@ -87,6 +108,10 @@ class TopShipPainter {
         c.restore();
       }
     }
+    if (decor != null) _decor.over(c, decor, size, now);
+    c.restore();
     return true;
   }
+
+  final _decor = SkinDecor();
 }

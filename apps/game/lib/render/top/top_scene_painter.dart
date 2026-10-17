@@ -160,6 +160,7 @@ class TopScenePainter {
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
         skin: skinId != null && skins.ready(skinId) ? skinId : null,
         billow: fever.level * (0.7 + 0.3 * math.sin(clockMs / 90)),
+        now: clockMs,
       );
       if (sinking) c.restore();
       c.restore();
@@ -238,7 +239,6 @@ class TopScenePainter {
 
   late final _turn = ShipTurn(scene);
 
-  /// 피버 질주 위아래 흔들림(흔들기 설정 따름).
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
 
   bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
