@@ -3346,6 +3346,10 @@ const Map<String, String> rawTables = {
       "bossFailSec": { "min": 20, "max": 90 },
       "upgradeGapStage10Sec": { "min": 8, "max": 60 }
     },
+    "spendProfiles": {
+      "light": ["starter_pack", "gem_650"],
+      "heavy": ["starter_pack", "captain_pack", "gem_1400", "gem_1400", "gem_4200", "voyage_pass", "gem_monthly"]
+    },
     "targets": {
       "firstBossFailMin": { "min": 1, "max": 3 },
       "firstSummonMin": { "min": 0, "max": 5 },

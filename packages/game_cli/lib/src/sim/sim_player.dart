@@ -13,10 +13,14 @@ export 'package:game_cli/src/sim/sim_result.dart';
 
 /// 설계서 7.2의 가상 플레이어: 가장 싼 강화·소환·합치기·승급, 보스 실패 시 farmRetrySec 파밍 후 재도전. 실제 엔진을 돌린다.
 class SimPlayer {
-  SimPlayer(this.t, {required this.seed, this.bossAd = false, String view = 'top'}) : clock = ManualClock(_start) {
+  SimPlayer(this.t, {required this.seed, this.bossAd = false, String view = 'top', List<String> buys = const []})
+    : clock = ManualClock(_start) {
     final fresh = GameState.newGame(playerId: 'sim$seed', seed: seed, now: _start, crews: t.meta.startingCrews);
     final initial = view == 'top' ? fresh : fresh.copyWith(settings: Settings(battleView: view));
     engine = CoreEngine(tables: t, clock: clock, initial: initial);
+    for (final (i, id) in buys.indexed) {
+      engine.enqueue(GrantPurchase(id, 'sim-$seed-$i', _start)); // 과금 가상 플레이어(--spend)
+    }
     result = SimResult(seed);
     final sim = t.meta.raw.obj('sim');
     decisionTicks = (sim.number('decisionSec') * Duration.millisecondsPerSecond / t.waves.tickMs).round();
