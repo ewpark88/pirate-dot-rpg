@@ -66,7 +66,7 @@ List<List<int>> _rows(int n) => n <= 4
         [for (var d = 5; d <= n; d++) d],
       ];
 
-class _DayCell extends StatelessWidget {
+class _DayCell extends StatefulWidget {
   const _DayCell({required this.day, required this.reward, required this.view});
 
   final int day;
@@ -76,8 +76,39 @@ class _DayCell extends StatelessWidget {
   final AttendanceView view;
 
   @override
+  State<_DayCell> createState() => _DayCellState();
+}
+
+// 출석 칸 손맛 (S1 2026-10-18 HD 결): 오늘 칸은 창이 열릴 때 통통(한 번), 받는 순간 빨간 도장이 쾅 찍힌다(지난 칸은 찍힌 채).
+class _DayCellState extends State<_DayCell> with SingleTickerProviderStateMixin {
+  late final AnimationController _stamp;
+
+  @override
+  void initState() {
+    super.initState();
+    _stamp = AnimationController(vsync: this, duration: const Duration(milliseconds: 380), value: 1);
+  }
+
+  bool _checked(_DayCell w) => w.day < w.view.day || (w.day == w.view.day && w.view.claimedToday);
+
+  @override
+  void didUpdateWidget(_DayCell old) {
+    super.didUpdateWidget(old);
+    if (_checked(widget) && !_checked(old) && !MediaQuery.disableAnimationsOf(context)) {
+      _stamp.forward(from: 0).ignore();
+    }
+  }
+
+  @override
+  void dispose() {
+    _stamp.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final (day, reward, view) = (widget.day, widget.reward, widget.view);
     final today = day == view.day;
     final ticket = !reward.has('gems');
     // 출석은 하루 빠져도 이어서 받는다(리셋 없음) — 지난 날은 모두 받은 칸.
@@ -86,37 +117,89 @@ class _DayCell extends StatelessWidget {
     // k2: 받은 날 = 옅은 회보라(Skin.track은 남색이라 글이 묻힌다), 나머지 = 연보라 안쪽 판.
     final fill = today && !checked ? Skin.goldTop : (checked ? const Color(0xFFD3D1EA) : Skin.insetFill);
     final ink = today && !checked ? Skin.goldInk : (checked ? Skin.sub : Skin.ink);
+    final box = SkinDepth(
+      fill: fill,
+      border: today ? Skin.goldEdge : (ticket ? Skin.goldBottom : Skin.outline),
+      borderWidth: today ? 2.5 : 2,
+      radius: 12,
+      shadow: Skin.shadowSmall,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Column(
+        children: [
+          Text(l10n.uiAttendanceDay(day), maxLines: 1, style: Skin.text(12, color: ink)),
+          const SizedBox(height: 3),
+          if (checked)
+            const SkinIcon(UiSprites.check, size: 22)
+          else
+            // 소환권 = 카드 뒷면 그림 (별은 등급만 뜻한다 — 사용자 지적 2026-10-16).
+            SkinIcon(ticket ? UiSprites.cardBack : UiSprites.gem, size: 22),
+          const SizedBox(height: 3),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              ticket ? l10n.uiAttendanceTicket : '${reward.integer('gems')}',
+              maxLines: 1,
+              style: Skin.text(13, color: ink),
+            ),
+          ),
+        ],
+      ),
+    );
+    final calm = MediaQuery.disableAnimationsOf(context);
     return Padding(
       key: Key('attendance.day.$day.${checked ? 'checked' : (today ? 'today' : 'later')}'),
       padding: const EdgeInsets.all(2),
-      child: SkinDepth(
-        fill: fill,
-        border: today ? Skin.goldEdge : (ticket ? Skin.goldBottom : Skin.outline),
-        borderWidth: today ? 2.5 : 2,
-        radius: 12,
-        shadow: Skin.shadowSmall,
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        child: Column(
-          children: [
-            Text(l10n.uiAttendanceDay(day), maxLines: 1, style: Skin.text(12, color: ink)),
-            const SizedBox(height: 3),
-            if (checked)
-              const SkinIcon(UiSprites.check, size: 22)
-            else
-              // 소환권 = 카드 뒷면 그림 (별은 등급만 뜻한다 — 사용자 지적 2026-10-16).
-              SkinIcon(ticket ? UiSprites.cardBack : UiSprites.gem, size: 22),
-            const SizedBox(height: 3),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                ticket ? l10n.uiAttendanceTicket : '${reward.integer('gems')}',
-                maxLines: 1,
-                style: Skin.text(13, color: ink),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 오늘(안 받음) 칸: 열릴 때 한 번 통통.
+          if (today && !checked && !calm)
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.82, end: 1),
+              duration: const Duration(milliseconds: 700),
+              curve: Curves.elasticOut,
+              builder: (_, k, c) => Transform.scale(scale: k, child: c),
+              child: box,
+            )
+          else
+            box,
+          if (checked)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: AnimatedBuilder(
+                  animation: _stamp,
+                  builder: (_, _) => Center(
+                    child: Transform.rotate(
+                      angle: -0.25,
+                      child: Transform.scale(
+                        scale: 1 + 1.2 * (1 - Curves.easeOutBack.transform(_stamp.value)),
+                        child: _Stamp(key: Key('attendance.stamp.$day'), text: l10n.uiAttendanceStamp),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
+}
+
+/// 받은 칸 빨간 도장(둥근 테 + 글).
+class _Stamp extends StatelessWidget {
+  const _Stamp({required this.text, super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+    decoration: BoxDecoration(
+      color: const Color(0x22E0453D),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: const Color(0xCCE0453D), width: 2.5),
+    ),
+    child: Text(text, style: Skin.bold(12, color: const Color(0xFFD03A33))),
+  );
 }

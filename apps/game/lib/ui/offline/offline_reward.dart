@@ -7,17 +7,18 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
+import 'package:pirate_dot/ui/offline/offline_fx.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
-import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/widgets/reward_fly.dart' show flyRewards;
 
 /// 상태·지금 시각 → 복귀 보상 미리보기 (경제 `offlinePreview`, ClaimOffline과 같은 계산). null이면 팝업 없음(최소 시간 미만).
 final offlinePreviewProvider = Provider<OfflinePreview? Function(GameState state, DateTime now)>((ref) {
@@ -109,6 +110,8 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
   void _claim() {
     _received = _fits();
     ref.read(commandSinkProvider).send(const ClaimOffline());
+    // 금화 비 → 위 막대 금화 자리로 날아가 꽂힌다(받을 게 있을 때).
+    if (!_received!.isZero) flyRewards(context, List.filled(5, UiSprites.coin));
     if (ref.read(adsPortProvider).isReady(AdPlacement.offline)) {
       setState(() => _claimed = true);
     } else {
@@ -138,18 +141,16 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
             style: Skin.bold(16),
           ),
           const SizedBox(height: 10),
-          // k2: 안쪽 판 + 금화 칸 + 금빛 테두리 숫자.
-          Container(
+          // 밤하늘 판(별이 차례로 반짝) + 금화 칸 + 0부터 굴러 오르는 금빛 숫자(S1 2026-10-18 HD 결).
+          NightSkyPanel(
             key: const Key('offline.gold'),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: Skin.inset(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const IconCell(color: Color(0xFFE0A83D), size: 52, child: SkinIcon(UiSprites.coin, size: 38)),
                 const SizedBox(width: 10),
                 Flexible(
-                  child: RewardSparkle(child: OutlineText(got.format(), size: 30, tone: OutlineTone.gold, fit: true)),
+                  child: RewardSparkle(child: RollUpGold(value: got)),
                 ),
               ],
             ),

@@ -37,6 +37,8 @@ void main() {
       ),
     );
     await precacheImages(tester);
+    // 밤하늘 별·골드 굴림(1.2초)이 끝난 장면.
+    await tester.pump(const Duration(milliseconds: 1300));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_offline_reward.png'));
   });
 
