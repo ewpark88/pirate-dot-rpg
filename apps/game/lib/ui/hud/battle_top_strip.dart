@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
-import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_intro.dart';
-import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/hud/buff_chips.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/hud/fast_sail.dart';
@@ -13,7 +10,6 @@ import 'package:pirate_dot/ui/hud/fever_slot.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
-import 'package:pirate_dot/ui/scene/scene_battle.dart';
 import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
@@ -34,13 +30,12 @@ class BattleTopStrip extends StatelessWidget {
     children: [
       // 진행 게이지 + 다음 목표 한 줄 (전투력은 상단 바 골드 옆).
       const StageGauge(),
-      const BossWeakness(),
       // 왼쪽 위 작은 알약들 (현상금·돌발 이벤트·즉석 도전) — 옆으로 나란히, 넘치면 다음 줄. 누름 통과.
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
       const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
       // 광고 버프·보상 칩(44dp) — 오른쪽 끝 세로 줄(보스·배는 가운데라 안 겹친다, 실기기 ① 2026-10-17).
-      const Padding(padding: EdgeInsets.fromLTRB(10, 4, 8, 0), child: BuffChips()),
+      const Padding(padding: EdgeInsets.only(top: 4), child: BuffChips()), // 오른쪽 여백은 BuffChips가(접힘은 끝에 붙임)
       // 보스 등장 이름표 (2초).
       const BossIntro(),
       BossFailNotice(sheetOpen: sheetOpen),
@@ -61,19 +56,17 @@ class _Pills extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
-    final scene = ref.watch(sceneActiveProvider);
+    // 보스전·장면 모드·현상금 중엔 띠 아래 알약 줄을 비운다(사용자 2026-10-18 '보스와의 전투를 가린다') — 그 글은 띠 안에.
+    final quiet =
+        ref.watch(sceneLabelProvider) || ref.watch(gameStateProvider.select((s) => s.battle?.bossActive ?? false));
     final challenge = ref.watch(gameStateProvider.select((s) => s.battle?.challenge != null));
     final cargoFull = ref.watch(cargoLevelProvider) == 2;
     final rebirth = ref.watch(rebirthReadyProvider);
     // 우선순위: 현상금 > 도전 > 화물칸 가득 > 환생 가능(계속). 늘 한 줄(실기기 ④ — 전장 위가 3줄이 됐다): 한 묶음만,
     // 좁으면 줄여서. 돌발 이벤트는 띠 안 아이콘(SeaEventIcon). 도전이 끝난 '성공' 알약은 도전 자리에 잠깐.
     final List<Widget> pills;
-    if (scene) {
-      // 탑·러시 중엔 장면 띠만(피버·도전·돌발은 멈춘다).
-      pills = const [SceneStrip()];
-    } else if (bounty) {
-      pills = const [BountyStrip()];
+    if (quiet) {
+      pills = const [];
     } else {
       // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸.
       final ranked = <List<Widget>>[
@@ -101,7 +94,7 @@ class _Pills extends ConsumerWidget {
             ),
           ),
         ),
-        if (!scene) const FeverSlot(),
+        if (!ref.watch(sceneActiveProvider)) const FeverSlot(),
       ],
     );
   }

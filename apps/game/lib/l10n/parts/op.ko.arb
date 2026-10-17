@@ -59,5 +59,24 @@
   "opTraitEscort": "호위",
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
-  "opTraitSplit": "분열"
+  "opTraitSplit": "분열",
+  "opGroupPurchase": "결제(흉내)",
+  "opSimNext": "다음 결제 결과",
+  "opSimSuccess": "성공",
+  "opSimCancel": "취소",
+  "opSimPending": "대기",
+  "opSimError": "오류",
+  "opSimSettle": "대기 결제 마치기",
+  "opSimRefund": "환불: {id}",
+  "@opSimRefund": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "opSimReplay": "마지막 구매 다시 보내기",
+  "opSimNone": "결제 흉내가 없는 빌드예요",
+  "opEntitlements": "권리 켜기/끄기",
+  "opShopOpen": "상점 열기"
 }

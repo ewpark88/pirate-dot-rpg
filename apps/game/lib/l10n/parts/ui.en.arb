@@ -1152,48 +1152,17 @@
   "uiStoryTapNext": "Tap for next",
   "uiShopTitle": "Shop",
   "uiShopNoAds": "No ads",
-  "uiShopSubLeft": "Subscribed · {days} days left",
   "uiShopBuy": "{price}",
-  "uiShopPrice": "{n} KRW",
-  "uiShopOff": "{pct}% off",
   "uiShopBest": "Popular",
-  "uiShopGemsS": "Handful of gems",
-  "uiShopGemsM": "Gem chest",
-  "uiShopGemsL": "Gem hoard",
-  "uiShopStarter": "Starter pack",
-  "uiShopNoAdsName": "Remove ads",
-  "uiShopSubName": "Captain pass · 30 days",
   "uiShopGemsN": "Gems ×{n}",
   "uiShopSummonN": "Summons ×{n}",
   "uiShopDailyGems": "Daily gems ×{n}",
   "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
   "uiShopLater": "Later",
-  "uiShopOpen": "Shop (operator)",
-  "@uiShopSubLeft": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "@uiShopBuy": {
     "placeholders": {
       "price": {
         "type": "String"
-      }
-    }
-  },
-  "@uiShopPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
-  "@uiShopOff": {
-    "placeholders": {
-      "pct": {
-        "type": "int"
       }
     }
   },
@@ -1433,5 +1402,257 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiShopSecStarter": "Just once",
+  "uiShopSecConvenience": "Convenience",
+  "uiShopSecGems": "Gems",
+  "uiShopSecMonthly": "Monthly gems",
+  "uiShopSecPass": "Voyage pass",
+  "uiShopSecSkins": "Ship skins",
+  "uiShopFirstDouble": "First buy ×2",
+  "uiShopOwned": "Owned",
+  "uiShopDaysLeft": "{n} days left",
+  "@uiShopDaysLeft": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopClaimToday": "Claim today's gems",
+  "uiShopClaimedToday": "Claimed today",
+  "uiShopRightNoAds": "Rewards without ads",
+  "uiShopRightSpeed": "Always 2× speed",
+  "uiShopRightOffline": "Offline rewards up to {h}h",
+  "@uiShopRightOffline": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopRightPass": "Premium pass rewards",
+  "uiShopDays": "{n} days",
+  "@uiShopDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopForever": "Forever",
+  "uiShopHeroCards": "Hero card ×{n}",
+  "@uiShopHeroCards": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSkinN": "Ship skin ×{n}",
+  "@uiShopSkinN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEndsIn": "Ends in {d}d {h}h",
+  "@uiShopEndsIn": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      },
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopEmpty": "The shop isn't available right now",
+  "uiPurchasePending": "Processing your payment…",
+  "uiPurchaseFailed": "The payment didn't go through",
+  "uiPurchaseUnavailable": "Payments aren't available right now",
+  "uiPurchaseOwned": "You already own this",
+  "uiPurchaseDone": "Purchased! {what}",
+  "@uiPurchaseDone": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWonSign": "₩",
+  "uiWonPrice": "{n} KRW",
+  "@uiWonPrice": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassTitle": "Voyage Pass",
+  "uiPassLevel": "Level {n}/{max}",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "{n} XP to next",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "Quests/check-in +{q} · New stage +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "Free",
+  "uiPassPaid": "Pass",
+  "uiPassClaimAll": "Claim all",
+  "uiPassUnlock": "Unlock pass · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "Pass: {n} days left",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "Pass reward at level {lv}",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "Season 1 Flagship",
+  "uiTitlePassFlag": "Season 1 Voyager",
+  "uiPassLegend": "Legend summon",
+  "uiDungeonTitle": "Weekday Dungeon",
+  "uiDungeonToday": "{day} · today's families",
+  "@uiDungeonToday": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonAll": "All families",
+  "uiDungeonStep": "Step {n}",
+  "@uiDungeonStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonStart": "Challenge step {n}",
+  "@uiDungeonStart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonSweep": "Sweep step {n}",
+  "@uiDungeonSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonReward": "Crew cards ×{c} · Gems {g}",
+  "@uiDungeonReward": {
+    "placeholders": {
+      "c": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonCrewNote": "Your fleet is swapped to these crews for the run",
+  "uiDungeonNoCrew": "No crews of these families — try another day",
+  "uiDungeonStrip": "Dungeon step {n} · wave {wave}/{waves}",
+  "@uiDungeonStrip": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonClear": "Step {n} cleared!",
+  "@uiDungeonClear": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonFail": "Step {n} failed",
+  "@uiDungeonFail": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonTicketBack": "Your ticket was returned",
+  "uiDungeonTimeout": "Time's up",
+  "uiDungeonSwept": "Swept step {n} · {reward}",
+  "@uiDungeonSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeekday1": "Monday",
+  "uiWeekday2": "Tuesday",
+  "uiWeekday3": "Wednesday",
+  "uiWeekday4": "Thursday",
+  "uiWeekday5": "Friday",
+  "uiWeekday6": "Saturday",
+  "uiWeekday7": "Sunday",
+  "uiAdFold": "Show ad rewards",
+  "uiTalkScenes": "Abyss Tower, Boss Rush and Weekday Dungeon are open! Try them in the Voyage tab.",
+  "uiTalkPass": "Your Voyage Pass is filling up! Level it with quests and check-ins.",
+  "uiTipTower": "Every floor has more foes. How far can you go? Sweep floors you've cleared.",
+  "uiTipRush": "Beat this week's 5 bosses faster for bigger rewards. Records reset weekly.",
+  "uiTipDungeon": "Each weekday has its own families — fight with those crews and earn their cards.",
+  "uiTipPass": "Top row is free, bottom row is the pass. Rewards are claimed in order."
 }

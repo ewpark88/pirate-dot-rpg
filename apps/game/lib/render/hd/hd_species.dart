@@ -18,6 +18,7 @@ import 'package:pirate_dot/render/hd/species/fire_pirate.dart';
 import 'package:pirate_dot/render/hd/species/firebird.dart';
 import 'package:pirate_dot/render/hd/species/flyingfish.dart';
 import 'package:pirate_dot/render/hd/species/frost_pirate.dart';
+import 'package:pirate_dot/render/hd/species/ghost_admiral.dart';
 import 'package:pirate_dot/render/hd/species/ghost_ship.dart';
 import 'package:pirate_dot/render/hd/species/ghostjelly.dart';
 import 'package:pirate_dot/render/hd/species/gull.dart';
@@ -106,6 +107,7 @@ const Map<String, HdSpecies> hdBosses = {
   'fire_pirate': firePirate,
   'deep_sub': deepSub,
   'ghost_ship': ghostShip,
+  'ghost_admiral': ghostAdmiral,
   'kraken': kraken,
   // 대보스 6(S3)
   'ice_slime': iceSlime,

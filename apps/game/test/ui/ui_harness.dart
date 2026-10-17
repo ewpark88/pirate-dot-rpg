@@ -200,3 +200,12 @@ const voyageTab = 0;
 const shipTab = 1;
 const crewTab = 2;
 const summonTab = 3;
+
+/// 열린 도크 시트 안에서 [key]가 보일 때까지 굴린다(맨 위부터) — 항해 탭처럼 카드가 많아 목록이 화면 밖 카드를 안 지을 때.
+Future<void> showInSheet(WidgetTester tester, String key) async {
+  final scrollable = find.descendant(of: find.byKey(const Key('sheet.panel')), matching: find.byType(Scrollable)).first;
+  tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+  await tester.pump();
+  await tester.scrollUntilVisible(find.byKey(Key(key)), 200, scrollable: scrollable);
+  await tester.pump();
+}

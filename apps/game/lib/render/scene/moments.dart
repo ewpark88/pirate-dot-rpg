@@ -83,6 +83,18 @@ class Moments {
   /// 심연의 탑 층 띠(S1): 층 시작 '12F' 1.6초, 클리어면 위에 'CLEAR!'.
   void onTowerFloor(int floor, {bool cleared = false}) => banner('${floor}F', sub: cleared ? 'CLEAR!' : '');
 
+  /// 요일 던전(S2): 시작 띠 'MON 3' + 그 날 계열(PIERCE · LASER), 그 계열 착탄은 크게·금 테(TopImpact).
+  Set<String> dungeonFamilies = const {};
+  void onDungeonStarted(String group, int step, List<String> families) {
+    dungeonFamilies = scene.topHits.impact.hotFamilies = families.toSet();
+    banner('${group.toUpperCase()} $step', sub: families.map((f) => f.toUpperCase()).join(' · '), ms: 1800);
+  }
+
+  void onDungeonEnded({required bool cleared}) {
+    dungeonFamilies = scene.topHits.impact.hotFamilies = const {};
+    banner(cleared ? 'CLEAR!' : 'FAILED', ms: 1400, hot: !cleared);
+  }
+
   /// 보스 러시(S5): 시작 'BOSS RUSH 1/n', 보스 하나 쓰러질 때마다 다음 번호 짧게, 마지막(대보스) 앞은 붉은 'LAST BOSS!' 길게.
   int rushTotal = 0;
   void onRushStarted(int total) {

@@ -24,7 +24,10 @@ class TopImpact {
   final hd = HdImpact();
 
   void addFamily(String family, double x, double y, double radius, int color, int rarity, double atMs) =>
-      hd.add(family, x, y, radius, color, rarity, atMs);
+      hd.add(family, x, y, radius, color, rarity, atMs, hot: hotFamilies.contains(family));
+
+  /// 요일 던전 그 날 계열(Moments가 넣는다) — 그 계열 착탄은 크게·금 테.
+  Set<String> hotFamilies = const {};
 
   double _chainNow = -1;
   int _chainN = 0;

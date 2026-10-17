@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/animation.dart' show Curves;
 import 'package:flutter/painting.dart';
+import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_species.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 
@@ -130,8 +132,20 @@ class TopBounty {
       ..color = _parchDark;
     c.drawRect(r.deflate(4), _line);
     _text(c, wanted, Offset(0, -h * 0.38), w * 0.17, color: const Color(0xFFE8443A));
-    final portrait = sprites.sheet('boss:$_boss');
-    if (portrait != null) {
+    // HD 보스(개편 ④)면 카툰 그림을 바로(옛 도트 초상 대신 — S1 실기기 p03), 아니면 도트.
+    final hd = hdBosses[_boss];
+    final portrait = hd == null ? sprites.sheet('boss:$_boss') : null;
+    if (hd != null) {
+      final r = math.min(w * 0.7, h * 0.42) / (2 * hd.extent);
+      c
+        ..save()
+        ..translate(0, -h * 0.02);
+      _hd
+        ..mood = HdMood.idle
+        ..begin(r);
+      hd.draw(_hd, c, r, 0);
+      c.restore();
+    } else if (portrait != null) {
       final s = math.min(w * 0.7 / portrait.frameW, h * 0.42 / portrait.frameH);
       sprites.draw(c, 'boss:$_boss', 0, -h * 0.02, w: portrait.frameW * s, h: portrait.frameH * s);
     }
@@ -142,6 +156,7 @@ class TopBounty {
   }
 
   final _starPath = Path();
+  final _hd = HdKit();
 
   void _star(Canvas c, Offset at, double s) {
     _starPath.reset();

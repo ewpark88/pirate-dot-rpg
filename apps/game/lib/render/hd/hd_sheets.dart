@@ -110,7 +110,9 @@ class HdSheets {
   HdSheet? sheet(String kind, {required bool boss, required double world, required double density}) {
     final sp = (boss ? hdBosses : hdEnemies)[kind];
     if (sp == null) return null;
-    if (_density == 0 || (density / _density - 1).abs() > 0.15) clear(density);
+    // 다시 굽기: 더 촘촘해야 할 때(+15%) 또는 많이 성길 때(-45%)만 — 보스 카메라 줌이 오가도 매번 다 굽지 않게.
+    if (_density == 0 || density > _density * 1.15 || density < _density * 0.55) clear(density);
+    _reap();
     final key = boss ? 'b:$kind' : kind;
     _used[key] = ++_tick;
     final have = _ready[key];
@@ -128,9 +130,7 @@ class HdSheets {
   static int _sizeOf(HdSheet s) => s.image.width * s.image.height * 4;
 
   void clear([double density = 0]) {
-    for (final s in _ready.values) {
-      s.image.dispose();
-    }
+    _ready.values.forEach(_retire);
     _ready.clear();
     _used.clear();
     _bytes = 0;
@@ -142,9 +142,18 @@ class HdSheets {
     final gone = _ready.remove(old);
     if (gone != null) {
       _bytes -= _sizeOf(gone);
-      gone.image.dispose();
+      _retire(gone);
     }
     _used.remove(old);
+  }
+
+  // 밀려난 시트는 바로 버리지 않는다 — 죽는 적 연출이 몇 프레임 더 그 그림을 그린다(버린 그림 그리기 = 단언 실패·release 깨짐).
+  final List<(HdSheet, int)> _retired = [];
+  void _retire(HdSheet s) => _retired.add((s, _tick));
+  void _reap() {
+    while (_retired.isNotEmpty && _tick - _retired.first.$2 > 3000) {
+      _retired.removeAt(0).$1.image.dispose();
+    }
   }
 
   /// 한 종을 8장 × 2방향으로 굽는다(각 칸은 잘라 옆 칸에 번지지 않게).

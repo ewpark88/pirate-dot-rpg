@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
 
 import 'ui_harness.dart';
 
@@ -27,10 +28,7 @@ GameState _state({
   );
 }
 
-Future<void> _show(WidgetTester tester, String key) async {
-  await tester.ensureVisible(find.byKey(Key(key)));
-  await tester.pump();
-}
+Future<void> _show(WidgetTester tester, String key) => showInSheet(tester, key);
 
 void main() {
   testWidgets('탑 카드: 최고 12층 · 도전권 2/3 · 도전 → StartTower · 소탕 9층(12×0.8) → SweepTower', (tester) async {
@@ -135,6 +133,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('rush.result')), findsOneWidget);
     expect(find.text('New record!'), findsOneWidget);
+  });
+
+  test('처음 열림 안내: 탑 상태가 생기면 guide.scenes · 패스 1단계면 guide.pass', () {
+    final t = GameTables.load();
+    final closed = loadFixture('stage37_midgame');
+    expect(activeGuides(closed, t), isNot(contains('guide.scenes')));
+    expect(activeGuides(_state(), t), contains('guide.scenes'));
+    final pass = closed.copyWith(
+      pass: PassState(season: t.iap.pass.season, xp: t.iap.pass.xpPerLevel),
+    );
+    expect(activeGuides(pass, t), contains('guide.pass'));
   });
 
   group('골든', () {

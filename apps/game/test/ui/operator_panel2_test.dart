@@ -36,6 +36,9 @@ Future<CommandLog> _pumpPanel(WidgetTester tester) async {
 
 Future<void> _tap(WidgetTester tester, String key) async {
   // 패널은 게으른 목록 — 위에 묶음이 늘면(오늘 새 기능) 아래 버튼은 아직 안 지어져 있다. 굴려서 짓는다.
+  // 맨 위에서부터 아래로 찾는다(위쪽 버튼이 이미 지나쳐 안 지어진 경우도 — 묶음이 늘어 목록이 길다).
+  tester.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
+  await tester.pump();
   await tester.scrollUntilVisible(find.byKey(Key(key)), 200, scrollable: find.byType(Scrollable).first);
   await tester.ensureVisible(find.byKey(Key(key)));
   await tester.pump();
