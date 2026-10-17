@@ -1975,5 +1975,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiShopSpeedOff": "보통",
+  "uiShopSpeedOn": "×2"
 }

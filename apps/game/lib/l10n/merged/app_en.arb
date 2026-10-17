@@ -2411,5 +2411,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiShopSpeedOff": "Normal",
+  "uiShopSpeedOn": "×2"
 }
