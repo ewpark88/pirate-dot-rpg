@@ -1,7 +1,7 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
 ## 2026-10-18 밤(이어서) · S5 · release_check·보스 크기 원인 확정
-- **현재 위치**: release_check 통과(main 8c710049 — 배포 aab 운영자 표식 0·운영자 apk 1), 운영자 apk 빌드됨(설치는 권한상 S1/사용자). review/boss-scale f79dbe35 — S2 마지막 smoke 대기 후 머지. review/iap a400de7c — pubspec(in_app_purchase 3.3.1)·계약 머지 대기.
+- **현재 위치**: release_check 통과(main 8c710049 — 배포 aab 운영자 표식 0·운영자 apk 1), 운영자 apk 빌드됨(설치는 권한상 S1/사용자). review/boss-scale f79dbe35 — S2 smoke OK(기준 범위, 조금 단단), S1 머지 대기. review/iap a400de7c — pubspec(in_app_purchase 3.3.1)·계약 머지 대기.
 - 한 일: boss-scale 원인 확정(S2 sim 2시간 흐름 — standoff 증가가 보스전 배 피해 1/4), standoffGrow 0 + 대보스 ±20° 호. auto-boss(S2) 검토 OK.
 - 다음: S2 OK 오면 boss-scale 머지 알림 → 결제 SDK 연결(pubspec 머지 뒤) → main.dart 배선·운영자 '구매 흉내'(계약 머지 뒤) → 탑(콘텐츠 v2 1순위) 엔진은 사용자 선택 뒤.
 - 남은 문제: 폰 입력·설치가 이 세션 권한에서 거부 — 사용자 직접 허락 필요.
