@@ -5,11 +5,13 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 보스 크기(S1 2026-10-18 핵앤슬래시 존재감 — S3가 그림을 대보스 1.8·해역 1.4·그 밖 1.2배로 키움): waves.top.bossScale.
 /// 엔진은 충돌 반경을 배율대로, standoff를 늘어난 반경 × standoffGrow만큼 늘려 그림이 배와 겹치지 않게 하고,
 /// 늘어난 가장자리 거리만큼 사거리에 더해 닿는 거리(= 보스전 시간)는 그대로 둔다. 큰 보스(orbitMax 넘음)는 돌지 않는다.
 void main() {
-  final t = GameTables.load();
+  final t = GameTables.load(stillShipRaw()); // 보스 자리를 배 기준으로 재므로 배 고정(순항·회피 없음)
   final top = t.waves.raw.obj('top');
   final start = DateTime.utc(2026, 11);
 

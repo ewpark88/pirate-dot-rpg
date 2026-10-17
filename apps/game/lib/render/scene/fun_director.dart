@@ -135,6 +135,9 @@ bool funEvent(BattleScene s, GameEvent e) {
     case TowerFloorCleared(:final floor):
       s.moments.onTowerFloor(floor + 1, cleared: true);
       _sfx(s, 'bossCleared', e);
+    // 보스 공격 빗나감(S2 boss-dodge): 배 옆 'MISS!'
+    case BossAttackMissed() when s.isTop:
+      s.topHits.boss.miss(s.topShip, s.clockMs);
     // 대군 습격(S2 HordeIncoming — 스테이지 첫 파 60~100마리 사방): 붉은 띠 'HORDE!'·마리 수 + 흔들림·경고음
     case HordeIncoming(:final count) when s.isTop:
       s.moments.banner('HORDE!', sub: 'x$count', ms: 1500, hot: true);
@@ -170,12 +173,15 @@ bool funEvent(BattleScene s, GameEvent e) {
       if (e.trait == 'enrage' || e.trait == 'dash') s.shake.trigger(s.juice.shake['aoe']!);
     case FeverStarted():
       // 화면 흔들기 없음(사용자 '화면이 좌우로 움직이면 조잡하다') — 시작 임팩트는 금빛 번쩍·충격파·'쑥' 가속(세로).
-      s.moments.feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs');
+      s.moments
+        ..feverFlashMs = s.fx.raw.obj('topEvents').obj('fever').number('flashMs')
+        ..feverAt = s.clockMs;
       s.haptic(HapticLevel.medium);
       s.topHits.glow.circle(s.clockMs, 90, 0xFFFFC23A); // 개편 ③ 피버 시작 큰 금빛 마법진
       _sfx(s, 'feverStarted', e);
       s.sound.fever(on: true, id: s.fx.raw.obj('topEvents').obj('fever').raw['bgm'] as String?);
     case FeverEnded():
+      s.moments.feverEndAt = s.clockMs;
       s.sound.fever(on: false);
     case GoldfishCaught(:final targetId, :final gold):
       final at = s.poseOf(targetId);

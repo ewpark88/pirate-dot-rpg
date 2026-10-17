@@ -576,3 +576,5 @@
 - 다음: S1 main 일괄(boss-feel 포함) 뒤 빠른 check 재확인·A줄 차례에 render 골든(층 막대·피니시) 다시 굽기, S5 firstFrame·PSS 재측정 반영.
 - 남은 문제: lane/render 빠른 check가 boss-feel main 전이라 레인 소유권으로 실패(금지 패턴 없음). test/ui 골든 10장(ui 레인), pubspec amb 등록(S1).
 
+- 6148b32c 보스 공격 예고 다듬기(boss-dodge 선합침 위: 부채꼴·장판·화살 띠·시간 막대·homing 조준·MISS!). 골든 5장은 다음 A줄.
+- f7877a56 피버 진입·끝 연출(FEVER! 날아감·FEVER END·바다 복귀 0.6초). 골든 3장은 A줄.

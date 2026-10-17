@@ -7,9 +7,11 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 배 순항(waves.top.cruise — 사용자 '내 배가 좀 더 역동적으로, 느리게 움직여서 재미가 없네', S1 2026-10-17).
 void main() {
-  final t = GameTables.load();
+  final t = GameTables.load(noDodgeRaw()); // 순항만(보스 회피 대시는 boss_dodge_test)
   final top = t.waves.raw.obj('top');
   final c = top.obj('cruise');
   final dt = t.waves.tickMs / 1000;

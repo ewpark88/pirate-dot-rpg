@@ -115,9 +115,13 @@ class BossPatternDef {
       radiusShipMul = j.numberOr('radiusShipMul', 0),
       capMul = j.numberOr('capMul', 1),
       durationSec = j.numberOr('durationSec', 0),
-      healRatio = j.numberOr('healRatio', 0);
+      healRatio = j.numberOr('healRatio', 0),
+      homing = j.raw['homing'] == true;
 
   final String type;
+
+  /// 피할 수 없는 패턴(대보스 필살기 등) — waves.top.bossDodge가 켜져도 지금처럼 늘 맞는다.
+  final bool homing;
   final double warnSec;
 
   /// 탄막 발 수 · 소환 마리 수.
