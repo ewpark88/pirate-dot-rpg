@@ -14,11 +14,11 @@ const Map<String, String> _icons = {
   'discount': UiSprites.coin,
   'bossTime': UiSprites.flag,
   'offline': UiSprites.moon,
-  'critChance': 'assets/ui/part_crowsnest.png',
-  'critDamage': 'assets/ui/part_cannon.png',
+  'critChance': '${UiSprites.hdDir}part_crowsnest.png',
+  'critDamage': '${UiSprites.hdDir}part_cannon.png',
   'fleetSlot': UiSprites.tabCrew,
   'pieceGain': UiSprites.tabMap,
-  'fastSail': 'assets/ui/part_sail.png',
+  'fastSail': '${UiSprites.hdDir}part_sail.png',
 };
 
 /// 상점 칸 하나.

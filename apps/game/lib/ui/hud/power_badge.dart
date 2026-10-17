@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -28,7 +29,7 @@ class PowerBadge extends ConsumerWidget {
         key: const Key('hud.power'),
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SkinIcon('assets/ui/part_cannon.png', size: 16),
+          SkinIcon(UiSprites.part('cannon'), size: 16),
           const SizedBox(width: 3),
           Text(power.format(), key: const Key('hud.power.value'), style: Skin.text(15)),
         ],
