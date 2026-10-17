@@ -4,10 +4,12 @@ import 'package:meta/meta.dart';
 
 part 'events_bestiary.dart';
 part 'events_bounty.dart';
+part 'events_dungeon.dart';
 part 'events_rush.dart';
 part 'events_tower.dart';
 part 'events_fast.dart';
 part 'events_fun.dart';
+part 'events_iap.dart';
 part 'events_meta.dart';
 part 'events_rebirth.dart';
 part 'events_stage.dart';

@@ -55,6 +55,15 @@ void main() {
     const StartRush(),
     const RetreatRush(),
     const GrantAdReward(AdPlacement.rushTicket),
+    const StartDungeon(1),
+    const SweepDungeon(1),
+    const RetreatDungeon(),
+    const GrantAdReward(AdPlacement.dungeonTicket),
+    GrantPurchase('gem_650', 'tok-1', DateTime.utc(2026, 11, 2)),
+    const RevokeEntitlement('noAds'),
+    const OpSetEntitlement('speed', on: true),
+    const ClaimGemSub(),
+    const ClaimPassReward(paid: true),
   ];
 
   test('모든 명령 JSON 왕복', () {
@@ -64,6 +73,9 @@ void main() {
   });
 
   final events = <GameEvent>[
+    const PurchaseGranted(1, productId: 'starter_pack', gems: 600, heroCards: 1, skins: ['sprout'], rights: ['noAds']),
+    const EntitlementChanged(1, id: 'speed', active: true),
+    const PassRewardClaimed(1, level: 3, paid: false, gems: 30),
     const AttackFired(1, crewId: 'octo', family: 'lob', targetIds: [1, 2], x: 10, y: 20),
     Damage(1, targetId: 1, amount: BigNum.from(12), crit: true, crewId: 'pang'),
     AoeDamageSum(1, total: BigNum.from(40), x: 1, y: 2),
@@ -103,6 +115,9 @@ void main() {
     const RushStarted(16, bosses: ['kraken', 'sea_croc']),
     const RushBossDown(16, index: 0, bossId: 'kraken', ticks: 300),
     const RushEnded(17, killed: 5, ticks: 2400, reason: 'cleared', gems: 115, pieces: 15, best: true),
+    const DungeonStarted(18, group: 'mon', step: 1, crewIds: ['octo']),
+    const DungeonCleared(19, group: 'mon', step: 1, cards: ['octo'], gems: 2),
+    const DungeonFailed(20, group: 'tue', step: 2, reason: 'timeout'),
   ];
 
   test('모든 이벤트 JSON 왕복', () {

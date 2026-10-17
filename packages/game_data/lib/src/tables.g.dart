@@ -16,6 +16,7 @@ const Map<String, String> rawTables = {
     { "id": "bountyTicket", "dailyLimit": 1, "reward": { "type": "bountyTicket", "value": 1 } },
     { "id": "towerTicket", "dailyLimit": 1, "reward": { "type": "towerTicket", "value": 1 } },
     { "id": "rushTicket", "dailyLimit": 1, "reward": { "type": "rushTicket", "value": 1 } },
+    { "id": "dungeonTicket", "dailyLimit": 1, "reward": { "type": "dungeonTicket", "value": 1 } },
     { "id": "autoUpgrade", "dailyLimit": 4, "reward": { "type": "buff", "durationSec": 600, "maxStackSec": 1800, "intervalSec": 1, "cargoBuyFull": 0.9, "mergeEverySec": 5 } }
   ],
   "chest": { "intervalSec": 240, "floatSec": 40, "baseGoldSec": 120 }
@@ -2535,7 +2536,12 @@ const Map<String, String> rawTables = {
       "lava": {"stripe": ["#FF6A20"], "hull": ["#2A2426", "#1A1416", "#4A4044", "#5E5256", "#3A3034"], "sail": ["#3A2A26", "#261A18", "#5A4038"], "flag": ["#FF7A2A"], "speckle": [{"on": "hull", "color": "#FF8A2A", "every": 5}, {"on": "sail", "color": "#FFB040", "every": 11}], "wake": "#FFB060", "muzzle": "#FF6A20"},
       "fairy": {"stripe": ["#FFE27A"], "hull": ["#E07A9A", "#B85A7A", "#FFD0DC", "#FFE2EA", "#F0A8BC"], "sail": ["#C8F4FF", "#9ADCF0", "#F0FCFF"], "flag": ["#FFE27A"], "speckle": [{"on": "sail", "color": "#FF9ACF", "every": 8}], "wake": "#FFC8E6", "muzzle": "#FF9ACF"},
       "festival": {"stripe": ["#FFFFFF"], "hull": ["#3A5CC8", "#2A44A0", "#F4E6C8", "#FFF2DC", "#D8C8A8"], "sail": ["#F0E8D2", "#CEC2A4", "#FCF8EC"], "flag": ["#FF5A5A"], "rainbowSail": true, "wake": "rainbow", "muzzle": "rainbow"},
-      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"}
+      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"},
+      "pass_s1": {"stripe": ["#FFD45A"], "hull": ["#4A3A9A", "#2A1E5A", "#C8B8F0", "#E0D8FF", "#8A7AD0"], "sail": ["#B8A8FF", "#7A68D8", "#E8E0FF"], "flag": ["#FFD45A"], "speckle": [{"on": "sail", "color": "#FFE89A", "every": 10}], "wake": "#C8B8FF", "muzzle": "#B45AFF"},
+      "sprout": {"stripe": ["#FF8AB0"], "hull": ["#6AB84A", "#3A7A2A", "#D8F0B8", "#EAF8D8", "#9AD07A"], "sail": ["#F4FFE8", "#C8E8A8", "#FFFFFF"], "flag": ["#FF8AB0"], "wake": "#C8FFB0", "muzzle": "#8AE85A"},
+      "golden_galleon": {"stripe": ["#FFFFFF"], "hull": ["#E8B830", "#A87410", "#FFF0A8", "#FFF8D0", "#F0D060"], "sail": ["#FFFAE8", "#F0D890", "#FFFFFF"], "flag": ["#E83A3A"], "speckle": [{"on": "hull", "color": "#FFFFFF", "every": 11}], "glow": true, "wake": "#FFE07A", "muzzle": "#FFD45A"},
+      "jolly_flag": {"stripe": ["#E83A3A"], "hull": ["#3A2A30", "#1A1018", "#8A7A80", "#A89AA0", "#5A4A50"], "sail": ["#3A3440", "#1E1A24", "#5A5460"], "flag": ["#1B1726"], "wake": "#FF6A6A", "muzzle": "#FF3A3A"},
+      "coral_yacht": {"stripe": ["#5AD8E8"], "hull": ["#FFF4F0", "#E8B0A8", "#FFFFFF", "#FFFFFF", "#FFD8D0"], "sail": ["#FF8A7A", "#E05A4A", "#FFC8B8"], "flag": ["#5AD8E8"], "speckle": [{"on": "sail", "color": "#FFFFFF", "every": 12}], "wake": "#FFC8D0", "muzzle": "#FF8A7A"}
     }
   },
   "topSea": {
@@ -2736,6 +2742,379 @@ const Map<String, String> rawTables = {
   "tokenExchangeCost": 10
 }
 ''',
+  'iap': r'''
+{
+  "gemSubDaily": 100,
+  "firstBuyMultiplier": 2,
+  "offlineHours": 12,
+  "speedMultiplier": 2,
+  "products": [
+    {
+      "id": "no_ads_30d",
+      "nameKey": "econIapNoAds30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "noAds",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "no_ads",
+      "nameKey": "econIapNoAds",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        }
+      ]
+    },
+    {
+      "id": "speed_30d",
+      "nameKey": "econIapSpeed30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "speed",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "nameKey": "econIapSpeed",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "captain_pack",
+      "nameKey": "econIapCaptainPack",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        },
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "starter_pack",
+      "nameKey": "econIapStarterPack",
+      "kind": "nonConsumable",
+      "gems": 600,
+      "heroCards": 1,
+      "skins": [
+        "sprout"
+      ],
+      "limit": 1
+    },
+    {
+      "id": "gem_120",
+      "nameKey": "econIapGem120",
+      "kind": "consumable",
+      "gems": 120,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_650",
+      "nameKey": "econIapGem650",
+      "kind": "consumable",
+      "gems": 650,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_1400",
+      "nameKey": "econIapGem1400",
+      "kind": "consumable",
+      "gems": 1400,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_4200",
+      "nameKey": "econIapGem4200",
+      "kind": "consumable",
+      "gems": 4200,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_9000",
+      "nameKey": "econIapGem9000",
+      "kind": "consumable",
+      "gems": 9000,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_monthly",
+      "nameKey": "econIapGemMonthly",
+      "kind": "subscription",
+      "gems": 300,
+      "entitlements": [
+        {
+          "id": "gemSub",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "voyage_pass",
+      "nameKey": "econIapVoyagePass",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "pass",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "skin_golden_galleon",
+      "nameKey": "econIapSkinGoldenGalleon",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon"
+      ]
+    },
+    {
+      "id": "skin_jolly_flag",
+      "nameKey": "econIapSkinJollyFlag",
+      "kind": "nonConsumable",
+      "skins": [
+        "jolly_flag"
+      ]
+    },
+    {
+      "id": "skin_coral_yacht",
+      "nameKey": "econIapSkinCoralYacht",
+      "kind": "nonConsumable",
+      "skins": [
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "skin_bundle",
+      "nameKey": "econIapSkinBundle",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon",
+        "jolly_flag",
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "offline_12h",
+      "nameKey": "econIapOffline12h",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "offline12"
+        }
+      ]
+    }
+  ],
+  "pass": {
+    "season": "s1",
+    "xpPerLevel": 50,
+    "xp": {
+      "quest": 10,
+      "attendance": 10,
+      "stage": 2
+    },
+    "free": [
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "summons": 1
+      },
+      {
+        "gems": 20
+      },
+      {
+        "gems": 30
+      },
+      {
+        "pieces": 2
+      },
+      {
+        "gems": 20
+      },
+      {
+        "title": "passFlag"
+      }
+    ],
+    "paid": [
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "skins": [
+          "pass_s1"
+        ]
+      },
+      {
+        "summons": 2
+      },
+      {
+        "pieces": 5
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "heroCards": 1
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "gems": 40
+      },
+      {
+        "summons": 2
+      },
+      {
+        "gems": 40
+      },
+      {
+        "legendSummon": 1
+      }
+    ]
+  }
+}
+''',
   'juice': r'''
 {
   "hitStopMs": {
@@ -2868,9 +3247,19 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
+    "groups": [
+      {"id": "mon", "hpMul": 0.8, "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
+      {"id": "tue", "hpMul": 1.0, "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
+      {"id": "wed", "hpMul": 0.8, "weekday": 3, "families": ["air", "lob"], "pattern": "swarm", "layer": "air"},
+      {"id": "thu", "hpMul": 0.8, "weekday": 4, "families": ["direct", "ring"], "pattern": "ring"},
+      {"id": "fri", "hpMul": 0.8, "weekday": 5, "families": ["skip", "cluster"], "pattern": "scatter"},
+      {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
+      {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
+    ]},
   "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageMul": 2, "floorTimeLimitSec": 90, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,

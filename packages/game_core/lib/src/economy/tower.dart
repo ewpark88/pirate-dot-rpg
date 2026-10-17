@@ -48,7 +48,8 @@ bool canStartTower(GameState s, GameTables t) {
       w.tickets > 0 &&
       w.active == null &&
       s.bounty?.active == null &&
-      s.rush?.active == null;
+      s.rush?.active == null &&
+      s.dungeon?.active == null;
 }
 
 /// StartTower: 도전권 −1, 1층부터. 아니면 그대로(거절).

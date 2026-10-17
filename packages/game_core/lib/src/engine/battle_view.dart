@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 
 part 'battle_view_items.dart';
 part 'battle_view_json.dart';
+part 'battle_view_scenes.dart';
 
 /// 전장 좌표계: 논리 화면 320×180 중 전장 0~148(설계서 10장) — 렌더가 두 틱 사이로 보간해 그린다, 세이브에 안 들어감.
 @immutable
@@ -43,6 +44,7 @@ class BattleView {
     this.bounty,
     this.tower,
     this.rush,
+    this.dungeon,
     this.fastSail,
     this.crewDamage = const {},
   });
@@ -123,6 +125,9 @@ class BattleView {
   /// 보스 러시 중이면 몇 번째 보스·전체·지난 틱(platform-boss-rush).
   final RushView? rush;
 
+  /// 요일 던전 중이면 묶음·단계·파(platform-weekday-dungeon).
+  final DungeonView? dungeon;
+
   /// 빠른 항해 돌파 중이면 구간·연속 격파(선택 키).
   final FastSailView? fastSail;
 
@@ -160,6 +165,8 @@ class BattleView {
     bool clearTower = false,
     RushView? rush,
     bool clearRush = false,
+    DungeonView? dungeon,
+    bool clearDungeon = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -190,6 +197,7 @@ class BattleView {
     bounty: clearBounty ? null : bounty ?? this.bounty,
     tower: clearTower ? null : tower ?? this.tower,
     rush: clearRush ? null : rush ?? this.rush,
+    dungeon: clearDungeon ? null : dungeon ?? this.dungeon,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
@@ -237,6 +245,7 @@ class BattleView {
     if (bounty != null) 'bounty': bounty!.toJson(),
     if (tower != null) 'tower': tower!.toJson(),
     if (rush != null) 'rush': rush!.toJson(),
+    if (dungeon != null) 'dungeon': dungeon!.toJson(),
     if (fastSail != null) 'fastSail': fastSail!.toJson(),
     if (crewDamage.isNotEmpty) 'crewDamage': {for (final e in crewDamage.entries) e.key: e.value.toJson()},
   };
@@ -275,6 +284,7 @@ class BattleView {
     bounty: bounty,
     tower: tower,
     rush: rush,
+    dungeon: dungeon,
     fastSail: fastSail,
     crewDamage: crewDamage,
   );

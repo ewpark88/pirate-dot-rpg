@@ -68,7 +68,7 @@ void main() {
     expect(x.e.state.tower!.tickets, cfg.integer('maxTickets'));
   });
 
-  test('도전 → 층 진행 → 침몰하면 끝: 도달 층 상자·최고 층 기록, 본 전투(같은 스테이지)로 돌아옴, 도전권 −1', () {
+  test('도전 → 층 진행 → 침몰·시간 초과로 끝: 도달 층 상자·최고 층 기록, 본 전투(같은 스테이지)로 돌아옴, 도전권 −1', () {
     final x = engine(mid());
     run(x, 1);
     final stage = x.e.state.progress.stage;
@@ -79,7 +79,7 @@ void main() {
     final ended = x.events.whereType<TowerEnded>().toList();
     expect(x.events.whereType<TowerStarted>(), hasLength(1));
     expect(ended, hasLength(1), reason: '배가 언젠가 가라앉는다(층마다 적이 늘고 강해짐)');
-    expect(ended.single.reason, 'sunk');
+    expect(ended.single.reason, isIn(['sunk', 'timeout']), reason: '가라앉거나 한 층 시간 제한(안전판)');
     final cleared = x.events.whereType<TowerFloorCleared>().toList();
     expect(cleared, isNotEmpty);
     expect([for (final c in cleared) c.floor], [for (var i = 1; i <= cleared.length; i++) i], reason: '1층부터 차례로');

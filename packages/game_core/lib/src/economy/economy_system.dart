@@ -4,10 +4,13 @@ import 'package:game_core/src/economy/bounty_flow.dart';
 import 'package:game_core/src/economy/chest.dart';
 import 'package:game_core/src/economy/collection_reward.dart' show claimCollectionReward;
 import 'package:game_core/src/economy/daily.dart';
+import 'package:game_core/src/economy/dungeon.dart';
 import 'package:game_core/src/economy/formation.dart';
+import 'package:game_core/src/economy/iap.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
+import 'package:game_core/src/economy/pass.dart';
 import 'package:game_core/src/economy/rebirth.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart';
 import 'package:game_core/src/economy/rush.dart';
@@ -38,8 +41,9 @@ class EconomySystem implements GameSystem {
     final SetFleetSlot c => setFleetSlot(state, c, ctx),
     final AutoFleet c => onAutoFleet(state, c, ctx),
     final ClaimOffline c => claimOffline(state, c, ctx),
-    final ClaimDaily c => claimDaily(state, c, ctx),
-    final ClaimAttendance c => claimAttendance(state, c, ctx),
+    final ClaimDaily c =>
+      c.questId == null ? claimDaily(state, c, ctx) : passXp(state, claimDaily(state, c, ctx), 'quest', ctx.tables),
+    final ClaimAttendance c => passXp(state, claimAttendance(state, c, ctx), 'attendance', ctx.tables),
     final OpSetCrew c => opSetCrew(state, c, ctx),
     final OpGrant c => opGrant(state, c, ctx),
     final OpSetShip c => opSetShip(state, c, ctx),
@@ -65,6 +69,11 @@ class EconomySystem implements GameSystem {
     final BuySkin c => buySkin(state, c, ctx),
     final ClaimCollectionReward c => claimCollectionReward(state, c, ctx),
     final ClaimTrial c => claimTrial(state, c, ctx),
+    final GrantPurchase c => grantPurchase(state, c, ctx),
+    RevokeEntitlement(:final id) => revokeEntitlement(state, id, ctx),
+    final OpSetEntitlement c => opSetEntitlement(state, c, ctx),
+    ClaimGemSub() => claimGemSub(state, ctx),
+    final ClaimPassReward c => claimPassReward(state, c, ctx),
     ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),
@@ -73,20 +82,27 @@ class EconomySystem implements GameSystem {
     final StartTower c => startTower(state, c, ctx),
     final SweepTower c => sweepTower(state, c, ctx),
     final StartRush c => startRush(state, c, ctx),
+    final StartDungeon c => startDungeon(state, c, ctx),
+    final SweepDungeon c => sweepDungeon(state, c, ctx),
     final OpSetBountyTickets c => opSetBountyTickets(state, c),
     final OpSetWeekday c => opSetWeekday(state, c),
     _ => null,
   };
 
   @override
-  GameState update(GameState state, SystemContext ctx) => autoUpgradeStep(
+  GameState update(GameState state, SystemContext ctx) => passTick(_update(state, ctx), ctx.tables);
+
+  GameState _update(GameState state, SystemContext ctx) => autoUpgradeStep(
     tickChest(
-      rushTick(
-        towerTick(
-          bountyTick(
-            tutorialTick(
-              unlockShipSkins(
-                rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+      dungeonTick(
+        rushTick(
+          towerTick(
+            bountyTick(
+              tutorialTick(
+                unlockShipSkins(
+                  rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
+                  ctx,
+                ),
                 ctx,
               ),
               ctx,

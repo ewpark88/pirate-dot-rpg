@@ -1,4 +1,5 @@
 import 'package:game_core/src/battle/combat_stats.dart';
+import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
@@ -33,4 +34,22 @@ String? captainOf(List<String> fleet, GameState s, GameTables t) {
     }
   }
   return best;
+}
+
+/// 전장 무장: [fleet] 가운데 보유한 선원으로 포를 다시 단다(쿨다운은 이어서), 선장도 다시 고른다.
+/// BattleSystem(평소·운영자 고정 출전)과 요일 던전(그 날 계열로 임시 출전)이 같이 쓴다.
+void armField(Field f, GameState s, GameTables t, List<String> fleet) {
+  final ids = [
+    for (final id in fleet)
+      if (s.crews.containsKey(id)) id,
+  ];
+  final old = {for (final g in f.guns) g.crewId: (g.cooldown, g.skillCooldown)};
+  f
+    ..guns = [
+      for (final id in ids)
+        Gun.of(t, id, power: crewPower(t, s.crews[id]!.level), rarity: rarityIndexAt(t.rarities, s.crews[id]!.level))
+          ..cooldown = old[id]?.$1 ?? 0
+          ..skillCooldown = old[id]?.$2 ?? 0,
+    ]
+    ..captainId = captainOf(ids, s, t);
 }

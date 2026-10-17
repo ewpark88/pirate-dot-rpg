@@ -41,3 +41,60 @@ class RetreatRush extends Command {
   @override
   String get type => 'retreatRush';
 }
+
+/// 요일 던전 도전(platform-weekday-dungeon): 오늘 묶음·열린 단계(깬 단계 + 1까지)·도전 ≥ 1·그 날 계열 선원 보유·장면 모드 아님.
+class StartDungeon extends Command {
+  const StartDungeon(this.step);
+
+  final int step;
+
+  @override
+  String get type => 'startDungeon';
+
+  @override
+  Json _fields() => {'step': step};
+}
+
+/// 요일 던전 소탕: 오늘 묶음에서 깬 단계 [step] 이하의 보상을 바로(전투 없음). 도전 −1.
+class SweepDungeon extends Command {
+  const SweepDungeon(this.step);
+
+  final int step;
+
+  @override
+  String get type => 'sweepDungeon';
+
+  @override
+  Json _fields() => {'step': step};
+}
+
+/// 요일 던전 도중 그만두기 = 실패(도전 돌려줌).
+class RetreatDungeon extends Command {
+  const RetreatDungeon();
+
+  @override
+  String get type => 'retreatDungeon';
+}
+
+/// 장면 모드(탑·러시·요일 던전) 명령 type — commands.dart 300줄 규칙으로 여기서 읽는다.
+const _sceneTypes = {
+  'startTower',
+  'sweepTower',
+  'retreatTower',
+  'startRush',
+  'retreatRush',
+  'startDungeon',
+  'sweepDungeon',
+  'retreatDungeon',
+};
+
+Command _sceneCommandFromJson(String type, Json j) => switch (type) {
+  'startTower' => const StartTower(),
+  'sweepTower' => const SweepTower(),
+  'retreatTower' => const RetreatTower(),
+  'startRush' => const StartRush(),
+  'retreatRush' => const RetreatRush(),
+  'startDungeon' => StartDungeon(j['step'] as int),
+  'sweepDungeon' => SweepDungeon(j['step'] as int),
+  _ => const RetreatDungeon(),
+};

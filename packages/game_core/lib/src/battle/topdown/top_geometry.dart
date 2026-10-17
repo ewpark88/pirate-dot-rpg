@@ -118,7 +118,7 @@ class TopGeometry implements BattleGeometry {
     final before = f.foes.length;
     spawnWaveFoes(f, stage, ctx, count: count, kind: kind);
     final added = f.foes.sublist(before);
-    _spawn.arrange(added, ctx.rng, pattern: count == null ? f.feverSwarm : null);
+    _spawn.arrange(added, ctx.rng, pattern: count == null ? f.feverSwarm : f.scenePattern); // 장면 무리는 장면 패턴
     _nearSpawn(added, ctx.rng);
   }
 
