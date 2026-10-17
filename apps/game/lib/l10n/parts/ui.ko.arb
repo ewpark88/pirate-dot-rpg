@@ -1854,5 +1854,33 @@
         "type": "int"
       }
     }
+  },
+  "uiUpgradeMilestone": "×2!",
+  "uiUpgradeSpent": "-{gold}",
+  "@uiUpgradeSpent": {
+    "placeholders": {
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnTailwind": "순풍! 속도 ×{speed} · 골드 ×{gold}",
+  "@uiSpeedOnTailwind": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      },
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnPaid": "2배속! 속도 ×{speed}",
+  "@uiSpeedOnPaid": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

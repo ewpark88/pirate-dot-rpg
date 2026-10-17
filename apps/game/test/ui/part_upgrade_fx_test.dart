@@ -28,4 +28,25 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(find.byKey(const Key('ship.gain.cannon')), findsNothing);
   });
+
+  testWidgets('마일스톤(PartMilestone) → 그 줄에 ×2! 도장 · 강화마다 골드 차감 글', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = loadFixture('stage37_midgame');
+    final lv = s.ship.level('cannon');
+    await pumpGame(tester, s, tab: 1, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    feed.add(RecordedTick(s.battle!, [PartUpgraded(1, part: 'cannon', level: lv + 1)]));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(const Key('ship.spent.cannon')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    feed.add(
+      RecordedTick(s.battle!, [
+        PartMilestone(2, part: 'cannon', level: lv + 2),
+        PartUpgraded(2, part: 'cannon', level: lv + 2),
+      ]),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(const Key('ship.milestone.cannon')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+  });
 }

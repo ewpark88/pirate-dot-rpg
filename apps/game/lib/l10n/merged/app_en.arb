@@ -2275,5 +2275,33 @@
         "type": "int"
       }
     }
+  },
+  "uiUpgradeMilestone": "×2!",
+  "uiUpgradeSpent": "-{gold}",
+  "@uiUpgradeSpent": {
+    "placeholders": {
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnTailwind": "Tailwind! Speed ×{speed} · Gold ×{gold}",
+  "@uiSpeedOnTailwind": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      },
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnPaid": "Speed boost! ×{speed}",
+  "@uiSpeedOnPaid": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }
