@@ -30,7 +30,7 @@ void main() {
     startBoss(f, stage, c);
     f.guns = [Gun.of(tables, crewOf(family), power: 1)];
     final boss = f.foes.firstWhere((e) => e.boss)..x = 200;
-    return (f, Round(f, c, CombatStats.of(game(stage), tables), rage: 0, invincible: invincible), boss);
+    return (f, Round(f, c, CombatStats.of(game(stage), tables), invincible: invincible), boss);
   }
 
   /// 보스 최대 체력의 1%를 [family] 선원으로 때리고, 실제로 들어간 비율(1 = 그대로)을 돌려준다.

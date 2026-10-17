@@ -51,7 +51,7 @@ void main() {
     final stats = CombatStats.of(s, t);
     for (var i = 0; i < (seconds * 1000 / t.waves.tickMs).round(); i++) {
       ctx.tick = i;
-      Round(f, ctx, stats, rage: 0)
+      Round(f, ctx, stats)
         ..moveFoes()
         ..topdownStep(s);
     }
@@ -127,7 +127,7 @@ void main() {
     for (var i = 0; i < ticks(3.5); i++) {
       ctx.tick = i;
       if (i == warn.tick + 1) boss.stunTimer = 1;
-      Round(f, ctx, CombatStats.of(s, t), rage: 0)
+      Round(f, ctx, CombatStats.of(s, t))
         ..moveFoes()
         ..topdownStep(s);
     }

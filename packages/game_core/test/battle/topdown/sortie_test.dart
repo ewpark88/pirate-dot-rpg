@@ -61,7 +61,7 @@ void main() {
     for (var i = 0; i < (seconds * 1000 / t.waves.tickMs).round(); i++) {
       ctx.tick = i;
       if (killFirst && events.whereType<CrewSortie>().length == 1) f.foes.first.hp = BigNum.zero;
-      Round(f, ctx, CombatStats.of(s, t), rage: 0)
+      Round(f, ctx, CombatStats.of(s, t))
         ..fireGuns()
         ..topdownStep(s);
     }

@@ -10,3 +10,6 @@
 3. **BattleView.rage**: S4가 HUD 분노 게이지를 지운 뒤 삭제(그 전엔 항상 0). Round의 `rage` 인자·`TriggerUltimate` 명령(무시됨)도 같은 때 정리.
 
 순서 제안: 1 → (S4 게이지 제거) → 2·3을 한 번에, 픽스처 재생성과 함께.
+
+## 처리 결과 (S1 작성)
+- [x] 반영 — 1단계 1eea1777(skills.json `ultimateMultiplier` 최상위, Round rage 삭제), 2단계 이 커밋(Progress.rage·BattleView.rage 삭제, 옛 세이브의 `rage` 키는 읽을 때 무시 — 스키마 버전 그대로, 픽스처 재생성). `TriggerUltimate` 명령은 저장된 명령 기록 호환 때문에 남겨 둔다(무시됨).

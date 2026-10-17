@@ -44,7 +44,7 @@ class EconomySystem implements GameSystem {
     OpSpawnChest() => spawnChest(state, ctx),
     final OpGrantTailwind c => opGrantTailwind(state, c, ctx),
     final TutorialAck c => tutorialAck(state, ctx.tables, c),
-    SkipTutorial() => state.copyWith(clearTutorial: true),
+    SkipTutorial() => skipTutorial(state, ctx),
     final OpSetTutorial c => opSetTutorial(state, c),
     final Rebirth c => onRebirth(state, c, ctx),
     final OpRebirthNow c => opRebirthNow(state, c, ctx),
@@ -57,6 +57,7 @@ class EconomySystem implements GameSystem {
     final OpSetRebirths c => opSetRebirths(state, c),
     final PickBottle c => pickBottle(state, c, ctx),
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
+    ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),
     final StartBounty c => startBounty(state, c, ctx),
@@ -72,7 +73,7 @@ class EconomySystem implements GameSystem {
       bountyTick(
         tutorialTick(
           rollDay(ensureRebirthRewards(ensureFleet(state, ctx.tables), ctx.tables), ctx.clock.now()),
-          ctx.tables,
+          ctx,
         ),
         ctx,
       ),

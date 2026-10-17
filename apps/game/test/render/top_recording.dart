@@ -15,7 +15,7 @@ List<RecordedTick> topRecording(
 }) {
   final start = DateTime.utc(2026, 11);
   final state = GameState.newGame(playerId: 'top', seed: 2026, now: start).copyWith(
-    progress: Progress(stage: stage, bestStage: stage, rage: 0.6, fever: fever),
+    progress: Progress(stage: stage, bestStage: stage, fever: fever),
     ship: const ShipState(parts: {'cannon': 24, 'hull': 40, 'sail': 10, 'crowsnest': 15, 'cargo': 10}),
     crews: {for (final MapEntry(:key, :value) in levels.entries) key: CrewState(level: value)},
     collection: levels.keys.toSet(),
@@ -259,3 +259,60 @@ List<RecordedTick> withVanguardSplash(List<RecordedTick> rec, {int at = 120}) =>
       ]);
     }(),
 ];
+
+/// 보스 처치를 [at] 틱에 강제로 넣는다(피드백 #18 보상 터짐): 그 틱 보스에게 Kill(금 [gold]) + BossCleared(젬 [gems]),
+/// 다음 틱부터 그 보스를 프레임에서 뺀다. 보스는 [topRecording]의 bossAt으로 먼저 불러 둔다.
+List<RecordedTick> withBossKill(List<RecordedTick> rec, {required int at, int gems = 10, int gold = 52000}) {
+  final f = rec[at].frame;
+  final boss = f.enemies.firstWhere((e) => e.boss, orElse: () => throw StateError('틱 $at에 보스가 없다'));
+  return [
+    for (var i = 0; i < rec.length; i++)
+      if (i < at)
+        rec[i]
+      else if (i == at)
+        RecordedTick(f, [
+          ...rec[i].events,
+          Kill(f.tick, targetId: boss.id, gold: BigNum.from(gold), x: boss.x, y: boss.y),
+          BossCleared(f.tick, stage: f.stage, gems: gems),
+        ])
+      else
+        RecordedTick(
+          rec[i].frame.copyWith(
+            enemies: [
+              for (final e in rec[i].frame.enemies)
+                if (e.id != boss.id) e,
+            ],
+          ),
+          [
+            for (final e in rec[i].events)
+              if (e is! Kill || e.targetId != boss.id) e,
+          ],
+        ),
+  ];
+}
+
+/// 보물상자를 [at] 틱 전 40틱 동안 배 오른쪽 앞에 띄우고 [at] 틱에 연다(피드백 #15 — ChestOpened, 탭·광고 같음).
+/// [adAt]이 있으면 그 틱에 광고 보상(SaveRequested adReward — 순풍 등 배 버프).
+List<RecordedTick> withChestOpen(List<RecordedTick> rec, {required int at, int? adAt, int gold = 8000}) {
+  final f = rec[at].frame;
+  final x = (f.shipX ?? 135) + 40;
+  final y = (f.shipY ?? 240) - 70;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      if (i >= at - 40 && i < at)
+        RecordedTick(
+          rec[i].frame.copyWith(
+            chest: ChestView(x: x, y: y, ticksLeft: 200),
+          ),
+          rec[i].events,
+        )
+      else if (i == at || i == adAt)
+        RecordedTick(rec[i].frame, [
+          ...rec[i].events,
+          if (i == at) ChestOpened(rec[i].frame.tick, gold: BigNum.from(gold)),
+          if (i == adAt) SaveRequested(rec[i].frame.tick, reason: 'adReward'),
+        ])
+      else
+        rec[i],
+  ];
+}

@@ -9,7 +9,7 @@ import 'package:game_data/game_data.dart';
 List<RecordedTick> engineBattle(GameTables t, {int ticks = 300}) {
   final start = DateTime.utc(2026, 11);
   final state = GameState.newGame(playerId: 'record', seed: 2026, now: start).copyWith(
-    progress: const Progress(stage: 31, bestStage: 31, rage: 0.95),
+    progress: const Progress(stage: 31, bestStage: 31),
     ship: const ShipState(parts: {'cannon': 24, 'hull': 40, 'sail': 10, 'crowsnest': 15, 'cargo': 10}),
     crews: const {
       'octo': CrewState(level: 30),

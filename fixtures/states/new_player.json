@@ -15,7 +15,6 @@
     "bestStage": 1,
     "farming": false,
     "rebirths": 0,
-    "rage": 0.0,
     "mapPiecesEarned": 0,
     "titles": [],
     "treasureSea": null,
@@ -43,11 +42,6 @@
       "level": 1,
       "exp": 0,
       "cards": 0
-    },
-    "turtle": {
-      "level": 1,
-      "exp": 0,
-      "cards": 0
     }
   },
   "fleet": [],
@@ -72,8 +66,7 @@
     "attendanceClaimed": false
   },
   "collection": [
-    "octo",
-    "turtle"
+    "octo"
   ],
   "settings": {
     "lang": "system",
@@ -191,12 +184,6 @@
         "cooldown": 0.3,
         "skillCooldown": 0.0,
         "rarity": 0
-      },
-      {
-        "crewId": "turtle",
-        "cooldown": 0.3,
-        "skillCooldown": 0.0,
-        "rarity": 0
       }
     ],
     "captainId": "octo",
@@ -205,7 +192,6 @@
     "stage": 1,
     "chest": null,
     "wave": 0,
-    "rage": 0.0,
     "gold": "0e0",
     "shipLook": {}
   }

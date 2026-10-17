@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
+import 'package:pirate_dot/render/top/top_boss_loot.dart';
 import 'package:pirate_dot/render/top/top_boss_pattern.dart';
 import 'package:pirate_dot/render/top/top_bounty.dart';
 import 'package:pirate_dot/render/top/top_crew_fx.dart';
@@ -26,6 +27,9 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 보스 처치 보상 터짐(피드백 #18).
+  final loot = TopBossLoot();
 
   /// 범위 공격 임팩트 v2.
   final impact = TopImpact();
@@ -232,6 +236,7 @@ class TopHits {
     crew
       ..fever(view.fever, drummer: view.fleet.any((f) => f.crewId == 'pumpum'), now: now)
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
+    loot.paint(c, now, ship, sprites, flash: flash);
   }
 
   void clear() {
@@ -243,6 +248,7 @@ class TopHits {
     crew.clear();
     impact.clear();
     boss.clear();
+    loot.clear();
     slash.clear();
     _emerges.clear();
     upgradeAt = -1000000000;

@@ -42,7 +42,7 @@ void main() {
   Field field(List<Foe> foes) =>
       Field(stage: 1, shipHpMax: BigNum.from(100), shipHp: BigNum.from(100))..foes.addAll(foes);
   Gun gun(String crewId, int rarity) => Gun.of(tables, crewId, power: 1, rarity: rarity);
-  Round round(Field f) => Round(f, ctx(), CombatStats.of(game(), tables), rage: 0);
+  Round round(Field f) => Round(f, ctx(), CombatStats.of(game(), tables));
   double dealt(int id) =>
       events.whereType<Damage>().where((d) => d.targetId == id).fold(0, (s, d) => s + d.amount.toDouble());
 
