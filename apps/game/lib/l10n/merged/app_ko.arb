@@ -747,5 +747,6 @@
       }
     }
   },
-  "uiBossDamageTap": "누르면 닫혀요"
+  "uiBossDamageTap": "누르면 닫혀요",
+  "uiBossDamageMvp": "MVP"
 }

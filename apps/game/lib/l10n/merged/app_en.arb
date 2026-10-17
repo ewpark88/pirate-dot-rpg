@@ -754,5 +754,6 @@
       }
     }
   },
-  "uiBossDamageTap": "Tap to close"
+  "uiBossDamageTap": "Tap to close",
+  "uiBossDamageMvp": "MVP"
 }
