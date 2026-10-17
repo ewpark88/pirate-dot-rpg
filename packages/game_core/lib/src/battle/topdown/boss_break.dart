@@ -7,6 +7,8 @@ import 'package:game_core/src/engine/events.dart';
 /// skills.json bossBreak {stunPerSec, slowPerSec, vulnerablePerSec, pullPerPx, breakSec, damageMul}(없으면 꺼짐):
 /// 이번 틱 보스에 늘어난 기절·둔화·취약 초와 밀림·끌림 거리를 게이지로. 가득(1)이면 breakSec 동안 기절 + 받는 피해 × damageMul
 /// (취약 = damageMul − 1, 기존 피해 길 그대로). 쓰러진 동안은 쌓이지 않는다.
+/// cooldownSec(선택, 없으면 0 — S1 승인 2026-10-17): 일어난 뒤 그 초 동안도 안 쌓인다 — 센 제어 편성도 30초에 몇 번에서 멈추게.
+/// 보스 첫 등장 직후엔 쿨다운이 없다(첫 브레이크는 빨리 보이게).
 extension BossBreak on Round {
   void tickBossBreak() {
     final skills = t.skills.raw;
@@ -28,9 +30,14 @@ extension BossBreak on Round {
         ..breakVulnerable = 0
         ..breakPull = 0;
       if (e.brokenUntil > 0) {
-        if (ctx.tick >= e.brokenUntil) e.brokenUntil = 0; // 다시 일어남
+        if (ctx.tick >= e.brokenUntil) {
+          e.brokenUntil = 0; // 다시 일어남
+          final cool = skills.obj('bossBreak').numberOr('cooldownSec', 0);
+          if (cool > 0) e.breakCooldownUntil = ctx.tick + math.max(1, (cool / dt).round());
+        }
         continue;
       }
+      if (ctx.tick < e.breakCooldownUntil) continue;
       e.breakGauge = math.min(1, e.breakGauge + gained);
       if (e.breakGauge < 1) continue;
       final b = skills.obj('bossBreak');

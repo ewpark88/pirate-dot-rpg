@@ -215,9 +215,8 @@
   "uiShopFxSlots": "+{n} slot",
   "uiShopFxPercent": "+{n}%",
   "uiBossFailTitle": "The boss got away",
-  "uiBossFailRule": "Beat the boss before time runs out. For now you're farming gold on this stage — upgrade your ship and try again!",
+  "uiBossFailRule": "Upgrade your ship or level up your crew, then challenge the boss again. Meanwhile you keep farming gold here.",
   "uiBossFailShort": "Boss got away — upgrade and retry!",
-  "uiBossFailUpgrade": "Upgrade {part}",
   "uiFarmingRetry": "Farming · boss retry ready",
   "uiPower": "Attack / sec",
   "uiGaugeStage": "{stage}-{wave}",
@@ -475,7 +474,7 @@
   "uiMonsterGhostjelly": "Ghost Jelly",
   "uiMonsterCursegull": "Curse Gull",
   "uiMonsterWraith": "Wraith",
-  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft",
+  "uiSettingsFlashSub": "Turn off or soften if it hurts your eyes",
   "uiSleepTouch": "Touch the screen to return",
   "uiSleepStage": "Stage {stage} · sailing",
   "uiSleepTitle": "Power saving",
@@ -490,5 +489,42 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiBossFailShip": "Upgrade ship",
+  "uiBossFailCrew": "Level up crew",
+  "uiDexNew": "New in the Monster Log! {name}",
+  "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
+  "uiDexTitleShort": "Log",
+  "@uiDexNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiDexNewGems": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSettingsFlashOff": "Off",
+  "uiSettingsFlashSoft": "Soft",
+  "uiSettingsFlashFull": "Full",
+  "uiSettingsSleepAfter": "Sleep screen after",
+  "uiSettingsSleepAfterSub": "Dims when untouched · your ship keeps fighting",
+  "uiSettingsSleepOff": "Off",
+  "uiSettingsSleepMin": "{min} min",
+  "@uiSettingsSleepMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "uiNewCrew": "New mate!"
 }

@@ -70,6 +70,30 @@ void main() {
       expect(sys.handle(step(5), const MergeAllCards(), h.ctx)!.tutorialStep, 6);
     });
 
+    test('환영 선원(피드백 #21): 첫 강화 단계를 넘는 틱에 bones 희귀 1명 + 빈 출전 칸 + CardGranted(starter), 한 번만', () {
+      final w = t.meta.raw.obj('tutorial').obj('welcomeCrew');
+      final id = w.str('crewId');
+      final s2 = h.newGame().copyWith(tutorialStep: 2, ship: const ShipState().withLevel('cannon', 3));
+      final s = sys.update(s2, h.ctx);
+      expect(s.crews[id]!.level, t.rarities.byId(w.str('rarity')).levelMin);
+      expect(s.fleet, contains(id));
+      final got = h.of<CardGranted>().single;
+      expect((got.crewId, got.rarity, got.source, got.isNew), (id, w.str('rarity'), 'starter', true));
+      expect(t.crews.byId(id).family, 'direct', reason: '연사(직사) 계열');
+      expect(sys.update(s.copyWith(tutorialStep: 2), h.ctx).crews[id], s.crews[id], reason: '이미 있으면 안 준다');
+    });
+
+    test('건너뛰기도 환영 선원을 그 틱에 준다(첫 강화 전이면) · 이미 넘었으면 다시 안 준다', () {
+      final id = t.meta.raw.obj('tutorial').obj('welcomeCrew').str('crewId');
+      final s = sys.handle(h.newGame().copyWith(tutorialStep: 1), const SkipTutorial(), h.ctx)!;
+      expect(s.tutorialStep, isNull);
+      expect(s.crews, contains(id));
+      expect(
+        sys.handle(h.newGame().copyWith(tutorialStep: 4), const SkipTutorial(), h.ctx)!.crews,
+        isNot(contains(id)),
+      );
+    });
+
     test('기준 13: SkipTutorial → null · OpSetTutorial은 그대로 설정', () {
       expect(sys.handle(step(1), const SkipTutorial(), h.ctx)!.tutorialStep, isNull);
       expect(sys.handle(step(1), const OpSetTutorial(5), h.ctx)!.tutorialStep, 5);

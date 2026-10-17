@@ -2,6 +2,7 @@ import 'package:game_core/src/battle/spawner.dart' show stageCurve;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/crew_stats.dart';
 import 'package:game_core/src/economy/rebirth_shop.dart' show crewMaxLevel;
+import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/state_parts.dart';
@@ -11,6 +12,7 @@ import 'package:game_data/game_data.dart';
 export 'package:game_core/src/economy/ads.dart' show addAutoUpgrade, autoUpgradeRemaining;
 export 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradePick;
 export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus;
+export 'package:game_core/src/economy/boss_preview.dart';
 export 'package:game_core/src/economy/bounty.dart';
 export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
 export 'package:game_core/src/economy/crew_attack.dart';
@@ -157,6 +159,14 @@ GameState receiveCard(GameState state, GameTables t, String crewId, String rarit
   );
 }
 
+/// [receiveCard] + CardGranted 이벤트 (렌더가 카드가 날아와 모이는 연출, S3 요청). [source]는 CardGranted 참고.
+GameState grantCard(GameState state, SystemContext ctx, String crewId, String rarity, String source) {
+  ctx.emit(
+    CardGranted(ctx.tick, crewId: crewId, rarity: rarity, source: source, isNew: !state.crews.containsKey(crewId)),
+  );
+  return receiveCard(state, ctx.tables, crewId, rarity);
+}
+
 /// 등급 확률표 [rates]로 한 번 굴린다 (보스·오프라인 드롭).
 String rollRarity(Map<String, double> rates, Rng rng) {
   var u = rng.nextDouble();
@@ -176,7 +186,7 @@ GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet)
   final b = t.growth.bossCards;
   final stage = state.progress.stage;
   if (state.progress.rebirths == 0 && b.isStarterStage(stage)) {
-    return receiveCard(state, t, b.starterCrew, t.rarities.rarities.first.id);
+    return grantCard(state, ctx, b.starterCrew, t.rarities.rarities.first.id, 'boss');
   }
   if (fleet.isEmpty) return state;
   // 환생 뒤 이미 깬 스테이지는 줄여서 (회차 수만큼 카드 수입이 곱해지지 않게).
@@ -184,7 +194,7 @@ GameState grantBossCards(GameState state, SystemContext ctx, List<String> fleet)
   final n = repeat ? b.repeatCountAt(stage) : b.countAt(stage);
   var s = state;
   for (var i = 0; i < n; i++) {
-    s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));
+    s = grantCard(s, ctx, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng), 'boss');
   }
   return s;
 }

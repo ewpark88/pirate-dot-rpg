@@ -3,11 +3,20 @@
 ## 현재 위치
 | 항목 | 내용 |
 | --- | --- |
-| 계획 | `docs/plans/active/ui-quality-v1.md` (v1·v2 승인, HUD 걷어내기·배 탭 줄 승인 대기) |
-| 상태 | 47a24efd까지(번쩍임 약하게 1a1b9e1·절전/잔상/방치 177210b2·보급 요약 47a24efd) — S1 머지 대기. 머지 뒤 할 일: 설정 sleepAfterSec·flashLevel, 방치 원본 → 렌더 BattleGame.idle 연결(S3 API 이름 대기), fever-break(S5 2b5955d: 궁극기·분노 제거, 보스 브레이크 막대), 도감 상태(S2 Progress.dex) |
-| 기다리는 것 | 골든 승인 · S3 글리프로 숫자 도트 글자(계획 8) |
+| 계획 | `docs/plans/active/user-feedback-2026-10-17.md`(S1 재배정 순서) · 가이드 v2 스펙 `docs/specs/ui-guide-v2.md`(승인) |
+| 상태 | 93b4ca4d까지 lane/ui. 2026-10-17: fever-break UI·idle/thermal 연결·#1 패배 안내 v2·골든 71장·도감 진짜 값·첫 처치 토스트 |
+| 다음 | #5 보스 공격력 비교·보스/배 체력 상시 · #7 골드 현재/최대 → #3 가이드 v2 구현(10개 카드, 튜토리얼 중 누름 막기) → #12 · #11/16 → #14·#13(S5 crewDamage 계약 뒤) · #21 · #9·#6. #19·#20은 S5(review/sail-ui) — 검토만 |
+| 기다리는 것 | S2 ClearHints(prefix)(설정 '안내 다시 보기') · S5 BattleView.crewDamage·BossCleared.mvp · S3 hud_painter 궁극기 원 그림 삭제 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 · S4 · fever-break UI · 방치/발열 연결 · 패배 안내 v2 · 도감 진짜 값
+- 0a9836e4 궁극기 버튼·함성 게이지 제거, 보스 브레이크 막대(상단 게이지 보스 시간 막대 아래 — S1 승인, 보스 그림 반지름을 UI가 몰라 머리 위 대신)·BossBroken 'BREAK!'.
+- 936b67f8 battleGameProvider: idleLevelProvider → game.idle.follow(sleep→dim), thermalLevelProvider → game.idle.heat (S3 요청 render-idle-thermal-link).
+- 60de2b09 #1 보스 패배 안내 v2: '배를 강화하거나 선원 레벨을 올린 뒤 다시 도전' + [배 강화]·[선원 레벨업](도크 탭 시트) + [보스 도전].
+- 795781c4 골든 71장 갱신 — 0a9836e4 때 8장만 갱신해 main check --full이 깨졌음(대화상자 뒤 궁극기 그림). **교훈: 여러 화면에 걸리는 변경은 커밋 전 slot 받아 check --full.**
+- f76369ef 가이드 v2 스펙 → S1 승인(결정은 스펙 9절). 93b4ca4d 도감 progress.dex 연결 + DexFirstKill 토스트([도감] → 시트).
+- 남은 문제: 렌더 hud_painter가 궁극기 원을 아직 그릴 수 있음(S3). 설정 '절전까지 시간'·'번쩍임 끔/약/강' 화면 연결은 S1 첫 배정 2)인데 재배정 목록에서 빠짐 — 확인 필요.
 
 ### 2026-10-15 · S4 · 소환 v2 · 스킨 전면 1차 · 전장 50→55% · 편성 교체 · 태블릿 배율 · 도크+시트
 - 0201bfa 소환 연출 v2(PB 카드 착지·기대감·3D 뒤집기·컷인·다시 소환), 스킨 기반(ui/skin), Jua+기호 보충 글꼴(S1 등록).

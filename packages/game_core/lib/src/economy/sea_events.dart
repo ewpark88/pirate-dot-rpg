@@ -171,11 +171,12 @@ GameState _tickActive(GameState s, Field f, SystemContext ctx, SeaEventView ev) 
       next = next.copyWith(wallet: next.wallet.copyWith(gems: next.wallet.gems + e.integer('gems')));
       final owned = next.crews.keys.toList()..sort();
       for (var i = 0; i < e.integer('cards') && owned.isNotEmpty; i++) {
-        next = receiveCard(
+        next = grantCard(
           next,
-          t,
+          ctx,
           owned[ctx.rng.nextInt(owned.length)],
           rollRarity(t.rarities.bossDropRates, ctx.rng),
+          'event',
         );
       }
     }

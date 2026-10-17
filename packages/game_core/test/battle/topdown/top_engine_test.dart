@@ -44,11 +44,13 @@ void main() {
     final e = engineOf(game());
     final fired = <(AttackFired, double, double)>[]; // 쏜 틱의 배 중심(보스전 비켜서기·피버 좌우로 움직인다)
     var kills = 0;
+    var fever = false; // 피버 중엔 배가 지그재그로 움직여 포구 기준이 shipX·shipY가 아니다
     for (var i = 0; i < ticksFor(120); i++) {
       e.tick();
       final v = e.state.battle;
       for (final ev in e.drainEvents()) {
-        if (ev is AttackFired) fired.add((ev, v?.shipX ?? top.shipX, v?.shipY ?? top.shipY));
+        if (ev is FeverStarted) fever = true;
+        if (ev is AttackFired && !fever) fired.add((ev, v?.shipX ?? top.shipX, v?.shipY ?? top.shipY));
         if (ev is Kill) kills++;
       }
     }

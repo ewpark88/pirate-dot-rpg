@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/combo_banner.dart';
 import 'package:pirate_dot/render/paint/pixel_font.dart';
 import 'package:pirate_dot/render/paint/slot_skin_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
@@ -25,7 +26,7 @@ class HudPainter {
 
   final _stage = PixelText();
   final _timer = PixelText();
-  final _combo = PixelText();
+  final _banner = ComboBanner();
   int _stageShown = -1;
   int _waveShown = -1;
   int _timerShown = -1;
@@ -97,7 +98,8 @@ class HudPainter {
     final f = scene.frame;
     final v = scene.layout.viewDots;
     if (top) {
-      _comboAt(c, v.top + v.height * _topComboAt);
+      // 빠른 항해 돌파 중엔 콤보 배너를 쉰다 — 격파 스탬프의 ×N이 같은 숫자를 맡는다(피드백 #20 '조잡하지 않게').
+      if (f.fastSail == null) _comboAt(c, v.top + v.height * _topComboAt);
       return;
     }
     if (f.stage != _stageShown || f.wave != _waveShown) {
@@ -131,11 +133,22 @@ class HudPainter {
   static const _topComboAt = 0.18;
 
   void _comboAt(Canvas c, double y) {
-    final combo = scene.combo.count(scene.clockMs);
-    if (combo < _fx.combo.integer('minKills')) return;
-    _combo
-      ..set('x$combo COMBO', _comboColor, _fx.combo.integer('scale'))
-      ..draw(c, _fx.combo.number('x'), y);
+    final v = scene.layout.viewDots;
+    final now = scene.clockMs;
+    _banner.paint(
+      c,
+      (v.left + v.width / 2).floorToDouble(),
+      y,
+      scene.combo.count(now),
+      now,
+      scene.combo.lastAddMs,
+      minKills: _fx.combo.integer('minKills'),
+      baseColor: _comboColor,
+      onMilestone: (_) {
+        scene.shake.trigger(scene.juice.shake['aoe']!);
+        scene.sound.sfx('multiKill', clockMs: now);
+      },
+    );
   }
 
   static double? _bossRatio(BattleView f) {

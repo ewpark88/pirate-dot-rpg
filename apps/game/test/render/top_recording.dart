@@ -262,7 +262,13 @@ List<RecordedTick> withVanguardSplash(List<RecordedTick> rec, {int at = 120}) =>
 
 /// 보스 처치를 [at] 틱에 강제로 넣는다(피드백 #18 보상 터짐): 그 틱 보스에게 Kill(금 [gold]) + BossCleared(젬 [gems]),
 /// 다음 틱부터 그 보스를 프레임에서 뺀다. 보스는 [topRecording]의 bossAt으로 먼저 불러 둔다.
-List<RecordedTick> withBossKill(List<RecordedTick> rec, {required int at, int gems = 10, int gold = 52000}) {
+List<RecordedTick> withBossKill(
+  List<RecordedTick> rec, {
+  required int at,
+  int gems = 10,
+  int gold = 52000,
+  List<CardGranted Function(int tick)> cards = const [],
+}) {
   final f = rec[at].frame;
   final boss = f.enemies.firstWhere((e) => e.boss, orElse: () => throw StateError('틱 $at에 보스가 없다'));
   return [
@@ -274,6 +280,7 @@ List<RecordedTick> withBossKill(List<RecordedTick> rec, {required int at, int ge
           ...rec[i].events,
           Kill(f.tick, targetId: boss.id, gold: BigNum.from(gold), x: boss.x, y: boss.y),
           BossCleared(f.tick, stage: f.stage, gems: gems),
+          for (final c in cards) c(f.tick),
         ])
       else
         RecordedTick(
@@ -290,3 +297,39 @@ List<RecordedTick> withBossKill(List<RecordedTick> rec, {required int at, int ge
         ),
   ];
 }
+
+/// 보물상자를 [at] 틱 전 40틱 동안 배 오른쪽 앞에 띄우고 [at] 틱에 연다(피드백 #15 — ChestOpened, 탭·광고 같음).
+/// [adAt]이 있으면 그 틱에 광고 보상(SaveRequested adReward — 순풍 등 배 버프).
+List<RecordedTick> withChestOpen(List<RecordedTick> rec, {required int at, int? adAt, int gold = 8000}) {
+  final f = rec[at].frame;
+  final x = (f.shipX ?? 135) + 40;
+  final y = (f.shipY ?? 240) - 70;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      if (i >= at - 40 && i < at)
+        RecordedTick(
+          rec[i].frame.copyWith(
+            chest: ChestView(x: x, y: y, ticksLeft: 200),
+          ),
+          rec[i].events,
+        )
+      else if (i == at || i == adAt)
+        RecordedTick(rec[i].frame, [
+          ...rec[i].events,
+          if (i == at) ChestOpened(rec[i].frame.tick, gold: BigNum.from(gold)),
+          if (i == adAt) SaveRequested(rec[i].frame.tick, reason: 'adReward'),
+        ])
+      else
+        rec[i],
+  ];
+}
+
+/// 카드 획득만 [at] 틱에 넣는다(피드백 #17 — 보스 없이: 환영 starter·오프라인·현상금 소탕은 한 틱에 수십 장).
+List<RecordedTick> withCard(
+  List<RecordedTick> rec, {
+  required int at,
+  required List<CardGranted Function(int tick)> cards,
+}) => [
+  for (var i = 0; i < rec.length; i++)
+    i == at ? RecordedTick(rec[i].frame, [...rec[i].events, for (final c in cards) c(rec[i].frame.tick)]) : rec[i],
+];

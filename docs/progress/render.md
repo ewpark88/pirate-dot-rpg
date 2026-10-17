@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 발열 대책(완료, 30fe9e9) → 도감 v2 대보스 6종 도트(바다 악어·괴물 고래·얼음 슬라임·레비아탄·크라켄·포세이돈) + 도감 v2 연출(InkCloud·삼킴·분열·자폭) → 계열 v3 시차 타격(burst·hop·ringSpeed·submerged) → 사운드 점검 → 4기기 골든 눈 확인 |
+| 현재 계획 | 사용자 피드백(docs/plans/active/user-feedback-2026-10-17.md): #18·#15·#4·#17 완료 → #20 보스 격파 정리 → #6 상자 → 피버 첫 일격·BossBroken·보급 → 대보스 움직임 → 보통 보스 23종 → 도감 v2 연출 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
 | 막힌 것 | 번쩍임 설정 기본값 '약하게'는 설정 담당(S4/S5) · main UI crew_identity·crew_filter 테스트 4건 실패(내 레인 아님) |
 
@@ -13,6 +13,14 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 · S3 · IdleGate·발열 → 대보스 6종 → 사용자 피드백 #18·#15·#4·#17
+- a00ce43 IdleGate 미연결 발견(battleGameProvider가 idle.follow를 안 부름) → 렌더 발열 입력 idle.heat(ThermalLevel.index: 보통↑ 가벼운 그리기·심함↑ 효과음 절반) + 요청서 render-idle-thermal-link(S4 936b67f8 반영).
+- 3394004 대보스 6종 도트 sea_croc·monster_whale·ice_slime·leviathan·kraken_titan·poseidon(kraken은 심해 해역 보스와 겹쳐 kraken_titan) — tools/art/gen_topdown_bigbosses.py + td_shade.py(입체 음영·디더·부위 구분선), 88도트 2프레임 + 컷인 초상, fx_map bossLook. sprites_test가 regions bossRotation·wallBoss 그림 유무도 검사. 시안 docs/specs/render-topdown/bigbosses_v1.png.
+- e7eb87a 궁극기 버튼·함성 게이지 그림 삭제(rage 안 읽음). ccf4f6a main 머지 뒤 골든 갱신(check --full 통과).
+- 2831897 #18 보스 처치 보상 터짐 TopBossLoot(연쇄 폭발·빛줄기·충격파 → 금화 28·젬이 크게 튀어나와 배로 + 금액). 9addd9b·6bd8afb #15 보물상자(ChestOpened: 금빛 기둥·금화 분수)·광고 보상(SaveRequested adReward: 배에서 기둥·고리·별가루). 9aa2b89 #4 콤보 v2(1초 연쇄, 처치마다 '쿵', 단계 색·크기, 10/25/50/100 터짐) + 한 프레임 3마리째부터 연쇄 폭발. f9f89f2 #17 카드 수집(CardGranted, isNew 크게·'NEW CREW!', starter 금빛 후광), TopLabel 분리.
+- 다음: #20 빠른 항해 보스 격파 연출 정리(조잡함 줄이기) → #6 보물상자 누르고 싶게 → 피버 첫 일격·BossBroken·보급 '보급!' → 대보스 움직임 보강(2프레임 차이가 작다 — S1) → 보통 보스 23종(S5 초안 id) → 도감 v2 연출.
+- 남은 문제: boss-duel(S5) 머지 뒤 보스전 카메라 78% 당김과 배 비킴이 겹치면 선원 줄에 가릴 수 있음(머지되면 확인). TopTexts.newCrew는 S4가 ARB로 채워야 한글.
 
 ### 2026-10-16 밤 · S3 · 발열 대책 (사용자 퇴근으로 멈춤)
 - 67b9cda 방치 절전(60초 → 30fps·가벼운 연출, 3분 → 어두운 점 화면 12fps)·효과음 초당 예산 14. 6d94b66 절전 문턱 BattleGame.sleepAfterSec. 30fe9e9 방치 원본을 UI로: game.idle.follow(IdleLevel) — 받으면 렌더는 스스로 세지 않는다.

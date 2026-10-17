@@ -239,8 +239,11 @@ extension _TopEvents on EventDirector {
     scene.sound.thud(scene.clockMs, big: strong);
   }
 
-  /// 타격감 v3 처치: 잉크·조각이 튐(적 크기 8).
-  void _juiceKill(Kill e) => scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
+  /// 타격감 v3 처치: 잉크·조각이 튐(적 크기 8) + 한꺼번에 많이 잡으면 연쇄 폭발(피드백 #4).
+  void _juiceKill(Kill e) {
+    scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
+    scene.topHits.impact.chainKill(e.x, e.y, scene.clockMs);
+  }
 
   /// 탑다운 보스 처치(피드백 #18): 흔들림·슬로모션·가장자리 빛 + 보스 자리에서 보상 터짐(연쇄 폭발 → 금화·젬 → 배로).
   void _topBossKill(Kill e) {
