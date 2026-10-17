@@ -31,6 +31,12 @@ const List<(String, Size, double)> _devices = [
 ];
 
 void main() {
+  testWidgets('골드 = 현재 / 최대(화물칸 상한, 피드백 #7)', (tester) async {
+    final s = _filled(0.5);
+    await pumpGame(tester, s, openTab: false);
+    expect(find.text(' / ${goldCapacity(s, _t).format()}'), findsOneWidget);
+  });
+
   testWidgets('가득: 상단 막대 + 알약 → 누르면 배 탭, 화물칸 강화 버튼에 손가락 · 줄 효과 "최대 a → b"', (tester) async {
     await pumpGame(tester, _filled(1), openTab: false);
     expect(find.byKey(const Key('cargo.bar')), findsOneWidget);

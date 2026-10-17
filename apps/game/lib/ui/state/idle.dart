@@ -8,8 +8,12 @@ enum IdleLevel { active, idle, sleep }
 /// 입력이 없을 때 idle이 되는 시간.
 const idleAfter = Duration(seconds: 60);
 
-/// 절전 화면까지 기본 시간 (설정 키가 오면 그 값 — S2에 autoSleepMin 요청).
+/// 절전 화면까지 기본 시간 (설정 sleepAfterSec 기본 180과 같다).
 const sleepAfterDefault = Duration(minutes: 3);
+
+/// 설정 → 절전 화면까지 시간. 절전 모드 끔 또는 0초면 null(절전 화면 없음).
+Duration? sleepAfterOf({required bool powerSave, required int sec}) =>
+    powerSave && sec > 0 ? Duration(seconds: sec) : null;
 
 /// 지금 방치 단계 (공용). [IdleNotifier.touch]가 입력마다 active로 되돌린다.
 final idleLevelProvider = NotifierProvider<IdleNotifier, IdleLevel>(IdleNotifier.new);

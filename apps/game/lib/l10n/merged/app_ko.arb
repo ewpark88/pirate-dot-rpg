@@ -676,7 +676,7 @@
   "uiMonsterGhostjelly": "유령 해파리",
   "uiMonsterCursegull": "저주 갈매기",
   "uiMonsterWraith": "망령",
-  "uiSettingsFlashSub": "끄면 화면이 번쩍이지 않아요 · 켜도 눈부시지 않게 약하게",
+  "uiSettingsFlashSub": "눈이 아프면 끄거나 약하게",
   "uiSleepTouch": "화면을 터치하면 돌아와요",
   "uiSleepStage": "스테이지 {stage} · 항해 중",
   "uiSleepTitle": "절전 화면",
@@ -710,6 +710,20 @@
         "type": "String"
       },
       "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSettingsFlashOff": "끔",
+  "uiSettingsFlashSoft": "약",
+  "uiSettingsFlashFull": "강",
+  "uiSettingsSleepAfter": "절전 화면까지",
+  "uiSettingsSleepAfterSub": "화면을 안 만지면 어둡게 쉬어요 · 배는 계속 싸워요",
+  "uiSettingsSleepOff": "끔",
+  "uiSettingsSleepMin": "{min}분",
+  "@uiSettingsSleepMin": {
+    "placeholders": {
+      "min": {
         "type": "int"
       }
     }
