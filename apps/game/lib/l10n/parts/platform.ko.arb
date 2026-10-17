@@ -4,5 +4,20 @@
   "platformNotifyChannelName": "오프라인 보상",
   "platformProtoTitle": "탑다운 전투 시험판",
   "platformProtoAgain": "다시 하기",
-  "platformProtoResult": "3분 생존! 처치 {kills} · 금화 {gold}"
+  "platformProtoResult": "3분 생존! 처치 {kills} · 금화 {gold}",
+  "platformAchKills": "몬스터 사냥꾼",
+  "platformAchBosses": "보스 사냥꾼",
+  "platformAchStage": "먼 바다로",
+  "platformAchRebirths": "다시 출항",
+  "platformAchCollection": "선원 수집가",
+  "platformAchMythic": "신화의 선장",
+  "platformAchTower": "심연 정복",
+  "platformAchRushClear": "보스 러시 완주",
+  "platformAchRushFast": "번개 러시",
+  "platformAchFever": "피버 마스터",
+  "platformAchUltimate": "필살기의 달인",
+  "platformAchDungeon": "요일 던전 개척자",
+  "platformAchBounty": "현상금 사냥꾼",
+  "platformAchSummons": "행운의 소환사",
+  "platformAchShipLevel": "배 장인"
 }

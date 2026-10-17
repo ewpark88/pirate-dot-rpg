@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:game_core/game_core.dart';
@@ -7,6 +8,14 @@ import 'package:pirate_dot/render/paint/scene_painter.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
 final tables = GameTables.load();
+
+/// 배 순항(waves.top.cruise)을 뺀 표 — 배가 가운데 고정이라고 보고 다른 연출을 재는 시험용(S5 still_ship과 같은 꼴).
+final stillTables = GameTables.load(() {
+  final raw = Map<String, String>.of(rawTables);
+  final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
+  (w['top'] as Map<String, dynamic>).remove('cruise');
+  return raw..['waves'] = jsonEncode(w);
+}());
 double get tickMs => tables.waves.tickMs.toDouble();
 
 /// 테스트용 기록 한 틱. [enemies]는 (id, x) 목록, y는 100 고정.

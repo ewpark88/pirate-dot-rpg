@@ -27,7 +27,7 @@ void main() {
   CoreEngine engineOf(GameState s) => CoreEngine(tables: tables, clock: ManualClock(start), initial: s);
   int ticksFor(double sec) => (sec * 1000 / tables.waves.tickMs).round();
 
-  test('첫 무리: 모두 배 중심에서 접근 원 밖(화면 밖), BattleView는 top·배 중심·적 방향', () {
+  test('첫 무리: 모두 화면 밖(접근 원 밖 — spawnFromView면 카메라 테두리 밖), BattleView는 top·배 중심·적 방향', () {
     final e = engineOf(game())..tick();
     final b = e.state.battle!;
     expect(b.mode, 'top');
@@ -36,8 +36,13 @@ void main() {
     for (final x in b.enemies.where((e) => !e.emerging)) {
       // 가까이 등장(nearSpawn) 몫은 제외
       final d = math.sqrt(math.pow(x.x - top.shipX, 2) + math.pow(x.y - top.shipY, 2));
-      expect(d, greaterThan(top.approachRadius * 0.9), reason: '첫 틱에 한 걸음 다가왔을 뿐');
-      expect(d, greaterThan(top.shipRadius * 4));
+      if (tables.waves.raw.obj('top').raw['spawnFromView'] == true) {
+        // 카메라 테두리 바로 밖 출발(waves.top.spawnFromView — S2 밀도): 화면 밖이고 접근 원보다는 가까울 수 있다.
+        expect(inCamera(tables, x.x, x.y), isFalse, reason: '화면 밖에서 시작(첫 틱에 한 걸음)');
+      } else {
+        expect(d, greaterThan(top.approachRadius * 0.9), reason: '첫 틱에 한 걸음 다가왔을 뿐');
+        expect(d, greaterThan(top.shipRadius * 4));
+      }
       expect(x.heading, closeTo(math.atan2(top.shipY - x.y, top.shipX - x.x), 1e-9));
     }
   });

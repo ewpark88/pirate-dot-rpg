@@ -13,6 +13,7 @@ import 'package:game_data/game_data.dart';
 /// - 진행 방향은 초당 turnDegPerSec까지만 꺾인다 → 빠를수록 큰 호(급회전·제자리 뱅글 없음 — 예전 '360도 돌며 촐싹' 금지).
 /// - 머리(heading)는 바다 흐름(forwardFlow — 배는 늘 앞으로)을 더한 진행 방향, ±maxTiltDeg까지.
 /// - 피버: 속도 × feverSpeedMul, 돌진 간격 × feverDashMul.
+/// - feverOnly(사용자 결정 2026-10-17): 피버 중에만 순항, 끝나면 감속하며 제자리(settleDist 안에서 정확히 0)로 — 평소 화면은 순항 전과 같다.
 /// - 자리는 rect(x 좌우, up 위, down 아래 — 바다 가운데 기준) 밖으로 나가지 않는다(화면·안전 영역).
 /// 표에 cruise가 없으면 null — 배는 예전처럼 제자리(피버 땐 meta.fever.weave).
 class TopCruise {
@@ -53,15 +54,22 @@ class TopCruise {
       st
         ..vx = 0
         ..vy = 0
-        ..dashLeft = 0;
+        ..dashLeft = 0
+        ..returning = false; // 보스전 뒤 제자리 복귀는 결투 비켜서기(TopDuel)가 예전처럼 맡는다
       return (x: cur.x, y: cur.y, heading: g.shipHeading);
     }
+    // feverOnly(사용자 결정 2026-10-17 '배는 피버 타임일 때만 움직이는 게 낫겠어'): 평소엔 제자리(0) — 피버가 막 끝났으면
+    // 같은 조향으로 감속하며 돌아와 settleDist 안에서 정확히 0에 선다(순간이동 없음).
+    final rest = c.raw['feverOnly'] == true && !fever;
+    if (rest && !st.returning) return (x: 0.0, y: 0.0, heading: 0.0);
+    if (!rest) st.returning = true;
+    if (rest) st.dashLeft = 0;
     st.sec += dt * (fever ? c.number('feverSpeedMul') : 1); // 피버면 8자도 빨리
     final fast = fever ? c.number('feverSpeedMul') : 1.0;
     final every =
         (c.number('dashEverySec') + c.number('dashJitterSec') * st.jitter) * (fever ? c.number('feverDashMul') : 1);
     st.sinceDash += dt;
-    if (st.dashLeft <= 0 && st.sinceDash >= every) {
+    if (!rest && st.dashLeft <= 0 && st.sinceDash >= every) {
       final hit = _cluster(f, g, cur);
       st
         ..sinceDash = 0
@@ -74,7 +82,7 @@ class TopCruise {
       }
     }
     final dashing = st.dashLeft > 0;
-    final target = dashing ? _clamp(st.tx, st.ty) : _wander(st.sec);
+    final target = rest ? (x: 0.0, y: 0.0) : (dashing ? _clamp(st.tx, st.ty) : _wander(st.sec));
     final top = speed * fast * (dashing ? c.number('dashSpeedMul') : 1);
     final dx = target.x - cur.x;
     final dy = target.y - cur.y;
@@ -105,9 +113,17 @@ class TopCruise {
       ny = ny.clamp(-r.number('up'), r.number('down'));
       st.vy = 0;
     }
+    if (rest && math.sqrt(nx * nx + ny * ny) <= c.number('settleDist')) {
+      nx = 0;
+      ny = 0;
+      st
+        ..vx = 0
+        ..vy = 0;
+    }
     // 머리: 바다가 아래로 흐르니(배는 늘 앞으로) 진행 방향에 forwardFlow를 더해 기울기만 — 뒤돌아 서지 않는다.
     final face = math.atan2(st.vx, c.number('forwardFlow') - st.vy).clamp(-maxTilt, maxTilt);
     st.heading = _turnToward(st.heading, face, headingTurn * dt);
+    if (rest && nx == 0 && ny == 0 && st.heading == 0) st.returning = false; // 제자리 도착 — 다음 피버까지 가만히
     return (x: nx, y: ny, heading: st.heading);
   }
 
@@ -202,4 +218,5 @@ class _CruiseState {
   double tx = 0;
   double ty = 0;
   int tick = -1;
+  bool returning = false; // 피버 순항 뒤 제자리로 돌아가는 중(feverOnly)
 }

@@ -19,6 +19,6 @@ void sceneSpawnAtView(Field f, int before) {
     final a = math.atan2(dy, dx);
     final d = math.sqrt(dx * dx + dy * dy);
     final depth = math.max<double>(0, d - spawn.startDistance(e, a)); // 대열 뒷줄·흩뿌림 거리
-    spawn.place(e, a, spawn.toView(a) + top.spawnMargin + top.radiusOf(e) + depth);
+    spawn.placeOut(e, a, spawn.toView(a) + top.spawnMargin + top.radiusOf(e) + depth);
   }
 }

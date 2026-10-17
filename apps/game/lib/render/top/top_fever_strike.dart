@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart' show LinearGradient;
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 
 /// 피버 첫 일격 (사용자 결정 2026-10-17 — 궁극기 대신 피버가 시작되는 순간의 한 방, UltimateCast):
 /// 화면: 선장 초상이 금빛 비스듬한 띠와 함께 왼쪽에서 확 들어와 0.5초 머물고 오른쪽으로 빠진다.
@@ -25,6 +26,13 @@ class TopFeverStrike {
   static const _gapMs = 35.0;
   static const _boltMs = 260.0;
   static const _maxTargets = 12;
+  static const rushMs = 3000.0; // 폭주(S2 선장 필살기 3초) 동안 배 금빛 오라
+
+  /// 선원 이름(UI가 BattleGame.crewNames로 — 렌더엔 번역이 없다). 없으면 이름 없이.
+  Map<String, String> names = const {};
+
+  /// 손으로 쓴 필살기(S2 UltimateCast.manual)면 컷인을 더 크게.
+  bool manual = false;
 
   /// 첫 일격 시작: 선장 [captain], 배 [ship], 맞을 적 자리 [targets](가까운 순).
   void start(double now, String? captain, Offset ship, Iterable<Offset> targets) {
@@ -44,7 +52,8 @@ class TopFeverStrike {
   }
 
   /// 전장 좌표(적 위 층): 충격파·번개·불꽃.
-  void paintWorld(Canvas c, double now, {required bool lite}) {
+  void paintWorld(Canvas c, double now, {required bool lite, Offset? ship}) {
+    if (ship != null) _rush(c, now, ship);
     final age = now - _at - _strikeAtMs;
     if (age < 0 || !active(now)) return;
     // 충격파: 두꺼운 금빛 고리 + 흰 안쪽 고리
@@ -104,7 +113,7 @@ class TopFeverStrike {
     final t = age / _cutInMs;
     // 들어옴 0~0.18 · 머묾 · 빠짐 0.8~1
     final slide = t < 0.18 ? 1 - _easeOut(t / 0.18) : (t > 0.8 ? -_easeIn((t - 0.8) / 0.2) : 0.0);
-    final h = box.height * 0.2;
+    final h = box.height * (manual ? 0.25 : 0.2);
     final cy = box.height * 0.36;
     final dx = slide * box.width;
     c
@@ -152,8 +161,44 @@ class TopFeverStrike {
       c
         ..drawLine(Offset(0, cy - h / 2 + 18), Offset(box.width, cy - h / 2 - 18), _line)
         ..drawLine(Offset(0, cy + h / 2 + 18), Offset(box.width, cy + h / 2 - 18), _line);
+      final name = names[id];
+      if (name != null) _label.draw(c, name, Offset(box.width * 0.68, cy), h * 0.24);
     }
     c.restore();
+    // 시작 순간 흰 번쩍(0.08초) — 컷인이 '쾅' 들어오게
+    if (age < 80) {
+      _fill.color = Color.fromRGBO(255, 255, 255, 0.35 * (1 - age / 80));
+      c.drawRect(Offset.zero & box, _fill);
+    }
+  }
+
+  final _label = TopLabel();
+
+  /// 폭주 정도 0~1(필살기 뒤 [rushMs] 동안 1, 끝 0.5초에 사라짐) — 발사체 굵게·불 꼬리.
+  double rush(double now) {
+    final age = now - _at;
+    if (age < 0 || age > rushMs) return 0;
+    return age > rushMs - 500 ? (rushMs - age) / 500 : 1;
+  }
+
+  /// 폭주 오라: 필살기 뒤 [rushMs] 동안 배 둘레 금빛 고리 두 겹이 맥박치며 돈다(마지막 0.5초 사라짐).
+  void _rush(Canvas c, double now, Offset ship) {
+    final age = now - _at;
+    if (age < 0 || age > rushMs) return;
+    final fade = age > rushMs - 500 ? (rushMs - age) / 500 : math.min(1, age / 150);
+    final pulse = 0.5 + 0.5 * math.sin(age / 90);
+    _line
+      ..strokeWidth = 3 + 2 * pulse
+      ..color = Color.fromRGBO(255, 205, 70, 0.75 * fade);
+    c.drawCircle(ship, 28 + 3 * pulse, _line);
+    _line
+      ..strokeWidth = 1.5
+      ..color = Color.fromRGBO(255, 250, 210, 0.8 * fade);
+    for (var k = 0; k < 8; k++) {
+      final a = age / 300 + k * math.pi / 4;
+      final p = ship + Offset(math.cos(a), math.sin(a)) * (33 + 2 * pulse);
+      c.drawLine(p, p + Offset(math.cos(a), math.sin(a)) * 7, _line);
+    }
   }
 
   static double _easeOut(double t) => 1 - (1 - t) * (1 - t) * (1 - t);

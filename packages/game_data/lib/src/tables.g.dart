@@ -3,6 +3,350 @@
 
 /// 테이블 이름(파일명에서 .json 뺀 것) → JSON 원문.
 const Map<String, String> rawTables = {
+  'achievements': r'''
+{
+  "_doc": "업적(docs/contracts/requests/ui-achievements.md, S4 안 그대로 — 젬은 S2가 BALANCE 하루 젬 규칙으로 확정). metric은 economy/achievements.dart achievementValue. lowerIsBetter면 값이 목표 이하일 때 단계(러시 최고 기록 초).",
+  "achievements": [
+    {
+      "id": "kills",
+      "nameKey": "platformAchKills",
+      "iconKey": "sword",
+      "metric": "kills",
+      "steps": [
+        {
+          "target": 1000,
+          "gems": 10
+        },
+        {
+          "target": 10000,
+          "gems": 20
+        },
+        {
+          "target": 100000,
+          "gems": 40
+        },
+        {
+          "target": 1000000,
+          "gems": 80
+        },
+        {
+          "target": 10000000,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "bosses",
+      "nameKey": "platformAchBosses",
+      "iconKey": "skull",
+      "metric": "bosses",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 50,
+          "gems": 30
+        },
+        {
+          "target": 200,
+          "gems": 60
+        },
+        {
+          "target": 1000,
+          "gems": 120
+        }
+      ]
+    },
+    {
+      "id": "stage",
+      "nameKey": "platformAchStage",
+      "iconKey": "flag",
+      "metric": "bestStage",
+      "steps": [
+        {
+          "target": 20,
+          "gems": 10
+        },
+        {
+          "target": 40,
+          "gems": 20
+        },
+        {
+          "target": 80,
+          "gems": 40
+        },
+        {
+          "target": 150,
+          "gems": 80
+        },
+        {
+          "target": 300,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "rebirths",
+      "nameKey": "platformAchRebirths",
+      "iconKey": "rebirth",
+      "metric": "rebirths",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 20
+        },
+        {
+          "target": 3,
+          "gems": 40
+        },
+        {
+          "target": 5,
+          "gems": 60
+        },
+        {
+          "target": 10,
+          "gems": 100
+        },
+        {
+          "target": 20,
+          "gems": 200
+        }
+      ]
+    },
+    {
+      "id": "collection",
+      "nameKey": "platformAchCollection",
+      "iconKey": "book",
+      "metric": "collection",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 20,
+          "gems": 40
+        },
+        {
+          "target": 30,
+          "gems": 80
+        },
+        {
+          "target": 40,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "mythic",
+      "nameKey": "platformAchMythic",
+      "iconKey": "star",
+      "metric": "mythicCrews",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 50
+        },
+        {
+          "target": 3,
+          "gems": 100
+        },
+        {
+          "target": 5,
+          "gems": 200
+        }
+      ]
+    },
+    {
+      "id": "tower",
+      "nameKey": "platformAchTower",
+      "iconKey": "trophy",
+      "metric": "towerBest",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 20,
+          "gems": 40
+        },
+        {
+          "target": 30,
+          "gems": 80
+        },
+        {
+          "target": 50,
+          "gems": 150
+        }
+      ]
+    },
+    {
+      "id": "rushClear",
+      "nameKey": "platformAchRushClear",
+      "iconKey": "crown",
+      "metric": "rushClears",
+      "steps": [
+        {
+          "target": 1,
+          "gems": 20
+        },
+        {
+          "target": 5,
+          "gems": 50
+        },
+        {
+          "target": 20,
+          "gems": 100
+        }
+      ]
+    },
+    {
+      "id": "rushFast",
+      "nameKey": "platformAchRushFast",
+      "iconKey": "clock",
+      "metric": "rushBestSec",
+      "steps": [
+        {
+          "target": 300,
+          "gems": 30
+        },
+        {
+          "target": 180,
+          "gems": 60
+        },
+        {
+          "target": 120,
+          "gems": 100
+        }
+      ],
+      "lowerIsBetter": true
+    },
+    {
+      "id": "fever",
+      "nameKey": "platformAchFever",
+      "iconKey": "fire",
+      "metric": "fevers",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 500,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "ultimate",
+      "nameKey": "platformAchUltimate",
+      "iconKey": "bolt",
+      "metric": "ultimates",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 1000,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "dungeon",
+      "nameKey": "platformAchDungeon",
+      "iconKey": "gate",
+      "metric": "dungeonSteps",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 20
+        },
+        {
+          "target": 50,
+          "gems": 50
+        },
+        {
+          "target": 200,
+          "gems": 100
+        }
+      ]
+    },
+    {
+      "id": "bounty",
+      "nameKey": "platformAchBounty",
+      "iconKey": "target",
+      "metric": "bounties",
+      "steps": [
+        {
+          "target": 5,
+          "gems": 10
+        },
+        {
+          "target": 30,
+          "gems": 30
+        },
+        {
+          "target": 100,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "summons",
+      "nameKey": "platformAchSummons",
+      "iconKey": "chest",
+      "metric": "summons",
+      "steps": [
+        {
+          "target": 10,
+          "gems": 10
+        },
+        {
+          "target": 100,
+          "gems": 30
+        },
+        {
+          "target": 500,
+          "gems": 80
+        }
+      ]
+    },
+    {
+      "id": "shipLevel",
+      "nameKey": "platformAchShipLevel",
+      "iconKey": "coin",
+      "metric": "shipLevel",
+      "steps": [
+        {
+          "target": 100,
+          "gems": 10
+        },
+        {
+          "target": 500,
+          "gems": 40
+        },
+        {
+          "target": 2000,
+          "gems": 100
+        }
+      ]
+    }
+  ]
+}
+''',
   'ads': r'''
 {
   "dailyCap": 25,
@@ -2453,8 +2797,8 @@ const Map<String, String> rawTables = {
     "sinkTilt": 0.35
   },
   "topCam": {
-    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(UI가 BattleGame.hudTopDp로 잰 값 — 없으면 hudTopDp: 실기기 S24 보스전 띠가 상태 표시줄 포함 약 165dp) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
-    "hudTopDp": 170,
+    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(UI가 BattleGame.hudTopDp로 잰 값 — 없으면 hudTopDp — S4 실측 기준 전장 상자 위끝에서 보스전 약 90~100dp) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
+    "hudTopDp": 100,
     "sideDp": 12,
     "rightDp": 24,
     "bottomDp": 24,
@@ -2756,6 +3100,7 @@ const Map<String, String> rawTables = {
   "firstBuyMultiplier": 2,
   "offlineHours": 12,
   "speedMultiplier": 2,
+  "speedProgressMul": 1.5,
   "products": [
     {
       "id": "no_ads_30d",
@@ -3293,9 +3638,9 @@ const Map<String, String> rawTables = {
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
   "fever": { "weave": {"mode": "flow", "amp": 60, "ampY": 34, "periodSec": 6.0, "tiltDeg": 15, "drift": 1.0, "loopEvery": 0},
-    "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
+    "killsStart": 260, "killsMax": 1300, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
-    "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring", "approachMul": 1.8 },
+    "swarm": { "countMul": 2.5, "min": 80, "refillBelow": 60, "refillPool": 0.3, "max": 260, "pattern": "ring", "approachMul": 1.8 },
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
   "shipSkins": [{"id": "king", "nameKey": "shipSkinKing", "source": {"type": "collection", "value": 10}}, {"id": "fairy", "nameKey": "shipSkinFairy", "source": {"type": "bestStage", "value": 100}}, {"id": "frost", "nameKey": "shipSkinFrost", "source": {"type": "bountyTier", "value": 10}}, {"id": "lava", "nameKey": "shipSkinLava", "source": {"type": "bountyAll", "value": 5}}, {"id": "ghostship", "nameKey": "shipSkinGhostship", "source": {"type": "bestStage", "value": 300}}, {"id": "festival", "nameKey": "shipSkinFestival", "source": {"type": "collection", "value": 40}}, {"id": "abyss", "nameKey": "shipSkinAbyss", "source": {"type": "pieces", "value": 50}}],
@@ -3976,15 +4321,15 @@ const Map<String, String> rawTables = {
   "tickMs": 50,
   "wavesPerStage": 2,
   "mobCount": { "base": 6, "stagesPerExtra": 10, "max": 14, "pool": { "base": 6, "stagesPerExtra": 10, "max": 14 } },
-  "waveHpPoolFactor": 1.1,
+  "waveHpPoolFactor": 1.8,
   "shipHitCap": 0.08,
-  "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
-  "boss": { "hpMultiplier": 400, "wallEvery": 10, "wallHpMultiplier": 1.9, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 26, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "fallbackSec": 120, "maxNeed": 4 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.01, "earlyAttackMultiplier": 0.027 },
-  "travelSec": 1.5,
+  "monster": { "hpBase": 9, "hpGrowth": 1.35, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
+  "boss": { "hpMultiplier": 1000, "wallEvery": 10, "wallHpMultiplier": 1.9, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 110, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "fallbackSec": 120, "maxNeed": 4 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.0048, "earlyAttackMultiplier": 0.0074 },
+  "travelSec": 0.4,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
     "windupSec": 0.4,
-    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150, "earlyExtra": 28, "earlyStages": 20 },
+    "spawnFromView": true, "scatterSpanSec": 4, "refill": { "fromStage": 11, "belowRatio": 0.35, "min": 8 }, "mobCount": { "base": 57, "stagesPerExtra": 2, "max": 195, "earlyExtra": 21, "earlyStages": 20 },
     "swarmSpacing": 3,
     "bossSpawnRadius": 152,
     "chestMargin": 12,
@@ -4008,8 +4353,9 @@ const Map<String, String> rawTables = {
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
     "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 },
-    "cruise": { "speed": 55, "accel": 260, "decel": 150, "turnDegPerSec": 150, "headingTurnDegPerSec": 240, "maxTiltDeg": 55, "forwardFlow": 60, "slowRadius": 30, "arriveRadius": 10, "homeUp": 20, "wanderX": 45, "wanderY": 28, "wanderSec": 8, "rect": { "x": 58, "up": 110, "down": 50 }, "dashEverySec": 2, "dashJitterSec": 1, "jitterStep": 0.618, "dashSpeedMul": 2.4, "dashMaxSec": 0.9, "overshoot": 36, "clusterRadius": 40, "clusterMin": 3, "feverSpeedMul": 1.5, "feverDashMul": 0.6 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
-    "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
+    "knockback": { "dist": 7, "everySec": 0.3, "bossMul": 0.15 },
+    "cruise": { "feverOnly": true, "settleDist": 2, "speed": 55, "accel": 260, "decel": 150, "turnDegPerSec": 150, "headingTurnDegPerSec": 240, "maxTiltDeg": 55, "forwardFlow": 60, "slowRadius": 30, "arriveRadius": 10, "homeUp": 20, "wanderX": 45, "wanderY": 28, "wanderSec": 8, "rect": { "x": 58, "up": 110, "down": 50 }, "dashEverySec": 2, "dashJitterSec": 1, "jitterStep": 0.618, "dashSpeedMul": 2.4, "dashMaxSec": 0.9, "overshoot": 36, "clusterRadius": 40, "clusterMin": 3, "feverSpeedMul": 1.5, "feverDashMul": 0.6 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
+    "nearSpawn": { "ratio": 0.3, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,
     "swarmSpreadDeg": 20,

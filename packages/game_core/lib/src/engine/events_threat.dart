@@ -53,6 +53,12 @@ GameEvent _threatEventFromJson(int t, Json j) => switch (j['type'] as String) {
     y: (j['y'] as num).toDouble(),
     radius: (j['radius'] as num).toDouble(),
   ),
+  'knockback' => Knockback(
+    t,
+    enemyId: j['enemyId'] as int,
+    dx: (j['dx'] as num).toDouble(),
+    dy: (j['dy'] as num).toDouble(),
+  ),
   'attackMissed' => AttackMissed(
     t,
     crewId: j['crewId'] as String,
@@ -269,4 +275,20 @@ class BombletBurst extends GameEvent {
 
   @override
   Json _fields() => {'crewId': crewId, 'x': x, 'y': y, 'radius': radius};
+}
+
+/// 타격 넉백(#82, waves.top.knockback): [enemyId]가 이번 틱 [dx]·[dy]만큼 배 바깥쪽으로 밀렸다(BattleView 위치에 이미 반영 —
+/// 렌더는 이 이벤트로 피격 튕김·물보라를 그리고, 자기 일반 피격 넉백은 끈다).
+class Knockback extends GameEvent {
+  const Knockback(super.tick, {required this.enemyId, required this.dx, required this.dy});
+
+  final int enemyId;
+  final double dx;
+  final double dy;
+
+  @override
+  String get type => 'knockback';
+
+  @override
+  Json _fields() => {'enemyId': enemyId, 'dx': dx, 'dy': dy};
 }

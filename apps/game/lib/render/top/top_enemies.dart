@@ -104,7 +104,7 @@ class TopEnemies {
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final flash = e.boss && hd != null ? _bossFlash(e.id, now: clock, on: e.flash) : e.flash;
       final hot = !flash && hotAt != null && hotAt!(e.drawX, e.drawY);
-      final crack = e.boss ? _crack(e, clock) : 1e9; // 보스 체력 25%마다 '부서짐'(조각·비틀·어지러운 눈 0.45초)
+      final crack = e.boss ? _crack(e, clock) : 1e9; // 보스 체력 층이 깨지면 '부서짐'(조각·1초 비틀·어지러운 눈)
       final tilt = e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) + _crackTilt(crack) : 0.0;
       // HD: 정면 3/4 그림이라 진행 방향으로 돌리지 않고 살짝 흔들기만(좌우는 시트 행으로).
       final rotation = hd != null
@@ -116,7 +116,7 @@ class TopEnemies {
         // HD v2 표정: 쓰러짐(브레이크) > 공격 예고(EnemyWindup) > 평소.
         final mood = !hd.moods
             ? (hd.hits && flash ? HdMood.hit : HdMood.idle) // 잡몹 v2: 맞으면 찡긋
-            : (scene.topHits.breaks.isDown(e.id, clock) || crack < 450
+            : (scene.topHits.breaks.isDown(e.id, clock) || crack < 600
                   ? HdMood.down
                   : (scene.topHits.muzzle.charging(e.id, clock) ? HdMood.windup : HdMood.idle));
         spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading), mood: mood), scale: hd.scale, hd: true);
@@ -205,7 +205,6 @@ class TopEnemies {
   final hdSheets = HdSheets(); // HD 카툰 시트(개편 ④)
   final Map<int, bool> _right = {};
   final Map<int, double> _bossFlashAt = {};
-  final Map<int, (int, double)> _quarter = {}; // 보스 id → (체력 4분의 몇, 부서진 시각)
 
   /// HD 좌우: 오른쪽으로 가면 뒤집은 행. 거의 위아래로 가면(|cos| < 0.3) 지난 방향 유지(떨림 방지).
   bool _facing(int id, double heading) {

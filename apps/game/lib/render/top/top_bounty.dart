@@ -178,7 +178,13 @@ class TopBounty {
   void _text(Canvas c, String s, Offset center, double size, {Color color = _ink, double alpha = 1, double scale = 1}) {
     final key = '$s|$size|${color.toARGB32()}';
     final pair = _texts.putIfAbsent(key, () {
-      if (_texts.length > 30) _texts.clear();
+      if (_texts.length > 30) {
+        for (final (a, b) in _texts.values) {
+          a.dispose();
+          b.dispose();
+        }
+        _texts.clear();
+      }
       TextPainter make(TextStyle style) => TextPainter(
         text: TextSpan(text: s, style: style),
         textDirection: TextDirection.ltr,
