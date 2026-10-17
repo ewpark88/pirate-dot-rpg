@@ -198,6 +198,10 @@ String formatReport(GameTables t, List<SimResult> rs, List<SimCheck> checks) {
       '${_fmt(m((r) => r.rebirthForecastMin == null || r.rebirthBeatBest == null ? null : r.rebirthForecastMin! / _min(r.rebirthBeatBest)!))} |',
     )
     ..writeln('| 첫 보스 실패 스테이지 | ${_fmt(m((r) => r.firstBossFailStage?.toDouble()))} |')
+    ..writeln(
+      '| 초반: 첫 외형 변화 / 첫 피버 / 10분 안 외형 변화·피버 수 | ${_fmt(m((r) => _min(r.firstLookChange)), '분')} / '
+      '${_fmt(m((r) => _min(r.firstFever)), '분')} / ${_fmt(m((r) => r.lookChanges10Min.toDouble()))} · ${_fmt(m((r) => r.fevers10Min.toDouble()))} |',
+    )
     ..writeln('| 첫 등급 상승(아무 선원, 카드 점프 포함) | ${_fmt(m((r) => _min(r.firstRarityUp)), '분')} |')
     ..writeln('| 최고 스테이지 | ${_fmt(m((r) => r.bestStage.toDouble()))} |')
     ..writeln(

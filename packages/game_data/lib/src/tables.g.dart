@@ -2823,11 +2823,11 @@ const Map<String, String> rawTables = {
   'ship_parts': r'''
 {
   "parts": [
-    {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartCannon"},
-    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 5, 12, 18, 30, 47, 83], "nameKey": "shipPartHull"},
-    {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 24, 30], "nameKey": "shipPartSail"},
-    {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 8, 16, 26, 36, 45], "nameKey": "shipPartCrowsnest"},
-    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 12, 20, 33, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
+    {"id": "cannon", "stat": "attack", "formula": "exp", "base": 4, "growth": 1.3676, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartCannon"},
+    {"id": "hull", "stat": "hp", "formula": "exp", "base": 1500, "growth": 1.4049, "costBase": 10, "costGrowth": 1.5209, "maxLevel": null, "milestoneEvery": 8, "milestoneMultiplier": 2, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 3, 7, 11, 16, 35, 83], "nameKey": "shipPartHull"},
+    {"id": "sail", "stat": "speed", "formula": "linear", "base": 1, "growth": 0.05, "costBase": 60, "costGrowth": 2.0972, "maxLevel": 30, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 11, 30], "nameKey": "shipPartSail"},
+    {"id": "crowsnest", "stat": "critChance", "formula": "linear", "base": 0.05, "growth": 0.01, "costBase": 50, "costGrowth": 2.0972, "maxLevel": 45, "milestoneEvery": null, "milestoneMultiplier": 1, "visualStages": [1, 3, 6, 12, 26, 45], "nameKey": "shipPartCrowsnest"},
+    {"id": "cargo", "stat": "capacity", "formula": "exp", "base": 30, "growth": 1.5209, "maxLevel": null, "milestoneEvery": null, "milestoneMultiplier": 1, "accelLevels": 4, "accelFrom": 8, "visualStages": [1, 2, 5, 9, 16, 30, 53], "nameKey": "shipPartCargo", "costRatio": 0.6, "costBase": 0, "costGrowth": 1}
   ],
   "caps": {"critChanceMax": 0.5, "critMultiplier": 2, "attackSpeedMax": 2.5, "skillCooldownMinSec": 1.5}
 }
@@ -2880,7 +2880,7 @@ const Map<String, String> rawTables = {
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
-    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150 },
+    "mobCount": { "base": 32, "stagesPerExtra": 2, "max": 150, "earlyExtra": 28, "earlyStages": 20 },
     "swarmSpacing": 3,
     "bossSpawnRadius": 152,
     "chestMargin": 12,

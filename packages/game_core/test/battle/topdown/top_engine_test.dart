@@ -44,10 +44,12 @@ void main() {
     final e = engineOf(game());
     final fired = <AttackFired>[];
     var kills = 0;
+    var fever = false; // 피버 중엔 배가 지그재그로 움직여 포구 기준이 shipX·shipY가 아니다
     for (var i = 0; i < ticksFor(120); i++) {
       e.tick();
       for (final ev in e.drainEvents()) {
-        if (ev is AttackFired) fired.add(ev);
+        if (ev is FeverStarted) fever = true;
+        if (ev is AttackFired && !fever) fired.add(ev);
         if (ev is Kill) kills++;
       }
     }

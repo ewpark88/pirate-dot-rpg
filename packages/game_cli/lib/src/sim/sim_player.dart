@@ -1,4 +1,5 @@
 import 'package:game_cli/src/sim/sim_cards.dart';
+import 'package:game_cli/src/sim/sim_early.dart';
 import 'package:game_cli/src/sim/sim_fun.dart';
 import 'package:game_cli/src/sim/sim_gold.dart';
 import 'package:game_cli/src/sim/sim_result.dart';
@@ -43,7 +44,6 @@ class SimPlayer {
   Duration? _wallSince;
 
   ({Duration at, int stage})? _recovering;
-
   Duration _runStart = Duration.zero;
 
   int _best = 1;
@@ -59,6 +59,7 @@ class SimPlayer {
   final _killGold = <(Duration at, BigNum gold)>[];
   late final _fun = SimFun(t);
   late final _threat = SimThreat(t);
+  late final _early = SimEarly(result);
   final _gold = SimGold();
 
   SimResult run(Duration total, SimSchedule first) {
@@ -192,6 +193,7 @@ class SimPlayer {
   void _observe(List<GameEvent> events) {
     for (final e in events) {
       _fun.observe(e, engine);
+      _early.observe(e, _elapsed);
       _threat.observe(e, engine);
       switch (e) {
         case Kill(:final gold):
@@ -214,8 +216,6 @@ class SimPlayer {
         case ShipLookChanged(:final part, :final stage):
           _recordLook(result.lookDay1, const Duration(days: 1), part, stage);
           _recordLook(result.lookWeek1, const Duration(days: 7), part, stage);
-        case CrewSummoned(:final results) when results.length == 1 && result.summons == 0: // 환영 선원
-          result.welcomeCrew ??= _elapsed;
         case BossFailed(:final stage):
           result.firstBossFail ??= _elapsed;
           result.firstBossFailStage ??= stage;

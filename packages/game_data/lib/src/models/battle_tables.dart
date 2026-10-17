@@ -78,9 +78,14 @@ class WavesTable {
   }
 
   /// 탑다운 한 파 마리 수 = min(top.mobCount.max, base + floor(stage / stagesPerExtra)) — 무리 습격(핵&슬래시, 2026-10-15).
+  /// 탑다운 한 파 마릿수. 초반 핵앤슬래시(피드백 #4): earlyExtra를 스테이지 1에 더하고 earlyStages까지 곧게 0으로(없으면 0).
+  /// 파 총량(pool)은 그대로라 마리가 많을수록 한 마리는 약하다.
   int topMobCountAt(int stage) {
     final m = raw.obj('top').obj('mobCount');
-    final n = m.integer('base') + stage ~/ m.integer('stagesPerExtra');
+    final early = m.numberOr('earlyExtra', 0);
+    final fade = m.numberOr('earlyStages', 1);
+    final extra = stage >= fade ? 0 : (early * (fade - stage) / (fade - 1)).round();
+    final n = m.integer('base') + stage ~/ m.integer('stagesPerExtra') + extra;
     return n < m.integer('max') ? n : m.integer('max');
   }
 
