@@ -1,5 +1,12 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤(이어서 3) · S5 · 보스 러시 엔진·탑 수치·결제 2단계·요일 던전 메모
+- **현재 위치**: review/boss-rush 984ade0e(탑 3a218b18 위 — 탑+러시, 빠른 check 통과, S3 lane/render에 b26400d4 머지됨 → A줄 일괄로 main). review/iap ec454d9b(SDK 연결·구매 흉내·출시 문서). review/weekday-dungeon 634cb93a(설계 메모, S1 승인 대기).
+- 한 일: 러시(주간 5보스·기록·구간 보상·주 7회), 탑 S2 수치·층 가중 2·층 시간 제한 90초·가장자리 출현, battle_view fromJson 분리(300줄), in_app_purchase 3.3.1 PlayBillingSdk·SimBillingSdk, 데이터 보안 '구매 내역'·콘텐츠 등급 무작위 아이템 = 예.
+- 다음: 요일 던전 승인 → 구현 / S2 iap-contract 오면 main.dart 결제 배선·운영자 패널 / 탑 수치 S2 재조정(신화 23분·중반 4층).
+- 남은 문제: 폰 입력·설치 권한(사용자 허락 필요). docs/PROGRESS.md는 S1 몫(main 폴더).
+- 배운 것: 장면 모드 시험의 보상 합계엔 도감 첫 처치 젬이 섞인다(DexFirstKill) — 같이 센다.
+
 ## 2026-10-18 밤(이어서 2) · S5 · 심연의 탑 엔진
 - **현재 위치**: review/tower 3a218b18 — 빠른 check 통과, S1 머지 대기. 계약 platform-tower S1 승인. boss-scale-fix 5a8634c3(main 시나리오 실패 고침) 보냄.
 - 한 일: 장면 모드 공통부(scene_mode.dart — 현상금·탑), top_tower.dart(층·파·보스·회복·침몰/그만두기/중단 → 상자·복귀), economy/tower.dart(열림·도전권 쌓임·광고·소탕·상자), 세이브·명령·이벤트·BattleView.tower, 시험 9.
