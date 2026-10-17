@@ -2828,7 +2828,7 @@ const Map<String, String> rawTables = {
   "crewSkills": [{"id": "support_rally", "reach": 117, "shape": "ship", "count": 1, "cooldownSec": 12, "multiplier": 0, "fx": "level_up", "heal": 0.1, "attackSpeedBuff": 0.25, "buffSec": 5}],
   "legendSkillScope": "screen",
   "maxSameFamilyInFleet": 2,
-  "rage": {"perKill": 0.01, "max": 1.0, "autoTrigger": true, "ultimateMultiplier": 5},
+  "ultimateMultiplier": 5,
   "bossControlFactor": 0.5,
   "critBurstDamage": 0.5,
   "rarityTempo": [1, 1, 1, 0.9, 0.8],

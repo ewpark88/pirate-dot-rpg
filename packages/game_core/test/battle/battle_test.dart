@@ -108,7 +108,7 @@ void main() {
     );
 
     final f = fieldWith(foes)..guns = [Gun.of(tables, crewOf('lob'), power: 1)];
-    Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0).fireGuns();
+    Round(f, ctxOf(1), CombatStats.of(game(), tables)).fireGuns();
     expect(events.whereType<AoeDamageSum>(), hasLength(1));
     expect(events.whereType<Damage>(), hasLength(8));
   });
@@ -126,7 +126,7 @@ void main() {
   test('6. 0.5초 안에 5마리 처치 → 창이 닫히면 MultiKill(5) + 히트스톱', () {
     final foes = [for (var i = 0; i < 5; i++) foeAt(200, 100.0 + i, hp: BigNum.from(1e-3))];
     final f = fieldWith(foes)..guns = [Gun.of(tables, crewOf('lob'), power: 1)];
-    final r = Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0)..fireGuns();
+    final r = Round(f, ctxOf(1), CombatStats.of(game(), tables))..fireGuns();
     expect(events.whereType<Kill>(), hasLength(5));
     final goldBefore = r.gold;
     for (var i = 0; i * w.tickMs <= w.multiKillWindowSec * 1000; i++) {
