@@ -33,7 +33,8 @@ abstract final class TopDungeon {
       ..bossActive = false
       ..dungeon = DungeonRun(group: active.group, step: active.step, waves: dungeonCfg(t).integer('wavesPerStep'))
       ..sceneFleet = crews
-      ..scenePattern = g.str('pattern');
+      ..scenePattern = g.str('pattern')
+      ..sceneHpMul = g.numberOr('hpMul', 1); // 선원 2명 계열이 낀 날은 적을 가볍게(S2)
     if (fresh) return _fail(s, f, ctx, 'interrupted');
     armField(f, s, t, crews);
     ctx.emit(DungeonStarted(ctx.tick, group: active.group, step: active.step, crewIds: crews));
@@ -157,6 +158,7 @@ abstract final class TopDungeon {
       ..dungeon = null
       ..sceneFleet = null
       ..scenePattern = null
+      ..sceneHpMul = 1
       ..shipHp = f.shipHpMax
       ..travelLeft = ctx.tables.waves.travelSec;
     armField(f, s, ctx.tables, activeFleet(s, ctx.tables));

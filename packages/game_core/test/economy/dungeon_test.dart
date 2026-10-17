@@ -123,6 +123,11 @@ void main() {
     expect(canStartDungeon(x.e.state, t, start, 1), crews.isNotEmpty);
   });
 
+  test('묶음 hpMul: 선원 2명 계열이 낀 날(월)은 적이 가볍고, 끝나면 전장 배율이 1로 돌아온다', () {
+    expect(dungeonGroupOn(t, DateTime.monday).number('hpMul'), lessThan(1));
+    expect(dungeonGroupOn(t, DateTime.tuesday).number('hpMul'), 1);
+  });
+
   test('결정론·JSON 왕복', () {
     String once() {
       final x = engine(fixture('all_crews_mythic'));

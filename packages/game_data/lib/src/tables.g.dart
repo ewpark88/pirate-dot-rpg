@@ -2869,15 +2869,15 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 2,
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
     "groups": [
-      {"id": "mon", "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
-      {"id": "tue", "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
-      {"id": "wed", "weekday": 3, "families": ["air", "lob"], "pattern": "swarm", "layer": "air"},
-      {"id": "thu", "weekday": 4, "families": ["direct", "ring"], "pattern": "ring"},
-      {"id": "fri", "weekday": 5, "families": ["skip", "cluster"], "pattern": "scatter"},
-      {"id": "sat", "weekday": 6, "families": ["assault"], "pattern": "swarm"},
-      {"id": "sun", "weekday": 7, "families": [], "pattern": "swarm"}
+      {"id": "mon", "hpMul": 0.8, "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
+      {"id": "tue", "hpMul": 1.0, "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
+      {"id": "wed", "hpMul": 0.8, "weekday": 3, "families": ["air", "lob"], "pattern": "swarm", "layer": "air"},
+      {"id": "thu", "hpMul": 0.8, "weekday": 4, "families": ["direct", "ring"], "pattern": "ring"},
+      {"id": "fri", "hpMul": 0.8, "weekday": 5, "families": ["skip", "cluster"], "pattern": "scatter"},
+      {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
+      {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
     ]},
   "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
