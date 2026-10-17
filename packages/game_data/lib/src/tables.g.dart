@@ -2737,6 +2737,184 @@ const Map<String, String> rawTables = {
   "tokenExchangeCost": 10
 }
 ''',
+  'iap': r'''
+{
+  "gemSubDaily": 100,
+  "firstBuyMultiplier": 2,
+  "offlineHours": 12,
+  "speedMultiplier": 2,
+  "products": [
+    {
+      "id": "no_ads_30d",
+      "nameKey": "econIapNoAds30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "noAds",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "no_ads",
+      "nameKey": "econIapNoAds",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        }
+      ]
+    },
+    {
+      "id": "speed_30d",
+      "nameKey": "econIapSpeed30d",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "speed",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "nameKey": "econIapSpeed",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "captain_pack",
+      "nameKey": "econIapCaptainPack",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "noAds"
+        },
+        {
+          "id": "speed"
+        }
+      ]
+    },
+    {
+      "id": "starter_pack",
+      "nameKey": "econIapStarterPack",
+      "kind": "nonConsumable",
+      "gems": 600,
+      "heroCards": 1,
+      "skins": [
+        "sprout"
+      ],
+      "limit": 1
+    },
+    {
+      "id": "gem_120",
+      "nameKey": "econIapGem120",
+      "kind": "consumable",
+      "gems": 120,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_650",
+      "nameKey": "econIapGem650",
+      "kind": "consumable",
+      "gems": 650,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_1400",
+      "nameKey": "econIapGem1400",
+      "kind": "consumable",
+      "gems": 1400,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_4200",
+      "nameKey": "econIapGem4200",
+      "kind": "consumable",
+      "gems": 4200,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_9000",
+      "nameKey": "econIapGem9000",
+      "kind": "consumable",
+      "gems": 9000,
+      "firstBuyDouble": true
+    },
+    {
+      "id": "gem_monthly",
+      "nameKey": "econIapGemMonthly",
+      "kind": "subscription",
+      "gems": 300,
+      "entitlements": [
+        {
+          "id": "gemSub",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "voyage_pass",
+      "nameKey": "econIapVoyagePass",
+      "kind": "subscription",
+      "entitlements": [
+        {
+          "id": "pass",
+          "days": 30
+        }
+      ]
+    },
+    {
+      "id": "skin_golden_galleon",
+      "nameKey": "econIapSkinGoldenGalleon",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon"
+      ]
+    },
+    {
+      "id": "skin_jolly_flag",
+      "nameKey": "econIapSkinJollyFlag",
+      "kind": "nonConsumable",
+      "skins": [
+        "jolly_flag"
+      ]
+    },
+    {
+      "id": "skin_coral_yacht",
+      "nameKey": "econIapSkinCoralYacht",
+      "kind": "nonConsumable",
+      "skins": [
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "skin_bundle",
+      "nameKey": "econIapSkinBundle",
+      "kind": "nonConsumable",
+      "skins": [
+        "golden_galleon",
+        "jolly_flag",
+        "coral_yacht"
+      ]
+    },
+    {
+      "id": "offline_12h",
+      "nameKey": "econIapOffline12h",
+      "kind": "nonConsumable",
+      "entitlements": [
+        {
+          "id": "offline12"
+        }
+      ]
+    }
+  ]
+}
+''',
   'juice': r'''
 {
   "hitStopMs": {

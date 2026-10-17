@@ -6,6 +6,7 @@ import 'package:game_core/src/economy/collection_reward.dart' show claimCollecti
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/dungeon.dart';
 import 'package:game_core/src/economy/formation.dart';
+import 'package:game_core/src/economy/iap.dart';
 import 'package:game_core/src/economy/merge.dart';
 import 'package:game_core/src/economy/offline.dart';
 import 'package:game_core/src/economy/operator.dart';
@@ -66,6 +67,10 @@ class EconomySystem implements GameSystem {
     final BuySkin c => buySkin(state, c, ctx),
     final ClaimCollectionReward c => claimCollectionReward(state, c, ctx),
     final ClaimTrial c => claimTrial(state, c, ctx),
+    final GrantPurchase c => grantPurchase(state, c, ctx),
+    RevokeEntitlement(:final id) => revokeEntitlement(state, id, ctx),
+    final OpSetEntitlement c => opSetEntitlement(state, c, ctx),
+    ClaimGemSub() => claimGemSub(state, ctx),
     ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),

@@ -9,6 +9,7 @@ part 'events_rush.dart';
 part 'events_tower.dart';
 part 'events_fast.dart';
 part 'events_fun.dart';
+part 'events_iap.dart';
 part 'events_meta.dart';
 part 'events_rebirth.dart';
 part 'events_stage.dart';
