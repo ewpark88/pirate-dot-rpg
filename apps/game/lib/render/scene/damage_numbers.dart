@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/fx/pool.dart';
 import 'package:pirate_dot/render/fx/transients.dart';
+import 'package:pirate_dot/render/replay/recording_player.dart' show EnemyPose;
 
 export 'package:pirate_dot/render/fx/transients.dart' show DamageKind;
 
@@ -19,6 +20,12 @@ class DamageNumber {
 
   /// 합치기 기준(적 id). 음수면 합치지 않는다(범위 합산 등).
   int key = -1;
+
+  /// 따라갈 적 id(-1 = 제자리) — 맞은 적이 움직여도(보스 돌진·호 왕복) 숫자가 붙어 간다(S1 '숫자가 보스를 따라가야'),
+  /// [ox]·[oy] = 생길 때 그 적과의 차이(쌓기 줄 포함). 적이 사라지면 그 자리에 남아 마저 떠오른다.
+  int follow = -1;
+  double ox = 0;
+  double oy = 0;
 
   /// 그리는 쪽이 붙여 두는 캐시(TextPainter 등). 풀과 함께 재사용된다.
   Object? cache;
@@ -54,7 +61,8 @@ class DamageNumbers {
   /// 1. 같은 적([key])·같은 종류가 [mergeMs] 안이면 그 숫자에 더하고 다시 튀어 오르게.
   /// 2. 지금 그려지는 숫자와 겹치면 한 줄씩 위로 비켜 쌓는다(최대 [stackRows]줄), 넘치면 맨 위 숫자에 합친다.
   /// 3. 동시 상한을 넘으면 가장 오래된 둘을 하나로 합친다 → 합계 보존.
-  void add(BigNum amount, double x, double y, DamageKind kind, {int key = -1}) {
+  /// [on] = 맞은 적의 지금 그림 자리 — 주면 숫자가 그 적을 따라간다.
+  void add(BigNum amount, double x, double y, DamageKind kind, {int key = -1, EnemyPose? on}) {
     final list = pool.active;
     if (key >= 0) {
       for (final n in list) {
@@ -101,13 +109,33 @@ class DamageNumbers {
       ..key = key
       ..x = x
       ..y = top
-      ..ageMs = 0;
+      ..ageMs = 0
+      ..follow = on?.id ?? -1
+      ..ox = on == null ? 0 : x - on.drawX
+      ..oy = on == null ? 0 : top - on.drawY;
+  }
+
+  /// 따라가는 숫자를 대상의 지금 자리로(매 프레임). 대상이 없으면(죽음) 그 자리에 남는다.
+  void track(EnemyPose? Function(int id) poseOf) {
+    for (final n in pool.active) {
+      if (n.follow < 0) continue;
+      final p = poseOf(n.follow);
+      if (p == null) {
+        n.follow = -1;
+        continue;
+      }
+      n
+        ..x = p.drawX + n.ox
+        ..y = p.drawY + n.oy;
+    }
   }
 
   /// 합친 숫자를 새로 띄운다: 지금 그려지는 높이를 새 기준으로 삼아(아래로 떨어져 위 숫자와 겹치지 않게) 수명만 처음부터.
   void _renew(DamageNumber n) {
+    final rise = riseOf(n);
     n
-      ..y = n.y - riseOf(n)
+      ..y = n.y - rise
+      ..oy = n.oy - rise
       ..ageMs = 0;
   }
 
@@ -138,11 +166,13 @@ class DamageNumbers {
   double _scaleOf(DamageKind kind) =>
       kind == DamageKind.normal || kind == DamageKind.ship ? spec.normalScale : spec.critScale;
 
-  void update(double dtMs) {
+  /// [poseOf]가 있으면 따라가는 숫자를 대상 자리로 옮긴다([track]).
+  void update(double dtMs, [EnemyPose? Function(int id)? poseOf]) {
     for (final n in pool.active) {
       n.ageMs += dtMs;
     }
     pool.releaseWhere(_expired);
+    if (poseOf != null) track(poseOf);
   }
 
   // 메서드 tear-off는 부를 때마다 클로저를 만든다 → 필드에 한 번만 만들어 둔다(프레임당 할당 0).

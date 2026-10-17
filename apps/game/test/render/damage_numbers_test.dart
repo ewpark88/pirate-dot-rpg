@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
+import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
 
 import 'helpers.dart';
@@ -68,5 +69,33 @@ void main() {
       ..add(BigNum.from(40), 100, 80, DamageKind.crit, key: 3);
     expect(n.active.map((d) => d.kind), [DamageKind.normal, DamageKind.crit]);
     expect(n.active.last.y, lessThan(80));
+  });
+
+  test('숫자가 맞은 적을 따라간다(보스 이동·돌진) — 상대 위치 유지, 죽으면 그 자리에 남음', () {
+    final nums = fresh();
+    final boss = EnemyPose()
+      ..id = 7
+      ..boss = true
+      ..drawX = 100
+      ..drawY = 50;
+    nums
+      ..add(BigNum.from(999), 100, 40, DamageKind.crit, key: 7, on: boss)
+      ..add(BigNum.from(5), 100, 40, DamageKind.normal, key: 7, on: boss); // 쌓기 줄도 대상 기준
+    final rel = [for (final n in nums.active) (n.x - boss.drawX, n.y - boss.drawY)];
+    EnemyPose? at(int id) => id == 7 ? boss : null;
+    for (var i = 0; i < 20; i++) {
+      boss
+        ..drawX += 9
+        ..drawY += 4;
+      nums.update(16, at);
+      for (final (k, n) in nums.active.indexed) {
+        expect((n.x - boss.drawX, n.y - boss.drawY), rel[k]);
+      }
+    }
+    final last = [for (final n in nums.active) (n.x, n.y)];
+    nums.update(16, (_) => null); // 죽음
+    boss.drawX += 50;
+    nums.update(16, at);
+    expect([for (final n in nums.active) (n.x, n.y)], last);
   });
 }

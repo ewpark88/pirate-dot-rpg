@@ -1,3 +1,5 @@
+import 'dart:ui' show Offset;
+
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -82,6 +84,14 @@ class Moments {
 
   /// 심연의 탑 층 띠(S1): 층 시작 '12F' 1.6초, 클리어면 위에 'CLEAR!'.
   void onTowerFloor(int floor, {bool cleared = false}) => banner('${floor}F', sub: cleared ? 'CLEAR!' : '');
+
+  /// 최근 처치 자리(최대 [_killMax]) — 무리 처치(MultiKill) 때 금화 터짐을 그 자리들에 뿌린다.
+  final recentKills = <Offset>[];
+  static const _killMax = 16;
+  void killAt(double x, double y) {
+    if (recentKills.length >= _killMax) recentKills.removeAt(0);
+    recentKills.add(Offset(x, y));
+  }
 
   /// 요일 던전(S2): 시작 띠 'MON 3' + 그 날 계열(PIERCE · LASER), 그 계열 착탄은 크게·금 테(TopImpact).
   Set<String> dungeonFamilies = const {};

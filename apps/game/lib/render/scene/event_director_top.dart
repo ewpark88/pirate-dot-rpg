@@ -266,6 +266,7 @@ extension _TopEvents on EventDirector {
   void _juiceKill(Kill e) {
     scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
     scene.topHits.impact.chainKill(e.x, e.y, scene.clockMs);
+    scene.moments.killAt(e.x, e.y);
   }
 
   /// 탑다운 보스 처치(피드백 #18): 흔들림·슬로모션·가장자리 빛 + 보스 자리에서 보상 터짐(연쇄 폭발 → 금화·젬 → 배로).
