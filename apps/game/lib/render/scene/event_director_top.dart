@@ -212,6 +212,8 @@ extension _TopEvents on EventDirector {
   }
 
   /// 배 피격: 번쩍(탑다운은 300ms마다 한 번)·체력·숫자(막이 다 받아 0이면 숫자 대신 막 물결)·돌진·물보라·침몰.
+  static const int _shipNumberKey = 1 << 30;
+
   void _shipHit(ShipDamaged e, RecordedTick tick) {
     if (!scene.isTop) {
       scene.shipFlashMs = _juice.flashFrames * kFrameMs;
@@ -219,10 +221,11 @@ extension _TopEvents on EventDirector {
       scene.shipFlashMs = _kTopHitFlashMs;
     }
     scene.shipHpRatio = e.hpRatio;
-    if (e.amount.isZero) {
+    // 0으로 보이는 작은 피해(1 미만)는 숫자 없이 물결만, 배 피해는 한 숫자로 합친다(따로 쌓여 '0'이 세로로 늘어서던 것 — S5 실기기).
+    if (e.amount.isZero || e.amount.format() == '0') {
       scene.topHits.crew.rippleAt = scene.clockMs;
     } else {
-      scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship);
+      scene.numbers.add(e.amount, _shipNumberAt(e).dx, _shipNumberAt(e).dy, DamageKind.ship, key: _shipNumberKey);
     }
     if (scene.isTop && e.fromX != null && e.fromY != null) scene.topHits.hit(scene, e.fromX!, e.fromY!);
     // 돌격대 박치기: 큰 충돌(강 단계 흔들림·멈춤 + 붉은 폭발).
