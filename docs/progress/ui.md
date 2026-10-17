@@ -4,8 +4,8 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | 개편 UI 마무리 6d86f128 — check --full 초록, S1 머지 대기(S2·S5 창 + reward-fx-wire + 내 창 + LEVEL UP!)
-| 다음 | 배 스킨 칸(meta.shipSkins 7 + 환생 4 한 창, IconCell 격자·미리보기·입기/BuySkin·SkinUnlocked 토스트) → 보스 특성 UI 재개(아래 재개 지점)
+| 상태 | lane/ui c9912b53 — 개편 UI 마무리(6d86f128, main 머지됨) 뒤 배 스킨 칸·환영 카드 가림·도감 보상·보스 특성 2차(c9c8a131 UI 초록)·#50 모션·#6 상자 톡! — 다음 slot에서 골든 일괄 + --full
+| 다음 | slot(S3 → S2 → S4) 때 test/ui 골든 일괄 + --full · S5 enemy-windup 피해 줄 수정본 확인 · main proto/render 골든 14개 빨강은 S3·S5 몫(내 레인 밖)
 | 기다리는 것 | slot(팝업 크기 --full) · S2 도감 수집 보상(e0d80c84) main 반영 → '보상 받기' · S5 swap-compare main 반영 → 새 동료 '추천' 칩 |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
@@ -15,6 +15,15 @@
 - 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 밤 · S4 · 배 스킨 칸 · 환영 카드 가림 · 도감 보상 · 보스 특성 2차 · #50 모션 · #6 상자
+- 1ab0538a 배 스킨 칸: 기본·환생 4·새 7종 한 창(미리보기 + 얻는 방법·진행 + 입기/조각 사기, IconCell 격자, SkinUnlockGate 토스트 + 입어 보기). 스킨 버튼 늘 보임.
+- baa8c6ee 환영 카드(starter) 순간 시트 닫기 + 가이드 말 2.6초 접기(guideHoldProvider) — S3 c12ced0a.
+- db15ea34 도감 수집 보상 '보상 받기'(collectionRewards) · 새 동료 '다음 보상까지'도 같은 기준. 3a288850 보스 특성 2차(약점 칩 글자·편성 칩 넘침·테스트·골든).
+- 36c8df3e #50 모션: 토스트 위에서 내려옴, RollingText(배 효과 숫자), 탭 슬라이드 방향·40dp. c9912b53 #6 상자 '톡!'(처음 3번, hints chest.tap1~3).
+- 검토: S5 hd-portrait OK, enemy-windup 피해 줄(자리·percentText 수정 요청), S2 k-windows OK.
+- 남은 문제: main --full이 proto·render 골든 14개로 빨강(S2 검진·S3 HD 뒤 갱신 빠짐, 내 레인 밖 — S1에 보고). 전투력 롤링은 '숫자만 바로' 결정이라 뺐음(S1 확인 대기).
+- 교훈: State의 AnimationController는 initState에서 — late = 지연 생성은 안 쓴 채 dispose될 때 오류. MarkHint는 CommandLog.hints에 따로 모인다.
 
 ### 2026-10-17 저녁 · S4 · 수집의 재미 · 피버까지 n마리 · 팝업 크기 · 보스 특성 1차
 - 94c51a99 새 동료 카드(CardGranted isNew, 연출 뒤 2.6초 · 역할 배지 임시 어댑터 crewRoleOf · 이렇게 싸워요 · 도감 n/40 · [출전시키기]).
