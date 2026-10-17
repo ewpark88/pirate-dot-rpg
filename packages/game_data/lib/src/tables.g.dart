@@ -2675,7 +2675,7 @@ const Map<String, String> rawTables = {
   },
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
-  "fever": { "weave": {"mode": "zigzag", "amp": 70, "legSec": 2.0, "turnSec": 0.45, "surge": 8, "tiltDeg": 25},
+  "fever": { "weave": {"mode": "flow", "amp": 58, "ampY": 22, "periodSec": 4.0, "tiltDeg": 32, "drift": 1.3, "loopEvery": 2, "loopRadius": 20, "loopSec": 1.6},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring" },
