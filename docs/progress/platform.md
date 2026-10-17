@@ -1,7 +1,7 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
 ## 2026-10-17 밤 · S5 · 통합 --full 머지, 피버 v2(#24 배 모션·#23 음악), #13·#14 UI, 검토 4건
-- **현재 위치**: #24·#23 main 머지됨(청취는 다음 폰 빌드). 머지·slot 대기: review/hud-layout 4f098cfc(#9 A·C·D·#26 + 상세 '지금 합치기' → MergeAllCards(crewId)) — 골든 일괄 갱신·--full은 slot(S4 lane/ui 머지 뒤), E는 그 뒤. review/crew-traits-2 b5d56523(선원 정리 2안 엔진 + 설명, S2 검토·S3 연출 요청).
+- **현재 위치**: #24·#23 main 머지됨(청취는 다음 폰 빌드). 머지·slot 대기: review/hud-layout 4f098cfc(#9 A·C·D·#26 + 상세 '지금 합치기' → MergeAllCards(crewId)) — 골든 일괄 갱신·--full은 slot(S4 lane/ui 머지 뒤), E는 그 뒤. review/crew-traits-2 f25e3497(선원 정리 2안 엔진 + 설명 + 요청서 EnemyView.rooted, S2 검토 OK). review/operator-today 0d980567(운영자 '오늘 새 기능' 6개). 발견: main skills.json에 bossBreak 표가 없어 브레이크가 꺼져 있음 — S1에 알림.
 - 한 일
   - #13·#14 UI(review/damage-ui): 선원 칸 아래 피해량, 보스 처치 2.6초 뒤 선원별 피해 창(MVP).
   - 통합 --full: 줄 수(events·top_geometry)·리터럴·하드코딩 문구 고침, ARB는 3-way 키 합치기(scratchpad arb_union.py), 골든은 최신 main 위 다시 굽기. boss-duel 키는 보류 → S1이 ① 채택(S2 재조정).
