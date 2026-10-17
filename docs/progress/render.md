@@ -14,6 +14,12 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-17 오후 · S3 · #20·#6·브레이크·첫 일격·#22·손맛 v4·피버 v2·보급·보통 보스 23종
+- 60e5be0 #20 빠른 항해 정리(콤보 배너 쉼·일반 숫자 없음·흰 속도선·파도 벽/항적 V자 짧게). 8db78be 카드 묶기(×n·+n). c174653 #6 상자(빛줄기·반사·들썩·반짝 줄). 84e27d1 대보스 움직임. a821bf7 보스 브레이크(충격파·조각·BREAK! 도장·기우뚱·별·노란 게이지). d2ade4c 피버 첫 일격(선장 컷인·금빛 번개 12). 42dd438 #22 카드 앞면 공개(cardFx.minRarity, BattleGame.cardFxMinRarity).
+- 85348dd·5089af5 손맛 v4(squash&stretch·파스텔 별/하트·흰 충격파·POP!·치명 별·숫자 overshoot/연쇄 색·코인 튐·5↑ 가장자리) + 피버 v2(전체 금빛·무지개 항적·파편 14·콤보 대형·8자 모션 x·y 항적·꺾임 물보라), 부하 피버 200마리. c0f592f 보급 낙하산 상자. e5f71eb 보통 보스 23종(gen_topdown_rotation_bosses.py). ef85d6c 보스 숨쉬기 공통.
+- 다음: slot 받아 손맛 v4·피버 v2 골든 일괄 갱신(+check --full) → 연쇄 번개(pelly, Damage 순서로 튐)·충전 사격·처형·추적 깃털(crew-traits 머지 뒤) → 보스 특성 7종(S2 boss-traits 이벤트 뒤) → 도감 v2 연출(먹물·삼키기·분열·자폭·떼).
+- 남은 문제: 손맛 v4로 처치·피격 그리기 호출 증가(150마리 164 → 329, 대부분 squash save/scale) — 실기기 gfxinfo로 확인 필요. 흰 1프레임 원은 번쩍임 설정과 무관(작아서) — 사용자 눈부심 피드백 오면 끔.
+
 ### 2026-10-17 · S3 · IdleGate·발열 → 대보스 6종 → 사용자 피드백 #18·#15·#4·#17
 - a00ce43 IdleGate 미연결 발견(battleGameProvider가 idle.follow를 안 부름) → 렌더 발열 입력 idle.heat(ThermalLevel.index: 보통↑ 가벼운 그리기·심함↑ 효과음 절반) + 요청서 render-idle-thermal-link(S4 936b67f8 반영).
 - 3394004 대보스 6종 도트 sea_croc·monster_whale·ice_slime·leviathan·kraken_titan·poseidon(kraken은 심해 해역 보스와 겹쳐 kraken_titan) — tools/art/gen_topdown_bigbosses.py + td_shade.py(입체 음영·디더·부위 구분선), 88도트 2프레임 + 컷인 초상, fx_map bossLook. sprites_test가 regions bossRotation·wallBoss 그림 유무도 검사. 시안 docs/specs/render-topdown/bigbosses_v1.png.
