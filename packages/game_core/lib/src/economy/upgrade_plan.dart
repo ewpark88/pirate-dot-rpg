@@ -17,10 +17,8 @@ UpgradePlan bestUpgradePlan(GameState state, GameTables t) {
   var s = state;
   var spent = BigNum.zero;
   final levels = <String, int>{};
-  // 레벨마다 비용이 커지므로 금방 끝난다. 안전장치로 상한.
-  for (var i = 0; i < _maxSteps; i++) {
-    final pick = autoUpgradePick(s, t);
-    if (pick == null) break;
+  // 레벨마다 비용이 커지고 골드는 줄기만 하므로 반드시 끝난다(최대 레벨 부위는 autoUpgradePick이 뺀다).
+  for (var pick = autoUpgradePick(s, t); pick != null; pick = autoUpgradePick(s, t)) {
     final lv = s.ship.level(pick);
     final cost = partCost(t.shipParts.byId(pick), lv).times(mult);
     spent = spent + cost;
@@ -36,5 +34,3 @@ UpgradePlan bestUpgradePlan(GameState state, GameTables t) {
     after: {for (final p in t.shipParts.parts) p.id: s.ship.level(p.id)},
   );
 }
-
-const _maxSteps = 10000;

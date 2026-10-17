@@ -54,6 +54,9 @@ class WavesTable {
   /// 첫 회차 스테이지 1~[earlyStageMax] 보스는 HP × [earlyHpMultiplier] — 입력 없이도 시작 편성으로 잡히게 (설계서 4.12 1~2단계).
   int get earlyStageMax => _boss.integer('earlyStageMax');
   double get earlyHpMultiplier => _boss.number('earlyHpMultiplier');
+
+  /// 스테이지 1~[earlyStageMax] 보스 공격 배율(없으면 1) — 보스 공격을 크게 올린 뒤(C8 ×100)에도 강화 전 배가 첫 보스에 가라앉지 않게.
+  double get earlyAttackMultiplier => _boss.numberOr('earlyAttackMultiplier', 1);
   double get travelSec => raw.number('travelSec');
 
   /// 빠른 항해: 환생 뒤 bestStage × fraction(올림) 이하 스테이지는 파 [RebirthSkip.waves]개만 잡고 보스.
