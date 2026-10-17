@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show startBoss;
 import 'package:game_core/src/economy/bounty.dart' show bountyBossHp, bountyReward, grantBountyReward;
-import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec;
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -64,7 +63,6 @@ abstract final class TopBounty {
       bossDef: t.regions.bosses[a.bossId],
       maxHp: bountyBossHp(t, a.bossId, a.tier),
       gold: false,
-      extraSec: bossExtraSec(s, t),
       limitSec: t.meta.raw.obj('bounty').number('timeLimitSec'), // 현상금은 시간 도전 그대로(보통 보스는 무제한)
     );
     f.bounty = (bossId: a.bossId, tier: a.tier);

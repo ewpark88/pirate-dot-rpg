@@ -125,7 +125,8 @@ class Field {
   /// 배가 [raw]만큼 맞고 (보호막을 뺀) 깎인 양을 돌려준다. 한 대는 최대 HP × [capRatio](waves.shipHitCap)까지 — 한 대에 가라앉지 않게.
   BigNum hurtShip(BigNum raw, double capRatio) {
     final cap = shipHpMax.times(capRatio);
-    var amount = raw > cap ? cap : raw;
+    final guarded = bossActive && bossGuard > 0 ? raw.times(1 - bossGuard) : raw; // 철갑판(상점 bossTime)
+    var amount = guarded > cap ? cap : guarded;
     final s = shield; // 보호막이 먼저 받는다(개성 v2 7.1)
     if (s != null && !s.hp.isZero) {
       final absorbed = amount > s.hp ? s.hp : amount;
@@ -139,6 +140,9 @@ class Field {
 
   /// 즉석 도전용: 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
   int multiKill = 0;
+
+  /// 보스전·현상금에서 배가 받는 피해 감소 비율(보물지도 상점 철갑판, rebirth_shop bossGuard). BattleSystem이 넣는다.
+  double bossGuard = 0;
 
   /// 피버 무리(meta.fever.swarm, 사용자 폰 피드백 2026-10-17): null이 아니면 다음 무리 파가 countMul배, 자리는 이 패턴(ring = 사방에서 한꺼번에).
   /// BattleSystem이 파를 부르기 전에 넣고 끝나면 지운다.

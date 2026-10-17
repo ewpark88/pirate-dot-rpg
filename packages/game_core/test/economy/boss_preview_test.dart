@@ -1,7 +1,6 @@
 import 'package:game_core/game_core.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart';
-import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec;
 import 'package:test/test.dart';
 
 import 'harness.dart';
@@ -20,7 +19,7 @@ void main() {
       );
       final f = Field(stage: stage, shipHpMax: BigNum.one, shipHp: BigNum.one)
         ..enemyHpScale = treasureHpMultiplier(s, t);
-      startBoss(f, stage, h.ctx, hpScale: tutorialBossScale(s, t), extraSec: bossExtraSec(s, t));
+      startBoss(f, stage, h.ctx, hpScale: tutorialBossScale(s, t));
       final boss = f.foes.firstWhere((e) => e.boss);
       final p = bossPreview(s, t);
       expect(p.bossId, boss.kind);

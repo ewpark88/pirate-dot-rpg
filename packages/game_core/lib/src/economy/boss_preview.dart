@@ -1,7 +1,6 @@
 import 'package:game_core/src/battle/spawner.dart' show bossAttack, bossMaxHp, tutorialBossScale;
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/rebirth_rewards.dart' show treasureHpMultiplier;
-import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec;
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_data/game_data.dart';
 
@@ -19,6 +18,6 @@ BossPreview bossPreview(GameState s, GameTables t) {
     bossId: def.id,
     maxHp: bossMaxHp(t, stage, def: def, hpScale: tutorialBossScale(s, t) * treasureHpMultiplier(s, t)),
     attack: bossAttack(t.waves, stage),
-    timeLimitSec: t.waves.bossTimeLimitSec > 0 ? t.waves.bossTimeLimitSec + bossExtraSec(s, t) : null,
+    timeLimitSec: t.waves.bossTimeLimitSec > 0 ? t.waves.bossTimeLimitSec : null,
   );
 }
