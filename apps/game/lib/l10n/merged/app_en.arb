@@ -683,7 +683,7 @@
   "uiMonsterGhostjelly": "Ghost Jelly",
   "uiMonsterCursegull": "Curse Gull",
   "uiMonsterWraith": "Wraith",
-  "uiSettingsFlashSub": "Off: no screen flashes · On: kept soft",
+  "uiSettingsFlashSub": "Turn off or soften if it hurts your eyes",
   "uiSleepTouch": "Touch the screen to return",
   "uiSleepStage": "Stage {stage} · sailing",
   "uiSleepTitle": "Power saving",
@@ -700,5 +700,40 @@
     }
   },
   "uiBossFailShip": "Upgrade ship",
-  "uiBossFailCrew": "Level up crew"
+  "uiBossFailCrew": "Level up crew",
+  "uiDexNew": "New in the Monster Log! {name}",
+  "uiDexNewGems": "New in the Monster Log! {name} · +{gems} gems",
+  "uiDexTitleShort": "Log",
+  "@uiDexNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiDexNewGems": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSettingsFlashOff": "Off",
+  "uiSettingsFlashSoft": "Soft",
+  "uiSettingsFlashFull": "Full",
+  "uiSettingsSleepAfter": "Sleep screen after",
+  "uiSettingsSleepAfterSub": "Dims when untouched · your ship keeps fighting",
+  "uiSettingsSleepOff": "Off",
+  "uiSettingsSleepMin": "{min} min",
+  "@uiSettingsSleepMin": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "uiNewCrew": "New mate!"
 }
