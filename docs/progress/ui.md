@@ -4,9 +4,9 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui a9d42898 — 보상 비행·편성 교체·합치기 결과·배 강화 손맛·2배속 칩/소리·업적 엔진·도감 보스 상세, test/ui 747 초록 |
+| 상태 | lane/ui 752f8e20 — 환생 연출·상점 2배속 비교 그림·도감 보스 HD 표정 순환, test/ui 751 초록 |
 | 다음 | S2 필살기·보스 여러 줄 계약(captainGauge·TriggerUltimate·autoUltimate·bossBarsLeft) main 반영 → 어댑터 교체·설정 '자동 필살기' 토글 · trialsReady export |
-| 기다리는 것 | S3 HdPortrait moods·silhouette·상점 speed_off/on 그림 main 반영 · S2 필살기·보스 줄 · S3 memory()·crewNames · S1 url_launcher |
+| 기다리는 것 | S2 bossDexView(review/fever-more) · S3 bossEntryMs · S2 필살기·보스 줄 · S3 memory()·crewNames · S1 url_launcher |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
 - 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
@@ -17,6 +17,7 @@
 ## 세션 로그 (최신이 위)
 
 ### 2026-10-18 밤 · S4 · 손맛 연출 묶음(사용자 취침 중 연속)
+- 4d56d874 환생 연출(금빛 감김·지도 비·새 돛 출항·보상 카드, 탭 넘김) + 보스 대화창 1.2초 늦춤(렌더 등장 연출). 752f8e20 상점 2배속 비교 그림·도감 보스 HD moods/실루엣.
 - 4aa068c1 보상 위 막대 비행·통통. 6a48b787 편성 교체 연출. 67ee80f3 일괄 합치기 결과 팝업(전·후 상태 비교). 63b68462·12e43712 배 강화 손맛·마일스톤 도장·골드 차감·2배속 칩. b870d1fa 업적 엔진 연결. fcf28e94 도감 보스 상세. a9d42898 2배속 배경음 1.06·바람(AudioMixPort).
 - 남은 것: 합치기 특성 강화 줄, 도감 '처음 만난 스테이지'(세이브 기록 없음 — 처음 등장으로 대신).
 - 교훈: 연타·시간 판정은 실제 시계 말고 엔진 틱으로(전체 시험 실행에서 흔들림). 반복 애니메이션 초상은 guideMotionProvider를 따르게(pumpAndSettle).
