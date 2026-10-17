@@ -107,15 +107,17 @@ class BattleGame extends FlameGame with _UiLinks {
   final _idleClock = Stopwatch()..start();
 
   /// 방치 단계(입력 없음 60초 → 절전 그리기, 3분 → 어두운 절전 화면). S4는 [IdleLevel.dim]일 때 UI 덮개를 얹는다.
-  late final idle = IdleWatch(
-    idleMs: _capCfg.number('idleSec') * 1000,
-    dimMs: _capCfg.number('dimSec') * 1000,
-    now: () => _idleClock.elapsedMicroseconds / 1000,
-  )..level.addListener(_applyIdle);
+  late final idle =
+      IdleWatch(
+          idleMs: _capCfg.number('idleSec') * 1000,
+          dimMs: _capCfg.number('dimSec') * 1000,
+          now: () => _idleClock.elapsedMicroseconds / 1000,
+        )
+        ..level.addListener(_applyIdle)
+        ..heat.addListener(_applyIdle);
 
-  /// 방치 중엔 사용자 설정 위에 절전·흔들림 끔을 덮는다(설정 값 자체는 그대로).
-  JuiceSettings get _effective =>
-      idle.level.value == IdleLevel.active ? _settings : _settings.copyWith(shake: false, powerSave: true);
+  /// 방치·발열 중엔 사용자 설정 위에 절전·흔들림 끔을 덮는다(설정 값 자체는 그대로).
+  JuiceSettings get _effective => idle.lite ? _settings.copyWith(shake: false, powerSave: true) : _settings;
 
   /// 절전 화면까지 초(사용자 설정 sleepAfterSec 0/60/180/300, 0 = 끔 — S4가 넣는다). 기본은 fx_map frameCap.dimSec.
   double get sleepAfterSec => idle.dimMs / 1000;
@@ -123,11 +125,7 @@ class BattleGame extends FlameGame with _UiLinks {
 
   void _applyIdle() {
     scene.settings = _effective;
-    scene.sound.budgetScale = switch (idle.level.value) {
-      IdleLevel.active => 1,
-      IdleLevel.idle => 0.5,
-      IdleLevel.dim => 0.15,
-    };
+    scene.sound.budgetScale = idle.soundBudget;
     painter.dim = idle.level.value == IdleLevel.dim ? _capCfg.number('dimBrightness') : null;
     _applyCap();
   }

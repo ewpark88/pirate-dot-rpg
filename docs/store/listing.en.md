@@ -17,7 +17,7 @@ Sweep away swarms of sea and sky monsters with cannons and area skills.
 
 🔥 Hack-and-slash, one blast at a time
 - Area attacks pop whole swarms at once — Double, Triple, Massacre!, Pirate King!
-- Every kill charges your captain's Ultimate; when it's full, it sweeps the entire screen
+- Every kill charges the Fever gauge; when it's full, your captain's opening strike sweeps the entire screen and Fever begins
 - Hit-stop, screen shake and coin fountains — the battlefield keeps exploding even when you don't touch it
 
 🏴‍☠️ A ship that visibly grows
@@ -51,10 +51,10 @@ Korean and English · Playable offline (ads need a connection)
 - Contains ads: yes · In-app purchases: none (phase 1)
 
 ## Graphics
-Names above match the in-game English strings (`parts/*.en.arb`: `shipTier*`, `battleRegion*`, `battleCombo*`, `uiHudUltimate`, `uiRebirthTitle`).
+Names above match the in-game English strings (`parts/*.en.arb`: `shipTier*`, `battleRegion*`, `battleCombo*`, `uiFeverBig`, `uiRebirthTitle`).
 Same assets and screenshot order as `listing.ko.md`, with English UI (set the device or in-game language to English) and these captions:
 1. "Blast the whole swarm!"
-2. "A screen-wide Ultimate"
+2. "FEVER! A screen-wide opening strike"
 3. "Upgrade it and watch your ship change"
 4. "Summon 40 crew members"
 5. "Merge your way to Mythic"

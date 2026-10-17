@@ -178,14 +178,12 @@ class Round {
     hitStop('ultimate');
     if (ult.healRatio > 0) heal(ult.healRatio);
     if (targets.isEmpty) return true;
-    final before = kills;
     strike(
       (x: geo.center.x, y: geo.center.y, hits: spread(targets, w)),
       damageOf(gun, t.skills.ultimateMultiplier),
       crewId: captain,
     );
     control(targets, knockback: ult.knockback, stunSec: ult.stunSec);
-    field.ultimateKills += kills - before;
     return true;
   }
 

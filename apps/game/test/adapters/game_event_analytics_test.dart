@@ -34,4 +34,20 @@ void main() {
       ],
     );
   });
+
+  test('도감 이벤트 → dex_seen / dex_first_kill (보스는 1·0)', () {
+    final r = _Recorder();
+    logGameEvents(r, const [
+      DexSeen(1, id: 'crab', boss: false),
+      DexFirstKill(2, id: 'kraken', boss: true, gems: 5),
+    ]);
+    expect([for (final (name, _) in r.logs) name], ['dex_seen', 'dex_first_kill']);
+    expect(
+      [for (final (_, params) in r.logs) params],
+      [
+        {'id': 'crab', 'boss': 0},
+        {'id': 'kraken', 'boss': 1, 'gems': 5},
+      ],
+    );
+  });
 }
