@@ -160,7 +160,9 @@ Future<void> main() async {
     final idle = container.read(idleLevelProvider);
     final thermal = container.read(thermalLevelProvider);
     unawaited(power.setFrameRate(targetFrameRate(idle: idle, thermal: thermal)));
-    audio.quiet = sfxQuiet(idle: idle, thermal: thermal);
+    audio
+      ..quiet = sfxQuiet(idle: idle, thermal: thermal)
+      ..maxTotal = sfxMaxTotal(thermal: thermal, normal: AudioAdapter.maxTotalSfx);
   }
 
   container

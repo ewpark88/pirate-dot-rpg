@@ -31,6 +31,10 @@ class AudioAdapter implements AudioPort {
   static const maxTotalSfx = 6;
   static const sameSfxGapMs = 60;
 
+  /// 효과음 재생 요청이 이 시간 안에 끝나지 않으면(플랫폼 응답 없음) 동시 수 자리를 돌려준다 — 자리가 갇혀 효과음이 영영
+  /// 안 나는 일이 없게(사용자 폰 버그 2026-10-17 회귀 방지).
+  static const sfxSlotTimeout = Duration(seconds: 2);
+
   /// 배경음을 다른 곡으로 바꿀 때 페이드 아웃·인 각각의 시간과 단계 수(피버 전용 곡 전환, 사용자 피드백 #23 — 해역 이동도 같이 부드럽게).
   static const bgmFadeMs = 400;
   static const bgmFadeSteps = 8;
@@ -47,6 +51,9 @@ class AudioAdapter implements AudioPort {
   String? _bgmId;
   bool _bgmPlaying = false;
   int _fadeGen = 0; // 페이드가 겹치면 앞의 것을 버린다
+
+  /// 지금 동시 재생 상한(발열이 심하면 main이 줄인다 — power_policy sfxMaxTotal).
+  int maxTotal = maxTotalSfx;
 
   bool hasSfx(String id) => _files.contains(_sfxPath(id));
 
@@ -73,7 +80,7 @@ class AudioAdapter implements AudioPort {
 
   @override
   void playSfx(String id, {int variant = 0, double pitch = 1}) {
-    if (_sfx <= 0 || _suspended || _quiet || _total >= maxTotalSfx) return;
+    if (_sfx <= 0 || _suspended || _quiet || _total >= maxTotal) return;
     final varied = _sfxPath('${id}_$variant');
     final path = _files.contains(varied) ? varied : _sfxPath(id);
     if (!_files.contains(path)) return;
@@ -83,12 +90,15 @@ class AudioAdapter implements AudioPort {
     _active[id] = n + 1;
     _lastAt[path] = now;
     _total += 1;
-    _fire(
-      _sdk.playSfx(path, volume: _sfx, rate: pitch).whenComplete(() {
-        _active[id] = (_active[id] ?? 1) - 1;
-        _total -= 1;
-      }),
-    );
+    var released = false;
+    void release() {
+      if (released) return;
+      released = true;
+      _active[id] = (_active[id] ?? 1) - 1;
+      _total -= 1;
+    }
+
+    _fire(_sdk.playSfx(path, volume: _sfx, rate: pitch).timeout(sfxSlotTimeout).whenComplete(release));
   }
 
   @override

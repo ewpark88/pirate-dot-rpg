@@ -171,4 +171,27 @@ void main() {
     await _pumpPanel(tester, size: const Size(400, 1400));
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_operator_panel.png'));
   });
+
+  testWidgets('오늘 새 기능(6.10): 피버 99% · 브레이크 가득 · 고른 보스 소환 · pelly 전설 출전 · 출항 대기 · 첫 10연 다시', (tester) async {
+    final log = await _pumpPanel(tester);
+    await _tap(tester, 'op.today.fever');
+    expect(log.sent.whereType<OpLoadState>().last.state.progress.fever, closeTo(0.99, 1e-9));
+    await _tap(tester, 'op.today.break');
+    expect(log.sent.last, isA<OpBossBreak>());
+    await _tap(tester, 'op.today.arc');
+    expect(log.sent.whereType<OpSetCrew>().last.crewId, 'pelly');
+    expect(log.sent.whereType<OpSetFleet>().last.crewIds, ['pelly']);
+    await _tap(tester, 'op.today.sail');
+    final sail = log.sent.whereType<OpLoadState>().last.state.progress;
+    expect((sail.sailHold, sail.rebirths >= 1), (true, true));
+    await _tap(tester, 'op.today.firstTen');
+    expect(log.sent.whereType<OpLoadState>().last.state.summonsTotal, 0);
+    // 보스 고르기 → 소환
+    await _tap(tester, 'op.today.bossPick');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Kraken').last);
+    await tester.pumpAndSettle();
+    await _tap(tester, 'op.today.boss');
+    expect((log.sent.last as OpSpawnBoss).bossId, 'kraken');
+  });
 }

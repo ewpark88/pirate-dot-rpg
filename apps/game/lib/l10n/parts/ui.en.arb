@@ -673,5 +673,13 @@
         "type": "String"
       }
     }
+  },
+  "uiSlotDamage": "DMG {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:pirate_dot/operator/crew_lab_group.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
 import 'package:pirate_dot/operator/platform_group.dart';
 import 'package:pirate_dot/operator/render_group.dart';
+import 'package:pirate_dot/operator/today_group.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 배포 빌드 잔존 검사용 표식 — 지우지 말 것 (tool/check --release, 요청서 platform-release-check A).
@@ -61,6 +62,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
       children: [
         Text(l10n.opPanelTitle, style: Theme.of(context).textTheme.titleLarge),
         _Group(l10n.opGroupSave, [SaveBackupGroup(sampleLabels: sampleLabels)]),
+        _Group(l10n.opGroupToday, const [TodayGroup()]), // 오늘 새 기능(설계서 6.10 — 폰에서 바로 확인)
         _Group(l10n.opGroupBattle, [
           for (final s in _speeds)
             OutlinedButton(
