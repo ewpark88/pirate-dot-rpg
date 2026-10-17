@@ -128,6 +128,7 @@ void startBoss(
   f
     ..bossActive = true
     ..bossTicksLeft = bossTimeLimitTicks(ctx, extraSec: extraSec)
+    ..bossDamage.clear()
     ..travelLeft = 0;
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }

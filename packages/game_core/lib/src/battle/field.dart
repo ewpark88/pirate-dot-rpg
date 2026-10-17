@@ -79,6 +79,26 @@ class Field {
   double buffValue = 0;
   double buffLeft = 0;
 
+  /// 선원별 실제 피해(남은 HP로 자름, 선원 몫만 — 피버 오라·자폭·빠른 항해 제외, 사용자 피드백 #13·#14).
+  /// [crewDamage]는 이번 스테이지(Field가 새로 생기면 0), [bossDamage]는 이번 보스전(보스·분열 몸·촉수, startBoss에서 비움).
+  final crewDamage = <String, BigNum>{};
+  final bossDamage = <String, BigNum>{};
+
+  void creditDamage(String crewId, Foe e, BigNum dealt) {
+    crewDamage[crewId] = (crewDamage[crewId] ?? BigNum.zero) + dealt;
+    if (bossActive && (e.boss || e.ownerId != null)) bossDamage[crewId] = (bossDamage[crewId] ?? BigNum.zero) + dealt;
+  }
+
+  /// 보스전 MVP: 보스 피해가 가장 큰 선원(같으면 출전 칸 앞). 없으면 null.
+  String? get bossMvp {
+    String? best;
+    for (final g in guns) {
+      final d = bossDamage[g.crewId];
+      if (d != null && (best == null || d > bossDamage[best]!)) best = g.crewId;
+    }
+    return best;
+  }
+
   int bossTimerTicks = 0; // 보스 패턴 주기(보호막 재생·용암·소환)까지 남은 틱
 
   BattleGeometry? geometry; // 전장 모양(탑다운). 없으면 waves.top 기본 — geometryOr
@@ -154,5 +174,6 @@ class Field {
     },
     shipShield: shield?.ratio ?? 0,
     fastSail: fastSail?.view(),
+    crewDamage: crewDamage.isEmpty ? const {} : Map.unmodifiable(crewDamage),
   );
 }

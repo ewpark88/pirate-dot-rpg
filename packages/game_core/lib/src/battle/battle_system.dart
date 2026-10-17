@@ -186,7 +186,7 @@ class BattleSystem implements GameSystem {
     final stage = p.stage + 1;
     final gems = stage > p.bestStage ? t.waves.bossGems : 0; // 처음 깬 보스만(사용자 신고 '젬 과다', 환생 뒤 반복은 없음)
     ctx
-      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: gems))
+      ..emit(BossCleared(ctx.tick, stage: p.stage, gems: gems, crewDamage: Map.of(f.bossDamage), mvp: f.bossMvp))
       ..emit(StageAdvanced(ctx.tick, stage: stage));
     if (stage > p.bestStage) ctx.emit(BestStageUpdated(ctx.tick, stage: stage));
     final tier = t.shipTiers.tierAt(stage);

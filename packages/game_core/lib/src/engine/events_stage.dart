@@ -50,16 +50,27 @@ class BossSpawned extends GameEvent {
 }
 
 class BossCleared extends GameEvent {
-  const BossCleared(super.tick, {required this.stage, required this.gems});
+  const BossCleared(super.tick, {required this.stage, required this.gems, this.crewDamage = const {}, this.mvp});
 
   final int stage;
   final int gems;
+
+  /// 이번 보스전 선원별 실제 피해(보스·분열 몸·촉수, 남은 HP로 자름) — 보스 처치 창(#14). 옛 기록은 빈 맵.
+  final Map<String, BigNum> crewDamage;
+
+  /// 보스 피해가 가장 큰 선원(같으면 출전 칸 앞). 선원 피해가 없으면 null.
+  final String? mvp;
 
   @override
   String get type => 'bossCleared';
 
   @override
-  Json _fields() => {'stage': stage, 'gems': gems};
+  Json _fields() => {
+    'stage': stage,
+    'gems': gems,
+    if (crewDamage.isNotEmpty) 'crewDamage': {for (final e in crewDamage.entries) e.key: e.value.toJson()},
+    if (mvp != null) 'mvp': mvp,
+  };
 }
 
 /// 제한 시간 초과 또는 배 침몰 → 파밍 모드.
