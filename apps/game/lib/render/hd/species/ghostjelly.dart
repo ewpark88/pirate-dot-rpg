@@ -7,8 +7,8 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 /// (= 부활 심지), 처진 슬픈 눈. 둥실둥실 위아래 + 촉수가 흩날린다. 떠 있어 그림자는 멀리.
 const ghostjelly = HdSpecies(_ghostjelly, extent: 1.45, ground: 1.3);
 
-const _jade = Color(0xDDA8FFE8);
-const _jadeD = Color(0xDD3AB89A);
+const _jade = Color(0xF4D0FFF4);
+const _jadeD = Color(0xF05ACCB0); // 어두운 유령 바다에서도 튀게 밝고 거의 불투명(S1)
 
 void _ghostjelly(HdKit k, Canvas c, double r, double t) {
   final bob = k.wave(t, 1) * r * 0.1;
@@ -23,7 +23,7 @@ void _ghostjelly(HdKit k, Canvas c, double r, double t) {
       math.pi / 2,
       r * (0.55 + (i.isEven ? 0.15 : 0)),
       2 * math.pi * t / HdKit.loopMs + i,
-      const Color(0xBB8AF0D8),
+      const Color(0xEEA8FFE8),
       r * 0.1,
     );
   }
