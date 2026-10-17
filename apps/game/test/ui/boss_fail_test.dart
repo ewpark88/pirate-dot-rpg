@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tabs/crew_tab.dart';
@@ -43,8 +44,10 @@ void main() {
     expect(find.byType(ShipTab), findsOneWidget); // 배 탭 시트가 열림
     expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
 
-    // 두 번째 실패: 경제 누계 bossFails 2 → 짧게.
+    // 두 번째 실패: 경제 누계 bossFails 2 → 짧게(시트를 닫고 — 열려 있으면 토스트).
     final container = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
+    container.read(dockTabRequestProvider.notifier).close();
+    await tester.pumpAndSettle();
     container.read(gameStateProvider.notifier).replace(s.copyWith(progress: s.progress.copyWith(bossFails: 2)));
     await tester.pump();
     _fail(feed, s);
@@ -98,6 +101,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(CrewTab), findsOneWidget);
     expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
+  });
+
+  testWidgets('시트가 열려 있으면 판 대신 토스트(실기기 ⑤) · 토스트 [보스 도전] → ChallengeBoss', (tester) async {
+    final feed = StreamController<RecordedTick>.broadcast(sync: true);
+    addTearDown(feed.close);
+    final s = _farming();
+    final log = await pumpGame(tester, s, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
+    expect(find.byKey(const Key('sheet.panel')), findsOneWidget);
+    _fail(feed, s);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('bossFail.detailed')), findsNothing);
+    expect(find.text('The boss got away'), findsNothing); // 판 제목
+    expect(find.text('Boss got away — upgrade and retry!'), findsOneWidget); // 토스트
+    await tester.tap(find.text('Challenge Boss').last);
+    await tester.pump(const Duration(seconds: 4));
+    expect(log.sent.whereType<ChallengeBoss>(), hasLength(1));
   });
 
   testWidgets('파밍 중 띠: 파밍이면 보이고 아니면 없다', (tester) async {

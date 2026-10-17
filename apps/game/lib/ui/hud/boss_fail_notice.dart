@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 안내가 저절로 사라지는 시간 — 처음(자세히)은 길게, 이후(짧게)는 짧게 (피로 원칙).
@@ -20,8 +21,11 @@ const _laterShow = Duration(seconds: 4);
 /// 처음: '보스를 놓쳤어요' + '배를 강화하거나 선원 레벨을 올린 뒤 다시 도전' + [배 강화] [선원] 바로 가기 + [보스 도전].
 /// 이후: 한 줄 + 같은 세 버튼(작게).
 /// 보스에 다시 도전하거나(파밍 끝) 시간이 지나면 사라진다. 전장 위쪽에 얹고 빈 곳은 눌림을 통과시킨다.
+/// 시트가 열려 있으면([sheetOpen]) 판 대신 작은 토스트 + [보스 도전](S1 실기기 ⑤ — 판이 남은 전장을 덮었다).
 class BossFailNotice extends ConsumerStatefulWidget {
-  const BossFailNotice({super.key});
+  const BossFailNotice({this.sheetOpen = false, super.key});
+
+  final bool sheetOpen;
 
   @override
   ConsumerState<BossFailNotice> createState() => _BossFailNoticeState();
@@ -45,6 +49,15 @@ class _BossFailNoticeState extends ConsumerState<BossFailNotice> {
   }
 
   void _show() {
+    if (widget.sheetOpen) {
+      final l10n = AppLocalizations.of(context);
+      return showSkinToast(
+        context,
+        l10n.uiBossFailShort,
+        action: l10n.uiBossChallenge,
+        onAction: () => ref.read(commandSinkProvider).send(const ChallengeBoss()),
+      );
+    }
     // 처음 실패(경제 progress.bossFails — 이번 실패까지 센 누계가 1 이하)만 자세히. 환생해도 이어진다.
     final seen = ref.read(gameStateProvider).progress.bossFails > 1;
     _hide?.cancel();
@@ -55,6 +68,13 @@ class _BossFailNoticeState extends ConsumerState<BossFailNotice> {
   void _close() {
     _hide?.cancel();
     if (mounted && _detailed != null) setState(() => _detailed = null);
+  }
+
+  @override
+  void didUpdateWidget(BossFailNotice old) {
+    super.didUpdateWidget(old);
+    // 판이 떠 있는데 시트가 열리면 접는다.
+    if (widget.sheetOpen && !old.sheetOpen) _close();
   }
 
   @override
