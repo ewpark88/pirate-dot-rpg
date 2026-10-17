@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/hp_pill.dart';
+import 'package:pirate_dot/render/paint/pixel_glyphs.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
@@ -119,7 +120,11 @@ class TopMarks {
       _bossLag[e.id] = lag;
       scene.topHits.glow.paintBoss(c, scene.clockMs, Offset(e.drawX, e.drawY), r);
       final w = (r * 1.7).clamp(40.0, 72.0).roundToDouble() + 6; // 사용자 '보스 체력이 안 보인다' — 넓고 굵게
-      var fill = _pill.colorFor(ratio);
+      // 체력 층(S1 '여러 줄'): 지금 층만 막대에 차고 위 층은 색이 다르다, 오른쪽에 'x남은 층'.
+      final b = scene.topHits.breaks;
+      final layer = b.layerOf(ratio);
+      final within = b.withinLayer(ratio);
+      var fill = layer > 1 ? _layerColors[(layer - 2) % _layerColors.length] : _pill.colorFor(within);
       if (_pill.isLow(ratio) && (scene.clockMs / 250).floor().isEven) {
         fill = Color.lerp(Color(fill), const Color(0xFFFFFFFF), 0.35)!.toARGB32();
       }
@@ -129,11 +134,12 @@ class TopMarks {
         top: (e.drawY - r - 12).roundToDouble(),
         w: w,
         h: 9,
-        ratio: ratio,
-        lag: lag,
+        ratio: within,
+        lag: lag > ratio && b.layerOf(lag) == layer ? b.withinLayer(lag) : within,
         fill: fill,
         skull: true,
       );
+      _layerMarks(c, e, layer, (e.drawX - w / 2).roundToDouble(), (e.drawY - r - 12).roundToDouble(), w);
       _breakBar(c, e, (e.drawX - w / 2).roundToDouble() + 8, (e.drawY - r - 1).roundToDouble(), w - 8);
     }
     if (_bossLag.length > 8) _bossLag.clear();
@@ -141,6 +147,35 @@ class TopMarks {
     // 브레이크 도장·별은 보스 체력 막대 위에.
     scene.topHits.breaks.paint(c, scene.clockMs, _poseAt, flash: scene.settings.flash, lite: scene.topHits.lite);
   }
+
+  static const _layerColors = [0xFFFF9A3A, 0xFFB45AFF, 0xFF4AA8FF]; // 위 층 색(2층 주황·3층 보라·4층 파랑)
+
+  /// 남은 층 'x2'(깨진 순간 2배로 튀어나옴) + 깨질 때 유리 조각 8개가 막대에서 튀어 떨어진다(0.5초).
+  void _layerMarks(Canvas c, EnemyPose e, int layer, double left, double top, double w) {
+    final age = scene.topHits.breaks.crackAge(e.id, scene.clockMs);
+    if (layer > 1 || age < 400) {
+      drawPixelText(c, 'x$layer', left + w + 2, top - (age < 300 ? 3 : 0), 0xFFFFFFFF, scale: age < 300 ? 2 : 1);
+    }
+    if (age >= 500) return;
+    final t = age / 500;
+    final old = layer > 1 ? _layerColors[(layer - 1) % _layerColors.length] : _layerColors[0];
+    _shardPaint.color = Color(old).withValues(alpha: 1 - t);
+    for (var i = 0; i < 8; i++) {
+      final a = -math.pi * (0.1 + 0.8 * i / 7);
+      final v = 30 + (i % 3) * 14.0;
+      final p = Offset(left + w * (i + 0.5) / 8 + math.cos(a) * v * t, top + 4 + math.sin(a) * v * t + 90 * t * t);
+      c.drawPath(
+        Path()
+          ..moveTo(p.dx, p.dy - 3)
+          ..lineTo(p.dx + 3, p.dy + 2)
+          ..lineTo(p.dx - 2, p.dy + 3)
+          ..close(),
+        _shardPaint,
+      );
+    }
+  }
+
+  final _shardPaint = Paint();
 
   Offset? _poseAt(int id) {
     for (var k = 0; k < scene.poseCount; k++) {

@@ -28,6 +28,35 @@ class TopBreak {
   static const _ringMs = 520.0;
   static const _stampMs = 1300.0;
 
+  /// 보스 체력 층(S1 '체력바 여러 줄' — S2 BossBarBroken 전엔 렌더가 체력을 [layers]칸으로 나눠 본다).
+  int layers = 3;
+  final Map<int, (int, double)> _layer = {}; // 보스 id → (지금 층, 깨진 시각)
+
+  /// 체력 [ratio]의 층(1 ~ [layers]) — 위 층부터 깎인다.
+  int layerOf(double ratio) => (ratio * layers).ceil().clamp(1, layers);
+
+  /// 층 안 남은 비율 0~1(막대에 그 층만 찬다).
+  double withinLayer(double ratio) => (ratio * layers - (layerOf(ratio) - 1)).clamp(0.0, 1.0);
+
+  /// 보스 [id]의 층을 갱신 — 층이 줄었으면(깨짐) 시각을 기록하고 true.
+  bool track(int id, double ratio, double now) {
+    final l = layerOf(ratio);
+    final prev = _layer[id];
+    if (_layer.length > 8 && prev == null) _layer.clear();
+    if (prev != null && l < prev.$1 && ratio > 0) {
+      _layer[id] = (l, now);
+      return true;
+    }
+    if (prev == null || l > prev.$1) _layer[id] = (l, -1000000000);
+    return false;
+  }
+
+  /// 층이 깨진 뒤 지난 ms(없으면 큰 값).
+  double crackAge(int id, double now) {
+    final at = _layer[id]?.$2;
+    return at == null || now < at ? 1e9 : now - at;
+  }
+
   /// 보스 [id]가 ([x],[y])에서 [ms] 동안 쓰러졌다.
   void broken(int id, double x, double y, double ms, double now) {
     _id = id;
