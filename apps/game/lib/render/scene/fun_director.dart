@@ -54,7 +54,7 @@ bool funEvent(BattleScene s, GameEvent e) {
     case MultiKill(:final count) when s.isTop && count >= 5:
       if (s.settings.flash && s.screenFlashMs <= 0) s.screenFlashMs = 140;
       final k = ((count - 5) / 35).clamp(0.0, 1.0);
-      s.shake.triggerPx(1.5 + 2.5 * k, 120 + 130 * k);
+      s.shake.triggerPx((1.5 + 2.5 * k) * 1.3, 120 + 130 * k); // ×1.3(S1 '임팩트')
       s.sound.chain(2 + (4 * k).round(), s.clockMs);
       final kills = s.moments.recentKills;
       for (var i = 0; i < kills.length && i < 2 + (6 * k).round(); i++) {

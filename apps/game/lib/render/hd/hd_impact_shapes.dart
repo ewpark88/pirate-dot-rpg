@@ -246,34 +246,6 @@ extension _ImpactShapes on HdImpact {
     }
   }
 
-  /// 요일 던전 그 날 계열: 두꺼운 금 테.
-  void _hotRim(Canvas c, double r, double t) {
-    _stroke
-      ..strokeWidth = r * 0.12 * (1 - t * 0.6)
-      ..color = Color.fromRGBO(255, 212, 90, _late(t));
-    c.drawCircle(Offset.zero, r * (1 + 0.25 * _ease(t)), _stroke);
-  }
-
-  /// 신화: 무지개 테(색이 돈다).
-  void _rainbowRim(Canvas c, double r, double t) {
-    _stroke
-      ..strokeWidth = r * 0.06
-      ..shader = Gradient.sweep(
-        Offset.zero,
-        const [
-          Color(0xFFFF5A5A),
-          Color(0xFFFFD45A),
-          Color(0xFF5AD86A),
-          Color(0xFF4AA8FF),
-          Color(0xFFB45AFF),
-          Color(0xFFFF5A5A),
-        ],
-        const [0, 0.2, 0.4, 0.6, 0.8, 1],
-      );
-    c.drawCircle(Offset.zero, r * (0.9 + 0.3 * _ease(t)), _stroke);
-    _stroke.shader = null;
-  }
-
   /// 외곽선 별([points]갈래).
   void _star(Canvas c, Offset at, double s, int points, Color light, Color dark, double alpha) {
     if (s <= 0.3) return;

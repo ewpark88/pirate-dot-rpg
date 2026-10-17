@@ -99,6 +99,16 @@ class SoundDirector {
     if (log.length > _logMax) log.removeAt(0);
   }
 
+  double _lastTing = -1000000000;
+
+  /// 치명 '쨍': 치명 타격음을 높게(1.7) 겹친다 — 90ms에 한 번.
+  void ting(double clockMs) {
+    if (clockMs < _lastTing) _lastTing = -1000000000;
+    if (audio == null || clockMs - _lastTing < 90) return;
+    _lastTing = clockMs;
+    audio!.playSfx('hit_crit', pitch: 1.7);
+  }
+
   /// 무리 처치 연쇄 '퍼퍼펑': pop을 [n]번 45ms 간격으로 음높이를 올리며(예산과 별개, 한 번에 최대 6).
   void chain(int n, double clockMs) {
     if (_chain.isNotEmpty) return; // 앞 연쇄가 끝나기 전엔 겹치지 않게

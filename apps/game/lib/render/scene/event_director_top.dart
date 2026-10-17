@@ -253,11 +253,16 @@ extension _TopEvents on EventDirector {
       scene.topHits.impact.add(en.x, en.y, 8, 0xFFFFE08A, scene.clockMs);
     }
     final strong = en.boss;
-    if (!strong && !e.crit) return;
     final ship = scene.topShip;
     final at = Offset(en.x, en.y);
+    // 일반 피격도 작은 넉백(S1 '임팩트' — 적 쪽에서 크게), 치명은 '쨍'
+    if (!strong && !e.crit) {
+      if (!scene.topHits.lite) scene.topHits.juice.knock(e.targetId, at, ship, scene.clockMs, units: 2);
+      return;
+    }
+    if (e.crit) scene.sound.ting(scene.clockMs);
     scene.topHits.juice
-      ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake)
+      ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake, crit: e.crit)
       ..knock(e.targetId, at, ship, scene.clockMs, units: strong ? 3 : 5);
     scene.sound.thud(scene.clockMs, big: strong);
   }
