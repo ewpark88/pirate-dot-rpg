@@ -9,7 +9,7 @@
 | --- | --- |
 | 마일스톤 | **M0 하네스 구축 — 완료** (`contracts-v1` 태그, origin: github.com/ewpark88/pirate-dot-rpg) |
 | 마지막 갱신 | 2026-10-17 · S1 |
-| 바로 다음 할 일 | **인계 docs/plans/active/handoff-2026-10-16.md 4절 재개 순서**: check --full → 레인 4개 재배정(완료) → 폰 연결 시 release_smoke 설치·발열 측정 → fever-break UI·보스 브레이크 수치·대보스 도트·도감 v2 |
+| 바로 다음 할 일 | **사용자 피드백 21건(docs/plans/active/user-feedback-2026-10-17.md)** P0: 1분 희귀 연사 선원·피버 200→1000·가이드 v2·패배 안내·초반 핵앤슬래시·보스/카드/상자 보상 연출 → P1 정보 표시 → P2 다듬기. 폰 연결 시 설치·발열 측정 |
 | 막힌 것 | 없음 |
 
 ## 마일스톤 체크리스트 (설계서 11장)
@@ -115,6 +115,7 @@ title S4-ui      & cd /d D:\Projects\pde-ui      & claude   → /lane-start ui
 ### 2026-10-17 · S1 · 재개: 레인 재배정
 - 세션 새로 열림: S2 economy=pirate-dot-rpg-26, S3 render=-5d, S4 ui=-24, S5 platform=-e8 (각자 D:\Projects\pde-<레인>). 인계 1절의 레인별 할 일 그대로 배정, 무거운 작업은 S1에 slot 요청 후 하나씩.
 - main 07b7f035 check --full 실행. 폰 미연결(adb 장치 없음) → 설치·실측은 연결 뒤.
+- 사용자 피드백 21건(폰 20분 플레이) → 우선순위 P0/P1/P2로 정해 4레인 배정(계획 user-feedback-2026-10-17.md). 스토어 샷 굽기는 화면 변경 뒤로 보류. 브레이크 기준 = balance crews ±10% 유지(S2 (b)). 대보스 id 확정(kraken_titan), 튜토리얼 1~3 보스 enemy_ship 고정.
 
 ### 2026-10-16 · S1 · 저녁: 사용자 퇴근 — 인계
 - 인계 문서: docs/plans/active/handoff-2026-10-16.md(오늘 사용자 요청 전체·상태·결정·머지 대기·재개 순서). 재개 시 이 문서부터.
