@@ -1152,7 +1152,29 @@
     "goldBase": "#2F8ACF",
     "feverBase": "#F2B634",
     "feverDeep": "#F59A2C",
-    "feverShallow": "#FFD66A"
+    "feverShallow": "#FFD66A",
+    "regions": {
+      "coral": { "base": "#1E6FA8", "deep": "#175E92", "shallow": "#2A80BA", "wave": "#7FC4EC" },
+      "storm": { "base": "#1F4E78", "deep": "#183F63", "shallow": "#2A5E8A", "wave": "#8AB0CF" },
+      "glacier": { "base": "#22668E", "deep": "#1A5476", "shallow": "#3378A0", "wave": "#C2E6FA" },
+      "volcano": { "base": "#33355A", "deep": "#272846", "shallow": "#43446C", "wave": "#E0A890" },
+      "abyss": { "base": "#152E5A", "deep": "#0F2246", "shallow": "#1E3C6E", "wave": "#6E8FD0" },
+      "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
+    },
+    "props": {
+      "spacing": 70,
+      "maxOnScreen": 6,
+      "laneHalf": 34,
+      "size": 28,
+      "sets": {
+        "coral": ["coral", "rock", "buoy", "seaweed"],
+        "storm": ["plank", "barrel", "buoy", "rock"],
+        "glacier": ["ice", "ice", "rock", "barrel"],
+        "volcano": ["lavaRock", "lavaRock", "rock", "plank"],
+        "abyss": ["seaweed", "rock", "coral", "barrel"],
+        "phantom": ["plank", "barrel", "rock", "seaweed"]
+      }
+    }
   },
   "atmosphere": {
     "cycleSec": 720,
