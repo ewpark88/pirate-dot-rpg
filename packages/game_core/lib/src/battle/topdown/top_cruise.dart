@@ -13,6 +13,7 @@ import 'package:game_data/game_data.dart';
 /// - 진행 방향은 초당 turnDegPerSec까지만 꺾인다 → 빠를수록 큰 호(급회전·제자리 뱅글 없음 — 예전 '360도 돌며 촐싹' 금지).
 /// - 머리(heading)는 바다 흐름(forwardFlow — 배는 늘 앞으로)을 더한 진행 방향, ±maxTiltDeg까지.
 /// - 피버: 속도 × feverSpeedMul, 돌진 간격 × feverDashMul.
+/// - mode 'line'(사용자 결정 2026-10-17 '일직선으로 이동만'): 호·회전 없이 무리 쪽 직선 왕복(_line), 머리 0.
 /// - feverOnly(사용자 결정 2026-10-17): 피버 중에만 순항, 끝나면 감속하며 제자리(settleDist 안에서 정확히 0)로 — 평소 화면은 순항 전과 같다.
 /// - 자리는 rect(x 좌우, up 위, down 아래 — 바다 가운데 기준) 밖으로 나가지 않는다(화면·안전 영역).
 /// 표에 cruise가 없으면 null — 배는 예전처럼 제자리(피버 땐 meta.fever.weave).
@@ -64,6 +65,7 @@ class TopCruise {
     if (rest && !st.returning) return (x: 0.0, y: 0.0, heading: 0.0);
     if (!rest) st.returning = true;
     if (rest) st.dashLeft = 0;
+    if (c.raw['mode'] == 'line') return _line(f, g, st, cur, rest: rest, fever: fever, dt: dt);
     st.sec += dt * (fever ? c.number('feverSpeedMul') : 1); // 피버면 8자도 빨리
     final fast = fever ? c.number('feverSpeedMul') : 1.0;
     final every =
@@ -125,6 +127,67 @@ class TopCruise {
     st.heading = _turnToward(st.heading, face, headingTurn * dt);
     if (rest && nx == 0 && ny == 0 && st.heading == 0) st.returning = false; // 제자리 도착 — 다음 피버까지 가만히
     return (x: nx, y: ny, heading: st.heading);
+  }
+
+  /// 일직선 왕복(mode 'line' — 사용자 결정 2026-10-17 '저번처럼 일직선으로 이동만'): 피버 중엔 빽빽한 무리 쪽(없으면 좌우
+  /// 번갈아)으로 직선으로 빠르게(× dashSpeedMul) 갔다가 직선으로 제자리(0)로 — 반복. 방향은 늘 목표로 곧게(호·회전 없음),
+  /// 머리는 0 그대로. 속력은 accel로 올리고 slowRadius 안에선 줄인다. 피버가 끝나면(rest) 직선으로 0에 선다.
+  ({double x, double y, double heading}) _line(
+    Field f,
+    TopGeometry g,
+    _CruiseState st,
+    ({double x, double y}) cur, {
+    required bool rest,
+    required bool fever,
+    required double dt,
+  }) {
+    double gap() => math.sqrt(math.pow(st.tx - cur.x, 1 + 1) + math.pow(st.ty - cur.y, 1 + 1));
+    if (rest) {
+      st
+        ..tx = 0
+        ..ty = 0
+        ..out = false
+        ..legOn = false;
+    } else if (!st.legOn || gap() <= c.number('arriveRadius')) {
+      if (st.out) {
+        st
+          ..tx = 0
+          ..ty = 0
+          ..out = false;
+      } else {
+        st.side = st.side == 0 ? 1 : -st.side;
+        final hit = _cluster(f, g, cur) ?? (x: st.side * c.obj('rect').number('x'), y: -c.number('homeUp'));
+        final at = _clamp(hit.x, hit.y);
+        st
+          ..tx = at.x
+          ..ty = at.y
+          ..out = true;
+      }
+      st.legOn = true;
+    }
+    final dx = st.tx - cur.x;
+    final dy = st.ty - cur.y;
+    final d = math.sqrt(dx * dx + dy * dy);
+    final top = speed * (fever ? c.number('feverSpeedMul') : 1) * (st.out ? c.number('dashSpeedMul') : 1);
+    final want = math.min(top, top * d / c.number('slowRadius'));
+    var v = math.sqrt(st.vx * st.vx + st.vy * st.vy);
+    v = want > v ? math.min(want, v + c.number('accel') * dt) : math.max(want, v - c.number('decel') * dt);
+    final step = math.min(v * dt, d);
+    var nx = d == 0 ? cur.x : cur.x + dx / d * step;
+    var ny = d == 0 ? cur.y : cur.y + dy / d * step;
+    st
+      ..vx = d == 0 ? 0 : dx / d * v
+      ..vy = d == 0 ? 0 : dy / d * v
+      ..heading = 0;
+    if (rest && math.sqrt(nx * nx + ny * ny) <= c.number('settleDist')) {
+      nx = 0;
+      ny = 0;
+      st
+        ..vx = 0
+        ..vy = 0
+        ..returning = false;
+    }
+    return (x: nx, y: ny, heading: 0.0);
   }
 
   /// [dir]로 갈 때 rect 벽까지 남은 거리에서 decel로 멈출 수 있는 속력(√(2·decel·거리) ÷ 그 축 성분).
@@ -219,4 +282,7 @@ class _CruiseState {
   double ty = 0;
   int tick = -1;
   bool returning = false; // 피버 순항 뒤 제자리로 돌아가는 중(feverOnly)
+  bool out = false; // 일직선 왕복: 나가는 다리인가(아니면 제자리로 돌아오는 다리)
+  bool legOn = false; // 일직선 왕복: 지금 다리의 목표가 정해졌나
+  int side = 0; // 무리가 없을 때 번갈아 갈 쪽(1 오른쪽, −1 왼쪽)
 }
