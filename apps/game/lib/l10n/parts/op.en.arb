@@ -49,5 +49,13 @@
   },
   "opLabWave": "Normal wave (with vanguard)",
   "opGroupLab": "Crew lab",
-  "opCardFxMin": "Card reveal from"
+  "opCardFxMin": "Card reveal from",
+  "opGroupToday": "Today's new features",
+  "opTodayFever": "Fever soon (99%)",
+  "opTodayBreak": "Fill boss break",
+  "opTodayBossPick": "Pick a special boss",
+  "opTodayBoss": "Spawn picked boss",
+  "opTodayArc": "Chain lightning test (pelly legend)",
+  "opTodaySail": "Sail-hold state",
+  "opTodayFirstTen": "Free first 10x again"
 }

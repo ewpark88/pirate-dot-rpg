@@ -155,9 +155,12 @@ BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
   ).times(w.bossHpMultiplier * d.hpMultiplier * hpScale * wallBossScale(w, stage));
 }
 
-/// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`.
-BigNum bossAttack(WavesTable w, int stage) =>
-    stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier);
+/// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`, 스테이지 1~earlyStageMax는 × earlyAttackMultiplier.
+BigNum bossAttack(WavesTable w, int stage) => stageCurve(
+  w.attackBase,
+  w.attackGrowth,
+  stage,
+).times(w.bossAttackMultiplier * (stage <= w.earlyStageMax ? w.earlyAttackMultiplier : 1));
 
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.

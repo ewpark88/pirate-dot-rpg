@@ -9,6 +9,7 @@ import 'package:game_core/src/battle/legend.dart';
 import 'package:game_core/src/battle/skills.dart';
 import 'package:game_core/src/battle/spawner.dart';
 import 'package:game_core/src/battle/tailwind_speed.dart';
+import 'package:game_core/src/battle/topdown/operator_boss.dart';
 import 'package:game_core/src/battle/topdown/top_bounty.dart';
 import 'package:game_core/src/bignum/big_num.dart';
 import 'package:game_core/src/economy/cards.dart' show fastSailSupplyLevels, grantBossCards, recordDex;
@@ -80,10 +81,8 @@ class BattleSystem implements GameSystem {
         f.bossActive = false;
         spawnWave(f, state.progress.stage, ctx, count: count, kind: enemyKind);
         return _project(state, f, ctx.tables);
-      case OpSpawnBoss():
-        final f = _sync(state, ctx)..foes.clear();
-        startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
-        return _project(state, f, ctx.tables);
+      case OpSpawnBoss() || OpBossBreak(): // 운영자 보스 소환(보스 고르기)·브레이크 가득(topdown/operator_boss.dart)
+        return _project(state, operatorBoss(_sync(state, ctx), state, ctx, command as OperatorCommand), ctx.tables);
       case OpSetInvincible(:final on):
         _invincible = on;
         return state;
