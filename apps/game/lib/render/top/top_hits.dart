@@ -38,6 +38,9 @@ class TopHits {
   /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
   TopTraits? traits;
 
+  /// 배 스킨 포구 화염 색(TopScenePainter가 프레임마다, 없으면 등급 색).
+  int? skinMuzzle;
+
   /// 디자인 개편 발광: 스킬 마법진(배 밑).
   final glow = TopGlow();
 

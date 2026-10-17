@@ -269,15 +269,19 @@ class TopSeaPainter {
       final b = _wakeBuckets[k];
       if (b.n == 0) continue;
       // 피버 v2: 무지개 항적 — 거리 칸마다 색이 다르고 시간에 따라 흘러간다.
-      _points.color = fever > 0.5
+      _points.color = fever > 0.5 || wakeRainbow
           ? HSVColor.fromAHSV(0.35 + 0.6 * (k + 1) / 4, (_rainbowClock / 4 + k * 70) % 360, 0.8, 1).toColor()
-          : _foam.withValues(alpha: 0.2 + 0.7 * (k + 1) / 4);
+          : (wakeTint == null ? _foam : Color(wakeTint!)).withValues(alpha: 0.2 + 0.7 * (k + 1) / 4);
       c.drawRawPoints(PointMode.points, Float32List.sublistView(b.xy, 0, b.n * 2), _points);
     }
   }
 
   final List<_Points> _wakeBuckets = List.generate(4, (_) => _Points(480));
   double _rainbowClock = 0;
+
+  /// 배 스킨 항적 색·무지개(배 스킨 v2).
+  int? wakeTint;
+  bool wakeRainbow = false;
 }
 
 /// 점 묶음(재사용 버퍼) — 프레임마다 할당 없이 채운다.
