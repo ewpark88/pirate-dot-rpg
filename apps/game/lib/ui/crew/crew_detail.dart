@@ -32,8 +32,8 @@ const _cardWidth = 132.0;
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
 
 /// 선원 카드를 누르면 상세 창 (사용자 요청 A).
-Future<void> showCrewDetail(BuildContext context, CrewDef def) => showDialog<void>(
-  context: context,
+Future<void> showCrewDetail(BuildContext context, CrewDef def) => showSkinDialog<void>(
+  context,
   builder: (_) => CrewDetailDialog(def: def),
 );
 

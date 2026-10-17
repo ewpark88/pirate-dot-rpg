@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/dock/home_dock.dart' show kDockHeight;
 import 'package:pirate_dot/ui/hud/hp_bars.dart' show shipHpAnchor;
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/pb_card.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
@@ -159,6 +160,8 @@ class GuideSkipDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AlertDialog(
     key: const Key('guide.skip.dialog'),
+    insetPadding: popupInset,
+    constraints: popupConstraints(context),
     title: Text(l10n.uiGuideSkipAsk, style: Skin.text(20)),
     actions: [
       SkinButton(

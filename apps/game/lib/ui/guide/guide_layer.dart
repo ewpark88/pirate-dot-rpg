@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_marks.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
 import 'package:pirate_dot/ui/guide/guide_talk.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -20,8 +21,7 @@ const _track = Duration(milliseconds: 150);
 /// 새 말이 나오기 전 쉼 (S1: 앞 행동의 결과가 끝나고 0.5~1초 뒤).
 const _pause = Duration(milliseconds: 700);
 
-/// 반응('좋아요! …')이 머무는 시간.
-const _reactionFor = Duration(milliseconds: 1500);
+const _reactionFor = Duration(milliseconds: 1500); // 반응('좋아요! …')이 머무는 시간
 
 /// 전투 중 말이 초상만 남게 접히기까지.
 const _collapseAfter = Duration(seconds: 3);
@@ -153,8 +153,8 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
 
   Future<void> _skip() async {
     final l10n = AppLocalizations.of(context);
-    final off = await showDialog<bool>(
-      context: context,
+    final off = await showSkinDialog<bool>(
+      context,
       builder: (_) => GuideSkipDialog(l10n: l10n),
     );
     if (off != true || !mounted) return;

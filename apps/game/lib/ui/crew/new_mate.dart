@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -96,8 +97,8 @@ class _NewMateGateState extends ConsumerState<NewMateGate> {
     if (!mounted || _open || _queue.isEmpty) return;
     _open = true;
     final (id, rarity) = _queue.removeAt(0);
-    await showDialog<void>(
-      context: context,
+    await showSkinDialog<void>(
+      context,
       builder: (_) => NewMateDialog(crewId: id, rarityId: rarity),
     );
     _open = false;
@@ -143,10 +144,10 @@ class NewMateDialog extends ConsumerWidget {
     final empty = ref.read(fleetSlotsProvider).indexOf(null);
     final name = shortCrewName(l10n, def);
     return Dialog(
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: popupInset,
       backgroundColor: Colors.transparent,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: (MediaQuery.sizeOf(context).width * 0.85).clamp(0, 340)),
+        constraints: popupConstraints(context),
         child: Container(
           key: const Key('newMate'),
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),

@@ -171,8 +171,8 @@ class _FastSailEndGateState extends ConsumerState<FastSailEndGate> {
     final lost = e.lost;
     ref.read(audioPortProvider)?.playSfx('fanfare');
     unawaited(
-      showDialog<void>(
-        context: context,
+      showSkinDialog<void>(
+        context,
         builder: (_) => FastSailEndDialog(ended: e, lost: lost),
       ),
     );

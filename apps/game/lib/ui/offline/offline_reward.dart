@@ -61,8 +61,8 @@ class _OfflineRewardGateState extends ConsumerState<OfflineRewardGate> {
     final preview = ref.read(offlinePreviewProvider)(ref.read(gameStateProvider), ref.read(clockProvider).now());
     if (preview == null) return;
     _open = true;
-    await showDialog<void>(
-      context: context,
+    await showSkinDialog<void>(
+      context,
       barrierDismissible: false,
       builder: (_) => OfflineRewardDialog(preview: preview),
     );

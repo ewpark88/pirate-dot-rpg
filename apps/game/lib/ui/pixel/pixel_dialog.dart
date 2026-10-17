@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -5,6 +7,33 @@ import 'package:pirate_dot/ui/skin/skin.dart';
 /// 창·시트 최대 폭(dp) — 태블릿에서 가운데에 알맞은 크기로.
 const _dialogMaxWidth = 480.0;
 const _sheetMaxWidth = 640.0;
+
+/// 창 폭 (팝업 기준, S1 2026-10-17 '창이 작고 여백이 많다'): 폰은 화면 폭의 85%, 태블릿은 480dp 상한.
+double popupWidth(BuildContext context) => math.min(MediaQuery.sizeOf(context).width * 0.85, _dialogMaxWidth);
+
+/// 창 크기: 폭을 [popupWidth]로 고정한다. Dialog의 `constraints`나 창 안 ConstrainedBox에 쓴다.
+BoxConstraints popupConstraints(BuildContext context) => BoxConstraints.tightFor(width: popupWidth(context));
+
+/// 창 바깥 여백 — 85% 폭이 들어가게 좌우는 좁게.
+const popupInset = EdgeInsets.symmetric(horizontal: 8, vertical: 16);
+
+/// 창 열고 닫기 (모션 기준: 살짝 커지며 페이드 200ms ease-out, 닫기 180ms). 모든 대화 창은 이것으로 띄운다.
+Future<T?> showSkinDialog<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+  bool barrierDismissible = true,
+  Color? barrierColor,
+}) => showDialog<T>(
+  context: context,
+  barrierDismissible: barrierDismissible,
+  barrierColor: barrierColor ?? Colors.black54,
+  animationStyle: const AnimationStyle(
+    duration: Duration(milliseconds: 200),
+    reverseDuration: Duration(milliseconds: 180),
+    curve: Curves.easeOut,
+  ),
+  builder: (context) => SkinPopIn(child: builder(context)),
+);
 
 /// 창 (스킨 r1): 둥근 흰 판 안에 [icon] · 제목 · 내용 · 오른쪽 아래 버튼 줄.
 class PixelDialog extends StatelessWidget {
@@ -18,37 +47,37 @@ class PixelDialog extends StatelessWidget {
   final List<Widget> actions;
 
   @override
-  Widget build(BuildContext context) => SkinPopIn(
-    child: Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      // 태블릿에서 창이 화면 끝까지 늘어나지 않게.
-      constraints: const BoxConstraints(maxWidth: _dialogMaxWidth),
-      child: PixelFrame(
-        padding: 9,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (icon case final i?) ...[Center(child: i), const SizedBox(height: 8)],
-            if (title case final t?) ...[
-              Text(t, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-            ],
-            Flexible(child: content),
-            if (actions.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Wrap(alignment: WrapAlignment.end, spacing: 8, runSpacing: 8, children: actions),
-            ],
+  Widget build(BuildContext context) => Dialog(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    insetPadding: popupInset,
+    constraints: popupConstraints(context),
+    child: PixelFrame(
+      padding: 9,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (icon case final i?) ...[Center(child: i), const SizedBox(height: 8)],
+          if (title case final t?) ...[
+            Text(t, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
           ],
-        ),
+          // 본문 16sp (팝업 기준).
+          Flexible(
+            child: DefaultTextStyle.merge(style: const TextStyle(fontSize: 16), child: content),
+          ),
+          if (actions.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Wrap(alignment: WrapAlignment.end, spacing: 8, runSpacing: 8, children: actions),
+          ],
+        ],
       ),
     ),
   );
 }
 
-/// 창·시트가 열릴 때 96% → 100% + 흐림 → 선명 (스킨 r2 ④). 자기를 띄운 경로(route)의 열림 애니메이션을 따른다.
+/// 창·시트가 열릴 때 92% → 100% + 흐림 → 선명 (스킨 r2 ④). 자기를 띄운 경로(route)의 열림 애니메이션을 따른다.
 class SkinPopIn extends StatelessWidget {
   const SkinPopIn({required this.child, super.key});
 
@@ -61,7 +90,7 @@ class SkinPopIn extends StatelessWidget {
     final a = CurvedAnimation(parent: route, curve: Curves.easeOutCubic);
     return FadeTransition(
       opacity: Tween<double>(begin: 0.4, end: 1).animate(a),
-      child: ScaleTransition(scale: Tween<double>(begin: 0.96, end: 1).animate(a), child: child),
+      child: ScaleTransition(scale: Tween<double>(begin: 0.92, end: 1).animate(a), child: child),
     );
   }
 }
