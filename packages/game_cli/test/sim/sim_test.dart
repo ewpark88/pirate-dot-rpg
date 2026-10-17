@@ -41,6 +41,9 @@ void main() {
     expect(p.meta.rebirth.integer('minStage'), 30);
     expect(p.growth.expToNext['legend'], 26);
     expect(() => patchTables(rawTables, ['meta.rebirth.minStag=30']), throwsArgumentError);
+    final hull = GameTables.load(patchTables(rawTables, ['ship_parts.parts[hull].base=900'])).shipParts.byId('hull');
+    expect(hull.base, 900);
+    expect(() => patchTables(rawTables, ['ship_parts.parts[hul].base=900']), throwsArgumentError);
   });
 
   test('중앙값: 미도달(null)은 가장 큰 값으로', () {

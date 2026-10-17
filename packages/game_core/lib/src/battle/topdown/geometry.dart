@@ -108,8 +108,8 @@ void shapeField(Field f, GameState s, GameTables t) {
       // 강화해도 좌우 이동·비켜선 자리가 끊기지 않게
       g
         ..weaveTick = old.weaveTick
-        ..duelling = old.duelling
         ..weave(old.top.shipX - old.base.shipX, dy: old.top.shipY - old.base.shipY, heading: old.shipHeading);
+      TopDuel.carry(old, g);
     }
   }
   final g = f.geometry;

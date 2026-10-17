@@ -38,10 +38,6 @@ class TopGeometry implements BattleGeometry {
   int weaveTick = 0;
   double shipHeading = 0;
 
-  /// 보스전 비켜서기(top_duel.dart) 중이거나 끝나고 제자리로 돌아오는 중.
-  bool duelling = false;
-  int duelTick = -1; // 마지막으로 움직인 Field.tick — 한 틱에 shapeField가 여러 번 불려도 한 걸음만
-
   void pose(({double x, double y, double heading}) p) => weave(p.x, dy: p.y, heading: p.heading);
   TopAim get targeting => _aim; // 조준(먹물 구름 blinds를 보스 패턴이 정한다)
 
