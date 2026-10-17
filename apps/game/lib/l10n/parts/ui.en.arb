@@ -1733,5 +1733,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiTalkUlt": "Your ultimate is charged! Tap the button at the bottom right!"
 }

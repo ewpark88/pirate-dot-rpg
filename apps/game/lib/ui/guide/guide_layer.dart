@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/dock/upgrade_all.dart' show canUpgradeAnyProvider;
+import 'package:pirate_dot/ui/guide/guide_boss_trait.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/guide/guide_marks.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
