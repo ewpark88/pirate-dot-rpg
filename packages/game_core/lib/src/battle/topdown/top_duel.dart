@@ -27,7 +27,7 @@ final _states = Expando<_DuelState>('topDuelState');
 _DuelState _of(TopGeometry g) => _states[g] ??= _DuelState();
 
 class TopDuel {
-  TopDuel._(this.shift, this.speed, this.rise, this.turn);
+  TopDuel._(this.shift, this.speed, this.rise, this.turn, this.shiftY);
 
   static final _cache = Expando<({TopDuel? duel})>('topDuel');
 
@@ -43,10 +43,15 @@ class TopDuel {
       d.number('speed'),
       d.numberOr('rise', 0) * top.number('viewHeight'),
       d.numberOr('turnDegPerSec', 0) * radiansPerDegree,
+      d.numberOr('shiftY', d.number('shift')),
     );
   }
 
   final double shift;
+
+  /// 세로 비켜서기 비율(없으면 shift와 같음). 작으면 보스가 위·아래에 있어도 배가 결투 중심(화면 가운데) 근처에 머문다 —
+  /// 가로는 카메라 반폭(90)이 좁아 shift만큼 비켜서야 둘 다 화면 안, 세로는 넉넉하다.
+  final double shiftY;
   final double speed;
 
   /// 결투 중심을 바다 가운데보다 얼마나 위로(전장 단위). 0이면 v1(제자리 둘레).
@@ -120,7 +125,7 @@ class TopDuel {
     final uy = cy / n - g.top.shipY;
     final len = math.sqrt(ux * ux + uy * uy);
     if (len == 0) return null;
-    final r = g.top.bossStandoff * shift;
-    return (x: -ux / len * r, y: -rise - uy / len * r, face: math.atan2(ux, -uy));
+    final r = g.top.bossStandoff;
+    return (x: -ux / len * r * shift, y: -rise - uy / len * r * shiftY, face: math.atan2(ux, -uy));
   }
 }

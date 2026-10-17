@@ -93,9 +93,9 @@ void main() {
       final b = v.enemies.firstWhere((e) => e.boss);
       final sx = v.shipX ?? top.shipX;
       final sy = v.shipY ?? top.shipY;
-      final mid = ((sx + b.x) / 2, (sy + b.y) / 2);
-      expect(mid.$1, closeTo(top.shipX, 12), reason: '가운데 x');
-      expect(mid.$2, closeTo(top.shipY - rise, 12), reason: '가운데 y = rise 위');
+      // 가로: 둘의 가운데가 화면 가운데(카메라 반폭이 좁다), 세로: 배가 결투 중심(rise 위) 근처 — 가운데서 전투.
+      expect((sx + b.x) / 2, closeTo(top.shipX, 12), reason: '가운데 x');
+      expect(sy, closeTo(top.shipY - rise, top.bossStandoff * cfg.number('shiftY') + 12), reason: '배가 가운데 높이');
       final face = math.atan2(b.x - sx, -(b.y - sy));
       var d = face - v.shipHeading;
       d = math.atan2(math.sin(d), math.cos(d));
