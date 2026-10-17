@@ -578,3 +578,4 @@
 
 - 6148b32c 보스 공격 예고 다듬기(boss-dodge 선합침 위: 부채꼴·장판·화살 띠·시간 막대·homing 조준·MISS!). 골든 5장은 다음 A줄.
 - f7877a56 피버 진입·끝 연출(FEVER! 날아감·FEVER END·바다 복귀 0.6초). 골든 3장은 A줄.
+- ef572604 A줄 골든 일괄(main 보스 18종 + boss-dodge 위, 17장). 남은 문제: 빠른 check는 boss-dodge main 전이라 소유권만 걸림.
