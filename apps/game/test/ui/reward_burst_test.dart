@@ -75,7 +75,9 @@ void main() {
   });
 
   testWidgets('움직이는 터짐은 1.8초 뒤 멈추고, lite는 빛줄기를 줄인다', (tester) async {
-    await _pump(tester, _devices[1].$2, _devices[1].$3, [const RewardBurst(items: _items, source: UiSprites.chest, lite: true)]);
+    await _pump(tester, _devices[1].$2, _devices[1].$3, [
+      const RewardBurst(items: _items, source: UiSprites.chest, lite: true),
+    ]);
     await tester.pump(RewardBurst.duration);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('reward.item.0')), findsOneWidget);
