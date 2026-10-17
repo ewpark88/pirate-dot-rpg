@@ -78,6 +78,14 @@ void main() {
     expect(find.text('Max ${partEffect(cargo, lv).format()} → ${partEffect(cargo, lv + 1).format()}'), findsOneWidget);
   });
 
+  testWidgets('상한을 넘게 가졌으면(복귀 ×3) "현재 / 최대" 대신 금빛 "+넘침" 배지(실기기 ④)', (tester) async {
+    final s = _filled(3);
+    final cap = goldCapacity(s, _t);
+    await pumpGame(tester, s, openTab: false);
+    expect(find.byKey(const Key('top.goldCap')), findsNothing);
+    expect(find.text('+${(cap.times(3) - cap).format()} extra'), findsOneWidget);
+  });
+
   testWidgets('여유 있으면(50%) 알약·손가락 없음', (tester) async {
     await pumpGame(tester, _filled(0.5), tab: shipTab);
     expect(find.byKey(const Key('cargo.full')), findsNothing);
