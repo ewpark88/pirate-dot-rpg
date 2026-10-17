@@ -2719,7 +2719,7 @@ const Map<String, String> rawTables = {
     "shop": [
       { "id": "startParts", "row": 1, "perLevel": 5, "perLevelMinor": 1, "maxLevel": 10, "costBase": 3, "costGrowth": 1.35, "nameKey": "econRebirthShopStartPartsName", "descKey": "econRebirthShopStartPartsDesc" },
       { "id": "discount", "row": 1, "perLevel": 0.04, "maxLevel": 10, "costBase": 4, "costGrowth": 1.4, "nameKey": "econRebirthShopDiscountName", "descKey": "econRebirthShopDiscountDesc" },
-      { "id": "bossTime", "row": 1, "perLevel": 3, "maxLevel": 5, "costBase": 6, "costGrowth": 1.5, "nameKey": "econRebirthShopBossTimeName", "descKey": "econRebirthShopBossTimeDesc" },
+      { "id": "bossTime", "row": 1, "perLevel": 0.04, "maxLevel": 5, "costBase": 6, "costGrowth": 1.5, "nameKey": "econRebirthShopBossTimeName", "descKey": "econRebirthShopBossTimeDesc" },
       { "id": "offline", "row": 2, "perLevel": 3600, "maxLevel": 4, "costBase": 10, "costGrowth": 1.8, "nameKey": "econRebirthShopOfflineName", "descKey": "econRebirthShopOfflineDesc" },
       { "id": "critChance", "row": 2, "perLevel": 0.01, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritChanceName", "descKey": "econRebirthShopCritChanceDesc" },
       { "id": "critDamage", "row": 2, "perLevel": 0.1, "maxLevel": 10, "costBase": 5, "costGrowth": 1.4, "nameKey": "econRebirthShopCritDamageName", "descKey": "econRebirthShopCritDamageDesc" },
