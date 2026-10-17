@@ -34,8 +34,8 @@ class BattleTopStrip extends StatelessWidget {
       // 현상금 전투 중에는 돌발 이벤트·도전이 멈추므로(계획 '영향') 현상금 알약만.
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
       Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
-      // 광고 버프·보상 칩(크게, 오른쪽) — 없으면 자리 없음.
-      Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: BuffChips()),
+      // 광고 버프·보상 칩(44dp) — 오른쪽 끝 세로 줄(보스·배는 가운데라 안 겹친다, 실기기 ① 2026-10-17).
+      Padding(padding: EdgeInsets.fromLTRB(10, 4, 8, 0), child: BuffChips()),
       // 보스 등장 이름표 (2초).
       BossIntro(),
       BossFailNotice(),
@@ -57,27 +57,22 @@ class _Pills extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
-    final (fever, challenge, sea) = ref.watch(
-      gameStateProvider.select(
-        (s) => ((s.battle?.feverTicksLeft ?? 0) > 0, s.battle?.challenge != null, s.battle?.seaEvent != null),
-      ),
-    );
+    final challenge = ref.watch(gameStateProvider.select((s) => s.battle?.challenge != null));
     final cargoFull = ref.watch(cargoLevelProvider) == 2;
     final rebirth = ref.watch(rebirthReadyProvider);
-    // 우선순위: 현상금 > 도전 > 돌발 이벤트(잠깐) > 화물칸 가득 > 환생 가능(계속). 한 줄에 들어가게 최대 2개,
-    // 피버 동안은(오른쪽에 원형 시간) 1개. 도전이 끝난 '성공' 알약은 도전 자리에 잠깐.
+    // 우선순위: 현상금 > 도전 > 화물칸 가득 > 환생 가능(계속). 늘 한 줄(실기기 ④ — 전장 위가 3줄이 됐다): 한 묶음만,
+    // 좁으면 줄여서. 돌발 이벤트는 띠 안 아이콘(SeaEventIcon). 도전이 끝난 '성공' 알약은 도전 자리에 잠깐.
     final List<Widget> pills;
     if (bounty) {
       pills = const [BountyStrip()];
     } else {
-      // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸으로 세되, 좁으면 Wrap이 다음 줄로 넘긴다.
+      // 묶음 하나 = 한 칸. 화물칸 가득 + 바로 '모두 강화'는 한 칸.
       final ranked = <List<Widget>>[
         if (challenge) const [ChallengeStrip()],
-        if (sea) const [SeaEventStrip()],
         if (cargoFull) const [CargoFullPill(), UpgradeAllPill()],
         if (rebirth) const [RebirthReadyPill()],
       ];
-      pills = [...ranked.take(fever ? 1 : 2).expand((g) => g), if (!challenge) const ChallengeStrip()];
+      pills = [...ranked.take(1).expand((g) => g), if (!challenge) const ChallengeStrip()];
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +80,16 @@ class _Pills extends ConsumerWidget {
         Expanded(
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Wrap(spacing: 6, runSpacing: 4, children: pills),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final (i, p) in pills.indexed) ...[if (i > 0) const SizedBox(width: 6), p],
+                ],
+              ),
+            ),
           ),
         ),
         const FeverSlot(),

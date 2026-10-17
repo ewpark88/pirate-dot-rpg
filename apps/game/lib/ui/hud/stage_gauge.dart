@@ -10,6 +10,7 @@ import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
 import 'package:pirate_dot/ui/hud/hp_bars.dart';
+import 'package:pirate_dot/ui/hud/sea_event_icon.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -113,6 +114,8 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                           child: Text(l10n.uiFarming, style: Skin.text(11, color: Skin.goldInk)),
                         ),
                       ],
+                      // 돌발 이벤트(폭풍 등)는 띠 안 작은 아이콘(실기기 ④).
+                      const SeaEventIcon(),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
