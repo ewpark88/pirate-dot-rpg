@@ -60,6 +60,16 @@ void main() {
     expect(Command.fromJson(const CancelAutoUpgrade().toJson()).toJson(), const CancelAutoUpgrade().toJson());
   });
 
+  test('ClearHints(가이드 v2): prefix로 시작하는 안내만 지우고, 빈 prefix면 전부', () {
+    var s = rich();
+    for (final id in ['guide.boss', 'guide.fever', 'ult.bubble']) {
+      s = sys.handle(s, MarkHint(id), h.ctx)!;
+    }
+    expect(sys.handle(s, const ClearHints('guide.'), h.ctx)!.settings.hints, {'ult.bubble'});
+    expect(sys.handle(s, const ClearHints(''), h.ctx)!.settings.hints, isEmpty);
+    expect(Command.fromJson(const ClearHints('g').toJson()).toJson(), const ClearHints('g').toJson());
+  });
+
   test('MarkHint: 안내 id를 세이브에 남기고, 이미 있으면 그대로', () {
     final s1 = sys.handle(rich(), const MarkHint('ult.bubble'), h.ctx)!;
     expect(s1.settings.hints, {'ult.bubble'});

@@ -251,6 +251,15 @@ class Settings {
     'hints': [...hints, id],
   });
 
+  /// [prefix]로 시작하는 안내 id를 지운다 (ClearHints, 빈 prefix = 전부).
+  Settings withoutHints(String prefix) => Settings.fromJson({
+    ..._full(),
+    'hints': [
+      for (final h in hints)
+        if (!h.startsWith(prefix)) h,
+    ],
+  });
+
   Settings withTitle(String? id) => Settings.fromJson({..._full(), 'title': id});
 
   /// 키 하나만 바꾼다 (SetSetting 명령용). 모르는 키는 [ArgumentError].

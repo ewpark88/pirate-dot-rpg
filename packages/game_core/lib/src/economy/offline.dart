@@ -90,7 +90,13 @@ GameState claimOffline(GameState state, ClaimOffline command, SystemContext ctx)
   if (!paid.lost.isZero) ctx.emit(GoldOverflow(ctx.tick, lost: paid.lost));
   var s = paid.state.copyWith(lastOfflineGold: paid.added);
   for (var i = 0; i < p.cards; i++) {
-    s = receiveCard(s, t, fleet[ctx.rng.nextInt(fleet.length)], rollRarity(t.rarities.bossDropRates, ctx.rng));
+    s = grantCard(
+      s,
+      ctx,
+      fleet[ctx.rng.nextInt(fleet.length)],
+      rollRarity(t.rarities.bossDropRates, ctx.rng),
+      'offline',
+    );
   }
   ctx
     ..emit(OfflineReward(ctx.tick, gold: p.gold, cards: p.cards, seconds: p.seconds))
