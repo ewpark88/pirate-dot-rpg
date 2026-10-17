@@ -2,11 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
-import 'package:pirate_dot/render/battle_game.dart';
+import 'package:pirate_dot/render/battle_game.dart' hide IdleLevel;
+import 'package:pirate_dot/render/battle_game.dart' as render show IdleLevel;
 import 'package:pirate_dot/render/top/top_fast_sail.dart' show TopTexts;
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/state/idle.dart';
 
 /// 전장 위젯 주입점. null이면 Flame 전장([battleGameProvider]). UI 테스트·골든은 빈 상자로 바꿔
 /// 렌더 레인의 그림 변화와 분리한다 (전장 골든은 render 레인 몫).
@@ -15,6 +18,13 @@ final battleViewBuilderProvider = Provider<WidgetBuilder?>((_) => null);
 /// 설정 → 전장 타격감 옵션 (흔들림·번쩍임·진동·절전).
 JuiceSettings juiceSettingsOf(Settings s) =>
     JuiceSettings(shake: s.shake, flash: s.flash, vibration: s.vibration, powerSave: s.powerSave);
+
+/// UI 방치 단계 → 렌더 단계 (절전 화면 = 렌더 dim).
+render.IdleLevel renderIdleOf(IdleLevel l) => switch (l) {
+  IdleLevel.active => render.IdleLevel.active,
+  IdleLevel.idle => render.IdleLevel.idle,
+  IdleLevel.sleep => render.IdleLevel.dim,
+};
 
 /// 앱의 전장 하나. 처음 읽을 때 만든다 — 전장 위젯을 주입하면 home_screen이 읽지 않으므로 만들어지지 않는다.
 /// 설정이 바뀌면 [JuiceSettings]를 바로 넘긴다. 운영자 패널 ‘렌더’ 묶음도 이것을 잡는다.
@@ -37,7 +47,10 @@ final battleGameProvider = Provider<BattleGame>((ref) {
     ..listen(
       gameStateProvider.select((s) => (s.settings.shake, s.settings.flash, s.settings.vibration, s.settings.powerSave)),
       (_, _) => game.settings = juiceSettingsOf(ref.read(gameStateProvider).settings),
-    );
+    )
+    // 방치 단계·발열 단계의 원본은 UI(앱 루트 IdleGate·플랫폼) — 렌더는 받은 값을 따르고 스스로 세지 않는다(S3 요청 render-idle-thermal-link).
+    ..listen(idleLevelProvider, (_, l) => game.idle.follow(renderIdleOf(l)), fireImmediately: true)
+    ..listen(thermalLevelProvider, (_, t) => game.idle.heat.value = t.index, fireImmediately: true);
   return game;
 });
 
