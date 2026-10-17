@@ -99,14 +99,14 @@ class TopScenePainter {
     final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
-      ..boost = math
-          .max(fever.level, _turn.rush) // 빠를수록 항적 길게·속도선(S5 배 이동 v2)
-      ..wakeTint = skins
-          .wake // 스킨 항적 색(앞 프레임 값)
+      ..boost = math.max(math.max(fever.level, _turn.rush), _seaHd.gale * 0.15)
+      ..wakeTint = skins.wake
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
       ..paint(c, viewRect, clockMs, region: region);
-    _seaHd.paint(c, viewRect, clockMs, _sea.flow.dy, region, lite: scene.topHits.lite, fever: fever.sea); // HD 빛 반사
+    _seaHd
+      ..speed = view.speed
+      ..paint(c, viewRect, clockMs, _sea.flow.dy, region, lite: scene.topHits.lite, fever: fever.sea);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
@@ -203,7 +203,7 @@ class TopScenePainter {
         glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
         skin: skinId != null && skins.ready(skinId) ? skinId : null,
-        billow: fever.level * (0.7 + 0.3 * math.sin(clockMs / 90)),
+        billow: math.max(fever.level, _seaHd.gale) * (0.7 + 0.3 * math.sin(clockMs / 90)), // 피버·2배속 돛 부풂
         now: clockMs,
       );
       if (sinking) c.restore();
