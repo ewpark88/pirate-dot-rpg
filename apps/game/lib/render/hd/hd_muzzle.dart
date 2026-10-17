@@ -23,12 +23,17 @@ class HdMuzzle {
   /// 쐈다 — 차오르던 빛을 터뜨린다(예고가 없었으면 터짐만).
   void fired(int id, double now, {bool boss = false}) {
     _trim(now);
+    if (boss || (_glows[id]?.boss ?? false)) bossShotAt = now;
     final g = _glows[id];
     _glows[id] = (g ?? _Glow(now, now, boss: boss))..firedAt = now;
   }
 
   /// 보스 기본 포탄(BossFired — 적 id가 없다): 차오르던 보스 빛을 모두 터뜨린다.
+  /// 보스가 마지막으로 쏜 시각(장면 ms) — 보스 카메라 펀치 줌.
+  double bossShotAt = -1000000000;
+
   void firedBosses(double now) {
+    bossShotAt = now;
     for (final g in _glows.values) {
       if (g.boss && g.firedAt == null) g.firedAt = now;
     }

@@ -2453,12 +2453,12 @@ const Map<String, String> rawTables = {
     "sinkTilt": 0.35
   },
   "topCam": {
-    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(S4 띠 82dp + 여유 8 — 태블릿은 uiScale로 커서 UI가 BattleGame.hudTopDp로 잰 값을 넣는다) ~ 선원 줄 위 bottomDp(배 체력 막대), 좌우 sideDp 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 다 들어오게 줌(최대 maxZoom).",
+    "_": "보스전 카메라 안전 영역(dp, S3·S4 공용): 위 HUD 띠 아래 끝(S4 띠 82dp + 여유 8 — 태블릿은 uiScale로 커서 UI가 BattleGame.hudTopDp로 잰 값을 넣는다) ~ 선원 줄 위 bottomDp(배 체력 막대), 왼쪽 sideDp·오른쪽 rightDp(S4 광고 칩 접힌 탭 24dp) 안에 배·보스(체력 막대·이름표·흔들림 topPad 단위 포함)가 벗어나면 그 프레임 줌을 깎는다(역동 줌의 상한 제약만).",
     "hudTopDp": 90,
     "sideDp": 12,
+    "rightDp": 24,
     "bottomDp": 24,
-    "topPad": 22,
-    "maxZoom": 1.3
+    "topPad": 22
   },
   "topShip": {
     "stages": {
@@ -2571,7 +2571,7 @@ const Map<String, String> rawTables = {
       "storm": { "base": "#2B3E52", "deep": "#213042", "shallow": "#384D63", "wave": "#94A3B3" },
       "glacier": { "base": "#3F8FC8", "deep": "#3279B0", "shallow": "#62AEE0", "wave": "#F4FCFF" },
       "volcano": { "base": "#33355A", "deep": "#272846", "shallow": "#43446C", "wave": "#E0A890" },
-      "abyss": { "base": "#152E5A", "deep": "#0F2246", "shallow": "#1E3C6E", "wave": "#6E8FD0" },
+      "abyss": { "base": "#1C3C72", "deep": "#112A5C", "shallow": "#2A5290", "wave": "#8CB0F0" },
       "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
     },
     "props": {
@@ -3255,7 +3255,7 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.6, "stepStage": 5, "fillFleet": true, "bossHpMul": 0.3, "dpsHpRatio": 1.6, "stepBaseSec": 8, "stepSec": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
     "groups": [
       {"id": "mon", "hpMul": 0.8, "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
       {"id": "tue", "hpMul": 1.0, "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
@@ -3265,10 +3265,10 @@ const Map<String, String> rawTables = {
       {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
       {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
     ]},
-  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 0.8, "rushBossSec": 15, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
-    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5,
+    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 20, "cards": 1}, {"floor": 20, "gems": 35, "cards": 2}, {"floor": 30, "gems": 50, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
@@ -3323,7 +3323,7 @@ const Map<String, String> rawTables = {
   "earlyCards": { "untilStage": 30, "maxRarity": "rare" },
   "trials": { "speed": { "atStage": 5, "durationSec": 600 }, "autoUpgrade": { "afterBossFails": 1, "durationSec": 600 } },
   "collectionRewards": [{"at": 5, "gems": 30}, {"at": 10, "summons": 1}, {"at": 20, "gems": 100}, {"at": 30, "summons": 3}, {"at": 40, "gems": 300, "summons": 5}],
-  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3 },
+  "offline": { "maxSec": 28800, "cardsPerMax": 3, "efficiency": 0.45, "minWaveSec": 30, "minSec": 300, "capMultiplier": 3, "floorUpgrades": 30 },
   "autoUpgradeUnlockStage": 20,
   "stuckHintSec": 180,
   "returnGift": { "afterDays": 3, "summons": 5, "tailwindSec": 7200 },
@@ -3996,6 +3996,7 @@ const Map<String, String> rawTables = {
     "mobRadius": 6,
     "bossRadius": 24,
     "bossStandoff": 100,
+    "armsArcDeg": 100,
     "bossScale": {"wall": 1.8, "region": 1.4, "other": 1.2, "standoffGrow": 0, "orbitMax": 1.5, "swayDeg": 20},
     "spawnMargin": 12,
     "approachRadius": 206,

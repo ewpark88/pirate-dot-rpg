@@ -41,7 +41,7 @@ void main() {
     final s = fixture('all_crews_mythic');
     final mon = dungeonToday(s, t, start);
     expect(mon.str('id'), 'mon');
-    final crews = dungeonCrews(s, t, mon);
+    final crews = dungeonFamilyCrews(s, t, mon);
     expect(crews, isNotEmpty);
     for (final id in crews) {
       expect(mon.strs('families'), contains(t.crews.byId(id).family));
@@ -126,6 +126,23 @@ void main() {
   test('묶음 hpMul: 선원 2명 계열이 낀 날(월)은 적이 가볍고, 끝나면 전장 배율이 1로 돌아온다', () {
     expect(dungeonGroupOn(t, DateTime.monday).number('hpMul'), lessThan(1));
     expect(dungeonGroupOn(t, DateTime.tuesday).number('hpMul'), 1);
+  });
+
+  test('fillFleet: 계열 선원이 칸보다 적으면 나머지 칸을 다른 선원으로(파워 순) — 계열 선원이 앞, 하나도 없으면 빈 출전', () {
+    final s = GameState.newGame(playerId: 'f', seed: 1, now: start).copyWith(
+      crews: {
+        'volt': const CrewState(level: 30),
+        'octo': const CrewState(level: 30),
+        'manta': const CrewState(level: 30),
+      },
+    );
+    final wed = dungeonGroupOn(t, DateTime.wednesday); // 공중 + 곡사 — manta(공중)·octo(곡사)
+    final family = dungeonFamilyCrews(s, t, wed);
+    final fleet = dungeonCrews(s, t, wed);
+    expect(family.toSet(), {'manta', 'octo'});
+    expect(fleet.take(family.length), family, reason: '계열 선원이 앞');
+    expect(fleet, contains('volt'), reason: '남은 칸을 다른 선원으로');
+    expect(dungeonCrews(s, t, dungeonGroupOn(t, DateTime.monday)), isEmpty, reason: '관통·레이저 선원이 없으면 입장 불가');
   });
 
   test('결정론·JSON 왕복', () {

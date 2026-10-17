@@ -42,6 +42,15 @@ class TopSpawn {
       ..y = top.shipY + math.sin(angle) * distance;
   }
 
+  /// 카메라 가운데([cx], [cy]) 기준 [angle]·[distance] 자리에 두되 몸 반경만큼 카메라 안으로 당긴다(보스 촉수 — 조준되게).
+  void placeInView(Foe e, double angle, double distance, double cx, double cy) {
+    final hx = math.max<double>(0, top.viewWidth * half - top.radiusOf(e));
+    final hy = math.max<double>(0, top.viewHeight * half - top.radiusOf(e));
+    e
+      ..x = (cx + math.cos(angle) * distance).clamp(cx - hx, cx + hx)
+      ..y = (cy + math.sin(angle) * distance).clamp(cy - hy, cy + hy);
+  }
+
   /// 화면 밖 출발 거리: 테두리 바깥과 접근 원 중 먼 곳(어느 방향이든 원 안에서 걷는 거리가 같게).
   double startDistance(Foe e, double angle) => top.spawnFromView
       ? toView(angle) + top.spawnMargin + top.radiusOf(e)

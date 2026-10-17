@@ -99,6 +99,36 @@ class SoundDirector {
     if (log.length > _logMax) log.removeAt(0);
   }
 
+  double _lastTing = -1000000000;
+
+  /// 치명 '쨍': 치명 타격음을 높게(1.7) 겹친다 — 90ms에 한 번.
+  void ting(double clockMs) {
+    if (clockMs < _lastTing) _lastTing = -1000000000;
+    if (audio == null || clockMs - _lastTing < 90) return;
+    _lastTing = clockMs;
+    audio!.playSfx('hit_crit', pitch: 1.7);
+  }
+
+  /// 무리 처치 연쇄 '퍼퍼펑': pop을 [n]번 45ms 간격으로 음높이를 올리며(예산과 별개, 한 번에 최대 6).
+  void chain(int n, double clockMs) {
+    if (_chain.isNotEmpty) return; // 앞 연쇄가 끝나기 전엔 겹치지 않게
+    for (var i = 0; i < n.clamp(0, 6); i++) {
+      _chain.add((clockMs + i * 45, 0.9 + i * 0.09));
+    }
+  }
+
+  final List<(double, double)> _chain = [];
+
+  /// 장면 시계마다(BattleScene.update) — 때가 된 연쇄 소리를 낸다.
+  void pump(double clockMs) {
+    if (_chain.isNotEmpty && clockMs < _chain.first.$1 - 1000) _chain.clear(); // 시계가 뒤로
+    while (_chain.isNotEmpty && _chain.first.$1 <= clockMs) {
+      final (_, pitch) = _chain.removeAt(0);
+      audio?.playSfx('pop', pitch: pitch);
+      log.add('pop');
+    }
+  }
+
   /// 해역 배경음. 같은 곡이면 그대로. 피버 중이면 기억만 했다가 피버가 끝나면 튼다.
   void bgm(String? id) {
     _region = id;

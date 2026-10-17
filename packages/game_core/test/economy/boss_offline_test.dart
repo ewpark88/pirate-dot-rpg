@@ -157,7 +157,7 @@ void main() {
       expect(e.cards, t.meta.offlineCardsPerMax);
       final gps = goldPerSecEstimate(s0, t, offlineFleet(s0, t));
       expect(e.gold.closeTo(gps.times(t.meta.offlineMaxSec * t.meta.offlineEfficiency)), isTrue);
-      final cap = goldCapacity(s0, t).times(offlineCapScale(t)); // 화물칸 용량 × offline.capMultiplier까지
+      final cap = goldCapacity(s0, t).times(offlineCapScale(t, s0)); // 화물칸 용량 × offline.capMultiplier까지
       expect(s.wallet.gold.closeTo(e.gold < cap ? e.gold : cap), isTrue);
       expect(s.savedAt, EconomyHarness.start);
       expect(h.of<SaveRequested>(), hasLength(1));

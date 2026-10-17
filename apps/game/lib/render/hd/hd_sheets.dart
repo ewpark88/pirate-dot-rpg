@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart' show debugPrint;
+
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
@@ -8,17 +10,20 @@ import 'package:pirate_dot/render/hd/hd_species.dart';
 /// 굽힌 HD 시트: 칸 [cell]px 정사각 × 8열(고리 0.1초씩) × 2행(0 = 왼쪽 봄 그대로, 1 = 좌우 뒤집어 오른쪽 봄).
 /// 전장 크기 [world]단위(지금 도트 칸과 같은 자리 크기)로 그린다 — 배율 = world / cell.
 /// HD v2 표정 보스([hdMoodSpecies])는 2행을 더 굽는다: 2·3행(왼·오른) = 0~3열 공격 예고 4장 + 4~7열 쓰러짐 4장(0.2초씩).
+/// 잡몹 v2([hits])는 2·3행 = 맞을 때 찡긋(> < 눈 + 몸 찌그러짐) 8장.
 class HdSheet {
-  HdSheet(this.image, this.cell, this.world, {this.moods = false});
+  HdSheet(this.image, this.cell, this.world, {this.moods = false, this.hits = false});
 
   final Image image;
   final double cell;
   final double world;
   final bool moods;
+  final bool hits;
 
   double get scale => world / cell;
 
   Rect src(int frame, {required bool right, HdMood mood = HdMood.idle}) {
+    if (hits && mood == HdMood.hit) return Rect.fromLTWH(frame * cell, (right ? 3 : 2) * cell, cell, cell);
     if (!moods || mood == HdMood.idle) return Rect.fromLTWH(frame * cell, right ? cell : 0, cell, cell);
     final col = (mood == HdMood.down ? 4 : 0) + (frame >> 1);
     return Rect.fromLTWH(col * cell, (right ? 3 : 2) * cell, cell, cell);
@@ -83,6 +88,9 @@ class HdSheets {
     if (stage == _planned || stage <= 0) return;
     _planned = stage;
     _queue.clear();
+    // 이번 보스 말고 지난 보스 시트는 버린다(보스 시트는 잡몹의 10~30배 — 해역 내내 쌓이면 수십 MB, S5 PSS 638MB).
+    final next = 'b:${regions.bossAt(stage).id}';
+    _ready.keys.where((k) => k.startsWith('b:') && k != next).toList().forEach(_drop);
     void add(String kind, {required bool boss}) {
       if ((boss ? hdBosses : hdEnemies)[kind] == null || _ready.containsKey(boss ? 'b:$kind' : kind)) return;
       final w0 = worldOf(kind, boss: boss);
@@ -98,6 +106,8 @@ class HdSheets {
 
   /// 프레임당 한 종(줄이 비면 아무것도 안 함). 밀도를 아직 모르면 기다린다.
   void step(double density) {
+    _frame++;
+    _reap();
     if (_queue.isEmpty || density <= 0) return;
     final (kind, boss, world) = _queue.removeAt(0);
     sheet(kind, boss: boss, world: world, density: density);
@@ -112,14 +122,22 @@ class HdSheets {
     if (sp == null) return null;
     // 다시 굽기: 더 촘촘해야 할 때(+15%) 또는 많이 성길 때(-45%)만 — 보스 카메라 줌이 오가도 매번 다 굽지 않게.
     if (_density == 0 || density > _density * 1.15 || density < _density * 0.55) clear(density);
-    _reap();
     final key = boss ? 'b:$kind' : kind;
     _used[key] = ++_tick;
     final have = _ready[key];
     if (have != null) return have;
-    final sheet = bake(sp, world, _density, cap: _cap, moods: boss, selfMood: hdMoodSpecies.contains(kind));
+    final sheet = bake(
+      sp,
+      world,
+      _density,
+      cap: _cap,
+      moods: boss,
+      hits: !boss && _cap >= maxCell, // 찡긋 행은 저사양(lite)이면 안 굽는다(잡몹 시트 절반)
+      selfMood: hdMoodSpecies.contains(kind),
+    );
     _bytes += _sizeOf(sheet);
     _ready[key] = sheet;
+    if (log) debugPrint('[hd] bake $key ${sheet.cell.toInt()}px×${sheet.image.height ~/ sheet.cell}행 → ${report()}');
     // 바이트 상한을 넘으면 오래 안 쓴 것부터(방금 구운 것은 남긴다).
     while (_bytes > budget && _ready.length > 1) {
       _evict(except: key);
@@ -137,21 +155,50 @@ class HdSheets {
     _density = density;
   }
 
-  void _evict({required String except}) {
-    final old = _ready.keys.where((k) => k != except).reduce((a, b) => (_used[a] ?? 0) <= (_used[b] ?? 0) ? a : b);
-    final gone = _ready.remove(old);
+  void _evict({required String except}) =>
+      _drop(_ready.keys.where((k) => k != except).reduce((a, b) => (_used[a] ?? 0) <= (_used[b] ?? 0) ? a : b));
+
+  void _drop(String key) {
+    final gone = _ready.remove(key);
     if (gone != null) {
       _bytes -= _sizeOf(gone);
       _retire(gone);
     }
-    _used.remove(old);
+    _used.remove(key);
   }
+
+  /// 장면을 버릴 때(ScenePainter.dispose): 텍스처를 바로 놓는다 — GC에 맡기면 네이티브 메모리가 늦게 풀린다.
+  void dispose() {
+    clear();
+    for (final (s, _) in _retired) {
+      s.image.dispose();
+    }
+    _retired.clear();
+    _queue.clear();
+  }
+
+  /// 운영자 계측(S1): 캐시 종·칸·행·MB + 버릴 대기 MB + 상한. [log]면 굽을 때마다 debugPrint.
+  static bool log = false;
+  String report() {
+    String mb(int b) => (b / 1048576).toStringAsFixed(1);
+    final parts = [
+      for (final MapEntry(:key, :value) in _ready.entries)
+        '$key ${value.cell.toInt()}px×${value.image.height ~/ value.cell}행 ${mb(_sizeOf(value))}',
+    ];
+    final wait = _retired.fold(0, (a, r) => a + _sizeOf(r.$1));
+    return '캐시 ${mb(_bytes)}/${mb(budget)}MB(밀도 ${_density.toStringAsFixed(2)}, 칸 상한 ${_cap.toInt()}) 대기 ${mb(wait)}MB · ${parts.join(', ')}';
+  }
+
+  /// 버릴 대기 바이트(시험).
+  int get retiredBytes => _retired.fold(0, (a, r) => a + _sizeOf(r.$1));
 
   // 밀려난 시트는 바로 버리지 않는다 — 죽는 적 연출이 몇 프레임 더 그 그림을 그린다(버린 그림 그리기 = 단언 실패·release 깨짐).
   final List<(HdSheet, int)> _retired = [];
-  void _retire(HdSheet s) => _retired.add((s, _tick));
+  // 프레임 수([step]이 매 프레임 센다)로 — sheet() 호출 수로 세면 적이 없을 때 영영 안 버려졌다.
+  int _frame = 0;
+  void _retire(HdSheet s) => _retired.add((s, _frame));
   void _reap() {
-    while (_retired.isNotEmpty && _tick - _retired.first.$2 > 3000) {
+    while (_retired.isNotEmpty && _frame - _retired.first.$2 > 20) {
       _retired.removeAt(0).$1.image.dispose();
     }
   }
@@ -165,9 +212,10 @@ class HdSheets {
     double density, {
     double cap = maxCell,
     bool moods = false,
+    bool hits = false,
     bool selfMood = true,
   }) {
-    final rows = moods ? 4 : 2;
+    final rows = moods || hits ? 4 : 2;
     // 표정 보스는 4행이라 칸 상한을 한 단계 낮춘다(메모리 2배 → 약 1.1배).
     final cell = (world * density).clamp(16.0, moods ? cap * 0.75 : cap).roundToDouble();
     final r = cell / (2 * sp.extent);
@@ -182,10 +230,11 @@ class HdSheets {
           ..translate(f * cell + cell / 2, row * cell + cell / 2);
         if (row.isOdd) c.scale(-1, 1);
         k
-          ..mood = row < 2 ? HdMood.idle : (f < 4 ? HdMood.windup : HdMood.down)
+          ..mood = row < 2 ? HdMood.idle : (hits ? HdMood.hit : (f < 4 ? HdMood.windup : HdMood.down))
           ..begin(r);
         moods ? k.shadow2(c, r, sp.ground) : k.shadow(c, r, sp.ground); // 보스는 그림자 2단(v2)
-        final t = row < 2 ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4;
+        final t = row < 2 || hits ? f * HdKit.loopMs / HdKit.frames : (f % 4) * HdKit.loopMs / 4;
+        if (hits && row >= 2) c.scale(1.14, 0.86); // 맞음: 납작 찡긋
         final generic = !selfMood && k.mood == HdMood.down;
         if (generic) k.downTilt(c, r * 0.9, t);
         sp.draw(k, c, r, t);
@@ -199,6 +248,6 @@ class HdSheets {
     final pic = rec.endRecording();
     final img = pic.toImageSync((cell * HdKit.frames).toInt(), (cell * rows).toInt());
     pic.dispose();
-    return HdSheet(img, cell, world, moods: moods);
+    return HdSheet(img, cell, world, moods: moods, hits: hits);
   }
 }

@@ -1,6 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/spawner.dart' show bossStandoffFor, startBoss;
+import 'package:game_core/src/battle/spawner.dart' show bossMaxHp, bossStandoffFor, startBoss;
+import 'package:game_core/src/battle/topdown/scene_hp.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
+import 'package:game_core/src/economy/formation.dart' show activeFleet;
 import 'package:game_core/src/economy/rush.dart';
 import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
@@ -61,16 +65,25 @@ abstract final class TopRush {
     final run = f.rush!;
     final id = run.bosses[run.index];
     final c = rushCfg(t);
-    final stage = (s.progress.bestStage * c.number('stageRatio')).floor();
+    final stage = math.max(1, (s.progress.bestStage * c.number('stageRatio')).floor());
+    final def = t.regions.bosses[id];
+    final hp = sceneHp(
+      s,
+      t,
+      c,
+      activeFleet(s, t),
+      bossMaxHp(t, stage, def: def, hpScale: c.number('hpMultiplier') * f.enemyHpScale),
+      c.numberOr('rushBossSec', 0),
+    );
     final g = f.geometry;
     final top = g is TopGeometry ? g.top : null;
     startBoss(
       f,
-      stage < 1 ? 1 : stage,
+      stage,
       ctx,
       emit: false, // 해역 보스 컷인 대신 RushStarted·RushBossDown(렌더 짧은 컷인)
-      bossDef: t.regions.bosses[id],
-      hpScale: c.number('hpMultiplier'),
+      bossDef: def,
+      maxHp: hp, // max(스테이지 HP × hpMultiplier, 함대 DPS × rushBossSec × dpsHpRatio)
       gold: false,
       x: top?.shipX,
       y: top == null ? null : top.shipY - bossStandoffFor(t, id) - top.bossRadius,

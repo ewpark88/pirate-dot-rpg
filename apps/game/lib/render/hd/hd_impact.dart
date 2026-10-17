@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 
+part 'hd_impact_rims.dart';
 part 'hd_impact_shapes.dart';
 
 /// 계열별 HD 착탄(사용자 '폭탄 임팩트가 겹치는 것들이 많은데 연출을 다 다르게'): 계열 11종이 서로 다른 모양,
@@ -20,7 +21,7 @@ class HdImpact {
     ..strokeCap = StrokeCap.round
     ..strokeJoin = StrokeJoin.round;
   static const _lifeMs = 520.0;
-  final _veil = Paint()..color = const Color(0x73FFFFFF); // 배 위 착탄 45%
+  final _veil = Paint()..color = const Color(0x59FFFFFF); // 배 위 착탄 35%(배를 덮지 않게)
   static const _upright = {'underwater', 'laser', 'skip'};
   static const _max = 14;
 
@@ -58,8 +59,8 @@ class HdImpact {
       final age = now - h.at;
       if (age < 0) continue;
       final t = age / _lifeMs;
-      // 일반·희귀도 바다 위에서 약하지 않게 최소 1.3배·굵은 선(S1 핵앤슬래시 손맛), 등급마다 +0.1
-      final r = h.radius * h.jitter * (1.3 + 0.1 * h.rarity);
+      // 일반·희귀도 바다 위에서 약하지 않게 최소 1.3배·굵은 선(S1 핵앤슬래시 손맛), 등급마다 +0.16(S1 '임팩트가 없다')
+      final r = h.radius * h.jitter * (1.3 + 0.16 * h.rarity);
       _k.ink.strokeWidth = math.max<double>(1.4, r * 0.09);
       final near = ship != null && (h.pos - ship).distance < shipR + r * 0.5;
       if (near) c.saveLayer(Rect.fromCircle(center: h.pos, radius: r * 2.5), _veil);
@@ -92,6 +93,7 @@ class HdImpact {
           _lob(c, h, r, t, lite: lite);
       }
       if (h.rarity >= 5) _rainbowRim(c, r, t);
+      if (h.rarity >= 4 && !near) _shockwave(c, r, t, mythic: h.rarity >= 5); // 전설·신화: 착탄 뒤 충격파 링
       if (h.hot) _hotRim(c, r, t);
       c.restore();
       if (near) c.restore();

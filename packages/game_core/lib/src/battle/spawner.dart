@@ -46,7 +46,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final w = t.waves;
   final species = t.regions.enemiesAt(stage, rebirths: f.rebirths); // 초반엔 1~2종, 진행·환생으로 늘어난다
   final n = count ?? (f.feverSwarm != null ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
-  final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
+  final share = count == null || f.scenePooled ? w.mobPoolAt(stage) / n : 1.0; // 장면 파(던전)도 한 파 몫을 나눔
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
   final gold = f.inScene ? BigNum.zero : stageCurve(w.goldBase, w.goldGrowth, stage).times(share); // 탑 등 장면 모드는 골드 없음

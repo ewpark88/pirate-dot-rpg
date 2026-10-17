@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:game_core/game_core.dart' show BigNum, BigNumFormat;
 import 'package:pirate_dot/render/paint/pixel_glyphs.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 
 /// 선원 개성 v2 연출 (S5 crew-identity, S1):
 /// - 거북(turtle) 보호막: 배 둘레 반투명 육각 껍질(BattleView.shipShield 0~1만큼 진하게), 막이 받은 피격(ShipDamaged 0)은 물결,
@@ -23,7 +25,8 @@ class TopCrewFx {
   double rippleAt = -1000000000;
   double brokenAt = -1000000000;
   final List<_Strike> _strikes = [];
-  final List<(double, double, double)> _misses = []; // x, y, ms
+  final List<(double, double, double, bool)> _misses = []; // x, y, ms, 막힘(BLOCK)
+  final _label = TopLabel();
   final List<double> _drums = [];
   double _lastFever = 0;
   double _lastDrum = -1000000000;
@@ -88,9 +91,16 @@ class TopCrewFx {
     }
   }
 
-  void miss(double x, double y, double now) {
+  /// 빗나감 'MISS'(회색) · 막힘 'BLOCK'(파랑): 테두리 글자가 옆으로 튕기며 떠올라 사라진다.
+  void miss(double x, double y, double now, {bool block = false}) {
     if (_misses.length >= 16) _misses.removeAt(0);
-    _misses.add((x, y, now));
+    _misses.add((x, y, now, block));
+  }
+
+  /// 피해가 0으로 보이면(1 미만 포함) 숫자 대신 MISS/BLOCK을 띄우고 true.
+  bool missIfZero(BigNum amount, double x, double y, double now, {required bool block}) {
+    if (amount.format() == '0') miss(x, y, now, block: block);
+    return amount.format() == '0';
   }
 
   /// 피버 게이지가 오르면(펌펌 출전 중) 북 파동 — 350ms마다 한 번.
@@ -131,9 +141,11 @@ class TopCrewFx {
     }
     _paintStrikes(c, now, poses, poseCount, flash: flash);
     _misses.removeWhere((m) => now - m.$3 > 700);
-    for (final (x, y, at) in _misses) {
+    for (final (x, y, at, block) in _misses) {
       final t = (now - at) / 700;
-      drawPixelText(c, 'MISS', x - 7, y - 10 - 8 * t, (((1 - t) * 0xCC).round() << 24) | 0xB8C0CC);
+      final p = Offset(x + ((x * 7).floor().isEven ? 10 : -10) * math.sin(t * math.pi / 2), y - 10 - 10 * t);
+      final color = block ? const Color(0xFF4AA8FF) : const Color(0xFF8A94A4);
+      _label.draw(c, block ? 'BLOCK' : 'MISS', p, 8, alpha: t < 0.6 ? 1 : (1 - t) / 0.4, color: color);
     }
     _drums.removeWhere((d) => now - d > 500);
     for (final d in _drums) {

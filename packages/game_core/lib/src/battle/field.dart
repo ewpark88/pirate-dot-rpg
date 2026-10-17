@@ -118,7 +118,9 @@ class Field {
   DungeonRun? dungeon; // 진행 중인 요일 던전(top_dungeon.dart)
   List<String>? sceneFleet; // 장면 중 임시 출전(요일 던전 — 세이브 fleet는 그대로)
   String? scenePattern; // 장면 무리 파의 자리 패턴(요일 던전: arc·ring·scatter…)
+  int slotsOpen = 0; // 열린 출전 칸(fleetSlots — 화면 잠금 칸 판정, BattleView.slotsOpen)
   double sceneHpMul = 1; // 장면 적 체력 배율(요일 던전 묶음 hpMul — 무리·보스)
+  bool scenePooled = false; // 장면 무리 파도 평소 파처럼 한 파 몫(HP·공격·골드)을 마리 수로 나눈다(요일 던전)
 
   /// 본 전투를 멈춘 장면 모드(현상금·탑 — scene_mode.dart) 중인가.
   bool get inScene => bounty != null || tower != null || rush != null || dungeon != null;
@@ -187,6 +189,7 @@ class Field {
     fever: prev.fever,
     feverTicksLeft: prev.feverTicksLeft,
     autoBossTicksLeft: autoBossLeft,
+    slotsOpen: slotsOpen,
     retryWinnable: retryWinnable,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,

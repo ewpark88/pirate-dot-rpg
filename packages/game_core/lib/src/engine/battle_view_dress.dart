@@ -1,0 +1,44 @@
+part of 'battle_view.dart';
+
+// battle_view.dart 300줄 — 배 겉모습 덮어쓰기를 확장으로 나눔(부르는 쪽은 그대로).
+extension BattleViewDress on BattleView {
+  /// 배 겉모습 세 값을 그대로 넣는다(null도 그대로 — copyWith로는 지울 수 없어서).
+  BattleView withShipDress({String? tierLook, String? skin, int? treasureSea}) => BattleView(
+    tick: tick,
+    slotsOpen: slotsOpen,
+    shipHp: shipHp,
+    shipHpMax: shipHpMax,
+    bossActive: bossActive,
+    bossTicksLeft: bossTicksLeft,
+    enemies: enemies,
+    fleet: fleet,
+    captainId: captainId,
+    hitStopTicks: hitStopTicks,
+    speed: speed,
+    stage: stage,
+    chest: chest,
+    wave: wave,
+    gold: gold,
+    shipLook: shipLook,
+    mode: mode,
+    shipX: shipX,
+    shipY: shipY,
+    shipHeading: shipHeading,
+    shipTierLook: tierLook,
+    shipSkin: skin,
+    treasureSea: treasureSea,
+    shipShield: shipShield,
+    fever: fever,
+    feverTicksLeft: feverTicksLeft,
+    autoBossTicksLeft: autoBossTicksLeft,
+    retryWinnable: retryWinnable,
+    seaEvent: seaEvent,
+    challenge: challenge,
+    bounty: bounty,
+    tower: tower,
+    rush: rush,
+    dungeon: dungeon,
+    fastSail: fastSail,
+    crewDamage: crewDamage,
+  );
+}

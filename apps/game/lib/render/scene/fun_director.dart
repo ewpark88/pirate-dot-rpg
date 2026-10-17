@@ -50,9 +50,17 @@ bool funEvent(BattleScene s, GameEvent e) {
       s.topHits.loot.reward(s.clockMs, s.topShip);
       _sfx(s, 'adReward', e);
     // 손맛 v4: 한꺼번에 5마리 이상 — 가장자리 금빛 + 작은 흔들림.
+    // 무리 크기 비례(S1 '처치 손맛' — 평소 40마리 기준 과하지 않게): 흔들림 1.5~4px, 연쇄 퍼퍼펑 2~6번, 금화 터짐 2~8곳.
     case MultiKill(:final count) when s.isTop && count >= 5:
       if (s.settings.flash && s.screenFlashMs <= 0) s.screenFlashMs = 140;
-      s.shake.trigger(s.juice.shake['aoe']!);
+      final k = ((count - 5) / 35).clamp(0.0, 1.0);
+      s.shake.triggerPx((1.5 + 2.5 * k) * 1.3, 120 + 130 * k); // ×1.3(S1 '임팩트')
+      s.sound.chain(2 + (4 * k).round(), s.clockMs);
+      final kills = s.moments.recentKills;
+      for (var i = 0; i < kills.length && i < 2 + (6 * k).round(); i++) {
+        final at = kills[kills.length - 1 - i];
+        s.spawnEffect('coin_burst', at.dx, at.dy);
+      }
     // 도감 v2 보스 패턴: 먹물·삼키기·분열·자폭.
     case InkCloud(:final x, :final y, :final radius, :final ticks) when s.isTop:
       s.topHits.bestiary.ink(x, y, radius, ticks * s.player.tickMs, s.clockMs);
@@ -84,7 +92,7 @@ bool funEvent(BattleScene s, GameEvent e) {
     case BossBroken(:final enemyId, :final ticks, :final x, :final y) when s.isTop:
       s.topHits.breaks.broken(enemyId, x, y, ticks * s.player.tickMs, s.clockMs);
       s.shake.trigger(s.juice.shake['bossKill']!);
-      if (s.slowMoMs <= 0) s.slowMoMs = 250;
+      if (s.slowMoMs <= 0) s.slowMoMs = 200; // 슬로 0.2초 + 보스 카메라 줌 펀치(TopBossCam, 안전 영역 안)
       s.haptic(HapticLevel.medium);
       _sfx(s, 'bossBroken', e);
     // 카드 획득(피드백 #17): 보스 보상 터짐에 붙거나 배 앞에서 솟아 배로. 첫 동료는 크게 '새 동료!', 환영(starter)은 더 크게.

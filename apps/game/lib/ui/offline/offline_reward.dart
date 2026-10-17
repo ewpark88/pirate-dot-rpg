@@ -100,11 +100,9 @@ class _OfflineRewardDialogState extends ConsumerState<OfflineRewardDialog> {
 
   /// 실릴 몫 = min(계산값, 오프라인 상한(화물칸 × capMultiplier) − 지금 골드) — 경제 claimOffline과 같은 계산(실기기 ②).
   BigNum _fits() {
-    final room = goldRoom(
-      ref.read(gameStateProvider),
-      ref.read(tablesProvider),
-      capScale: offlineCapScale(ref.read(tablesProvider)),
-    );
+    final s = ref.read(gameStateProvider);
+    final t = ref.read(tablesProvider);
+    final room = goldRoom(s, t, capScale: offlineCapScale(t, s)); // 환생 직후 바닥값(다음 강화 floorUpgrades번)도 같이
     return widget.preview.gold > room ? room : widget.preview.gold;
   }
 

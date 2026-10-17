@@ -245,7 +245,7 @@ extension _TopEvents on EventDirector {
   void _juiceHit(Damage e, int index) {
     final en = _player.enemyAt(index, e.targetId);
     if (en == null) return;
-    if (!scene.topHits.lite) scene.topHits.juice.squash(e.targetId, scene.clockMs); // 손맛 v4 찌그러짐
+    if (!scene.topHits.lite) scene.topHits.juice.squash(e.targetId, scene.clockMs, keep: en.boss); // 찌그러짐(보스도 매 타격)
     if (e.crit) scene.topHits.juice.critStar(en.x, en.y, scene.clockMs);
     // 레이저가 켜진 선원의 피해: 맞은 자리 작은 불꽃.
     final crew = e.crewId;
@@ -253,11 +253,16 @@ extension _TopEvents on EventDirector {
       scene.topHits.impact.add(en.x, en.y, 8, 0xFFFFE08A, scene.clockMs);
     }
     final strong = en.boss;
-    if (!strong && !e.crit) return;
     final ship = scene.topShip;
     final at = Offset(en.x, en.y);
+    // 일반 피격도 작은 넉백(S1 '임팩트' — 적 쪽에서 크게), 치명은 '쨍'
+    if (!strong && !e.crit) {
+      if (!scene.topHits.lite) scene.topHits.juice.knock(e.targetId, at, ship, scene.clockMs, units: 2);
+      return;
+    }
+    if (e.crit) scene.sound.ting(scene.clockMs);
     scene.topHits.juice
-      ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake)
+      ..hit(scene.clockMs, at - ship, strong: strong, shake: scene.settings.shake, crit: e.crit)
       ..knock(e.targetId, at, ship, scene.clockMs, units: strong ? 3 : 5);
     scene.sound.thud(scene.clockMs, big: strong);
   }
@@ -266,6 +271,7 @@ extension _TopEvents on EventDirector {
   void _juiceKill(Kill e) {
     scene.topHits.juice.pop(e.x, e.y, scene.clockMs, 8);
     scene.topHits.impact.chainKill(e.x, e.y, scene.clockMs);
+    scene.moments.killAt(e.x, e.y);
   }
 
   /// 탑다운 보스 처치(피드백 #18): 흔들림·슬로모션·가장자리 빛 + 보스 자리에서 보상 터짐(연쇄 폭발 → 금화·젬 → 배로).
