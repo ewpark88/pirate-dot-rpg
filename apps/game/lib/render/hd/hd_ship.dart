@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
-import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 part 'hd_ship_parts.dart';
 part 'hd_ship_v2.dart';
@@ -200,6 +199,5 @@ class HdShip {
         c.drawRect(Rect.fromCenter(center: Offset(x * hw, len * 0.36), width: hw * 0.14, height: len * 0.05), k.fill);
       }
     }
-    k.shine2(c, hull.getBounds()); // 림 라이트·첫 광택은 blob이
   }
 }

@@ -54,9 +54,7 @@ void _whale(HdKit k, Canvas c, double r, double t, {required bool lava}) {
     ..quadraticBezierTo(-r * 0.45, r * 0.85, -r * 0.75, r * 0.4)
     ..cubicTo(-r * 0.95, -r * 0.2, -r * 0.75, -r * 0.95, 0, -r * 0.95)
     ..close();
-  k
-    ..blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD)
-    ..shine2(c, body.getBounds());
+  k.blob(c, body, lava ? const Color(0xFF8A7C80) : const Color(0xFFA8C0EC), greyD);
   // 흰 배(주름 줄)
   final belly = Path()
     ..moveTo(-r * 0.48, r * 0.1)
