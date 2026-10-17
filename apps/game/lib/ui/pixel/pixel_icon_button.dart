@@ -63,14 +63,19 @@ class _PixelIconButtonState extends State<PixelIconButton> {
                 offset: Offset(0, _down ? pixelUnit(context) : 0),
                 child: Opacity(
                   opacity: !enabled ? 0.4 : (_down ? 0.75 : 1),
-                  // 흰 동그라미 뱃지 (글자가 붙으면 알약).
+                  // k1: 짙은 남색 네모 칸 + 굵은 외곽선 (글자가 붙으면 알약).
                   child: Container(
                     height: 44,
                     constraints: const BoxConstraints(minWidth: 44),
                     padding: EdgeInsets.symmetric(horizontal: widget.trailing == null ? 0 : 8),
                     decoration: BoxDecoration(
-                      color: Skin.card,
-                      borderRadius: BorderRadius.circular(22),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Skin.navyPanelTop, Skin.navyPanel],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Skin.outline, width: 2),
                       boxShadow: Skin.shadowSmall,
                     ),
                     alignment: Alignment.center,
@@ -87,7 +92,7 @@ class _PixelIconButtonState extends State<PixelIconButton> {
                         if (widget.trailing case final t?) ...[
                           const SizedBox(width: 2),
                           DefaultTextStyle.merge(
-                            style: Skin.text(15, color: Skin.goldInk),
+                            style: Skin.outlined(15, color: const Color(0xFFFFD84A), stroke: 1.2),
                             child: t,
                           ),
                         ],

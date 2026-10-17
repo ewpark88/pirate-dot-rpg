@@ -72,9 +72,10 @@ class _ShipHeader extends ConsumerWidget {
           gradient: const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF8FD3FF), Color(0xFF4FA9E8)],
+            colors: [Skin.navyPanelTop, Skin.navyPanel],
           ),
           borderRadius: BorderRadius.circular(Skin.radiusCard),
+          border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
           boxShadow: Skin.shadow,
         ),
         child: Row(
@@ -85,7 +86,7 @@ class _ShipHeader extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: Skin.text(20, color: Colors.white)),
+                  Text(name, style: Skin.outlined(20)),
                   const SizedBox(height: 6),
                   const ShipSkinButton(),
                   // 모두 강화 원터치(경제 bestUpgradePlan) — 배 그림 옆에 두어 360에서도 부위 줄이 보이게.

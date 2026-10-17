@@ -30,7 +30,7 @@ class PowerBadge extends ConsumerWidget {
         children: [
           const SkinIcon('assets/ui/part_cannon.png', size: 16),
           const SizedBox(width: 3),
-          Text(power.format(), key: const Key('hud.power.value'), style: Skin.text(15)),
+          Text(power.format(), key: const Key('hud.power.value'), style: Skin.outlined(15, stroke: 1.2)),
         ],
       ),
     );

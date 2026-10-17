@@ -169,7 +169,7 @@ class SkinDepth extends StatelessWidget {
   }
 }
 
-/// 둥근 알약 진행 막대 (채움은 같은 색 밝기 그라데이션).
+/// 둥근 알약 진행 막대 (k1: 짙은 홈 + 굵은 외곽선, 채움은 같은 색 밝기 그라데이션 + 위 광택).
 class SkinBar extends StatelessWidget {
   const SkinBar({required this.value, this.color = Skin.mint, this.height = 10, super.key});
 
@@ -180,14 +180,22 @@ class SkinBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     height: height,
-    decoration: BoxDecoration(color: Skin.track, borderRadius: BorderRadius.circular(height)),
+    decoration: BoxDecoration(
+      color: Skin.track,
+      borderRadius: BorderRadius.circular(height),
+      border: Border.all(color: Skin.outline, width: height >= 8 ? 2 : 1.2),
+    ),
     alignment: Alignment.centerLeft,
     child: FractionallySizedBox(
       widthFactor: value.clamp(0, 1).toDouble(),
       heightFactor: 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [Color.lerp(color, Colors.white, 0.3)!, color]),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color.lerp(color, Colors.white, 0.45)!, color, Color.lerp(color, Skin.outline, 0.15)!],
+          ),
           borderRadius: BorderRadius.circular(height),
         ),
       ),

@@ -137,8 +137,9 @@ class _ShipHpBarState extends ConsumerState<ShipHpBar> {
           height: 20,
           padding: const EdgeInsets.symmetric(horizontal: 6),
           decoration: BoxDecoration(
-            color: Color.lerp(const Color(0xCC0B1730), const Color(0xCCB3122E), calm ? 0 : hit),
+            color: Color.lerp(const Color(0xE6262A52), const Color(0xCCB3122E), calm ? 0 : hit),
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Skin.outline, width: 2),
           ),
           child: Row(
             children: [

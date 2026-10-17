@@ -11,10 +11,10 @@ class HudBubble extends StatelessWidget {
     constraints: const BoxConstraints(maxWidth: 220),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: Skin.card,
       borderRadius: BorderRadius.circular(12),
       boxShadow: Skin.shadow,
-      border: Border.all(color: Skin.goldBottom, width: 2),
+      border: Border.all(color: Skin.outline, width: 2),
     ),
     child: Text(text, style: Skin.text(13)),
   );

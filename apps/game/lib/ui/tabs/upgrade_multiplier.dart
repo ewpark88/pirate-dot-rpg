@@ -43,7 +43,12 @@ class UpgradeMultiplierPills extends ConsumerWidget {
     return Container(
       key: const Key('ship.mult'),
       padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(color: Skin.card, borderRadius: BorderRadius.circular(22), boxShadow: Skin.shadowSmall),
+      decoration: BoxDecoration(
+        color: Skin.card,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
+        boxShadow: Skin.shadowSmall,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -69,7 +74,7 @@ class UpgradeMultiplierPills extends ConsumerWidget {
                     ),
                     child: Text(
                       n == 0 ? l10n.uiMultMax : l10n.uiMult(n),
-                      style: Skin.text(15, color: now == n ? Colors.white : Skin.ink),
+                      style: now == n ? Skin.outlined(15, stroke: 1.2) : Skin.text(15),
                     ),
                   ),
                 ),

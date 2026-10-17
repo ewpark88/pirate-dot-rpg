@@ -101,6 +101,8 @@ class CrewDetailDialog extends ConsumerWidget {
 
     return PixelDialog(
       key: Key('crew.detail.${def.id}'),
+      // k1: 이름은 노란 리본 제목으로.
+      title: shortCrewName(l10n, def),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,8 +116,7 @@ class CrewDetailDialog extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(shortCrewName(l10n, def), style: Theme.of(context).textTheme.titleMedium),
-                      Text(tableText(l10n, def.nameKey), style: dim),
+                      Text(tableText(l10n, def.nameKey), style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 4),
                       // 등급 알약(등급 색 테두리·옅은 바탕·진한 글 — 일반의 회색도 읽힌다) · 출전 알약.
                       Wrap(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -62,8 +61,10 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       // 순풍 칩: 연한 민트 알약 (스킨 r1).
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F8EF),
+        // k1: 짙은 남색 알약 + 외곽선.
+        color: Skin.navyPanel,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Skin.outline, width: 2),
         boxShadow: Skin.shadowSmall,
       ),
       child: Opacity(
@@ -74,11 +75,11 @@ class _TailwindBadgeState extends ConsumerState<TailwindBadge> {
             const PixelSprite(UiSprites.tailwind, dots: 16, scale: 1),
             if (active) ...[
               const SizedBox(width: 4),
-              Text(remainingText(left), style: Skin.text(15, color: Skin.mintInk)),
+              Text(remainingText(left), style: Skin.outlined(15, color: const Color(0xFF8CF5B8), stroke: 1.2)),
               const SizedBox(width: 4),
               Text(
                 l10n.uiEffectMultiplier(shortDecimal(multiplier)),
-                style: Skin.text(15, color: PixelPalette.accent, weight: FontWeight.bold),
+                style: Skin.outlined(15, color: const Color(0xFFFFD84A), stroke: 1.2),
               ),
             ],
           ],

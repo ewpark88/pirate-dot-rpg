@@ -36,8 +36,9 @@ void showSkinToast(BuildContext context, String text, {String? action, VoidCallb
                 key: const Key('skin.toast'),
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Skin.ink.withValues(alpha: 0.92),
-                  borderRadius: BorderRadius.circular(22),
+                  color: Skin.navyPanel.withValues(alpha: 0.96),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
                   boxShadow: Skin.shadow,
                 ),
                 child: Row(
@@ -47,7 +48,7 @@ void showSkinToast(BuildContext context, String text, {String? action, VoidCallb
                       child: Text(
                         text,
                         textAlign: TextAlign.center,
-                        style: Skin.text(16, color: Colors.white),
+                        style: Skin.outlined(16, stroke: 1.2),
                       ),
                     ),
                     if (action != null) ...[

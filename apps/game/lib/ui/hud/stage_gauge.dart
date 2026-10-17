@@ -85,8 +85,9 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
               key: const Key('hud.gauge'),
               padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
               decoration: BoxDecoration(
-                color: Skin.ink.withValues(alpha: 0.92),
+                color: Skin.navyPanel.withValues(alpha: 0.94),
                 borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Skin.outline, width: Skin.outlineWidth),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
