@@ -25,7 +25,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final t = ctx.tables;
   final w = t.waves;
   final region = t.regions.regionAt(stage);
-  final n = count ?? w.topMobCountAt(stage);
+  final n = count ?? (f.feverSwarm ? feverSwarmCount(t, stage) : w.topMobCountAt(stage));
   final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
@@ -52,6 +52,17 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
       f.foes.add(e);
     }
   }
+}
+
+/// 피버 중 한 파 마리 수 = 평소 × countMul, 상한 max(평소 상한 150보다 크게). 표에 swarm이 없으면 평소 그대로.
+/// 몫(pool ÷ 마리 수)은 그대로 나뉘어 한 마리는 약해지고 파 총량(HP·골드·공격)은 변하지 않는다.
+int feverSwarmCount(GameTables t, int stage) {
+  final n = t.waves.topMobCountAt(stage);
+  final fever = t.meta.raw.obj('fever');
+  if (!fever.has('swarm')) return n;
+  final sw = fever.obj('swarm');
+  final m = (n * sw.number('countMul')).round();
+  return m < sw.integer('max') ? m : sw.integer('max');
 }
 
 /// 보스 등장 (규칙 8, battle-m3-bosses). HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율, 타이머 `boss.timeLimitSec`.

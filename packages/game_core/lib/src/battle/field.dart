@@ -120,6 +120,9 @@ class Field {
   /// 즉석 도전용: 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
   int multiKill = 0;
 
+  /// 피버 무리(meta.fever.swarm, 사용자 폰 피드백 2026-10-17): 켜져 있으면 다음 무리 파가 countMul배·사방에서 한꺼번에. BattleSystem이 파를 부르기 전에 넣는다.
+  bool feverSwarm = false;
+
   /// 파를 이루는 살아 있는 적(돌발 이벤트 적 제외) — 파 끝·다음 파 판정.
   Iterable<Foe> get waveFoes => living.where((f) => f.eventKind == null);
 
