@@ -56,6 +56,9 @@ class BattleSystem implements GameSystem {
         f.foes.clear();
         startBoss(f, state.progress.stage, ctx, extraSec: bossExtraSec(state, ctx.tables));
         return _project(state.copyWith(progress: state.progress.copyWith(farming: false)), f, ctx.tables);
+      case StartVoyage():
+        final p = state.progress;
+        return p.sailHold ? state.copyWith(progress: p.copyWith(sailHold: false)) : state;
       case SkipFastSail():
         final run = _sync(state, ctx).fastSail;
         if (run == null) return state;
@@ -142,6 +145,7 @@ class BattleSystem implements GameSystem {
   /// 무리 다음은 무리, 파를 다 잡았고 파밍 중이 아니면 보스. 빠른 항해: 환생 뒤 bestStage × fastSailFraction(올림) 이하는 rebirthSkip.waves개만.
   void _nextEncounter(Field f, GameState s, SystemContext ctx) {
     final p = s.progress;
+    if (p.sailHold) return; // 환생 뒤 출항 대기: 잔잔한 바다(#19)
     final w = ctx.tables.waves;
     final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
