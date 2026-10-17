@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/dock/upgrade_all.dart' show canUpgradeAnyProvider;
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
+import 'package:pirate_dot/ui/guide/guide_marks.dart';
 import 'package:pirate_dot/ui/guide/guide_spots.dart';
 import 'package:pirate_dot/ui/guide/guide_talk.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -26,8 +26,7 @@ const _reactionFor = Duration(milliseconds: 1500);
 /// 전투 중 말이 초상만 남게 접히기까지.
 const _collapseAfter = Duration(seconds: 3);
 
-/// 가이드 v3 층: 홈 화면 위에 옥토 선장 말풍선 + 누를 곳 빛 테두리·손가락. 튜토리얼 누를 곳 단계는 밝은 곳 밖 누름을 막는다.
-/// 창(소환 결과 등)은 이 층 위 경로라 가리지 않는다.
+/// 가이드 v3 층: 옥토 선장 말풍선 + 누를 곳 빛 테두리·손가락(튜토리얼 누를 곳 단계는 밝은 곳 밖 누름을 막음). 창(경로)들 아래.
 class GuideLayer extends ConsumerStatefulWidget {
   const GuideLayer({required this.child, super.key});
 
@@ -214,13 +213,13 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(
-                painter: _DimPainter(holes: holes, alpha: dim),
+                painter: GuideDimPainter(holes: holes, alpha: dim),
               ),
             ),
           ),
         if (block)
           Positioned.fill(
-            child: _HoleBlocker(holes: holes, onBlocked: () => setState(() => _taps++)),
+            child: GuideHoleBlocker(holes: holes, onBlocked: () => setState(() => _taps++)),
           ),
         // 시스템 안내: 누를 곳을 누르면(했다) 닫는다. 누름은 그대로 아래로 간다.
         if (showing && !block && step == null && line == null && holes.isNotEmpty)
@@ -299,101 +298,4 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
       ],
     );
   }
-}
-
-/// 전체를 [alpha]만큼 어둡게, [holes]만 밝게(둥근 구멍).
-class _DimPainter extends CustomPainter {
-  _DimPainter({required this.holes, required this.alpha});
-
-  final List<Rect> holes;
-  final double alpha;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var path = Path()..addRect(Offset.zero & size);
-    for (final h in holes) {
-      path = Path.combine(
-        PathOperation.difference,
-        path,
-        Path()..addRRect(RRect.fromRectAndRadius(h.inflate(6), const Radius.circular(12))),
-      );
-    }
-    canvas.drawPath(path, Paint()..color = Colors.black.withValues(alpha: alpha));
-  }
-
-  @override
-  bool shouldRepaint(_DimPainter old) => old.alpha != alpha || old.holes != holes;
-}
-
-/// 구멍 밖 누름을 삼키고 [onBlocked]를 부른다. 구멍 안은 아래 위젯이 받는다.
-class _HoleBlocker extends LeafRenderObjectWidget {
-  const _HoleBlocker({required this.holes, required this.onBlocked});
-
-  final List<Rect> holes;
-  final VoidCallback onBlocked;
-
-  @override
-  RenderObject createRenderObject(BuildContext context) => _RenderHoleBlocker(holes, onBlocked);
-
-  @override
-  void updateRenderObject(BuildContext context, _RenderHoleBlocker r) => r
-    ..holes = holes
-    ..onBlocked = onBlocked;
-}
-
-class _RenderHoleBlocker extends RenderBox {
-  _RenderHoleBlocker(this.holes, this.onBlocked);
-
-  List<Rect> holes;
-  VoidCallback onBlocked;
-
-  @override
-  bool get sizedByParent => true;
-
-  @override
-  Size computeDryLayout(BoxConstraints constraints) => constraints.biggest;
-
-  @override
-  bool hitTestSelf(Offset position) => !holes.any((h) => h.inflate(6).contains(position));
-
-  @override
-  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
-    if (event is PointerDownEvent) onBlocked();
-  }
-}
-
-/// 가리킨 곳 오른쪽 아래 모서리에 큰 손가락 — 3번 톡톡 누르고 멈춘다([taps]가 바뀌면 다시). 동작 줄이기면 가만히.
-class GuideFinger extends StatelessWidget {
-  const GuideFinger({required this.at, required this.taps, required this.calm, super.key});
-
-  final Rect at;
-  final int taps;
-  final bool calm;
-
-  @override
-  Widget build(BuildContext context) => Positioned(
-    // 글자(탭 이름 등)를 덮지 않게 오른쪽 아래 모서리.
-    left: at.right - 24,
-    top: at.bottom - 28,
-    child: IgnorePointer(
-      child: TweenAnimationBuilder<double>(
-        key: ValueKey(taps),
-        tween: Tween(begin: 0, end: calm ? 0 : 3),
-        duration: const Duration(milliseconds: 2400),
-        builder: (_, v, child) {
-          // 한 번 톡 = 0.8초: 아래로 눌렀다 올라옴.
-          final t = v - v.floor();
-          final press = v >= 3 ? 0.0 : (t < 0.5 ? t * 2 : (1 - t) * 2);
-          return Transform.translate(offset: Offset(0, -8 * press), child: child);
-        },
-        child: const Icon(
-          Icons.touch_app_rounded,
-          key: Key('guide.finger'),
-          size: 40,
-          color: Colors.white,
-          shadows: [Shadow(color: Color(0xCC000000), blurRadius: 6, offset: Offset(0, 2))],
-        ),
-      ),
-    ),
-  );
 }
