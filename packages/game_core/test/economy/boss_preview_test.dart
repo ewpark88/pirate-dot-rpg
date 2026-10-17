@@ -34,6 +34,8 @@ void main() {
     final base = h.newGame().copyWith(progress: const Progress(stage: 3, bestStage: 3));
     final tut = bossPreview(base.copyWith(tutorialStep: 3), t).maxHp;
     final plain = bossPreview(base.copyWith(clearTutorial: true), t).maxHp;
-    expect((tut / plain).toDouble(), closeTo(t.waves.tutorialFailHpMultiplier, 1e-9));
+    // 튜토리얼 보스는 초반 감쇠 없이 × tutorialFailHpMultiplier, 같은 스테이지 재도전은 감쇠(earlyRamp)만 — 한 번 지고 강화 뒤엔 이긴다.
+    final early = earlyRamp(t.waves, 3, t.waves.earlyHpMultiplier);
+    expect((tut / plain).toDouble(), closeTo(t.waves.tutorialFailHpMultiplier / early, 1e-6));
   });
 }

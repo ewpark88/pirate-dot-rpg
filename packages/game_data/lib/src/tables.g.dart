@@ -3137,7 +3137,7 @@ const Map<String, String> rawTables = {
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
-  "boss": { "hpMultiplier": 270, "wallEvery": 10, "wallHpMultiplier": 2.8, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 20, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.015, "earlyAttackMultiplier": 0.035 },
+  "boss": { "hpMultiplier": 270, "wallEvery": 10, "wallHpMultiplier": 2.8, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 20, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "levelGain": 1 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.015, "earlyAttackMultiplier": 0.035 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {
