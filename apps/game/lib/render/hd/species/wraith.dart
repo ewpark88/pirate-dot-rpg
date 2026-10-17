@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 /// 망령(td_enemy:wraith — 부활·수면, docs/specs/economy-hd-monsters-b.md): 두건 쓴 듯한 둥근 머리, 아래로 흩어지는 꼬리(다리 없음),
 /// 가슴 혼불(= 부활 심지), 검은 빈 눈(무표정). 좌우로 흔들리며 미끄러지고 꼬리가 일렁인다.
@@ -52,7 +53,11 @@ void _wraith(HdKit k, Canvas c, double r, double t) {
   // 4) 검은 빈 눈 둘(무표정, 세로 타원) + 작은 'o' 입
   k.fill.color = HdKit.inkColor;
   for (final s in const [-1.0, 1.0]) {
-    c.drawOval(Rect.fromCenter(center: Offset(s * r * 0.22, -r * 0.45), width: r * 0.24, height: r * 0.34), k.fill);
+    if (k.mood == HdMood.hit) {
+      k.squintEye(c, Offset(s * r * 0.22, -r * 0.45), r * 0.28); // 맞음: 찡긋(잡몹 v2)
+    } else {
+      c.drawOval(Rect.fromCenter(center: Offset(s * r * 0.22, -r * 0.45), width: r * 0.24, height: r * 0.34), k.fill);
+    }
   }
   c
     ..drawOval(Rect.fromCenter(center: Offset(0, -r * 0.2), width: r * 0.1, height: r * 0.12), k.fill)
