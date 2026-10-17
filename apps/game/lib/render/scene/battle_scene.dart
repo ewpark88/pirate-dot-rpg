@@ -143,7 +143,7 @@ class BattleScene {
 
   /// 한 화면 프레임. [dtMs]는 실제 경과 시간.
   void update(double dtMs) {
-    clockMs += dtMs;
+    sound.pump(clockMs += dtMs);
     final rate = topHits.juice.frozen(dtMs) ? 0.0 : (slowMoMs > 0 ? juice.bossSlowMoRate : 1.0); // 렌더 히트스톱(v3)
     if (slowMoMs > 0) slowMoMs -= dtMs;
     player.advance(dtMs * rate);
@@ -165,7 +165,7 @@ class BattleScene {
     }
     coins.releaseWhere(_coinDone);
     if (!arrived.isZero) _coinArrived(arrived);
-    numbers.update(fxDt);
+    numbers.update(fxDt, poseOf); // 숫자는 맞은 적을 따라간다
     shake.update(dtMs);
     for (var i = 0; i < kMaxSlots; i++) {
       slotFlashMs[i] = _down(slotFlashMs[i], dtMs);

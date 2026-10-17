@@ -205,6 +205,7 @@ class EventDirector implements ReplayListener {
         target.y - kNumberLiftPx,
         e.crit || down ? DamageKind.crit : DamageKind.normal,
         key: e.targetId,
+        on: scene.poseOf(e.targetId), // 맞은 적을 따라간다
       );
     }
     _fx(e.crit ? 'critHit' : 'damage', tx, target.y);
@@ -248,8 +249,7 @@ class EventDirector implements ReplayListener {
     if (scene.isTop) _juiceKill(e);
     scene.combo.add(scene.clockMs);
     _fx('kill', e.x, e.y);
-    // 피버(탑다운): 처치 불꽃·코인 2배(사용자 '피버 임펙트').
-    final fever = scene.isTop && scene.frame.feverTicksLeft > 0;
+    final fever = scene.isTop && scene.frame.feverTicksLeft > 0; // 피버: 처치 불꽃·코인 2배(사용자 '피버 임펙트')
     if (fever) _fx('kill', e.x + 3, e.y - 3);
     // 화물칸 가득(S2 GoldOverflow): 코인 대신 회색 '+0'.
     if (scene.isTop && scene.topHits.crew.full(scene.clockMs)) return scene.topHits.crew.zero(e.x, e.y, scene.clockMs);
