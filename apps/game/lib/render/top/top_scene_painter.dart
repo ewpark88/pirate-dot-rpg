@@ -178,7 +178,7 @@ class TopScenePainter {
         for (var k = 3; k >= 1; k--) {
           _ghost.colorFilter = ColorFilter.mode(Color.fromRGBO(255, 216, 74, 0.55 * burst / k), BlendMode.srcIn);
           c
-            ..saveLayer(null, _ghost)
+            ..saveLayer(const Rect.fromLTRB(-90, -110, 90, 140), _ghost)
             ..translate(0, 9.0 * k * burst);
           _ship.paint(c, tier, view.shipLook);
           c.restore();
@@ -290,7 +290,7 @@ class TopScenePainter {
     final s = 1 - 0.35 * down;
     _sinkPaint.color = Color.fromRGBO(255, 255, 255, 1 - 0.6 * down);
     c
-      ..saveLayer(null, _sinkPaint)
+      ..saveLayer(const Rect.fromLTRB(-90, -110, 90, 140), _sinkPaint)
       ..scale(s);
     return true;
   }

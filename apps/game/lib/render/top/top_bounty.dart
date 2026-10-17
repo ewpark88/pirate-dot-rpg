@@ -209,7 +209,10 @@ class TopBounty {
       ..translate(center.dx, center.dy)
       ..scale(scale);
     final at = Offset(-fill.width / 2, -fill.height / 2);
-    if (alpha < 1) c.saveLayer(null, Paint()..color = Color.fromRGBO(0, 0, 0, alpha.clamp(0, 1)));
+    // 글자 크기만큼의 레이어(화면 전체 레이어는 텍스처가 튄다 — S5 gfx)
+    final bounds = (at & Size(fill.width, fill.height)).inflate(fill.height * 0.3);
+    final veil = Paint()..color = Color.fromRGBO(0, 0, 0, alpha.clamp(0, 1));
+    if (alpha < 1) c.saveLayer(bounds, veil);
     outline.paint(c, at);
     fill.paint(c, at);
     if (alpha < 1) c.restore();

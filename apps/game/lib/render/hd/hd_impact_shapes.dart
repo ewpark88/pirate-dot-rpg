@@ -29,7 +29,7 @@ extension _ImpactShapes on HdImpact {
             math.sin(a + 0.35) * d,
           )
           ..close();
-        c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
+        c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
         _k.blob(c, p, const Color(0xFFFFE45A), const Color(0xFFFF6A2A), gloss: false, line: 0.35);
         c.restore();
       }
@@ -103,7 +103,7 @@ extension _ImpactShapes on HdImpact {
       ..lineTo(len, 0)
       ..lineTo(0, w)
       ..close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(t)));
+    c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(t)));
     _k.blob(c, p, const Color(0xFFFFFFFF), h.color, gloss: false, line: 0.6);
     c.restore();
     _stroke
@@ -164,7 +164,7 @@ extension _ImpactShapes on HdImpact {
       ..quadraticBezierTo(-r * 0.3, -r * 0.9 * up, 0, -r * 1.1 * up)
       ..quadraticBezierTo(r * 0.3, -r * 0.9 * up, r * 0.22, 0)
       ..close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, 0.9 * (1 - t * 0.5)));
+    c.saveLayer(col.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, 0.9 * (1 - t * 0.5)));
     _k.blob(c, col, const Color(0xFFF0FCFF), const Color(0xFF6AC8F0), line: 0.6);
     c.restore();
     if (lite) return;
@@ -216,7 +216,7 @@ extension _ImpactShapes on HdImpact {
         ..quadraticBezierTo(0, -w * 2, r * 0.9, 0)
         ..quadraticBezierTo(0, -w * 0.4, -r * 0.9, 0)
         ..close();
-      c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
+      c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, _late(u)));
       _k.blob(c, p, const Color(0xFFFFFFFF), h.color, gloss: false, line: 0.5);
       c
         ..restore()
@@ -257,7 +257,7 @@ extension _ImpactShapes on HdImpact {
       i == 0 ? p.moveTo(q.dx, q.dy) : p.lineTo(q.dx, q.dy);
     }
     p.close();
-    c.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, alpha.clamp(0, 1)));
+    c.saveLayer(p.getBounds().inflate(12), Paint()..color = Color.fromRGBO(255, 255, 255, alpha.clamp(0, 1)));
     _k.blob(c, p, light, dark, gloss: false, line: 0.5);
     c.restore();
   }
