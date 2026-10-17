@@ -1,0 +1,18 @@
+{
+  "name": "회귀 스모크(전투 그대로 → 뒤로 두 번 종료)",
+  "note": "release-regression.md 자동 부분 A — 좌표 입력 없음(뒤로 키만). 운영자·배포 빌드 둘 다. 우리 앱이 전투 화면 맨 앞일 때 시작.",
+  "steps": [
+    {"do": "front", "expect": true},
+    {"do": "shot", "name": "a01_battle"},
+    {"do": "wait", "sec": 60, "note": "전투 1분 — 피버·대군이 한 번쯤"},
+    {"do": "shot", "name": "a02_battle_60s"},
+    {"do": "crash"},
+    {"do": "back", "note": "뒤로 한 번 — '한 번 더 누르면 종료' 안내"},
+    {"do": "wait", "sec": 0.5},
+    {"do": "shot", "name": "a03_back_once"},
+    {"do": "back", "note": "두 번째 — 저장 뒤 종료"},
+    {"do": "wait", "sec": 2},
+    {"do": "front", "expect": false},
+    {"do": "crash"}
+  ]
+}
