@@ -62,8 +62,8 @@ void main() {
       find.descendant(of: find.byKey(const Key('hud.settings')), matching: find.byTooltip('Settings')),
       findsOneWidget,
     );
-    // 퀘스트는 도크 첫 칸(#9 A) — 툴팁 대신 아이콘 아래 글자가 늘 보인다.
-    expect(find.descendant(of: find.byKey(const Key('daily.icon')), matching: find.text('Quests')), findsOneWidget);
+    // 퀘스트는 도크 첫 칸(#9 A). 얇은 도크(2026-10-17 확정)는 고른 탭만 글자 — 대신 화면 낭독 이름이 늘 있다.
+    expect(find.bySemanticsLabel('Quests'), findsOneWidget);
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   });
 }

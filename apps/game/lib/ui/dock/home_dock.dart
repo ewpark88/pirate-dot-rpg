@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
-import 'package:pirate_dot/ui/hud/hud_layout.dart';
-import 'package:pirate_dot/ui/hud/stage_gauge.dart';
 import 'package:pirate_dot/ui/meta/daily_sheet.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -18,7 +16,7 @@ import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 도크 높이(dp) — 전장 상자는 이 위에서 끝난다(시트가 닫혔을 때).
-const double kDockHeight = 76;
+const double kDockHeight = 58; // 얇은 도크(사용자 2026-10-17 배치 확정 — 고른 탭만 이름)
 
 /// 아래 엄지 자리 도크 (사용자 결정: 도크 + 끌어올리는 시트): 동그란 아이콘 5개 + 빠른 강화.
 /// 순서(사용자 피드백 #9 A, S1 결정): [퀘스트][배][선원][소환][항해] — 자주 누르는 퀘스트를 엄지 자리 첫 칸으로, 지금 보는 화면인 항해는 끝으로.
@@ -55,14 +53,10 @@ class HomeDock extends ConsumerWidget {
     final glow = ref.watch(rebirthReadyProvider)
         ? ref.watch(gameStateProvider.select((s) => ((s.battle?.tick ?? 0) ~/ 10).isEven))
         : null;
-    // 배치 안(HUD 배치 검토): 얇은 도크 = 58dp·고른 탭만 이름, 엄지 = 닫힌 도크 위에 진행 게이지.
-    final layout = ref.watch(hudLayoutProvider);
-    final slim = layout == HudLayout.slim;
     Widget tab(int i, double slot) {
       final (asset, label, spot, badge) = items[i];
       return _DockIcon(
         key: Key('tab.$i'),
-        slim: slim,
         slot: slot,
         asset: asset,
         label: label,
@@ -82,7 +76,7 @@ class HomeDock extends ConsumerWidget {
 
     // k1: 짙은 남색 띠 + 위 굵은 외곽선.
     final bar = Container(
-      height: slim ? dockHeightFor(layout) : kDockHeight,
+      height: kDockHeight,
       decoration: const BoxDecoration(
         color: Skin.navyPanel,
         border: Border(
@@ -99,7 +93,6 @@ class HomeDock extends ConsumerWidget {
               if (daily >= 0) ...[
                 _DockIcon(
                   key: const Key('daily.icon'),
-                  slim: slim,
                   slot: slot,
                   asset: UiSprites.quest,
                   label: l10n.uiTabQuest,
@@ -113,27 +106,14 @@ class HomeDock extends ConsumerWidget {
                 const SizedBox(width: _gap),
               ],
               for (final i in const [1, 2, 3, 0]) ...[tab(i, slot), const SizedBox(width: _gap)],
-              // 얇은 도크면 빠른 강화를 칸 높이에 맞춰 줄인다(금액 배지가 잘리지 않게).
-              if (slim)
-                const SizedBox(height: 56, child: FittedBox(child: QuickUpgradeButton()))
-              else
-                const QuickUpgradeButton(),
+              // 얇은 도크: 빠른 강화를 칸 높이에 맞춰 줄인다(금액 배지가 잘리지 않게).
+              const SizedBox(height: 56, child: FittedBox(child: QuickUpgradeButton())),
             ],
           );
         },
       ),
     );
-    if (layout != HudLayout.thumb || open != null) return bar;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(
-          height: thumbGaugeHeight,
-          child: Align(alignment: Alignment.bottomCenter, child: StageGauge()),
-        ),
-        bar,
-      ],
-    );
+    return bar;
   }
 }
 
@@ -142,7 +122,6 @@ const double _gap = 4;
 
 class _DockIcon extends StatelessWidget {
   const _DockIcon({
-    required this.slim,
     required this.asset,
     required this.label,
     required this.selected,
@@ -157,8 +136,6 @@ class _DockIcon extends StatelessWidget {
     super.key,
   });
 
-  /// 얇은 도크(배치 안).
-  final bool slim;
   final String asset;
   final String label;
   final bool selected;
@@ -192,7 +169,7 @@ class _DockIcon extends StatelessWidget {
         onTap: onTap,
         child: SizedBox(
           width: slot,
-          height: slim ? 58 : kDockHeight,
+          height: kDockHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -204,8 +181,8 @@ class _DockIcon extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOutBack,
-                  width: (selected ? (slim ? 50.0 : 58.0) : (slim ? 42.0 : 48.0)).clamp(0, slot),
-                  height: (selected ? (slim ? 36.0 : 52.0) : (slim ? 40.0 : 46.0)).clamp(0, slot - 2),
+                  width: (selected ? 50.0 : 42.0).clamp(0, slot),
+                  height: (selected ? 36.0 : 40.0).clamp(0, slot - 2),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -233,8 +210,8 @@ class _DockIcon extends StatelessWidget {
                   child: icon,
                 ),
               ),
-              // 얇은 도크는 고른 탭만 이름.
-              if (!slim || selected) ...[const SizedBox(height: 1), OutlineText(label, size: slim ? 12 : 14)],
+              // 얇은 도크: 고른 탭만 이름.
+              if (selected) ...[const SizedBox(height: 1), OutlineText(label, size: 12)],
             ],
           ),
         ),
