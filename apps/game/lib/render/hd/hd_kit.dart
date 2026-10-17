@@ -1,0 +1,229 @@
+import 'dart:math' as math;
+import 'dart:ui';
+
+import 'package:flutter/painting.dart' show Alignment, LinearGradient;
+
+/// 한 종 그리기(HD 카툰, docs/specs/render-hd-style.md): 가운데 원점, 몸 반지름 [r], 시각 [t](ms, 0~[HdKit.loopMs]).
+/// 정면 3/4 시점·왼쪽을 본다(오른쪽은 굽기가 좌우로 뒤집는다). 움직임은 [HdKit.wave]로 — 8장 고리가 이어지게.
+typedef HdDraw = void Function(HdKit k, Canvas c, double r, double t);
+
+/// HD 종 하나: 그리기 + 크기 규격.
+class HdSpecies {
+  const HdSpecies(this.draw, {this.extent = 1.4, this.ground = 0.75});
+
+  final HdDraw draw;
+
+  /// 그림이 원점에서 r의 몇 배까지 뻗나 — 굽기 칸 한 변 = 2·extent·r.
+  final double extent;
+
+  /// 그림자 타원 중심 높이(r 배수, 아래가 +). 날짐승은 더 아래로(떠 있게).
+  final double ground;
+}
+
+/// HD 카툰 공용 부품(쿵푸할매 서바이버 스타일): 굵은 검정 외곽선·위 밝고 아래 어두운 그라데이션·왼쪽 위 광택·큰 눈.
+/// 모든 종이 이 부품만 쓰면 같은 품질이 된다. 붓은 재사용(그리는 동안 할당 최소).
+class HdKit {
+  /// 애니메이션 고리 길이 — 0.1초 × 8장.
+  static const loopMs = 800.0;
+  static const frames = 8;
+
+  /// 외곽선 색(순검정 대신 아주 어두운 보라 — 팔레트와 어울림).
+  static const inkColor = Color(0xFF1A1424);
+
+  final fill = Paint()..isAntiAlias = true;
+  final ink = Paint()
+    ..isAntiAlias = true
+    ..style = PaintingStyle.stroke
+    ..strokeJoin = StrokeJoin.round
+    ..strokeCap = StrokeCap.round
+    ..color = inkColor;
+  final _stroke = Paint()
+    ..isAntiAlias = true
+    ..style = PaintingStyle.stroke
+    ..strokeJoin = StrokeJoin.round
+    ..strokeCap = StrokeCap.round;
+
+  /// 외곽선 두께 규칙: r의 11%, 최소 2.5px. 종을 그리기 전에 굽기가 부른다.
+  void begin(double r) => ink.strokeWidth = math.max(2.5, r * 0.11);
+
+  /// 고리 파동: 한 고리(800ms)에 [n]번 오르내림 — 8장째가 1장째로 이어진다. [off]는 부위마다 어긋나게.
+  double wave(double t, int n, [double off = 0]) => math.sin(2 * math.pi * n * t / loopMs + off);
+
+  /// 몸 덩어리: [light](위) → [dark](아래) 그라데이션 + 외곽선 + 왼쪽 위 광택.
+  void blob(Canvas c, Path p, Color light, Color dark, {bool gloss = true}) {
+    final b = p.getBounds();
+    // 셰이더 출력은 붓 색 알파를 곱한다 — 앞에서 남은 반투명 색을 지운다.
+    fill
+      ..color = const Color(0xFFFFFFFF)
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [light, dark],
+      ).createShader(b);
+    c.drawPath(p, fill);
+    fill.shader = null;
+    c.drawPath(p, ink);
+    if (gloss) shine(c, b);
+  }
+
+  /// 광택: 덩어리 [b]의 왼쪽 위 흰 타원 + 반짝 점.
+  void shine(Canvas c, Rect b) {
+    fill.color = const Color(0x99FFFFFF);
+    c.drawOval(
+      Rect.fromCenter(
+        center: Offset(b.left + b.width * 0.32, b.top + b.height * 0.24),
+        width: b.width * 0.28,
+        height: b.height * 0.14,
+      ),
+      fill,
+    );
+    fill.color = const Color(0xCCFFFFFF);
+    c.drawCircle(Offset(b.left + b.width * 0.2, b.top + b.height * 0.3), b.width * 0.035, fill);
+  }
+
+  /// 큰 카툰 눈: 흰자 + 검은 눈동자 + 반짝 두 점 + 외곽선. [angry]면 눈썹, [look](-1 왼쪽 ~ 1 오른쪽)은 눈동자 방향.
+  void eye(Canvas c, Offset at, double s, {bool angry = false, double look = 0}) {
+    final white = Rect.fromCenter(center: at, width: s, height: s * 1.15);
+    fill.color = const Color(0xFFFFFFFF);
+    c
+      ..drawOval(white, fill)
+      ..drawOval(white, ink);
+    fill.color = inkColor;
+    c.drawOval(
+      Rect.fromCenter(center: at + Offset(look * s * 0.15, s * 0.08), width: s * 0.55, height: s * 0.68),
+      fill,
+    );
+    fill.color = const Color(0xFFFFFFFF);
+    c
+      ..drawCircle(at + Offset(-s * 0.08 + look * s * 0.15, -s * 0.08), s * 0.14, fill)
+      ..drawCircle(at + Offset(s * 0.12 + look * s * 0.15, s * 0.2), s * 0.06, fill);
+    if (angry) c.drawLine(at + Offset(-s * 0.55, -s * 0.85), at + Offset(s * 0.45, -s * 0.55), ink);
+  }
+
+  /// 웃는 입(아래로 휜 선) — 가운데 [at], 폭 [w].
+  void smile(Canvas c, Offset at, double w) {
+    c.drawPath(
+      Path()
+        ..moveTo(at.dx - w / 2, at.dy)
+        ..quadraticBezierTo(at.dx, at.dy + w * 0.55, at.dx + w / 2, at.dy),
+      ink,
+    );
+  }
+
+  /// 벌린 입(검붉은 속 + 외곽선) — [p]는 닫힌 입 모양.
+  void mouth(Canvas c, Path p) {
+    fill.color = const Color(0xFF6A1424);
+    c
+      ..drawPath(p, fill)
+      ..drawPath(p, ink);
+  }
+
+  /// 흰 이빨 하나: 윗변 왼쪽 [a]에서 폭 [w], 아래로 [h](음수면 위로).
+  void tooth(Canvas c, Offset a, double w, double h) {
+    fill.color = const Color(0xFFFFFFFF);
+    c.drawPath(
+      Path()
+        ..moveTo(a.dx, a.dy)
+        ..lineTo(a.dx + w / 2, a.dy + h)
+        ..lineTo(a.dx + w, a.dy)
+        ..close(),
+      fill,
+    );
+  }
+
+  /// 분홍 볼(양쪽) — 가운데 [at]에서 좌우 [dx], 크기 [s].
+  void cheeks(Canvas c, Offset at, double dx, double s) {
+    fill.color = const Color(0x88FFB0C0);
+    for (final k in const [-1.0, 1.0]) {
+      c.drawOval(Rect.fromCenter(center: at + Offset(k * dx, 0), width: s, height: s * 0.55), fill);
+    }
+  }
+
+  /// 외곽선 두른 색 줄(다리·촉수·더듬이): 굵기 [w], 색 [color].
+  void limb(Canvas c, Path p, Color color, double w) {
+    _stroke
+      ..strokeWidth = w + ink.strokeWidth * 2
+      ..color = inkColor;
+    c.drawPath(p, _stroke);
+    _stroke
+      ..strokeWidth = w
+      ..color = color;
+    c.drawPath(p, _stroke);
+  }
+
+  /// 꿈틀 촉수: [from]에서 방향 [angle](라디안, 0 = 오른쪽·π/2 = 아래)으로 길이 [len], [n]마디가 [phase]로 흔들린다.
+  void tentacle(Canvas c, Offset from, double angle, double len, double phase, Color color, double w, {int n = 4}) {
+    final p = Path()..moveTo(from.dx, from.dy);
+    final d = Offset(math.cos(angle), math.sin(angle));
+    final side = Offset(-d.dy, d.dx);
+    for (var k = 1; k <= n; k++) {
+      final q = from + d * (len * k / n) + side * (math.sin(phase + k) * len * 0.24 * k / n);
+      p.lineTo(q.dx, q.dy);
+    }
+    limb(c, p, color, w);
+  }
+
+  /// 집게(번쩍 든): 뿌리 [at], 각도 [angle], 크기 [r], [open](0~1) 벌림.
+  void pincer(Canvas c, Offset at, double r, double angle, Color light, Color dark, {double open = 0}) {
+    c
+      ..save()
+      ..translate(at.dx, at.dy)
+      ..rotate(angle);
+    final arm = Path()..addOval(Rect.fromCenter(center: Offset(0, r * 0.28), width: r * 0.3, height: r * 0.5));
+    blob(c, arm, light, dark, gloss: false);
+    final g = r * 0.1 * open;
+    final claw = Path()
+      ..moveTo(-r * 0.32, 0)
+      ..cubicTo(-r * 0.4, -r * 0.5 - g, r * 0.05, -r * 0.62 - g, r * 0.12, -r * 0.3)
+      ..lineTo(0, -r * 0.18)
+      ..lineTo(r * 0.3, -r * 0.42 - g)
+      ..cubicTo(r * 0.42, -r * 0.1, r * 0.25, r * 0.15, 0, r * 0.12)
+      ..close();
+    blob(c, claw, light, dark);
+    c.restore();
+  }
+
+  /// 물고기 꼬리(오목 삼각): 뿌리 [at], 길이 [r], 각도 [angle](0 = 오른쪽으로 뻗음).
+  void tail(Canvas c, Offset at, double r, double angle, Color light, Color dark) {
+    c
+      ..save()
+      ..translate(at.dx, at.dy)
+      ..rotate(angle);
+    final p = Path()
+      ..moveTo(0, 0)
+      ..lineTo(r, -r * 0.8)
+      ..quadraticBezierTo(r * 0.72, 0, r, r * 0.8)
+      ..close();
+    blob(c, p, light, dark, gloss: false);
+    c.restore();
+  }
+
+  /// 금관(보스 표시): 아랫변 가운데 [at], 폭 [w].
+  void crown(Canvas c, Offset at, double w) {
+    final h = w * 0.62;
+    final p = Path()
+      ..moveTo(at.dx - w / 2, at.dy)
+      ..lineTo(at.dx - w * 0.43, at.dy - h * 0.73)
+      ..lineTo(at.dx - w * 0.17, at.dy - h * 0.3)
+      ..lineTo(at.dx, at.dy - h)
+      ..lineTo(at.dx + w * 0.17, at.dy - h * 0.3)
+      ..lineTo(at.dx + w * 0.43, at.dy - h * 0.73)
+      ..lineTo(at.dx + w / 2, at.dy)
+      ..close();
+    blob(c, p, const Color(0xFFFFE27A), const Color(0xFFE0A020));
+  }
+
+  /// 무늬 점들(외곽선 없음): (x, y, 반지름) 모두 r 배수.
+  void spots(Canvas c, double r, List<(double, double, double)> at, Color color) {
+    fill.color = color;
+    for (final (x, y, s) in at) {
+      c.drawCircle(Offset(x * r, y * r), s * r, fill);
+    }
+  }
+
+  /// 바다 위 그림자 — 굽기가 종마다 자동으로 깐다.
+  void shadow(Canvas c, double r, double ground) {
+    fill.color = const Color(0x40061A30);
+    c.drawOval(Rect.fromCenter(center: Offset(0, r * ground), width: r * 1.7, height: r * 0.5), fill);
+  }
+}
