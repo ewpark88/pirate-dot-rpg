@@ -51,6 +51,19 @@ void main() {
       expect(s.tokens, (b.starterCount - need + between) * t.growth.tokenPerSurplusCard);
     });
 
+    test('CardGranted(S3 요청): 장마다 crewId·등급·source boss, 처음 얻는 선원만 isNew', () {
+      final s0 = atStage(starter(), 8, rebirths: 1);
+      grantBossCards(s0, h.ctx, ['turtle']);
+      final got = h.of<CardGranted>();
+      expect(got, hasLength(2));
+      expect(got.map((e) => (e.crewId, e.source, e.isNew)), everyElement(('turtle', 'boss', false)));
+      final fresh = EconomyHarness();
+      final s1 = atStage(starter().copyWith(crews: {'octo': const CrewState()}), 8, rebirths: 1);
+      grantBossCards(s1, fresh.ctx, ['pang']);
+      expect(fresh.of<CardGranted>().first.isNew, isTrue);
+      expect(fresh.of<CardGranted>().last.isNew, isFalse, reason: '두 번째 장은 이미 보유');
+    });
+
     test('환생 뒤 스테이지 1~10은 2장, 출전 선원에게', () {
       final s0 = atStage(starter(), 8, rebirths: 1).copyWith(
         crews: {
