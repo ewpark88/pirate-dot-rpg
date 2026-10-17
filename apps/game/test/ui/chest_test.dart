@@ -102,7 +102,8 @@ void main() {
     expect(find.byKey(const Key('chest.sheet')), findsOneWidget);
     expect(find.textContaining('Ad ×'), findsOneWidget); // 광고 쪽 이득 표시
     // 작게: 폰 폭 85% 이하.
-    expect(tester.getSize(find.byKey(const Key('chest.sheet'))).width, lessThanOrEqualTo(384 * 0.9));
+    // 창 판 폭(리본이 판 전체 폭) = 폰 폭 85% 이하(팝업 기준).
+    expect(tester.getSize(find.byKey(const Key('dialog.ribbon'))).width, lessThanOrEqualTo(384 * 0.85));
     expect(find.byKey(const Key('ad.chest.gold')), findsOneWidget);
     expect(find.byKey(const Key('ad.chest.gems')), findsOneWidget);
     await tester.tap(find.byKey(const Key('chest.take')));
