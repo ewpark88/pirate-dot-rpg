@@ -50,13 +50,17 @@ class UpgradeAllButton extends ConsumerWidget {
         tone: SkinTone.gold,
         height: 56,
         onPressed: on ? () => upgradeAll(context, ref) : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.keyboard_double_arrow_up_rounded, size: 24, color: Skin.goldInk),
-            const SizedBox(width: 6),
-            Text(l10n.uiUpgradeAll, style: Skin.text(18, color: Skin.goldInk)),
-          ],
+        // 배 헤더 안(좁은 칸)에서도 한 줄 — 넘치면 줄여 맞춘다.
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.keyboard_double_arrow_up_rounded, size: 24, color: Skin.goldInk),
+              const SizedBox(width: 6),
+              Text(l10n.uiUpgradeAll, style: Skin.text(18, color: Skin.goldInk)),
+            ],
+          ),
         ),
       ),
     );
