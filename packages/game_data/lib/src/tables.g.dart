@@ -2799,6 +2799,7 @@ const Map<String, String> rawTables = {
     "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring" },
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
+  "shipSkins": [{"id": "king", "nameKey": "shipSkinKing", "source": {"type": "collection", "value": 10}}, {"id": "fairy", "nameKey": "shipSkinFairy", "source": {"type": "bestStage", "value": 100}}, {"id": "frost", "nameKey": "shipSkinFrost", "source": {"type": "bountyTier", "value": 10}}, {"id": "lava", "nameKey": "shipSkinLava", "source": {"type": "bountyAll", "value": 5}}, {"id": "ghostship", "nameKey": "shipSkinGhostship", "source": {"type": "bestStage", "value": 300}}, {"id": "festival", "nameKey": "shipSkinFestival", "source": {"type": "collection", "value": 40}}, {"id": "abyss", "nameKey": "shipSkinAbyss", "source": {"type": "pieces", "value": 50}}],
   "startingCrews": ["octo"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },

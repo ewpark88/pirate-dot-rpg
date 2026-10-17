@@ -11,5 +11,12 @@
   "shipSkinCoral": "Coral Voyagers",
   "shipSkinStorm": "Storm Hunters",
   "shipSkinGold": "Golden Fleet",
-  "shipSkinPhantom": "Phantom Ship"
+  "shipSkinPhantom": "Phantom Ship",
+  "shipSkinKing": "Crown Galleon",
+  "shipSkinFairy": "Fairy Sloop",
+  "shipSkinFrost": "Frost Hunter",
+  "shipSkinLava": "Lava Warship",
+  "shipSkinGhostship": "Ghost Ship",
+  "shipSkinFestival": "Festival Flagship",
+  "shipSkinAbyss": "Abyss Ship"
 }

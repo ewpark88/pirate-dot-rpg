@@ -74,3 +74,16 @@ class MarkHint extends Command {
   @override
   Json _fields() => {'id': id};
 }
+
+/// 조각 스킨 사기(meta.shipSkins source pieces): 보물지도 조각 value개 → 스킨.
+class BuySkin extends Command {
+  const BuySkin(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'buySkin';
+
+  @override
+  Json _fields() => {'id': id};
+}
