@@ -44,7 +44,7 @@ class EconomySystem implements GameSystem {
     OpSpawnChest() => spawnChest(state, ctx),
     final OpGrantTailwind c => opGrantTailwind(state, c, ctx),
     final TutorialAck c => tutorialAck(state, ctx.tables, c),
-    SkipTutorial() => state.copyWith(clearTutorial: true),
+    SkipTutorial() => skipTutorial(state, ctx),
     final OpSetTutorial c => opSetTutorial(state, c),
     final Rebirth c => onRebirth(state, c, ctx),
     final OpRebirthNow c => opRebirthNow(state, c, ctx),

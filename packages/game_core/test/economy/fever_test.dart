@@ -20,7 +20,7 @@ void main() {
 
   test('게이지 = 처치 수(시간 충전 없음): 1마리 = 1 ÷ feverKillsAt, 동시 처치 배수 없음, 보스 + bossKill', () {
     final need = feverKillsAt(t, 1);
-    expect(need, inInclusiveRange(f.integer('killsBase'), f.integer('killsMax')));
+    expect(need, f.integer('killsStart'));
     expect(feverStep(withFever(0), h.ctx, kills: 4, bossKilled: false).progress.fever, closeTo(4 / need, 1e-12));
     expect(feverStep(withFever(0), h.ctx, kills: 0, bossKilled: false).progress.fever, 0);
     expect(
@@ -29,8 +29,11 @@ void main() {
     );
   });
 
-  test('필요 처치 수는 무리가 커지면 줄지 않고 killsMax에서 멈춘다', () {
-    expect(feverKillsAt(t, 100), greaterThanOrEqualTo(feverKillsAt(t, 1)));
+  test('필요 처치 수(피드백 #2): 스테이지 1 killsStart → killsRampStage까지 늘어 killsMax에서 멈춘다', () {
+    final ramp = f.integer('killsRampStage');
+    expect(feverKillsAt(t, 1), f.integer('killsStart'));
+    expect(feverKillsAt(t, ramp ~/ 2), inExclusiveRange(f.integer('killsStart'), f.integer('killsMax')));
+    expect(feverKillsAt(t, ramp), f.integer('killsMax'));
     expect(feverKillsAt(t, 100000), f.integer('killsMax'));
   });
 

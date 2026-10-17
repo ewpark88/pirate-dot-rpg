@@ -62,5 +62,14 @@ GameState tutorialAfterMerge(GameState s, GameTables t) {
   return s.tutorialStep == merge ? s.copyWith(tutorialStep: merge + 1) : s;
 }
 
+/// 건너뛰기(S1 결정 2026-10-17): 튜토리얼은 끝나도 환영 선원은 그 틱에 받는다(아직 첫 강화 전이었으면).
+GameState skipTutorial(GameState s, SystemContext ctx) {
+  final up = _steps(ctx.tables).obj('upgrade').integer('step');
+  final step = s.tutorialStep;
+  final before = step != null && step <= up;
+  final done = s.copyWith(clearTutorial: true);
+  return before ? _welcome(done, ctx) : done;
+}
+
 GameState opSetTutorial(GameState s, OpSetTutorial c) =>
     c.step == null ? s.copyWith(clearTutorial: true) : s.copyWith(tutorialStep: c.step);

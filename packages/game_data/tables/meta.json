@@ -79,11 +79,11 @@
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
   "fever": { "weave": {"mode": "zigzag", "amp": 70, "legSec": 2.0, "turnSec": 0.45, "surge": 8, "tiltDeg": 25},
-    "killsBase": 1000, "killsMax": 1000, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
+    "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "aura": { "radiusShipMul": 2.5, "waveHpPerSec": 0.6, "bossFactor": 0.1, "pulseSec": 0.25, "forwardBoost": 0.5 }
   },
-  "startingCrews": ["octo", "turtle"],
+  "startingCrews": ["octo"],
   "summonCostGems": 30,
   "fleetPower": { "exponent": 0.5 },
   "dailyQuests": [
