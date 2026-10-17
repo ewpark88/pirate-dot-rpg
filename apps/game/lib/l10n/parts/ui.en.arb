@@ -1159,7 +1159,6 @@
   "uiShopDailyGems": "Daily gems ×{n}",
   "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
   "uiShopLater": "Later",
-  "uiShopOpen": "Shop (operator)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {
@@ -1490,5 +1489,163 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPassTitle": "Voyage Pass",
+  "uiPassLevel": "Level {n}/{max}",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "{n} XP to next",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "Quests/check-in +{q} · New stage +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "Free",
+  "uiPassPaid": "Pass",
+  "uiPassClaimAll": "Claim all",
+  "uiPassUnlock": "Unlock pass · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "Pass: {n} days left",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "Pass reward at level {lv}",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "Season 1 Flagship",
+  "uiTitlePassFlag": "Season 1 Voyager",
+  "uiPassLegend": "Legend summon",
+  "uiDungeonTitle": "Weekday Dungeon",
+  "uiDungeonToday": "{day} · today's families",
+  "@uiDungeonToday": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonAll": "All families",
+  "uiDungeonStep": "Step {n}",
+  "@uiDungeonStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonStart": "Challenge step {n}",
+  "@uiDungeonStart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonSweep": "Sweep step {n}",
+  "@uiDungeonSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonReward": "Crew cards ×{c} · Gems {g}",
+  "@uiDungeonReward": {
+    "placeholders": {
+      "c": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonCrewNote": "Your fleet is swapped to these crews for the run",
+  "uiDungeonNoCrew": "No crews of these families — try another day",
+  "uiDungeonStrip": "Dungeon step {n} · wave {wave}/{waves}",
+  "@uiDungeonStrip": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonClear": "Step {n} cleared!",
+  "@uiDungeonClear": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonFail": "Step {n} failed",
+  "@uiDungeonFail": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonTicketBack": "Your ticket was returned",
+  "uiDungeonTimeout": "Time's up",
+  "uiDungeonSwept": "Swept step {n} · {reward}",
+  "@uiDungeonSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeekday1": "Monday",
+  "uiWeekday2": "Tuesday",
+  "uiWeekday3": "Wednesday",
+  "uiWeekday4": "Thursday",
+  "uiWeekday5": "Friday",
+  "uiWeekday6": "Saturday",
+  "uiWeekday7": "Sunday"
 }

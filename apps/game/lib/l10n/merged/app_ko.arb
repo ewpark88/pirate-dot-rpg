@@ -317,6 +317,25 @@
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
   "opTraitSplit": "분열",
+  "opGroupPurchase": "결제(흉내)",
+  "opSimNext": "다음 결제 결과",
+  "opSimSuccess": "성공",
+  "opSimCancel": "취소",
+  "opSimPending": "대기",
+  "opSimError": "오류",
+  "opSimSettle": "대기 결제 마치기",
+  "opSimRefund": "환불: {id}",
+  "@opSimRefund": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "opSimReplay": "마지막 구매 다시 보내기",
+  "opSimNone": "결제 흉내가 없는 빌드예요",
+  "opEntitlements": "권리 켜기/끄기",
+  "opShopOpen": "상점 열기",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -1503,7 +1522,6 @@
   "uiShopDailyGems": "매일 젬 {n}",
   "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
   "uiShopLater": "나중에",
-  "uiShopOpen": "상점 (운영자)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {
@@ -1834,5 +1852,163 @@
         "type": "String"
       }
     }
-  }
+  },
+  "uiPassTitle": "항해 패스",
+  "uiPassLevel": "{n}/{max}단계",
+  "@uiPassLevel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassNext": "다음 단계까지 {n}",
+  "@uiPassNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassHow": "퀘스트·출석 +{q} · 처음 깬 스테이지 +{s}",
+  "@uiPassHow": {
+    "placeholders": {
+      "q": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassFree": "무료",
+  "uiPassPaid": "패스",
+  "uiPassClaimAll": "모두 받기",
+  "uiPassUnlock": "유료 줄 열기 · {price}",
+  "@uiPassUnlock": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassActive": "패스 {n}일 남음",
+  "@uiPassActive": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinAt": "{lv}단계 패스 보상",
+  "@uiPassSkinAt": {
+    "placeholders": {
+      "lv": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPassSkinName": "시즌1 깃발 배",
+  "uiTitlePassFlag": "시즌1 항해사",
+  "uiPassLegend": "전설 소환",
+  "uiDungeonTitle": "요일 던전",
+  "uiDungeonToday": "{day} · 오늘의 계열",
+  "@uiDungeonToday": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonAll": "모든 계열",
+  "uiDungeonStep": "{n}단계",
+  "@uiDungeonStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonStart": "{n}단계 도전",
+  "@uiDungeonStart": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonSweep": "{n}단계 소탕",
+  "@uiDungeonSweep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonReward": "이 계열 선원 카드 {c}장 · 젬 {g}",
+  "@uiDungeonReward": {
+    "placeholders": {
+      "c": {
+        "type": "int"
+      },
+      "g": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonCrewNote": "출전은 이 계열 선원으로 잠시 바뀌어요",
+  "uiDungeonNoCrew": "이 계열 선원이 없어요 — 다른 요일에 도전해요",
+  "uiDungeonStrip": "요일 던전 {n}단계 · {wave}/{waves}파",
+  "@uiDungeonStrip": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "wave": {
+        "type": "int"
+      },
+      "waves": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonClear": "{n}단계 클리어!",
+  "@uiDungeonClear": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonFail": "{n}단계 실패",
+  "@uiDungeonFail": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiDungeonTicketBack": "도전권은 돌려받았어요",
+  "uiDungeonTimeout": "시간 초과",
+  "uiDungeonSwept": "{n}단계 소탕 · {reward}",
+  "@uiDungeonSwept": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "uiWeekday1": "월요일",
+  "uiWeekday2": "화요일",
+  "uiWeekday3": "수요일",
+  "uiWeekday4": "목요일",
+  "uiWeekday5": "금요일",
+  "uiWeekday6": "토요일",
+  "uiWeekday7": "일요일"
 }

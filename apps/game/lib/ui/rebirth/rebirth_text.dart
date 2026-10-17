@@ -62,6 +62,7 @@ String titleName(AppLocalizations l, String id) => switch (id) {
   'navigator' => l.econTitleNavigator,
   'captain' => l.econTitleCaptain,
   'admiral' => l.econTitleAdmiral,
+  'passFlag' => l.uiTitlePassFlag, // 항해 패스 시즌1 30단계 무료
   _ => l.econTitleSeaKing,
 };
 

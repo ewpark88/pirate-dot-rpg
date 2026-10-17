@@ -5,6 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/operator/crew_lab_group.dart';
 import 'package:pirate_dot/operator/meta_group.dart';
 import 'package:pirate_dot/operator/platform_group.dart';
+import 'package:pirate_dot/operator/purchase_group.dart';
 import 'package:pirate_dot/operator/render_group.dart';
 import 'package:pirate_dot/operator/today_group.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -129,6 +130,7 @@ class _OperatorPanelState extends ConsumerState<OperatorPanel> {
           ),
         ]),
         _Group(l10n.opGroupPlatform, const [PlatformTestGroup()]),
+        _Group(l10n.opGroupPurchase, const [PurchaseGroup()]),
         _Group(l10n.opGroupLab, const [CrewLabGroup()]), // 선원 시험(맨 아래 — 위 묶음 자리는 그대로)
       ],
     );

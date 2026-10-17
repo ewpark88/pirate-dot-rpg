@@ -24,16 +24,21 @@ class SceneStrip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (tower, rush) = ref.watch(gameStateProvider.select((s) => (s.battle?.tower, s.battle?.rush)));
-    if (tower == null && rush == null) return const SizedBox.shrink();
+    final (tower, rush, dungeon) = ref.watch(
+      gameStateProvider.select((s) => (s.battle?.tower, s.battle?.rush, s.battle?.dungeon)),
+    );
+    if (tower == null && rush == null && dungeon == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final tickMs = ref.watch(tablesProvider).waves.tickMs;
-    final text = tower != null
-        ? l10n.uiTowerStrip(tower.floor, tower.wave + 1, tower.waves)
-        : l10n.uiRushStrip(rush!.index + 1, rush.total, sceneClock(l10n, rush.ticks, tickMs));
+    final text = switch ((tower, rush, dungeon)) {
+      (final w?, _, _) => l10n.uiTowerStrip(w.floor, w.wave + 1, w.waves),
+      (_, final r?, _) => l10n.uiRushStrip(r.index + 1, r.total, sceneClock(l10n, r.ticks, tickMs)),
+      (_, _, final d?) => l10n.uiDungeonStrip(d.step, d.wave + 1, d.waves),
+      _ => '',
+    };
     return IgnorePointer(
       child: Container(
-        key: Key(tower != null ? 'tower.strip' : 'rush.strip'),
+        key: Key(tower != null ? 'tower.strip' : (rush != null ? 'rush.strip' : 'dungeon.strip')),
         padding: const EdgeInsets.fromLTRB(10, 4, 12, 4),
         decoration: BoxDecoration(
           color: const Color(0xFF2E2260).withValues(alpha: 0.92),
@@ -52,15 +57,17 @@ class SceneRetreatButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final (tower, rush) = ref.watch(
-      gameStateProvider.select((s) => (s.battle?.tower != null, s.battle?.rush != null)),
+    final (tower, rush, dungeon) = ref.watch(
+      gameStateProvider.select((s) => (s.battle?.tower != null, s.battle?.rush != null, s.battle?.dungeon != null)),
     );
-    if (!tower && !rush) return const SizedBox.shrink();
+    if (!tower && !rush && !dungeon) return const SizedBox.shrink();
     return FittedBox(
       child: SkinButton(
         key: const Key('scene.retreat'),
         tone: SkinTone.plain,
-        onPressed: () => ref.read(commandSinkProvider).send(tower ? const RetreatTower() : const RetreatRush()),
+        onPressed: () => ref
+            .read(commandSinkProvider)
+            .send(tower ? const RetreatTower() : (rush ? const RetreatRush() : const RetreatDungeon())),
         child: Text(AppLocalizations.of(context).uiBountyRetreat),
       ),
     );
@@ -90,12 +97,46 @@ class _SceneGateState extends ConsumerState<SceneGate> {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     switch (e) {
-      case TowerStarted() || RushStarted():
+      case TowerStarted() || RushStarted() || DungeonStarted():
         ref.read(dockTabRequestProvider.notifier).close();
       case TowerSwept(:final floor, :final chestGems, :final chestCards):
         showSkinToast(
           context,
           l10n.uiTowerSwept(floor, sceneReward(l10n, gems: chestGems, cards: chestCards)),
+        );
+      case DungeonCleared(swept: true, :final step, :final gems, :final cards):
+        showSkinToast(context, l10n.uiDungeonSwept(step, sceneReward(l10n, gems: gems, cards: cards.length)));
+      case DungeonCleared(:final step, :final gems, :final cards):
+        unawaited(
+          showSkinDialog<void>(
+            context,
+            builder: (_) => _ResultDialog(
+              key: const Key('dungeon.result'),
+              title: l10n.uiDungeonClear(step),
+              lines: const [],
+              reward: sceneReward(l10n, gems: gems, cards: cards.length),
+            ),
+          ),
+        );
+      case DungeonFailed(:final step, :final reason):
+        unawaited(
+          showSkinDialog<void>(
+            context,
+            builder: (_) => _ResultDialog(
+              key: const Key('dungeon.fail'),
+              title: l10n.uiDungeonFail(step),
+              lines: [
+                switch (reason) {
+                  'retreat' => l10n.uiTowerEndRetreat,
+                  'timeout' => l10n.uiDungeonTimeout,
+                  'interrupted' => l10n.uiTowerEndInterrupted,
+                  _ => l10n.uiTowerEndSunk,
+                },
+                l10n.uiDungeonTicketBack,
+              ],
+              reward: '',
+            ),
+          ),
         );
       case TowerEnded():
         unawaited(showSkinDialog<void>(context, builder: (_) => TowerResultDialog(end: e)));

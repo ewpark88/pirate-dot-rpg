@@ -66,5 +66,24 @@
   "opTraitEscort": "Escort",
   "opTraitDash": "Dash",
   "opTraitPattern": "Pattern",
-  "opTraitSplit": "Split"
+  "opTraitSplit": "Split",
+  "opGroupPurchase": "Purchases (sim)",
+  "opSimNext": "Next purchase result",
+  "opSimSuccess": "Success",
+  "opSimCancel": "Cancel",
+  "opSimPending": "Pending",
+  "opSimError": "Error",
+  "opSimSettle": "Settle pending",
+  "opSimRefund": "Refund: {id}",
+  "@opSimRefund": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "opSimReplay": "Replay last purchase",
+  "opSimNone": "No purchase simulator in this build",
+  "opEntitlements": "Entitlements on/off",
+  "opShopOpen": "Open shop"
 }
