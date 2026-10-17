@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
-import 'package:pirate_dot/render/paint/bolt.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/slot_states.dart';
@@ -30,11 +29,7 @@ class SlotSkinPainter {
   late final int _locked = _c('locked');
   late final int _lockedBorder = _c('lockedBorder');
   late final int _lock = _c('lock');
-  late final int _ultTop = _c('ultimateTop');
   late final int _ultBottom = _c('ultimateBottom');
-  late final int _ultEdge = _c('ultimateEdge');
-  late final int _gauge = _c('gauge');
-  late final int _gaugeBack = _c('gaugeBack');
   late final List<int> _rarity = [for (final c in _cfg.strs('rarity')) parseArgb(c, 'slotSkin.rarity')];
   late final int _mythicInner = parseArgb(_cfg.str('mythicInner'), 'slotSkin.mythicInner');
   late final Map<String, int> _familyColor = {
@@ -171,7 +166,6 @@ class SlotSkinPainter {
       _paint.color = Color(_familyColor[_family[slot.crewId]] ?? 0xFFFFFFFF);
       c.drawCircle(Offset(ir.left + _px(5), ir.top + _px(5)), _px(3), _paint);
     }
-    _ultimate(c, layout.ultimateInBand);
     return true;
   }
 
@@ -241,49 +235,5 @@ class SlotSkinPainter {
     c
       ..drawCircle(Offset(cx, body.top + u * 3), u * 1.2, _paint)
       ..drawRect(Rect.fromLTWH(cx - u * 0.5, body.top + u * 3, u, u * 2.6), _paint);
-  }
-
-  static const _blinkMs = 250.0;
-
-  /// 궁극기 통통 버튼: 아래 4dp 진한 테두리 → 금 그라데이션 몸 → 선장 초상 → 덮개·게이지 → 번개.
-  void _ultimate(Canvas c, Rect r) {
-    final f = scene.frame;
-    final rage = f.rage.clamp(0.0, 1.0);
-    final full = rage >= 1;
-    final blink = full && (scene.clockMs / _blinkMs).floor().isEven;
-    // 뜬 배치는 둥근 큰 버튼(사용자 결정), 예전 배치는 둥근 사각.
-    final radius = scene.layout.floating ? r.width / 2 : _dp('ultimateRadius');
-    final edge = _px(4);
-    final body = Rect.fromLTRB(r.left, r.top, r.right, r.bottom - edge);
-    final outer = RRect.fromRectAndRadius(r, Radius.circular(radius));
-    _shadow(c, outer, 6, 2);
-    _paint
-      ..shader = null
-      ..color = Color(_ultEdge);
-    c.drawRRect(outer, _paint);
-    final bodyRR = RRect.fromRectAndRadius(body, Radius.circular(radius));
-    _paint.shader = _gradient(99, body, blink ? 0xFFFFFFFF : _ultTop, _ultBottom);
-    c.drawRRect(bodyRR, _paint);
-    _paint.shader = null;
-    final inner = RRect.fromRectAndRadius(body.deflate(_px(4)), Radius.circular(radius - _px(4)));
-    final captain = f.captainId;
-    if (captain != null) _portrait(c, inner, captain);
-    if (!full) _dim(c, inner, 1 - rage);
-    final ir = inner.outerRect;
-    final g = RRect.fromRectAndRadius(
-      Rect.fromLTWH(ir.left + _px(3), ir.bottom - _px(6), ir.width - _px(6), _px(3.5)),
-      Radius.circular(_px(1.75)),
-    );
-    _paint.color = Color(_gaugeBack);
-    c.drawRRect(g, _paint);
-    if (rage > 0) {
-      final gr = g.outerRect;
-      _paint.color = Color(full ? (blink ? 0xFFFFFFFF : _ultTop) : _gauge);
-      c.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromLTWH(gr.left, gr.top, gr.width * rage, gr.height), g.tlRadius),
-        _paint,
-      );
-    }
-    drawBolt(c, _paint, ir.left + _px(3), ir.top + _px(3), _px(1), _ultTop, _ultEdge);
   }
 }

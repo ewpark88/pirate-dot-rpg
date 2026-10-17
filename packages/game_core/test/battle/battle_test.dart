@@ -21,9 +21,9 @@ void main() {
   final w = tables.waves;
   final start = DateTime.utc(2026, 11);
 
-  GameState game({int stage = 1, Map<String, CrewState> crews = const {}, double rage = 0}) =>
+  GameState game({int stage = 1, Map<String, CrewState> crews = const {}}) =>
       GameState.newGame(playerId: 't', seed: 7, now: start).copyWith(
-        progress: Progress(stage: stage, bestStage: stage, rage: rage),
+        progress: Progress(stage: stage, bestStage: stage),
         crews: crews,
       );
   CoreEngine engineOf(GameState s) => CoreEngine(tables: tables, clock: ManualClock(start), initial: s);
@@ -108,7 +108,7 @@ void main() {
     );
 
     final f = fieldWith(foes)..guns = [Gun.of(tables, crewOf('lob'), power: 1)];
-    Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0).fireGuns();
+    Round(f, ctxOf(1), CombatStats.of(game(), tables)).fireGuns();
     expect(events.whereType<AoeDamageSum>(), hasLength(1));
     expect(events.whereType<Damage>(), hasLength(8));
   });
@@ -126,7 +126,7 @@ void main() {
   test('6. 0.5초 안에 5마리 처치 → 창이 닫히면 MultiKill(5) + 히트스톱', () {
     final foes = [for (var i = 0; i < 5; i++) foeAt(200, 100.0 + i, hp: BigNum.from(1e-3))];
     final f = fieldWith(foes)..guns = [Gun.of(tables, crewOf('lob'), power: 1)];
-    final r = Round(f, ctxOf(1), CombatStats.of(game(), tables), rage: 0)..fireGuns();
+    final r = Round(f, ctxOf(1), CombatStats.of(game(), tables))..fireGuns();
     expect(events.whereType<Kill>(), hasLength(5));
     final goldBefore = r.gold;
     for (var i = 0; i * w.tickMs <= w.multiKillWindowSec * 1000; i++) {
@@ -152,7 +152,6 @@ void main() {
     expect(ults, hasLength(1), reason: '피버 하나에 첫 일격 하나');
     expect(ults.single.tick, started.tick + 1, reason: '피버가 켜진 다음 틱(전투가 피버 상태를 보는 첫 틱)');
     expect(ults.single.ultimateId, family('skip').ultimateId);
-    expect(e.state.progress.rage, 0, reason: '분노는 쌓이지 않는다');
   });
 
   test('처치하면 골드가 지갑에 들어간다', () {

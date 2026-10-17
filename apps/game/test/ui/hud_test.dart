@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
-import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/ui/hud/top_bar.dart';
 
 import 'ui_harness.dart';
@@ -18,34 +17,15 @@ void main() {
     }
   });
 
-  // 사용자 결정(S3 d8d4a68): 궁극기는 오른쪽 끝 칸 바로 위 둥근 버튼 — 선원 칸과 겹치지 않는다.
-  testWidgets('기준 1: 궁극기는 오른쪽 끝 칸 위(battleFrameFor.ultimateRect), 칸과 겹치지 않음', (tester) async {
-    await pumpGame(tester, loadFixture('stage37_midgame'));
-    final area = tester.getRect(find.byKey(const Key('battle.area')));
-    final f = battleFrameFor(area.size, s24Dpr);
-    final ult = tester.getRect(find.byKey(const Key('hud.ultimate')));
-    expect(ult.center, offsetMoreOrLessEquals(area.topLeft + f.ultimateRect.center, epsilon: 0.5));
-    expect(f.ultimateRect.bottom, lessThanOrEqualTo(f.slotRects.last.top + 0.5));
-    expect(f.ultimateRect.overlaps(f.slotRects.last), isFalse);
-    expect(ult.width, greaterThanOrEqualTo(48));
+  // 사용자 결정 2026-10-17: 궁극기 버튼 제거(피버 첫 일격) — 선원 줄 오른쪽에는 보스 도전만.
+  testWidgets('기준 1: 궁극기 버튼 없음, 선원 칸을 눌러도 TriggerUltimate 없음', (tester) async {
+    final log = await pumpGame(tester, loadFixture('stage37_midgame'));
+    expect(find.byKey(const Key('hud.ultimate')), findsNothing);
+    expect(log.sent.whereType<TriggerUltimate>(), isEmpty);
   });
 
   testWidgets('기준 2: 보스 남은 초는 캔버스(렌더)가 그린다 — UI 오버레이 없음', (tester) async {
     await pumpGame(tester, loadFixture('boss_fight'));
     expect(find.text('Boss 20s'), findsNothing);
-  });
-
-  testWidgets('기준 3: 함성이 덜 찼으면 궁극기 버튼 비활성', (tester) async {
-    final log = await pumpGame(tester, loadFixture('stage37_midgame'));
-    await tester.tap(find.byKey(const Key('hud.ultimate')));
-    expect(log.sent, isEmpty);
-  });
-
-  testWidgets('기준 3: 함성이 가득이면 누를 때 TriggerUltimate 1개', (tester) async {
-    final base = loadFixture('stage37_midgame');
-    final full = base.copyWith(progress: base.progress.copyWith(rage: 1));
-    final log = await pumpGame(tester, full);
-    await tester.tap(find.byKey(const Key('hud.ultimate')));
-    expect(log.sent, [isA<TriggerUltimate>()]);
   });
 }

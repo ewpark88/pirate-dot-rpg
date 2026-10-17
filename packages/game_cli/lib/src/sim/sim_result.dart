@@ -12,6 +12,9 @@ class SimResult {
   Duration? firstBossFail;
   int? firstBossFailStage;
   Duration? firstSummonReady;
+
+  /// 환영 선원(meta.tutorial.welcomeCrew, 피드백 #21 — 목표 1분 안)을 받은 시점.
+  Duration? welcomeCrew;
   Duration? stage10;
   Duration? stage40;
 
