@@ -55,13 +55,14 @@ GameState _withGap() {
 String _gapBenched() => loadFixture('stage37_midgame').battle!.fleet.last.crewId;
 
 void main() {
-  test('특징·전설 문구: 보호막(turtle)·낙뢰(pelly)·피버(pumpum), 일반 등급은 확률 줄', () async {
+  test('특징·전설 문구: 보호막(turtle)·연쇄 번개(pelly)·피버(pumpum), 일반 등급은 확률 줄', () async {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     final t = GameTables.load();
     final legend = t.rarities.rarities.indexWhere((r) => r.id == 'legend');
-    List<String> at(String id, int r) => legendLines(l10n, t.skills.legendFor(id, r, legend)!);
+    List<String> at(String id, int r) => legendLines(l10n, t.skills.legendFor(id, r, legend)!, rarity: r);
     expect(at('turtle', legend).single, startsWith('Ship shield every 8s'));
-    expect(at('pelly', legend), contains('Lightning arcs to 3 nearby'));
+    // 연쇄 번개(crew-traits 2026-10-17): 전설은 5마리.
+    expect(at('pelly', legend), contains('Chain lightning: jumps to up to 5 enemies (70% damage per jump)'));
     expect(at('pumpum', legend).single, startsWith('While deployed: fever charge +50%'));
     // 일반(배율 0.4): 발사체 1 × 0.4 → 40% 확률.
     expect(at('crabs', 0), contains('40% chance of +1 projectile'));

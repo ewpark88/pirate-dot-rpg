@@ -726,5 +726,51 @@
         "type": "String"
       }
     }
+  },
+  "uiLegendChainLightning": "Chain lightning: jumps to up to {count} enemies ({falloff} damage per jump)",
+  "uiLegendExecute": "Execute: ×{mul} damage to enemies below {below} HP",
+  "uiLegendCharge": "Charged shot: every {every}th shot deals ×{mul} and stuns {sec}s",
+  "uiLegendNoMiss": "Homing feathers: never miss (great vs evasive bosses)",
+  "uiLegendNoMissChance": "Homing feathers: {percent} chance to never miss",
+  "uiHitHoming": "Homing",
+  "@uiLegendChainLightning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "falloff": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendExecute": {
+    "placeholders": {
+      "below": {
+        "type": "String"
+      },
+      "mul": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendCharge": {
+    "placeholders": {
+      "every": {
+        "type": "int"
+      },
+      "mul": {
+        "type": "String"
+      },
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendNoMissChance": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   }
 }
