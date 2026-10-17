@@ -2,10 +2,14 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
 import 'package:pirate_dot/render/hd/species/flyingfish.dart';
 import 'package:pirate_dot/render/hd/species/gull.dart';
+import 'package:pirate_dot/render/hd/species/icecrab.dart';
 import 'package:pirate_dot/render/hd/species/jelly.dart';
 import 'package:pirate_dot/render/hd/species/kraken.dart';
+import 'package:pirate_dot/render/hd/species/penguin.dart';
 import 'package:pirate_dot/render/hd/species/piranha.dart';
 import 'package:pirate_dot/render/hd/species/puffer.dart';
+import 'package:pirate_dot/render/hd/species/seal.dart';
+import 'package:pirate_dot/render/hd/species/snowgull.dart';
 import 'package:pirate_dot/render/hd/species/stormgull.dart';
 import 'package:pirate_dot/render/hd/species/urchin.dart';
 
@@ -21,6 +25,11 @@ const Map<String, HdSpecies> hdEnemies = {
   'urchin': urchin,
   'flyingfish': flyingfish,
   'puffer': puffer,
+  'icecrab': icecrab,
+  'icecrab_small': icecrabSmall,
+  'penguin': penguin,
+  'seal': seal,
+  'snowgull': snowgull,
 };
 
 const Map<String, HdSpecies> hdBosses = {
