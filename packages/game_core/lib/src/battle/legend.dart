@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/cluster.dart';
 import 'package:game_core/src/battle/combat.dart';
+import 'package:game_core/src/battle/crew_traits2.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart';
 import 'package:game_core/src/battle/topdown/geometry.dart';
@@ -42,7 +43,7 @@ Volley extendVolley(
   if (l == null || v.hits.isEmpty) return v;
   final extraChains = l.extraChains + (roll(l.extraChainsChance, rng) ? 1 : 0);
   final noFalloff = l.noFalloff || roll(l.noFalloffChance, rng);
-  if (extraChains == 0 && !noFalloff) return v;
+  if (extraChains == 0 && !noFalloff) return reshapeVolley(g, v, foes, w, geometry); // 관통 가속·휩쓸기(crew_traits2)
   final hit = [for (final h in v.hits) h.foe];
   final pool = geometry.eligible(g.attack, foes).where((e) => !hit.contains(e)).toList();
   for (var i = 0; i < extraChains && pool.isNotEmpty; i++) {
@@ -53,7 +54,7 @@ Volley extendVolley(
   }
   final hadFalloff = v.hits.length > 1 && v.hits[1].factor < v.hits[0].factor;
   final falloff = !noFalloff && (hadFalloff || extraChains > 0);
-  return (x: v.x, y: v.y, hits: spread(hit, w, falloff: falloff));
+  return reshapeVolley(g, (x: v.x, y: v.y, hits: spread(hit, w, falloff: falloff)), foes, w, geometry);
 }
 
 /// 맞은 적에게 onHit 효과. 보스는 기절·끌어당김·감속을 bossControlFactor만큼.
@@ -235,6 +236,7 @@ void legendAfterHit(Round r, Gun g, Volley v, BigNum base, {required bool crit})
   lightningArc(r, g, v, base);
   execute(r, g, v, base);
   chargedShot(r, g, v, base);
+  traitsAfterHit(r, g, v, base); // 부메랑·물기 속박·해적왕 강타(crew_traits2)
 }
 
 double _d2(Foe a, Foe b) => (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);

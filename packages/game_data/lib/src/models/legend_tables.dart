@@ -46,7 +46,12 @@ class LegendDef {
             )
           : null,
       noMiss = j.raw['noMiss'] == true,
-      noMissChance = j.numberOr('noMissChance', 0);
+      noMissChance = j.numberOr('noMissChance', 0),
+      pierceRamp = j.numberOr('pierceRamp', 0),
+      boomerang = j.numberOr('boomerang', 0),
+      bindSec = j.numberOr('bindSec', 0),
+      sweep = j.has('sweep') ? (deg: j.obj('sweep').number('deg'), range: j.obj('sweep').number('range')) : null,
+      bossBonus = j.numberOr('bossBonus', 0);
 
   /// [raw]의 기본 값에 [mythic]이면 `mythic` 키들을 덮어쓴 능력.
   factory LegendDef.of(JsonReader raw, {required bool mythic}) => LegendDef.fromJson(
@@ -110,6 +115,15 @@ class LegendDef {
       out['charge'] = c;
     }
     if (r['noMiss'] == true) out['noMissChance'] = scale;
+    // 선원 정리 2안(BALANCE.md 4절): 연속 값은 × 배율, 휩쓸기는 각도만 배율(범위는 그대로).
+    for (final k in ['pierceRamp', 'boomerang', 'bindSec', 'bossBonus']) {
+      if (r.containsKey(k)) out[k] = n(r, k) * scale;
+    }
+    if (r['sweep'] is Map) {
+      final sw = Map<String, dynamic>.of(r['sweep'] as Map<String, dynamic>);
+      sw['deg'] = n(sw, 'deg') * scale;
+      out['sweep'] = sw;
+    }
     if (r['zone'] is Map) {
       final z = Map<String, dynamic>.of(r['zone'] as Map<String, dynamic>);
       if (z.containsKey('slow')) z['slow'] = n(z, 'slow') * scale;
@@ -134,6 +148,11 @@ class LegendDef {
     'execute',
     'charge',
     'noMiss',
+    'pierceRamp',
+    'boomerang',
+    'bindSec',
+    'sweep',
+    'bossBonus',
   };
 
   final int extraProjectiles;
@@ -172,6 +191,22 @@ class LegendDef {
 
   /// 피버 서포트(개성 v2 7.3, pumpum): 출전 중이면 피버 게이지 충전 × (1 + chargeBonus), 피버 지속 + extraSec초.
   final ({double chargeBonus, double extraSec})? fever;
+
+  /// 선원 정리 2안(BALANCE.md 4절, S1 승인) — 탄 +n 과다(8명) 정리.
+  /// 관통 가속(sword): 관통 감쇠 대신 꿰뚫을 때마다 × (1 + pierceRamp).
+  final double pierceRamp;
+
+  /// 부메랑(saw): 같은 길로 돌아오며 맞은 적에게 한 번 더 — 피해 × boomerang.
+  final double boomerang;
+
+  /// 물기 속박(bara): 맞은 적이 이 초 동안 움직이지 못한다(공격은 한다). 보스는 bossControlFactor배.
+  final double bindSec;
+
+  /// 휩쓸기(lobster): 첫 대상 쪽 부채꼴 deg(도) 안, 첫 대상 거리 + range 안 적 전부.
+  final ({double deg, double range})? sweep;
+
+  /// 해적왕 강타(davy): 보스(분열 몸·촉수 포함) 피해 + bossBonus.
+  final double bossBonus;
 }
 
 /// 맞은 적에게 거는 효과.

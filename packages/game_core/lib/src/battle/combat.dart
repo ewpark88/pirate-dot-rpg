@@ -61,7 +61,8 @@ class Round {
         e.stunTimer -= dt;
         continue;
       }
-      final speed = e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed;
+      final rooted = (e.rootTimer -= dt) > -dt; // 물기 속박이면 이동만 멈춘다(이미 닿아 있으면 계속 공격)
+      final speed = rooted ? 0.0 : (e.slowTimer > 0 ? e.speed * (1 - e.slow) : e.speed);
       e.slowTimer -= dt;
       if (e.slowTimer <= 0) e.slow = 0;
       if (e.plan?.steering ?? false) continue; // 보스 돌진·복귀 중(boss_patterns.dart)
