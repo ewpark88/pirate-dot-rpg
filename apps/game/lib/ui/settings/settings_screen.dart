@@ -6,12 +6,14 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/ads/admob_ads.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bitmap.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
 import 'package:pirate_dot/ui/settings/settings_rows.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 
 /// 설정 화면 (설계서 4.12). 바꾸면 SetSetting만 보낸다 — 화면은 엔진이 돌려준 상태로 다시 그린다.
@@ -135,6 +137,17 @@ class SettingsScreen extends ConsumerWidget {
                       trailing: const PixelBitmap(PixelBitmaps.chevron),
                       onTap: () => unawaited(ads.showPrivacyOptions()),
                     ),
+                  // 가이드 v2: 처음 만나는 시스템 안내를 다시 켠다(ClearHints 'guide.').
+                  PixelListRow(
+                    key: const Key('settings.guideReplay'),
+                    leading: const Icon(Icons.lightbulb_rounded, size: 22, color: Skin.primaryEdge),
+                    title: Text(l10n.uiSettingsGuideReplay),
+                    trailing: const PixelBitmap(PixelBitmaps.chevron),
+                    onTap: () {
+                      ref.read(guideQueueProvider.notifier).replay();
+                      showSkinToast(context, l10n.uiSettingsGuideReplayDone);
+                    },
+                  ),
                   // 도움말: 큰 수 단위 (계획 E11).
                   _Group(
                     key: const Key('settings.help'),
