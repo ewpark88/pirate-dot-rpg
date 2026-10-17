@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart' show guidesEnabledProvider;
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/shop/shop_data.dart';
@@ -16,11 +17,10 @@ import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/story/story_data.dart' show storyEnabledProvider;
 
 // 맛보기 (사용자 2026-10-17, 경제 S2 meta.trials · ClaimTrial): 받을 수 있게 되면 큰 카드 팝업(체험 전/후 한 줄 ·
 // [무료로 써 보기] · [나중에]). 체험 중 남은 시간은 순풍 배지·자동 강화 칩(크게)이 보여 준다. 끝나면 '광고로 10분 더'
-// (+ 상점이 열려 있으면 '영구로 갖기'). [나중에]는 이번 실행에서만 다시 묻지 않는다. 이야기·안내를 끈 시험에선 쉰다.
+// (+ 상점이 열려 있으면 '영구로 갖기'). [나중에]는 이번 실행에서만 다시 묻지 않는다. 시험에선 [trialsEnabledProvider]로 끈다.
 
 /// 받을 수 있는 맛보기(경제 trialsReady와 같은 조건 — game_core가 export하기 전 임시 어댑터, S2 요청).
 List<String> trialsReadyUi(GameState s, GameTables t) {
@@ -35,6 +35,9 @@ List<String> trialsReadyUi(GameState s, GameTables t) {
         k,
   ];
 }
+
+/// 맛보기 팝업을 켤지(안내를 끄면 같이 꺼짐) — UI 시험은 끈다(샘플이 조건을 넘어 모든 화면에 뜨기 때문, 맛보기 시험만 켠다).
+final trialsEnabledProvider = Provider<bool>((ref) => ref.watch(guidesEnabledProvider));
 
 /// 이번 실행에서 이미 물은 맛보기 — 게이트가 다시 만들어져도 남게(앱 전체 한 벌).
 final trialAskedProvider = Provider<Set<String>>((_) => <String>{});
@@ -59,7 +62,7 @@ class _TrialGateState extends ConsumerState<TrialGate> {
   @override
   void initState() {
     super.initState();
-    if (!ref.read(storyEnabledProvider)) return;
+    if (!ref.read(trialsEnabledProvider)) return;
     _tick = Timer.periodic(_check, (_) => _poll());
   }
 
@@ -69,7 +72,8 @@ class _TrialGateState extends ConsumerState<TrialGate> {
   }
 
   Future<void> _poll() async {
-    if (!mounted || _open) return;
+    // 다른 창·시트(오프라인 보상·퀘스트 등)가 떠 있으면 기다린다 — 겹쳐 뜨지 않게.
+    if (!mounted || _open || !(ModalRoute.of(context)?.isCurrent ?? true)) return;
     final s = ref.read(gameStateProvider);
     final t = ref.read(tablesProvider);
     // 끝난 체험: 쓰던 버프가 0이 되는 순간 한 번.

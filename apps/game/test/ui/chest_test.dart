@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_ring.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -75,6 +76,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          trialsEnabledProvider.overrideWithValue(false),
           initialGameStateProvider.overrideWithValue(state),
           battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),
           clockProvider.overrideWithValue(FixedClock(state.savedAt)),
@@ -113,7 +115,12 @@ void main() {
   });
 
   testWidgets('광고 준비: 상자를 눌러도 같은 시트 · 상자가 가라앉으면 시트가 닫힌다', (tester) async {
-    await pumpGame(tester, _withChest(), openTab: false, overrides: [adOfferProvider.overrideWith((ref, _) => true)]);
+    await pumpGame(
+      tester,
+      _withChest(),
+      openTab: false,
+      overrides: [adOfferProvider.overrideWith((ref, _) => true)],
+    );
     await tester.tap(find.byKey(const Key('chest')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('chest.sheet')), findsOneWidget);

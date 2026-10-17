@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -45,6 +46,7 @@ Future<CommandLog> _pump(WidgetTester tester, RebirthPreview? preview, {GameStat
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        trialsEnabledProvider.overrideWithValue(false),
         initialGameStateProvider.overrideWithValue(s),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),

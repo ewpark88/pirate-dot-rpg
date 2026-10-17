@@ -5,6 +5,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/meta/daily_providers.dart';
+import 'package:pirate_dot/ui/meta/trial_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -46,6 +47,7 @@ Future<CommandLog> _pump(WidgetTester tester, {List<QuestView>? quests, Attendan
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        trialsEnabledProvider.overrideWithValue(false),
         initialGameStateProvider.overrideWithValue(state),
         commandSinkProvider.overrideWithValue(log),
         battleViewBuilderProvider.overrideWithValue((_) => const SizedBox()),

@@ -16,7 +16,7 @@ GameState _at(int best) {
 
 void main() {
   testWidgets('스테이지 5 넘음 → 2배속 체험 팝업 → 무료로 써 보기 = ClaimTrial(speed)', (tester) async {
-    final log = await pumpGame(tester, _at(37), openTab: false, story: true);
+    final log = await pumpGame(tester, _at(37), openTab: false, trials: true);
     await tester.pump(const Duration(seconds: 2));
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byKey(const Key('trial.offer.speed')), findsOneWidget);
@@ -26,7 +26,7 @@ void main() {
   });
 
   testWidgets('나중에 → 같은 실행에선 다시 안 뜬다', (tester) async {
-    await pumpGame(tester, _at(37), openTab: false, story: true);
+    await pumpGame(tester, _at(37), openTab: false, trials: true);
     await tester.pump(const Duration(seconds: 2));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.byKey(const Key('trial.later')));

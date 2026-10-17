@@ -19,7 +19,12 @@ void main() {
     final id = s0.crews.keys.first;
     GameState? locked;
     for (var lv = 1; lv <= 300 && locked == null; lv++) {
-      final s = s0.copyWith(crews: {...s0.crews, id: s0.crews[id]!.copyWith(level: lv)});
+      final s = s0.copyWith(
+        crews: {
+          ...s0.crews,
+          id: s0.crews[id]!.copyWith(level: lv),
+        },
+      );
       if (promoteStatus(s, t, id) == PromoteStatus.stageLocked) locked = s;
     }
     expect(locked, isNotNull, reason: '시험 전제: 잠기는 레벨이 있다');
