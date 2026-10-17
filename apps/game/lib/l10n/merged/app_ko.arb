@@ -734,5 +734,18 @@
       }
     }
   },
-  "uiNewCrew": "새 동료!"
+  "uiNewCrew": "새 동료!",
+  "uiBossDamageTitle": "보스 격파! 선원별 피해",
+  "uiBossDamageLine": "{damage} · {percent}",
+  "@uiBossDamageLine": {
+    "placeholders": {
+      "damage": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDamageTap": "누르면 닫혀요"
 }

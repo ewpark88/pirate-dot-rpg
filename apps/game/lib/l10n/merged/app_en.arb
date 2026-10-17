@@ -741,5 +741,18 @@
       }
     }
   },
-  "uiNewCrew": "New mate!"
+  "uiNewCrew": "New mate!",
+  "uiBossDamageTitle": "Boss down! Damage by crew",
+  "uiBossDamageLine": "{damage} · {percent}",
+  "@uiBossDamageLine": {
+    "placeholders": {
+      "damage": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDamageTap": "Tap to close"
 }

@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
+import 'package:pirate_dot/ui/hud/boss_damage.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -187,8 +188,9 @@ class _FastSailEndGateState extends ConsumerState<FastSailEndGate> {
     super.dispose();
   }
 
+  // 보스 처치 선원별 피해 창(#14)도 여기서 묶는다(home_screen 300줄 — 같은 '전투 결과 창' 무리).
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => BossDamageGate(child: widget.child);
 }
 
 /// 끝 요약: '스테이지 from → to 돌파!' · 보스 n마리 · 골드 +·젬 + · (넘쳤으면) 못 실은 골드 + 화물칸 강화 · '더 강해진 당신'.

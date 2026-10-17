@@ -95,6 +95,7 @@ class _SlotButton extends ConsumerWidget {
       final def = tables.crews.byId(crewId);
       label = tableText(l10n, def.nameKey);
       onTap = () => unawaited(showCrewDetail(context, def));
+      overlay = _SlotDamage(crewId: crewId);
     } else if (open) {
       label = l10n.uiFleetEmptySlot;
       onTap = () {
@@ -132,6 +133,34 @@ class _SlotButton extends ConsumerWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: overlay,
+      ),
+    );
+  }
+}
+
+/// 선원 칸 아래 이번 스테이지 피해량(사용자 피드백 #13, BattleView.crewDamage — 남은 HP로 자른 실제 피해, 큰 수 줄임). 누름 통과.
+class _SlotDamage extends ConsumerWidget {
+  const _SlotDamage({required this.crewId});
+
+  final String crewId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 줄임 글이 바뀔 때만 다시 그린다(피해는 매 틱 늘어난다).
+    final text = ref.watch(gameStateProvider.select((s) => s.battle?.crewDamage[crewId]?.format()));
+    if (text == null) return const SizedBox.shrink();
+    return IgnorePointer(
+      child: Align(
+        alignment: const Alignment(0, 0.95),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Container(
+            key: Key('fleet.damage.$crewId'),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(color: const Color(0xAA000000), borderRadius: BorderRadius.circular(6)),
+            child: Text(text, maxLines: 1, style: Skin.text(11, color: Colors.white)),
+          ),
+        ),
       ),
     );
   }
