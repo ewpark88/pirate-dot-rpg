@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -177,5 +178,51 @@ void main() {
       await precacheImages(tester);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/en_guide_step2_s24.png'));
     });
+  });
+
+  testWidgets('오늘 새 안내: 특성 보스 → 특성·카운터 한 마디(전투 말) · 도감 보상 · 배 스킨', (tester) async {
+    final f = loadFixture('boss_fight').copyWith(clearTutorial: true);
+    final trait = f.copyWith(
+      battle: f.battle!.copyWith(
+        enemies: [
+          for (final e in f.battle!.enemies) e.boss ? EnemyView.fromJson({...e.toJson(), 'kind': 'storm_pirate'}) : e,
+        ],
+      ),
+    );
+    await pumpGame(tester, _seen(trait, guideIds.where((id) => id != 'guide.bossTrait')), openTab: false, guides: true);
+    await _settle(tester);
+    expect(find.textContaining('This boss has Evade 25%'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+
+    final two = _two();
+    final ids = _t.crews.crews.take(6).map((c) => c.id).toSet();
+    await pumpGame(
+      tester,
+      _seen(two.copyWith(collection: ids), guideIds.where((id) => id != 'guide.collect')),
+      openTab: false,
+      guides: true,
+    );
+    await _settle(tester);
+    expect(find.textContaining('A log reward is ready'), findsOneWidget);
+
+    await pumpGame(
+      tester,
+      _seen(
+        two.copyWith(ship: two.ship.copyWith(skinsOwned: {'king'})),
+        guideIds.where((id) => id != 'guide.shipSkin'),
+      ),
+      openTab: false,
+      guides: true,
+    );
+    await _settle(tester);
+    expect(find.textContaining('You got a new ship skin'), findsOneWidget);
+  });
+
+  testWidgets('창 안 옥토 한 마디: 선원 상세 공격 미리보기(처음 한 번 · MarkHint tip.preview)', (tester) async {
+    final log = await pumpGame(tester, _seen(_two(), guideIds), openTab: false, guides: true);
+    showCrewDetail(tester.element(find.byType(HomeScreen)), _t.crews.byId('octo')).ignore();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('tip.preview'), skipOffstage: false), findsOneWidget);
+    expect(log.hints.map((h) => h.id), contains('tip.preview'));
   });
 }

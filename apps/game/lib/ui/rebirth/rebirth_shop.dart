@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/guide/once_tip.dart';
 import 'package:pirate_dot/ui/pixel/pixel_bar.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
@@ -62,6 +63,8 @@ class _RebirthShopSheetState extends ConsumerState<RebirthShopSheet> {
             _PiecePill(count: shop.pieces),
           ],
         ),
+        // 처음 열 때 옥토 한 마디: 철갑판(가이드 v3).
+        OnceTip(id: 'tip.ironDeck', text: l10n.uiTipIronDeck),
         const SizedBox(height: 10),
         Flexible(
           child: SingleChildScrollView(

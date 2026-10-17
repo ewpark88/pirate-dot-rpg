@@ -1359,5 +1359,21 @@
       }
     }
   },
-  "uiChestTap": "톡!"
+  "uiChestTap": "톡!",
+  "uiTalkBossTrait": "이 보스는 {trait}! {counters} 선원이 잘 통해요.",
+  "uiTalkShipSkin": "새 배 스킨이 생겼어요! 배 탭 '배 스킨'에서 갈아입어 봐요.",
+  "uiTalkCollect": "도감 보상을 받을 수 있어요! 선원 탭에서 톡!",
+  "uiTipPreview": "등급 칸을 누르면 더 세진 모습을 미리 볼 수 있어요!",
+  "uiTipSwap": "초록 숫자면 더 세져요. '추천'이 보이면 바꿔 봐요!",
+  "uiTipIronDeck": "철갑판은 보스전에서 배가 덜 다치게 해요. 보스가 버거우면 먼저!",
+  "@uiTalkBossTrait": {
+    "placeholders": {
+      "trait": {
+        "type": "String"
+      },
+      "counters": {
+        "type": "String"
+      }
+    }
+  }
 }

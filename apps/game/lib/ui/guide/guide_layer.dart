@@ -173,14 +173,13 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
     final step = ref.watch(tutorialStepProvider);
     final id = ref.watch(guideQueueProvider);
     final line = ref.watch(guideLineProvider);
-    final farming = ref.watch(gameStateProvider.select((s) => s.progress.farming));
-    final canUpgrade = ref.watch(canUpgradeAnyProvider);
     final scene = (
       shipOpen: _visible('ship.upgrade.cannon'),
       summonOpen: _visible('summon.ten'),
       crewOpen: _visible('crew.mergeAll'),
-      farming: farming,
-      canUpgrade: canUpgrade,
+      farming: ref.watch(gameStateProvider.select((s) => s.progress.farming)),
+      canUpgrade: ref.watch(canUpgradeAnyProvider),
+      bossTrait: bossTraitTalk(l10n, ref),
     );
     // 덧씌운 말(스토리보드·운영자)이 먼저, 그다음 튜토리얼·시스템 안내.
     final talk = line != null

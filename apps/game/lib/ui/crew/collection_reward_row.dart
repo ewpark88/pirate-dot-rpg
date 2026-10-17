@@ -6,6 +6,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 // 도감 수집 보상 (S1 2026-10-17 '수집의 재미', 경제 S2 collectionRewards): 선원 탭 도감 카드 아래 한 줄 —
 // 받을 칸이 있으면 반짝이는 금빛 [보상 받기 (n명)](→ ClaimCollectionReward, 보상 터짐은 RewardGate), 없으면 '다음 보상 n명: …'.
@@ -32,13 +33,17 @@ class CollectionRewardRow extends ConsumerWidget {
     final s = ref.read(gameStateProvider);
     final ready = collectionRewards(s, t).where((r) => r.reached && !r.claimed).firstOrNull;
     if (ready != null) {
-      return SkinButton(
-        key: const Key('collect.claim'),
-        tone: SkinTone.gold,
-        onPressed: () => ref.read(commandSinkProvider).send(ClaimCollectionReward(ready.at)),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(l10n.uiCollectClaim(ready.at, collectRewardText(l10n, ready))),
+      // 가이드 '도감 보상' 안내가 가리키는 자리.
+      return TutorialSpot(
+        id: 'collect.claim',
+        child: SkinButton(
+          key: const Key('collect.claim'),
+          tone: SkinTone.gold,
+          onPressed: () => ref.read(commandSinkProvider).send(ClaimCollectionReward(ready.at)),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(l10n.uiCollectClaim(ready.at, collectRewardText(l10n, ready))),
+          ),
         ),
       );
     }
