@@ -51,6 +51,10 @@ class CrewTab extends ConsumerWidget {
       ),
     );
     final crews = queryCrews(ref.read(gameStateProvider), tables, query);
+    // 합칠 수 있는 선원 수(일괄 합치기 글)와 목록에서 첫 번째(가이드 'crew.levelUp'). 위 watch가 레벨·경험치 변화에 다시 짓는다.
+    final ups = levelUpIds(ref.read(gameStateProvider), tables);
+    final mergeCount = ups.length;
+    final firstUp = crews.where((c) => ups.contains(c.id)).firstOrNull?.id;
     final bonusOf = ref.watch(collectionBonusProvider);
     final bonus = ref.watch(
       gameStateProvider.select((s) {
@@ -134,11 +138,26 @@ class CrewTab extends ConsumerWidget {
                       child: PixelDot(
                         dotKey: const Key('crew.mergeAll.dot'),
                         show: ref.watch(mergeBadgeProvider),
+                        // 가이드 v2: 56dp, 합칠 선원이 있으면 'n명 ↑'(피드백 #11·#16).
                         child: SkinButton(
                           key: const Key('crew.mergeAll'),
                           tone: SkinTone.gold,
+                          height: 56,
                           onPressed: () => ref.read(commandSinkProvider).send(const MergeAllCards()),
-                          child: Text(l10n.uiCrewMergeAll),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  mergeCount > 0 ? l10n.uiCrewMergeAllCount(mergeCount) : l10n.uiCrewMergeAll,
+                                  style: Skin.text(18),
+                                ),
+                                if (mergeCount > 0)
+                                  const Icon(Icons.arrow_upward_rounded, size: 20, color: Skin.mintInk),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -180,7 +199,11 @@ class CrewTab extends ConsumerWidget {
                           if (j > i) const SizedBox(width: _spacing),
                           Expanded(
                             child: j < crews.length
-                                ? CrewCard(def: crews[j], owned: owned.contains(crews[j].id))
+                                ? CrewCard(
+                                    def: crews[j],
+                                    owned: owned.contains(crews[j].id),
+                                    levelUpSpot: crews[j].id == firstUp,
+                                  )
                                 : const SizedBox(),
                           ),
                         ],

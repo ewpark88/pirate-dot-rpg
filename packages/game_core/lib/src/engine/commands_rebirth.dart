@@ -82,6 +82,14 @@ class OpSetRebirths extends OperatorCommand {
 
 /// 빠른 항해 돌파 건너뛰기(docs/specs/platform-fast-sail-breakthrough.md 5, UI는 환생 2회차부터): 남은 스테이지 보스 보상을 한 번에 받고
 /// 구간 끝 다음 스테이지로. 구간 중이 아니면 무시.
+/// 환생 뒤 출항(사용자 피드백 #19): Progress.sailHold를 풀어 무리·빠른 항해를 시작한다. 대기 중이 아니면 무시.
+class StartVoyage extends Command {
+  const StartVoyage();
+
+  @override
+  String get type => 'startVoyage';
+}
+
 class SkipFastSail extends Command {
   const SkipFastSail();
 

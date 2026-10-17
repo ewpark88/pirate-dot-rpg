@@ -35,13 +35,18 @@ const List<(String, Size, double)> _devices = [
 BattleView _ended(GameState s) => BattleView.fromJson({...s.battle!.toJson()}..remove('fastSail'));
 
 void main() {
-  testWidgets('구간 중: 알약 대신 돌파 띠(큰 스테이지 · 구간 · ×연속 격파), 1회차는 건너뛰기 없음', (tester) async {
+  testWidgets('구간 중: 우상단 패널(빠른 항해 n/m · 보스 연속 격파), 1회차는 건너뛰기 없음', (tester) async {
     await pumpGame(tester, _run(), openTab: false);
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('fastSail.banner')), findsOneWidget);
-    expect(find.text('Stage 18'), findsOneWidget);
-    expect(find.text('10 → 40'), findsOneWidget);
-    expect(find.text('×3 in a row'), findsOneWidget);
+    final panel = find.byKey(const Key('fastSail.banner'));
+    expect(panel, findsOneWidget);
+    expect(find.text('Fast sail 9/31'), findsOneWidget); // 10~40 중 18 = 9번째
+    expect(find.text('Boss streak 3'), findsOneWidget);
+    // 피드백 #20: 오른쪽 위 — 패널이 화면 오른쪽 절반에 있고 전장 가운데를 덮지 않는다.
+    final box = tester.getRect(panel);
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(box.left, greaterThan(screen.width / 2 - 20));
+    expect(box.width, lessThanOrEqualTo(196));
     expect(find.byKey(const Key('fastSail.skip')), findsNothing);
   });
 
@@ -102,7 +107,7 @@ void main() {
     setUpAll(loadGoldenFonts);
 
     for (final (name, size, dpr) in _devices) {
-      testWidgets('돌파 띠 $name', (tester) async {
+      testWidgets('빠른 항해 패널 $name', (tester) async {
         await pumpGame(
           tester,
           _run(rebirths: 2),

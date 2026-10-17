@@ -7,12 +7,16 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
+import 'package:pirate_dot/ui/hud/boss_damage.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
+
+// 환생 뒤 출항 버튼(빠른 항해의 시작, #19) — 홈 화면이 이 파일 하나로 둘 다 가져간다(home_screen 300줄).
+export 'package:pirate_dot/ui/hud/sail_start.dart' show SailStartButton;
 
 // 빠른 항해 돌파 UI (기획 platform-fast-sail-breakthrough 'UI (S4)', 사용자 결정 2026-10-16):
 // 큰 스테이지 카운터(차르르) + 연속 격파 수 · 2회차부터 건너뛰기 · 끝 요약 창(돌파 스테이지·골드·젬·'더 강해진 당신').
@@ -39,7 +43,8 @@ class ResupplyNotifier extends Notifier<ShipResupplied?> {
   void set(ShipResupplied? e) => state = e;
 }
 
-/// 위쪽 알약 줄 자리를 대신하는 돌파 띠: 제목 · 큰 스테이지 숫자(올라가는 애니메이션) · 구간 진행 막대 · ×연속 격파 · 건너뛰기.
+/// 빠른 항해 패널 (사용자 피드백 #20 '우상단에 예쁘게'): 화면 오른쪽 위 작은 패널 — '빠른 항해 n/m'(n은 구간 안 몇 번째 스테이지,
+/// 굴러 올라가는 숫자) · 얇은 진행 막대 · '보스 연속 격파 x'(2부터) · 2회차부터 건너뛰기. 전장 가운데를 덮지 않게 폭을 줄였다.
 class FastSailBanner extends ConsumerWidget {
   const FastSailBanner({super.key});
 
@@ -50,92 +55,84 @@ class FastSailBanner extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final stage = ref.watch(gameStateProvider.select((s) => s.progress.stage));
     final canSkip = ref.watch(gameStateProvider.select((s) => s.progress.rebirths >= 2));
-    final span = (run.to - run.from).clamp(1, 1 << 30);
-    final done = ((stage - run.from) / span).clamp(0.0, 1.0);
-    return Container(
-      key: const Key('fastSail.banner'),
-      padding: const EdgeInsets.fromLTRB(12, 6, 8, 8),
-      decoration: BoxDecoration(
-        color: feverNavy.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: feverGold, width: 2),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 제목 + ×연속 격파 (한 줄).
-                Row(
+    final total = (run.to - run.from + 1).clamp(1, 1 << 30);
+    final at = (stage - run.from + 1).clamp(1, total);
+    return Align(
+      alignment: Alignment.topRight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 196),
+        child: Container(
+          key: const Key('fastSail.banner'),
+          padding: const EdgeInsets.fromLTRB(10, 6, 10, 8),
+          decoration: BoxDecoration(
+            color: feverNavy.withValues(alpha: 0.86),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: feverGold, width: 2),
+            boxShadow: const [BoxShadow(color: Color(0x55000000), blurRadius: 6, offset: Offset(0, 2))],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 빠른 항해 n/m — n이 굴러 올라간다(차르르). 좁으면 줄여 맞춘다.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
                   children: [
-                    const Icon(Icons.anchor_rounded, size: 15, color: feverGold),
-                    const SizedBox(width: 3),
-                    Flexible(
-                      child: Text(
-                        l10n.uiFastSailTitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Skin.text(13, color: feverGold),
+                    const Icon(Icons.sailing_rounded, size: 18, color: feverGold),
+                    const SizedBox(width: 4),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(end: at.toDouble()),
+                      duration: const Duration(milliseconds: 350),
+                      builder: (_, v, _) => Text(
+                        l10n.uiFastSailProgress(v.round(), total),
+                        key: const Key('fastSail.stage'),
+                        style: Skin.text(17, color: Colors.white),
                       ),
                     ),
-                    if (run.combo > 1) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        key: const Key('fastSail.combo'),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(color: feverOrange, borderRadius: BorderRadius.circular(10)),
-                        child: Text(l10n.uiFastSailCombo(run.combo), style: Skin.text(12, color: Colors.white)),
-                      ),
-                    ],
                   ],
                 ),
-                // 차르르: 숫자가 이전 값에서 지금 값까지 굴러 올라간다. 좁으면 줄여 맞춘다.
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(end: stage.toDouble()),
-                        duration: const Duration(milliseconds: 350),
-                        builder: (_, v, _) => Text(
-                          l10n.uiFastSailStage(v.round()),
-                          key: const Key('fastSail.stage'),
-                          style: Skin.text(26, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(l10n.uiFastSailRange(run.from, run.to), style: Skin.text(12, color: Colors.white70)),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 4),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: at / total,
+                  minHeight: 5,
+                  backgroundColor: Colors.white24,
+                  color: feverGold,
                 ),
-                const SizedBox(height: 3),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: LinearProgressIndicator(
-                    value: done,
-                    minHeight: 5,
-                    backgroundColor: Colors.white24,
-                    color: feverGold,
+              ),
+              if (run.combo > 1) ...[
+                const SizedBox(height: 5),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    key: const Key('fastSail.combo'),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(color: feverOrange, borderRadius: BorderRadius.circular(10)),
+                    child: Text(l10n.uiFastSailStreak(run.combo), style: Skin.text(13, color: Colors.white)),
                   ),
                 ),
               ],
-            ),
+              if (canSkip) ...[
+                const SizedBox(height: 6),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SkinButton(
+                    key: const Key('fastSail.skip'), // 기본 높이 48 = 최소 누름(S4 검토), 글자만 작게
+                    onPressed: () => ref.read(commandSinkProvider).send(const SkipFastSail()),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(l10n.uiFastSailSkip, style: Skin.text(14, color: Colors.white)),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-          if (canSkip) ...[
-            const SizedBox(width: 6),
-            SkinButton(
-              key: const Key('fastSail.skip'),
-              height: 44,
-              onPressed: () => ref.read(commandSinkProvider).send(const SkipFastSail()),
-              child: Text(l10n.uiFastSailSkip),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -187,8 +184,9 @@ class _FastSailEndGateState extends ConsumerState<FastSailEndGate> {
     super.dispose();
   }
 
+  // 보스 처치 선원별 피해 창(#14)도 여기서 묶는다(home_screen 300줄 — 같은 '전투 결과 창' 무리).
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) => BossDamageGate(child: widget.child);
 }
 
 /// 끝 요약: '스테이지 from → to 돌파!' · 보스 n마리 · 골드 +·젬 + · (넘쳤으면) 못 실은 골드 + 화물칸 강화 · '더 강해진 당신'.

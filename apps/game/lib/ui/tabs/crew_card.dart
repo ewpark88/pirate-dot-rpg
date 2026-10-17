@@ -16,6 +16,7 @@ import 'package:pirate_dot/ui/state/build_counter.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 승급 버튼을 보이는 상태 = 승급 문 앞(레벨은 됐고 카드·골드·증표만 남음).
 const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, PromoteStatus.gold, PromoteStatus.tokens};
@@ -23,10 +24,13 @@ const Set<PromoteStatus> _atGate = {PromoteStatus.ok, PromoteStatus.cards, Promo
 /// 선원 한 명 (스킨 r1): Pirate Busters 카드(등급 테두리·일러스트·별 리본·이름), 레벨·카드 수 배지,
 /// 승급(문 앞일 때 오른쪽 아래 작은 원 버튼), 출전이면 아래 민트 알약. 미보유는 실루엣. 누르면 상세 창.
 class CrewCard extends ConsumerWidget {
-  const CrewCard({required this.def, required this.owned, super.key});
+  const CrewCard({required this.def, required this.owned, this.levelUpSpot = false, super.key});
 
   final CrewDef def;
   final bool owned;
+
+  /// 목록에서 처음으로 합칠 수 있는 선원 — 가이드 카드가 가리키는 TutorialSpot 'crew.levelUp'(S4 가이드 v2).
+  final bool levelUpSpot;
 
   String get crewId => def.id;
 
@@ -35,10 +39,10 @@ class CrewCard extends ConsumerWidget {
     countBuild('crewCard');
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
-    final (level, cards, status, canUp) = ref.watch(
+    final (level, cards, status, up) = ref.watch(
       gameStateProvider.select((s) {
         final crew = s.crews[def.id];
-        final up = crew != null && canLevelUp(crew, tables, maxLevel: crewMaxLevel(s, tables));
+        final up = crew == null ? 0 : mergeGain(crew, tables, maxLevel: crewMaxLevel(s, tables));
         return (crew?.level, crew?.cards, promoteStatus(s, tables, def.id), up);
       }),
     );
@@ -71,24 +75,36 @@ class CrewCard extends ConsumerWidget {
                         ink: Skin.goldInk,
                       ),
               ),
-              // 합치기로 레벨이 오르면 초록 ↑ (사용자 지시 2026-10-16 — 도감에서 합칠 수 있는 선원이 보이게).
-              if (canUp)
+              // 합치기로 레벨이 오르면 빛나는 초록 알약 '↑ +n' (피드백 #11·#16 — 합칠 수 있는 선원이 눈에 띄게).
+              // 레벨 배지 바로 아래(그림 위) — 이름판·승급 버튼과 겹치지 않게.
+              if (up > 0)
                 Positioned(
-                  left: -3,
-                  bottom: -3,
+                  left: -4,
+                  top: 26,
                   child: Semantics(
                     label: l10n.uiCrewUpBadge,
-                    child: Container(
-                      key: Key('crew.up.${def.id}'),
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: Skin.mint,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                        boxShadow: Skin.shadowSmall,
+                    child: TutorialSpot(
+                      id: levelUpSpot ? 'crew.levelUp' : 'crew.up',
+                      child: Container(
+                        key: Key('crew.up.${def.id}'),
+                        padding: const EdgeInsets.fromLTRB(4, 2, 7, 2),
+                        decoration: BoxDecoration(
+                          color: Skin.mint,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(color: Skin.mint.withValues(alpha: 0.7), blurRadius: 8, spreadRadius: 1),
+                            ...Skin.shadowSmall,
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
+                            Text(l10n.uiCrewUpLevels(up), style: Skin.text(13, color: Colors.white)),
+                          ],
+                        ),
                       ),
-                      child: const Icon(Icons.arrow_upward_rounded, size: 16, color: Colors.white),
                     ),
                   ),
                 ),

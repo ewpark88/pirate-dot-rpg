@@ -42,14 +42,15 @@ void main() {
 
   test('2분 돌리면 처치·골드·스테이지가 오르고, 발사 이벤트에 포구·방향이 실린다', () {
     final e = engineOf(game());
-    final fired = <AttackFired>[];
+    final fired = <(AttackFired, double, double)>[]; // 쏜 틱의 배 중심(보스전 비켜서기·피버 좌우로 움직인다)
     var kills = 0;
     var fever = false; // 피버 중엔 배가 지그재그로 움직여 포구 기준이 shipX·shipY가 아니다
     for (var i = 0; i < ticksFor(120); i++) {
       e.tick();
+      final v = e.state.battle;
       for (final ev in e.drainEvents()) {
         if (ev is FeverStarted) fever = true;
-        if (ev is AttackFired && !fever) fired.add(ev);
+        if (ev is AttackFired && !fever) fired.add((ev, v?.shipX ?? top.shipX, v?.shipY ?? top.shipY));
         if (ev is Kill) kills++;
       }
     }
@@ -57,12 +58,12 @@ void main() {
     expect(e.state.wallet.gold > BigNum.zero, isTrue);
     expect(e.state.progress.stage, greaterThan(1));
     expect(fired, isNotEmpty);
-    for (final f in fired.take(50)) {
+    for (final (f, sx, sy) in fired.take(50)) {
       expect(f.fromX, isNotNull);
-      expect(f.angle, closeTo(math.atan2(f.y - top.shipY, f.x - top.shipX), 1e-9));
+      expect(f.angle, closeTo(math.atan2(f.y - sy, f.x - sx), 1e-9));
     }
     // 사방에서 맞혔다(옆모습처럼 오른쪽만이 아님).
-    final quadrants = {for (final f in fired) ((f.angle! + math.pi) / (math.pi / 2)).floor() % 4};
+    final quadrants = {for (final (f, _, _) in fired) ((f.angle! + math.pi) / (math.pi / 2)).floor() % 4};
     expect(quadrants.length, greaterThanOrEqualTo(3));
   });
 
@@ -129,8 +130,9 @@ void main() {
       ..enqueue(const OpSpawnBoss())
       ..tick();
     double dist() {
-      final boss = e.state.battle!.enemies.firstWhere((x) => x.boss);
-      return math.sqrt(math.pow(boss.x - top.shipX, 2) + math.pow(boss.y - top.shipY, 2));
+      final v = e.state.battle!;
+      final boss = v.enemies.firstWhere((x) => x.boss);
+      return math.sqrt(math.pow(boss.x - (v.shipX ?? top.shipX), 2) + math.pow(boss.y - (v.shipY ?? top.shipY), 2));
     }
 
     final boss0 = e.state.battle!.enemies.firstWhere((x) => x.boss);
