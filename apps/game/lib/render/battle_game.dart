@@ -18,6 +18,7 @@ import 'package:pirate_dot/render/perf/perf_monitor.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/text/outline_digits.dart';
 import 'package:pirate_dot/render/top/top_fast_sail.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 
@@ -122,10 +123,6 @@ class BattleGame extends FlameGame with _UiLinks {
   /// 방치·발열 중엔 사용자 설정 위에 절전·흔들림 끔을 덮는다(설정 값 자체는 그대로).
   JuiceSettings get _effective => idle.lite ? _settings.copyWith(shake: false, powerSave: true) : _settings;
 
-  /// 절전 화면까지 초(사용자 설정 sleepAfterSec 0/60/180/300, 0 = 끔 — S4가 넣는다). 기본은 fx_map frameCap.dimSec.
-  double get sleepAfterSec => idle.dimMs / 1000;
-  set sleepAfterSec(double sec) => idle.dimMs = sec * 1000;
-
   void _applyIdle() {
     scene.settings = _effective;
     scene.sound.budgetScale = idle.soundBudget;
@@ -229,7 +226,9 @@ class BattleGame extends FlameGame with _UiLinks {
     if (loadSprites) {
       images.prefix = 'assets/';
       _sprites = await SpriteBank.load(images, _tables);
-      painter.sprites = _sprites;
+      painter
+        ..sprites = _sprites
+        ..digits = await OutlineDigits.load(devicePixelRatio: 3); // 테두리 피해 숫자
     }
   }
 
