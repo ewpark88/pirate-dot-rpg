@@ -83,6 +83,20 @@ class TopGlow {
       c.drawRect(rect, _fill);
     }
     _fill.shader = null;
+    // 솟아오르는 물보라: 흰 물방울이 위로 튀었다 떨어짐(앞 0.5)
+    if (t < 0.5) {
+      final u = t / 0.5;
+      _fill.color = Color.fromRGBO(235, 250, 255, 0.9 * (1 - u));
+      for (var i = 0; i < 12; i++) {
+        final a = -math.pi * (0.1 + 0.8 * i / 11);
+        final v = r * (1.2 + (i % 3) * 0.4);
+        c.drawCircle(
+          at + Offset(math.cos(a) * v * u, math.sin(a) * v * u * 1.6 + r * 2.2 * u * u),
+          r * 0.09 * (1 - u * 0.5),
+          _fill,
+        );
+      }
+    }
     // 바다 위 고리 두 겹
     for (var k = 0; k < 2; k++) {
       final u = ((t * 2) - k * 0.3).clamp(0.0, 1.0);

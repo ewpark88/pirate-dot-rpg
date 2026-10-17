@@ -75,7 +75,11 @@ class Moments {
   double bannerTotal = 1600;
   bool bannerHot = false; // 붉은 띠(마지막 보스)
 
-  void banner(String text, {String sub = '', double ms = 1600, bool hot = false}) {
+  /// 띠 세로 자리(상자 높이 비율) — 보스 등장 WARNING은 위쪽(보스를 가리지 않게).
+  double bannerY = 0.36;
+
+  void banner(String text, {String sub = '', double ms = 1600, bool hot = false, double y = 0.36}) {
+    bannerY = y;
     bannerText = text;
     bannerSub = sub;
     bannerMs = bannerTotal = ms;
@@ -145,7 +149,14 @@ class Moments {
   /// 해역 보스 첫 등장이면 컷인.
   void onBossSpawned(String kind, int stage) {
     scene.topHits.glow.bossRiseAt = scene.clockMs; // 개편 ③ 보스 등장 빛기둥(모든 보스)
-    if (kind != scene.tables.regions.regionAt(stage).regionBoss || !_seenBosses.add(kind)) return;
+    // 등장 연출(S1): 바다 밑에서 솟음·물보라·0.3초 어둡게 — 대보스(그림 1.4배↑)는 1.2초 WARNING 붉은 띠·포효, 순환 보스 0.6초
+    final big = bossScaleOf(scene.tables, kind) >= 1.4;
+    entryMs = entryTotal = big ? 1200 : 600;
+    scene.shake.triggerPx(big ? 7 : 3, big ? 650 : 300);
+    if (kind != scene.tables.regions.regionAt(stage).regionBoss || !_seenBosses.add(kind)) {
+      if (big && bannerMs <= 0) banner('WARNING', ms: 1200, hot: true, y: 0.22); // 다른 띠(탑 층 등)·첫 컷인과 안 겹치게
+      return;
+    }
     final c = scene.fx.cutIn;
     cutIn
       ..kind = kind
@@ -156,7 +167,12 @@ class Moments {
   /// 운영자: 컷인 다시 보기.
   void resetSeenBosses() => _seenBosses.clear();
 
+  /// 보스 등장 연출 남은 ms(UI 대화창은 이게 0이 된 뒤 — 겹치지 않게)·전체 길이.
+  double entryMs = 0;
+  double entryTotal = 1;
+
   void update(double dtMs) {
+    if (entryMs > 0) entryMs -= dtMs;
     if (bannerMs > 0) bannerMs -= dtMs;
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
