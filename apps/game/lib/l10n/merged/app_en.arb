@@ -256,6 +256,24 @@
   "econIapSkinCoralYacht": "Coral Yacht",
   "econIapSkinBundle": "Ship Skin Bundle (3)",
   "econIapOffline12h": "Roomy Cargo Map",
+  "econBossCoralGolem": "Coral Golem",
+  "econBossClownKing": "Clownfish King",
+  "econBossPearlClam": "Pearl Clam",
+  "econBossStormEagle": "Storm Eagle",
+  "econBossCloudWhale": "Cloud Whale",
+  "econBossThunderCrab": "Thunder Crab",
+  "econBossFrostYeti": "Frost Yeti",
+  "econBossIceNarwhal": "Ice Narwhal",
+  "econBossSnowOwlShip": "Snow Owl Galleon",
+  "econBossMagmaGolem": "Magma Golem",
+  "econBossFireSalamander": "Fire Salamander",
+  "econBossAshDragon": "Ash Dragon",
+  "econBossAbyssEye": "Abyssal Eye",
+  "econBossLanternEel": "Lantern Eel",
+  "econBossBoneShark": "Bone Shark",
+  "econBossBansheeQueen": "Banshee Queen",
+  "econBossCursedBell": "Cursed Bell",
+  "econBossGhostKraken": "Ghost Kraken",
   "opPanelTitle": "Operator Mode",
   "opGroupSave": "Save",
   "opGroupBattle": "Battle",
@@ -2431,5 +2449,18 @@
   "uiHelpUltimate": "Captain's Ultimate",
   "uiHelpUltimateBody": "The gauge fills as you fight. When it's full, tap the button at the bottom right to sweep the whole screen.",
   "uiHelpFever": "Fever",
-  "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your damage and gold go up for a while and enemies swarm in."
+  "uiHelpFeverBody": "Defeating enemies fills the fever gauge. When full, your damage and gold go up for a while and enemies swarm in.",
+  "uiSettingsAutoUltimate": "Auto ultimate (fires when full)",
+  "uiAttendanceStamp": "Got it",
+  "uiBossDexAtFirst": "When it first appears: HP {hp} · Attack {atk}",
+  "@uiBossDexAtFirst": {
+    "placeholders": {
+      "hp": {
+        "type": "String"
+      },
+      "atk": {
+        "type": "String"
+      }
+    }
+  }
 }

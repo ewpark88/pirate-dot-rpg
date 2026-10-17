@@ -17,7 +17,8 @@ import 'package:pirate_dot/ui/text/table_text.dart';
 
 // 몬스터 도감 보스 상세 (사용자·S1 2026-10-18): 보스 칸을 누르면 HD 초상(움직임) · 이름 · 해역 · 체력·공격(지금 스테이지 기준 —
 // 경제 bossPreview를 그 보스 체력 배율로 바꿔) · 특성 아이콘 + 설명 · 약점 계열 칩 · 공격 패턴 이름 · 처치 수 · 처음 등장 /
-// 다음 등장 스테이지(표 regions.bossAt). 못 만난 보스는 실루엣 + '스테이지 n에서 등장'. S2 bossDexView가 오면 값만 바꾼다.
+// 다음 등장 스테이지(표 regions.bossAt). 못 만난 보스는 실루엣 + '스테이지 n에서 등장'. 처음 등장 스테이지와 그때 체력·공격은
+// 경제 bossDexView(S2) 값 그대로.
 
 /// 이 보스가 나오는 [from] 이후 첫 스테이지(표 regions.bossAt, 최대 [limit]까지 찾는다).
 int? bossNextStage(GameTables t, String id, int from, {int limit = 2000}) {
@@ -54,8 +55,9 @@ class BossDexDialog extends ConsumerWidget {
     final s = ref.watch(gameStateProvider);
     final def = t.regions.bosses[entry.id]!;
     final stage = s.progress.stage;
-    final first = bossNextStage(t, entry.id, 1);
-    final next = bossNextStage(t, entry.id, stage + 1);
+    final dex = bossDexView(s, t).where((e) => e.id == entry.id).firstOrNull;
+    final first = (dex?.firstStage ?? 0) > 0 ? dex!.firstStage : null;
+    final next = first == null ? null : bossNextStage(t, entry.id, stage + 1);
     final region = first == null ? null : t.regions.regionAt(first);
     if (!entry.met) {
       return PixelDialog(
@@ -117,6 +119,12 @@ class BossDexDialog extends ConsumerWidget {
             ],
           ),
           Text(l10n.uiBossDexAtStage(stage), style: Skin.text(12, color: Skin.sub)),
+          if (dex != null && first != null)
+            Text(
+              l10n.uiBossDexAtFirst(dex.hp.format(), dex.attack.format()),
+              key: const Key('dex.boss.first'),
+              style: Skin.text(12, color: Skin.sub),
+            ),
           if (def.traits.isNotEmpty) ...[
             const SizedBox(height: 8),
             for (final tr in def.traits)

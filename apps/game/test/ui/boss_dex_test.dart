@@ -36,6 +36,9 @@ void main() {
     expect(find.byKey(Key('dex.boss.$id')), findsOneWidget);
     expect(find.byKey(const Key('dex.boss.hp')), findsOneWidget);
     expect(find.byKey(const Key('dex.boss.next')), findsOneWidget);
+    // 처음 등장 때 체력·공격은 경제 bossDexView 값 그대로.
+    final row = bossDexView(met, _t).firstWhere((e) => e.id == id);
+    expect(find.text('When it first appears: HP ${row.hp.format()} · Attack ${row.attack.format()}'), findsOneWidget);
     if (_t.regions.bosses[id]!.patterns.isNotEmpty) expect(find.byKey(const Key('dex.boss.patterns')), findsOneWidget);
   });
 
