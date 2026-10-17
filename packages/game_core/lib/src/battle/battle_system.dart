@@ -40,6 +40,7 @@ class BattleSystem implements GameSystem {
   final _fun = ChallengeTracker();
   List<String>? _fixedFleet;
   bool _invincible = false;
+  bool _still = false; // 배 고정(OpSetShipStill — 보여 주기 장면)
   bool _zeroCooldown = false;
 
   @override
@@ -85,6 +86,10 @@ class BattleSystem implements GameSystem {
         return _project(state, operatorBoss(_sync(state, ctx), state, ctx, command as OperatorCommand), ctx.tables);
       case OpSetInvincible(:final on):
         _invincible = on;
+        return state;
+      case OpSetShipStill(:final on):
+        _still = on;
+        _field?.shipStill = on;
         return state;
       case OpCastSkill(:final crewId):
         return _round(state, ctx, (r) {
@@ -261,7 +266,8 @@ class BattleSystem implements GameSystem {
       ..enemyHpScale = treasureHpMultiplier(s, ctx.tables)
       ..rebirths = s.progress.rebirths
       // 옛 전장 모양을 넘겨 shapeField가 강화 때처럼 배 자리·결투·순항을 이어 받게 — 스테이지가 바뀔 때 배가 가운데로 순간이동하던 것.
-      ..geometry = (from ?? f)?.geometry;
+      ..geometry = (from ?? f)?.geometry
+      ..shipStill = _still;
     shapeField(nf, s, ctx.tables);
     if (view.bossActive) {
       final b = view.enemies.where((e) => e.boss).firstOrNull;

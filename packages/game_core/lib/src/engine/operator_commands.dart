@@ -25,6 +25,7 @@ sealed class OperatorCommand extends Command {
     'op.spawnBoss' => OpSpawnBoss(bossId: j['bossId'] as String?),
     'op.bossBreak' => const OpBossBreak(),
     'op.invincible' => OpSetInvincible(on: j['on'] as bool),
+    'op.shipStill' => OpSetShipStill(on: j['on'] as bool),
     'op.speed' => OpSetSpeed(j['speed'] as int),
     'op.step' => const OpStepTick(),
     'op.castSkill' => OpCastSkill(j['crewId'] as String),
@@ -154,6 +155,19 @@ class OpSetInvincible extends OperatorCommand {
 
   @override
   String get type => 'op.invincible';
+
+  @override
+  Json _fields() => {'on': on};
+}
+
+/// 배 고정: 순항(waves.top.cruise)을 끈다 — 선원 공격 미리보기 같은 '보여 주기' 장면(S1 2026-10-17).
+class OpSetShipStill extends OperatorCommand {
+  const OpSetShipStill({required this.on});
+
+  final bool on;
+
+  @override
+  String get type => 'op.shipStill';
 
   @override
   Json _fields() => {'on': on};

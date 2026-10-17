@@ -125,7 +125,7 @@ void shapeField(Field f, GameState s, GameTables t) {
           feverApproach(s, t) // 피버 무리는 빨리 조여 온다
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
       ..weaveTick = on ? g.weaveTick + 1 : 0;
-    final cruise = TopCruise.of(t.waves); // 배 순항(평소·피버 — 표에 있으면 피버 8자 대신)
+    final cruise = f.shipStill ? null : TopCruise.of(t.waves); // 배 순항(평소·피버 — 표에 있으면 피버 8자 대신)
     final dt = t.waves.tickMs * secondsPerMillisecond;
     final free = cruise == null ? feverPose(s, t, g.weaveTick, on: on) : cruise.step(f, g, fever: on, dt: dt);
     final duel = TopDuel.of(t.waves); // 보스전 비켜서기(사용자 피드백 #10), 표 키 없으면 피버 자리 그대로
