@@ -20,6 +20,7 @@ import 'package:pirate_dot/ui/settings/settings_screen.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/big_num_text.dart';
+import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 /// 상단 바 (전장 밖, layout-v2-brief 1): 왼쪽 골드·젬, 순풍 칩 + 광고 그림 버튼(순풍·파밍 중 함포 지원),
 /// 오른쪽 퀘스트·설정 그림 버튼. 누르는 영역이 48dp라 바 높이도 48dp.
@@ -66,7 +67,7 @@ class TopBar extends ConsumerWidget {
                   ),
                 ],
               ),
-              const GoldCapBar(),
+              const TutorialSpot(id: 'cargo.bar', child: GoldCapBar()),
             ],
           ),
           const SizedBox(width: 10),

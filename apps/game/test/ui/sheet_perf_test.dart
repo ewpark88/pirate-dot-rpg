@@ -36,7 +36,8 @@ int _maxBuilds(String id) => switch (id) {
 };
 
 void main() {
-  final base = loadFixture('all_crews_mythic');
+  // 상태를 통째로 바꿔 넣으므로 튜토리얼·처음 보는 안내 카드가 다시 뜨지 않게 미리 끈다.
+  final base = withGuidesSeen(loadFixture('all_crews_mythic').copyWith(clearTutorial: true));
 
   for (final (name, tab) in [('voyage', voyageTab), ('ship', shipTab), ('crew', crewTab), ('summon', summonTab)]) {
     testWidgets('시트 $name 열고 틱 100번: 닫힌 상태보다 크게 느리지 않다', (tester) async {

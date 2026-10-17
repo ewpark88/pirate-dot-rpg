@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/guide/guide_layer.dart';
 import 'package:pirate_dot/ui/home_screen.dart';
 import 'package:pirate_dot/ui/idle/idle_gate.dart';
 import 'package:pirate_dot/ui/pixel/pixel_theme.dart';
@@ -33,7 +34,8 @@ class PirateDotApp extends ConsumerWidget {
           ),
         ),
       ),
-      home: const HomeScreen(),
+      // 가이드 v2 층(카드·밝은 곳·손가락)은 홈 화면 위, 창(경로)들 아래.
+      home: const GuideLayer(child: HomeScreen()),
     );
   }
 }

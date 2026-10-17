@@ -8,6 +8,7 @@
 3. `docs/ARCHITECTURE.md` — 레이어, 의존 규칙, 포트, 결정론
 4. `packages/game_core/lib/contracts.dart` — 바꾸지 말 것. 필요하면 `docs/contracts/requests/`에 요청
 5. 기획 질문은 `docs/GAME_DESIGN.md`(설계서). 설계서와 코드가 어긋나면 설계서가 기준
+6. **밸런스는 `docs/balance/BALANCE.md`**(사용자 2026-10-17): 목표 지표·선원 역할표(계열·특성 중복 점검)·보스 특성·경제 곡선·변경 기록. 수치·특성·선원을 바꾸기 전에 읽고, 바꾼 뒤 갱신한다
 
 ## 레드라인 (위반하면 tool/check 실패)
 - 내 레인 경로(`LANES.yaml`) 밖의 파일을 수정하지 않는다 (main 브랜치 = S1 통합 세션만 예외)

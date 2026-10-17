@@ -91,6 +91,10 @@
     "adReward": {
       "fx": null,
       "sfx": "promote"
+    },
+    "bossBroken": {
+      "fx": null,
+      "sfx": "ultimate"
     }
   },
   "projectiles": {
@@ -870,6 +874,9 @@
       "#D7263D"
     ],
     "mythicInner": "#FFD447"
+  },
+  "cardFx": {
+    "minRarity": "hero"
   },
   "coinFx": {
     "sizeDp": 18,

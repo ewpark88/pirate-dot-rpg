@@ -5,9 +5,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_toggle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-
-/// 절전 화면까지 고를 수 있는 시간(초). 0 = 끔.
-const sleepAfterChoices = [0, 60, 180, 300];
+import 'package:pirate_dot/ui/state/idle.dart';
 
 /// 설정 '번쩍임' 세 단계 끔·약·강(기본 약 — 사용자 '번쩍임 눈 아프다'). flashLevel 하나만 보낸다(엔진이 flash도 맞춘다).
 class FlashLevelRow extends ConsumerWidget {
@@ -35,7 +33,7 @@ class FlashLevelRow extends ConsumerWidget {
   }
 }
 
-/// 설정 '절전 화면까지' 끔·1분·3분·5분. 절전 모드가 꺼져 있으면 흐리게 + 고를 수 없음(절전 화면도 안 뜬다).
+/// 설정 '절전 화면까지' 1·5·10·20·30분. 절전 모드가 꺼져 있으면 흐리게 + 고를 수 없음(절전 화면도 안 뜬다).
 class SleepAfterRow extends ConsumerWidget {
   const SleepAfterRow({super.key});
 
@@ -45,8 +43,8 @@ class SleepAfterRow extends ConsumerWidget {
     final (sec, powerSave) = ref.watch(
       gameStateProvider.select((s) => (s.settings.sleepAfterSec, s.settings.powerSave)),
     );
-    // 표에 없는 값(옛 세이브 등)은 가장 가까운 칸을 고른 것으로 보인다.
-    final selected = sleepAfterChoices.reduce((a, b) => (a - sec).abs() <= (b - sec).abs() ? a : b);
+    // 표에 없는 값(옛 세이브 180·0 등)은 가장 가까운 칸 — 동작도 같은 값(idle.dart sleepAfterOf).
+    final selected = nearestSleepChoice(sec);
     return Opacity(
       opacity: powerSave ? 1 : 0.45,
       child: _ChoiceRow(
@@ -56,7 +54,7 @@ class SleepAfterRow extends ConsumerWidget {
         child: PixelSegmented<int>(
           key: const Key('settings.sleepAfter'),
           segments: [
-            for (final c in sleepAfterChoices) (c, c == 0 ? l10n.uiSettingsSleepOff : l10n.uiSettingsSleepMin(c ~/ 60)),
+            for (final c in sleepAfterChoices) (c, l10n.uiSettingsSleepMin(c ~/ 60)),
           ],
           selected: selected,
           onChanged: powerSave ? (v) => ref.read(commandSinkProvider).send(SetSetting('sleepAfterSec', v)) : null,

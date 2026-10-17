@@ -6,6 +6,7 @@ import 'package:pirate_dot/render/paint/hp_pill.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/top/top_chest.dart';
 import 'package:pirate_dot/render/top/top_status.dart';
 
 /// 탑다운 표시들 (T4-3 — 옆모습 화가만 그리던 것을 옮김): 수중 구역, 적 상태 아이콘·보호막·정예 테두리,
@@ -132,23 +133,45 @@ class TopMarks {
         fill: fill,
         skull: true,
       );
+      _breakBar(c, e, (e.drawX - w / 2).roundToDouble() + 8, (e.drawY - r - 2).roundToDouble(), w - 8);
     }
     if (_bossLag.length > 8) _bossLag.clear();
+    // 브레이크 도장·별은 보스 체력 막대 위에.
+    scene.topHits.breaks.paint(c, scene.clockMs, _poseAt, flash: scene.settings.flash, lite: scene.topHits.lite);
+  }
+
+  Offset? _poseAt(int id) {
+    for (var k = 0; k < scene.poseCount; k++) {
+      final e = scene.poses[k];
+      if (e.id == id) return Offset(e.drawX, e.drawY);
+    }
+    return null;
+  }
+
+  /// 보스 브레이크 게이지(체력 막대 아래 노란 막대, 4칸 눈금): 80% 넘으면 맥박, 쓰러진 동안은 주황·흰 깜빡임으로 가득.
+  void _breakBar(Canvas c, EnemyPose e, double left, double top, double w) {
+    final down = scene.topHits.breaks.isDown(e.id, scene.clockMs);
+    if (down) scene.topHits.breaks.radius = (e.drawY - top - 2).abs();
+    final ratio = down ? 1.0 : e.breakRatio.clamp(0.0, 1.0);
+    if (ratio <= 0) return;
+    final blink = (scene.clockMs / 120).floor().isEven;
+    _fill.color = const Color(0xFF1B2A4A);
+    c.drawRect(Rect.fromLTWH(left - 1, top - 1, w + 2, 5), _fill);
+    final hot = ratio >= 0.8 && (scene.clockMs / 200).floor().isEven;
+    _fill.color = down
+        ? (blink ? const Color(0xFFFFFFFF) : const Color(0xFFFF8A2A))
+        : (hot ? const Color(0xFFFFF27A) : const Color(0xFFFFC21A));
+    c.drawRect(Rect.fromLTWH(left, top, (w * ratio).roundToDouble(), 3), _fill);
+    _fill.color = const Color(0xFF1B2A4A);
+    for (var k = 1; k < 4; k++) {
+      c.drawRect(Rect.fromLTWH((left + w * k / 4).roundToDouble(), top, 1, 3), _fill);
+    }
   }
 
   /// 떠내려온 보물상자(전장 좌표). 가라앉을수록 흐려진다 — 누를 곳·남은 시간 링·금액은 UI(ChestLayer).
-  void chest(Canvas c, double clockMs) {
-    final ch = scene.chest;
-    if (!ch.visible) return;
-    sprites.draw(
-      c,
-      'td_event:chest',
-      ch.x.roundToDouble(),
-      ch.y.roundToDouble(),
-      frame: (clockMs / 450).floor() % 2,
-      alpha: 1 - 0.7 * ch.sink,
-    );
-  }
+  void chest(Canvas c, double clockMs) =>
+      _chest.paint(c, sprites, scene.chest, clockMs, lite: scene.topHits.lite || scene.settings.powerSave);
+  final _chest = TopChest();
 
   /// 배 회복(초록 덮개)·강화(테) 빛 — 배 상자 [box](배 중심 원점).
   void shipAura(Canvas c, Rect box) {

@@ -10,6 +10,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/top/ship_preview.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/guide/guide_cards.dart';
 import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
@@ -47,6 +48,7 @@ Future<CommandLog> pumpGame(
   int tab = 0,
   FixedClock? clock,
   bool keepTutorial = false,
+  bool guides = false,
   Size size = s24Size,
   double dpr = s24Dpr,
   List<Override> overrides = const [],
@@ -67,8 +69,14 @@ Future<CommandLog> pumpGame(
       key: UniqueKey(),
       overrides: [
         // 샘플은 모두 tutorialStep=1이다. 튜토리얼을 시험하는 테스트만 그대로 두고, 나머지는 끝난 상태로 그린다.
-        initialGameStateProvider.overrideWithValue(keepTutorial ? state : state.copyWith(clearTutorial: true)),
+        initialGameStateProvider.overrideWithValue(
+          guides
+              ? (keepTutorial ? state : state.copyWith(clearTutorial: true))
+              : withGuidesSeen(keepTutorial ? state : state.copyWith(clearTutorial: true)),
+        ),
         commandSinkProvider.overrideWithValue(log),
+        // 처음 만나는 시스템 카드는 가이드를 시험하는 테스트(guides: true)에서만.
+        guidesEnabledProvider.overrideWithValue(guides),
         // 시계는 샘플의 저장 시각에 고정 — 순풍 남은 시간 등이 매번 같게 (복귀 팝업도 안 뜬다).
         clockProvider.overrideWithValue(clock ?? FixedClock(state.savedAt)),
         // 전장은 렌더 레인 몫 — 같은 크기의 빈 상자로 바꿔 UI 테스트·골든이 전장 그림에 흔들리지 않게 한다.
@@ -94,6 +102,18 @@ Future<CommandLog> pumpGame(
     }
   }
   return log;
+}
+
+/// 가이드 v2 '처음 만나는 시스템' 카드를 모두 본 것으로 둔 상태 — 하네스 없이 앱을 띄우는 테스트(실제 엔진 등)가 쓴다.
+/// ([pumpGame]은 guidesEnabledProvider로 끈다. 샘플은 조건이 많이 맞아 모든 화면에 카드가 뜨기 때문.)
+GameState withGuidesSeen(GameState s) {
+  return s.copyWith(
+    settings: Settings.fromJson({
+      ...s.settings.toJson(),
+      'battleView': s.settings.battleView,
+      'hints': [...s.settings.hints, ...guideIds],
+    }),
+  );
 }
 
 Future<void>? _shipsLoaded;

@@ -74,7 +74,7 @@ abstract final class TopBounty {
     final t = ctx.tables;
     final reward = bountyReward(s, t, a.bossId, a.tier, ctx.rng);
     final b = s.bounty!;
-    final paid = grantBountyReward(s, t, reward);
+    final paid = grantBountyReward(s, ctx, reward);
     ctx.emit(BountyCleared(ctx.tick, bossId: a.bossId, tier: a.tier, reward: reward));
     _reset(f, ctx);
     return paid.copyWith(

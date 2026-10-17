@@ -33,10 +33,17 @@ extension BossBreak on Round {
         if (ctx.tick >= e.brokenUntil) {
           e.brokenUntil = 0; // 다시 일어남
           final cool = skills.obj('bossBreak').numberOr('cooldownSec', 0);
-          if (cool > 0) e.breakCooldownUntil = ctx.tick + math.max(1, (cool / dt).round());
+          if (cool > 0) {
+            e
+              ..breakCooldownTicks = math.max(1, (cool / dt).round())
+              ..breakCooldownUntil = ctx.tick + e.breakCooldownTicks;
+          }
         }
         continue;
       }
+      e.breakCooldownRatio = ctx.tick < e.breakCooldownUntil
+          ? (e.breakCooldownUntil - ctx.tick) / e.breakCooldownTicks
+          : 0;
       if (ctx.tick < e.breakCooldownUntil) continue;
       e.breakGauge = math.min(1, e.breakGauge + gained);
       if (e.breakGauge < 1) continue;

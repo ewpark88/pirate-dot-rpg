@@ -23,6 +23,7 @@ void main() {
     const AckSummonResult(),
     const GrantAdReward(AdPlacement.chest, choice: 'gems'),
     const Rebirth(),
+    const StartVoyage(),
     const ExchangeToken('manta'),
     const SetSetting('shake', false),
     const OpSetCrew('volke', level: 75),

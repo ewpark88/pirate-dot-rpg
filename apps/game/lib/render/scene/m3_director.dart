@@ -79,10 +79,22 @@ class M3Director {
   /// 화면 안 적인가(가로만): 탑다운은 배 중심 ± 보이는 폭 반, 옆모습은 보이는 오른쪽 끝까지.
   bool _onScreen(double x) => scene.isTop ? (x - scene.topShip.dx).abs() <= _halfView : x <= kLogicalWidth;
 
+  /// 피버 첫 일격(탑다운): 선장 컷인 + 배 충격파 + 가까운 적 12마리에 금빛 번개, 짧은 슬로모션.
+  void _feverStrike(UltimateCast e) {
+    final ship = scene.topShip;
+    final near = [
+      for (var k = 0; k < scene.poseCount; k++)
+        if (_onScreen(scene.poses[k].x)) Offset(scene.poses[k].drawX, scene.poses[k].drawY),
+    ]..sort((a, b) => (a - ship).distanceSquared.compareTo((b - ship).distanceSquared));
+    scene.topHits.feverStrike.start(scene.clockMs, e.crewId, ship, near);
+    if (scene.slowMoMs <= 0) scene.slowMoMs = 300;
+  }
+
   /// 궁극기 순간 화면 흰 번쩍임 (기준 장면 15fps 3프레임).
   static const _ultimateFlashMs = 200.0;
 
   void onUltimate(UltimateCast e, int index) {
+    if (scene.isTop) _feverStrike(e);
     if (scene.settings.flash) scene.screenFlashMs = _ultimateFlashMs;
     final pattern = _fx.ultimates[e.ultimateId];
     if (pattern == null) {

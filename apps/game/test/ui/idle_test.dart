@@ -36,14 +36,14 @@ IdleLevel _level(WidgetTester tester) =>
     ProviderScope.containerOf(tester.element(find.byType(HomeScreen))).read(idleLevelProvider);
 
 void main() {
-  testWidgets('60초 입력 없음 = idle, 3분 = 절전 덮개 · 덮개를 누르면 복귀하고 그 누름은 게임에 안 간다', (tester) async {
+  testWidgets('60초 입력 없음 = idle, 기본 10분 = 절전 덮개 · 덮개를 누르면 복귀하고 그 누름은 게임에 안 간다', (tester) async {
     final (clock, log) = await _pump(tester);
     expect(_level(tester), IdleLevel.active);
     clock.time = clock.time.add(const Duration(seconds: 61));
     await tester.pump(const Duration(seconds: 5));
     expect(_level(tester), IdleLevel.idle);
     expect(find.byKey(const Key('idle.sleep')), findsNothing);
-    clock.time = clock.time.add(const Duration(minutes: 3));
+    clock.time = clock.time.add(sleepAfterDefault);
     await tester.pump(const Duration(seconds: 5));
     expect(_level(tester), IdleLevel.sleep);
     expect(find.byKey(const Key('idle.sleep')), findsOneWidget);
@@ -83,7 +83,7 @@ void main() {
     final off = s.copyWith(settings: s.settings.withValue('powerSave', false));
     final clock = FixedClock(s.savedAt);
     await pumpGame(tester, off, clock: clock, openTab: false);
-    clock.time = clock.time.add(const Duration(minutes: 5));
+    clock.time = clock.time.add(sleepAfterDefault + const Duration(minutes: 1));
     await tester.pump(const Duration(seconds: 5));
     expect(_level(tester), IdleLevel.idle);
     expect(find.byKey(const Key('idle.sleep')), findsNothing);
@@ -95,7 +95,7 @@ void main() {
     for (final (name, size, dpr) in _devices) {
       testWidgets('절전 화면 $name', (tester) async {
         final (clock, _) = await _pump(tester, size: size, dpr: dpr, locale: const Locale('ko'));
-        clock.time = clock.time.add(const Duration(minutes: 4));
+        clock.time = clock.time.add(sleepAfterDefault + const Duration(minutes: 1));
         await tester.pump(const Duration(seconds: 5));
         await precacheImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_idle_sleep_$name.png'));

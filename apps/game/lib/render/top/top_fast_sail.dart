@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/painting.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
 
 /// 빠른 항해 돌파 연출 (S5 fast-sail, docs/specs/platform-fast-sail-breakthrough.md, 사용자 '꿈과 희망을 심어 주는 웅대한
@@ -22,10 +23,9 @@ class TopFastSail {
   final _line = Paint()
     ..style = PaintingStyle.stroke
     ..strokeCap = StrokeCap.round;
-  final Map<String, (TextPainter, TextPainter)> _texts = {};
+  final _label = TopLabel();
   static const _gold = Color(0xFFFFD84A);
   static const _orange = Color(0xFFFF8A2A);
-  static const _navy = Color(0xFF1B2A4A);
 
   void started(int from, int to, double now) {
     _startAt = now;
@@ -152,41 +152,8 @@ class TopFastSail {
     }
   }
 
-  void _text(Canvas c, String s, Offset center, double size, {double alpha = 1, Color color = _gold}) {
-    final key = '$s|$size|${color.toARGB32()}';
-    final pair = _texts.putIfAbsent(key, () {
-      if (_texts.length > 40) _texts.clear();
-      TextPainter make(TextStyle style) => TextPainter(
-        text: TextSpan(text: s, style: style),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      final base = TextStyle(fontFamily: 'Jua', fontFamilyFallback: const ['GowunDodumSymbols'], fontSize: size);
-      // 두 겹: 굵은 남색 테두리 + 흰 바탕에 색 그늘 — 황금 바다·띠 어디서도 읽힌다.
-      return (
-        make(
-          base.copyWith(
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = size * 0.16
-              ..strokeJoin = StrokeJoin.round
-              ..color = _navy,
-          ),
-        ),
-        make(
-          base.copyWith(
-            color: const Color(0xFFFFFFFF),
-            shadows: [Shadow(color: color, offset: Offset(0, size * 0.06))],
-          ),
-        ),
-      );
-    });
-    final (outline, fill) = pair;
-    final at = center - Offset(fill.width / 2, fill.height / 2);
-    if (alpha < 1) c.saveLayer(null, Paint()..color = Color.fromRGBO(0, 0, 0, alpha.clamp(0, 1)));
-    outline.paint(c, at);
-    fill.paint(c, at);
-    if (alpha < 1) c.restore();
-  }
+  void _text(Canvas c, String s, Offset center, double size, {double alpha = 1, Color color = _gold}) =>
+      _label.draw(c, s, center, size, alpha: alpha, color: color);
 }
 
 class _Strike {
@@ -208,6 +175,9 @@ class TopTexts {
     this.ended = _endedEn,
     this.wanted = 'WANTED',
     this.fled = 'Fled!',
+    this.newCrew = 'NEW CREW!',
+    this.bossBreak = 'BREAK!',
+    this.crewName = _noName,
   });
 
   final String start;
@@ -218,6 +188,16 @@ class TopTexts {
   /// 현상금 수배 포스터 머리말·도망 문구.
   final String wanted;
   final String fled;
+
+  /// 새 동료 카드 위 문구(피드백 #17, S4 ARB).
+  final String newCrew;
+
+  /// 보스 브레이크 도장(S4 ARB uiBossBreak).
+  final String bossBreak;
+
+  /// 선원 이름(앞면 공개 카드 아래, 피드백 #22 — S4 crew 이름 키). 비면 이름 없음.
+  final String Function(String crewId) crewName;
+  static String _noName(String _) => '';
 
   static String _endedEn(int from, int to) => 'STAGE $from → $to CLEARED!';
 }

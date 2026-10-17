@@ -120,7 +120,7 @@ class EventDirector implements ReplayListener {
           _m3.onSkill(e);
           _flashSlot(tick.frame, e.crewId);
         case Damage():
-          _damage(e, tick, index, number: e.crit || !_inVolley(events, i));
+          _damage(e, tick, index, number: e.crit || (!_inVolley(events, i) && f.fastSail == null));
         case AoeDamageSum():
           _aoe(e, tick, index);
         case Kill():
@@ -191,18 +191,19 @@ class EventDirector implements ReplayListener {
     return false;
   }
 
-  /// [number]가 false면 숫자 없이 피격 연출만 (범위 피해는 합산 숫자 하나 — 기준 장면 show=False).
+  /// [number]가 false면 숫자 없이 피격 연출만 (범위 합산 숫자 하나). 브레이크로 쓰러진 보스는 늘 큰 숫자.
   void _damage(Damage e, RecordedTick tick, int index, {required bool number}) {
     if (scene.isTop) _juiceHit(e, index);
     final target = _player.enemyAt(index - 1, e.targetId) ?? _player.enemyAt(index, e.targetId);
     if (target == null) return;
     final tx = target.boss ? scene.layout.clampBossX(target.x) : target.x;
-    if (number) {
+    final down = target.boss && scene.topHits.breaks.isDown(e.targetId, scene.clockMs);
+    if (number || down) {
       scene.numbers.add(
         e.amount,
         tx,
         target.y - kNumberLiftPx,
-        e.crit ? DamageKind.crit : DamageKind.normal,
+        e.crit || down ? DamageKind.crit : DamageKind.normal,
         key: e.targetId,
       );
     }
@@ -277,8 +278,7 @@ class EventDirector implements ReplayListener {
         ..x = e.x
         ..y = e.y;
     }
-    final wasBoss = _player.enemyAt(index - 1, e.targetId)?.boss ?? false;
-    if (wasBoss) scene.isTop ? _topBossKill(e) : _bossKill();
+    if (_player.enemyAt(index - 1, e.targetId)?.boss ?? false) scene.isTop ? _topBossKill(e) : _bossKill();
   }
 
   static const _coinLiftPx = 10.0;

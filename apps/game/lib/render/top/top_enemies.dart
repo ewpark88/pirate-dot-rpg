@@ -49,7 +49,10 @@ class TopEnemies {
       final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
       final sheet = sprites.sheet(key);
       if (sheet == null) continue;
-      final frame = ((scene.clockMs / 220).floor() + e.id) % sheet.frames;
+      // 큰 보스(대보스 88도트)는 프레임을 느리게(350ms) 바꾸고 숨쉬듯 3% 커졌다 작아진다(S1 '대보스 존재감').
+      final huge = e.boss && sheet.frameW >= _hugeW;
+      final frame = ((scene.clockMs / (huge ? 350 : 220)).floor() + e.id) % sheet.frames;
+      final breathe = huge ? 1 + 0.03 * math.sin(clock / 420 + e.id) : 1.0;
       final lunge = _lungeOf(e.id, e.drawX, e.drawY, clock) + scene.topHits.juice.knockOf(e.id, clock);
       final hot = !e.flash && hotAt != null && hotAt!(e.drawX, e.drawY);
       (e.flash ? _flashBatches : (hot ? _hotBatches : _batches)).putIfAbsent(
@@ -59,8 +62,12 @@ class TopEnemies {
         ..xf.add(
           RSTransform.fromComponents(
             // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation: e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08,
-            scale: key == _merchant ? _merchantScale : 1,
+            rotation:
+                e.heading +
+                math.pi / 2 +
+                math.sin(clock / 240 + e.id) * 0.08 +
+                (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0),
+            scale: key == _merchant ? _merchantScale : breathe,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
             translateX: (e.drawX + math.sin(clock / 160 + e.id * 1.7) * 0.7 + lunge.dx).roundToDouble(),
@@ -99,6 +106,7 @@ class TopEnemies {
   }
 
   final Map<String, String> _bossKeys = {};
+  static const _hugeW = 80;
   final _atlasPaint = Paint()
     ..isAntiAlias = false
     ..filterQuality = FilterQuality.none;
