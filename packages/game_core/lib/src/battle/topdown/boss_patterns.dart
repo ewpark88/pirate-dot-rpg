@@ -172,7 +172,11 @@ extension BossPatterns on Round {
               tier: e.tier,
             )
             ..splits = e.splits + 1
-            ..hp = halfHp;
+            ..hp = halfHp
+            ..breakCooldownUntil = e
+                .breakCooldownUntil // 분열한 몸도 부모의 브레이크 쿨다운을 이어받는다(S5 참고)
+            ..breakCooldownTicks = e.breakCooldownTicks
+            ..breakCooldownRatio = e.breakCooldownRatio;
       e
         ..hp = halfHp
         ..splits += 1;
