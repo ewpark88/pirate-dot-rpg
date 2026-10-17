@@ -182,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     final sheetH = _sheet.value * body.maxHeight;
     // 전장 상자는 시트(열림)나 도크(닫힘) 위에서 끝난다 — 렌더가 받은 상자를 채우므로 선원 줄·궁극기가 늘 그 바로 위에 붙는다.
     final battleBottom = math.max(sheetH, kDockHeight);
-    final top = BattleTopStrip(tutorial: tutorial, sheetOpen: _open);
+    final top = BattleTopStrip(tutorial: tutorial, sheetOpen: _open, sheetTab: _tab);
     return Stack(
       children: [
         Positioned(

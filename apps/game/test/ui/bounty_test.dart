@@ -75,7 +75,7 @@ void main() {
     final s = _state(active: const BountyView(bossId: 'giant_hermit', tier: 2, ticksLeft: 300));
     final log = await _pump(tester, state: s, overrides: [battleFeedProvider.overrideWithValue(feed.stream)]);
     expect(find.byKey(const Key('bounty.strip')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('bounty.retreat')));
+    await tester.tap(find.byKey(const Key('scene.retreat'))); // 후퇴는 띠 안(체력 막대를 가리지 않게)
     await tester.pump();
     expect(log.sent.whereType<RetreatBounty>(), hasLength(1));
     _replace(tester, _state());

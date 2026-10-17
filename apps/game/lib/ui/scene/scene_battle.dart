@@ -55,7 +55,8 @@ class SceneStrip extends ConsumerWidget {
   }
 }
 
-/// 후퇴 (보스 도전 자리) → RetreatTower / RetreatRush. 도달 층·잡은 보스까지는 기록된다.
+/// 후퇴 — 떠 있는 띠 안 장면 글 옆 작은 버튼(사용자 2026-10-18 '후퇴가 내 배 체력바를 가린다'): 현상금 RetreatBounty ·
+/// 탑 RetreatTower · 러시 RetreatRush · 던전 RetreatDungeon. 도달 층·잡은 보스까지는 기록된다.
 class SceneRetreatButton extends ConsumerWidget {
   const SceneRetreatButton({super.key});
 
@@ -64,15 +65,36 @@ class SceneRetreatButton extends ConsumerWidget {
     final (tower, rush, dungeon) = ref.watch(
       gameStateProvider.select((s) => (s.battle?.tower != null, s.battle?.rush != null, s.battle?.dungeon != null)),
     );
-    if (!tower && !rush && !dungeon) return const SizedBox.shrink();
-    return FittedBox(
-      child: SkinButton(
+    final bounty = ref.watch(bountyProvider.select((v) => v.active != null));
+    if (!tower && !rush && !dungeon && !bounty) return const SizedBox.shrink();
+    final cmd = switch ((tower, rush, dungeon)) {
+      (true, _, _) => const RetreatTower(),
+      (_, true, _) => const RetreatRush(),
+      (_, _, true) => const RetreatDungeon(),
+      _ => const RetreatBounty(),
+    };
+    final label = AppLocalizations.of(context).uiBountyRetreat;
+    // 작은 알약(글 크기만큼) — 띠 한 줄 안에 들어가게. 누르는 자리는 위아래로 넉넉히(띠 높이).
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: GestureDetector(
         key: const Key('scene.retreat'),
-        tone: SkinTone.plain,
-        onPressed: () => ref
-            .read(commandSinkProvider)
-            .send(tower ? const RetreatTower() : (rush ? const RetreatRush() : const RetreatDungeon())),
-        child: Text(AppLocalizations.of(context).uiBountyRetreat),
+        behavior: HitTestBehavior.opaque,
+        onTap: () => ref.read(commandSinkProvider).send(cmd),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(6, 4, 0, 4),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Skin.cream,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Skin.outline, width: 1.5),
+            ),
+            child: Text(label, style: Skin.bold(12)),
+          ),
+        ),
       ),
     );
   }

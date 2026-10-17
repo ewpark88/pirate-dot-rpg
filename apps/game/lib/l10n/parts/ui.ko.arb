@@ -1654,5 +1654,59 @@
   "uiTipTower": "층마다 무리가 늘어요. 어디까지 버틸까? 한 번 깬 층은 소탕으로 바로 받아요.",
   "uiTipRush": "이번 주 보스 5마리를 빨리 잡을수록 보상이 커요. 기록은 주마다 새로.",
   "uiTipDungeon": "요일마다 계열이 바뀌어요. 그 계열 선원으로 싸우고 그 선원 카드를 받아요.",
-  "uiTipPass": "위 줄은 누구나, 아래 줄은 패스 보상. 받기는 앞 칸부터 차례로."
+  "uiTipPass": "위 줄은 누구나, 아래 줄은 패스 보상. 받기는 앞 칸부터 차례로.",
+  "uiSaveTitle": "세이브 옮기기",
+  "uiSaveHelp": "기기를 바꿀 때 코드로 진행을 옮겨요. 자동 백업(Google)도 켜져 있어요 — 같은 계정 새 기기에서 복원돼요.",
+  "uiSaveCopy": "코드 복사",
+  "uiSaveCopied": "코드를 복사했어요 — 메모나 메신저에 붙여 두세요",
+  "uiSavePaste": "코드 붙여 넣기",
+  "uiSavePasteHint": "여기에 코드를 붙여 넣어요",
+  "uiSaveFromClipboard": "클립보드에서",
+  "uiSaveCheck": "확인",
+  "uiSaveBad": "코드가 맞지 않아요 — 다시 복사해 붙여 넣어 주세요",
+  "uiSaveCompare": "지금 / 가져올 진행",
+  "uiSaveStage": "최고 스테이지 {now} → {next}",
+  "@uiSaveStage": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSaveCrews": "선원 {now}명 → {next}명",
+  "@uiSaveCrews": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSaveSavedAt": "저장 시각 {at}",
+  "@uiSaveSavedAt": {
+    "placeholders": {
+      "at": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSaveOverwrite": "이 진행으로 덮어쓰기",
+  "uiSaveSure": "정말 덮어쓸까요? 지금 진행은 사라지고 되돌릴 수 없어요.",
+  "uiSaveSureYes": "덮어쓰기",
+  "uiSaveDone": "진행을 가져왔어요!",
+  "uiRebirthIn": "환생까지 {n}스테이지",
+  "@uiRebirthIn": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthReadyAgain": "환생할 수 있어요! 항해 탭에서 언제든지.",
+  "uiRebirthGo": "항해 탭"
 }
