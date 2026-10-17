@@ -4,9 +4,9 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui dadbb04f — 누수 점검(UI 평평)·칭호 진행 막대, test/ui 722 초록 |
+| 상태 | lane/ui ffd258a0 — 업적 요청서·가짜 화면, 그래픽 층 점검, test/ui 725 초록 |
 | 다음 | S2 필살기·보스 여러 줄 계약(captainGauge·TriggerUltimate·autoUltimate·bossBarsLeft) main 반영 → 어댑터 교체·설정 '자동 필살기' 토글 · trialsReady export |
-| 기다리는 것 | S2 필살기·보스 줄 계약 · S3 memory()·crewNames 세터 main 반영 · S1 url_launcher(appLinkOpenerProvider 덮기) |
+| 기다리는 것 | S2 필살기·보스 줄(boss-feel)·업적(ui-achievements) 계약 · S3 memory()·crewNames · S1 url_launcher |
 
 ### 재개 지점: 보스 특성 UI (멈춤 — 개편 뒤 이어서)
 - 브랜치 lane/ui, 마지막 커밋 = '보스 특성 UI 1차'. 계약은 이미 main에 있다(BossDef.traits · counterFamilies · regions.json bossTraits).
@@ -18,6 +18,7 @@
 
 ### 2026-10-18 밤 · S4 · 사용자 요청 묶음
 - f3af95bc 운영자 맨 위 출전 칸 진단 줄(UI·렌더 모두 fleetSlots 기준 확인) · 보스 여러 줄 임시 어댑터. a2003ad7 퀘스트 시트 자동 접기. 3a28d9d3 태블릿 40장 점검.
+- 50ae4097 업적 요청서 + 가짜 시트. ffd258a0 시트 탭 전환 전체 Opacity·소환 컷인 큰 Opacity 층 제거(그래픽 메모리).
 - a4c05c7d 누수 점검 시험(시트·탭 200번 — 요소·이미지 그대로). dadbb04f 칭호 진행 막대·패스 칭호 줄. 업적은 엔진 계약 필요.
 - d48cf924 RollingText 한 줄 높이 굴림·전투력 '+증가' 떠오름·빠른 강화 떠오름 → 배 체력 막대 위.
 - 45797284 설정 '정보' 묶음·운영자 패널 버튼(설정 맨 아래, 운영자 빌드만).
