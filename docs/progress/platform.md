@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤(이어서 2) · S5 · 심연의 탑 엔진
+- **현재 위치**: review/tower 3a218b18 — 빠른 check 통과, S1 머지 대기. 계약 platform-tower S1 승인. boss-scale-fix 5a8634c3(main 시나리오 실패 고침) 보냄.
+- 한 일: 장면 모드 공통부(scene_mode.dart — 현상금·탑), top_tower.dart(층·파·보스·회복·침몰/그만두기/중단 → 상자·복귀), economy/tower.dart(열림·도전권 쌓임·광고·소탕·상자), 세이브·명령·이벤트·BattleView.tower, 시험 9.
+- 다음: S4 탑 화면·S3 층 띠·S2 수치 확정(층당 약 25초로 느림 — 출현 거리·마리 수) → 보스 러시(같은 장면 모드로) → 요일 던전. 결제 어댑터는 pubspec·계약 대기.
+- 배운 것: 탑 시험은 신화 함대면 배가 안 맞아 끝나지 않는다 — 중반 함대(37 샘플 + 환생 1)가 5~6층에서 침몰해 시험에 알맞다. 시험은 '끝난 틱에서 멈춰' 확인(뒤에 본 전투가 이어져 스테이지가 오른다).
+
 ## 2026-10-18 밤(이어서) · S5 · release_check·보스 크기 원인 확정
 - **현재 위치**: release_check 통과(main 8c710049 — 배포 aab 운영자 표식 0·운영자 apk 1), 운영자 apk 빌드됨(설치는 권한상 S1/사용자). review/boss-scale f79dbe35 — S2 smoke OK(기준 범위, 조금 단단), S1 머지 대기. review/iap a400de7c — pubspec(in_app_purchase 3.3.1)·계약 머지 대기.
 - 한 일: boss-scale 원인 확정(S2 sim 2시간 흐름 — standoff 증가가 보스전 배 피해 1/4), standoffGrow 0 + 대보스 ±20° 호. auto-boss(S2) 검토 OK.
