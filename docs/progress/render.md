@@ -520,3 +520,8 @@
 - 한 일: worktree `D:\Projects\pde-render`(lane/render) 진입, 레인 브리핑·계약·`juice.json`·`fx_map.json`·합성 기록 확인, 스펙+계획 초안.
   main e4edf73 머지 후 스펙을 `docs/specs/render-battle-replay.md`로 분리. S1 답변(히트스톱 프레임, 데모 기록 상수 경로) 반영.
   main 7156ca6(훅 수정)·f664a25(전투 M1) 머지.
+
+## 2026-10-17 (오후) — 실기기 4건·보스 카메라·해역 바다·유령 제독
+- 한 일: b1acb918 현상금 포스터 HD 보스 · 126f7f69 요일 던전 띠(MON n + 계열)·그 날 계열 착탄 금 테 · 3dc3290a 평소 40마리 점검(문제 없음) · S5 피버 무리 사방 조이기 머지(54a81b54) · 2083bcf9 HD 해역 바다 디테일(HdSeaDetail) · 3c6bb50a+3948f4cc 보스 카메라 잘림 없게(안전 영역 fx_map topCam S4 공용, 카메라 점 기준, 줌 0.6~1.3, 시험 top_bosscam_fit 4기기+높은 띠) · HdSheets 밀려난 그림 늦게 버리기(죽는 적 연출 단언 실패 버그) · 621eac6b 유령 제독 HD(마지막 도트 보스).
+- 다음: A줄 일괄 때 보스 장면 골든(도감·전리품·특성·피버 무리·해역) 다시 굽기, S4 hudTopDp 연결 확인, 몬스터 v2 디테일.
+- 남은 문제: 태블릿 실제 띠 높이는 S4가 hudTopDp로 넘겨야 정확(기본 90dp).
