@@ -66,11 +66,11 @@ class LootBits {
     if ((age / 120).floor().isEven) c.drawRect(Rect.fromLTWH(x + 3, y - 7, 1, 1), _paint);
   }
 
-  /// 카드: 등급 색 테두리 + 선원 초상, 가로로 뒤집히며 돈다.
-  void card(Canvas c, Offset p, (String, int) card, double age, SpriteDraw? sprites) {
-    final flip = math.cos(age / 140).abs().clamp(0.25, 1.0);
-    final w = 12 * flip;
-    const h = 16.0;
+  /// 카드: 등급 색 테두리 + 선원 초상. [spin]이면 가로로 천천히 뒤집히며 돈다(얼굴이 읽히게 폭 60% 아래로는 안 줄어듦).
+  void card(Canvas c, Offset p, (String, int) card, double age, SpriteDraw? sprites, {bool spin = true}) {
+    final flip = spin ? math.cos(age / 260).abs().clamp(0.6, 1.0) : 1.0;
+    final w = 14 * flip;
+    const h = 19.0;
     final r = Rect.fromCenter(center: p, width: w + 2, height: h + 2);
     _paint.color = const Color(0xFF1B1726);
     c.drawRect(r, _paint);
@@ -78,6 +78,6 @@ class LootBits {
     c.drawRect(r.deflate(1), _paint);
     _paint.color = const Color(0xFFF6EBD0);
     c.drawRect(r.deflate(2.5), _paint);
-    sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy, w - 3, w - 3);
+    sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy - 1, w - 3, w - 3);
   }
 }
