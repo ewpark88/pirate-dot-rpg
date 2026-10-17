@@ -13,7 +13,7 @@ void main() {
   final top = t.waves.raw.obj('top');
   final start = DateTime.utc(2026, 11);
 
-  test('분류별 배율·standoff — 대보스가 가장 멀리, 보통 보스는 조금', () {
+  test('분류별 배율 — standoff는 그대로(S2 sim: 늘리면 2시간 흐름에서 보스전 배 피해가 1/4로 줄었다)', () {
     final wall = t.regions.regions.first.wallBoss!;
     final region = t.regions.regions.first.regionBoss;
     final other = t.regions.regions.first.boss;
@@ -21,9 +21,12 @@ void main() {
     expect(bossScaleOf(t, region), top.obj('bossScale').number('region'));
     expect(bossScaleOf(t, other), top.obj('bossScale').number('other'));
     final base = top.number('bossStandoff');
-    expect(bossStandoffFor(t, wall), greaterThan(bossStandoffFor(t, region)));
-    expect(bossStandoffFor(t, region), greaterThan(bossStandoffFor(t, other)));
-    expect(bossStandoffFor(t, other), greaterThan(base));
+    for (final id in [wall, region, other]) {
+      expect(bossStandoffFor(t, id), base);
+    }
+    // 대보스 그림(반지름 = bossLook w/2 × 배율)이 배(shipRadius)와 겹치지 않는다.
+    final w = t.fxMap.raw.obj('bossLook').obj(wall).number('w') / 2 * bossScaleOf(t, wall);
+    expect(base, greaterThan(w + top.number('shipRadius')));
   });
 
   /// [stage] 보스를 불러 [sec]초 — 보스 자리(배 기준) 기록.
@@ -48,7 +51,7 @@ void main() {
     return out;
   }
 
-  test('대보스: 더 먼 standoff에 서고 원 대신 배 위 ±swayDeg 호를 오간다 — 결투 중에도 화면 안', () {
+  test('대보스: 원 대신 배 위 ±swayDeg 호를 오간다 — 결투 중에도 화면 안', () {
     final stage = t.regions.wallEvery; // 10 = 해역 대보스
     final wall = t.regions.bossAt(stage).id;
     expect(t.regions.bossClassOf(wall), 'wall');
