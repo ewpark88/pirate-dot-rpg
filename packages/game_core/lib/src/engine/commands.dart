@@ -11,7 +11,6 @@ part 'commands_tower.dart';
 part 'operator_commands.dart';
 
 /// 플레이어 입력. UI는 버튼을 누르면 Command만 보낸다. 엔진은 다음 틱에 적용한다.
-///
 /// JSON 형식(`{"type": ..., ...}`)은 시나리오 리플레이·운영자 로그에 쓴다.
 @immutable
 sealed class Command {
@@ -59,6 +58,9 @@ sealed class Command {
       'retreatTower' => const RetreatTower(),
       'startRush' => const StartRush(),
       'retreatRush' => const RetreatRush(),
+      'startDungeon' => StartDungeon(j['step'] as int),
+      'sweepDungeon' => SweepDungeon(j['step'] as int),
+      'retreatDungeon' => const RetreatDungeon(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       'markHint' => MarkHint(j['id'] as String),
       'buySkin' => BuySkin(j['id'] as String),
