@@ -49,6 +49,14 @@ class TopEnemies {
     final clock = scene.clockMs;
     final lite = scene.topHits.lite;
     _seen.clear();
+    hdSheets
+      ..cap = lite ? HdSheets.lowCell : HdSheets.maxCell
+      ..plan(
+        scene.frame.stage,
+        scene.tables.regions,
+        (k, {required boss}) => sprites.sheet(_keyFor(k, boss: boss))?.frameW,
+      )
+      ..step(snap);
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
