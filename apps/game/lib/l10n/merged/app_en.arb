@@ -1326,5 +1326,41 @@
         "type": "int"
       }
     }
+  },
+  "uiCollectNext": "Next reward at {at}: {reward}",
+  "uiCollectGems": "Gems ×{n}",
+  "uiCollectSummons": "Free summon ×{n}",
+  "uiCollectClaim": "Claim ({at} crew)",
+  "uiCollectAllDone": "All log rewards claimed",
+  "@uiCollectNext": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiCollectGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectClaim": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      }
+    }
   }
 }

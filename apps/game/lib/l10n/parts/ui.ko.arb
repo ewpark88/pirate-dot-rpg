@@ -1063,5 +1063,41 @@
         "type": "int"
       }
     }
+  },
+  "uiCollectNext": "다음 보상 {at}명: {reward}",
+  "uiCollectGems": "젬 {n}",
+  "uiCollectSummons": "무료 소환 {n}회",
+  "uiCollectClaim": "보상 받기 ({at}명)",
+  "uiCollectAllDone": "도감 보상을 모두 받았어요",
+  "@uiCollectNext": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      },
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiCollectGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiCollectClaim": {
+    "placeholders": {
+      "at": {
+        "type": "int"
+      }
+    }
   }
 }

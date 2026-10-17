@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
+import 'package:pirate_dot/ui/crew/collection_reward_row.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
 import 'package:pirate_dot/ui/dock/dock_request.dart';
@@ -134,6 +135,7 @@ class NewMateDialog extends ConsumerWidget {
       if (id != null) id.area ? l10n.uiAreaWide : l10n.uiAreaSingle,
     ].join(' · ');
     final dex = collectionBonus(s, t);
+    final nextReward = nextCollectReward(s, t);
     final empty = ref.read(fleetSlotsProvider).indexOf(null);
     final name = shortCrewName(l10n, def);
     // k2: 노란 리본 '새 동료!' + X + 연보라 판 (공용 PixelDialog).
@@ -184,9 +186,10 @@ class NewMateDialog extends ConsumerWidget {
             CrewIdentityPanel(crewId: crewId, rarity: t.rarities.rarities.indexOf(rarity)),
             const SizedBox(height: 8),
             Text(
-              dex.nextAt == null
+              // '다음 보상까지 n명' = 도감 수집 보상(S2 collectionRewards)의 다음 칸.
+              nextReward == null
                   ? l10n.uiNewMateDexAll(dex.owned, dex.total)
-                  : l10n.uiNewMateDex(dex.owned, dex.total, dex.nextAt! - dex.owned),
+                  : l10n.uiNewMateDex(dex.owned, dex.total, nextReward.at - s.collection.length),
               key: const Key('newMate.dex'),
               style: Skin.text(14, color: Skin.sub),
             ),
