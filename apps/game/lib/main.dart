@@ -39,6 +39,7 @@ import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/app.dart';
 import 'package:pirate_dot/ui/back_to_exit.dart' show exitSaveProvider;
 import 'package:pirate_dot/ui/state/analytics_provider.dart';
+import 'package:pirate_dot/ui/state/crash_context.dart' show crashKeyProvider;
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/state/idle.dart';
 import 'package:pirate_dot/ui/state/platform_providers.dart';
@@ -172,6 +173,7 @@ Future<void> main() async {
       simBillingProvider.overrideWithValue(sim),
       saveImportProvider.overrideWithValue(host.replace), // 설정 '세이브 옮기기'(코드 가져오기)
       // 뒤로 두 번 종료 직전 저장(S4 back_to_exit) — 느린 기기에서 종료가 멈춰 보이지 않게 1초까지만 기다린다(crash-anr.md 3절)
+      crashKeyProvider.overrideWithValue(analytics.setCrashKey), // 충돌 보고서 맥락 키(S4 CrashContextGate)
       exitSaveProvider.overrideWithValue(() => host.save().timeout(const Duration(seconds: 1), onTimeout: () {})),
       audioPortProvider.overrideWithValue(audio),
       analyticsPortProvider.overrideWithValue(analytics),
