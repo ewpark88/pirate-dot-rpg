@@ -33,8 +33,6 @@ class HudPainter {
   FxMapTable get _fx => scene.fx;
   late final int _white = parseArgb(_fx.hud.str('textColor'), 'hud.textColor');
   late final int _goldColor = parseArgb(_fx.hud.str('goldColor'), 'hud.goldColor');
-  late final int _rageFill = parseArgb(_fx.hud.str('rageFill'), 'hud.rageFill');
-  late final int _rageFull = parseArgb(_fx.hud.str('rageFull'), 'hud.rageFull');
   late final int _barBack = parseArgb(_fx.hud.str('barBack'), 'hud.barBack');
   late final int _bossFill = parseArgb(_fx.hud.str('bossFill'), 'hud.bossFill');
   late final int _timerColor = parseArgb(_fx.hud.str('bossTimerColor'), 'hud.bossTimerColor');
@@ -216,58 +214,8 @@ class HudPainter {
       final badge = s.number('badge');
       _fill(c, ix, iy, badge, badge, family);
     }
-    _ultimate(c, layout.ultimateInBand);
     c.restore();
   }
-
-  static const _blinkMs = 250.0;
-
-  /// 궁극기 버튼 그림: 2도트 테두리(가득 차면 금빛·흰빛 깜빡임) + 선장 초상 + 아래 함성 게이지. 누르는 건 UI.
-  void _ultimate(Canvas c, Rect r) {
-    final f = scene.frame;
-    final rage = f.rage.clamp(0.0, 1.0);
-    final full = rage >= 1;
-    final blink = full && (scene.clockMs / _blinkMs).floor().isEven;
-    _fill(c, r.left, r.top, r.width, r.height, blink ? _rageFull : _goldColor);
-    final inner = r.deflate(2);
-    _fill(c, inner.left, inner.top, inner.width, inner.height, _plate);
-    final captain = f.captainId;
-    if (captain != null) {
-      c
-        ..save()
-        ..clipRect(inner);
-      sprites.draw(
-        c,
-        'crew:$captain',
-        inner.center.dx.floorToDouble(),
-        (inner.top + kSlotSize / 2 - 1).floorToDouble(),
-      );
-      c.restore();
-    }
-    final gy = inner.bottom - _gaugePx;
-    _fill(c, inner.left, gy, inner.width, _gaugePx, _barBack);
-    if (rage > 0) _fill(c, inner.left, gy, inner.width * rage, _gaugePx, full ? _rageFull : _rageFill);
-    if (!full) _fill(c, inner.left, inner.top, inner.width, (inner.height - _gaugePx) * (1 - rage), _cooldown);
-    _bolt(c, inner.left + 1, inner.top + 1);
-  }
-
-  /// 궁극기 표시 번개 (5×8, 외곽선 포함) — 초상 위에 얹어 '누르는 버튼'으로 읽히게.
-  static const _boltRows = ['.kkkk', 'kyyyk', 'kyyk.', 'kyyyk', '.kyyk', '.kyk.', 'kyk..', 'kk...'];
-
-  void _bolt(Canvas c, double x, double y) {
-    for (var dy = 0; dy < _boltRows.length; dy++) {
-      final row = _boltRows[dy];
-      for (var dx = 0; dx < row.length; dx++) {
-        final ch = row[dx];
-        if (ch == '.') continue;
-        _fill(c, x + dx, y + dy, 1, 1, ch == 'y' ? _goldColor : _outline);
-      }
-    }
-  }
-
-  static const _outline = 0xFF1B1726;
-
-  static const _gaugePx = 3.0;
 }
 
 /// 데미지 숫자 하나의 도트 글자. [DamageNumber.cache]에 붙어 풀과 함께 재사용된다.

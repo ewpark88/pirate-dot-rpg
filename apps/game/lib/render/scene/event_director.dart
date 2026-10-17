@@ -132,7 +132,7 @@ class EventDirector implements ReplayListener {
         case ShipDamaged():
           _shipHit(e, tick);
         case BossCleared():
-          _bossKill();
+          scene.isTop ? scene.topHits.loot.gems(e.gems) : _bossKill();
         case BossSpawned():
           scene.moments.onBossSpawned(e.kind, tick.frame.stage);
           if (scene.settings.flash) scene.bossWarnMs = scene.fx.bossEntrance.number('ms');
@@ -278,7 +278,7 @@ class EventDirector implements ReplayListener {
         ..y = e.y;
     }
     final wasBoss = _player.enemyAt(index - 1, e.targetId)?.boss ?? false;
-    if (wasBoss) _bossKill();
+    if (wasBoss) scene.isTop ? _topBossKill(e) : _bossKill();
   }
 
   static const _coinLiftPx = 10.0;
