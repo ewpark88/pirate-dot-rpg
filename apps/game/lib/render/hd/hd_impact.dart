@@ -28,12 +28,22 @@ class HdImpact {
     'lob', 'ring', 'cluster', 'direct', 'pierce', 'laser', 'skip', 'underwater', 'air', 'assault', 'shock', //
   ];
 
-  void add(String family, double x, double y, double radius, int color, int rarity, double atMs) {
+  void add(String family, double x, double y, double radius, int color, int rarity, double atMs, {bool hot = false}) {
     if (_hits.length >= _max) _hits.removeAt(0);
     // 같은 자리 겹침 흔들기: 자리 해시로 회전 0~2π·크기 0.85~1.15
     final h = ((x * 73.1).floor() ^ (y * 31.7).floor() ^ atMs.floor()) & 0xFFFF;
     _hits.add(
-      _Hit(family, Offset(x, y), radius, Color(color), rarity, atMs, h / 0xFFFF * 2 * math.pi, 0.85 + (h % 31) / 100),
+      _Hit(
+        family,
+        Offset(x, y),
+        radius * (hot ? 1.3 : 1),
+        Color(color),
+        rarity,
+        atMs,
+        h / 0xFFFF * 2 * math.pi,
+        0.85 + (h % 31) / 100,
+        hot: hot,
+      ),
     );
   }
 
@@ -82,6 +92,7 @@ class HdImpact {
           _lob(c, h, r, t, lite: lite);
       }
       if (h.rarity >= 5) _rainbowRim(c, r, t);
+      if (h.hot) _hotRim(c, r, t);
       c.restore();
       if (near) c.restore();
     }
@@ -89,7 +100,18 @@ class HdImpact {
 }
 
 class _Hit {
-  _Hit(this.family, this.pos, this.radius, this.color, this.rarity, this.at, this.spin, this.jitter);
+  _Hit(
+    this.family,
+    this.pos,
+    this.radius,
+    this.color,
+    this.rarity,
+    this.at,
+    this.spin,
+    this.jitter, {
+    this.hot = false,
+  });
+  final bool hot; // 요일 던전 그 날 계열 — 금 테
   final String family;
   final Offset pos;
   final double radius;

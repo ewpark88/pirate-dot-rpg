@@ -246,6 +246,14 @@ extension _ImpactShapes on HdImpact {
     }
   }
 
+  /// 요일 던전 그 날 계열: 두꺼운 금 테.
+  void _hotRim(Canvas c, double r, double t) {
+    _stroke
+      ..strokeWidth = r * 0.12 * (1 - t * 0.6)
+      ..color = Color.fromRGBO(255, 212, 90, _late(t));
+    c.drawCircle(Offset.zero, r * (1 + 0.25 * _ease(t)), _stroke);
+  }
+
   /// 신화: 무지개 테(색이 돈다).
   void _rainbowRim(Canvas c, double r, double t) {
     _stroke
