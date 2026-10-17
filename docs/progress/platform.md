@@ -1,5 +1,19 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 · S5 · 디자인 개편(쿵푸할매 스타일) — HD 아이콘·바다 v2·보상 연출·창 개편
+- **현재 위치**: main 머지됨 — sea-v2(해역 팔레트·외곽선 소품). S4 UI run 대기 — review/k-windows-s5 7dcb0e53(창 개편 S5 몫 + reward-fx-wire). HD 아이콘(review/hd-icons f2c2abb4)은 S4 run에 포함. 다음: HD 몬스터 절반(코랄·폭풍·빙하 잡몹 약 13종) — S3 기준서·공용 벡터 도구 기다림.
+- 한 일
+  - HD 아이콘 42종(tools/art/gen_hd_icons.py 코드 SVG → assets/ui/hd 1x·2.0x·3.0x, 칸 85% 자동 채움, 탭은 바깥 테). PixelSprite hd는 fit contain.
+  - 바다 v2: 해역별 깊은 팔레트(fx_map topSea.regions), 흘러가는 외곽선 소품 TopSeaProps(해역 세트·배 길 밖·화면당 4·Picture 캐시·피버 0.5 미만 생략), check --full 초록 → main.
+  - 보상 연출 RewardBurst(회전 빛기둥 5색·출처 그림 흔들림→열림·등급색 IconCell + 외곽선 숫자·회전 튕김 정렬·lite) + 붙이기(광고 상자·도감 수집·보스 처치 창 전·소환 결과 빛).
+  - 창 개편: 환생 7종·일일·오프라인을 PixelDialog·SubRibbon·Skin.inset·IconCell·OutlineText로.
+  - 운영자 보스 목록 42종·특징 칩, 선원 역할 키(S2 조정).
+- 배운 것
+  - lint를 고칠 때 의미 있는 인자(fit: BoxFit.contain)를 같이 지우지 말 것 — 아이콘이 원본 크기로 묶여 '작게 보인다'로 돌아왔다.
+  - Image에 fit이 없으면 scaleDown(원본보다 키우지 않음).
+  - k2에서 Skin.track은 남색 — 옅은 '잠김' 바탕으로 쓰면 글이 묻힌다(D3D1EA 사용).
+  - 300줄 제한: main과 합칠 때 남의 변경으로 넘을 수 있다 — 합친 뒤 줄 수 먼저 확인.
+
 ## 2026-10-18 새벽 · S5 · 통합 run 머지, 디자인 개편(쿵푸할매 스타일) ② HD 아이콘 시작
 - **현재 위치**: 디자인 개편 최우선(docs/plans/active/design-kungfu-style.md). 내 몫 ② HD 아이콘 — 시안 S1 확인 대기.
   생성기·시안은 scratchpad/icons(gen_hd_icons.py — 37개: 재화·탭·부위·상자·체크·계열 11종, compare_all.png·fam.png, icon-map.md).
