@@ -55,11 +55,13 @@ class _SummonCutInState extends State<SummonCutIn> with SingleTickerProviderStat
                 // 빛 회전 배경.
                 Transform.rotate(
                   angle: t * math.pi * 0.6,
-                  child: Opacity(
-                    opacity: 0.85,
-                    child: SizedBox.square(
-                      dimension: 560,
-                      child: Image.asset(pbLegendRays, fit: BoxFit.contain),
+                  // 그림 자체 투명도(Opacity 층은 560dp 텍스처를 매 프레임 만든다 — S3·S5 그래픽 메모리 점검 2026-10-18).
+                  child: SizedBox.square(
+                    dimension: 560,
+                    child: Image.asset(
+                      pbLegendRays,
+                      fit: BoxFit.contain,
+                      opacity: const AlwaysStoppedAnimation(0.85),
                     ),
                   ),
                 ),

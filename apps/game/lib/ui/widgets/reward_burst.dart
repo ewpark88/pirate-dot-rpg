@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/widgets/reward_fly.dart';
 import 'package:pirate_dot/ui/widgets/reward_rays.dart';
 
 export 'package:pirate_dot/ui/widgets/reward_rays.dart' show RewardTier;
@@ -208,19 +209,23 @@ Future<void> showRewardBurst(
   RewardTier tier = RewardTier.gold,
   bool lite = false,
   Duration hold = const Duration(milliseconds: 1200),
-}) => showDialog<void>(
-  context: context,
-  barrierColor: const Color(0x99000000),
-  builder: (dialog) => _AutoClose(
-    after: RewardBurst.duration + hold,
-    child: GestureDetector(
-      key: const Key('reward.burst'),
-      behavior: HitTestBehavior.opaque,
-      onTap: () => Navigator.of(dialog).pop(),
-      child: RewardBurst(items: items, source: source, openedSource: openedSource, tier: tier, lite: lite),
+}) async {
+  await showDialog<void>(
+    context: context,
+    barrierColor: const Color(0x99000000),
+    builder: (dialog) => _AutoClose(
+      after: RewardBurst.duration + hold,
+      child: GestureDetector(
+        key: const Key('reward.burst'),
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(dialog).pop(),
+        child: RewardBurst(items: items, source: source, openedSource: openedSource, tier: tier, lite: lite),
+      ),
     ),
-  ),
-);
+  );
+  // 끝맺음: 칸마다 위 막대 제 자리로 날아가 꽂힌다(숫자 통통 · 반짝, S1 2026-10-18).
+  if (context.mounted) flyRewards(context, [for (final i in items) i.icon]);
+}
 
 /// [after]가 지나면 창을 닫는다. 타이머는 창과 함께 사라진다(창이 먼저 닫히거나 화면이 통째로 없어져도 남지 않게).
 class _AutoClose extends StatefulWidget {

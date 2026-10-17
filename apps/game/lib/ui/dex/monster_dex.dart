@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/hd/hd_portrait.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
+import 'package:pirate_dot/ui/dex/boss_dex_detail.dart';
 import 'package:pirate_dot/ui/dex/monster_dex_data.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -172,7 +173,7 @@ class _DexTile extends ConsumerWidget {
     final known = e.defeated;
     final name = !known ? l10n.uiDexUnknown : (e.boss ? bossName(l10n, ref, e.id) : monsterName(l10n, e.id));
     final kills = e.kills;
-    return Container(
+    final tile = Container(
       key: Key('dex.tile.${e.id}'),
       padding: const EdgeInsets.fromLTRB(4, 6, 4, 6),
       decoration: BoxDecoration(
@@ -216,5 +217,8 @@ class _DexTile extends ConsumerWidget {
         ],
       ),
     );
+    // 보스 칸은 누르면 상세(S1 2026-10-18).
+    if (!e.boss) return tile;
+    return GestureDetector(behavior: HitTestBehavior.opaque, onTap: () => showBossDex(context, e), child: tile);
   }
 }

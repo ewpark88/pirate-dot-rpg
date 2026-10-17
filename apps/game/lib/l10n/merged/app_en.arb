@@ -595,7 +595,7 @@
   "uiFleetRejectedFamily": "Up to {max} crew of the same type can sail together",
   "uiFleetSlotStage": "Stage {stage}",
   "uiCrewReplace": "Replace",
-  "uiFleetSwapped": "Swapped places with a deployed crew",
+  "uiFleetSwapped": "Swapped!",
   "uiQuickUpgrade": "Quick upgrade: {part} (hold to repeat)",
   "uiQuickUpgradeNone": "Not enough gold to upgrade",
   "uiPanelHandle": "Drag to resize · tap the battle to close",
@@ -635,7 +635,6 @@
   "uiSkinEquipped": "Equipped",
   "uiTitle": "Title",
   "uiTitleNone": "No title",
-  "uiTitleLocked": "Rebirth ×{count}",
   "uiShopFxLevels": "+{n} lv",
   "uiShopFxDown": "-{n}%",
   "uiShopFxSec": "+{n}s",
@@ -1756,17 +1755,6 @@
       }
     }
   },
-  "uiTowerSwept": "Swept F{n} · {reward}",
-  "@uiTowerSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiRushTitle": "Boss Rush",
   "uiRushWeek": "Beat this week's 5 bosses, fast",
   "uiRushBest": "Best {time}",
@@ -2057,17 +2045,6 @@
   },
   "uiDungeonTicketBack": "Your ticket was returned",
   "uiDungeonTimeout": "Time's up",
-  "uiDungeonSwept": "Swept step {n} · {reward}",
-  "@uiDungeonSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiWeekday1": "Monday",
   "uiWeekday2": "Tuesday",
   "uiWeekday3": "Wednesday",
@@ -2183,5 +2160,230 @@
     }
   },
   "uiLinkCopied": "Link copied — paste it into your browser or mail app",
-  "uiContactSubject": "Game support"
+  "uiContactSubject": "Game support",
+  "uiTitleProgressRebirth": "Rebirths {now}/{need}",
+  "@uiTitleProgressRebirth": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiTitleProgressPass": "Voyage Pass {now}/{need}",
+  "@uiTitleProgressPass": {
+    "placeholders": {
+      "now": {
+        "type": "int"
+      },
+      "need": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchTitle": "Achievements",
+  "uiAchClaim": "Claim +{gems}",
+  "@uiAchClaim": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchDone": "Done",
+  "uiAchProgress": "{value} / {target}",
+  "@uiAchProgress": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "uiPassLevelUp": "Voyage Pass level {n}!",
+  "@uiPassLevelUp": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFleetAlreadyBest": "Already your strongest fleet",
+  "uiMergeResultTitle": "Merge results",
+  "uiMergeLv": "Lv {a} → {b}",
+  "@uiMergeLv": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeAtk": "Attack {a} → {b}",
+  "@uiMergeAtk": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeGain": "+{p}%",
+  "@uiMergeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeRarity": "{a} → {b}",
+  "@uiMergeRarity": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiMergeMore": "+{n} more",
+  "@uiMergeMore": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiMergeFleet": "Fleet power {a} → {b}",
+  "@uiMergeFleet": {
+    "placeholders": {
+      "a": {
+        "type": "String"
+      },
+      "b": {
+        "type": "String"
+      }
+    }
+  },
+  "uiUpgradeCombo": "Upgrade combo!",
+  "uiUpgradeLook": "New look!",
+  "uiUpgradeGain": "+{p}%",
+  "@uiUpgradeGain": {
+    "placeholders": {
+      "p": {
+        "type": "int"
+      }
+    }
+  },
+  "uiUpgradeMilestone": "×2!",
+  "uiUpgradeSpent": "-{gold}",
+  "@uiUpgradeSpent": {
+    "placeholders": {
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnTailwind": "Tailwind! Speed ×{speed} · Gold ×{gold}",
+  "@uiSpeedOnTailwind": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      },
+      "gold": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSpeedOnPaid": "Speed boost! ×{speed}",
+  "@uiSpeedOnPaid": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "uiAchFast": "Best {value}s · target ≤ {target}s",
+  "@uiAchFast": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiAchNoRecord": "No record · target ≤ {target}s",
+  "@uiAchNoRecord": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPatternVolley": "Volley",
+  "uiPatternBlast": "Blast",
+  "uiPatternCharge": "Charge",
+  "uiPatternInk": "Ink cloud",
+  "uiPatternSummon": "Summon",
+  "uiPatternSwallow": "Swallow",
+  "uiBossDexHp": "HP {v}",
+  "@uiBossDexHp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtk": "Attack {v}",
+  "@uiBossDexAtk": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtStage": "At stage {n}",
+  "@uiBossDexAtStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexPatterns": "Attacks",
+  "uiBossDexFirst": "First appears at stage {n}",
+  "@uiBossDexFirst": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexNext": "Next at stage {n}",
+  "@uiBossDexNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexUnmet": "Appears at stage {n}",
+  "@uiBossDexUnmet": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

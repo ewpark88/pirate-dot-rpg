@@ -8,6 +8,7 @@ import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/dex/monster_dex.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
+import 'package:pirate_dot/ui/meta/achievements.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pass/pass_sheet.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -45,7 +46,14 @@ class VoyageTab extends ConsumerWidget {
       padding: const EdgeInsets.all(8),
       children: [
         // 칭호 띠 (환생 v2 — 칭호가 생기면 보인다, 누르면 목록).
-        const Align(alignment: Alignment.centerLeft, child: TitleChip()),
+        // 칭호 띠 + 업적 버튼(S1 2026-10-18 업적·칭호 정리).
+        const Row(
+          children: [
+            Flexible(child: TitleChip()),
+            Spacer(),
+            AchievementsButton(),
+          ],
+        ),
         if (ready) ...const [RebirthCard(), SizedBox(height: 8)],
         const _RegionCard(),
         const SizedBox(height: 8),
