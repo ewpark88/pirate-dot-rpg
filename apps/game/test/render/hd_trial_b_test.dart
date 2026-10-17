@@ -31,7 +31,18 @@ void main() {
   });
 }
 
-const _kinds = ['starfish', 'starfish_small', 'lavacrab', 'lavacrab_small', 'lavaturtle', 'firebird'];
+const _kinds = [
+  'starfish',
+  'starfish_small',
+  'lavacrab',
+  'lavacrab_small',
+  'lavaturtle',
+  'firebird',
+  'angler',
+  'squid',
+  'siphon',
+  'eel',
+];
 const _rowH = 150.0;
 
 class _Sheet extends CustomPainter {

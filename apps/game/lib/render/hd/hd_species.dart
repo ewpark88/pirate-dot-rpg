@@ -1,5 +1,7 @@
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/species/angler.dart';
 import 'package:pirate_dot/render/hd/species/crab.dart';
+import 'package:pirate_dot/render/hd/species/eel.dart';
 import 'package:pirate_dot/render/hd/species/firebird.dart';
 import 'package:pirate_dot/render/hd/species/jelly.dart';
 import 'package:pirate_dot/render/hd/species/kraken.dart';
@@ -7,6 +9,8 @@ import 'package:pirate_dot/render/hd/species/lavacrab.dart';
 import 'package:pirate_dot/render/hd/species/lavacrab_small.dart';
 import 'package:pirate_dot/render/hd/species/lavaturtle.dart';
 import 'package:pirate_dot/render/hd/species/piranha.dart';
+import 'package:pirate_dot/render/hd/species/siphon.dart';
+import 'package:pirate_dot/render/hd/species/squid.dart';
 import 'package:pirate_dot/render/hd/species/starfish.dart';
 import 'package:pirate_dot/render/hd/species/starfish_small.dart';
 
@@ -23,6 +27,10 @@ const Map<String, HdSpecies> hdEnemies = {
   'lavacrab_small': lavacrabSmall,
   'lavaturtle': lavaturtle,
   'firebird': firebird,
+  'angler': angler,
+  'squid': squid,
+  'siphon': siphon,
+  'eel': eel,
 };
 
 const Map<String, HdSpecies> hdBosses = {
