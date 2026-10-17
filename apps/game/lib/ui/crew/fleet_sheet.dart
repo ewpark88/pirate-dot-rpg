@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
@@ -209,8 +210,16 @@ class _CrewRow extends ConsumerWidget {
                       '${l10n.uiLevel(level)} · ${tableText(l10n, tables.skills.byId(def.family).nameKey)}',
                       style: dim,
                     ),
-                    // 특색 아이콘 4개(개성 v2) — 고를 때 성향이 보이게.
-                    CrewIdentityIcons(crewId: def.id, size: 12),
+                    // 특색 아이콘 4개(개성 v2) — 고를 때 성향이 보이게. 다음 보스에게 잘 먹히는 계열이면 '보스 약점' 칩(#25).
+                    Wrap(
+                      spacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        CrewIdentityIcons(crewId: def.id, size: 12),
+                        if (ref.watch(bossCounterFamiliesProvider).contains(def.family))
+                          CounterChip(key: Key('fleet.counter.${def.id}')),
+                      ],
+                    ),
                   ],
                 ),
               ),

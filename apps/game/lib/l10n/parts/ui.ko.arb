@@ -849,5 +849,50 @@
         "type": "int"
       }
     }
+  },
+  "uiTraitEvade": "회피 {pct}%",
+  "uiTraitEvadeArea": "폭탄 회피 {pct}%",
+  "uiTraitArmor": "장갑",
+  "uiTraitRegen": "재생 초당 {pct}%",
+  "uiTraitReflect": "반사막",
+  "uiTraitEnrage": "분노",
+  "uiTraitEscort": "호위 {n}",
+  "uiTraitDash": "가속",
+  "uiTraitWeakTo": "{families}에 약함",
+  "uiCounterChip": "보스 약점",
+  "@uiTraitEvade": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitEvadeArea": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitRegen": {
+    "placeholders": {
+      "pct": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiTraitEscort": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiTraitWeakTo": {
+    "placeholders": {
+      "families": {
+        "type": "String"
+      }
+    }
   }
 }

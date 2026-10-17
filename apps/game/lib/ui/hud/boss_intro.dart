@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -141,6 +142,8 @@ class _BossIntroState extends ConsumerState<BossIntro> with SingleTickerProvider
                       overflow: TextOverflow.ellipsis,
                       style: Skin.text(big ? 22 : 19, color: Colors.white),
                     ),
+                    // 보스 특성 아이콘 + 한 줄 (#25).
+                    if (t.regions.bosses[id] case final def?) BossTraitLine(boss: def, tables: t),
                   ],
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -27,7 +28,7 @@ class BossWeakness extends ConsumerWidget {
       }),
     );
     final boss = bossId == null ? null : tables.regions.bosses[bossId];
-    if (boss == null || boss.weakFamilies.isEmpty) return const SizedBox.shrink();
+    if (boss == null || (bossCounters(boss).isEmpty && boss.traits.isEmpty)) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final small = Theme.of(context).textTheme.labelSmall?.copyWith(color: Skin.ink);
 
@@ -42,7 +43,16 @@ class BossWeakness extends ConsumerWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(tableText(l10n, boss.nameKey), style: small?.copyWith(fontWeight: FontWeight.bold)),
-          WeakChips(boss: boss, labelStyle: small),
+          for (final t in boss.traits)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(traitIcon(t.type), size: 14, color: Skin.ink),
+                const SizedBox(width: 2),
+                Text(traitName(l10n, t), style: small),
+              ],
+            ),
+          if (bossCounters(boss).isNotEmpty) WeakChips(boss: boss, labelStyle: small),
         ],
       ),
     );
@@ -64,7 +74,8 @@ class WeakChips extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(l10n.uiBossWeak, style: labelStyle),
-        for (final f in boss.weakFamilies) ...[
+        // 약점 = 표의 약점 + 특성 카운터 계열 (#25).
+        for (final f in bossCounters(boss)) ...[
           const SizedBox(width: 4),
           // 약점 칩: 도트 프레임 (누르는 것 아님).
           PixelFrame(
