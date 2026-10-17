@@ -4,7 +4,10 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 
 /// 해골 선원(td_enemy:skeleton — 부활·수면, docs/specs/economy-hd-monsters-b.md): 큰 해골 머리(2등신) + 해적 두건, 갈비뼈 사이 보라
 /// 혼불(= 부활 심지), 녹슨 칼, 빈 눈구멍에 보라 불빛. 덜그럭 걸음 — 머리·팔이 따로 흔들린다.
-const skeleton = HdSpecies(_skeleton, extent: 1.45, ground: 1);
+const skeleton = HdSpecies(_skeleton, extent: 1.75, ground: 1.2);
+
+/// 2등신 해골은 다른 종보다 작아 보여 1.2배로 그린다(S1 2026-10-17).
+const _grow = 1.2;
 
 const _bone = Color(0xFFF4ECD8);
 const _boneD = Color(0xFFA89C84);
@@ -12,6 +15,14 @@ const _curse = Color(0xFFC07AFF);
 const _bandana = Color(0xFFE04A5A);
 
 void _skeleton(HdKit k, Canvas c, double r, double t) {
+  c
+    ..save()
+    ..scale(_grow);
+  _draw(k, c, r, t);
+  c.restore();
+}
+
+void _draw(HdKit k, Canvas c, double r, double t) {
   final step = k.wave(t, 2);
   final rattle = k.wave(t, 4) * r * 0.03; // 머리 덜그럭
   final soul = (k.wave(t, 1) + 1) / 2;
