@@ -89,6 +89,9 @@ const Map<String, HdSpecies> hdEnemies = {
   'wraith': wraith,
 };
 
+/// HD v2 표정 3종(평소·공격 예고·쓰러짐)을 굽는 보스 — 굽기가 시트에 2행을 더한다.
+const Set<String> hdMoodSpecies = {'sea_croc'};
+
 const Map<String, HdSpecies> hdBosses = {
   // S5 배 보스 무리(공용 몸 boss_ship.dart — 순환 6 + 중간 6)
   'enemy_ship': enemyShip,

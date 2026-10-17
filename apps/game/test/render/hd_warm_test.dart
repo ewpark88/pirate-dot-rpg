@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pirate_dot/render/hd/hd_kit.dart';
 import 'package:pirate_dot/render/hd/hd_sheets.dart';
 import 'package:pirate_dot/render/hd/hd_species.dart';
 
@@ -29,5 +30,15 @@ void main() {
     expect(low.cell, HdSheets.lowCell);
     big.image.dispose();
     low.image.dispose();
+  });
+
+  test('HD v2 표정 보스는 4행(평소 2 + 예고·쓰러짐 2)으로 굽고 표정마다 다른 칸', () {
+    final sp = hdBosses['sea_croc']!;
+    final s = HdSheets.bake(sp, 88, 4, moods: true);
+    expect(s.image.height, (s.cell * 4).toInt());
+    expect(s.src(3, right: false, mood: HdMood.windup).top, s.cell * 2);
+    expect(s.src(3, right: true, mood: HdMood.down).left, s.cell * 5);
+    expect(s.src(3, right: false).top, 0);
+    s.image.dispose();
   });
 }
