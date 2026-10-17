@@ -208,21 +208,48 @@ Future<void> showRewardBurst(
   RewardTier tier = RewardTier.gold,
   bool lite = false,
   Duration hold = const Duration(milliseconds: 1200),
-}) async {
-  var open = true;
-  final close = Timer(RewardBurst.duration + hold, () {
-    if (open && context.mounted) Navigator.of(context).pop();
-  });
-  await showDialog<void>(
-    context: context,
-    barrierColor: const Color(0x99000000),
-    builder: (dialog) => GestureDetector(
+}) => showDialog<void>(
+  context: context,
+  barrierColor: const Color(0x99000000),
+  builder: (dialog) => _AutoClose(
+    after: RewardBurst.duration + hold,
+    child: GestureDetector(
       key: const Key('reward.burst'),
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(dialog).pop(),
       child: RewardBurst(items: items, source: source, openedSource: openedSource, tier: tier, lite: lite),
     ),
-  );
-  open = false;
-  close.cancel();
+  ),
+);
+
+/// [after]가 지나면 창을 닫는다. 타이머는 창과 함께 사라진다(창이 먼저 닫히거나 화면이 통째로 없어져도 남지 않게).
+class _AutoClose extends StatefulWidget {
+  const _AutoClose({required this.after, required this.child});
+
+  final Duration after;
+  final Widget child;
+
+  @override
+  State<_AutoClose> createState() => _AutoCloseState();
+}
+
+class _AutoCloseState extends State<_AutoClose> {
+  Timer? _close;
+
+  @override
+  void initState() {
+    super.initState();
+    _close = Timer(widget.after, () {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  void dispose() {
+    _close?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
