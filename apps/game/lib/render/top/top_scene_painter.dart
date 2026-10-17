@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_sea_detail.dart';
+import 'package:pirate_dot/render/hd/hd_sheets.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
@@ -237,12 +238,11 @@ class TopScenePainter {
   double _shipR = 16;
   double _maxBoxH = 0;
   final _ghost = Paint();
-
   final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
   double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
   double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
-  void dispose() => _foes.hdSheets.dispose(); // 장면을 버릴 때 HD 텍스처를 바로 놓는다
+  HdSheets get hd => _foes.hdSheets; // HD 시트 캐시(장면을 버릴 때 dispose·미리보기 small)
   Map<String, Object> memory() => {..._foes.hdSheets.memory(), 'labels': _overlays.labels}; // 운영자 메모리 진단
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
