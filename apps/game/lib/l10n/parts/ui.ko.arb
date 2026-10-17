@@ -1894,5 +1894,60 @@
         "type": "int"
       }
     }
+  },
+  "uiPatternVolley": "포탄 연사",
+  "uiPatternBlast": "광역 폭발",
+  "uiPatternCharge": "돌진",
+  "uiPatternInk": "먹물 뿌리기",
+  "uiPatternSummon": "부하 부르기",
+  "uiPatternSwallow": "삼키기",
+  "uiBossDexHp": "체력 {v}",
+  "@uiBossDexHp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtk": "공격 {v}",
+  "@uiBossDexAtk": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtStage": "스테이지 {n} 기준",
+  "@uiBossDexAtStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexPatterns": "공격 패턴",
+  "uiBossDexFirst": "처음 등장 스테이지 {n}",
+  "@uiBossDexFirst": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexNext": "다음 등장 스테이지 {n}",
+  "@uiBossDexNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexUnmet": "스테이지 {n}에서 등장",
+  "@uiBossDexUnmet": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

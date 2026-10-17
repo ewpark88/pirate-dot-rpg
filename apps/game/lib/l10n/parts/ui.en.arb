@@ -1894,5 +1894,60 @@
         "type": "int"
       }
     }
+  },
+  "uiPatternVolley": "Volley",
+  "uiPatternBlast": "Blast",
+  "uiPatternCharge": "Charge",
+  "uiPatternInk": "Ink cloud",
+  "uiPatternSummon": "Summon",
+  "uiPatternSwallow": "Swallow",
+  "uiBossDexHp": "HP {v}",
+  "@uiBossDexHp": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtk": "Attack {v}",
+  "@uiBossDexAtk": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiBossDexAtStage": "At stage {n}",
+  "@uiBossDexAtStage": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexPatterns": "Attacks",
+  "uiBossDexFirst": "First appears at stage {n}",
+  "@uiBossDexFirst": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexNext": "Next at stage {n}",
+  "@uiBossDexNext": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiBossDexUnmet": "Appears at stage {n}",
+  "@uiBossDexUnmet": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
