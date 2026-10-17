@@ -1148,5 +1148,45 @@
   "uiSwapDpsUp": "공격력 높음",
   "uiSwapDpsDown": "공격력 낮음",
   "uiPreviewTitle": "공격 미리보기",
-  "uiPreviewNow": "지금"
+  "uiPreviewNow": "지금",
+  "uiLegendPierceRamp": "관통 가속: 꿰뚫을 때마다 피해 +{percent}",
+  "@uiLegendPierceRamp": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBoomerang": "부메랑: 돌아오며 한 번 더 ({percent})",
+  "@uiLegendBoomerang": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBind": "물기 속박: 문 적은 {sec}초 동안 못 움직임",
+  "@uiLegendBind": {
+    "placeholders": {
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendSweep": "휩쓸기: 앞쪽 {deg}° 안 적을 모두 벤다",
+  "@uiLegendSweep": {
+    "placeholders": {
+      "deg": {
+        "type": "int"
+      }
+    }
+  },
+  "uiLegendBossBonus": "해적왕 강타: 보스 피해 +{percent}",
+  "@uiLegendBossBonus": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }
