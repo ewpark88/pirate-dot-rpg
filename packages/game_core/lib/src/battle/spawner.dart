@@ -46,7 +46,7 @@ void spawnWaveFoes(Field f, int stage, SystemContext ctx, {int? count, String? k
   final share = count == null ? w.mobPoolAt(stage) / n : 1.0;
   final hp = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * share);
   final attack = stageCurve(w.attackBase, w.attackGrowth, stage).times(share);
-  final gold = stageCurve(w.goldBase, w.goldGrowth, stage).times(share);
+  final gold = f.inScene ? BigNum.zero : stageCurve(w.goldBase, w.goldGrowth, stage).times(share); // 탑 등 장면 모드는 골드 없음
   for (var i = 0; i < n; i++) {
     final id = kind ?? species[ctx.rng.nextInt(species.length)];
     final def = t.regions.enemies[id] ?? t.regions.enemies.values.first;

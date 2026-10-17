@@ -6,8 +6,7 @@ import 'package:meta/meta.dart';
 
 part 'battle_view_items.dart';
 
-/// 전장 좌표계: 논리 화면 320×180 중 전장 0~148 (docs/GAME_DESIGN.md 10장).
-/// 렌더는 이 좌표를 두 틱 사이로 보간해 그린다. 세이브에는 들어가지 않는다.
+/// 전장 좌표계: 논리 화면 320×180 중 전장 0~148(설계서 10장) — 렌더가 두 틱 사이로 보간해 그린다, 세이브에 안 들어감.
 @immutable
 class BattleView {
   const BattleView({
@@ -40,6 +39,7 @@ class BattleView {
     this.seaEvent,
     this.challenge,
     this.bounty,
+    this.tower,
     this.fastSail,
     this.crewDamage = const {},
   });
@@ -74,6 +74,7 @@ class BattleView {
     seaEvent: j['seaEvent'] == null ? null : SeaEventView.fromJson(j['seaEvent'] as Json),
     challenge: j['challenge'] == null ? null : ChallengeView.fromJson(j['challenge'] as Json),
     bounty: j['bounty'] == null ? null : BountyView.fromJson(j['bounty'] as Json),
+    tower: j['tower'] == null ? null : TowerView.fromJson(j['tower'] as Json),
     fastSail: j['fastSail'] == null ? null : FastSailView.fromJson(j['fastSail'] as Json),
     crewDamage: {
       for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),
@@ -146,8 +147,9 @@ class BattleView {
   final SeaEventView? seaEvent;
   final ChallengeView? challenge;
 
-  /// 현상금 전투 중이면 그 보스·단계·남은 틱 (현상금 B0). 없으면 JSON에 키가 없다.
+  /// 현상금 전투 중이면 그 보스·단계·남은 틱 (현상금 B0) · 탑 중이면 층·파(platform-tower). 없으면 JSON에 키가 없다.
   final BountyView? bounty;
+  final TowerView? tower;
 
   /// 빠른 항해 돌파 중이면 구간·연속 격파(선택 키).
   final FastSailView? fastSail;
@@ -181,6 +183,8 @@ class BattleView {
     bool clearChallenge = false,
     BountyView? bounty,
     bool clearBounty = false,
+    TowerView? tower,
+    bool clearTower = false,
     Map<String, int>? shipLook,
     String? mode,
     double? shipX,
@@ -208,6 +212,7 @@ class BattleView {
     seaEvent: clearSeaEvent ? null : seaEvent ?? this.seaEvent,
     challenge: clearChallenge ? null : challenge ?? this.challenge,
     bounty: clearBounty ? null : bounty ?? this.bounty,
+    tower: clearTower ? null : tower ?? this.tower,
     shipLook: shipLook ?? this.shipLook,
     mode: mode ?? this.mode,
     shipX: shipX ?? this.shipX,
@@ -252,6 +257,7 @@ class BattleView {
     if (seaEvent != null) 'seaEvent': seaEvent!.toJson(),
     if (challenge != null) 'challenge': challenge!.toJson(),
     if (bounty != null) 'bounty': bounty!.toJson(),
+    if (tower != null) 'tower': tower!.toJson(),
     if (fastSail != null) 'fastSail': fastSail!.toJson(),
     if (crewDamage.isNotEmpty) 'crewDamage': {for (final e in crewDamage.entries) e.key: e.value.toJson()},
   };
@@ -287,6 +293,7 @@ class BattleView {
     seaEvent: seaEvent,
     challenge: challenge,
     bounty: bounty,
+    tower: tower,
     fastSail: fastSail,
     crewDamage: crewDamage,
   );
