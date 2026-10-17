@@ -1,5 +1,19 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 저녁 · S5 · S4 짐 덜기 — UI #19·#20·#12·#11·#16, S2 검토
+- **현재 위치**: 리뷰 브랜치 머지 대기(S1 순서 crew-damage → boss-duel → sail-hold → sail-ui). review/sail-hold ef3fc1f3 · review/sail-ui f2fbd543(S4 검토 반영 완료, 기본 check 통과) · review/crew-ui f2d8bbc3(S4 검토 대기). boss-duel sim은 5명×1시간 짧게(slot), 정밀 비교는 밤.
+- 한 일
+  - #19 UI: 상자 창 '출항!'(StartVoyage), sailHold면 전장 가운데 56dp '출항!' + 안내(TutorialSpot 'sail.start'). #20: 빠른 항해 띠 → 우상단 패널(n/m·막대·보스 연속 격파·건너뛰기 48dp).
+  - #12: 상세 '레벨을 올리는 이유'(공격력 +x% 초당 a→b · 카드 n장 · 승급까지 n레벨) + 56dp '지금 합치기'. #11·#16: 카드 '↑ +n' 알약, 일괄 합치기 56dp 'n명'. 값은 경제 crewGrowth·mergeGain(economy/crew_growth.dart, S2 경로).
+  - S2 review/break-cooldown 4cfd351f 검토 OK(참고 2: 분열 몸 쿨다운 미상속, UI 게이지 0).
+- 배운 것
+  - 셸(sed·awk·python heredoc)로 ARB에 `
+`을 넣으면 실제 줄바꿈이 돼 JSON이 깨진다 → Edit 도구로.
+  - 다른 브랜치에서 check를 돌리면 생성물(l10n gen)이 그 브랜치 ARB로 다시 만들어진다 → 브랜치를 바꾼 뒤엔 merge_arb·gen-l10n부터.
+  - 폰트에 '↑' 글자가 없어 네모로 나온다 → 아이콘으로.
+  - 골든 실패를 '원래 빨강'으로 단정하지 말 것 — 최신 main 머지 후 다시 본다(이번엔 낡은 기준 탓이었음).
+- **다음 할 일**: S4 crew-ui 검토 반영 → slot 때 boss-duel 5명×1시간 · 머지 전 --full(최신 main 머지 후) · 스토어 굽기는 피드백 반영 뒤.
+
 ## 2026-10-17 오후 · S5 · S1 배정 4건 → 사용자 피드백 21건 재배정(#13·14·10·19)
 - **현재 위치**: S1 머지·slot 대기. 셋 다 main e1f4258b(rage 정리) 위로 merge, dart 테스트 통과 — review/crew-damage b70f09eb · review/boss-duel 502dff7a(sim 비교 2회 slot 순번 4번째) · review/sail-hold 86516d1f(#19 승인·구현, game_cli sim 한 줄은 S2 확인) · review/sail-ui 27683b45(#19 출항 버튼·#20 우상단 패널, S4 검토 대기). lane/platform 0093dff0.
 - 한 일
