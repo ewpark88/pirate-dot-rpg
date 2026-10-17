@@ -39,9 +39,12 @@ class ShipSkins {
     pair(_hullSrc, 'hull');
     pair(_sailSrc, 'sail');
     pair(_flagSrc, 'flag');
-    pair(_hullGhost, 'hull');
-    pair(_sailGhost, 'sail');
-    pair(_stripeSrc, 'stripe');
+    // 스킨 v2(stripe 키가 있는 7종)만 유령 등급 팔레트·돛 빨간 줄까지 바꾼다 — 기존 4종 그림은 그대로.
+    if (skin.has('stripe')) {
+      pair(_hullGhost, 'hull');
+      pair(_sailGhost, 'sail');
+      pair(_stripeSrc, 'stripe');
+    }
     final pattern = patternOf(skin);
     for (final key in keys) {
       final s = bank[key];

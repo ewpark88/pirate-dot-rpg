@@ -56,11 +56,13 @@ class TopShipPainter {
       );
     }
     // 모션 v1: 늘 파도 따라 ±0.5 위아래·±1.5° 기울기, 돛은 바람에 은은히 펄럭(피버면 크게 — 부르는 쪽 billow).
+    // now 0(정지 미리보기 — 배 탭·스킨 고르기)이면 흔들림 없이 그대로.
+    final live = now != 0;
     c
       ..save()
-      ..translate(0, math.sin(now / 700) * 0.5)
-      ..rotate(math.sin(now / 900) * 0.026);
-    final sailBillow = math.max(billow, 0.15 + 0.1 * math.sin(now / 240));
+      ..translate(0, live ? math.sin(now / 700) * 0.5 : 0)
+      ..rotate(live ? math.sin(now / 900) * 0.026 : 0);
+    final sailBillow = live ? math.max(billow, 0.15 + 0.1 * math.sin(now / 240)) : billow;
     final decor = skin != null && SkinDecor.ids.contains(skin) ? skin : null;
     if (decor != null) _decor.under(c, decor, size, now);
     for (final layer in layers) {
