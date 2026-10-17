@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/replay/recording_player.dart';
+import 'package:pirate_dot/render/top/top_boss_signature.dart';
 
 /// 보스 특성 연출 (S2 boss-traits — 회피·장갑·재생·반사막·분노·호위·가속). 전장 좌표.
 /// - 회피(AttackMissed reason evade): 보스 옆으로 하얀 잔상 호 세 줄(MISS 글자는 TopCrewFx가 이미 띄운다).
@@ -23,6 +24,8 @@ class TopBossTraits {
   final Map<int, double> _escort = {};
   final List<(Offset, double, int)> _sparks = []; // 자리, ms, 종류(0 장갑·1 회피·2 재생)
   final Map<int, double> _lastHp = {};
+  final Map<int, double> _sigAt = {}; // 새 보스 18종 표식 켜진 ms(TopBossSignature)
+  final _sig = TopBossSignature();
 
   final _fill = Paint()..isAntiAlias = false;
   final _line = Paint()
@@ -35,6 +38,7 @@ class TopBossTraits {
 
   void fired(BossTraitFired e, double tickMs, double now) {
     final ms = e.ticks * tickMs;
+    _sigAt[e.enemyId] = now;
     switch (e.trait) {
       case 'reflect':
         // ticks = 예고 + 지속 — 예고는 엔진 warnSec(대략 앞 1/3)로 본다.
@@ -70,6 +74,7 @@ class TopBossTraits {
     _escort.clear();
     _sparks.clear();
     _lastHp.clear();
+    _sigAt.clear();
   }
 
   void paint(Canvas c, double now, List<EnemyPose> poses, int poseCount, double Function(EnemyPose) radiusOf) {
@@ -158,6 +163,7 @@ class TopBossTraits {
         }
       }
     }
+    _signatures(c, now, poses, poseCount, radiusOf);
     _sparks.removeWhere((s) => now - s.$2 > 420);
     for (final (at, ms, kind) in _sparks) {
       final t = (now - ms) / 420;
@@ -188,6 +194,21 @@ class TopBossTraits {
             ..drawRect(Rect.fromCenter(center: p, width: 7, height: 2), _fill)
             ..drawRect(Rect.fromCenter(center: p, width: 2, height: 7), _fill);
       }
+    }
+  }
+
+  /// 새 보스 18종 표식: 특성 발동(fired)·장갑 '팅'·회피·재생 불꽃이 그 보스 곁에 막 생기면 켠다(1.2초에 한 번), 0.9초.
+  void _signatures(Canvas c, double now, List<EnemyPose> poses, int poseCount, double Function(EnemyPose) radiusOf) {
+    for (var k = 0; k < poseCount; k++) {
+      final e = poses[k];
+      if (!e.boss || !TopBossSignature.has(e.kind)) continue;
+      final at = Offset(e.drawX, e.drawY);
+      final r = radiusOf(e);
+      final last = _sigAt[e.id] ?? -1000000000.0;
+      if (now - last > 1200 && _sparks.any((s) => now - s.$2 < 60 && (s.$1 - at).distance < r * 1.6)) {
+        _sigAt[e.id] = now;
+      }
+      _sig.paint(c, e.kind, at, r, now - (_sigAt[e.id] ?? -1000000000.0), now);
     }
   }
 
