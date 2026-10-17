@@ -116,4 +116,15 @@ void main() {
     final line = DamageNumbers.lineHeight(nums.scaleOf(n2)) * nums.tall;
     expect(((n1.y - nums.riseOf(n1)) - (n2.y - nums.riseOf(n2))).abs(), greaterThanOrEqualTo(line - 1e-6));
   });
+
+  test('보스에 뜬 숫자는 1.35배', () {
+    final boss = EnemyPose()
+      ..id = 3
+      ..boss = true;
+    final nums = fresh()
+      ..add(BigNum.from(9), 0, 0, DamageKind.normal, key: 3, on: boss)
+      ..add(BigNum.from(9), 300, 0, DamageKind.normal, key: 4);
+    final [b, n] = nums.active;
+    expect(nums.scaleOf(b), closeTo(nums.scaleOf(n) * 1.35, 1e-9));
+  });
 }
