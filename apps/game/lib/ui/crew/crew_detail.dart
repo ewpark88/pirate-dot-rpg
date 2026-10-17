@@ -180,7 +180,7 @@ class CrewDetailDialog extends ConsumerWidget {
                 border: legendNow == null ? Skin.plainEdge : Skin.goldBottom,
                 [
                   if (legendNow == null) Text(l10n.uiCrewLegendLocked, style: dim),
-                  for (final line in legendLines(l10n, legend))
+                  for (final line in legendLines(l10n, legend, rarity: legendNow == null ? legendIndex : rarityIndex))
                     Text(line, style: legendNow == null ? dim : Skin.text(15, color: Skin.goldInk)),
                   if (traitScale != null)
                     Text(l10n.uiCrewTraitFull, key: const Key('crew.detail.traitFull'), style: dim),
