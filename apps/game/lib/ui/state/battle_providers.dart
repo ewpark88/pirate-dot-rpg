@@ -4,12 +4,13 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
-import 'package:pirate_dot/render/battle_game.dart' hide IdleLevel;
 import 'package:pirate_dot/render/battle_game.dart' as render show IdleLevel;
+import 'package:pirate_dot/render/battle_game.dart' hide IdleLevel;
 import 'package:pirate_dot/render/top/top_fast_sail.dart' show TopTexts;
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/state/idle.dart';
+import 'package:pirate_dot/ui/text/table_text.dart';
 
 /// 전장 위젯 주입점. null이면 Flame 전장([battleGameProvider]). UI 테스트·골든은 빈 상자로 바꿔
 /// 렌더 레인의 그림 변화와 분리한다 (전장 골든은 render 레인 몫).
@@ -60,6 +61,7 @@ final hasBattleGameProvider = Provider<bool>((ref) => ref.watch(battleViewBuilde
 /// 렌더 빠른 항해 돌파 연출 문구(렌더 레인은 ARB가 없다 — S3 TopTexts)를 지금 언어로 넣고 게임을 돌려준다.
 BattleGame withTopTexts(BattleGame game, BuildContext context) {
   final l10n = AppLocalizations.of(context);
+  final crews = ProviderScope.containerOf(context, listen: false).read(tablesProvider).crews.crews;
   game.topTexts = TopTexts(
     start: l10n.uiFastSailStart,
     strike: l10n.uiFastSailStrike,
@@ -72,6 +74,11 @@ BattleGame withTopTexts(BattleGame game, BuildContext context) {
     newCrew: l10n.uiNewCrew,
     // 보스 쓰러짐 연출(S3 a821bf7e).
     bossBreak: l10n.uiBossBreak,
+    // 카드 앞면 공개 연출(S3 #22)의 선원 이름.
+    crewName: (id) => switch (crews.where((c) => c.id == id).firstOrNull) {
+      final c? => tableText(l10n, c.nameKey),
+      null => '',
+    },
   );
   return game;
 }

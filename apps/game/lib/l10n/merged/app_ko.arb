@@ -188,6 +188,7 @@
   "opLabSwarm": "무리 {count}마리",
   "opLabWave": "기본 파 (돌격대 포함)",
   "opGroupLab": "선원 시험",
+  "opCardFxMin": "카드 연출 시작 등급",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -865,5 +866,21 @@
   "uiGuideSkipKeep": "계속 보기",
   "uiGuideTapHere": "여기를 눌러요",
   "uiSettingsGuideReplay": "안내 다시 보기",
-  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요"
+  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요",
+  "uiSummonFirstTenFirst": "먼저 무료 10연({rarity} 확정)을 받아요",
+  "uiSummonFirstTenLater": "튜토리얼 보스를 이기면 무료 10연({rarity} 확정)!",
+  "@uiSummonFirstTenFirst": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSummonFirstTenLater": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -657,5 +657,21 @@
   "uiGuideSkipKeep": "계속 보기",
   "uiGuideTapHere": "여기를 눌러요",
   "uiSettingsGuideReplay": "안내 다시 보기",
-  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요"
+  "uiSettingsGuideReplayDone": "처음 보는 안내를 다시 보여 줄게요",
+  "uiSummonFirstTenFirst": "먼저 무료 10연({rarity} 확정)을 받아요",
+  "uiSummonFirstTenLater": "튜토리얼 보스를 이기면 무료 10연({rarity} 확정)!",
+  "@uiSummonFirstTenFirst": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSummonFirstTenLater": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  }
 }
