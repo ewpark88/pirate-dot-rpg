@@ -573,7 +573,7 @@
   "uiFleetRejectedFamily": "같은 계열은 {max}명까지만 함께 출전할 수 있어요",
   "uiFleetSlotStage": "스테이지 {stage}",
   "uiCrewReplace": "바꾸기",
-  "uiFleetSwapped": "출전 중인 선원과 자리를 바꿨어요",
+  "uiFleetSwapped": "교체!",
   "uiQuickUpgrade": "빠른 강화: {part} (길게 누르면 계속)",
   "uiQuickUpgradeNone": "강화할 골드가 모자라요",
   "uiPanelHandle": "끌어서 크기 조절 · 전투를 누르면 닫혀요",
@@ -2196,5 +2196,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiFleetAlreadyBest": "이미 최강 편성이에요"
 }

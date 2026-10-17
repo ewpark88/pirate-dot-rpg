@@ -8,6 +8,7 @@ import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/scene/slot_states.dart';
 import 'package:pirate_dot/ui/crew/crew_detail.dart';
 import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
+import 'package:pirate_dot/ui/crew/fleet_swap_fx.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
@@ -65,6 +66,12 @@ class BattleButtons extends ConsumerWidget {
               Positioned.fromRect(
                 rect: hit(r),
                 child: _SlotButton(slot: i, rect: r),
+              ),
+            // 편성 교체 연출(칸 위 0.7초 — 사용자 2026-10-18).
+            for (final (i, r) in f.slotRects.indexed)
+              Positioned.fromRect(
+                rect: r,
+                child: FleetSwapFx(slot: i),
               ),
             // 보스 도전(사용자 피드백 #9 D·#26): 원형 56dp를 화면 오른쪽 가장자리에 붙이고 배 체력 막대 바로 위에 띄운다(엄지 자리,
             // 막대와 겹치지 않게 — S1 2026-10-17).
