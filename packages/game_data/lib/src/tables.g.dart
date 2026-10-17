@@ -24,6 +24,7 @@ const Map<String, String> rawTables = {
   "crews": [
     {
       "id": "octo",
+      "role": "mob",
       "num": 1,
       "baseRarity": "common",
       "family": "lob",
@@ -58,6 +59,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "starry",
+      "role": "mob",
       "num": 2,
       "baseRarity": "common",
       "family": "cluster",
@@ -86,6 +88,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "crabs",
+      "role": "mob",
       "num": 3,
       "baseRarity": "rare",
       "family": "lob",
@@ -122,6 +125,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "uni",
+      "role": "mob",
       "num": 4,
       "baseRarity": "hero",
       "family": "ring",
@@ -150,6 +154,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "volke",
+      "role": "mob",
       "num": 5,
       "baseRarity": "legend",
       "family": "cluster",
@@ -178,6 +183,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "pang",
+      "role": "mob",
       "num": 6,
       "baseRarity": "common",
       "family": "direct",
@@ -213,6 +219,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "hippo",
+      "role": "boss",
       "num": 7,
       "baseRarity": "common",
       "family": "direct",
@@ -248,6 +255,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "bones",
+      "role": "mob",
       "num": 8,
       "baseRarity": "rare",
       "family": "direct",
@@ -283,6 +291,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "lion",
+      "role": "boss",
       "num": 9,
       "baseRarity": "hero",
       "family": "direct",
@@ -318,6 +327,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "volt",
+      "role": "control",
       "num": 10,
       "baseRarity": "legend",
       "family": "direct",
@@ -350,6 +360,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "sword",
+      "role": "mob",
       "num": 11,
       "baseRarity": "common",
       "family": "pierce",
@@ -380,6 +391,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "nar",
+      "role": "mob",
       "num": 12,
       "baseRarity": "rare",
       "family": "laser",
@@ -409,6 +421,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "walrus",
+      "role": "control",
       "num": 13,
       "baseRarity": "rare",
       "family": "pierce",
@@ -439,6 +452,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "saw",
+      "role": "mob",
       "num": 14,
       "baseRarity": "hero",
       "family": "pierce",
@@ -469,6 +483,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "moby",
+      "role": "control",
       "num": 15,
       "baseRarity": "legend",
       "family": "pierce",
@@ -499,6 +514,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "otter",
+      "role": "mob",
       "num": 16,
       "baseRarity": "common",
       "family": "skip",
@@ -539,6 +555,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "pingu",
+      "role": "control",
       "num": 17,
       "baseRarity": "rare",
       "family": "skip",
@@ -574,6 +591,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "sheldon",
+      "role": "mob",
       "num": 18,
       "baseRarity": "rare",
       "family": "skip",
@@ -609,6 +627,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "dolphy",
+      "role": "control",
       "num": 19,
       "baseRarity": "hero",
       "family": "skip",
@@ -644,6 +663,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "orca",
+      "role": "mob",
       "num": 20,
       "baseRarity": "legend",
       "family": "skip",
@@ -680,6 +700,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "puffer",
+      "role": "mob",
       "num": 21,
       "baseRarity": "common",
       "family": "ring",
@@ -708,6 +729,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "jelly",
+      "role": "control",
       "num": 22,
       "baseRarity": "rare",
       "family": "underwater",
@@ -742,6 +764,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "bara",
+      "role": "control",
       "num": 23,
       "baseRarity": "rare",
       "family": "underwater",
@@ -778,6 +801,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "moray",
+      "role": "control",
       "num": 24,
       "baseRarity": "hero",
       "family": "underwater",
@@ -814,6 +838,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "kraki",
+      "role": "control",
       "num": 25,
       "baseRarity": "legend",
       "family": "underwater",
@@ -848,6 +873,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "polly",
+      "role": "mob",
       "num": 26,
       "baseRarity": "common",
       "family": "air",
@@ -888,6 +914,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "gull",
+      "role": "mob",
       "num": 27,
       "baseRarity": "common",
       "family": "air",
@@ -924,6 +951,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "pelly",
+      "role": "control",
       "num": 28,
       "baseRarity": "rare",
       "family": "air",
@@ -962,6 +990,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "alba",
+      "role": "boss",
       "num": 29,
       "baseRarity": "hero",
       "family": "air",
@@ -998,6 +1027,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "manta",
+      "role": "control",
       "num": 30,
       "baseRarity": "legend",
       "family": "air",
@@ -1034,6 +1064,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "shark",
+      "role": "guard",
       "num": 31,
       "baseRarity": "common",
       "family": "assault",
@@ -1065,6 +1096,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "crabby",
+      "role": "guard",
       "num": 32,
       "baseRarity": "rare",
       "family": "assault",
@@ -1093,6 +1125,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "king",
+      "role": "guard",
       "num": 33,
       "baseRarity": "rare",
       "family": "assault",
@@ -1121,6 +1154,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "lobster",
+      "role": "guard",
       "num": 34,
       "baseRarity": "hero",
       "family": "assault",
@@ -1149,6 +1183,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "davy",
+      "role": "boss",
       "num": 35,
       "baseRarity": "legend",
       "family": "assault",
@@ -1179,6 +1214,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "turtle",
+      "role": "support",
       "num": 36,
       "baseRarity": "common",
       "family": "shock",
@@ -1206,6 +1242,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "pumpum",
+      "role": "support",
       "num": 37,
       "baseRarity": "common",
       "family": "shock",
@@ -1234,6 +1271,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "cook",
+      "role": "support",
       "num": 38,
       "baseRarity": "rare",
       "family": "shock",
@@ -1263,6 +1301,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "corey",
+      "role": "control",
       "num": 39,
       "baseRarity": "hero",
       "family": "shock",
@@ -1294,6 +1333,7 @@ const Map<String, String> rawTables = {
     },
     {
       "id": "lamp",
+      "role": "support",
       "num": 40,
       "baseRarity": "legend",
       "family": "laser",
@@ -2465,7 +2505,14 @@ const Map<String, String> rawTables = {
           "#78FFC8"
         ],
         "glow": true
-      }
+      },
+      "king": {"stripe": ["#FFD24A"], "hull": ["#2A1E14", "#1A120C", "#C9A030", "#E6C25A", "#8A6A1E"], "sail": ["#B0202A", "#801820", "#E04A4A"], "flag": ["#FFD24A"], "speckle": [{"on": "sail", "color": "#FFD24A", "every": 9}], "wake": "#FFE27A", "muzzle": "#FFD24A"},
+      "ghostship": {"stripe": ["#78FFC8"], "hull": ["#2E3A40", "#1E282C", "#56686E", "#6A7E84", "#3E4E54"], "sail": ["#B8F0D8", "#80C8B0", "#E6FFF4"], "flag": ["#78FFC8"], "glow": true, "wake": "#8EF0D0", "muzzle": "#78FFC8"},
+      "frost": {"stripe": ["#6EC8FF"], "hull": ["#5A7A9A", "#40607E", "#BCD8EE", "#D8ECFA", "#8EB0CC"], "sail": ["#E8F6FF", "#B8DCF4", "#FFFFFF"], "flag": ["#6EC8FF"], "speckle": [{"on": "hull", "color": "#FFFFFF", "every": 6}], "wake": "#CFF0FF", "muzzle": "#9EE6FF"},
+      "lava": {"stripe": ["#FF6A20"], "hull": ["#2A2426", "#1A1416", "#4A4044", "#5E5256", "#3A3034"], "sail": ["#3A2A26", "#261A18", "#5A4038"], "flag": ["#FF7A2A"], "speckle": [{"on": "hull", "color": "#FF8A2A", "every": 5}, {"on": "sail", "color": "#FFB040", "every": 11}], "wake": "#FFB060", "muzzle": "#FF6A20"},
+      "fairy": {"stripe": ["#FFE27A"], "hull": ["#E07A9A", "#B85A7A", "#FFD0DC", "#FFE2EA", "#F0A8BC"], "sail": ["#C8F4FF", "#9ADCF0", "#F0FCFF"], "flag": ["#FFE27A"], "speckle": [{"on": "sail", "color": "#FF9ACF", "every": 8}], "wake": "#FFC8E6", "muzzle": "#FF9ACF"},
+      "festival": {"stripe": ["#FFFFFF"], "hull": ["#3A5CC8", "#2A44A0", "#F4E6C8", "#FFF2DC", "#D8C8A8"], "sail": ["#F0E8D2", "#CEC2A4", "#FCF8EC"], "flag": ["#FF5A5A"], "rainbowSail": true, "wake": "rainbow", "muzzle": "rainbow"},
+      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"}
     }
   },
   "topSea": {
@@ -2481,7 +2528,30 @@ const Map<String, String> rawTables = {
     "goldBase": "#2F8ACF",
     "feverBase": "#F2B634",
     "feverDeep": "#F59A2C",
-    "feverShallow": "#FFD66A"
+    "feverShallow": "#FFD66A",
+    "regions": {
+      "coral": { "base": "#178CA6", "deep": "#11738C", "shallow": "#25A3BC", "wave": "#9AEDF2" },
+      "storm": { "base": "#2B3E52", "deep": "#213042", "shallow": "#384D63", "wave": "#94A3B3" },
+      "glacier": { "base": "#3F8FC8", "deep": "#3279B0", "shallow": "#62AEE0", "wave": "#F4FCFF" },
+      "volcano": { "base": "#33355A", "deep": "#272846", "shallow": "#43446C", "wave": "#E0A890" },
+      "abyss": { "base": "#152E5A", "deep": "#0F2246", "shallow": "#1E3C6E", "wave": "#6E8FD0" },
+      "phantom": { "base": "#2A2A5A", "deep": "#1F1F48", "shallow": "#383870", "wave": "#B8A6F0" }
+    },
+    "props": {
+      "spacing": 70,
+      "maxOnScreen": 4,
+      "laneHalf": 34,
+      "size": 36,
+      "flowMul": 1.4,
+      "sets": {
+        "coral": ["coral", "rock", "buoy", "seaweed"],
+        "storm": ["plank", "barrel", "buoy", "rock"],
+        "glacier": ["ice", "ice", "rock", "barrel"],
+        "volcano": ["lavaRock", "lavaRock", "rock", "plank"],
+        "abyss": ["seaweed", "rock", "coral", "barrel"],
+        "phantom": ["plank", "barrel", "rock", "seaweed"]
+      }
+    }
   },
   "atmosphere": {
     "cycleSec": 720,

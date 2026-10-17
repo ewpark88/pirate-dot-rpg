@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart' show HSVColor;
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/top/top_sea_props.dart';
 
 /// 탑다운 바다 (T2, S1 '단색에 점선뿐이라 밋밋'): 깊이 얼룩(느린 시차) · 물결 대시 · 햇빛 반짝임 · 파도 거품 · 배 항적(흰 V자).
 /// 배는 가운데 고정, 바다가 뱃머리 반대쪽으로 흐른다(흐름 = 진행 방향 × 속도, 장면 시계 기준).
@@ -14,10 +15,10 @@ class TopSeaPainter {
 
   final JsonReader cfg;
   int _c(String k) => parseArgb(cfg.str(k), 'topSea.$k');
-  late final Color _base = Color(_c('base'));
-  late final Color _deep = Color(_c('deep'));
-  late final Color _shallow = Color(_c('shallow'));
-  late final Color _wave = Color(_c('wave'));
+  late ({Color base, Color deep, Color shallow, Color wave}) _pal = seaPalette(cfg, null);
+  String? _region;
+  late final TopSeaProps? _props = TopSeaProps.of(cfg); // 흘러가는 외곽선 소품(디자인 개편 ③), 피버엔 흐려짐
+
   late final Color _foam = Color(_c('foam'));
   late final Color _goldWave = Color(_c('goldWave'));
   late final Color _goldFoam = Color(_c('goldFoam'));
@@ -137,7 +138,9 @@ class TopSeaPainter {
   }
 
   /// 바다 전체: [view] = 보이는 영역(단위, 왼쪽 위 기준), [clockMs] = 깜빡임용.
-  void paint(Canvas c, Rect view, double clockMs) {
+  /// [region]: 해역 팔레트(한 단계 깊은 진한 청록·남색, fx_map `topSea.regions`)·소품 세트 — 바뀔 때만 읽는다.
+  void paint(Canvas c, Rect view, double clockMs, {String? region}) {
+    if (region != null && region != _region) _pal = seaPalette(cfg, _region = region);
     // 시트를 여닫는 동안 보이는 높이가 매 프레임 바뀐다 — 길(Path)은 커질 때만 다시 만든다(64단위로 올림, 사용자 '시트 열면 버벅').
     final built = _builtFor;
     if (built == null || view.width > built.width + 0.5 || view.height > built.height) {
@@ -145,7 +148,7 @@ class TopSeaPainter {
       _build(size);
       _builtFor = size;
     }
-    _paint.color = _mix(_base, _goldBase, _feverBase);
+    _paint.color = _mix(_pal.base, _goldBase, _feverBase);
     c.drawRect(view.inflate(1), _paint);
     void layer(Path p, Color color, double parallax, {double back = 0}) {
       final o = flow * parallax - _dir * back;
@@ -159,17 +162,19 @@ class TopSeaPainter {
         ..restore();
     }
 
-    layer(_deepPath, _mix(_deep, _deep, _feverDeep.withValues(alpha: _deep.a)), 0.6);
-    layer(_shallowPath, _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a)), 0.6);
+    layer(_deepPath, _mix(_pal.deep, _pal.deep, _feverDeep.withValues(alpha: _pal.deep.a)), 0.6);
+    layer(_shallowPath, _mix(_pal.shallow, _pal.shallow, _feverShallow.withValues(alpha: _pal.shallow.a)), 0.6);
+    final wave = _mix(_pal.wave, _goldWave, _goldWave);
     // 질주 모션 블러: 물결·얕은 곳을 흐름 반대쪽으로 흐린 잔상 2겹 — 세로로 늘어나 보인다.
     if (boost > 0.05) {
       for (final k in const [1.0, 2.0]) {
-        final shallow = _mix(_shallow, _shallow, _feverShallow.withValues(alpha: _shallow.a));
-        layer(_shallowPath, shallow.withValues(alpha: _shallow.a * 0.5 * boost), 0.6, back: 5 * k * boost);
-        layer(_wavePath, _mix(_wave, _goldWave, _goldWave).withValues(alpha: 0.45 * boost / k), 1, back: 6 * k * boost);
+        final shallow = _mix(_pal.shallow, _pal.shallow, _feverShallow.withValues(alpha: _pal.shallow.a));
+        layer(_shallowPath, shallow.withValues(alpha: _pal.shallow.a * 0.5 * boost), 0.6, back: 5 * k * boost);
+        layer(_wavePath, wave.withValues(alpha: 0.45 * boost / k), 1, back: 6 * k * boost);
       }
     }
-    layer(_wavePath, _mix(_wave, _goldWave, _goldWave), 1);
+    layer(_wavePath, wave, 1);
+    _props?.paint(c, view, flow.dy, _region ?? '', alpha: 1 - fever);
     // 거품: 천천히 숨 쉬듯 나타났다 사라짐
     final foamA = 0.35 + 0.35 * math.sin(clockMs / 900);
     layer(_foamPath, _mix(_foam, _goldFoam, _goldFoam).withValues(alpha: foamA.clamp(0.0, 1.0)), 1);

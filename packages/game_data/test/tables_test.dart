@@ -59,6 +59,15 @@ void main() {
       expect(() => GameTables.load(raw), throwsA(isA<TableValidationException>()));
     });
 
+    test('선원 역할은 5개(guard·boss·mob·control·support) 중 하나', () {
+      final raw = patched('crews', (m) => ((m['crews'] as List).first as Map)['role'] = 'tank');
+      expect(() => GameTables.load(raw), throwsA(isA<TableValidationException>()));
+      final t = GameTables.load();
+      expect(t.crews.crews.map((c) => c.role).toSet(), crewRoles.toSet(), reason: '다섯 역할 모두 한 명 이상');
+      expect(t.crews.byId('davy').role, 'boss');
+      expect(t.crews.byId('shark').role, 'guard');
+    });
+
     test('타입이 틀리면 경로를 알려준다', () {
       final raw = patched('waves', (m) => m['tickMs'] = 'fifty');
       expect(

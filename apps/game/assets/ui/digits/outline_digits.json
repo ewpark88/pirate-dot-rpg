@@ -2,6 +2,7 @@
  "width": 584,
  "height": 168,
  "cellHeight": 42,
+ "fontSize": 28,
  "baseline": 28,
  "colors": {
   "white": 0,

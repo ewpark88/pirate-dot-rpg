@@ -12,6 +12,10 @@ const crewFamilies = [
   'shock',
 ];
 
+/// 선원 역할 5종(S2 BALANCE 역할표를 묶음, S1 2026-10-17): 지킴이(강습 근접) · 보스 딜 · 무리(범위·연쇄) · 제어(기절·감속·끌기·밀기) ·
+/// 서포트(회복·보호막·피버). UI 역할 칩·추천이 읽는다.
+const crewRoles = ['guard', 'boss', 'mob', 'control', 'support'];
+
 /// 등급 5단계, 낮은 것부터.
 const rarityOrder = ['common', 'rare', 'hero', 'legend', 'mythic'];
 
@@ -21,6 +25,7 @@ class CrewDef {
       num = j.integer('num'),
       baseRarity = j.str('baseRarity'),
       family = j.str('family'),
+      role = j.str('role'),
       reachBonus = j.numberOr('reachBonus', 0),
       fx = j.str('fx'),
       skill = j.strOrNull('skill'),
@@ -34,6 +39,9 @@ class CrewDef {
   /// Pirate Busters 원작 등급. 소환 풀 구성에만 쓰고, 이 게임의 등급은 레벨 구간이다.
   final String baseRarity;
   final String family;
+
+  /// 역할 [crewRoles] 중 하나.
+  final String role;
 
   /// 계열 사거리(skills.json attack.reach)에 더하는 선원별 보정(±, 필드 px).
   final double reachBonus;
@@ -65,6 +73,9 @@ class CrewTable {
     for (final f in crewFamilies) {
       final n = crews.where((c) => c.family == f).length;
       expect(e, that: n >= 1, message: 'crews: 계열 $f에 선원이 없음');
+    }
+    for (final c in crews) {
+      expect(e, that: crewRoles.contains(c.role), message: 'crews: ${c.id} role ${c.role}는 $crewRoles 중 하나여야 함');
     }
     const expected = {'common': 12, 'rare': 12, 'hero': 8, 'legend': 8};
     for (final r in expected.entries) {

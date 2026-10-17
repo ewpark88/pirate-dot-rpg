@@ -6,7 +6,7 @@
 글꼴: assets/fonts/Jua-Regular.ttf(OFL-1.1, 이미 등록 — 둥글고 굵다). 4배로 그려 줄여서(LANCZOS) 매끈하다.
 아틀라스: 한 줄 = 한 색(COLORS 순서), 칸 높이 CELL_H, 글리프는 GLYPHS 순서로 왼쪽부터. 좌표는 **1x 기준**(json) —
 2.0x·3.0x 파일은 같은 배치를 그 배율로 그린 것. 읽는 쪽(render/text/outline_digits.dart)은 실제 그림 폭 ÷ json width로 배율을 안다.
-json: {width, height, cellHeight, baseline, colors: {이름: 줄 y}, glyphs: {글자: {x, w, advance}}} — advance는 다음 글자까지(테가 겹치게 w보다 작다).
+json: {width, height, cellHeight, fontSize(1x 글자 크기), baseline, colors: {이름: 줄 y}, glyphs: {글자: {x, w, advance}}} — advance는 다음 글자까지(테가 겹치게 w보다 작다).
 """
 
 from __future__ import annotations
@@ -83,6 +83,7 @@ def layout() -> dict:
         "width": x,
         "height": CELL_H * len(COLORS),
         "cellHeight": CELL_H,
+        "fontSize": SIZE,
         "baseline": PAD + STROKE + round(ascent / SS),
         "colors": {name: i * CELL_H for i, (name, _, _) in enumerate(COLORS)},
         "glyphs": glyphs,

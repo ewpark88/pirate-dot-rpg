@@ -100,7 +100,7 @@ class TopScenePainter {
       ..fever = fever.sea
       ..boost = fever.level
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
-      ..paint(c, viewRect, clockMs);
+      ..paint(c, viewRect, clockMs, region: scene.tables.regions.regionAt(view.stage).id);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
@@ -113,7 +113,9 @@ class TopScenePainter {
       ..translate(-cam.dx, -cam.dy);
     fever.weaveTrail(c, ship, clockMs, _sea.flowSpeed);
     _marks.zones(c);
-    _foes.paint(c, under: true, cull: visibleWorld);
+    _foes
+      ..snap = dot * dpr
+      ..paint(c, under: true, cull: visibleWorld);
     c.restore();
     final size = _ship.sizeOf(tier);
     _shipR = size == null ? 16 : size.width * _shipScale / 2;
@@ -158,6 +160,7 @@ class TopScenePainter {
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
         skin: skinId != null && skins.ready(skinId) ? skinId : null,
         billow: fever.level * (0.7 + 0.3 * math.sin(clockMs / 90)),
+        now: clockMs,
       );
       if (sinking) c.restore();
       c.restore();
@@ -236,7 +239,6 @@ class TopScenePainter {
 
   late final _turn = ShipTurn(scene);
 
-  /// 피버 질주 위아래 흔들림(흔들기 설정 따름).
   double _surge(double clock) => scene.settings.shake ? math.sin(clock / 90) * 0.6 * fever.level : 0;
 
   bool _hot(double x, double y) => fever.melting(x, y, scene.topShip);
