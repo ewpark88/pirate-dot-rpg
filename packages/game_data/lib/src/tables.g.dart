@@ -2868,9 +2868,9 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 5,
-    "brackets": [{"sec": 300, "gems": 30}, {"sec": 180, "gems": 60, "pieces": 5}, {"sec": 120, "gems": 100, "pieces": 10}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
+    "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageMul": 2, "floorTimeLimitSec": 90, "bossEvery": 5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
@@ -3578,7 +3578,7 @@ const Map<String, String> rawTables = {
   "waveHpPoolFactor": 1.1,
   "shipHitCap": 0.08,
   "monster": { "hpBase": 9, "hpGrowth": 1.32, "attackBase": 7, "attackGrowth": 1.24, "goldBase": 3.3, "goldGrowth": 1.135 },
-  "boss": { "hpMultiplier": 400, "wallEvery": 10, "wallHpMultiplier": 1.9, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 26, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "levelGain": 1 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.01, "earlyAttackMultiplier": 0.027 },
+  "boss": { "hpMultiplier": 400, "wallEvery": 10, "wallHpMultiplier": 1.9, "midWallEvery": 5, "midWallHpMultiplier": 1.4, "attackMultiplier": 26, "goldMultiplier": 6, "timeLimitSec": 0, "forecastSec": 40, "earlyRampToStage": 6, "autoBoss": { "cooldownSec": 25, "fallbackSec": 120, "maxNeed": 4 }, "gems": 5, "cards": 1, "speed": 20, "tutorialFailStage": 3, "tutorialFailHpMultiplier": 5, "earlyStageMax": 2, "earlyHpMultiplier": 0.01, "earlyAttackMultiplier": 0.027 },
   "travelSec": 1.5,
   "rebirthSkip": { "fraction": 0.45, "waves": 0, "supply": { "hullVsAttack": 10000, "cannonVsHp": 0.05, "sideRatio": 0.6 }, "breakSec": 2.0, "travelSec": 0.3, "breakAccel": 0.75, "breakMinSec": 0.25, "finaleSec": 0.6 },
   "top": {

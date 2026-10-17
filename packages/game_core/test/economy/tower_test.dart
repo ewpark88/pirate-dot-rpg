@@ -176,6 +176,31 @@ void main() {
     expect(x.e.state.tower!.tickets, before + 1, reason: '하루 1');
   });
 
+  test('안전판: 한 층이 floorTimeLimitSec를 넘으면 그 층까지 기록하고 끝(timeout)', () {
+    final raw = Map<String, String>.of(rawTables);
+    final meta = jsonDecode(raw['meta']!) as Map<String, dynamic>;
+    (meta['tower'] as Map<String, dynamic>)['floorTimeLimitSec'] = 1;
+    raw['meta'] = jsonEncode(meta);
+    final clock = ManualClock(start);
+    final e =
+        CoreEngine(
+            tables: GameTables.load(raw),
+            clock: clock,
+            initial: mid().copyWith(savedAt: start),
+          )
+          ..tick()
+          ..enqueue(const StartTower());
+    final events = <GameEvent>[];
+    for (var i = 0; i < 200 && !events.any((x) => x is TowerEnded); i++) {
+      e.tick();
+      events.addAll(e.drainEvents());
+    }
+    final ended = events.whereType<TowerEnded>().single;
+    expect(ended.reason, 'timeout');
+    expect(ended.floor, 0);
+    expect(e.state.tower!.active, isNull);
+  });
+
   test('결정론: 같은 상태·같은 명령이면 같은 탑', () {
     String once() {
       final x = engine(mid());
