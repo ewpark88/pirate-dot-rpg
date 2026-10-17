@@ -8,53 +8,13 @@ import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
-import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 
-// 현상금 전투 중 UI (기획 6절 ③④): 위쪽 '현상금' 띠, 후퇴 버튼(보스 도전 자리), 끝나면 결과 작은 창.
-
-/// 전장 위 '현상금 · 보스 n단계' 띠 (현상금 전투 중일 때만, 누름 통과).
-class BountyStrip extends ConsumerWidget {
-  const BountyStrip({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final active = ref.watch(bountyProvider.select((v) => v.active));
-    if (active == null) return const SizedBox.shrink();
-    final l10n = AppLocalizations.of(context);
-    return IgnorePointer(
-      child: Container(
-        key: const Key('bounty.strip'),
-        constraints: const BoxConstraints(maxWidth: 160),
-        padding: const EdgeInsets.fromLTRB(6, 3, 12, 3),
-        decoration: BoxDecoration(
-          color: const Color(0xFF7A3E17).withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Skin.goldBottom, width: 1.5),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SkinIcon(UiSprites.flag),
-            const SizedBox(width: 5),
-            Flexible(
-              child: Text(
-                l10n.uiBountyStrip(bossName(l10n, ref, active.bossId), active.tier),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Skin.text(13, color: const Color(0xFFFFE27A)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// 현상금 전투 중 UI (기획 6절 ③④): 위쪽 '현상금' 글(떠 있는 띠 안 — SceneStrip), 후퇴 버튼(보스 도전 자리), 끝나면 결과 작은 창.
 
 /// 후퇴 버튼 (선원 줄 오른쪽, 궁극기 옆 = 보스 도전 자리) → RetreatBounty. 현상금 전투 중에만.
 class BountyRetreatButton extends ConsumerWidget {

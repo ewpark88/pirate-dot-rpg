@@ -13,6 +13,8 @@ import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/hud/sea_event_icon.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
+import 'package:pirate_dot/ui/scene/scene_battle.dart';
+import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -96,11 +98,15 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                 children: [
                   Row(
                     children: [
-                      Text(
-                        l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
-                        key: const Key('hud.gauge.stage'),
-                        style: Skin.outlined(14),
-                      ),
+                      // 탑·러시·던전·현상금 중엔 그 글(띠 아래 줄 대신, 사용자 2026-10-18).
+                      if (ref.watch(sceneLabelProvider))
+                        const Flexible(flex: 3, child: SceneStrip())
+                      else
+                        Text(
+                          l10n.uiGaugeStage(g.stage, math.min(g.wave + 1, g.waves)),
+                          key: const Key('hud.gauge.stage'),
+                          style: Skin.outlined(14),
+                        ),
                       // 파밍 중 (보스 재도전 가능) — 따로 띠를 두지 않고 게이지 안 작은 꼬리표.
                       if (g.farming && !g.boss) ...[
                         const SizedBox(width: 6),
