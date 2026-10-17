@@ -52,6 +52,16 @@ class BossSpawned extends GameEvent {
 class BossCleared extends GameEvent {
   const BossCleared(super.tick, {required this.stage, required this.gems, this.crewDamage = const {}, this.mvp});
 
+  factory BossCleared.fromJson(int t, Json j) => BossCleared(
+    t,
+    stage: j['stage'] as int,
+    gems: j['gems'] as int,
+    crewDamage: {
+      for (final e in (j['crewDamage'] as Json? ?? const {}).entries) e.key: BigNum.parse(e.value as String),
+    },
+    mvp: j['mvp'] as String?,
+  );
+
   final int stage;
   final int gems;
 
