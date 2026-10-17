@@ -14,7 +14,17 @@ class HdSeaDetail {
     ..strokeCap = StrokeCap.round;
   final _band = Path();
 
+  /// 2배속 '질풍'(S1 '속도 ×2 효과가 밋밋'): 0~1 — 켜지면 0.6초에 차오르고 꺼지면 0.4초에 잦아든다.
+  double gale = 0;
+  double _galeOnAt = -1000000000;
+  bool _galeOn = false;
+
+  /// 지금 배속(BattleView.speed) — 2 이상이면 질풍.
+  int speed = 1;
+
   void paint(Canvas c, Rect view, double now, double scroll, String region, {bool lite = false, double fever = 0}) {
+    _updateGale(now, speed > 1);
+    if (gale > 0) _galePaint(c, view, now, lite: lite);
     if (fever > 0) _feverSea(c, view, now, fever, lite: lite);
     if (fever > 0.6) return; // 피버 금빛 바다엔 해역 디테일 대신 피버 빛
     final dim = 1 - fever;
@@ -61,6 +71,54 @@ class HdSeaDetail {
     }
     c.restore();
   }
+
+  double _lastNow = 0;
+  void _updateGale(double now, bool on) {
+    final dt = (now - _lastNow).clamp(0.0, 100.0);
+    _lastNow = now;
+    if (on && !_galeOn) _galeOnAt = now;
+    _galeOn = on;
+    gale = (gale + (on ? dt / 600 : -dt / 400)).clamp(0.0, 1.0);
+  }
+
+  /// 질풍: 화면 양옆 바람 줄(옅게 계속) + 켜는 순간 0.6초 가장자리에서 휙 쓸고 지나가는 굵은 바람결·배 뒤 물보라 터짐.
+  void _galePaint(Canvas c, Rect v, double now, {required bool lite}) {
+    final ship = Offset(v.center.dx, v.top + v.height * 0.72);
+    _stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 3;
+    for (var i = 0; i < (lite ? 8 : 16); i++) {
+      final side = i.isEven ? 0.0 : 1.0;
+      final x = v.left + v.width * (side == 0 ? 0.02 + (i % 5) * 0.025 : 0.98 - (i % 5) * 0.025);
+      final y = v.top + ((i * 97.0 + now * 0.9) % (v.height + 80)) - 40;
+      _stroke.color = Color.fromRGBO(235, 250, 255, 0.55 * gale);
+      c.drawLine(Offset(x, y), Offset(x, y + 60 + (i % 3) * 20), _stroke);
+    }
+    final b = (now - _galeOnAt) / 600;
+    if (b < 0 || b >= 1) return;
+    // 켜는 순간: 양옆에서 가운데로 휙 — 굵은 곡선 바람결 4줄 + 배 뒤 물보라 고리
+    for (var i = 0; i < 4; i++) {
+      final y = v.top + v.height * (0.25 + i * 0.15);
+      final reach = v.width * 0.45 * _ease(b);
+      _stroke
+        ..strokeWidth = 9 * (1 - b) + 2
+        ..color = Color.fromRGBO(255, 255, 255, 0.85 * (1 - b));
+      for (final s in const [-1.0, 1.0]) {
+        final x0 = s < 0 ? v.left : v.right;
+        _band
+          ..reset()
+          ..moveTo(x0, y)
+          ..quadraticBezierTo(x0 - s * reach * 0.6, y - 18, x0 - s * reach, y + 6);
+        c.drawPath(_band, _stroke);
+      }
+    }
+    _stroke
+      ..strokeWidth = 4 * (1 - b) + 1
+      ..color = Color.fromRGBO(230, 250, 255, 0.8 * (1 - b));
+    c.drawOval(Rect.fromCenter(center: ship + const Offset(0, 30), width: 40 + 120 * b, height: 16 + 40 * b), _stroke);
+  }
+
+  double _ease(double t) => 1 - (1 - t) * (1 - t) * (1 - t);
 
   /// 피버 금빛 바다 v2: 배 둘레 밝은 금빛 → 가장자리 짙은 호박색(적이 노랑에 묻히지 않게) + 배에서 퍼지는 박동 고리
   /// (0.6초) + 금빛 4갈래 반짝임.

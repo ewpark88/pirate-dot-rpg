@@ -172,6 +172,9 @@ class TopJuice {
 
   /// 전장 좌표 — 처치: 첫 1프레임 흰 번쩍 원 → 흰 충격파 링이 빠르게 퍼지고, 진한 외곽선 파스텔 별·하트·동그라미가 넓게 튀며
   /// 두 번 통통 튄다. 큰 처치(같은 프레임 3마리↑)는 'POP!'(화면에 최대 2개).
+  /// 붐빔(동시 140마리↑ — S2 대군): 처치 파편·연기 구름을 줄인다(TopEnemies가 프레임마다 넣는다).
+  bool crowd = false;
+
   void paint(Canvas c, double now, {required bool lite, bool fever = false}) {
     _paintStars(c, now);
     _pops.removeWhere((p) => now - p.$3 > _popMs);
@@ -184,7 +187,7 @@ class TopJuice {
         _fill.color = const Color(0xE6FFFFFF);
         c.drawCircle(Offset(x, y), size * 0.9, _fill);
       }
-      if (!lite && t < 0.42) _puff(c, x, y, size.toDouble(), t / 0.42);
+      if (!lite && !crowd && t < 0.42) _puff(c, x, y, size.toDouble(), t / 0.42);
       if (t < 0.3) {
         final k = t / 0.3;
         _fill
@@ -205,7 +208,7 @@ class TopJuice {
         _popText.draw(c, -_popText.width / 2, -2.5);
         c.restore();
       }
-      final n = lite ? 4 : (fever ? 14 : 8); // 피버 v2: 파편 거의 2배
+      final n = lite || crowd ? 4 : (fever ? 14 : 8); // 피버 v2: 파편 거의 2배, 붐비면 4
       for (var k = 0; k < n; k++) {
         final a = k * 2 * math.pi / n + x * 0.13;
         final d = size * (0.8 + 3.8 * (1 - (1 - t) * (1 - t)));

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_sea_detail.dart';
+import 'package:pirate_dot/render/hd/hd_sheets.dart';
 import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/ship_hp_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
@@ -98,14 +99,14 @@ class TopScenePainter {
     final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
-      ..boost = math
-          .max(fever.level, _turn.rush) // 빠를수록 항적 길게·속도선(S5 배 이동 v2)
-      ..wakeTint = skins
-          .wake // 스킨 항적 색(앞 프레임 값)
+      ..boost = math.max(math.max(fever.level, _turn.rush), _seaHd.gale * 0.15)
+      ..wakeTint = skins.wake
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
       ..paint(c, viewRect, clockMs, region: region);
-    _seaHd.paint(c, viewRect, clockMs, _sea.flow.dy, region, lite: scene.topHits.lite, fever: fever.sea); // HD 빛 반사
+    _seaHd
+      ..speed = view.speed
+      ..paint(c, viewRect, clockMs, _sea.flow.dy, region, lite: scene.topHits.lite, fever: fever.sea);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
@@ -178,7 +179,7 @@ class TopScenePainter {
         for (var k = 3; k >= 1; k--) {
           _ghost.colorFilter = ColorFilter.mode(Color.fromRGBO(255, 216, 74, 0.55 * burst / k), BlendMode.srcIn);
           c
-            ..saveLayer(null, _ghost)
+            ..saveLayer(const Rect.fromLTRB(-90, -110, 90, 140), _ghost)
             ..translate(0, 9.0 * k * burst);
           _ship.paint(c, tier, view.shipLook);
           c.restore();
@@ -202,7 +203,7 @@ class TopScenePainter {
         glow: celebrate ? 0.5 + 0.5 * math.sin(clockMs / 70) : (skinGlow ? 0.12 + 0.1 * math.sin(clockMs / 500) : 0),
         recoil: _recoil(clockMs - m.cannonFiredAtMs),
         skin: skinId != null && skins.ready(skinId) ? skinId : null,
-        billow: fever.level * (0.7 + 0.3 * math.sin(clockMs / 90)),
+        billow: math.max(fever.level, _seaHd.gale) * (0.7 + 0.3 * math.sin(clockMs / 90)), // 피버·2배속 돛 부풂
         now: clockMs,
       );
       if (sinking) c.restore();
@@ -237,12 +238,11 @@ class TopScenePainter {
   double _shipR = 16;
   double _maxBoxH = 0;
   final _ghost = Paint();
-
   final _bossCam = TopBossCam();
   (double, double, double, Offset) _camT = (0, 0, 1, Offset.zero); // 화면 배 자리 x·y, 단위 dp, 카메라
   double radiusOf(EnemyPose e) => _foes.radiusOf(e); // 적 그림 반지름(단위, HD 칸) — 시험
   double get camZoom => _bossCam.zoom; // 보스 카메라 지금 줌 — 시험
-  void dispose() => _foes.hdSheets.dispose(); // 장면을 버릴 때 HD 텍스처를 바로 놓는다
+  HdSheets get hd => _foes.hdSheets; // HD 시트 캐시(장면을 버릴 때 dispose·미리보기 small)
   Map<String, Object> memory() => {..._foes.hdSheets.memory(), 'labels': _overlays.labels}; // 운영자 메모리 진단
 
   /// 지금 그린 카메라로 전장 좌표 → 상자 dp(흔들림 제외) — UI 탭 자리(황금 물고기·유리병·상자)가 같은 기준을 쓴다.
@@ -290,7 +290,7 @@ class TopScenePainter {
     final s = 1 - 0.35 * down;
     _sinkPaint.color = Color.fromRGBO(255, 255, 255, 1 - 0.6 * down);
     c
-      ..saveLayer(null, _sinkPaint)
+      ..saveLayer(const Rect.fromLTRB(-90, -110, 90, 140), _sinkPaint)
       ..scale(s);
     return true;
   }

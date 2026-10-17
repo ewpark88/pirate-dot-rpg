@@ -68,6 +68,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
     if (_made) _painter.dispose(); // 옛 장면 HD 텍스처를 바로 놓는다
     _made = true;
     _painter = ScenePainter(_scene)..sprites = widget.sprites;
+    _painter.top.hd.small = true; // 미리보기는 작은 HD 캐시(12MB) — 화면에 여럿 살아 있어도 텍스처가 쌓이지 않게(S5 gfx 바닥)
     _tickAccum = 0;
     _liteAccum = 0;
     // 첫 화면부터 배·적·공격이 보이게 [_warmSec]초를 미리 돌린다(멈춘 첫 장면 — UI 시험·골든 — 도 빈 바다가 아니게).
