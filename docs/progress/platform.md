@@ -1,5 +1,13 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 밤 · S5 · 장면 수치·크라켄 버그·시나리오 3종·기기 감시
+- **현재 위치**: 머지 대기 3개(모두 빠른 check 통과) — review/save-transfer f71b9e5d(세이브 옮기기), review/scene-scenarios cebc8b9e(scene-balance bcd42c3d 포함 — S2 확정 장면 수치·DPS 상한 HP·크라켄 촉수 호·던전 파 한 파 몫·시나리오 3종), review/device-watch 84f8a6f0(읽기 전용 기기 감시).
+- 한 일: 크라켄 촉수가 카메라 밖에 놓여 보호막이 영영 안 꺼지던 버그(러시·평소 크라켄전) → armsArcDeg 100 + 시험(옛 배치면 실패 확인). 던전 파 n배 HP·공격 → scenePooled. 러시 0.7·던전 0.75·+5·보스 0.3. scenarios scene_tower·scene_rush·scene_dungeon. device_watch.py(맨 앞일 때만 프레임·온도·CPU·PSS·크래시 → build/device/watch). 동시 적 260·330마리 틱 0.5ms.
+- 탐침: 러시 신화 5마리 44~49초·중반 2마리. 던전 신화 10단계 9~17초(쉬움 — S2 dpsHpRatio 조정), 중반 1단계.
+- 다음: S2 던전 수치 오면 반영·재측정, 폰 감시(60분) 결과로 PSS 추세(638MB — 10/17 측정 430~517보다 큼) S3에 전달.
+- 남은 문제: 폰 입력·설치 권한(사용자 허락). docs/PROGRESS.md는 S1 몫.
+- 배운 것: '끝나지 않는 장면'은 조준 불가(카메라 밖) 대상부터 의심. 프레임 끊김 기준은 그때 주사율(절전 30Hz)에 맞춘다.
+
 ## 2026-10-18 밤(이어서 5) · S5 · release_check·피버 무리·밀도 지원·피버 버그
 - **현재 위치**: release_check(main f6dc2ecc) 통과 — BILLING 권한·결제 클래스 OK. swarm-perf(피버 고리 카메라 기준·접근 1.8·spawnFromView·inCamera)·store-iap-docs main 머지 중. review/screen-density-s5 0c104770(S2 밀도 위: 피버 중 보스 처치 시 피버 끊김 버그·피버 첫 틱 고리 즉시·scatterSpanSec·시험) → S2가 보정 후 올림.
 - 탐침: 던전·러시는 신화 함대엔 너무 쉬움(던전 단계 4~18초·러시 0~27초), 중반 함대는 계열 선원 없는 날 던전 입장 불가 → S2 수치·입장 조건.
