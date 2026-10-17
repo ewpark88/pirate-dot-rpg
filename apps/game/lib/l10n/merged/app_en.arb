@@ -595,7 +595,6 @@
   "uiRebirthLockedWhy": "Rebirth makes you permanently stronger with map pieces",
   "uiChestTitle": "Treasure chest",
   "uiChestTake": "Just take · {amount}",
-  "uiChestPill": "Choose chest reward",
   "uiCrewTrait": "Trait (now {percent})",
   "uiCrewTraitFull": "At Legend: full 100% — Legend ability",
   "uiLegendProjectileChance": "{percent} chance of +1 projectile",
@@ -997,6 +996,24 @@
       }
     }
   },
+  "uiChestJustTake": "Just take",
+  "uiChestAdMult": "Ad ×{mult}",
+  "uiChestAdGems": "or watch an ad for {gems} gems",
+  "@uiChestAdMult": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiChestAdGems": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiChestPill": "Choose chest reward",
   "uiSlotDamage": "DMG {amount}",
   "@uiSlotDamage": {
     "placeholders": {

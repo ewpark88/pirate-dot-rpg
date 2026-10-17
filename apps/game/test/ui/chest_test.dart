@@ -87,8 +87,8 @@ void main() {
     expect(find.descendant(of: find.byKey(const Key('chest')), matching: find.text('250K')), findsOneWidget);
   });
 
-  // 사용자 직접 지시 2026-10-16: 상자 위 말풍선 삭제 → 왼쪽 가장자리 작은 알약, 누르면(또는 상자를 누르면) 선택 시트.
-  testWidgets('광고 준비: 가장자리 알약 → 선택 시트(광고 골드·젬 + 그냥 받기) → TapChest', (tester) async {
+  // 사용자 지시 2026-10-16 말풍선 삭제 → 2026-10-17 '왼쪽 아이콘도 띄우지 마라, 상자를 누르면 창만'.
+  testWidgets('광고 준비: 알약 없음 · 상자를 누르면 작은 창(그냥 받기 · 광고 ×n 골드 · 광고 젬) → TapChest', (tester) async {
     final log = await pumpGame(
       tester,
       _withChest(),
@@ -96,13 +96,13 @@ void main() {
       overrides: [adOfferProvider.overrideWith((ref, _) => true)],
     );
     expect(find.byKey(const Key('chest.adBubble')), findsNothing);
-    final pill = tester.getRect(find.byKey(const Key('chest.pill')));
-    final area = tester.getRect(find.byKey(const Key('battle.area')));
-    expect(pill.height, lessThanOrEqualTo(44));
-    expect(pill.right, lessThan(area.left + area.width * 0.2), reason: '전장 가운데 60% 밖(왼쪽 가장자리)');
-    await tester.tap(find.byKey(const Key('chest.pill')));
+    expect(find.byKey(const Key('chest.pill')), findsNothing);
+    await tester.tap(find.byKey(const Key('chest')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('chest.sheet')), findsOneWidget);
+    expect(find.textContaining('Ad ×'), findsOneWidget); // 광고 쪽 이득 표시
+    // 작게: 폰 폭 85% 이하.
+    expect(tester.getSize(find.byKey(const Key('chest.sheet'))).width, lessThanOrEqualTo(384 * 0.9));
     expect(find.byKey(const Key('ad.chest.gold')), findsOneWidget);
     expect(find.byKey(const Key('ad.chest.gems')), findsOneWidget);
     await tester.tap(find.byKey(const Key('chest.take')));
@@ -132,7 +132,7 @@ void main() {
       ('411', const Size(411, 891), 2.625),
       ('tablet', const Size(800, 1280), 2.0),
     ]) {
-      testWidgets('상자 알약 $name', (tester) async {
+      testWidgets('상자 선택 창 $name', (tester) async {
         await pumpGame(
           tester,
           _withChest(),
@@ -143,25 +143,11 @@ void main() {
           overrides: [adOfferProvider.overrideWith((ref, _) => true)],
         );
         await precacheImages(tester);
-        await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_chest_pill_$name.png'));
+        await tester.tap(find.byKey(const Key('chest')));
+        await tester.pumpAndSettle();
+        await precacheImages(tester);
+        await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_chest_choice_$name.png'));
       });
     }
-
-    testWidgets('상자 선택 시트 360', (tester) async {
-      await pumpGame(
-        tester,
-        _withChest(),
-        size: const Size(360, 640),
-        dpr: 3,
-        locale: const Locale('ko'),
-        openTab: false,
-        overrides: [adOfferProvider.overrideWith((ref, _) => true)],
-      );
-      await precacheImages(tester);
-      await tester.tap(find.byKey(const Key('chest.pill')));
-      await tester.pumpAndSettle();
-      await precacheImages(tester);
-      await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_chest_sheet_360.png'));
-    });
   });
 }
