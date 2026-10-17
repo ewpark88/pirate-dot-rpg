@@ -28,6 +28,8 @@ class TopOverlays {
     }
   }
 
+  final _flashPaint = Paint();
+
   /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).
   void paint(Canvas c, Size box, double ms) {
     final flash = scene.settings.flash;
@@ -35,7 +37,11 @@ class TopOverlays {
     final f = scene.moments.feverFlashMs;
     // 피버 시작: 전체 금빛 번쩍 대신 가장자리 금빛 비네트(사용자 '흰 번쩍임 눈 아프다').
     if (f > 0 && flash) {
-      edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * vignetteBump(1 - f / _fever.number('flashMs')));
+      final bump = vignetteBump(1 - f / _fever.number('flashMs'));
+      // 피버 v2: 화면 전체 금빛(밝기 변화 회귀 테스트 안 — 서서히 차오르고 빠짐, 최대 22%) + 가장자리 금빛.
+      _flashPaint.color = _feverColor.withValues(alpha: 0.22 * bump);
+      c.drawRect(Offset.zero & box, _flashPaint);
+      edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
     final l = atmosphere.lightning(ms);
     // 폭풍 번개: 전체 흰 번쩍 대신 옅은 하늘색 가장자리.

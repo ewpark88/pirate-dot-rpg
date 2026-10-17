@@ -66,6 +66,20 @@ List<SimCheck> judge(GameTables t, List<SimResult> rs, {required String schedule
       '%',
       within: Duration.zero,
     ),
+    c(
+      'bossKillSec',
+      '보스 처치 시간(깬 보스전)',
+      (r) => SimThreat.median(r.threat?.bossKillSec ?? const []),
+      '초',
+      within: Duration.zero,
+    ),
+    c(
+      'bossFailSec',
+      '보스 실패까지(침몰)',
+      (r) => SimThreat.median(r.threat?.bossFailSec ?? const []),
+      '초',
+      within: Duration.zero,
+    ),
     c('bossFirstWinPct', '보스 첫 도전 성공(보통 스테이지)', (r) => r.threat?.bossFirstWinPct, '%', within: Duration.zero),
     c('wallFirstWinPct', '보스 첫 도전 성공(10단위 해역 보스)', (r) => r.threat?.wallFirstWinPct, '%', within: Duration.zero),
     c(

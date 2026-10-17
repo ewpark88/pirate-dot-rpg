@@ -50,12 +50,16 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
   /// 피버 시작 때 지갑 골드 (끝에 '+골드' 계산), 시작 때 남은 틱(게이지 기준).
   BigNum? _goldAtStart;
 
+  /// 이번 피버 동안 처치 수 (끝 요약 'n마리').
+  int _kills = 0;
+
   @override
   void initState() {
     super.initState();
     _sub = ref.read(battleFeedProvider)?.listen((tick) {
       for (final e in tick.events) {
         if (e is FeverStarted) _start();
+        if (e is Kill && _goldAtStart != null) _kills++;
         if (e is FeverEnded) _end();
       }
     });
@@ -64,6 +68,7 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
   void _start() {
     if (!mounted) return;
     _goldAtStart = ref.read(gameStateProvider).wallet.gold;
+    _kills = 0;
     _endTimer?.cancel();
     ref.read(feverEndTextProvider.notifier).set(null);
     _slamCtl.forward(from: 0).ignore();
@@ -74,7 +79,9 @@ class _FeverDramaState extends ConsumerState<FeverDrama> with SingleTickerProvid
     final start = _goldAtStart;
     final now = ref.read(gameStateProvider).wallet.gold;
     final gain = start == null || now < start ? BigNum.zero : now - start;
-    ref.read(feverEndTextProvider.notifier).set(AppLocalizations.of(context).uiFeverEnd(gain.format()));
+    // 끝 요약(피버 v2): 처치 수 · 골드 — 위쪽 알약 자리(FeverSlot)라 S3 가운데 연출과 겹치지 않는다.
+    ref.read(feverEndTextProvider.notifier).set(AppLocalizations.of(context).uiFeverEndKills(_kills, gain.format()));
+    _goldAtStart = null;
     _endTimer?.cancel();
     _endTimer = Timer(_endShow, () {
       if (mounted) ref.read(feverEndTextProvider.notifier).set(null);

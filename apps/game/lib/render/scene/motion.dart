@@ -26,7 +26,16 @@ void placeProjectile(Projectile p) {
   if (p.flat) {
     // 탑다운: 땅 위 자리는 직선(떨어지기는 목표 위 그대로), 높이는 heightAt.
     if (s.path == ProjectilePath.drop) return (p.toX, p.toY);
-    return (p.fromX + (p.toX - p.fromX) * t, p.fromY + (p.toY - p.fromY) * t);
+    final x = p.fromX + (p.toX - p.fromX) * t;
+    final y = p.fromY + (p.toY - p.fromY) * t;
+    if (p.curve == 0) return (x, y);
+    // 추적 깃털: 진행 방향의 수직으로 sin(πt)만큼 휘었다가 목표에 꽂힌다.
+    final dx = p.toX - p.fromX;
+    final dy = p.toY - p.fromY;
+    final len = math.sqrt(dx * dx + dy * dy);
+    if (len < 1e-6) return (x, y);
+    final bend = p.curve * math.sin(math.pi * t);
+    return (x - dy / len * bend, y + dx / len * bend);
   }
   switch (s.path) {
     case ProjectilePath.drop:

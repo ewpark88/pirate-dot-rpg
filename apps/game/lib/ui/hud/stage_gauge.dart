@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
+import 'package:pirate_dot/ui/hud/boss_compare.dart';
 import 'package:pirate_dot/ui/hud/fun_strips.dart';
+import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/hud/skull_painter.dart';
 import 'package:pirate_dot/ui/meta/goal_bar.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
@@ -18,10 +20,10 @@ const _pulse = Duration(milliseconds: 1800);
 const _pulses = 3;
 
 /// 게이지 한 화면에 필요한 값 (20Hz 상태에서 이것만 골라 구독).
-typedef _Gauge = ({int stage, int wave, int waves, bool boss, bool farming, int ticksLeft, int inRegion, int per});
+typedef _Gauge = ({int stage, int wave, int waves, bool boss, bool farming, int inRegion, int per});
 
 /// 전장 위 스테이지 진행 게이지 (S1 지시): 파 1~3 칸 + 보스 해골, 아래 얇은 해역 진행.
-/// 파를 다 깨면(보스 직전) 해골이 빨갛게 3번 뛴다. 보스 중에는 칸 대신 남은 시간 막대(줄어들수록 빨강).
+/// 파를 다 깨면(보스 직전) 해골이 빨갛게 3번 뛴다. 보스 중에는 칸 대신 보스 체력 막대(이름 · 남은 / 최대).
 class StageGauge extends ConsumerStatefulWidget {
   const StageGauge({super.key});
 
@@ -31,9 +33,6 @@ class StageGauge extends ConsumerStatefulWidget {
 
 class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProviderStateMixin {
   late final AnimationController _pulseCtl = AnimationController(vsync: this, duration: _pulse);
-
-  /// 이번 보스의 처음 남은 시간 (상점 '모래시계'로 늘어날 수 있어 테이블 대신 처음 값을 쓴다).
-  int _bossTotal = 1;
 
   @override
   void dispose() {
@@ -50,7 +49,6 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
       waves: waves,
       boss: b?.bossActive ?? false,
       farming: p.farming,
-      ticksLeft: b?.bossTicksLeft ?? 0,
       inRegion: (p.stage - 1) % per + 1,
       per: per,
     );
@@ -63,10 +61,7 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
     final per = tables.regions.stagesPerRegion;
     final g = ref.watch(gameStateProvider.select((s) => _select(s, waves, per)));
     final preBoss = !g.boss && !g.farming && g.wave >= g.waves;
-    if (g.boss && g.ticksLeft > _bossTotal) _bossTotal = g.ticksLeft;
-    if (!g.boss) _bossTotal = 1;
     final l10n = AppLocalizations.of(context);
-    final seconds = (g.ticksLeft * tables.waves.tickMs / Duration.millisecondsPerSecond).ceil();
     return _PulseOnEnter(
       active: preBoss,
       controller: _pulseCtl,
@@ -109,12 +104,10 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
-                            height: 12,
+                            // 보스전: 보스 타이머 대신 굵은 보스 체력 막대(사용자 2026-10-17 — 타이머는 엔진에서 없어짐).
+                            height: g.boss ? 20 : 12,
                             child: g.boss
-                                ? TutorialSpot(
-                                    id: 'boss.timer',
-                                    child: _TimerBar(value: (g.ticksLeft / _bossTotal).clamp(0.0, 1.0)),
-                                  )
+                                ? const TutorialSpot(id: 'boss.hp', child: BossHpBar())
                                 : Row(
                                     children: [
                                       for (var i = 0; i < g.waves; i++) ...[
@@ -169,22 +162,14 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
                         );
                       },
                     ),
-                    if (g.boss) ...[
-                      const SizedBox(width: 4),
-                      Text(
-                        l10n.uiGaugeSeconds(seconds),
-                        key: const Key('hud.gauge.seconds'),
-                        style: Skin.text(14, color: const Color(0xFFFFB3BC)),
-                      ),
-                    ],
                   ],
                 ),
-                // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다).
+                // 다음 목표 (얇은 한 줄 — 따로 띠를 두지 않는다). 보스전·파밍 중엔 그 자리에 '보스 vs 나'(피드백 #5).
                 const Padding(
                   padding: EdgeInsets.only(top: 3),
                   child: Row(
                     children: [
-                      Expanded(child: GoalBar(compact: true)),
+                      Expanded(child: BossCompare(fallback: GoalBar(compact: true))),
                       SizedBox(width: 8),
                       // 피버(10초 전체 강화) — 게이지 안에 따로(켜지는 순간 선장 첫 일격).
                       TutorialSpot(id: 'fever.meter', child: FeverMeter()),
@@ -253,28 +238,4 @@ class _Segment extends StatelessWidget {
       ),
     );
   }
-}
-
-/// 보스 남은 시간 막대: 많이 남으면 주황, 적게 남을수록 빨강.
-class _TimerBar extends StatelessWidget {
-  const _TimerBar({required this.value});
-
-  final double value;
-
-  @override
-  Widget build(BuildContext context) => ClipRRect(
-    key: const Key('hud.gauge.timer'),
-    borderRadius: BorderRadius.circular(4),
-    child: Stack(
-      fit: StackFit.expand,
-      children: [
-        const ColoredBox(color: Colors.white24),
-        FractionallySizedBox(
-          alignment: Alignment.centerLeft,
-          widthFactor: value,
-          child: ColoredBox(color: Color.lerp(Skin.danger, const Color(0xFFFFA24A), value)!),
-        ),
-      ],
-    ),
-  );
 }

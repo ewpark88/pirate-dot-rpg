@@ -84,11 +84,12 @@ class Arena {
   Duration get _tick => Duration(milliseconds: t.waves.tickMs);
   int secondsToTicks(double s) => (s * Duration.millisecondsPerSecond / t.waves.tickMs).round();
 
-  /// 보스전 창 = 보스 제한 시간.
-  int get bossWindowTicks => secondsToTicks(t.waves.bossTimeLimitSec);
+  /// 보스전 창 = 30초 고정(보스 시간 제한이 없어진 뒤에도 같은 기준으로 비교, 2026-10-17).
+  static const bossWindowSec = 30.0;
+  int get bossWindowTicks => secondsToTicks(bossWindowSec);
 
   /// 보스전 피해를 [ArenaConfig.seconds] 기준으로 바꾸는 배율.
-  double get bossScale => config.seconds / t.waves.bossTimeLimitSec;
+  double get bossScale => config.seconds / bossWindowSec;
 
   /// [fleet] 선원들(모두 [level])로 [scene]을 잰다. 보조 선원 없음 = [fleet]에 한 명.
   /// [owned]: 보유 선원(기본 = [fleet]). 비교 쌍(혼자/함께)은 같은 [owned]를 줘야 보유 효과·도감 보너스가 상쇄된다(S2 요청).

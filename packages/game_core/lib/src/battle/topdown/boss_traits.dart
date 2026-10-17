@@ -118,9 +118,9 @@ extension BossTraits on Round {
   /// 호위: 보스 둘레(보스 반경 + 잡몹 지름)에 고르게 세운다 — 촉수처럼 보스에 딸려 움직이지 않고 지킨다.
   void _guard(Foe boss, List<Foe> guards) {
     final g = geo;
-    final r = g is TopGeometry ? g.top.bossRadius + g.top.mobRadius * 2 : 0.0;
+    final r = g is TopGeometry ? g.top.bossRadius + g.top.mobRadius / half : 0.0;
     for (var i = 0; i < guards.length; i++) {
-      final a = i * 2 * math.pi / guards.length;
+      final a = i * fullTurn / guards.length;
       guards[i]
         ..ownerId = boss.id
         ..x = boss.x + r * math.cos(a)

@@ -37,6 +37,29 @@
   "battleBossLeviathan": "레비아탄",
   "battleBossKrakenTitan": "크라켄 문어",
   "battleBossPoseidon": "포세이돈",
+  "battleBossHermitConch": "집게 소라게",
+  "battleBossJellyQueen": "해파리 여왕",
+  "battleBossHammerShark": "망치상어",
+  "battleBossStormRaider": "폭풍 해적선",
+  "battleBossThunderRayPup": "새끼 번개 가오리",
+  "battleBossGreatSerpent": "괴물 뱀",
+  "battleBossTwisterDolphin": "회오리 돌고래",
+  "battleBossFrostPirate": "얼음 해적선",
+  "battleBossSealChief": "바다표범 대장",
+  "battleBossGiantSquid": "대왕오징어",
+  "battleBossIcecrabChief": "얼음 게 무리장",
+  "battleBossBlazePirate": "불 해적선",
+  "battleBossLavaTortoise": "용암 거북",
+  "battleBossFlameEel": "불꽃 장어",
+  "battleBossLavaSlime": "거대 용암 아메바",
+  "battleBossHunterSub": "사냥 잠수함",
+  "battleBossAnglerKing": "아귀 왕",
+  "battleBossDeepOctopus": "심해 문어",
+  "battleBossPhantomJelly": "유령 해파리",
+  "battleBossWraithShip": "망령선",
+  "battleBossSkeletonCaptain": "해골 선장",
+  "battleBossCursegullLeader": "저주 갈매기 떼장",
+  "battleBossSpecter": "망령",
   "crewOctoName": "문어 폭탄병 옥토",
   "crewOctoShort": "옥토",
   "crewStarryName": "불가사리 불꽃병 스타리",
@@ -126,8 +149,8 @@
   "econRebirthShopStartPartsDesc": "환생 뒤 대포·선체·화물칸 시작 레벨 +{n}, 돛·망루 +{m}",
   "econRebirthShopDiscountName": "상인 단골",
   "econRebirthShopDiscountDesc": "배 강화 골드 비용 -{pct}%",
-  "econRebirthShopBossTimeName": "모래시계",
-  "econRebirthShopBossTimeDesc": "보스 제한 시간 +{sec}초",
+  "econRebirthShopBossTimeName": "철갑판",
+  "econRebirthShopBossTimeDesc": "보스전·현상금에서 배가 받는 피해 -{pct}%",
   "econRebirthShopOfflineName": "긴 정박",
   "econRebirthShopOfflineDesc": "오프라인 보상 최대 +{hours}시간",
   "econRebirthShopCritChanceName": "매의 눈",
@@ -189,6 +212,14 @@
   "opLabWave": "기본 파 (돌격대 포함)",
   "opGroupLab": "선원 시험",
   "opCardFxMin": "카드 연출 시작 등급",
+  "opGroupToday": "오늘 새 기능",
+  "opTodayFever": "피버 곧 시작(99%)",
+  "opTodayBreak": "보스 브레이크 가득",
+  "opTodayBossPick": "특징 보스 고르기",
+  "opTodayBoss": "고른 보스 소환",
+  "opTodayArc": "연쇄 번개 시험(pelly 전설 출전)",
+  "opTodaySail": "출항 대기 상태",
+  "opTodayFirstTen": "첫 10연 다시 받기",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -423,7 +454,6 @@
   "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
   "uiPower": "초당 공격력",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}초",
   "uiMult": "×{n}",
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
@@ -580,7 +610,6 @@
   "uiRebirthLockedWhy": "환생하면 보물지도 조각으로 영구히 강해져요",
   "uiChestTitle": "보물상자",
   "uiChestTake": "그냥 받기 · {amount}",
-  "uiChestPill": "보물상자 보상 고르기",
   "uiCrewTrait": "특징 (지금 {percent})",
   "uiCrewTraitFull": "전설이 되면 100%로 — 전설 능력",
   "uiLegendProjectileChance": "{percent} 확률로 발사체 +1",
@@ -844,7 +873,7 @@
   "uiGuideStep6Title": "이제 자유롭게!",
   "uiGuideStep6Why": "앱을 꺼도 골드가 쌓여요. 위쪽 목표를 따라가면 돼요.",
   "uiGuideBossTitle": "보스전",
-  "uiGuideBossWhy": "위 주황 막대 = 남은 시간. 그 아래 브레이크 막대가 차면 보스가 쓰러져 큰 피해!",
+  "uiGuideBossWhy": "위 빨간 막대 = 보스 체력. 그 아래 브레이크 막대가 차면 보스가 쓰러져 큰 피해!",
   "uiGuideFeverTitle": "피버!",
   "uiGuideFeverWhy": "처치가 쌓이면 잠깐 모두 강해지고, 첫 일격이 화면을 쓸어요.",
   "uiGuideChestTitle": "보물상자",
@@ -879,6 +908,124 @@
   "@uiSummonFirstTenLater": {
     "placeholders": {
       "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "uiUpgradeAll": "모두 강화",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiGuideSailTitle": "출항!",
+  "uiGuideSailWhy": "환생으로 더 강해졌어요. 출항하면 지나온 바다를 빠르게 지나가요.",
+  "uiBossCompare": "약 {kill}초에 처치 · 한 방 {hit}%",
+  "uiBossCompareEasy": "여유",
+  "uiBossCompareTight": "빠듯",
+  "uiBossCompareHard": "어려움",
+  "@uiBossCompare": {
+    "placeholders": {
+      "kill": {
+        "type": "int"
+      },
+      "hit": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "피버 끝 · {kills}마리 · 골드 +{amount}",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendChainLightning": "연쇄 번개: 적 {count}마리까지 이어짐 (튈 때마다 피해 {falloff})",
+  "uiLegendExecute": "처형: 체력 {below} 아래 적에게 피해 ×{mul}",
+  "uiLegendCharge": "충전 사격: {every}번째 사격마다 피해 ×{mul} + 기절 {sec}초",
+  "uiLegendNoMiss": "추적 깃털: 빗나가지 않음 (회피하는 보스에 강함)",
+  "uiLegendNoMissChance": "추적 깃털: {percent} 확률로 빗나가지 않음",
+  "uiHitHoming": "추적",
+  "@uiLegendChainLightning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "falloff": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendExecute": {
+    "placeholders": {
+      "below": {
+        "type": "String"
+      },
+      "mul": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendCharge": {
+    "placeholders": {
+      "every": {
+        "type": "int"
+      },
+      "mul": {
+        "type": "String"
+      },
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendNoMissChance": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiChestJustTake": "그냥 받기",
+  "uiChestAdMult": "광고 ×{mult}",
+  "uiChestAdGems": "또는 광고 보고 젬 {gems}",
+  "@uiChestAdMult": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiChestAdGems": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSlotDamage": "피해 {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
         "type": "String"
       }
     }

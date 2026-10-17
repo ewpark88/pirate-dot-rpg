@@ -12,6 +12,7 @@ import 'package:pirate_dot/ui/crew/fleet_sheet.dart';
 import 'package:pirate_dot/ui/hud/boss_break.dart';
 import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
+import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
@@ -30,6 +31,10 @@ class BattleButtons extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, box) {
         final f = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context));
+        // 보스 도전 버튼이 떠 있나(파밍 중·보스전 아님).
+        final challenge = ref.watch(
+          gameStateProvider.select((s) => s.progress.farming && !(s.battle?.bossActive ?? false)),
+        );
         // 시트를 거의 끝까지 열어 전장이 아주 작으면(줄 위 칸이 전장 위로 삐져 상단 바를 덮음) 버튼을 숨긴다.
         if (f.ultimateRect.top < 0) return const SizedBox.shrink();
         // 그림 자리가 48dp보다 작으면 누르는 영역만 가운데 기준으로 키운다.
@@ -43,6 +48,15 @@ class BattleButtons extends ConsumerWidget {
           children: [
             // 해역 보스 첫 등장 컷인(렌더) 위 보스 이름 — 컷인 동안만.
             const Positioned.fill(child: BossCutInName()),
+            // 내 배 체력: 선원 줄 바로 위 전폭(사용자 2026-10-17 '배 체력이 안 보인다' — 늘 보인다).
+            // 보스 도전 버튼이 보이면(파밍 중) 그 왼쪽에서 끝낸다 — 숫자가 가려지지 않게.
+            Positioned(
+              left: 8,
+              right: challenge ? box.maxWidth - f.bossRect.right + _challengeWidth + 8 : 8,
+              top: f.slotBand.top - 24,
+              height: 20,
+              child: const ShipHpBar(),
+            ),
             // 보스가 쓰러지는 순간 보스 자리에 'BREAK!' (누름 통과).
             const Positioned.fill(child: BossBreakBurst()),
             // 선원 칸: 누르면 후보 시트 (수동 편성). 빈 칸은 ‘+’.
@@ -67,6 +81,9 @@ class BattleButtons extends ConsumerWidget {
     );
   }
 }
+
+/// 보스 도전 버튼이 칸 오른쪽 끝에서 왼쪽으로 펼쳐지는 폭(초상 + '보스 도전!', 360에서 약 127dp) — 배 체력 막대가 비켜 줄 폭.
+const _challengeWidth = 140.0;
 
 /// 선원 줄 한 칸 (렌더 slot_states와 같은 규칙): 출전 선원은 왼쪽부터 채워 그려진다(activeFleet).
 /// 출전 중 → 선원 상세, 열린 빈 칸 → 편성 시트(빈 자리에 앉힘), 잠김 → ‘스테이지 N에서 열림’ 안내 + 칸 아래 작은 ‘스테이지 N’.
@@ -158,10 +175,60 @@ class _SlotDamage extends ConsumerWidget {
             key: Key('fleet.damage.$crewId'),
             padding: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(color: const Color(0xAA000000), borderRadius: BorderRadius.circular(6)),
-            child: Text(text, maxLines: 1, style: Skin.text(11, color: Colors.white)),
+            // 숫자만 있으면 뭔지 몰라서(사용자 피드백 5번) — 작은 칼 + '피해 12K'.
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CustomPaint(size: Size(10, 10), painter: _SwordPainter()),
+                const SizedBox(width: 2),
+                Text(
+                  AppLocalizations.of(context).uiSlotDamage(text),
+                  maxLines: 1,
+                  style: Skin.text(12, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+/// 작은 칼 한 자루(대각선 칼날 + 손잡이) — 선원 칸 피해 표시.
+class _SwordPainter extends CustomPainter {
+  const _SwordPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    canvas
+      ..drawLine(
+        Offset(w * 0.9, w * 0.1),
+        Offset(w * 0.3, w * 0.7),
+        Paint()
+          ..color = const Color(0xFFFFE27A)
+          ..strokeWidth = 1.8
+          ..strokeCap = StrokeCap.round,
+      )
+      ..drawLine(
+        Offset(w * 0.15, w * 0.5),
+        Offset(w * 0.5, w * 0.85),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.6
+          ..strokeCap = StrokeCap.round,
+      )
+      ..drawLine(
+        Offset(w * 0.3, w * 0.7),
+        Offset(w * 0.1, w * 0.9),
+        Paint()
+          ..color = const Color(0xFFB07A3A)
+          ..strokeWidth = 1.8
+          ..strokeCap = StrokeCap.round,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_SwordPainter old) => false;
 }

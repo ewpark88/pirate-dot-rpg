@@ -37,6 +37,29 @@
   "battleBossLeviathan": "Leviathan",
   "battleBossKrakenTitan": "Kraken Titan",
   "battleBossPoseidon": "Poseidon",
+  "battleBossHermitConch": "Hermit Conch",
+  "battleBossJellyQueen": "Jelly Queen",
+  "battleBossHammerShark": "Hammerhead",
+  "battleBossStormRaider": "Storm Raider",
+  "battleBossThunderRayPup": "Thunder Ray Pup",
+  "battleBossGreatSerpent": "Sea Serpent",
+  "battleBossTwisterDolphin": "Twister Dolphin",
+  "battleBossFrostPirate": "Frost Pirate",
+  "battleBossSealChief": "Seal Chief",
+  "battleBossGiantSquid": "Giant Squid",
+  "battleBossIcecrabChief": "Ice Crab Chief",
+  "battleBossBlazePirate": "Blaze Pirate",
+  "battleBossLavaTortoise": "Lava Tortoise",
+  "battleBossFlameEel": "Flame Eel",
+  "battleBossLavaSlime": "Giant Lava Slime",
+  "battleBossHunterSub": "Hunter Sub",
+  "battleBossAnglerKing": "Angler King",
+  "battleBossDeepOctopus": "Deep Octopus",
+  "battleBossPhantomJelly": "Phantom Jelly",
+  "battleBossWraithShip": "Wraith Ship",
+  "battleBossSkeletonCaptain": "Skeleton Captain",
+  "battleBossCursegullLeader": "Cursed Gull Leader",
+  "battleBossSpecter": "Specter",
   "crewOctoName": "Octo the Bomber",
   "crewOctoShort": "Octo",
   "crewStarryName": "Starry the Flamer",
@@ -126,8 +149,8 @@
   "econRebirthShopStartPartsDesc": "After rebirth: cannon, hull, cargo start +{n}; sail, crow's nest +{m}",
   "econRebirthShopDiscountName": "Merchant Regular",
   "econRebirthShopDiscountDesc": "Ship upgrade gold cost -{pct}%",
-  "econRebirthShopBossTimeName": "Hourglass",
-  "econRebirthShopBossTimeDesc": "Boss time limit +{sec}s",
+  "econRebirthShopBossTimeName": "Iron Plating",
+  "econRebirthShopBossTimeDesc": "Ship damage in boss fights and bounties -{pct}%",
   "econRebirthShopOfflineName": "Long Anchorage",
   "econRebirthShopOfflineDesc": "Offline reward cap +{hours}h",
   "econRebirthShopCritChanceName": "Hawk Eye",
@@ -196,6 +219,14 @@
   "opLabWave": "Normal wave (with vanguard)",
   "opGroupLab": "Crew lab",
   "opCardFxMin": "Card reveal from",
+  "opGroupToday": "Today's new features",
+  "opTodayFever": "Fever soon (99%)",
+  "opTodayBreak": "Fill boss break",
+  "opTodayBossPick": "Pick a special boss",
+  "opTodayBoss": "Spawn picked boss",
+  "opTodayArc": "Chain lightning test (pelly legend)",
+  "opTodaySail": "Sail-hold state",
+  "opTodayFirstTen": "Free first 10x again",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -430,7 +461,6 @@
   "uiFarmingRetry": "Farming · boss retry ready",
   "uiPower": "Attack / sec",
   "uiGaugeStage": "{stage}-{wave}",
-  "uiGaugeSeconds": "{sec}s",
   "uiMult": "×{n}",
   "uiMultMax": "MAX",
   "uiUpgradeLevels": "+{n}",
@@ -587,7 +617,6 @@
   "uiRebirthLockedWhy": "Rebirth makes you permanently stronger with map pieces",
   "uiChestTitle": "Treasure chest",
   "uiChestTake": "Just take · {amount}",
-  "uiChestPill": "Choose chest reward",
   "uiCrewTrait": "Trait (now {percent})",
   "uiCrewTraitFull": "At Legend: full 100% — Legend ability",
   "uiLegendProjectileChance": "{percent} chance of +1 projectile",
@@ -851,7 +880,7 @@
   "uiGuideStep6Title": "You're all set!",
   "uiGuideStep6Why": "Gold piles up even when the app is closed. Follow the goal at the top.",
   "uiGuideBossTitle": "Boss fight",
-  "uiGuideBossWhy": "Orange bar = time left. Fill the BREAK bar below to knock the boss down for big damage!",
+  "uiGuideBossWhy": "Red bar = boss HP. Fill the BREAK bar below to knock the boss down for big damage!",
   "uiGuideFeverTitle": "Fever!",
   "uiGuideFeverWhy": "Enough defeats power everyone up for a moment, and the first strike sweeps the screen.",
   "uiGuideChestTitle": "Treasure chest",
@@ -886,6 +915,124 @@
   "@uiSummonFirstTenLater": {
     "placeholders": {
       "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "uiUpgradeAll": "Upgrade all",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiGuideSailTitle": "Set sail!",
+  "uiGuideSailWhy": "Rebirth made you stronger. Set sail to rush through the seas you've cleared.",
+  "uiBossCompare": "Down in ~{kill}s · hit {hit}%",
+  "uiBossCompareEasy": "Easy",
+  "uiBossCompareTight": "Close",
+  "uiBossCompareHard": "Tough",
+  "@uiBossCompare": {
+    "placeholders": {
+      "kill": {
+        "type": "int"
+      },
+      "hit": {
+        "type": "int"
+      }
+    }
+  },
+  "uiFeverChip": "FEVER ×{mult}",
+  "uiFeverEndKills": "Fever over · {kills} defeated · +{amount} gold",
+  "@uiFeverChip": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiFeverEndKills": {
+    "placeholders": {
+      "kills": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendChainLightning": "Chain lightning: jumps to up to {count} enemies ({falloff} damage per jump)",
+  "uiLegendExecute": "Execute: ×{mul} damage to enemies below {below} HP",
+  "uiLegendCharge": "Charged shot: every {every}th shot deals ×{mul} and stuns {sec}s",
+  "uiLegendNoMiss": "Homing feathers: never miss (great vs evasive bosses)",
+  "uiLegendNoMissChance": "Homing feathers: {percent} chance to never miss",
+  "uiHitHoming": "Homing",
+  "@uiLegendChainLightning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "falloff": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendExecute": {
+    "placeholders": {
+      "below": {
+        "type": "String"
+      },
+      "mul": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendCharge": {
+    "placeholders": {
+      "every": {
+        "type": "int"
+      },
+      "mul": {
+        "type": "String"
+      },
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiLegendNoMissChance": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiChestJustTake": "Just take",
+  "uiChestAdMult": "Ad ×{mult}",
+  "uiChestAdGems": "or watch an ad for {gems} gems",
+  "@uiChestAdMult": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiChestAdGems": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
+      }
+    }
+  },
+  "uiSlotDamage": "DMG {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
         "type": "String"
       }
     }
