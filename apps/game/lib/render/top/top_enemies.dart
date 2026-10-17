@@ -246,6 +246,8 @@ class TopEnemies {
   /// 돌발 이벤트 적(황금 물고기·바다뱀·상인선)은 td_event 그림, 나머지는 td_enemy·td_boss.
   String _keyFor(String kind, {required bool boss}) {
     if (sprites.sheet('td_event:$kind') != null) return 'td_event:$kind';
+    // HD 그림만 있는 새 보스(순환 v2 18종 — 도트 없음): 크기 기준은 보통 보스 칸을 빌린다(그림은 HD 종 그대로).
+    if (boss && sprites.sheet('td_boss:$kind') == null && hdBosses.containsKey(kind)) return 'td_boss:hammer_shark';
     return boss ? 'td_boss:$kind' : 'td_enemy:$kind';
   }
 
