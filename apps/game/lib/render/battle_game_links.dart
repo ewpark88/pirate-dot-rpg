@@ -41,6 +41,7 @@ mixin _UiLinks on FlameGame {
       ..wanted = v.wanted
       ..fled = v.fled;
     scene.topHits.loot.newCrewText = v.newCrew;
+    scene.topHits.breaks.text = v.bossBreak;
   }
 
   // 그린 카메라 그대로(보스전 당김·확대·피버 가속 포함) — 탭 자리가 그림과 어긋나지 않게.

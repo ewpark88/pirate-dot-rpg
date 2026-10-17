@@ -62,7 +62,11 @@ class TopEnemies {
         ..xf.add(
           RSTransform.fromComponents(
             // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
-            rotation: e.heading + math.pi / 2 + math.sin(clock / 240 + e.id) * 0.08,
+            rotation:
+                e.heading +
+                math.pi / 2 +
+                math.sin(clock / 240 + e.id) * 0.08 +
+                (e.boss ? scene.topHits.breaks.tiltOf(e.id, clock) : 0),
             scale: key == _merchant ? _merchantScale : breathe,
             anchorX: sheet.frameW / 2,
             anchorY: sheet.frameH / 2,
