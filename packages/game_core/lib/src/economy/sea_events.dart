@@ -178,10 +178,6 @@ GameState _tickActive(GameState s, Field f, SystemContext ctx, SeaEventView ev) 
           rollRarity(t.rarities.bossDropRates, ctx.rng),
         );
       }
-    } else {
-      next = next.copyWith(
-        progress: next.progress.copyWith(rage: math.min(next.progress.rage + e.number('rage'), t.skills.rageMax)),
-      );
     }
     f.foes.removeWhere((x) => x.eventKind == ev.id);
     return _end(addFever(next, t.meta.raw.obj('fever').number('seaEventWin')), ctx, ev.id, 'done');

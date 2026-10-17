@@ -117,8 +117,7 @@ class Field {
     return amount;
   }
 
-  /// 즉석 도전용: 궁극기 처치 수, 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
-  int ultimateKills = 0;
+  /// 즉석 도전용: 이번 틱 동시 처치 수 (ChallengeTracker가 읽고 비운다).
   int multiKill = 0;
 
   /// 파를 이루는 살아 있는 적(돌발 이벤트 적 제외) — 파 끝·다음 파 판정.
