@@ -96,6 +96,7 @@ class TopScenePainter {
     // 보이는 전장(전장 좌표) + 여유 — 화면 밖 적·발사체·이펙트·숫자는 그리지 않는다(S1 배터리).
     visibleWorld = viewRect.shift(cam).inflate(_cullMargin);
     fever.update(clockMs);
+    final region = view.tower != null ? 'abyss' : scene.tables.regions.regionAt(view.stage).id; // 심연의 탑 = 심연 바다
     _sea
       ..fever = fever.sea
       ..boost = fever.level
@@ -103,12 +104,12 @@ class TopScenePainter {
           .wake // 스킨 항적 색(앞 프레임 값)
       ..wakeRainbow = skins.wakeRainbow
       ..advance(clockMs, 0) // 바다 흐름은 늘 세로(배가 대각선으로 꺾어도 배경은 좌우로 안 움직인다)
-      ..paint(c, viewRect, clockMs, region: scene.tables.regions.regionAt(view.stage).id);
+      ..paint(c, viewRect, clockMs, region: region);
     fever.rays(c, viewRect);
     final powerSave = scene.settings.powerSave;
     atmosphere
       ..storm = view.seaEvent?.id == 'storm'
-      ..update(clockMs, scene.tables.regions.regionAt(view.stage).id, _sea.flow, 0, powerSave: powerSave)
+      ..update(clockMs, region, _sea.flow, 0, powerSave: powerSave)
       ..paintUnder(c, viewRect, clockMs, powerSave: powerSave);
     // 전장 좌표로: 카메라(바다 가운데·배 높이)가 원점.
     c

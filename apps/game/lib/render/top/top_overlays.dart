@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
+import 'package:pirate_dot/render/scene/moments.dart';
 import 'package:pirate_dot/render/top/top_atmosphere.dart';
+import 'package:pirate_dot/render/top/top_label.dart';
 import 'package:pirate_dot/render/top/top_marks.dart' show edgeVignette, vignetteBump;
 
 /// 탑다운 피버·폭풍 덮개 (지루함 해소 3종): 피버 금화 비(전장 좌표)와 상자 dp 위 시작 번쩍·번개(테두리는 UI).
@@ -29,6 +31,39 @@ class TopOverlays {
   }
 
   final _flashPaint = Paint();
+  final _label = TopLabel();
+
+  /// 심연의 탑 층 띠: 화면 가운데 보라 띠가 펼쳐졌다 접히며 큰 '12F'(클리어면 위에 작은 CLEAR!).
+  void _tower(Canvas c, Size box) {
+    final m = scene.moments;
+    if (m.towerMs <= 0) return;
+    final t = 1 - m.towerMs / Moments.towerShowMs;
+    final open = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1.0);
+    final h = box.height * 0.085 * open;
+    final cy = box.height * 0.36;
+    _flashPaint.shader = Gradient.linear(
+      Offset(0, cy - h),
+      Offset(0, cy + h),
+      const [
+        Color(0xEE2A1450),
+        Color(0xEE5A2A8A),
+        Color(0xEE2A1450),
+      ],
+      const [0, 0.5, 1],
+    );
+    c.drawRect(Rect.fromLTRB(0, cy - h, box.width, cy + h), _flashPaint);
+    _flashPaint.shader = null;
+    _flashPaint.color = const Color(0xFFFFD45A).withValues(alpha: open);
+    c
+      ..drawRect(Rect.fromLTRB(0, cy - h, box.width, cy - h + 2), _flashPaint)
+      ..drawRect(Rect.fromLTRB(0, cy + h - 2, box.width, cy + h), _flashPaint);
+    if (open < 0.6) return;
+    final pop = t < 0.25 ? 0.6 + 0.4 * (t - 0.15) / 0.1 : 1.0;
+    _label.draw(c, '${m.towerFloor}F', Offset(box.width / 2, cy + box.height * 0.01), box.height * 0.1 * pop);
+    if (m.towerClear) {
+      _label.draw(c, 'CLEAR!', Offset(box.width / 2, cy - h * 1.25), box.height * 0.035, color: const Color(0xFF7AFFB0));
+    }
+  }
 
   /// 상자 dp 위 덮개: 피버 금빛 테두리(맥박)·피버 시작 번쩍·폭풍 번개(번쩍임 설정이 켜졌을 때만).
   void paint(Canvas c, Size box, double ms) {
@@ -43,6 +78,7 @@ class TopOverlays {
       c.drawRect(Offset.zero & box, _flashPaint);
       edgeVignette(c, Offset.zero & box, _feverColor, 0.35 * bump);
     }
+    _tower(c, box);
     final l = atmosphere.lightning(ms);
     // 폭풍 번개: 전체 흰 번쩍 대신 옅은 하늘색 가장자리.
     if (l > 0 && flash) edgeVignette(c, Offset.zero & box, const Color(0xFFCFE6FF), 0.22 * l);

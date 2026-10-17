@@ -66,6 +66,18 @@ class Moments {
   /// 무리전 침몰(배 HP 0, 엔진이 배를 고치고 파를 다시) 연출 남은 시간(ms): 앞 절반 기울며 가라앉고, 뒤 절반 고쳐져 떠오른다.
   double sinkMs = 0;
 
+  /// 심연의 탑 층 띠(S1): 층 시작 때 '12F' 큰 띠 1.6초, 층 클리어면 앞에 'CLEAR!' 도장.
+  int towerFloor = 0;
+  double towerMs = 0;
+  bool towerClear = false;
+  static const towerShowMs = 1600.0;
+
+  void onTowerFloor(int floor, {bool cleared = false}) {
+    towerFloor = floor;
+    towerClear = cleared;
+    towerMs = towerShowMs;
+  }
+
   void onShipSunk() {
     if (sinkMs > 0) return;
     sinkMs = scene.fx.raw.obj('shipHp').number('sinkMs');
@@ -93,6 +105,7 @@ class Moments {
   void resetSeenBosses() => _seenBosses.clear();
 
   void update(double dtMs) {
+    if (towerMs > 0) towerMs -= dtMs;
     if (cutIn.active) cutIn.ageMs += dtMs;
     if (pillarMs > 0) pillarMs -= dtMs;
     if (glowMs > 0) glowMs -= dtMs;
