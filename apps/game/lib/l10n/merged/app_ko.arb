@@ -882,5 +882,17 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeAll": "모두 강화",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

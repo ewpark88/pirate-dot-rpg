@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/ui/bounty/bounty_battle.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
+import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/boss_fail_notice.dart';
 import 'package:pirate_dot/ui/hud/boss_intro.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
@@ -71,7 +72,9 @@ class _Pills extends ConsumerWidget {
       final ranked = <Widget>[
         if (challenge) const ChallengeStrip(),
         if (sea) const SeaEventStrip(),
-        if (cargoFull) const CargoFullPill(),
+        // 화물칸 가득 + 바로 '모두 강화' (한 칸으로 센다).
+        if (cargoFull)
+          const Row(mainAxisSize: MainAxisSize.min, children: [CargoFullPill(), SizedBox(width: 6), UpgradeAllPill()]),
         if (rebirth) const RebirthReadyPill(),
       ];
       pills = [...ranked.take(fever ? 1 : 2), if (!challenge) const ChallengeStrip()];

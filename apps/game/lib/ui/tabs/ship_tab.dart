@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/ui/dock/upgrade_all.dart';
 import 'package:pirate_dot/ui/hud/cargo.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -39,6 +40,8 @@ class ShipTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(8),
       children: [
+        // 모두 강화 원터치(경제 bestUpgradePlan) — 반복 강화 대신.
+        const Padding(padding: EdgeInsets.only(bottom: 8), child: UpgradeAllButton()),
         if (cargoFirst) ...[for (final def in parts.take(1)) _PartRow(def: def)],
         // 지금 배 (크게) · 등급 이름 · 배 스킨(환생 v2 — 스킨이 생기면 보인다).
         const _ShipHeader(),

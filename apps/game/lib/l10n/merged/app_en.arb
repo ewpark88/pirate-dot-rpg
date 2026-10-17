@@ -889,5 +889,17 @@
         "type": "String"
       }
     }
+  },
+  "uiUpgradeAll": "Upgrade all",
+  "uiUpgradeAllPart": "{part} +{n}",
+  "@uiUpgradeAllPart": {
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
