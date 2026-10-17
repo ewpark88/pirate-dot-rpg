@@ -581,3 +581,4 @@
 - ef572604 A줄 골든 일괄(main 보스 18종 + boss-dodge 위, 17장). 남은 문제: 빠른 check는 boss-dodge main 전이라 소유권만 걸림.
 - 47beafc4 선원 발사체 몸통 HD v2(TopShotBody, 계열 11 × 등급). 계열 골든은 다음 A줄.
 - f57711df 잡몹 종류별 처치 연출(7유형). 장면 골든은 다음 A줄.
+- d7dc0b00 새 보스 18종 특성 표식(TopBossSignature). 특성 골든 3장은 A줄(발사체 몸통 차이).
