@@ -50,22 +50,25 @@ void main() {
   String crewOf(String familyId, [int nth = 0]) =>
       tables.crews.crews.where((c) => c.family == familyId).elementAt(nth).id;
 
-  test('1. 첫 틱에 topMobCountAt(1)마리가 화면 밖에 생기고, HP 합 = 단일 HP × mobPoolAt(1) × waveHpPoolFactor', () {
-    final e = engineOf(game())..tick();
-    final enemies = e.state.battle!.enemies;
-    final top = w.raw.obj('top');
-    expect(enemies, hasLength(w.topMobCountAt(1)));
-    bool offCamera(EnemyView x) =>
-        (x.x - top.number('shipX')).abs() > top.number('viewWidth') / 2 ||
-        (x.y - top.number('shipY')).abs() > top.number('viewHeight') / 2;
-    // 가까이 등장(nearSpawn) 몫은 배 근처에서 예고 중 — 그 밖은 모두 화면 밖.
-    expect(enemies.where((x) => !x.emerging).every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
+  test(
+    '1. 첫 틱에 대군 습격 hordeCountAt(1)마리(스테이지 첫 파 — 사용자 2026-10-17)가 화면 밖에 생기고, HP 합 = 단일 HP × mobPoolAt(1) × waveHpPoolFactor',
+    () {
+      final e = engineOf(game())..tick();
+      final enemies = e.state.battle!.enemies;
+      final top = w.raw.obj('top');
+      expect(enemies, hasLength(hordeCountAt(tables, 1)));
+      bool offCamera(EnemyView x) =>
+          (x.x - top.number('shipX')).abs() > top.number('viewWidth') / 2 ||
+          (x.y - top.number('shipY')).abs() > top.number('viewHeight') / 2;
+      // 가까이 등장(nearSpawn) 몫은 배 근처에서 예고 중 — 그 밖은 모두 화면 밖.
+      expect(enemies.where((x) => !x.emerging).every((x) => offCamera(x) && x.hpRatio == 1), isTrue);
 
-    final f = fieldWith([]);
-    spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1
-    final total = f.foes.fold(BigNum.zero, (s, x) => s + x.maxHp);
-    expect(total.closeTo(BigNum.from(w.hpBase * w.mobPoolAt(1) * w.waveHpPoolFactor)), isTrue);
-  });
+      final f = fieldWith([]);
+      spawnWave(f, 1, ctxOf(1), kind: 'crab'); // crab hpScale 1
+      final total = f.foes.fold(BigNum.zero, (s, x) => s + x.maxHp);
+      expect(total.closeTo(BigNum.from(w.hpBase * w.mobPoolAt(1) * w.waveHpPoolFactor)), isTrue);
+    },
+  );
 
   test('2. 아무 공격도 없으면 적이 배에 닿고 ShipDamaged가 나온다', () {
     final e = engineOf(game())..enqueue(const OpSetWave(count: 1, enemyKind: 'crab'));

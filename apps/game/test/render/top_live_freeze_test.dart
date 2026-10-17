@@ -11,8 +11,8 @@ import 'top_recording.dart';
 // 라이브(엔진 push) 재생: 엔진 틱 50ms마다 push, 렌더 16.7ms마다 update. 보이는 적이 전부 그대로인 프레임 비율·가장 긴 구간.
 void main() {
   test('라이브 재생: 보이는 적 전부 정지는 히트스톱 정도로 짧다(엔진이 움직였는데 화면이 전부 멈춘 프레임: 가장 긴 구간 2프레임 이하, 1% 미만)', () {
-    final rec = topRecording(tables, ticks: 800, stage: 23);
-    final s = BattleScene(tables, null);
+    final rec = topRecording(noHordeTables, ticks: 800, stage: 23); // 첫 파 대군 습격은 뺀다(고리가 화면 밖에서 모여드는 첫 몇 초)
+    final s = BattleScene(noHordeTables, null);
     var pushed = 0;
     var engineMs = 0.0;
     var allStill = 0;

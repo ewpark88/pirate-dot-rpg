@@ -164,6 +164,7 @@ void main() {
         ..['base'] = 32
         ..['earlyExtra'] = 12;
       top
+        ..remove('horde') // 대군 습격 끔
         ..['spawnFromView'] = false
         ..['scatterSpanSec'] = 0;
       (top['nearSpawn'] as Map<String, dynamic>)['ratio'] = 0.15;
