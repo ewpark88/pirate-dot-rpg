@@ -93,6 +93,8 @@ extension _TopEvents on EventDirector {
     final dy = e.fromY - ship.dy;
     final len = math.max(1e-6, math.sqrt(dx * dx + dy * dy));
     final color = _enemyShotColors[e.kind] ?? 0xFFFFFFFF;
+    scene.topHits.muzzle.fired(e.enemyId, scene.clockMs); // HD 쏘는 부위 번쩍
+    scene.sound.sfx('enemyFired', clockMs: scene.clockMs, tick: e.tick);
     scene.topHits.shots.fire(
       e.fromX,
       e.fromY,

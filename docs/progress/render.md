@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 현재 계획 | 사용자 피드백(docs/plans/active/user-feedback-2026-10-17.md): #18·#15·#4·#17 완료 → #20 보스 격파 정리 → #6 상자 → 피버 첫 일격·BossBroken·보급 → 대보스 움직임 → 보통 보스 23종 → 도감 v2 연출 |
+| 현재 계획 | 디자인 개편 ④ HD 전부 전환(사용자 결정 2026-10-17, docs/specs/render-hd-style.md): 기준서·HdKit·굽기 완료 → 대보스 6 완료 → 해역·중간 보스 → 순환 23 → 배(등급·스킨 7). 몬스터 27은 S2·S5 |
 | 상태 | v2 승인·main 머지. 선원 바 FleetSlot.rarity 반영. 앱 아이콘 원본(tools/art/icon/)·UI 16px 아이콘 7개 완료 |
 | 막힌 것 | 번쩍임 설정 기본값 '약하게'는 설정 담당(S4/S5) · main UI crew_identity·crew_filter 테스트 4건 실패(내 레인 아님) |
 
@@ -13,6 +13,13 @@
 | (대기) | | 부하 장면 | | |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 밤 2 · S3 · 개편 ③ 연출 마무리 → ④ HD 전환 1단계·대보스 6
+- 7ff1ceaa 스킨별 항적·포구 색 + '새 배 스킨!' 변신. 5831f37f 보스 등장/처치 빛기둥·피버 큰 마법진. f545f6f4 render 골든 일괄(sea-v2) — main 머지됨.
+- HD: 82d81750 기준서·HdKit 부품·hd_species 목록·HdSheets 굽기(기기 해상도 8장×2방향 toImageSync, 14장 캐시)·TopEnemies HD 경로(회전 없이 좌우 뒤집기). 시범 4종 본 게임. d55cb908 blob(line:) 얇은 선. 대보스 6(ice_slime·sea_croc·kraken_titan·leviathan·monster_whale·poseidon) + 눈 선 두께를 눈 크기에 맞춤 + hd_bosses 골든 — 이번 커밋.
+- 이어서: c12ced0a 카드 연출(초반 모든 등급 앞면 공개 + 실제 엔진 5분 회귀 live_cards_test), e209693e HD 보스 24 + 스킨 미리보기 동시 굽기 버그, cf460664 해역 보스 5(생물 보스 29종 끝), 23b2e27e HD 플레이어 배(위에서 본 벡터, 진행 방향 회전). 나눔: S5 = 배 보스 13(main 머지)·몬스터 A, S2 = 몬스터 B.
+- 다음(slot): 최신 main 머지 → render 골든 일괄(HD 보스·배·S5 배 보스) → check --full. 그 뒤 muzzle(쏘기 직전 빛, S5 hd-a의 HdSpecies.muzzle) 연결, crew-traits-2 rooted.
+- 남은 것: crew-traits-2 rooted(wip/render-traits2), 출격 렌더 죽은 코드 정리. 레벨업 반짝이는 S4 카드(OutlineText)로 제안.
 
 ### 2026-10-17 밤 · S3 · 모션 v1·배 스킨 v2/v3 → (멈춤: 쿵푸할매 스타일 디자인 개편 최우선)
 - 모션 v1: a58cfa0 틱 사이 배 자리·방향 보간·적 방향 보간·기기 픽셀 격자, 449537d 등장 팝인·사망 찌그러짐, 3225c7e 2프레임 넘김 섞기 + 4기기 띠 골든 top_motion_strip_*. 배 위아래 출렁·기울기·돛 은은한 펄럭은 TopShipPainter(now) — 이번 커밋.

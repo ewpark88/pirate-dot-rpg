@@ -139,6 +139,17 @@ void main() {
     expect(rec.sfx.length, greaterThan(before));
   });
 
+  test('사운드 점검(2026-10-17): 새 이벤트는 자작 음원을 음높이로 구분(events[].pitch)', () {
+    final rec = _Rec();
+    final d = SoundDirector(tables.fxMap, tables.juice)..audio = rec;
+    var ms = 0.0;
+    for (final e in const ['bossTrait', 'cardRevealed', 'skinChanged', 'enemyFired', 'bossBroken']) {
+      d.sfx(e, clockMs: ms += 500);
+    }
+    expect([for (final s in rec.sfx) s.$1], ['skill', 'promote', 'fanfare', 'pop', 'ultimate']);
+    expect([for (final s in rec.sfx) s.$3], [0.8, 1.25, 1.1, 1.7, 1.0]);
+  });
+
   test('수용 기준 5: audio가 없으면 아무 일 없음', () {
     final s = _play([
       tickOf(0, enemies: [(1, 200)]),

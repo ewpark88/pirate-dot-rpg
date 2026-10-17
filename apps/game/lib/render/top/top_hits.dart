@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:pirate_dot/render/hd/hd_muzzle.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
@@ -37,6 +38,9 @@ class TopHits {
 
   /// 선원 특성(연쇄 번개·처형·충전·추적) — 표가 필요해 EventDirector가 처음 만든다.
   TopTraits? traits;
+
+  /// HD 원거리 적 발사 빛(쏘는 부위).
+  final muzzle = HdMuzzle();
 
   /// 지금까지 띄운 카드 수(CardGranted → 연출, 실제 흐름 회귀 테스트가 센다).
   int cardsShown = 0;
@@ -217,7 +221,9 @@ class TopHits {
     final ship = s.topShip;
     juice.paint(c, now, lite: lite, fever: view.feverTicksLeft > 0);
     bestiary.paintOver(c, now);
-    traits?.paint(c, now, view, s.poses, s.poseCount, lite: lite);
+    traits
+      ?..ship = ship
+      ..paint(c, now, view, s.poses, s.poseCount, lite: lite);
     impact.paint(c, now, flash: flash, lite: lite);
     family.paint(c, now, ship, const Rect.fromLTWH(0, 0, 300, 520), sprites);
     shots.paint(c, now, flash: flash);

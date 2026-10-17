@@ -61,7 +61,8 @@ class SoundDirector {
   void sfx(String event, {required double clockMs, int tick = 0, int salt = 0}) {
     final a = audio;
     if (a == null) return;
-    final id = _fx.events[event]?.strOrNull('sfx');
+    final ev = _fx.events[event];
+    final id = ev?.strOrNull('sfx');
     if (id == null) return;
     if (clockMs < _tokenClock) {
       // 장면 시계가 뒤로 갔다(장면을 새로 만들거나 기록을 처음부터) — 예전 '마지막 재생 시각'이 미래로 남아 효과음이 막히지 않게.
@@ -83,7 +84,8 @@ class SoundDirector {
     final last = _lastMs[id];
     if (last != null && clockMs - last < _minGapMs) return;
     var variant = 0;
-    var pitch = 1.0;
+    // 같은 음원을 음높이로 구분(사운드 점검 2026-10-17 — 새 이벤트는 자작 음원 재사용): events[].pitch, 기본 1.
+    var pitch = ev != null && ev.has('pitch') ? ev.number('pitch') : 1.0;
     if (_hitEvents.contains(event)) {
       final h = ((tick * _primeTick) ^ (salt * _primeSalt)) & 0x7FFFFFFF;
       variant = h % _variants;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flame/cache.dart';
 import 'package:flutter/widgets.dart';
 import 'package:game_data/game_data.dart';
+import 'package:pirate_dot/render/hd/hd_ship.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 import 'package:pirate_dot/render/top/ship_skins.dart';
@@ -65,6 +66,7 @@ class _ShipPreviewState extends State<ShipPreview> {
   @override
   void initState() {
     super.initState();
+    HdShip.load(widget.tables.fxMap.raw.obj('topShip').obj('skinPreview')); // HD 배 스킨 색
     final skin = widget.skin;
     if (_loaded == null || (skin != null && !_skins.ready(skin))) unawaited(_load());
   }

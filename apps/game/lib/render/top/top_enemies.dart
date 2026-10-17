@@ -49,6 +49,14 @@ class TopEnemies {
     final clock = scene.clockMs;
     final lite = scene.topHits.lite;
     _seen.clear();
+    hdSheets
+      ..cap = lite ? HdSheets.lowCell : HdSheets.maxCell
+      ..plan(
+        scene.frame.stage,
+        scene.tables.regions,
+        (k, {required boss}) => sprites.sheet(_keyFor(k, boss: boss))?.frameW,
+      )
+      ..step(snap);
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -88,7 +96,9 @@ class TopEnemies {
       final _Spr spr;
       if (hd != null) {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
-        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading)), scale: hd.scale, hd: true);
+        final right = _facing(e.id, e.heading);
+        spr = (image: hd.image, src: hd.src(f, right: right), scale: hd.scale, hd: true);
+        if (!e.boss) scene.topHits.muzzle.collect(e.id, e.kind, e.drawX, e.drawY, hd.world, right: right, now: clock);
       } else {
         spr = (image: sheet.image, src: _cell(sheet, frame), scale: 1.0, hd: false);
       }
@@ -142,6 +152,7 @@ class TopEnemies {
       c.restore();
     }
     _squashed.clear();
+    if (!under) scene.topHits.muzzle.paint(c);
     _transitions(c, under: under, clock: clock, lite: lite);
   }
 
