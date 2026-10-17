@@ -5,7 +5,7 @@ import 'package:pirate_dot/render/hd/hd_kit_parts.dart';
 
 /// 성게(td_enemy:urchin — 폭풍 · 단단함 · 수중 · 원거리 가시): 넓고 낮은 보라 몸 + 굵은 가시 고리(끝 노랑),
 /// 쏘는 가시 하나는 밝은 노랑으로 크게(왼쪽 위 — 보는 쪽). 테 두껍게, 거품.
-const urchin = HdSpecies(_urchin);
+const urchin = HdSpecies(_urchin, extent: 1.25, muzzle: Offset(-0.77, -0.9));
 
 void _urchin(HdKit k, Canvas c, double r, double t) {
   final sway = k.wave(t, 1) * 0.06;

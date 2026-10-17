@@ -4,7 +4,7 @@ import 'package:pirate_dot/render/hd/hd_kit.dart';
 
 /// 날치(td_enemy:flyingfish — 폭풍 · 빠름 · 수면 · 원거리 물줄기): 길고 가는 파란 몸 + 큰 날개 지느러미 + 갈라진 꼬리,
 /// 뒤로 잔상 줄(빠름 규칙). 쏘는 부위 = 입(앞 끝, 물빛 강조).
-const flyingfish = HdSpecies(_flyingfish, extent: 1.5);
+const flyingfish = HdSpecies(_flyingfish, extent: 1.25, muzzle: Offset(-0.86, 0.02));
 
 void _flyingfish(HdKit k, Canvas c, double r, double t) {
   final flap = k.wave(t, 2);

@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 
 /// 얼음게(td_enemy:icecrab — 빙하 · 분열 → 작은 것 2): 얼음 등딱지에 쪼개질 금 3줄(곧 깨질 듯 반짝), 고드름 집게.
-const icecrab = HdSpecies(_icecrab, extent: 1.35, ground: 0.7);
+const icecrab = HdSpecies(_icecrab, extent: 1.25, ground: 0.7);
 
 /// 작은 얼음게(td_enemy:icecrab_small — 분열로 생긴 것): 같은 색 조금 밝게, 금 없음, 놀란 눈, 빠른 종종걸음.
-/// 분열 규칙 '반 크기': 칸은 같고 extent를 키워 그림을 작게(그림자 높이도 같은 비율).
-const icecrabSmall = HdSpecies(_icecrabSmall, extent: 2.1, ground: 0.7);
+/// 분열 규칙 '반 크기'는 칸이 맡는다(td_icecrab_small 칸 12단위 → 굽기가 이미 작게) — extent는 얼음게와 같게(S3).
+const icecrabSmall = HdSpecies(_icecrabSmall, extent: 1.25, ground: 0.7);
 
 void _icecrab(HdKit k, Canvas c, double r, double t) => _drawIceCrab(k, c, r, t, small: false);
 
