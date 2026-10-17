@@ -164,6 +164,10 @@ class _SceneGateState extends ConsumerState<SceneGate> {
             ),
           ),
         );
+      // 아무것도 못 했으면(앱이 꺼져 0층·0마리로 끝남) 빈 결과 창을 띄우지 않는다(S1 실기기 '0/5 처치' 빈 창).
+      case TowerEnded(floor: 0, chestGems: 0, chestCards: 0):
+      case RushEnded(killed: 0, gems: 0, pieces: 0):
+        break;
       case TowerEnded():
         unawaited(showSkinDialog<void>(context, builder: (_) => TowerResultDialog(end: e)));
       case RushEnded():
@@ -221,7 +225,16 @@ class RushResultDialog extends ConsumerWidget {
     return _ResultDialog(
       key: const Key('rush.result'),
       title: end.reason == 'cleared' ? l10n.uiRushCleared(time) : l10n.uiRushPartial(end.killed, total),
-      lines: [if (end.best) l10n.uiRushNewBest],
+      lines: [
+        if (end.best) l10n.uiRushNewBest,
+        switch (end.reason) {
+          'cleared' => '',
+          'retreat' => l10n.uiTowerEndRetreat,
+          'interrupted' => l10n.uiTowerEndInterrupted,
+          'timeout' => l10n.uiDungeonTimeout,
+          _ => l10n.uiTowerEndSunk,
+        },
+      ].where((t) => t.isNotEmpty).toList(),
       reward: sceneReward(l10n, gems: end.gems, pieces: end.pieces),
     );
   }

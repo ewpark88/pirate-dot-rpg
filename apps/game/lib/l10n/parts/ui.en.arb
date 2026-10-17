@@ -1708,5 +1708,8 @@
     }
   },
   "uiRebirthReadyAgain": "You can rebirth now! Any time from the Voyage tab.",
-  "uiRebirthGo": "Voyage"
+  "uiRebirthGo": "Voyage",
+  "uiCaptainSkill": "Captain's ultimate",
+  "uiCaptainSkillShort": "ULT",
+  "uiBackToExit": "Press back again to exit"
 }
