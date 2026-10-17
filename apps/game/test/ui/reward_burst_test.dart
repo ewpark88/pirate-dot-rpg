@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
 import 'ui_harness.dart';
 
-/// 보상 터짐(디자인 개편 ③): 단계(0.2 솟음 · 0.45 정점 · 1 정렬) 4기기 + 등급 빛 5색(s24).
+/// 보상 터짐(디자인 개편 ③): 단계(0.1 흔들림 · 0.4 열려 솟음 · 1 정렬, 7개 = 2줄) 4기기 + 등급 빛 5색(s24, 상자·도감 책).
 const List<RewardItem> _items = [
-  (icon: UiSprites.coin, label: '52K'),
-  (icon: UiSprites.gem, label: '30'),
-  (icon: UiSprites.shard, label: '3'),
-  (icon: UiSprites.chest, label: '1'),
-  (icon: UiSprites.star, label: '×2'),
+  (icon: UiSprites.coin, label: '52K', tier: RewardTier.gold),
+  (icon: UiSprites.gem, label: '30', tier: RewardTier.blue),
+  (icon: UiSprites.shard, label: '3', tier: RewardTier.purple),
+  (icon: UiSprites.tabSummon, label: '1', tier: RewardTier.purple),
+  (icon: UiSprites.star, label: '2', tier: RewardTier.green),
+  (icon: UiSprites.tailwind, label: '1', tier: RewardTier.blue),
+  (icon: UiSprites.coin, label: '1.2M', tier: RewardTier.gold),
 ];
 
 const List<(String, Size, double)> _devices = [
@@ -34,9 +37,11 @@ Future<void> _pump(WidgetTester tester, Size size, double dpr, List<Widget> pane
     ..devicePixelRatio = dpr;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Row(children: [for (final p in panels) _panel(p)]),
+    ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Row(children: [for (final p in panels) _panel(p)]),
+      ),
     ),
   );
   await tester.runAsync(() async {
@@ -53,22 +58,24 @@ void main() {
   for (final (name, size, dpr) in _devices) {
     testWidgets('보상 터짐 단계 $name', (tester) async {
       await _pump(tester, size, dpr, [
-        for (final t in const [0.2, 0.45, 1.0]) RewardBurst(items: _items, progress: t),
+        for (final t in const [0.1, 0.4, 1.0])
+          RewardBurst(items: _items, source: UiSprites.chest, openedSource: UiSprites.chestOpen, progress: t),
       ]);
-      expect(find.byKey(const Key('reward.item.4')), findsNWidgets(3));
+      expect(find.byKey(const Key('reward.item.6')), findsNWidgets(3));
       await expectLater(find.byType(Row).first, matchesGoldenFile('goldens/ko_reward_burst_$name.png'));
     });
   }
 
   testWidgets('보상 터짐 등급 빛 5색 s24', (tester) async {
     await _pump(tester, _devices[1].$2, _devices[1].$3, [
-      for (final tier in RewardTier.values) RewardBurst(items: _items.take(3).toList(), tier: tier, progress: 1),
+      for (final tier in RewardTier.values)
+        RewardBurst(items: _items.take(3).toList(), source: UiSprites.book, tier: tier, progress: 1),
     ]);
     await expectLater(find.byType(Row).first, matchesGoldenFile('goldens/ko_reward_burst_tiers.png'));
   });
 
   testWidgets('움직이는 터짐은 1.8초 뒤 멈추고, lite는 빛줄기를 줄인다', (tester) async {
-    await _pump(tester, _devices[1].$2, _devices[1].$3, [const RewardBurst(items: _items, lite: true)]);
+    await _pump(tester, _devices[1].$2, _devices[1].$3, [const RewardBurst(items: _items, source: UiSprites.chest, lite: true)]);
     await tester.pump(RewardBurst.duration);
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('reward.item.0')), findsOneWidget);

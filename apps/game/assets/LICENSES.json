@@ -1444,6 +1444,10 @@
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
+    "ui/hd/2.0x/book.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
     "ui/hd/2.0x/check.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
@@ -1453,6 +1457,10 @@
       "license": "OWN"
     },
     "ui/hd/2.0x/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/2.0x/chest_open.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
@@ -1604,6 +1612,10 @@
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
+    "ui/hd/3.0x/book.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
     "ui/hd/3.0x/check.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
@@ -1613,6 +1625,10 @@
       "license": "OWN"
     },
     "ui/hd/3.0x/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/3.0x/chest_open.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
@@ -1764,6 +1780,10 @@
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
+    "ui/hd/book.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
     "ui/hd/check.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
@@ -1773,6 +1793,10 @@
       "license": "OWN"
     },
     "ui/hd/chest.png": {
+      "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
+      "license": "OWN"
+    },
+    "ui/hd/chest_open.png": {
       "source": "tools/art/gen_hd_icons.py 코드 SVG(쿵푸할매 스타일 개편 HD 아이콘, PB 아이콘 모양 참고)",
       "license": "OWN"
     },
