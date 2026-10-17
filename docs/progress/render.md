@@ -571,3 +571,8 @@
 - 다음: boss-feel main 머지 뒤 패치(scratchpad bossfeel_render.patch) 적용·골든, S5 폰 측정 반영.
 - 남은 문제: test/ui 골든 10장(ui 레인), pubspec amb 등록(S1).
 
+## 2026-10-18 (오후) — 피니시·콜드 스타트·boss-feel
+- 한 일: 55fe0314 보스 처치 피니시(VICTORY!/BOSS DOWN!·줌 펀치·bossFinishMs) · 91855ccc 콜드 스타트 HD 굽기 분산 · 742e79de S2 boss-feel da9ac0fc 선합침 + 층 막대 실제 bossBars·manual 큰 컷인.
+- 다음: S1 main 일괄(boss-feel 포함) 뒤 빠른 check 재확인·A줄 차례에 render 골든(층 막대·피니시) 다시 굽기, S5 firstFrame·PSS 재측정 반영.
+- 남은 문제: lane/render 빠른 check가 boss-feel main 전이라 레인 소유권으로 실패(금지 패턴 없음). test/ui 골든 10장(ui 레인), pubspec amb 등록(S1).
+
