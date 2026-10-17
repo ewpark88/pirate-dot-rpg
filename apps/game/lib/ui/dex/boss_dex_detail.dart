@@ -63,10 +63,13 @@ class BossDexDialog extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ColorFiltered(
-              colorFilter: const ColorFilter.mode(Color(0xFF2B3550), BlendMode.srcIn),
-              child: BossPortrait(bossId: entry.id, size: 110),
-            ),
+            if (HdPortrait.has(entry.id, boss: true))
+              HdPortrait(kind: entry.id, boss: true, size: 160, silhouette: true)
+            else
+              ColorFiltered(
+                colorFilter: const ColorFilter.mode(Color(0xFF2B3550), BlendMode.srcIn),
+                child: BossPortrait(bossId: entry.id, size: 110),
+              ),
             const SizedBox(height: 8),
             if (first != null) Text(l10n.uiBossDexUnmet(first), style: Skin.bold(16)),
           ],
@@ -89,8 +92,11 @@ class BossDexDialog extends ConsumerWidget {
                 ? HdPortrait(
                     kind: entry.id,
                     boss: true,
-                    size: 120,
+                    size: 160,
+                    // 평소 → 공격 예고(붉은 눈) → 쓰러짐 순환(S3) · 움직임 끄기면 평소 얼굴.
                     animate: ref.watch(guideMotionProvider) && !MediaQuery.disableAnimationsOf(context),
+                    moods: true,
+                    shadow: true,
                   )
                 : BossPortrait(bossId: entry.id, size: 110),
           ),

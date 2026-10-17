@@ -1949,5 +1949,33 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiRebirthCineMap": "Treasure map +{n}",
+  "@uiRebirthCineMap": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSail": "Set sail again!",
+  "uiRebirthCineTap": "Tap to skip",
+  "uiRebirthCineGems": "Gems +{n}",
+  "@uiRebirthCineGems": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiRebirthCineSummons": "Hero summons ×{n}",
+  "@uiRebirthCineSummons": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiShopSpeedOff": "Normal",
+  "uiShopSpeedOn": "×2"
 }
