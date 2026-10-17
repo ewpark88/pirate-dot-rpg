@@ -7,6 +7,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/skin/outline_text.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/crew_name.dart';
@@ -134,11 +135,7 @@ class _BossDamageDialogState extends ConsumerState<BossDamageDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  l10n.uiBossDamageTitle,
-                  textAlign: TextAlign.center,
-                  style: Skin.text(20, color: Skin.goldTop),
-                ),
+                SubRibbon(l10n.uiBossDamageTitle),
                 if (mvp != null) ...[
                   const SizedBox(height: 28), // 왕관이 초상 위로 22 튀어나온다 — 제목과 안 겹치게
                   Row(
