@@ -31,5 +31,6 @@ void _urchin(HdKit k, Canvas c, double r, double t) {
   k
     ..eye(c, Offset(-r * 0.38, -r * 0.05), r * 0.3, angry: true, look: -1)
     ..eye(c, Offset(r * 0.05, -r * 0.02), r * 0.26, angry: true, look: -1)
-    ..bubbles(c, r, t, x: -r * 0.2);
+    ..underwater(c, body)
+    ..bubbles(c, r, t, at: Offset(-r * 0.9, -r * 0.3));
 }

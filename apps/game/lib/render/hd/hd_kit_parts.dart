@@ -3,17 +3,12 @@ import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
 
-/// 거품 붓(재사용).
-final _bubble = Paint()
-  ..isAntiAlias = true
-  ..style = PaintingStyle.stroke
-  ..color = const Color(0xCCE8F8FF);
-
-/// HdKit 부품 더하기(S5 — 바닷새 날개 · 가시 고리 · 수중 거품). 모든 종이 같이 쓴다(render-hd-style.md 6절 4).
+/// HdKit 부품 더하기(S5 — 바닷새 날개 · 가시 고리). 모든 종이 같이 쓴다(render-hd-style.md 6절 4).
+/// hd_kit.dart가 300줄에 가까워 따로 둔다(S2 underwater·bubbles·wing은 HdKit 안).
 extension HdKitParts on HdKit {
-  /// 날개(옆모습, 몸 뒤로 들린 한 장 — S5 바닷새): 어깨 [at], 길이 [len], [lift](-0.4 내림 ~ 0.6 올림, wave로 날갯짓),
+  /// 바닷새 날개(옆모습, 몸 뒤로 들린 한 장 — 끝 깃 색·꺾임이 있어 갈매기 3종을 구분. 일반 날개는 HdKit.wing): 어깨 [at], 길이 [len], [lift](-0.4 내림 ~ 0.6 올림, wave로 날갯짓),
   /// [bend](0 둥근 날개 ~ 1 가운데가 꺾인 뾰족 날개), 끝 깃 색 [tip]·[tipDark].
-  void wing(
+  void birdWing(
     Canvas c,
     Offset at,
     double len,
@@ -85,15 +80,6 @@ extension HdKitParts on HdKit {
       );
       fill.color = isHot ? const Color(0xFFFFFFFF) : tipColor;
       c.drawCircle(d * (r * outer * 0.96), r * (isHot ? 0.09 : 0.055), fill);
-    }
-  }
-
-  /// 수중 거품(물속 종): 몸 위로 오르는 작은 고리 3개 — 고리마다 한 번 올라 이어진다.
-  void bubbles(Canvas c, double r, double t, {double x = 0}) {
-    _bubble.strokeWidth = math.max(1.5, r * 0.05);
-    for (var i = 0; i < 3; i++) {
-      final up = ((t / HdKit.loopMs + i / 3) % 1) * r * 0.7;
-      c.drawCircle(Offset(x + r * (0.35 - i * 0.3), -r * 0.75 - up), r * (0.07 + i * 0.025), _bubble);
     }
   }
 }

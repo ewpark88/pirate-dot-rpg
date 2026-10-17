@@ -24,7 +24,7 @@ void drawSeabird(HdKit k, Canvas c, double r, double t, SeabirdLook look) {
     ..translate(0, bob);
   // 뒤 날개(조금 어둡게, 반 박자 늦게) → 꼬리(오른쪽 뒤).
   k
-    ..wing(
+    ..birdWing(
       c,
       Offset(r * 0.15, -r * 0.1),
       r * 1.25,
@@ -71,7 +71,7 @@ void drawSeabird(HdKit k, Canvas c, double r, double t, SeabirdLook look) {
   c.drawCircle(Offset(-r * 1.18, -r * 0.1), r * 0.06, k.fill);
   // 앞 날개(크게, 날갯짓) → 눈.
   k
-    ..wing(
+    ..birdWing(
       c,
       Offset(-r * 0.05, -r * 0.02),
       r * 1.35,

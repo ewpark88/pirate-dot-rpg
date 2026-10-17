@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:pirate_dot/render/hd/hd_kit.dart';
-import 'package:pirate_dot/render/hd/hd_kit_parts.dart';
 
 /// 날치(td_enemy:flyingfish — 폭풍 · 빠름 · 수면 · 원거리 물줄기): 길고 가는 파란 몸 + 큰 날개 지느러미 + 갈라진 꼬리,
 /// 뒤로 잔상 줄(빠름 규칙). 쏘는 부위 = 입(앞 끝, 물빛 강조).
@@ -31,7 +30,15 @@ void _flyingfish(HdKit k, Canvas c, double r, double t) {
   k.fill.color = const Color(0x99FFFFFF);
   c.drawOval(Rect.fromCenter(center: Offset(-r * 0.05, r * 0.18), width: r * 1.2, height: r * 0.18), k.fill);
   // 날개 지느러미(몸 위로 크게 펼침, 펄럭).
-  k.wing(c, Offset(-r * 0.25, -r * 0.1), r * 1.2, -flap * 0.35 + 0.1, const Color(0xFFBEE8FF), const Color(0xFF5AAEE0));
+  k.wing(
+    c,
+    Offset(-r * 0.25, -r * 0.1),
+    r * 1.2,
+    -0.75,
+    (flap + 1) / 2,
+    const Color(0xFFBEE8FF),
+    const Color(0xFF5AAEE0),
+  );
   // 입(쏘는 부위): 앞 끝 물빛 동그라미.
   k.fill.color = const Color(0xFFBFF4FF);
   c
