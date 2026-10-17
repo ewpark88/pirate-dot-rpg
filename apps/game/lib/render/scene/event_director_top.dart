@@ -23,6 +23,11 @@ extension _TopEvents on EventDirector {
     final colors = scene.tables.rarities.rarities;
     final color = parseArgb(colors[rarity.clamp(0, colors.length - 1)].color, 'rarities.color');
     final delayMs = math.max<double>(0, (start - _player.position) * _player.tickMs / math.max(1, frame.speed));
+    // 추적 깃털: 방금 띄운 이 선원 발사체를 옆으로 휘게(좌우 번갈아).
+    final curve = scene.topHits.traits?.curveFor(e.crewId, rarity, e.tick) ?? 0;
+    for (final p in scene.projectiles.active) {
+      if (p.crewId == e.crewId && p.progress == 0) p.curve = curve;
+    }
     scene.topHits.muzzles.muzzle(
       tip.dx,
       tip.dy,
@@ -101,7 +106,7 @@ extension _TopEvents on EventDirector {
 
   /// 솟아오르기 예고(EnemyEmerging): warnTicks 동안 물보라, 끝나면 터짐(몸은 EnemyPose.emerging 동안 숨김).
   void _emerging(EnemyEmerging e, BattleView frame) {
-    scene.topHits.emerge(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
+    scene.topHits.emerges.add(e.x, e.y, scene.clockMs, e.warnTicks * _player.tickMs / math.max(1, frame.speed));
   }
 
   /// 강습(assault) 탑다운: 발사체 대신 피해 순간(index)에 배에서 대상마다 휘두르기 + 베기 자국. 색 = 쏜 선원 등급 색.
@@ -117,8 +122,17 @@ extension _TopEvents on EventDirector {
     final targets = e.targetIds.isEmpty ? const [-1] : e.targetIds;
     for (final id in targets.take(6)) {
       final t = id < 0 ? null : _player.enemyAt(index, id) ?? _player.enemyAt(index - 1, id);
-      scene.topHits.slash.swing(ship.dx, ship.dy, t?.x ?? e.x, t?.y ?? e.y, scene.clockMs + delayMs, color);
+      scene.topHits.slash.swing(
+        ship.dx,
+        ship.dy,
+        t?.x ?? e.x,
+        t?.y ?? e.y,
+        scene.clockMs + delayMs,
+        color,
+        rarity: rarity,
+      );
     }
+    if (rarity >= 4) scene.shake.trigger(_juice.shake['aoe']!); // 신화 회전 베기: 화면 미세 흔들림
     _flashSlot(frame, e.crewId);
   }
 
@@ -224,6 +238,8 @@ extension _TopEvents on EventDirector {
   void _juiceHit(Damage e, int index) {
     final en = _player.enemyAt(index, e.targetId);
     if (en == null) return;
+    if (!scene.topHits.lite) scene.topHits.juice.squash(e.targetId, scene.clockMs); // 손맛 v4 찌그러짐
+    if (e.crit) scene.topHits.juice.critStar(en.x, en.y, scene.clockMs);
     // 레이저가 켜진 선원의 피해: 맞은 자리 작은 불꽃.
     final crew = e.crewId;
     if (crew != null && scene.topHits.family.beaming(crew, scene.clockMs)) {

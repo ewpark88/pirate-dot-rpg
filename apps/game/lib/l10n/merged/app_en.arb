@@ -1012,5 +1012,14 @@
         "type": "int"
       }
     }
+  },
+  "uiChestPill": "Choose chest reward",
+  "uiSlotDamage": "DMG {amount}",
+  "@uiSlotDamage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

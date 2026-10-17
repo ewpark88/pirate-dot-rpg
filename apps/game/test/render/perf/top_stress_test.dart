@@ -70,6 +70,11 @@ void main() {
     '탑다운 부하 150마리(사방 넓게 — 화면 밖 많음)',
     (tester) => _measure(tester, 'top stress 150 wide', stressRecording(spread: 300)),
   );
+  // 피버 무리(S2 fever-swarm: 피버 ×2.5, 화면 최대 200마리) + 손맛 v4·피버 v2 파편(피버면 처치 조각 14개).
+  testWidgets(
+    '탑다운 피버 200마리',
+    (tester) => _measure(tester, 'top fever 200', _worst(count: 200), maxCalls: 1600),
+  );
   // 최악 장면(S1 성능 점검): 150마리 + 피버 질주·꼬리·범위 임팩트·보스 패턴·낙뢰·보호막·적 탄·돌파 사격을 한꺼번에.
   testWidgets('탑다운 최악 장면(새 효과 전부)', (tester) => _measure(tester, 'top worst', _worst(), maxCalls: 1400));
   testWidgets(
@@ -78,8 +83,8 @@ void main() {
   );
 }
 
-List<RecordedTick> _worst() {
-  final base = stressRecording();
+List<RecordedTick> _worst({int count = 150}) {
+  final base = stressRecording(count: count);
   return [
     for (var i = 0; i < base.length; i++)
       () {

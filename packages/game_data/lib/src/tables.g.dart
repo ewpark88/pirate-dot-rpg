@@ -1858,6 +1858,121 @@ const Map<String, String> rawTables = {
       "color": "#5AAAA0",
       "w": 72,
       "h": 72
+    },
+    "hermit_conch": {
+      "color": "#EC96AA",
+      "w": 56,
+      "h": 56
+    },
+    "jelly_queen": {
+      "color": "#C88CE6",
+      "w": 56,
+      "h": 56
+    },
+    "hammer_shark": {
+      "color": "#60789A",
+      "w": 56,
+      "h": 56
+    },
+    "storm_raider": {
+      "color": "#3C4266",
+      "w": 56,
+      "h": 56
+    },
+    "thunder_ray_pup": {
+      "color": "#5A6096",
+      "w": 56,
+      "h": 56
+    },
+    "great_serpent": {
+      "color": "#329678",
+      "w": 56,
+      "h": 56
+    },
+    "twister_dolphin": {
+      "color": "#6E96C8",
+      "w": 56,
+      "h": 56
+    },
+    "frost_pirate": {
+      "color": "#468CC8",
+      "w": 56,
+      "h": 56
+    },
+    "seal_chief": {
+      "color": "#96A0AF",
+      "w": 56,
+      "h": 56
+    },
+    "giant_squid": {
+      "color": "#EBC8CD",
+      "w": 56,
+      "h": 56
+    },
+    "icecrab_chief": {
+      "color": "#78BEEB",
+      "w": 56,
+      "h": 56
+    },
+    "blaze_pirate": {
+      "color": "#5A1E18",
+      "w": 56,
+      "h": 56
+    },
+    "lava_tortoise": {
+      "color": "#463C40",
+      "w": 56,
+      "h": 56
+    },
+    "flame_eel": {
+      "color": "#DC5A28",
+      "w": 56,
+      "h": 56
+    },
+    "lava_slime": {
+      "color": "#E6782A",
+      "w": 56,
+      "h": 56
+    },
+    "hunter_sub": {
+      "color": "#AA2828",
+      "w": 56,
+      "h": 56
+    },
+    "angler_king": {
+      "color": "#463C64",
+      "w": 56,
+      "h": 56
+    },
+    "deep_octopus": {
+      "color": "#3C5AAA",
+      "w": 56,
+      "h": 56
+    },
+    "phantom_jelly": {
+      "color": "#5AC8BE",
+      "w": 56,
+      "h": 56
+    },
+    "wraith_ship": {
+      "color": "#78D2B4",
+      "w": 56,
+      "h": 56
+    },
+    "skeleton_captain": {
+      "color": "#E6E1CD",
+      "w": 56,
+      "h": 56
+    },
+    "cursegull_leader": {
+      "color": "#966EAA",
+      "w": 56,
+      "h": 56
+    },
+    "specter": {
+      "color": "#A0BEF0",
+      "w": 56,
+      "h": 56
     }
   },
   "bossLookDefault": "enemy_ship",
@@ -2677,7 +2792,7 @@ const Map<String, String> rawTables = {
   },
   "dex": { "firstKillGems": 5, "bossFirstKillGems": 5 },
   "cargo": { "warnRatio": 0.8, "overflowSec": 0.5 },
-  "fever": { "weave": {"mode": "flow", "amp": 58, "ampY": 22, "periodSec": 4.0, "tiltDeg": 32, "drift": 1.3, "loopEvery": 2, "loopRadius": 20, "loopSec": 1.6},
+  "fever": { "weave": {"mode": "flow", "amp": 60, "ampY": 34, "periodSec": 6.0, "tiltDeg": 15, "drift": 1.0, "loopEvery": 0},
     "killsStart": 200, "killsMax": 1000, "killsRampStage": 40, "bossKill": 0.02, "challengeWin": 0.15, "seaEventWin": 0.1,
     "durationSec": 10, "damageMultiplier": 2.0, "goldMultiplier": 1.5,
     "swarm": { "countMul": 2.5, "max": 200, "pattern": "ring" },
