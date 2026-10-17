@@ -71,7 +71,9 @@ class TopBossCam {
     var fit = maxZoom;
     if (_up > 0) fit = math.min(fit, (shipY - safe.top) / (_up * d));
     if (_down > 0) fit = math.min(fit, (safe.bottom - shipY) / (_down * d));
-    if (_side > 0) fit = math.min(fit, (safe.width / 2) / (_side * d));
+    // 옆: 화면 가운데(카메라 점) ~ 가까운 안전 옆 끝(오른쪽은 광고 탭만큼 더 좁다)
+    final half = math.min(field.center.dx - safe.left, safe.right - field.center.dx);
+    if (_side > 0) fit = math.min(fit, half / (_side * d));
     final want = fit.clamp(0.6, maxZoom);
     if (dt > 0) _zoom += (want - _zoom) * math.min(1, dt / (want < _zoom ? 60 : 500));
     final punchT = (now - _punchAt) / 300;
@@ -89,7 +91,7 @@ class TopBossCam {
     return Rect.fromLTRB(
       f.left + side,
       math.max(f.top, scene.hudTopDp ?? cfg.number('hudTopDp')),
-      f.right - side,
+      f.right - cfg.number('rightDp'),
       f.bottom - cfg.number('bottomDp'),
     );
   }
