@@ -2062,5 +2062,19 @@
   "uiNotifyAskTitle": "Get a heads-up?",
   "uiNotifyAskBody": "Want a ping when you can come back? I'll call you when the cargo hold is full!",
   "uiNotifyAskLater": "Later",
-  "uiNotifyAskYes": "Sure!"
+  "uiNotifyAskYes": "Sure!",
+  "uiLogTitle": "Voyage log",
+  "uiLogKills": "Enemies defeated",
+  "uiLogBosses": "Bosses defeated",
+  "uiLogBestStage": "Best stage",
+  "uiLogRebirths": "Rebirths",
+  "uiLogTower": "Tower best floor",
+  "uiLogRush": "Best rush time",
+  "uiLogCollection": "Crew collected",
+  "uiLogSummons": "Summons",
+  "uiLogFevers": "Fevers",
+  "uiLogUltimates": "Ultimates",
+  "uiLogBounties": "Bounties won",
+  "uiLogDungeon": "Dungeon steps",
+  "uiLogShip": "Ship upgrade total"
 }
