@@ -95,6 +95,17 @@ Map<String, Object?> observe(GameState s, [GameTables? t]) => {
   // 탑다운(탑다운 전환 T1): 전장 방식, 적이 있는 사분면 수(배 중심 기준), 보스가 standoff 원에 섰는가.
   'mode': s.battle?.mode,
   if (t != null) ...topObservations(s, t),
+  // 장면 모드(심연의 탑·보스 러시·요일 던전 — scene_mode.dart): 진행 중인가·남은 도전·기록.
+  'towerActive': s.tower?.active != null,
+  'towerTickets': s.tower?.tickets,
+  'towerBest': s.tower?.best,
+  'rushActive': s.rush?.active != null,
+  'rushTickets': s.rush?.tickets,
+  'rushCleared': s.rush?.bestTicks != null,
+  'dungeonActive': s.dungeon?.active != null,
+  'dungeonTickets': s.dungeon?.tickets,
+  'dungeonBest': (s.dungeon?.cleared.values ?? const <int>[]).fold<int>(0, (a, b) => a > b ? a : b),
+  'inScene': s.battle?.tower != null || s.battle?.rush != null || s.battle?.dungeon != null || s.battle?.bounty != null,
 };
 
 bool _atStandoff(double d, double r) => d >= r - 1e-6 && d <= r + 20; // 큰 보스는 standoff가 더 멀다(bossScale)

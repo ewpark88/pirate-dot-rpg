@@ -136,7 +136,12 @@ abstract final class TopDungeon {
       t,
       c,
       f.sceneFleet ?? const [],
-      bossMaxHp(t, stage, def: t.regions.bosses[id], hpScale: f.enemyHpScale * f.sceneHpMul),
+      bossMaxHp(
+        t,
+        stage,
+        def: t.regions.bosses[id],
+        hpScale: f.enemyHpScale * f.sceneHpMul * c.numberOr('bossHpMul', 1),
+      ),
       c.numberOr('stepBaseSec', 0),
     );
     startBoss(

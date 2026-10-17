@@ -1,0 +1,14 @@
+# 수용 기준(platform-weekday-dungeon): 일요일(아무 계열) 1단계를 깨면 깬 단계가 기록되고 도전이 1 줄며 본 전투로 돌아온다.
+# 담당: platform(S5). 요일은 운영자 고정(op.setWeekday 7) — 시나리오 시계와 상관없이 같은 묶음.
+name: 요일 던전 — 일요일 1단계 클리어
+seed: 5
+state: fixtures/states/all_crews_mythic.json
+steps:
+  - advance: 1t
+  - input: { type: op.setWeekday, weekday: 7 }
+  - expect: { dungeonTickets: 1, dungeonActive: false, dungeonBest: 0 }
+  - input: { type: startDungeon, step: 1 }
+  - advance: 2t
+  - expect: { dungeonActive: true, inScene: true }
+  - advance: 45s
+  - expect: { dungeonActive: false, dungeonBest: 1, dungeonTickets: 0, inScene: false, stage: 160 }
