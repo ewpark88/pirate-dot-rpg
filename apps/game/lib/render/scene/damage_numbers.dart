@@ -65,8 +65,8 @@ class DamageNumbers {
       }
     }
     final scale = _scaleOf(kind);
-    final line = lineHeight(scale);
-    final width = textWidth(amount.format(), scale);
+    final line = lineHeight(scale) * tall;
+    final width = textWidth(amount.format(), scale) * wide;
     var top = y;
     DamageNumber? blocker;
     for (var row = 0; row < stackRows; row++) {
@@ -114,6 +114,11 @@ class DamageNumbers {
   /// 글자 줄 높이 (3×5 도트 글리프 × 배율 + 외곽선·여백).
   static double lineHeight(double scale) => 5 * scale + 3;
 
+  /// 실제 그리는 글자가 도트 글자보다 몇 배 높고·넓은지(테두리 숫자 아틀라스면 HudPainter가 2.3·1.5로 넣는다).
+  /// 쌓기 간격·겹침 판정에 곱한다 — 안 곱하면 큰 글자가 도트 줄 간격으로 쌓여 한 글자씩 세로로 겹쳐 보였다(S5 실기기).
+  double tall = 1;
+  double wide = 1;
+
   /// 글자 폭 (3×5 글리프 4칸 간격 × 배율, pixel_glyphs와 같은 계산).
   static double textWidth(String text, double scale) => text.length * 4 * scale;
 
@@ -123,7 +128,7 @@ class DamageNumbers {
   /// (x, y)에 폭 [width]·줄 높이 [line]인 숫자를 놓으면 겹치는 숫자 (가운데 정렬 기준 글자 상자끼리).
   DamageNumber? _overlapping(double x, double y, double line, double width) {
     for (final n in pool.active) {
-      final w = textWidth(n.text, scaleOf(n));
+      final w = textWidth(n.text, scaleOf(n)) * wide;
       if ((n.x - x).abs() < (w + width) / 2 + _gapX && ((n.y - riseOf(n)) - y).abs() < line) return n;
     }
     return null;
