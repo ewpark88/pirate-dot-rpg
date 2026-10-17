@@ -123,7 +123,7 @@ void main() {
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final s = _filled(0.5);
-    final room = goldRoom(s, _t, capScale: offlineCapScale(_t)); // 복귀는 화물칸 × capMultiplier까지
+    final room = goldRoom(s, _t, capScale: offlineCapScale(_t, s)); // 복귀는 화물칸 × capMultiplier(또는 다음 강화 바닥값)까지
     final container = ProviderContainer(overrides: [initialGameStateProvider.overrideWithValue(s)]);
     addTearDown(container.dispose);
     await tester.pumpWidget(
@@ -164,8 +164,8 @@ void main() {
   testWidgets('복귀 창: 화물칸이 가득이라 받을 골드가 0이면 광고 ×2(+0)를 숨기고 [화물칸 강화]가 주 버튼(실기기 ②)', (
     tester,
   ) async {
-    final s = _filled(offlineCapScale(_t));
-    expect(goldRoom(s, _t, capScale: offlineCapScale(_t)).isZero, isTrue, reason: '시험 전제: 복귀 상한까지 가득');
+    final s = _filled(offlineCapScale(_t, _filled(0)));
+    expect(goldRoom(s, _t, capScale: offlineCapScale(_t, s)).isZero, isTrue, reason: '시험 전제: 복귀 상한까지 가득');
     final container = ProviderContainer(
       overrides: [
         initialGameStateProvider.overrideWithValue(s),
