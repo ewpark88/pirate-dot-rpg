@@ -55,7 +55,7 @@ void main() {
       )!;
       final b = s.image.width * s.image.height * 4;
       if (b > largest) largest = b;
-      expect(sheets.bytes, lessThanOrEqualTo(HdSheets.budgetBytes + largest), reason: kind);
+      expect(sheets.bytes, lessThanOrEqualTo(sheets.budget + largest), reason: kind);
     }
     // 방금 쓴 것은 남는다.
     final (lastKind, lastBoss) = all.last;
@@ -70,5 +70,20 @@ void main() {
     );
     sheets.clear();
     expect(sheets.bytes, 0);
+  });
+
+  test('상한은 화면 크기 비례 — 폰(밀도 4 이하) 48MB · 태블릿(밀도 6) 96MB · 그 사이는 밀도²', () {
+    double budgetAt(double density) {
+      final sheets = HdSheets()..sheet(all.first.$1, boss: all.first.$2, world: 16, density: density);
+      final mb = sheets.budget / 1048576;
+      sheets.clear();
+      return mb;
+    }
+
+    expect(budgetAt(3), 48);
+    expect(budgetAt(4), 48);
+    expect(budgetAt(5), closeTo(48 * 25 / 16, 0.01));
+    expect(budgetAt(6), 96);
+    expect(budgetAt(8), 96);
   });
 }

@@ -47,7 +47,7 @@ void main() {
     expect(gateFirstLegend(at(h, 10), t, 'rare'), 'rare');
     expect(gateFirstLegend(at(h, until), t, 'legend'), 'legend');
     expect(gateFirstLegend(at(h, 10, rebirths: 1), t, 'legend'), 'legend');
-    grantCard(at(h, 10), h.ctx, 'octo', 'legend', 'boss');
+    grantCard(at(h, 10), h.ctx, 'bones', 'legend', 'boss'); // 옥토는 시작 선원 보호로 일반이 된다(starter_guard_test)
     expect(h.of<CardGranted>().single.rarity, 'hero');
   });
 }
