@@ -48,6 +48,10 @@ mixin _UiLinks on FlameGame {
   /// 선원 칸 큰 Lv(사용자 'Lv 크게' — S4 카드와 같은 기준): UI가 선원 id → 레벨을 넣는다. 비면 Lv 안 그림.
   set crewLevels(Map<String, int> v) => scene.crewLevels = v;
 
+  /// 위 HUD 띠(BattleTopStrip) 아래 끝(dp, 전장 상자 위에서) — 보스 카메라가 배·보스를 그 아래에 다 넣는다(S1 '줌인돼 잘림').
+  /// UI가 띠 높이를 재서 넣는다(상태 표시줄 포함). 안 넣으면 fx_map topCam.hudTopDp.
+  set hudTopDp(double v) => scene.hudTopDp = v;
+
   /// 카드 앞면 공개 연출을 몇 등급부터 할지(rarities.json id, 피드백 #22 — 기본 fx_map cardFx.minRarity). 운영자·설정이 넣는다.
   set cardFxMinRarity(String rarityId) {
     scene.topHits.loot.revealFrom = scene.tables.rarities.rarities.indexWhere((r) => r.id == rarityId);
