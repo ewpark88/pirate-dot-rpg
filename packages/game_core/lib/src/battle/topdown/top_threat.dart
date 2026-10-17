@@ -7,6 +7,7 @@ import 'package:game_core/src/battle/foe.dart';
 import 'package:game_core/src/battle/shield.dart';
 import 'package:game_core/src/battle/sortie.dart';
 import 'package:game_core/src/battle/topdown/boss_break.dart';
+import 'package:game_core/src/battle/topdown/boss_dodge.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart';
 import 'package:game_core/src/battle/topdown/boss_traits.dart';
 import 'package:game_core/src/battle/topdown/top_bomber.dart';
@@ -18,12 +19,25 @@ import 'package:game_core/src/engine/game_state.dart';
 
 /// 날아가는 적 탄 (배 위협 (a)) — [ticksLeft] 뒤 배에 [amount] 피해.
 class EnemyShot {
-  EnemyShot({required this.ticksLeft, required this.amount, required this.fromX, required this.fromY});
+  EnemyShot({
+    required this.ticksLeft,
+    required this.amount,
+    required this.fromX,
+    required this.fromY,
+    this.aimX,
+    this.aimY,
+    this.enemyId,
+  });
 
   int ticksLeft;
   final BigNum amount;
   final double fromX;
   final double fromY;
+
+  /// 보스 회피(waves.top.bossDodge): 예고 시작 때 고정한 조준 자리. null이면 늘 맞는다(지금 규칙).
+  final double? aimX;
+  final double? aimY;
+  final int? enemyId;
 }
 
 /// 탑다운 전투의 틱마다 추가 단계: 선원 탄 도착 + 피버 오라 + 배 위협(docs/specs/platform-ship-threat.md).
@@ -114,6 +128,7 @@ extension TopdownStep on Round {
       shot.ticksLeft -= 1;
       if (shot.ticksLeft > 0) continue;
       field.enemyShots.remove(shot);
+      if (!shellHits(shot)) continue; // 보스 회피: 조준 자리에 배가 없으면 빗나감(BossAttackMissed)
       if (invincible) continue;
       final amount = field.hurtShip(shot.amount, w.raw.number('shipHitCap'));
       ctx.emit(

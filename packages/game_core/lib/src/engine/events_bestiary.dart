@@ -3,6 +3,13 @@ part of 'events.dart';
 // 도감 v2 이벤트 (docs/specs/platform-bestiary-v2.md — 먹물·삼키기·분열·자폭).
 
 GameEvent _bestiaryEventFromJson(int t, Json j) => switch (j['type'] as String) {
+  'bossAttackMissed' => BossAttackMissed(
+    t,
+    enemyId: j['enemyId'] as int,
+    kind: j['kind'] as String,
+    x: (j['x'] as num).toDouble(),
+    y: (j['y'] as num).toDouble(),
+  ),
   'inkCloud' => InkCloud(
     t,
     enemyId: j['enemyId'] as int,
@@ -222,4 +229,21 @@ class UltimateCast extends GameEvent {
 
   @override
   Json _fields() => {'crewId': crewId, 'ultimateId': ultimateId, if (manual) 'manual': true};
+}
+
+/// 보스 공격이 빗나갔다(보스 회피 — waves.top.bossDodge): [kind] volley·blast·charge, [x]·[y] = 조준 자리(돌진은 멈춘 자리).
+/// 렌더는 빗나감 물보라·MISS.
+class BossAttackMissed extends GameEvent {
+  const BossAttackMissed(super.tick, {required this.enemyId, required this.kind, required this.x, required this.y});
+
+  final int enemyId;
+  final String kind;
+  final double x;
+  final double y;
+
+  @override
+  String get type => 'bossAttackMissed';
+
+  @override
+  Json _fields() => {'enemyId': enemyId, 'kind': kind, 'x': x, 'y': y};
 }
