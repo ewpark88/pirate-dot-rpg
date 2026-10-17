@@ -884,5 +884,6 @@
     }
   },
   "uiTabQuest": "퀘스트",
-  "uiGaugeOpenVoyage": "항해 지도 열기"
+  "uiGaugeOpenVoyage": "항해 지도 열기",
+  "uiBossChallengeShort": "도전!"
 }

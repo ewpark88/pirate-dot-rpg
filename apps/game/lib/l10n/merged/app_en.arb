@@ -891,5 +891,6 @@
     }
   },
   "uiTabQuest": "Quests",
-  "uiGaugeOpenVoyage": "Open the voyage map"
+  "uiGaugeOpenVoyage": "Open the voyage map",
+  "uiBossChallengeShort": "Fight!"
 }

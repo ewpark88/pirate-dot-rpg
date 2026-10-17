@@ -72,12 +72,17 @@ class _StageGaugeState extends ConsumerState<StageGauge> with SingleTickerProvid
       active: preBoss,
       controller: _pulseCtl,
       // 게이지(스테이지 '37-2')를 누르면 항해 지도(도크 항해 패널)가 열린다(사용자 피드백 #9 A — 항해는 도크 끝으로 옮김).
+      // 안의 글(스테이지·보스 막대 등)은 따로 읽히게 explicitChildNodes, 누름은 이 노드 하나가 맡는다.
       child: Semantics(
+        container: true,
+        explicitChildNodes: true,
         button: true,
         label: l10n.uiGaugeOpenVoyage,
+        onTap: () => ref.read(dockTabRequestProvider.notifier).open(voyageTab),
         child: GestureDetector(
           key: const Key('hud.gauge.tap'),
           behavior: HitTestBehavior.opaque,
+          excludeFromSemantics: true,
           onTap: () => ref.read(dockTabRequestProvider.notifier).open(voyageTab),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 2, 10, 0),

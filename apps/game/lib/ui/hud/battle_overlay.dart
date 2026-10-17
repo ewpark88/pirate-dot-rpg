@@ -52,11 +52,10 @@ class BattleButtons extends ConsumerWidget {
                 rect: hit(r),
                 child: _SlotButton(slot: i, rect: r),
               ),
-            // 보스 도전: 보스 초상 + '보스 도전!' (글이 들어가게 칸 왼쪽으로 넓힘, 오른쪽 끝은 칸에 맞춤).
+            // 보스 도전(사용자 피드백 #9 D·#26): 원형 56dp를 화면 오른쪽 가장자리에 붙이고 선원 줄 바로 위에 띄운다(엄지 자리).
             Positioned(
-              right: box.maxWidth - f.bossRect.right,
-              top: f.bossRect.center.dy - 22,
-              height: 44,
+              right: bossChallengeEdge,
+              top: f.slotRects.first.top - bossChallengeGap - bossChallengeHeight,
               child: const BossChallengeButton(),
             ),
             // 현상금 전투 중에는 같은 자리에 후퇴 버튼 (보스 도전은 파밍 중에만이라 겹치지 않는다).

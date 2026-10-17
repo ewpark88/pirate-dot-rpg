@@ -28,9 +28,18 @@ void main() {
     }
   });
 
-  testWidgets('보스 도전: 보스 초상 + "Boss!" 버튼, 처음 1회 말풍선, 누르면 ChallengeBoss', (tester) async {
+  testWidgets('보스 도전: 원형 56dp(보스 초상 + 리본 "Fight!"), 화면 오른쪽 끝·선원 줄 바로 위, 처음 1회 말풍선, 누르면 ChallengeBoss', (
+    tester,
+  ) async {
     final log = await pumpGame(tester, _with(farming: true), openTab: false);
-    expect(find.text('Boss!'), findsOneWidget);
+    expect(find.text('Fight!'), findsOneWidget);
+    final button = tester.getRect(find.byKey(const Key('boss.challenge')));
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(button.width, greaterThanOrEqualTo(56));
+    expect(screen.width - button.right, closeTo(8, 1), reason: '#26 오른쪽 가장자리에 붙임');
+    final slot = tester.getRect(find.byKey(const Key('fleet.crew.0')));
+    final gap = slot.top - button.bottom;
+    expect(gap, inInclusiveRange(8, 12), reason: '#26 선원 줄과 살짝 마진');
     expect(find.byKey(const Key('boss.bubble')), findsOneWidget);
     await tester.tap(find.byKey(const Key('boss.challenge')));
     expect(log.sent.whereType<ChallengeBoss>(), hasLength(1));
