@@ -75,6 +75,19 @@ class MarkHint extends Command {
   Json _fields() => {'id': id};
 }
 
+/// 조각 스킨 사기(meta.shipSkins source pieces): 보물지도 조각 value개 → 스킨.
+class BuySkin extends Command {
+  const BuySkin(this.id);
+
+  final String id;
+
+  @override
+  String get type => 'buySkin';
+
+  @override
+  Json _fields() => {'id': id};
+}
+
 /// 도감 수집 보상 받기(meta.collectionRewards, S4 '수집의 재미'): 보유 선원이 [at]명 이상이고 아직 안 받았으면 젬·소환.
 class ClaimCollectionReward extends Command {
   const ClaimCollectionReward(this.at);

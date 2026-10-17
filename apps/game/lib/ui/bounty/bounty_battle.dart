@@ -9,6 +9,7 @@ import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/reward_sparkle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
@@ -134,10 +135,7 @@ class _ResultDialog extends ConsumerWidget {
                 SkinIcon(rewardIcon(result.reward), size: 28),
                 const SizedBox(width: 6),
                 RewardSparkle(
-                  child: Text(
-                    rewardText(l10n, result.reward, result.amount),
-                    style: Skin.text(24, color: Skin.primaryEdge),
-                  ),
+                  child: OutlineText(rewardText(l10n, result.reward, result.amount), size: 24, tone: OutlineTone.gold),
                 ),
               ],
             )

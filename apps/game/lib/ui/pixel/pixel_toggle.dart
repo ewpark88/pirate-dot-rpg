@@ -79,7 +79,8 @@ class PixelSegmented<T> extends StatelessWidget {
               key: ValueKey('segment.$value'),
               primary: value == selected,
               onPressed: onChanged == null ? null : () => onChanged!(value),
-              child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              // 좁은 칸(절전 5칸 등)에서 '1 …'로 자르지 않고 줄여서 다 보인다.
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text(label, maxLines: 1)),
             ),
           ),
         ),

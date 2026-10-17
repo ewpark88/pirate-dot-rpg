@@ -133,6 +133,31 @@ def chest():
 
 
 @icon
+def chest_open():
+    """열린 보물상자(보상 연출 가운데) — 뚜껑이 뒤로 젖혀지고 안에서 금빛."""
+    return svg(grad('g', '#c9843f', '#7a4318') + grad('m', '#fff07a', '#e39a00') + rgrad('l', '#fffbe0', '#ffd34a'),
+               f'<path d="M10 20 Q12 4 32 4 Q52 4 54 20 Z" fill="url(#g)" stroke="{INK}" stroke-width="{OL}"/>'
+               f'<path d="M10 20 H54" stroke="url(#m)" stroke-width="5"/>'
+               f'<ellipse cx="32" cy="30" rx="22" ry="7" fill="url(#l)" stroke="{INK}" stroke-width="3"/>'
+               f'<path d="M10 30 H54 V54 Q54 58 50 58 H14 Q10 58 10 54 Z" fill="url(#g)" stroke="{INK}" stroke-width="{OL}"/>'
+               f'<path d="M10 38 H54" stroke="url(#m)" stroke-width="5"/>'
+               f'<rect x="27" y="34" width="10" height="11" rx="2.5" fill="url(#m)" stroke="{INK}" stroke-width="2.5"/>'
+               + sparkle(18, 24, 4) + sparkle(46, 22, 5) + shine(20, 12, 6, 2.5))
+
+
+@icon
+def book():
+    """도감 책(도감 보상 연출 가운데)."""
+    return svg(grad('c', '#4fa8ff', '#1f5fc4') + grad('p', '#fffaf0', '#e6dcc4') + grad('m', '#fff07a', '#e39a00'),
+               f'<path d="M8 12 Q20 8 32 14 Q44 8 56 12 V54 Q44 50 32 56 Q20 50 8 54 Z" fill="url(#c)" stroke="{INK}" stroke-width="{OL}"/>'
+               f'<path d="M12 15 Q22 12 31 17 V51 Q22 47 12 50 Z" fill="url(#p)" stroke="{INK}" stroke-width="2.5"/>'
+               f'<path d="M52 15 Q42 12 33 17 V51 Q42 47 52 50 Z" fill="url(#p)" stroke="{INK}" stroke-width="2.5"/>'
+               f'<path d="{star_path(22, 32, 6, 2.6)}" fill="url(#m)" stroke="{INK}" stroke-width="1.8"/>'
+               f'<path d="M37 26 H47 M37 32 H47 M37 38 H45" stroke="#b7863e" stroke-width="2"/>'
+               + sparkle(54, 8, 4))
+
+
+@icon
 def lock():
     return svg(grad('g', '#ffe27a', '#d98a00'),
                f'<path d="M20 30 V22 Q20 10 32 10 Q44 10 44 22 V30" fill="none" stroke="{INK}" stroke-width="12"/>'

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/hd/hd_portrait.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/dex/monster_dex_data.dart';
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
@@ -72,7 +73,7 @@ class MonsterDexCard extends ConsumerWidget {
   }
 }
 
-/// 잡몹 그림 (`enemies/td_<id>.png` 첫 칸). [shadow]면 검은 실루엣.
+/// 잡몹 그림: HD 카툰(HdPortrait) — HD가 아닌 종은 `enemies/td_<id>.png` 첫 칸. [shadow]면 검은 실루엣.
 class MonsterSprite extends StatelessWidget {
   const MonsterSprite({required this.id, this.size = 40, this.shadow = false, super.key});
 
@@ -82,7 +83,15 @@ class MonsterSprite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final img = SizedBox.square(
+    // HD 카툰 종이면 HD 초상(전장과 같은 그림), 아니면 지금 도트 첫 칸.
+    final img = HdPortrait(kind: id, size: size, fallback: _dot());
+    return shadow
+        ? ColorFiltered(colorFilter: const ColorFilter.mode(Color(0xFF2B3550), BlendMode.srcIn), child: img)
+        : img;
+  }
+
+  Widget _dot() {
+    return SizedBox.square(
       dimension: size,
       child: ClipRect(
         child: OverflowBox(
@@ -99,9 +108,6 @@ class MonsterSprite extends StatelessWidget {
         ),
       ),
     );
-    return shadow
-        ? ColorFiltered(colorFilter: const ColorFilter.mode(Color(0xFF2B3550), BlendMode.srcIn), child: img)
-        : img;
   }
 }
 
@@ -117,7 +123,7 @@ class MonsterDexSheet extends ConsumerWidget {
       key: const Key('dex.sheet'),
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
       children: [
-        Text(l10n.uiDexTitle, style: Theme.of(context).textTheme.titleLarge),
+        SubRibbon(l10n.uiDexTitle),
         Text(l10n.uiDexHint, style: Skin.text(13, color: Skin.sub)),
         for (final r in dex) ...[
           const SizedBox(height: 12),

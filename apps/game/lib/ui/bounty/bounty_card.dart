@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart' show AdPlacement;
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
+import 'package:pirate_dot/render/hd/hd_portrait.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/bounty/bounty_sheet.dart';
 import 'package:pirate_dot/ui/bounty/bounty_vm.dart';
@@ -47,7 +48,7 @@ String rewardIcon(BountyRewardKind r) => switch (r) {
   BountyRewardKind.mapPieces => UiSprites.tabMap,
 };
 
-/// 보스 초상 (해역 보스 옆모습 그림 재사용 — 새 그림 없음). [dim]이면 흐리게(오늘 아닌 요일).
+/// 보스 초상: HD 카툰(HdPortrait) — HD가 아닌 보스는 해역 보스 옆모습 도트 그림. [dim]이면 흐리게(오늘 아닌 요일).
 class BossPortrait extends StatelessWidget {
   const BossPortrait({required this.bossId, this.size = 56, this.dim = false, super.key});
 
@@ -58,9 +59,12 @@ class BossPortrait extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Opacity(
     opacity: dim ? 0.4 : 1,
-    child: SizedBox.square(
-      dimension: size,
-      child: Image.asset(
+    // HD 카툰 보스면 HD 초상(전장과 같은 그림), 아니면 해역 보스 도트 그림.
+    child: HdPortrait(
+      kind: bossId,
+      boss: true,
+      size: size,
+      fallback: Image.asset(
         'assets/bosses/$bossId.png',
         filterQuality: FilterQuality.none,
         fit: BoxFit.contain,
@@ -96,8 +100,9 @@ class BountyCard extends ConsumerWidget {
           key: const Key('bounty.card'),
           behavior: HitTestBehavior.opaque,
           onTap: openSheet,
-          child: SkinCard(
+          child: Container(
             padding: const EdgeInsets.all(10),
+            decoration: Skin.inset(radius: Skin.radiusCard),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -203,7 +208,7 @@ class BountyTicketPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: full ? const Color(0xFFFFE3E7) : Skin.cream,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: full ? Skin.danger : Skin.goldBottom, width: 1.5),
+        border: Border.all(color: full ? Skin.danger : Skin.outline, width: 2),
       ),
       child: Text(
         AppLocalizations.of(context).uiBountyTickets(cap, tickets),
