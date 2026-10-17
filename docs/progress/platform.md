@@ -1,5 +1,10 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 늦은 밤 · S5 · 스토어 샷 개편 후 장면·폰 읽기 전용 측정
+- **현재 위치**: store-shots-v3(0a90be73) main 머지됨 — 굽기는 slot 순서 S2 → S4 → S5. 폰 측정(프레임·메모리·온도 3회) 진행 중 → 표를 S1에.
+- 장면 8: HD 무리·피버 v2·대보스 브레이크(폭풍해 80)·연쇄 번개(볼트·범고래·수달, 120)·새 동료 카드·선원 상세·10연 소환·환생 지도. 도우미 store_shot_kit.dart.
+- 배운 것: 파이썬 open(…,'w')는 윈도에서 CRLF로 쓴다 — newline='' 필수. 장면 후보는 엔진만 짧게 돌려 이벤트 틱을 먼저 확인.
+
 ## 2026-10-18 늦은 밤 · S5 · 쏘기 직전 예고·상세 피해 줄·BGM 믹스
 - **현재 위치**: review/enemy-windup 08fccf30 — S4(피해 줄 UI) 검토·S1 머지 대기.
 - 한 일: EnemyWindup(ranged·boss·volley, waves.top.windupSec 0.4, sim 불변 시험), 선원 상세 피해 줄(#13), BGM 기본 믹스 0.7.
