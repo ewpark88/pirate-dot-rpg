@@ -63,6 +63,7 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'enemyFired' ||
     'enemyWindup' ||
     'enemyEmerging' ||
+    'knockback' ||
     'attackMissed' ||
     'shieldUp' ||
     'shieldBroken' ||
