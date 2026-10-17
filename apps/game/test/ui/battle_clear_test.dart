@@ -22,7 +22,6 @@ const List<(String, Size, double)> _devices = [
 
 /// 늘 떠 있을 수 있는 전장 위 UI (띠·알약·말풍선). 처음 한 번 뜨는 안내 카드·튜토리얼은 뺀다.
 const _overlays = [
-  'chest.pill',
   'hud.farming',
   'fun.sea.goldfish',
   'fun.challenge.kills',
@@ -69,9 +68,8 @@ void main() {
         expect(r.width, lessThan(area.width * 0.9), reason: '$key 전폭');
         expect(r.overlaps(center), isFalse, reason: '$key가 전장 가운데를 덮는다 $r / $center');
       }
-      // 상자 광고 = 왼쪽 가장자리 알약(높이 ≤ 44dp), 상자 위 말풍선 없음(사용자 지시 2026-10-16).
-      expect(find.byKey(const Key('chest.pill')), findsOneWidget);
-      expect(tester.getSize(find.byKey(const Key('chest.pill'))).height, lessThanOrEqualTo(44));
+      // 상자 광고 알약·말풍선 없음(사용자 지시 2026-10-17 — 상자를 누르면 창).
+      expect(find.byKey(const Key('chest.pill')), findsNothing);
       expect(find.byKey(const Key('chest.adBubble')), findsNothing);
       // 현상금 전투 중 (현상금 알약만).
       final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));

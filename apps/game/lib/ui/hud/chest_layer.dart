@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
-import 'package:pirate_dot/render/layout.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/ui/hud/chest_edge.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
@@ -52,14 +51,8 @@ class ChestLayer extends ConsumerWidget {
             : f.worldToDp(Offset(x, y), Offset(tables.waves.top.shipX, shipY));
         // 카메라 밖(상자 밖)의 보물상자는 보이지 않는다 — 누를 곳은 없고 가장자리 알약만.
         final onScreen = (Offset.zero & box.biggest).contains(at);
-        // 광고 제안은 상자 위 말풍선 대신 왼쪽 가장자리 작은 알약(ChestEdgePill) — 상자를 누르면 같은 선택 시트(사용자 지시 2026-10-16).
-        final slots = battleFrameFor(box.biggest, MediaQuery.devicePixelRatioOf(context)).slotRects;
-        final slotTop = slots.isEmpty ? box.maxHeight : slots.map((r) => r.top).reduce((a, b) => a < b ? a : b);
-        // 세로: 전장 높이 55% 근처, 선원 줄 위로 8dp 여유.
-        final pillTop = (box.maxHeight * 0.55).clamp(0.0, slotTop - chestPillSize.height - 8);
         return Stack(
           children: [
-            Positioned(left: 4, top: pillTop, child: const ChestEdgePill()),
             if (onScreen)
               Positioned(
                 left: at.dx - _size / 2,

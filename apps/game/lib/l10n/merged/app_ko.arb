@@ -588,7 +588,6 @@
   "uiRebirthLockedWhy": "환생하면 보물지도 조각으로 영구히 강해져요",
   "uiChestTitle": "보물상자",
   "uiChestTake": "그냥 받기 · {amount}",
-  "uiChestPill": "보물상자 보상 고르기",
   "uiCrewTrait": "특징 (지금 {percent})",
   "uiCrewTraitFull": "전설이 되면 100%로 — 전설 능력",
   "uiLegendProjectileChance": "{percent} 확률로 발사체 +1",
@@ -987,6 +986,23 @@
     "placeholders": {
       "percent": {
         "type": "String"
+      }
+    }
+  },
+  "uiChestJustTake": "그냥 받기",
+  "uiChestAdMult": "광고 ×{mult}",
+  "uiChestAdGems": "또는 광고 보고 젬 {gems}",
+  "@uiChestAdMult": {
+    "placeholders": {
+      "mult": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiChestAdGems": {
+    "placeholders": {
+      "gems": {
+        "type": "int"
       }
     }
   }
