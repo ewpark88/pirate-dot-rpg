@@ -46,7 +46,7 @@ void main() {
     await tester.pumpAndSettle();
     final first = s.battle!.fleet.first.crewId;
     expect(find.byKey(Key('fleet.damage.$first')), findsOneWidget);
-    expect(find.descendant(of: find.byKey(Key('fleet.damage.$first')), matching: find.text('12K')), findsOneWidget);
+    expect(find.descendant(of: find.byKey(Key('fleet.damage.$first')), matching: find.text('DMG 12K')), findsOneWidget);
   });
 
   testWidgets('#14 보스 처치 → 보상 연출 뒤 창(MVP·선원 줄), 누르면 닫힘', (tester) async {

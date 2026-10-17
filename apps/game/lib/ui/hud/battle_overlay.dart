@@ -158,10 +158,60 @@ class _SlotDamage extends ConsumerWidget {
             key: Key('fleet.damage.$crewId'),
             padding: const EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(color: const Color(0xAA000000), borderRadius: BorderRadius.circular(6)),
-            child: Text(text, maxLines: 1, style: Skin.text(11, color: Colors.white)),
+            // 숫자만 있으면 뭔지 몰라서(사용자 피드백 5번) — 작은 칼 + '피해 12K'.
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CustomPaint(size: Size(10, 10), painter: _SwordPainter()),
+                const SizedBox(width: 2),
+                Text(
+                  AppLocalizations.of(context).uiSlotDamage(text),
+                  maxLines: 1,
+                  style: Skin.text(12, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+/// 작은 칼 한 자루(대각선 칼날 + 손잡이) — 선원 칸 피해 표시.
+class _SwordPainter extends CustomPainter {
+  const _SwordPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    canvas
+      ..drawLine(
+        Offset(w * 0.9, w * 0.1),
+        Offset(w * 0.3, w * 0.7),
+        Paint()
+          ..color = const Color(0xFFFFE27A)
+          ..strokeWidth = 1.8
+          ..strokeCap = StrokeCap.round,
+      )
+      ..drawLine(
+        Offset(w * 0.15, w * 0.5),
+        Offset(w * 0.5, w * 0.85),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.6
+          ..strokeCap = StrokeCap.round,
+      )
+      ..drawLine(
+        Offset(w * 0.3, w * 0.7),
+        Offset(w * 0.1, w * 0.9),
+        Paint()
+          ..color = const Color(0xFFB07A3A)
+          ..strokeWidth = 1.8
+          ..strokeCap = StrokeCap.round,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_SwordPainter old) => false;
 }
