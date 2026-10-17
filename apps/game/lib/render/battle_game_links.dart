@@ -42,6 +42,12 @@ mixin _UiLinks on FlameGame {
       ..fled = v.fled;
     scene.topHits.loot.newCrewText = v.newCrew;
     scene.topHits.breaks.text = v.bossBreak;
+    scene.topHits.loot.crewName = v.crewName;
+  }
+
+  /// 카드 앞면 공개 연출을 몇 등급부터 할지(rarities.json id, 피드백 #22 — 기본 fx_map cardFx.minRarity). 운영자·설정이 넣는다.
+  set cardFxMinRarity(String rarityId) {
+    scene.topHits.loot.revealFrom = scene.tables.rarities.rarities.indexWhere((r) => r.id == rarityId);
   }
 
   // 그린 카메라 그대로(보스전 당김·확대·피버 가속 포함) — 탭 자리가 그림과 어긋나지 않게.
