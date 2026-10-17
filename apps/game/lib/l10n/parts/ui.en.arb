@@ -1647,5 +1647,12 @@
   "uiWeekday4": "Thursday",
   "uiWeekday5": "Friday",
   "uiWeekday6": "Saturday",
-  "uiWeekday7": "Sunday"
+  "uiWeekday7": "Sunday",
+  "uiAdFold": "Show ad rewards",
+  "uiTalkScenes": "Abyss Tower, Boss Rush and Weekday Dungeon are open! Try them in the Voyage tab.",
+  "uiTalkPass": "Your Voyage Pass is filling up! Level it with quests and check-ins.",
+  "uiTipTower": "Every floor has more foes. How far can you go? Sweep floors you've cleared.",
+  "uiTipRush": "Beat this week's 5 bosses faster for bigger rewards. Records reset weekly.",
+  "uiTipDungeon": "Each weekday has its own families — fight with those crews and earn their cards.",
+  "uiTipPass": "Top row is free, bottom row is the pass. Rewards are claimed in order."
 }

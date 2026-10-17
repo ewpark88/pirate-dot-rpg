@@ -2,7 +2,9 @@ import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/fleet.dart' show armField;
-import 'package:game_core/src/battle/spawner.dart' show bossStandoffFor, spawnWave, startBoss;
+import 'package:game_core/src/battle/spawner.dart' show bossMaxHp, bossStandoffFor, spawnWave, stageCurve, startBoss;
+import 'package:game_core/src/battle/topdown/scene_hp.dart';
+import 'package:game_core/src/battle/topdown/scene_spawn.dart';
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
 import 'package:game_core/src/economy/dungeon.dart';
 import 'package:game_core/src/economy/formation.dart' show activeFleet;
@@ -34,7 +36,9 @@ abstract final class TopDungeon {
       ..dungeon = DungeonRun(group: active.group, step: active.step, waves: dungeonCfg(t).integer('wavesPerStep'))
       ..sceneFleet = crews
       ..scenePattern = g.str('pattern')
-      ..sceneHpMul = g.numberOr('hpMul', 1); // 선원 2명 계열이 낀 날은 적을 가볍게(S2)
+      ..sceneHpMul = g
+          .numberOr('hpMul', 1) // 선원 2명 계열이 낀 날은 적을 가볍게(S2)
+      ..scenePooled = true;
     if (fresh) return _fail(s, f, ctx, 'interrupted');
     armField(f, s, t, crews);
     ctx.emit(DungeonStarted(ctx.tick, group: active.group, step: active.step, crewIds: crews));
@@ -86,6 +90,15 @@ abstract final class TopDungeon {
       for (final id in t.regions.regionAt(stage).enemies)
         if (layer == null || t.regions.enemies[id]?.layer == layer) id,
     ];
+    // HP 위 막기: 이 파 총 HP = max(스테이지 기준, 출전 DPS × (stepBaseSec + 단계 × stepSec) ÷ 파 수 × dpsHpRatio) — 배율로 맞춘다.
+    final w = t.waves;
+    // 스테이지 기준 = 평소 한 파 총량 — 파는 scenePooled라 평소처럼 HP·공격을 마리 수로 나눈다(마리마다 한 마리 전체 값이면
+    // n배 단단하고 n배 아파 중반 함대가 1단계 2초 만에 가라앉았다).
+    final stageTotal = stageCurve(w.hpBase, w.hpGrowth, stage).times(w.waveHpPoolFactor * w.mobPoolAt(stage));
+    final sec = (c.numberOr('stepBaseSec', 0) + run.step * c.numberOr('stepSec', 0)) / run.waves;
+    final total = sceneHp(s, t, c, f.sceneFleet ?? const [], stageTotal, sec);
+    final hpMul = g.numberOr('hpMul', 1);
+    f.sceneHpMul = hpMul * (total / stageTotal).toDouble();
     final before = f.foes.length;
     spawnWave(
       f,
@@ -94,15 +107,8 @@ abstract final class TopDungeon {
       count: n,
       kind: kinds.isEmpty || layer == null ? null : kinds[ctx.rng.nextInt(kinds.length)],
     );
-    final geo = f.geometry;
-    if (geo is TopGeometry) {
-      final mul = c.number('spawnDistanceMul'); // 화면 가장자리 바로 밖에서(탑과 같음)
-      for (final e in f.foes.skip(before)) {
-        e
-          ..x = geo.top.shipX + (e.x - geo.top.shipX) * mul
-          ..y = geo.top.shipY + (e.y - geo.top.shipY) * mul;
-      }
-    }
+    f.sceneHpMul = hpMul;
+    sceneSpawnAtView(f, before); // 화면 가장자리 바로 밖에서(탑과 같음)
     run.wave += 1;
   }
 
@@ -117,12 +123,27 @@ abstract final class TopDungeon {
     final id = weak ?? t.regions.regionAt(stage).boss;
     final geo = f.geometry;
     final top = geo is TopGeometry ? geo.top : null;
+    final c = dungeonCfg(t);
+    final hp = sceneHp(
+      s,
+      t,
+      c,
+      f.sceneFleet ?? const [],
+      bossMaxHp(
+        t,
+        stage,
+        def: t.regions.bosses[id],
+        hpScale: f.enemyHpScale * f.sceneHpMul * c.numberOr('bossHpMul', 1),
+      ),
+      c.numberOr('stepBaseSec', 0),
+    );
     startBoss(
       f,
       stage,
       ctx,
       emit: false,
       bossDef: t.regions.bosses[id],
+      maxHp: hp, // max(스테이지 HP, 출전 DPS × stepBaseSec × dpsHpRatio)
       gold: false,
       x: top?.shipX,
       y: top == null ? null : top.shipY - bossStandoffFor(t, id) - top.bossRadius,
@@ -159,6 +180,7 @@ abstract final class TopDungeon {
       ..sceneFleet = null
       ..scenePattern = null
       ..sceneHpMul = 1
+      ..scenePooled = false
       ..shipHp = f.shipHpMax
       ..travelLeft = ctx.tables.waves.travelSec;
     armField(f, s, ctx.tables, activeFleet(s, ctx.tables));

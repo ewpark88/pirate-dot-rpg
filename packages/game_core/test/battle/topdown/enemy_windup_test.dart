@@ -5,13 +5,15 @@ import 'package:game_core/testing.dart';
 import 'package:game_data/game_data.dart';
 import 'package:test/test.dart';
 
+import 'still_ship.dart';
+
 /// 쏘기 직전 예고 EnemyWindup(S1 2026-10-18): 원거리 잡몹·보스 기본 포탄·보스 일제 사격이 쏘기 windupSec 전에 예고.
 /// 예고만 — 발사·피해·진행은 windupSec을 꺼도 똑같다(sim 불변).
 void main() {
   final start = DateTime.utc(2026, 11);
 
   GameTables tablesWith(double windup) {
-    final raw = Map<String, String>.of(rawTables);
+    final raw = stillShipRaw();
     final w = jsonDecode(raw['waves']!) as Map<String, dynamic>;
     (w['top'] as Map<String, dynamic>)['windupSec'] = windup;
     raw['waves'] = jsonEncode(w);

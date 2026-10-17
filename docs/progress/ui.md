@@ -4,7 +4,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | 계획 | 최우선: 쿵푸할매 스타일 디자인 개편 `docs/plans/active/design-kungfu-style.md`(main) ①단계 UI 스킨 — 내가 주 담당 |
-| 상태 | lane/ui — 상점·운영자 결제·항해 패스·요일 던전 끝(빠른 check 통과), main f6dc2ecc 머지 |
+| 상태 | lane/ui 734c1afa — test/ui 669·test/render 293 초록, 보스전 띠 아래 비움, main 8120b03d 위 |
 | 다음 | 실기기 확인 뒤 다듬기(상점 가격 글꼴 '₩'·패스 스킨 미리보기 장식) · trialsReady export 오면 UI 어댑터 지우기 |
 | 기다리는 것 | S2 trialsReady export · S5 결제 어댑터 |
 
@@ -15,6 +15,10 @@
 - 다시 시작할 첫 파일: `apps/game/test/ui/boss_traits_test.dart`(골든 추가) → `apps/game/lib/ui/hud/boss_traits.dart`.
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-18 · S4 · 보스전 띠 아래 비우기 · test/ui 복구
+- 734c1afa 보스전·장면 모드 중 띠 아래 알약·약점 줄 없앰, 장면 글은 띠 안. 항해 탭 길어져 깨진 시험 → showInSheet. 전장 안전 영역(위 82dp × uiScale, 아래 선원 줄 − 24dp) S3에 전달.
+- 교훈: 빠른 check엔 test/ui가 없다 — 화면을 넓게 바꾼 날엔 해시 전에 test/ui 전부.
 
 ### 2026-10-18 · S4 · 결제·패스·요일 던전
 - 211ac225 상점(iap.json 18종, 가격 = products().price·없으면 숨김, 묶음·첫 구매 ×2·보유 중·구독 n일·월간 젬 받기, 위 막대 버튼, PurchaseGate 토스트, 스타터 1회 팝업 7일) + A줄 골든 일괄.

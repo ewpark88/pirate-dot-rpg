@@ -3255,7 +3255,7 @@ const Map<String, String> rawTables = {
       { "id": "storm", "weight": 10, "durationSec": 45, "enemySpeed": 1.3, "goldMultiplier": 1.5 }
     ]
   },
-  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.7, "stepStage": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "spawnDistanceMul": 0.55, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
+  "dungeon": {"ticketsPerDay": 1, "maxTickets": 3, "steps": 10, "stageRatio": 0.6, "stepStage": 5, "fillFleet": true, "bossHpMul": 0.3, "dpsHpRatio": 1.6, "stepBaseSec": 8, "stepSec": 3, "wavesPerStep": 2, "baseCount": 25, "countGrowth": 1.1, "maxCount": 150, "stepTimeLimitSec": 60, "cardsPerStep": 1, "gemsPerStep": 1,
     "groups": [
       {"id": "mon", "hpMul": 0.8, "weekday": 1, "families": ["pierce", "laser"], "pattern": "arc", "layer": "surface"},
       {"id": "tue", "hpMul": 1.0, "weekday": 2, "families": ["underwater", "shock"], "pattern": "swarm", "layer": "underwater"},
@@ -3265,10 +3265,10 @@ const Map<String, String> rawTables = {
       {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
       {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
     ]},
-  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.8, "hpMultiplier": 1.0, "perBossGems": 3,
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 0.8, "rushBossSec": 15, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
-  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5, "spawnDistanceMul": 0.55,
-    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 25, "cards": 1}, {"floor": 20, "gems": 45, "cards": 2}, {"floor": 30, "gems": 70, "cards": 3}]},
+  "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5,
+    "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 20, "cards": 1}, {"floor": 20, "gems": 35, "cards": 2}, {"floor": 30, "gems": 50, "cards": 3}]},
   "bounty": {
     "timeLimitSec": 30,
     "ticketsPerDay": 3, "ticketCap": 9, "stagePerTier": 10, "hpMultiplier": 1.5, "maxTier": 30, "giftGems": 10,
@@ -3996,6 +3996,7 @@ const Map<String, String> rawTables = {
     "mobRadius": 6,
     "bossRadius": 24,
     "bossStandoff": 100,
+    "armsArcDeg": 100,
     "bossScale": {"wall": 1.8, "region": 1.4, "other": 1.2, "standoffGrow": 0, "orbitMax": 1.5, "swayDeg": 20},
     "spawnMargin": 12,
     "approachRadius": 206,
@@ -4006,7 +4007,8 @@ const Map<String, String> rawTables = {
     "spawnPatterns": { "scatter": 0.5, "swarm": 0.35, "arc": 0.15 },
     "scatterGapSec": [0.15, 0.5],
     "arcSpreadDeg": 150,
-    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
+    "vanguard": { "count": 2, "hpMul": 10, "speedMul": 1.6, "attackMul": 100, "fromStage": 5 }, "bossDuel": { "shift": 0.5, "shiftY": 0.1, "speed": 30, "rise": 0.13, "turnDegPerSec": 180 },
+    "cruise": { "speed": 55, "accel": 260, "decel": 150, "turnDegPerSec": 150, "headingTurnDegPerSec": 240, "maxTiltDeg": 55, "forwardFlow": 60, "slowRadius": 30, "arriveRadius": 10, "homeUp": 20, "wanderX": 45, "wanderY": 28, "wanderSec": 8, "rect": { "x": 58, "up": 110, "down": 50 }, "dashEverySec": 2, "dashJitterSec": 1, "jitterStep": 0.618, "dashSpeedMul": 2.4, "dashMaxSec": 0.9, "overshoot": 36, "clusterRadius": 40, "clusterMin": 3, "feverSpeedMul": 1.5, "feverDashMul": 0.6 }, "crewPreview": { "stage": 31, "swarm": 14, "phaseSec": 5, "seed": 2026 },
     "nearSpawn": { "ratio": 0.15, "distanceMin": 40, "distanceMax": 80, "warnSec": 0.6, "midDelayMaxSec": 3 },
     "swarmGroupsMin": 1,
     "swarmGroupsMax": 5,

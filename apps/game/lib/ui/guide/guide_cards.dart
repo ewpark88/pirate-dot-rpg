@@ -29,6 +29,7 @@ const guideIds = [
   'guide.summon',
   'guide.collect',
   'guide.shipSkin',
+  'guide.scenes', 'guide.pass', // 탑·러시·던전 열림 · 패스 첫 단계
 ];
 
 /// 예전 말풍선의 본 기록 → 같은 안내로 본다(옛 세이브에서 다시 뜨지 않게).
@@ -50,6 +51,8 @@ const guideSpots = {
   'guide.bossTrait': ['boss.gauge'],
   'guide.collect': ['tab.crew', 'collect.claim'],
   'guide.shipSkin': ['tab.ship', 'ship.skin'],
+  'guide.scenes': ['tab.voyage', 'tower.card'],
+  'guide.pass': ['tab.voyage', 'pass.card'],
 };
 
 /// 전투 중에 뜨는 안내 — 어둡게 하지 않고 손가락 없이 말만, 3초 뒤 초상만 남게 접힌다. 그 상황이 끝나면 닫힌다.
@@ -77,6 +80,8 @@ List<String> activeGuides(GameState s, GameTables t) {
     if (canSummon(s, t, 10)) 'guide.summon',
     if (collectionRewardsReady(s, t) > 0) 'guide.collect',
     if (s.ship.skinsOwned.isNotEmpty) 'guide.shipSkin',
+    if (s.tower != null) 'guide.scenes', // 탑·러시·던전은 함께 열린다(환생 1 또는 스테이지 60)
+    if (passLevel(s, t) > 0) 'guide.pass',
   ];
 }
 
@@ -237,6 +242,8 @@ GuideTalk? guideTalkFor(AppLocalizations l, {required GuideScene scene, int? ste
     'guide.bossTrait' => scene.bossTrait ?? l.uiTalkBoss,
     'guide.collect' => l.uiTalkCollect,
     'guide.shipSkin' => l.uiTalkShipSkin,
+    'guide.scenes' => l.uiTalkScenes,
+    'guide.pass' => l.uiTalkPass,
     'guide.fever' => l.uiTalkFever,
     'guide.chest' => l.uiTalkChest,
     'guide.bossRetry' => l.uiTalkBossRetry,

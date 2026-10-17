@@ -27,15 +27,28 @@ JsonReader dungeonGroupById(GameTables t, String id) =>
 /// 오늘 묶음(현지 요일, 운영자 고정 요일 우선).
 JsonReader dungeonToday(GameState s, GameTables t, DateTime now) => dungeonGroupOn(t, s.bounty?.weekday ?? now.weekday);
 
-/// 그 묶음에 출전할 선원: 보유 중 묶음 계열(비면 모든 계열)인 선원을 파워 순으로 출전 칸 수만큼.
-List<String> dungeonCrews(GameState s, GameTables t, JsonReader group) {
+/// 그 묶음 계열 보유 선원(파워 순, 비면 모든 계열) — 입장 조건·카드 보상은 이 선원들만.
+List<String> dungeonFamilyCrews(GameState s, GameTables t, JsonReader group) {
   final families = group.strs('families');
   final owned = [
     for (final c in t.crews.crews)
       if (s.crews[c.id] case final st? when families.isEmpty || families.contains(c.family))
         (id: c.id, power: crewPower(t, st.level)),
   ]..sort((a, b) => b.power.compareTo(a.power));
-  return [for (final c in owned.take(fleetSlots(s, t))) c.id];
+  return [for (final c in owned) c.id];
+}
+
+/// 그 묶음 출전: 계열 선원을 출전 칸 수만큼, 모자라면(fillFleet) 나머지 칸을 다른 보유 선원으로 파워 순 채움
+/// (S2 2026-10-18 — 계열 선원 1명으로 들어가 바로 침몰하던 것). 계열 선원이 하나도 없으면 빈 목록(입장 불가).
+List<String> dungeonCrews(GameState s, GameTables t, JsonReader group) {
+  final slots = fleetSlots(s, t);
+  final family = dungeonFamilyCrews(s, t, group).take(slots).toList();
+  if (family.isEmpty || family.length >= slots || dungeonCfg(t).raw['fillFleet'] != true) return family;
+  final rest = [
+    for (final c in t.crews.crews)
+      if (s.crews[c.id] case final st? when !family.contains(c.id)) (id: c.id, power: crewPower(t, st.level)),
+  ]..sort((a, b) => b.power.compareTo(a.power));
+  return [...family, for (final c in rest.take(slots - family.length)) c.id];
 }
 
 /// 매 틱: 열렸는데 상태가 없으면 도전 ticketsPerDay로 만든다. 날짜가 바뀐 첫 틱엔 지난 일수만큼 maxTickets까지 더한다(탑과 같음).
@@ -97,7 +110,7 @@ GameState sweepDungeon(GameState s, SweepDungeon c, SystemContext ctx) {
 GameState dungeonReward(GameState s, SystemContext ctx, JsonReader group, int step, {bool swept = false}) {
   final t = ctx.tables;
   final c = dungeonCfg(t);
-  final pool = dungeonCrews(s, t, group);
+  final pool = dungeonFamilyCrews(s, t, group); // 카드는 그 날 계열 선원만(채운 칸 선원 제외)
   final allOwned = pool.isEmpty ? (s.crews.keys.toList()..sort()) : pool;
   var next = s;
   final cards = <String>[];

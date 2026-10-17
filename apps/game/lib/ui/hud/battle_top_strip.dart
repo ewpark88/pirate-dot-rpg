@@ -35,7 +35,7 @@ class BattleTopStrip extends StatelessWidget {
       // 빠른 항해 돌파 중엔 알약 대신 돌파 띠(현상금·돌발 이벤트는 구간 동안 안 생긴다).
       const Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
       // 광고 버프·보상 칩(44dp) — 오른쪽 끝 세로 줄(보스·배는 가운데라 안 겹친다, 실기기 ① 2026-10-17).
-      const Padding(padding: EdgeInsets.fromLTRB(10, 4, 8, 0), child: BuffChips()),
+      const Padding(padding: EdgeInsets.only(top: 4), child: BuffChips()), // 오른쪽 여백은 BuffChips가(접힘은 끝에 붙임)
       // 보스 등장 이름표 (2초).
       const BossIntro(),
       BossFailNotice(sheetOpen: sheetOpen),

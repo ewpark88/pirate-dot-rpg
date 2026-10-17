@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:game_core/src/battle/combat_stats.dart';
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/targeting.dart' show Volley;
+import 'package:game_core/src/battle/topdown/top_cruise.dart';
 import 'package:game_core/src/battle/topdown/top_duel.dart';
 import 'package:game_core/src/battle/topdown/top_fever.dart' show feverForwardBoost, feverPose;
 import 'package:game_core/src/battle/topdown/top_geometry.dart';
@@ -112,6 +113,7 @@ void shapeField(Field f, GameState s, GameTables t) {
         ..weaveTick = old.weaveTick
         ..weave(old.top.shipX - old.base.shipX, dy: old.top.shipY - old.base.shipY, heading: old.shipHeading);
       TopDuel.carry(old, g);
+      TopCruise.carry(old, g);
     }
   }
   final g = f.geometry;
@@ -123,9 +125,11 @@ void shapeField(Field f, GameState s, GameTables t) {
           feverApproach(s, t) // 피버 무리는 빨리 조여 온다
       ..forwardBoost = feverForwardBoost(s, t.meta.raw.obj('fever').raw, on: on)
       ..weaveTick = on ? g.weaveTick + 1 : 0;
-    final free = feverPose(s, t, g.weaveTick, on: on);
+    final cruise = TopCruise.of(t.waves); // 배 순항(평소·피버 — 표에 있으면 피버 8자 대신)
+    final dt = t.waves.tickMs * secondsPerMillisecond;
+    final free = cruise == null ? feverPose(s, t, g.weaveTick, on: on) : cruise.step(f, g, fever: on, dt: dt);
     final duel = TopDuel.of(t.waves); // 보스전 비켜서기(사용자 피드백 #10), 표 키 없으면 피버 자리 그대로
-    g.pose(duel == null ? free : duel.step(f, g, free, dt: t.waves.tickMs * secondsPerMillisecond));
+    g.pose(duel == null ? free : duel.step(f, g, free, dt: dt));
   }
 }
 
