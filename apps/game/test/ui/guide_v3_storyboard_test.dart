@@ -109,9 +109,10 @@ void main() {
             guidePointedProvider.overrideWithValue({?line.spot}),
           ],
         );
+        await tester.pump(const Duration(milliseconds: 1000));
         await tester.pump(const Duration(milliseconds: 400));
         expect(find.byKey(const Key('talk')), findsOneWidget);
-        if (line.spot != null && !line.reaction) expect(find.byKey(const Key('talk.glow')), findsOneWidget);
+        if (line.spot != null && !line.reaction) expect(find.byKey(const Key('talk.glow.0')), findsOneWidget);
         await precacheImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/storyboard_v3_${i + 1}_$lang.png'));
       });

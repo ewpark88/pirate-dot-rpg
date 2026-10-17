@@ -50,17 +50,8 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
       _bubble = null;
       return const SizedBox.shrink();
     }
-    if (_bubble == null) {
-      // 처음 1회 · 4초 뒤 닫힘.
-      final hints = ref.read(hudHintsProvider.notifier);
-      _bubble = hints.count('boss.bubble') < 1;
-      if (_bubble!) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => hints.shown('boss.bubble'));
-        _hide = Timer(const Duration(seconds: 4), () {
-          if (mounted) setState(() => _bubble = false);
-        });
-      }
-    }
+    // 가이드 v3: 처음 안내는 옥토 선장 말(guide.bossRetry)로 합쳤다 — 버튼 위 말풍선은 띄우지 않는다.
+    _bubble ??= false;
     final boss = tables.regions.regionAt(stage).boss;
     final calm = MediaQuery.disableAnimationsOf(context);
     final pulse = flashOn && !calm ? 0.5 + 0.5 * math.sin(tick / 3) : 0.0;

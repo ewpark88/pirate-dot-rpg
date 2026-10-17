@@ -35,8 +35,6 @@ class BattleTopStrip extends StatelessWidget {
       Padding(padding: EdgeInsets.fromLTRB(10, 4, 10, 0), child: _PillsOrFastSail()),
       // 보스 등장 이름표 (2초).
       BossIntro(),
-      // 처음 환생할 수 있게 된 순간 큰 말풍선 한 번.
-      RebirthReadyBubble(),
       BossFailNotice(),
     ],
   );

@@ -116,6 +116,15 @@ GameState withGuidesSeen(GameState s) {
   );
 }
 
+/// [keep] 하나만 빼고 시스템 안내를 모두 본 것으로 (그 안내 하나만 시험).
+GameState withGuidesSeenExcept(GameState s, String keep) => s.copyWith(
+  settings: Settings.fromJson({
+    ...s.settings.toJson(),
+    'battleView': s.settings.battleView,
+    'hints': [...s.settings.hints, ...guideIds.where((id) => id != keep)],
+  }),
+);
+
 Future<void>? _shipsLoaded;
 
 Future<void> _preloadShips() => _shipsLoaded ??= () async {

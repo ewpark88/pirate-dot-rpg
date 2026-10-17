@@ -141,7 +141,7 @@ class _RebirthReadyBubbleState extends ConsumerState<RebirthReadyBubble> {
         child: Container(
           width: double.infinity,
           constraints: const BoxConstraints(maxWidth: 420),
-          padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF8E1),
             borderRadius: BorderRadius.circular(14),
@@ -150,18 +150,12 @@ class _RebirthReadyBubbleState extends ConsumerState<RebirthReadyBubble> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.anchor_rounded, size: 22, color: Skin.goldInk),
+              const Icon(Icons.anchor_rounded, size: 28, color: Skin.goldInk),
               const SizedBox(width: 8),
-              // 한 줄(사용자 피드백 #9 C — 전장 가림 줄이기), 좁으면 줄여 맞춘다. 6초 뒤 접혀 알약만 남는다.
               Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    l10n.uiRebirthReadyBubble(p.gain, rebirthMultText(l10n, p.bonusAfter)),
-                    maxLines: 1,
-                    style: Skin.text(15, color: Skin.goldInk),
-                  ),
+                child: Text(
+                  l10n.uiRebirthReadyBubble(p.gain, rebirthMultText(l10n, p.bonusAfter)),
+                  style: Skin.text(14, color: Skin.goldInk),
                 ),
               ),
             ],

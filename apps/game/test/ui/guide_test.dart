@@ -29,25 +29,30 @@ GameState _two() {
   return s.copyWith(wallet: s.wallet.copyWith(gold: goldCapacity(s, _t), gems: 100000));
 }
 
+/// 말은 0.7초 쉬고 나온다(가이드 v3).
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump(const Duration(milliseconds: 100));
+  await tester.pump(const Duration(milliseconds: 900));
+}
+
 void main() {
   testWidgets('조건이 맞는 첫 카드 하나 → MarkHint, 알겠어요 → 다음 카드(줄 서기), 둘이 동시에 뜨지 않는다', (tester) async {
     final s = _two();
     final active = activeGuides(s, _t).where((id) => !battleGuideIds.contains(id)).toList();
     expect(active.length, greaterThanOrEqualTo(2), reason: '샘플에 조건 맞는 카드가 둘 이상 있어야 줄 서기를 본다');
     final log = await pumpGame(tester, _seen(s, battleGuideIds), openTab: false, guides: true);
-    await tester.pump();
-    expect(find.byKey(const Key('guide.card')), findsOneWidget);
+    await _settle(tester);
+    expect(find.byKey(const Key('talk')), findsOneWidget);
     expect(log.hints.map((c) => c.id), [active.first]);
-    await tester.tap(find.byKey(const Key('guide.ok')));
-    await tester.pump();
-    await tester.pump();
-    expect(find.byKey(const Key('guide.card')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('talk.text')));
+    await _settle(tester);
+    expect(find.byKey(const Key('talk')), findsOneWidget);
     expect(log.hints.map((c) => c.id), active.take(2));
   });
 
   testWidgets('본 기록(hints)에 있으면 안 뜬다 · 튜토리얼 중엔 시스템 카드 없음', (tester) async {
     await pumpGame(tester, loadFixture('stage37_midgame'), openTab: false);
-    expect(find.byKey(const Key('guide.card')), findsNothing);
+    expect(find.byKey(const Key('talk')), findsNothing);
     final log = await pumpGame(
       tester,
       _seen(loadFixture('stage37_midgame').copyWith(tutorialStep: 2), const []),
@@ -55,33 +60,33 @@ void main() {
       keepTutorial: true,
       guides: true,
     );
-    await tester.pump();
+    await _settle(tester);
     expect(log.hints, isEmpty);
     await tester.pump(const Duration(seconds: 3));
   });
 
   testWidgets('건너뛰기 → 끄기: 남은 시스템 카드를 모두 본 것으로(MarkHint 전부), 카드 없음', (tester) async {
     final log = await pumpGame(tester, _seen(_two(), const []), openTab: false, guides: true);
-    await tester.pump();
+    await _settle(tester);
     await tester.tap(find.byKey(const Key('guide.skip')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('guide.skip.off')));
     await tester.pumpAndSettle();
     expect(log.hints.map((c) => c.id).toSet(), guideIds.toSet());
-    expect(find.byKey(const Key('guide.card')), findsNothing);
+    expect(find.byKey(const Key('talk')), findsNothing);
   });
 
   testWidgets('보스전 카드: 어둡게 하지 않고 3초 뒤 오른쪽 위 알약, 누르면 다시 펼침', (tester) async {
     final s = loadFixture('boss_fight').copyWith(clearTutorial: true);
     await pumpGame(tester, _seen(s, guideIds.where((id) => id != 'guide.boss')), openTab: false, guides: true);
-    await tester.pump();
-    expect(find.text('Boss fight'), findsOneWidget);
+    await _settle(tester);
+    expect(find.textContaining('A boss!'), findsOneWidget);
     await tester.pump(const Duration(seconds: 4));
-    expect(find.byKey(const Key('guide.card')), findsNothing);
-    expect(find.byKey(const Key('guide.pill')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('guide.pill')));
-    await tester.pump();
-    expect(find.byKey(const Key('guide.card')), findsOneWidget);
+    expect(find.byKey(const Key('talk')), findsNothing);
+    expect(find.byKey(const Key('talk.mini')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('talk.mini')));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(const Key('talk')), findsOneWidget);
     await tester.pump(const Duration(seconds: 4));
   });
 
@@ -89,12 +94,12 @@ void main() {
     final s = loadFixture('boss_fight').copyWith(clearTutorial: true);
     final seen = _seen(s, guideIds.where((id) => id != 'guide.boss'));
     await pumpGame(tester, seen, openTab: false, guides: true);
-    await tester.pump();
-    expect(find.byKey(const Key('guide.card')), findsOneWidget);
+    await _settle(tester);
+    expect(find.byKey(const Key('talk')), findsOneWidget);
     final c = ProviderScope.containerOf(tester.element(find.byType(HomeScreen)));
     c.read(gameStateProvider.notifier).replace(seen.copyWith(battle: seen.battle!.copyWith(bossActive: false)));
     await tester.pump();
-    expect(find.byKey(const Key('guide.card')), findsNothing);
+    expect(find.byKey(const Key('talk')), findsNothing);
     await tester.pump(const Duration(seconds: 4));
   });
 
@@ -102,7 +107,7 @@ void main() {
     final s = loadFixture('stage37_midgame').copyWith(clearTutorial: true);
     final hold = s.copyWith(progress: s.progress.copyWith(sailHold: true));
     final log = await pumpGame(tester, _seen(hold, const []), openTab: false, guides: true);
-    await tester.pump();
+    await _settle(tester);
     await tester.pump(const Duration(milliseconds: 300));
     expect(log.hints.first.id, 'guide.sail');
     expect(find.text('Set sail!'), findsWidgets);
@@ -154,7 +159,8 @@ void main() {
           dpr: dpr,
           locale: const Locale('ko'),
         );
-        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pump(const Duration(milliseconds: 1000));
+        await tester.pump(const Duration(milliseconds: 400));
         await precacheImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_guide_boss_$name.png'));
         await tester.pump(const Duration(seconds: 4));
