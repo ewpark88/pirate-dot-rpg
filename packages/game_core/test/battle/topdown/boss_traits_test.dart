@@ -106,6 +106,22 @@ void main() {
     expect(a.r.traitHit(a.boss, hit, crewId: crewOf('underwater')), hit);
   });
 
+  test('반사 상한 maxShipHpPerSec: 한 틱에 아무리 많이 때려도 반사 피해 합은 배 최대 체력 × 비율 × 한 틱 초(S2 — 8%×7 몰림)', () {
+    final a = arena(const ['reflect']);
+    a.boss.traitTicks['reflectUntil'] = a.ctx.tick + 100;
+    final big = a.r.field.shipHpMax; // 한 번에 배 최대 체력만큼 — 반사(× ratio)만으로도 상한을 넘는다
+    for (var i = 0; i < 7; i++) {
+      expect(a.r.traitHit(a.boss, big, crewId: crewOf('direct')), isNull);
+    }
+    final cap = defaults['reflect'] as Map<String, dynamic>;
+    final perTick = (cap['maxShipHpPerSec'] as num) * a.r.dt;
+    final lost = (a.r.field.shipHpMax - a.r.field.shipHp) / a.r.field.shipHpMax;
+    expect(lost.toDouble(), closeTo(perTick, 1e-9));
+    a.ctx.tick++; // 다음 틱엔 다시 그만큼
+    a.r.traitHit(a.boss, big, crewId: crewOf('direct'));
+    expect(((a.r.field.shipHpMax - a.r.field.shipHp) / a.r.field.shipHpMax).toDouble(), closeTo(perTick * 2, 1e-9));
+  });
+
   test('분노: HP 30% 아래로 한 번 — 공격 × 1.3, 쉼 × 0.6', () {
     final a = arena(const ['enrage']);
     final attack = a.boss.attack;
