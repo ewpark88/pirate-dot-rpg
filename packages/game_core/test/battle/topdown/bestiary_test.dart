@@ -42,7 +42,12 @@ void main() {
     expect(t.regions.bossAt(20).id, 'giant_hermit');
     expect(t.regions.bossAt(25).id, t.regions.regions.first.midBoss);
     expect(t.regions.bossAt(50).id, t.regions.regions.first.regionBoss);
-    final plain = GameTables.load(rawTables);
+    // 키 없으면 지금 그대로: 라이브 표(순환 있음)에서 순환 키를 뺀 것.
+    final plain = patch((r) {
+      for (final region in (r['regions'] as List).cast<Map<String, dynamic>>()) {
+        region.remove('bossRotation');
+      }
+    });
     expect({for (var s = 1; s <= 9; s++) plain.regions.bossAt(s).id}, {plain.regions.regions.first.boss});
   });
 
@@ -148,10 +153,11 @@ void main() {
       initial: GameState.newGame(playerId: 'x', seed: 1, now: start).copyWith(
         progress: const Progress(stage: 5, bestStage: 5),
         crews: const {'octo': CrewState(level: 60), 'pang': CrewState(level: 60), 'sword': CrewState(level: 60)},
+        ship: const ShipState().withLevel('hull', 30), // 보스 시간 제한 없음·공격 ×35 — 강화 안 한 배는 먼저 가라앉는다
       ),
     )..enqueue(const OpSpawnBoss());
     final events = <GameEvent>[];
-    for (var i = 0; i < 1200 && events.whereType<BossCleared>().isEmpty; i++) {
+    for (var i = 0; i < 2400 && events.whereType<BossCleared>().isEmpty; i++) {
       e.tick();
       events.addAll(e.drainEvents());
     }

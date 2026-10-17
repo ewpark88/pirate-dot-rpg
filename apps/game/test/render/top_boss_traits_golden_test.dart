@@ -13,7 +13,7 @@ import 'package:pirate_dot/render/top/top_frame.dart';
 import 'helpers.dart';
 import 'top_recording.dart';
 
-/// 계열 행동 v3 출격 (S5 CrewSortie): 강습·공중 선원 초상이 날아가(out) 꽂혀 휘두름(strike) — 실제 기록(가재·폴리 신화). S24.
+/// 보스 특성(S2 boss-traits): 반사막 육각·분노 붉은 오라+눈 빛+커짐·호위 고리·회피 잔상. 실제 보스 + 주입, S24.
 class _Painter extends CustomPainter {
   _Painter(this.painter, this.frame, this.dpr);
   final ScenePainter painter;
@@ -31,24 +31,37 @@ class _Painter extends CustomPainter {
 }
 
 void main() {
-  final rec = topRecording(tables, ticks: 300, levels: const {'lobster': 66, 'polly': 66});
-  int first(bool Function(GameEvent e) f) => rec.indexWhere((t) => t.events.any(f));
-  final cases = {
-    'out': (first((e) => e is CrewSortie && e.phase == 'out'), 0.15),
-    'strike': (first((e) => e is CrewSortie && e.phase == 'strike'), 0.08),
-  };
-  for (final MapEntry(key: name, value: (at, after)) in cases.entries) {
-    testWidgets('출격 골든 s24 $name', (tester) async {
-      expect(at, greaterThanOrEqualTo(0), reason: '$name 이벤트가 기록에 있어야 한다');
+  for (final (name, after) in const [('reflect', 900.0), ('enrage', 300.0), ('evade', 150.0)]) {
+    testWidgets('보스 특성 골든 s24 $name', (tester) async {
       const dpr = 2.8125;
       final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
       const box = Size(384, 832 - 48 - 24 - 76);
+      final base = topRecording(tables, ticks: 320, stage: 120, bossAt: 5);
+      final at = base.indexWhere((t) => t.frame.enemies.any((e) => e.boss), 160);
+      final f = base[at].frame;
+      final boss = f.enemies.firstWhere((e) => e.boss);
+      final evs = switch (name) {
+        'reflect' => [BossTraitFired(f.tick, enemyId: boss.id, trait: 'reflect', ticks: 80)],
+        'enrage' => [
+          BossTraitFired(f.tick, enemyId: boss.id, trait: 'enrage'),
+          BossTraitFired(f.tick, enemyId: boss.id, trait: 'escort'),
+        ],
+        _ => [AttackMissed(f.tick, crewId: 'octo', x: boss.x, y: boss.y, reason: 'evade')],
+      };
+      final rec = [
+        for (var i = 0; i < base.length; i++)
+          i == at ? RecordedTick(base[i].frame, [...base[i].events, ...evs]) : base[i],
+      ];
       final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
       final painter = ScenePainter(scene)..sprites = bank;
       final frame = topFrameFor(box, dpr);
       final warm = Canvas(PictureRecorder());
-      final stop = at + after * 1000 / tables.waves.tickMs;
-      while (scene.player.position < stop) {
+      while (scene.player.position < at + 1) {
+        scene.update(kFrameMs);
+        painter.paintTop(warm, frame);
+      }
+      final start = scene.clockMs;
+      while (scene.clockMs - start < after) {
         scene.update(kFrameMs);
         painter.paintTop(warm, frame);
       }
@@ -67,7 +80,10 @@ void main() {
           ),
         ),
       );
-      await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_sortie_${name}_s24.png'));
+      await expectLater(
+        find.byType(RepaintBoundary).first,
+        matchesGoldenFile('goldens/top_boss_trait_${name}_s24.png'),
+      );
     });
   }
 }

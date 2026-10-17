@@ -23,12 +23,14 @@ BossCompareView? bossCompareOf(GameState s, GameTables t) {
   final dps = fleetPower(s, t).dps;
   if (dps.isZero) return null;
   var hpLeft = p.maxHp;
-  var limit = p.timeLimitSec;
+  // 보스 시간 제한이 없으면(2026-10-17 사용자 결정) 난이도 기준은 waves.boss.forecastSec — S4가 타이머 없는 표시로 다시 그린다.
+  final forecast = t.waves.raw.obj('boss').number('forecastSec');
+  var limit = p.timeLimitSec ?? forecast;
   if (b.bossActive) {
     for (final e in b.enemies) {
       if (e.boss) hpLeft = p.maxHp.times(e.hpRatio.clamp(0.0, 1.0));
     }
-    limit = b.bossTicksLeft * t.waves.tickMs / Duration.millisecondsPerSecond;
+    if (b.bossTicksLeft > 0) limit = b.bossTicksLeft * t.waves.tickMs / Duration.millisecondsPerSecond;
   }
   final kill = (hpLeft / dps).toDouble();
   final ratio = limit <= 0 ? double.infinity : kill / limit;

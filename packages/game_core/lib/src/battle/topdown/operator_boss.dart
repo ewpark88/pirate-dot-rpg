@@ -1,6 +1,5 @@
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/spawner.dart' show startBoss;
-import 'package:game_core/src/economy/rebirth_shop.dart' show bossExtraSec;
 import 'package:game_core/src/engine/commands.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
@@ -12,7 +11,7 @@ Field operatorBoss(Field f, GameState s, SystemContext ctx, OperatorCommand c) {
     case OpSpawnBoss(:final bossId):
       f.foes.clear();
       final def = bossId == null ? null : ctx.tables.regions.bosses[bossId];
-      startBoss(f, s.progress.stage, ctx, extraSec: bossExtraSec(s, ctx.tables), bossDef: def);
+      startBoss(f, s.progress.stage, ctx, bossDef: def);
     case OpBossBreak():
       if (!ctx.tables.skills.raw.has('bossBreak')) break; // 표에 브레이크가 없으면(꺼짐) 아무 일 없음
       for (final e in f.living) {
