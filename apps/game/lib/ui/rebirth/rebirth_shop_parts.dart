@@ -4,6 +4,7 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_text.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/skin/icon_cell.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
@@ -36,7 +37,7 @@ class ShopTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final dim = !item.unlocked;
-    final border = selected ? Skin.primaryBottom : (item.affordable ? Skin.goldBottom : Colors.transparent);
+    final border = selected ? Skin.primaryBottom : (item.affordable ? Skin.goldEdge : Skin.outline);
     Widget tile = Semantics(
       button: true,
       selected: selected,
@@ -49,25 +50,23 @@ class ShopTile extends StatelessWidget {
           duration: const Duration(milliseconds: 160),
           constraints: const BoxConstraints(minHeight: 112),
           padding: const EdgeInsets.fromLTRB(4, 8, 4, 6),
-          decoration: BoxDecoration(
-            color: dim ? Skin.plainBottom : (item.maxed ? const Color(0xFFE6F8EF) : Skin.cream),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: border, width: 2.5),
+          // k2: 굵은 외곽선 칸(고름 = 파랑 테 · 살 수 있음 = 금 테).
+          decoration: Skin.inset(
+            fill: dim ? Skin.plainBottom : (item.maxed ? const Color(0xFFE6F8EF) : Colors.white),
+            border: border,
+            radius: 14,
           ),
           child: Column(
             children: [
               Opacity(
                 opacity: dim ? 0.45 : 1,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Skin.skyDeep, width: 2),
-                  ),
-                  alignment: Alignment.center,
-                  child: SkinIcon(_icons[item.id] ?? UiSprites.star, size: 28),
+                // 아이콘은 상태 색 칸(다 올림 초록 · 살 수 있음 금 · 그 밖 파랑, 잠김은 흐리게).
+                child: IconCell(
+                  color: item.maxed
+                      ? partCellColors[0]
+                      : (item.affordable ? const Color(0xFFE0A83D) : partCellColors[1]),
+                  size: 46,
+                  child: SkinIcon(_icons[item.id] ?? UiSprites.star, size: 32),
                 ),
               ),
               const SizedBox(height: 4),
@@ -150,11 +149,7 @@ class ShopDetail extends StatelessWidget {
         key: const Key('rebirth.shop.detail'),
         width: double.infinity,
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Skin.cream,
-          borderRadius: BorderRadius.circular(Skin.radiusCard),
-          border: Border.all(color: Skin.goldTop, width: 2),
-        ),
+        decoration: Skin.inset(fill: const Color(0xFFFFF4CF), radius: Skin.radiusCard),
         child: it == null
             ? Text(
                 l10n.uiRebirthShopPick,

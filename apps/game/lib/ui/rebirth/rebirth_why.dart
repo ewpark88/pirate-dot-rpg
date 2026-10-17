@@ -35,7 +35,7 @@ class RebirthWhy extends ConsumerWidget {
 
     Widget head(String text, Color color) => Padding(
       padding: const EdgeInsets.only(top: 6, bottom: 2),
-      child: Text(text, style: Skin.text(14, color: color)),
+      child: Text(text, style: Skin.bold(15, color: color)),
     );
     Widget line(IconData icon, String text, {Key? key, Color color = Skin.ink}) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
@@ -58,11 +58,8 @@ class RebirthWhy extends ConsumerWidget {
       child: Container(
         key: key,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        decoration: BoxDecoration(
-          color: strong ? const Color(0xFFFFF4CF) : Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: strong ? Skin.goldBottom : Skin.cardEdge, width: 1.5),
-        ),
+        // k2: 굵은 외곽선 칸(지금 환생 = 금빛).
+        decoration: Skin.inset(fill: strong ? const Color(0xFFFFF4CF) : Colors.white, radius: 10),
         child: Column(
           children: [
             Text(
@@ -80,11 +77,7 @@ class RebirthWhy extends ConsumerWidget {
       key: const Key('rebirth.why'),
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 10),
-      decoration: BoxDecoration(
-        color: Skin.insetFill,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Skin.cardEdge, width: 1.5),
-      ),
+      decoration: Skin.inset(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
