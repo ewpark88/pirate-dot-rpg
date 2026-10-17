@@ -1,0 +1,611 @@
+{
+ "_doc": "도감 v2 보스 수치(S2, 2026-10-17). platform-bestiary-v2-regions.draft.json의 bosses에 id로 덮는다(구조는 S5). 원칙(설계서 platform-bestiary-v2 1절 \"보스 HP·공격 곡선은 그대로\"): 보통 보스 hpMultiplier 1.0, 회복·숨기·소환(swallow·ink·summon)이 있으면 0.9, 분열 2번 0.9·1번 0.95. 대보스(wallBoss)도 같은 규칙(1.0, 회복·소환 있으면 0.9) — 벽 배율(waves.boss.wallHpMultiplier)이 이미 곱해진다. 대보스만 패턴이 세다: 돌진 1.8, 탄막·소환 5, 쉼 2.2초. swallow 회복 마리당 4%, ink 2.0초. 라이브 regions.json 반영 뒤 sim(보스 첫 도전 70~85·10단위 30~50·보스전 피해 25~45)으로 다시 본다.",
+ "bosses": {
+  "hermit_conch": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "jelly_queen": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "hammer_shark": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "sea_croc": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.8,
+     "capMul": 2
+    },
+    {
+     "type": "swallow",
+     "warnSec": 0.8,
+     "radiusShipMul": 1.5,
+     "healRatio": 0.04
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.2
+  },
+  "storm_raider": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "thunder_ray_pup": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "great_serpent": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 60
+    }
+   ],
+   "restSec": 2.5
+  },
+  "twister_dolphin": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "monster_whale": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 5
+    },
+    {
+     "type": "swallow",
+     "warnSec": 0.8,
+     "radiusShipMul": 1.5,
+     "healRatio": 0.04
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.8,
+     "capMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.2
+  },
+  "frost_pirate": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "seal_chief": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    }
+   ],
+   "restSec": 2.5
+  },
+  "giant_squid": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "ink",
+     "warnSec": 0.6,
+     "radiusShipMul": 2,
+     "durationSec": 2.0
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "icecrab_chief": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "ice_slime": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    },
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    }
+   ],
+   "restSec": 2.2,
+   "splitAt": [
+    0.5,
+    0.25
+   ]
+  },
+  "blaze_pirate": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "lava_tortoise": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "flame_eel": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "lava_slime": {
+   "hpMultiplier": 0.95,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5,
+   "splitAt": [
+    0.5
+   ]
+  },
+  "leviathan": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 60
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.8,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.2
+  },
+  "hunter_sub": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    }
+   ],
+   "restSec": 2.5
+  },
+  "angler_king": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "deep_octopus": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "ink",
+     "warnSec": 0.6,
+     "radiusShipMul": 2,
+     "durationSec": 2.0
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    }
+   ],
+   "restSec": 2.5
+  },
+  "phantom_jelly": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    }
+   ],
+   "restSec": 2.5
+  },
+  "kraken_titan": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "ink",
+     "warnSec": 0.6,
+     "radiusShipMul": 2,
+     "durationSec": 2.0
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 5
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.2
+  },
+  "wraith_ship": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 3
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "skeleton_captain": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "cursegull_leader": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 5
+    },
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 3,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 40
+    }
+   ],
+   "restSec": 2.5
+  },
+  "specter": {
+   "hpMultiplier": 1.0,
+   "patterns": [
+    {
+     "type": "blast",
+     "warnSec": 0.6,
+     "damageRatio": 0.8,
+     "radiusShipMul": 2
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.5,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.5
+  },
+  "poseidon": {
+   "hpMultiplier": 0.9,
+   "patterns": [
+    {
+     "type": "volley",
+     "warnSec": 0.6,
+     "count": 5,
+     "speed": 200,
+     "damageRatio": 0.3,
+     "spreadDeg": 90
+    },
+    {
+     "type": "summon",
+     "warnSec": 0.6,
+     "count": 5
+    },
+    {
+     "type": "charge",
+     "warnSec": 0.6,
+     "speedMul": 4,
+     "damageRatio": 1.8,
+     "capMul": 2
+    }
+   ],
+   "restSec": 2.2
+  }
+ }
+}
