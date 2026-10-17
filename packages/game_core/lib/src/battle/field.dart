@@ -152,8 +152,10 @@ class Field {
 
   /// 자동 보스 도전(spawner.dart autoBossTick): 실패 뒤 파밍 틱 · 실패 때 배 부위 레벨 합 · 재도전까지 남은 틱.
   int farmTicks = 0;
-  int failLevels = 0;
   int autoBossLeft = 0;
+  double failPower = 0;
+  double failNeed = 1;
+  bool retryWinnable = false;
 
   /// 피버 무리(meta.fever.swarm, 사용자 폰 피드백 2026-10-17): null이 아니면 다음 무리 파가 countMul배, 자리는 이 패턴(ring = 사방에서 한꺼번에).
   /// BattleSystem이 파를 부르기 전에 넣고 끝나면 지운다.
@@ -181,6 +183,7 @@ class Field {
     fever: prev.fever,
     feverTicksLeft: prev.feverTicksLeft,
     autoBossTicksLeft: autoBossLeft,
+    retryWinnable: retryWinnable,
     seaEvent: prev.seaEvent,
     challenge: prev.challenge,
     mode: 'top',
