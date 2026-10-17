@@ -34,7 +34,7 @@ class ShipSkinButton extends ConsumerWidget {
           constraints: const BoxConstraints(minHeight: 48),
           child: Container(
             padding: const EdgeInsets.fromLTRB(6, 2, 12, 2),
-            decoration: Skin.inset(fill: Colors.white, radius: 24),
+            decoration: Skin.inset(radius: 24),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -129,7 +129,7 @@ class _SkinTile extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             // k2: 굵은 외곽선 칸(낀 것 = 파랑 테, 잠김 = 옅은 회보라).
             decoration: Skin.inset(
-              fill: owned ? Colors.white : const Color(0xFFD3D1EA),
+              fill: owned ? Skin.insetFill : const Color(0xFFD3D1EA),
               border: equipped ? Skin.primaryBottom : Skin.outline,
               radius: 16,
             ),

@@ -59,7 +59,7 @@ class RebirthWhy extends ConsumerWidget {
         key: key,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         // k2: 굵은 외곽선 칸(지금 환생 = 금빛).
-        decoration: Skin.inset(fill: strong ? const Color(0xFFFFF4CF) : Colors.white, radius: 10),
+        decoration: Skin.inset(fill: strong ? const Color(0xFFFFF4CF) : Skin.insetFill, radius: 10),
         child: Column(
           children: [
             Text(

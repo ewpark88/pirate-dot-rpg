@@ -52,7 +52,7 @@ class ShopTile extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(4, 8, 4, 6),
           // k2: 굵은 외곽선 칸(고름 = 파랑 테 · 살 수 있음 = 금 테).
           decoration: Skin.inset(
-            fill: dim ? Skin.plainBottom : (item.maxed ? const Color(0xFFE6F8EF) : Colors.white),
+            fill: dim ? Skin.plainBottom : (item.maxed ? const Color(0xFFE6F8EF) : Skin.insetFill),
             border: border,
             radius: 14,
           ),

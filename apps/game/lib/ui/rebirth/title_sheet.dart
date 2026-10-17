@@ -73,7 +73,7 @@ class TitleSheet extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14),
               // k2: 굵은 외곽선 줄(고른 것 = 파랑 테, 잠김 = 옅은 회보라).
               decoration: Skin.inset(
-                fill: owned ? Colors.white : const Color(0xFFD3D1EA),
+                fill: owned ? Skin.insetFill : const Color(0xFFD3D1EA),
                 border: selected ? Skin.primaryBottom : Skin.outline,
                 radius: 14,
               ),
