@@ -1,5 +1,10 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤 · S5 · HD 초상(UI)
+- **현재 위치**: review/hd-portrait 7aa98f42 — S4(UI 두 파일)·S3(렌더) 검토 대기. hd-bosses-a는 main 머지됨.
+- 한 일: HdPortrait(render) — 종 그림을 UI 칸에 바로(정지/animate, HD 아니면 도트 fallback). 도감 MonsterSprite·BossPortrait(현상금·도감 보스·이름표·보스 도전)·보스 컷인 연결.
+- 다음: 검토 반영. 재개 지점: rotation+duel smoke, 폰 확인표.
+
 ## 2026-10-18 저녁 · S5 · HD 배 보스 무리 12종
 - **현재 위치**: review/hd-bosses-a 9d41f427(main 2876a4b1 위) — S3 검토 대기. HD 묶음 A는 main 머지됨.
 - 한 일: S3와 보스 나눔(S3 = 대보스·생물 보스·해역 보스, S5 = 배 무리) → 공용 몸 boss_ship.dart + 12종 + 비교 골든 hd_bosses_a.
