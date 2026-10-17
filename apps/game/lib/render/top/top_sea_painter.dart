@@ -19,8 +19,6 @@ class TopSeaPainter {
   String? _region;
   late final TopSeaProps? _props = TopSeaProps.of(cfg); // 흘러가는 외곽선 소품(디자인 개편 ③), 피버엔 흐려짐
 
-  /// 해역 팔레트로(한 단계 깊은 진한 청록·남색, fx_map `topSea.regions`). 바뀔 때만 읽는다.
-  void useRegion(String id) => id == _region ? null : _pal = seaPalette(cfg, _region = id);
   late final Color _foam = Color(_c('foam'));
   late final Color _goldWave = Color(_c('goldWave'));
   late final Color _goldFoam = Color(_c('goldFoam'));
@@ -140,7 +138,9 @@ class TopSeaPainter {
   }
 
   /// 바다 전체: [view] = 보이는 영역(단위, 왼쪽 위 기준), [clockMs] = 깜빡임용.
-  void paint(Canvas c, Rect view, double clockMs) {
+  /// [region]: 해역 팔레트(한 단계 깊은 진한 청록·남색, fx_map `topSea.regions`)·소품 세트 — 바뀔 때만 읽는다.
+  void paint(Canvas c, Rect view, double clockMs, {String? region}) {
+    if (region != null && region != _region) _pal = seaPalette(cfg, _region = region);
     // 시트를 여닫는 동안 보이는 높이가 매 프레임 바뀐다 — 길(Path)은 커질 때만 다시 만든다(64단위로 올림, 사용자 '시트 열면 버벅').
     final built = _builtFor;
     if (built == null || view.width > built.width + 0.5 || view.height > built.height) {
