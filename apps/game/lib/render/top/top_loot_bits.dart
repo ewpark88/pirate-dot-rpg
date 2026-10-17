@@ -30,6 +30,50 @@ class LootBits {
     }
   }
 
+  /// 보물상자 V자 빛줄기(디자인 개편 — 쿵푸할매 상자 연출): 상자에서 위로 벌어지는 보라 빛줄기 두 개, 그 안을 금화·젬이 줄지어 솟는다(1.2초).
+  void vBeams(Canvas c, Offset at, double age, SpriteDraw? sprites) {
+    const ms = 1200.0;
+    if (age >= ms) return;
+    final t = age / ms;
+    final rise = math.min<double>(1, t * 3);
+    final fade = t < 0.65 ? 1.0 : 1 - (t - 0.65) / 0.35;
+    const len = 170.0;
+    for (final side in const [-1.0, 1.0]) {
+      final dir = Offset(math.sin(side * 0.36), -math.cos(0.36));
+      final tip = at + dir * len * rise;
+      final n = Offset(-dir.dy, dir.dx);
+      for (final (w, a) in const [(14.0, 0.28), (7.0, 0.5), (2.5, 0.9)]) {
+        _path
+          ..reset()
+          ..moveTo(at.dx + n.dx * w * 0.4, at.dy + n.dy * w * 0.4)
+          ..lineTo(tip.dx + n.dx * w, tip.dy + n.dy * w)
+          ..lineTo(tip.dx - n.dx * w, tip.dy - n.dy * w)
+          ..lineTo(at.dx - n.dx * w * 0.4, at.dy - n.dy * w * 0.4)
+          ..close();
+        _paint.color = (w < 3 ? const Color(0xFFF4E6FF) : const Color(0xFFB45AFF)).withValues(alpha: a * fade);
+        c.drawPath(_path, _paint);
+      }
+      // 빛줄기 안을 솟는 보상: 금화·젬 번갈아 6개
+      for (var k = 0; k < 6; k++) {
+        final u = ((t * 1.6) + k / 6) % 1;
+        if (u > rise) continue;
+        final p = at + dir * len * u;
+        final s = 9 * (0.7 + 0.3 * u);
+        if (k.isEven &&
+            sprites != null &&
+            sprites.drawSmoothFrame(c, 'coin_hd', (k + (age ~/ 70)) % 4, p.dx, p.dy, s, s)) {
+          continue;
+        }
+        c
+          ..save()
+          ..translate(p.dx, p.dy)
+          ..scale(1.2);
+        gem(c, Offset.zero, age + k * 40);
+        c.restore();
+      }
+    }
+  }
+
   /// 별가루(광고 보상): 배 둘레에서 빙글 돌며 솟아오르는 반짝 12개.
   void stars(Canvas c, Offset at, double age) {
     const ms = 1200.0;

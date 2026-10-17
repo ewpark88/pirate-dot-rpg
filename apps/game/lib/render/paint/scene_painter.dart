@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/paint/stage_painter.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/top_view.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
+import 'package:pirate_dot/render/text/outline_digits.dart';
 import 'package:pirate_dot/render/top/top_dim.dart';
 import 'package:pirate_dot/render/top/top_frame.dart';
 import 'package:pirate_dot/render/top/top_scene_painter.dart';
@@ -30,6 +31,10 @@ class ScenePainter {
   late final StagePainter _stage;
   final _sprite = SpriteDraw();
   late final HudPainter _hud;
+
+  /// 테두리 숫자 아틀라스(디자인 개편) — 넣으면 피해 숫자를 그것으로.
+  OutlineDigits? get digits => _hud.digits;
+  set digits(OutlineDigits? d) => _hud.digits = d;
   late final PbFxPainter _pb;
   final _topWave = TopWaveFx();
 

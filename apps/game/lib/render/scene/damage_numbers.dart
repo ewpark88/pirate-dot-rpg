@@ -37,6 +37,10 @@ class DamageNumbers {
 
   /// juice damageNumber.mergeMs: 이 시간 안의 같은 적·같은 종류 피해는 숫자 하나로 합친다(숫자 더미 방지).
   final double mergeMs;
+  late final double _merge = math.max(mergeMs, 300);
+
+  /// 화면에 동시에 띄우는 숫자 최대(작은 보통 숫자부터 생략).
+  int screenCap = 12;
 
   /// juice damageNumber.stackRows: 겹치는 숫자를 위로 비켜 쌓는 최대 줄 수. 넘치면 맨 위 숫자에 합친다.
   final int stackRows;
@@ -54,7 +58,7 @@ class DamageNumbers {
     final list = pool.active;
     if (key >= 0) {
       for (final n in list) {
-        if (n.key == key && n.kind == kind && n.ageMs < mergeMs) {
+        if (n.key == key && n.kind == kind && n.ageMs < _merge) {
           _renew(n.._setAmount(n.amount + amount));
           return;
         }
@@ -74,6 +78,16 @@ class DamageNumbers {
       // 종류(크기)는 그대로 둔다 — 일반 숫자가 치명타 크기로 커지면 옆 줄과 다시 겹친다. 합계는 보존.
       _renew(blocker.._setAmount(blocker.amount + amount));
       return;
+    }
+    // 화면 동시 숫자 상한(디자인 개편 — 쿵푸할매처럼 숫자는 적고 크게): 넘치면 가장 작은 보통 숫자를 뺀다(새 것이 더 작으면 새 것을 생략).
+    if (list.length >= screenCap) {
+      DamageNumber? smallest;
+      for (final n in list) {
+        if (n.kind != DamageKind.normal) continue;
+        if (smallest == null || n.amount < smallest.amount) smallest = n;
+      }
+      if (smallest == null || (kind == DamageKind.normal && amount <= smallest.amount)) return;
+      pool.release(smallest);
     }
     if (list.length >= pool.capacity) {
       final oldest = list[0];

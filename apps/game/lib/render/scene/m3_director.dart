@@ -36,6 +36,7 @@ class M3Director {
   static const _screenScope = 'screen';
 
   void onSkill(SkillCast e) {
+    if (scene.isTop) _magicCircle(e.crewId);
     final skill = _skills[e.skillId];
     if (skill?.shape == 'ship') {
       scene
@@ -50,6 +51,14 @@ class M3Director {
       return;
     }
     if (sheet != null) scene.spawnEffect(sheet, e.x, e.y, scale: _fx.skillFxScale);
+  }
+
+  /// 디자인 개편 발광: 스킬 쓴 선원 계열 색 마법진을 배 밑에.
+  void _magicCircle(String crewId) {
+    final crew = scene.tables.crews.crews.where((c) => c.id == crewId).firstOrNull;
+    final fam = _fx.familyColors;
+    final color = crew != null && fam.has(crew.family) ? parseArgb(fam.str(crew.family), 'familyColors') : 0xFFFFD24A;
+    scene.topHits.glow.circle(scene.clockMs, 46, color);
   }
 
   void _screenSkill(String? sheet) {

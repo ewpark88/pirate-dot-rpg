@@ -10,6 +10,7 @@ import 'package:pirate_dot/render/paint/slot_skin_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/scene/battle_scene.dart';
 import 'package:pirate_dot/render/scene/damage_numbers.dart';
+import 'package:pirate_dot/render/text/outline_digits.dart';
 
 /// 캔버스 안 HUD (기준 battle_ship.gif, render-quality-v1 규칙 4·5·8):
 /// 도트 데미지 숫자, `xN COMBO` 배너, 왼쪽 위 코인+골드, 가운데 `스테이지-파`, 오른쪽 위 함성 게이지, 선원 슬롯 6칸.
@@ -86,6 +87,11 @@ class HudPainter {
           ..pixel.set(n.text, t == 0 ? layer.colorOf(n) : _comboTint[t - 1], layer.scaleOf(n).round());
       }
       final pop = _popScale(n);
+      final d = digits;
+      if (d != null) {
+        _outlined(c, d, n, layer, scale * pop * (n.kind == DamageKind.ship ? 1 : grow), t);
+        continue;
+      }
       final s = scale * pop * (n.kind == DamageKind.ship ? 1 : grow);
       c
         ..save()
@@ -97,6 +103,26 @@ class HudPainter {
   }
 
   static const _comboTint = [0xFFFFF1A8, 0xFFFFB347, 0xFFFF7AC8];
+
+  /// 쿵푸할매식 테두리 숫자 아틀라스(S2 outline_digits — BattleGame이 읽어 넣는다). 없으면 도트 글자.
+  OutlineDigits? digits;
+
+  /// 테두리 숫자: 보통 흰(연쇄 길면 금)·치명 금(크게)·배 피해 빨강. 칸 높이 = 도트 글자 높이의 약 2배.
+  void _outlined(Canvas c, OutlineDigits d, DamageNumber n, DamageNumbers layer, double s, int tier) {
+    final color = switch (n.kind) {
+      DamageKind.ship => 'red',
+      DamageKind.crit => 'gold',
+      _ => tier >= 2 ? 'gold' : 'white',
+    };
+    final h = 5 * layer.scaleOf(n) * (n.kind == DamageKind.crit ? 3.0 : 2.3);
+    final w = d.layout.measure(n.text, height: h);
+    c
+      ..save()
+      ..translate(n.x, n.y - layer.riseOf(n))
+      ..scale(s);
+    d.paint(c, Offset(-w / 2, -h / 2), n.text, color: color, height: h);
+    c.restore();
+  }
 
   /// 나올 때 크기: 치명은 0.5 → 1.55 → 1(160ms, 넘쳤다 돌아옴), 보통은 0.7 → 1.15 → 1(110ms).
   static double _popScale(DamageNumber n) {
