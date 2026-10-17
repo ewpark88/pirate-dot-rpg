@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:game_core/src/battle/field.dart';
-import 'package:game_core/src/battle/spawner.dart' show feverSwarmPattern, spawnWave, startBoss, tutorialBossScale;
+import 'package:game_core/src/battle/spawner.dart'
+    show feverSwarmPattern, hordeCountAt, spawnWave, startBoss, tutorialBossScale;
 import 'package:game_core/src/economy/fever.dart' show feverJustStarted, feverOn;
 import 'package:game_core/src/economy/rebirth_shop.dart' show fastSailFraction;
 import 'package:game_core/src/engine/events.dart';
@@ -67,8 +68,16 @@ void nextEncounter(Field f, GameState s, SystemContext ctx) {
   if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
     startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables));
   } else {
-    f.feverSwarm = feverSwarmPattern(ctx.tables, fever: feverOn(s));
+    // 대군 습격(사용자 2026-10-17 '스테이지를 넘어갈 때마다 많이 몰려들게'): 스테이지 첫 파(파밍 아님)는 hordeCountAt마리가
+    // 사방(고리)에서 한꺼번에 — 한 파 몫은 그대로 나눈다(처치 시간·골드 총량 같음).
+    final horde = !p.farming && p.wave == 0 && hordeCountAt(ctx.tables, p.stage) > 0 && !feverOn(s);
+    f
+      ..feverSwarm = horde ? 'ring' : feverSwarmPattern(ctx.tables, fever: feverOn(s))
+      ..hordeCount = horde ? hordeCountAt(ctx.tables, p.stage) : 0;
     spawnWave(f, p.stage, ctx);
-    f.feverSwarm = null;
+    f
+      ..feverSwarm = null
+      ..hordeCount = 0;
+    if (horde) ctx.emit(HordeIncoming(ctx.tick, stage: p.stage, count: hordeCountAt(ctx.tables, p.stage)));
   }
 }
