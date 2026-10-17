@@ -43,6 +43,7 @@ void main() {
           locale: const Locale('ko'),
           overrides: [bossBarsProvider.overrideWithValue((left: 2, total: 3, ratio: 0.4))],
         );
+        await precacheImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('../goldens/ko_boss_bars_$name.png'));
       });
     }
