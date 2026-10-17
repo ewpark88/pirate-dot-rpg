@@ -34,6 +34,8 @@ void main() {
     const OpJumpStage(150),
     const OpSetWave(count: 14, enemyKind: 'gull'),
     const OpSpawnBoss(),
+    const OpSpawnBoss(bossId: 'kraken'),
+    const OpBossBreak(),
     const OpSetInvincible(on: true),
     const OpSetSpeed(4),
     const OpStepTick(),
