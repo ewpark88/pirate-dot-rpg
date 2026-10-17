@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:game_core/src/battle/captain_skill.dart' show bossBarsAt;
+import 'package:game_core/src/battle/captain_skill.dart' show bossBarsAt, bossBarsLeftAt;
 import 'package:game_core/src/battle/field.dart';
 import 'package:game_core/src/battle/topdown/boss_patterns.dart' show BossPlan;
 import 'package:game_core/src/battle/topdown/top_vanguard.dart';
@@ -145,7 +145,7 @@ void startBoss(
     ..hp = boss.maxHp.times(hpRatio)
     ..scale = bossScaleOf(t, def.id)
     ..bossBars = bars
-    ..bossBarsLeft = math.max(1, (hpRatio * bars - 1e-9).ceil());
+    ..bossBarsLeft = bossBarsLeftAt(bars, hpRatio);
   if (def.patterns.isNotEmpty) {
     int ticks(double sec) => (sec / (w.tickMs * secondsPerMillisecond)).round();
     final first = def.firstRestSec;

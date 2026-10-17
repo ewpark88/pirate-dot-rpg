@@ -64,6 +64,6 @@ List<BossDexEntry> bossDexView(GameState s, GameTables t) {
         kills: dex.killsOf(b.id),
       ),
   ];
-  int key(BossDexEntry e) => e.firstStage == 0 ? 1 << 30 : e.firstStage;
+  int key(BossDexEntry e) => e.firstStage == 0 ? r.loopStages + 1 : e.firstStage; // 안 나오는 보스는 뒤
   return rows..sort((a, b) => key(a).compareTo(key(b)));
 }

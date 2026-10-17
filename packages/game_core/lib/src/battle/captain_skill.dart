@@ -11,6 +11,9 @@ import 'package:game_data/game_data.dart';
 // ② 선장 필살기 meta.captainSkill — 게이지가 처치·보스 피해로 차고, 가득이면 자동(Settings.autoUltimate) 또는
 //    TriggerUltimate로: 선장 궁극기 효과(피버 첫 일격과 같은 castUltimate) + 함대 rushSec초 폭주(공격 속도 × attackSpeedMul).
 
+/// HP 비율 [ratio]에서 남은 층 수(최소 1): 깎인 층 수를 내림해 뺀다 — 딱 경계(2/3 등)면 그 층은 깨진 것.
+int bossBarsLeftAt(int bars, double ratio) => math.max(1, bars - ((1 - ratio) * bars).floor());
+
 /// 스테이지 [stage] 보스의 체력 층 수(waves.boss.bars.byStage — from 이상 중 마지막). 표에 없으면 1(층 없음).
 int bossBarsAt(GameTables t, int stage) {
   final b = t.waves.raw.obj('boss');
@@ -32,7 +35,7 @@ extension BossFeel on Round {
     for (final e in field.foes) {
       if (!e.boss || e.bossBars <= 1) continue;
       if (!e.alive) continue;
-      final left = math.max(1, ((e.hp / e.maxHp).toDouble() * e.bossBars - 1e-9).ceil());
+      final left = bossBarsLeftAt(e.bossBars, (e.hp / e.maxHp).toDouble());
       if (left >= e.bossBarsLeft) continue;
       final sec = bars.number('staggerSec');
       final ticks = math.max(1, (sec / dt).round());
