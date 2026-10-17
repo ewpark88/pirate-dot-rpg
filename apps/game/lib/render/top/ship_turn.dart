@@ -36,7 +36,10 @@ class ShipTurn {
     // 엔진이 배 방향(shipHeading, 피버 지그재그 ±25°)을 주면 그 각도로 — 꺾을 때 약 0.25초에 빠르게 돌고, x 변화 뱅크는 쓰지 않는다.
     final heading = scene.frame.shipHeading;
     final before = _heading;
-    _heading += (heading - _heading) * math.min(1, dt / 80);
+    // 보스전 v2(S5: 배가 보스를 마주 보며 돈다)는 방향이 한 바퀴를 넘나든다 — 가까운 쪽으로 돌게 차이를 −π~π로.
+    var diff = (heading - _heading) % (2 * math.pi);
+    if (diff > math.pi) diff -= 2 * math.pi;
+    _heading += diff * math.min(1, dt / 80);
     // 피버 8자 곡선(S5): 크게 꺾는 동안 0.11초마다 바깥쪽으로 물보라가 튄다(사용자 '물보라가 약하다').
     final rate = (_heading - before) / dt;
     if (rate.abs() > 0.0012 && clockMs - _sprayAt > 110) {
