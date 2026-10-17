@@ -1159,7 +1159,6 @@
   "uiShopDailyGems": "매일 젬 {n}",
   "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
   "uiShopLater": "나중에",
-  "uiShopOpen": "상점 (운영자)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {

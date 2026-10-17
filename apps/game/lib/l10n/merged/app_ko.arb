@@ -317,6 +317,25 @@
   "opTraitDash": "돌진",
   "opTraitPattern": "패턴",
   "opTraitSplit": "분열",
+  "opGroupPurchase": "결제(흉내)",
+  "opSimNext": "다음 결제 결과",
+  "opSimSuccess": "성공",
+  "opSimCancel": "취소",
+  "opSimPending": "대기",
+  "opSimError": "오류",
+  "opSimSettle": "대기 결제 마치기",
+  "opSimRefund": "환불: {id}",
+  "@opSimRefund": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "opSimReplay": "마지막 구매 다시 보내기",
+  "opSimNone": "결제 흉내가 없는 빌드예요",
+  "opEntitlements": "권리 켜기/끄기",
+  "opShopOpen": "상점 열기",
   "platformNotifyOfflineFullTitle": "보물창고가 가득 찼어요",
   "platformNotifyOfflineFullBody": "원정대가 {hours}시간 동안 모은 골드가 기다리고 있어요.",
   "platformNotifyChannelName": "오프라인 보상",
@@ -1503,7 +1522,6 @@
   "uiShopDailyGems": "매일 젬 {n}",
   "uiShopStarterAsk": "처음 한 번만! 빠르게 강해지는 꾸러미예요.",
   "uiShopLater": "나중에",
-  "uiShopOpen": "상점 (운영자)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {

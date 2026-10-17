@@ -324,6 +324,25 @@
   "opTraitDash": "Dash",
   "opTraitPattern": "Pattern",
   "opTraitSplit": "Split",
+  "opGroupPurchase": "Purchases (sim)",
+  "opSimNext": "Next purchase result",
+  "opSimSuccess": "Success",
+  "opSimCancel": "Cancel",
+  "opSimPending": "Pending",
+  "opSimError": "Error",
+  "opSimSettle": "Settle pending",
+  "opSimRefund": "Refund: {id}",
+  "@opSimRefund": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "opSimReplay": "Replay last purchase",
+  "opSimNone": "No purchase simulator in this build",
+  "opEntitlements": "Entitlements on/off",
+  "opShopOpen": "Open shop",
   "platformNotifyOfflineFullTitle": "Your treasure hold is full",
   "platformNotifyOfflineFullBody": "Your crew saved up {hours} hours of gold for you.",
   "platformNotifyChannelName": "Offline rewards",
@@ -1510,7 +1529,6 @@
   "uiShopDailyGems": "Daily gems ×{n}",
   "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
   "uiShopLater": "Later",
-  "uiShopOpen": "Shop (operator)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {

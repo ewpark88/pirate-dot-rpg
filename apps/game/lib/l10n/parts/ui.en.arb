@@ -1159,7 +1159,6 @@
   "uiShopDailyGems": "Daily gems ×{n}",
   "uiShopStarterAsk": "One time only! A bundle to get strong fast.",
   "uiShopLater": "Later",
-  "uiShopOpen": "Shop (operator)",
   "@uiShopBuy": {
     "placeholders": {
       "price": {
