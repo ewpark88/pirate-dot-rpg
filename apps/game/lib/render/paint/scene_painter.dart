@@ -62,7 +62,11 @@ class ScenePainter {
   void paint(Canvas canvas) {}
 
   /// 탑다운 장면 그리기 (운영자·테스트: top.atmosphere.offsetMs로 시간대 미리보기).
-  late final TopScenePainter top = TopScenePainter(scene, _sprite);
+  TopScenePainter get top => _top ??= TopScenePainter(scene, _sprite);
+  TopScenePainter? _top;
+
+  /// 장면을 버릴 때(BattleGame이 새 장면으로 바꿀 때·미리보기 위젯 dispose): HD 텍스처를 바로 놓는다.
+  void dispose() => _top?.dispose();
   // ignore: prefer_function_declarations_over_variables — 메서드 tear-off는 프레임마다 클로저를 만든다 → 필드에 한 번만.
   late final void Function(Canvas c) _worldFx = (c) {
     _cull = top.visibleWorld; // top.paint가 이번 프레임 값을 넣은 뒤 불린다

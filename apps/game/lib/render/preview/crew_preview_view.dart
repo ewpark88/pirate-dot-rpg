@@ -43,6 +43,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   late CrewPreview _engine;
   late BattleScene _scene;
   late ScenePainter _painter;
+  bool _made = false;
   Ticker? _ticker;
   final ValueNotifier<int> _repaint = ValueNotifier(0);
   Duration _last = Duration.zero;
@@ -64,6 +65,8 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   void _restart() {
     _engine = CrewPreview(widget.tables, crewId: widget.crewId, level: widget.level);
     _scene = BattleScene(widget.tables, null);
+    if (_made) _painter.dispose(); // 옛 장면 HD 텍스처를 바로 놓는다
+    _made = true;
     _painter = ScenePainter(_scene)..sprites = widget.sprites;
     _tickAccum = 0;
     _liteAccum = 0;
@@ -113,6 +116,7 @@ class _CrewPreviewViewState extends State<CrewPreviewView> with SingleTickerProv
   void dispose() {
     _ticker?.dispose();
     _repaint.dispose();
+    if (_made) _painter.dispose();
     super.dispose();
   }
 

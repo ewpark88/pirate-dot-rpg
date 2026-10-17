@@ -67,7 +67,7 @@ class TopEnemies {
           final f => f * (boss ? _boost(k, boss: true) : 1),
         },
       )
-      ..step(snap);
+      ..step(bakeDensity);
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
     for (var k = 0; k < scene.poseCount; k++) {
       final e = scene.poses[k];
@@ -81,7 +81,7 @@ class TopEnemies {
               e.kind,
               boss: e.boss,
               world: sheet.frameW * _boost(e.kind, boss: e.boss),
-              density: snap,
+              density: bakeDensity,
             )
           : null;
       // 보스는 프레임 300ms·숨쉬기 3%, 큰 보스(대보스 88도트)는 350ms(S1 '대보스 존재감').
@@ -249,6 +249,7 @@ class TopEnemies {
 
   /// 전장 1단위당 기기 픽셀(TopScenePainter가 프레임마다) — 위치를 이 격자에 맞춘다.
   double snap = 1;
+  double bakeDensity = 1; // HD 굽기 밀도(줌 뺀 단위당 px)
   static const _hugeW = 80;
   final _atlasPaint = Paint()
     ..isAntiAlias = false
