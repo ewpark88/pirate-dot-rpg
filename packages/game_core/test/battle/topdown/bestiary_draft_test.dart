@@ -16,6 +16,7 @@ void main() {
     final raw = Map<String, String>.of(rawTables);
     final r = jsonDecode(raw['regions']!) as Map<String, dynamic>;
     r['wallEvery'] = draft['wallEvery'];
+    r['rotationFromStage'] = draft['rotationFromStage'];
     final byId = (draft['regions'] as Map<String, dynamic>).cast<String, Map<String, dynamic>>();
     for (final region in (r['regions'] as List).cast<Map<String, dynamic>>()) {
       region.addAll(byId[region['id']]!);
@@ -38,6 +39,12 @@ void main() {
     for (final b in draft['bosses'] as List) {
       expect(names[(b as Map)['nameKey']]?.keys, containsAll(['ko', 'en']), reason: '${b['id']}');
     }
+  });
+
+  test('튜토리얼 1~3스테이지는 해역 일반 보스(enemy_ship), 순환은 4부터', () {
+    final t = applied();
+    expect([for (var s = 1; s <= 3; s++) t.regions.bossAt(s).id], everyElement('enemy_ship'));
+    expect(t.regions.regions.first.bossRotation, contains(t.regions.bossAt(4).id));
   });
 
   test('수용 기준 1: 해역마다 연속 10스테이지에 보스 4종 이상, 10단위 = 대보스, 25·50은 그대로', () {

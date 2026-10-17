@@ -1,6 +1,7 @@
 {
-  "_doc": "도감 v2 보스 초안(S5 구조·데이터, 수치는 S2). regions.json에 덧대는 조각: wallEvery·regions[id].bossRotation/wallBoss·bosses 추가. 수치는 기존 보스 값을 복사한 자리표시 — hpMultiplier·패턴 값은 S2. id는 S3 그림(td_<id>) 이름과 맞춘다. 검사: packages/game_core/test/battle/topdown/bestiary_draft_test.dart",
+  "_doc": "도감 v2 보스 초안(S5 구조·데이터, 수치는 S2). regions.json에 덧대는 조각: wallEvery·rotationFromStage(1~3은 enemy_ship — 튜토리얼, S1 결정)·regions[id].bossRotation/wallBoss·bosses 추가. 수치는 기존 보스 값을 복사한 자리표시 — hpMultiplier·패턴 값은 S2. id는 S3 그림(td_<id>) 이름과 맞춘다. 검사: packages/game_core/test/battle/topdown/bestiary_draft_test.dart",
   "wallEvery": 10,
+  "rotationFromStage": 4,
   "regions": {
     "coral": {
       "bossRotation": [
@@ -45,7 +46,7 @@
         "deep_octopus",
         "phantom_jelly"
       ],
-      "wallBoss": "kraken_lord"
+      "wallBoss": "kraken_titan"
     },
     "phantom": {
       "bossRotation": [
@@ -628,8 +629,8 @@
       "firstRestSec": 0.6
     },
     {
-      "id": "kraken_lord",
-      "nameKey": "battleBossKrakenLord",
+      "id": "kraken_titan",
+      "nameKey": "battleBossKrakenTitan",
       "hpMultiplier": 1.0,
       "weakFamilies": [],
       "patterns": [
@@ -874,9 +875,9 @@
       "ko": "유령 해파리",
       "en": "Phantom Jelly"
     },
-    "battleBossKrakenLord": {
+    "battleBossKrakenTitan": {
       "ko": "크라켄 문어",
-      "en": "Kraken Lord"
+      "en": "Kraken Titan"
     },
     "battleBossWraithShip": {
       "ko": "망령선",
