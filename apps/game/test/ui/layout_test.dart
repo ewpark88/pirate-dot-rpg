@@ -29,7 +29,7 @@ void main() {
   group('한국어 화면 문구', () {
     testWidgets('HUD·배 탭', (tester) async {
       await pumpGame(tester, loadFixture('boss_fight'), locale: const Locale('ko'), tab: shipTab);
-      expect(find.byTooltip('궁극기'), findsOneWidget);
+      expect(find.text('브레이크'), findsOneWidget); // 보스전 브레이크 막대 꼬리표(궁극기 버튼은 2026-10-17 제거)
       expect(find.text('대포'), findsOneWidget);
     });
 
