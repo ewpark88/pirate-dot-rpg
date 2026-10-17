@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_kit_v2.dart';
 
 part 'hd_ship_parts.dart';
+part 'hd_ship_v2.dart';
 
 /// 플레이어 배 색(기본 = 등급색, 스킨 = fx_map topShip.skinPreview의 hull·sail·flag 첫 색들).
 typedef HdShipColors = ({Color rim, Color rimD, Color deck, Color deckD, Color sail, Color sailD, Color flag});
@@ -92,6 +94,7 @@ class HdShip {
     double alpha = 1,
     bool rainbow = false,
     double now = 0,
+    String tier = 'dinghy',
   }) {
     final w = size.width;
     final h = size.height;
@@ -113,9 +116,12 @@ class HdShip {
       c.saveLayer(Rect.fromCenter(center: Offset.zero, width: w * 2.4, height: h * 1.6), _layer);
     }
     _part(c, 'hull', glowPart, glow, w, h, () => _hull(c, hull, len, hw, hullSt, col));
+    _tierDecor(c, len, hw, tier, now);
+    _sailShadows(c, len, hw, st('sail', 5));
     _part(c, 'cargo', glowPart, glow, w, h, () => _cargo(c, len, hw, st('cargo', 7)));
     _part(c, 'cannon', glowPart, glow, w, h, () => _cannons(c, len, hw, st('cannon', 7), recoil));
     _crew(c, len, hw);
+    _rigging(c, len, hw, st('sail', 5), col);
     _part(c, 'sail', glowPart, glow, w, h, () => _sails(c, len, hw, st('sail', 5), billow, col, rainbow));
     _part(c, 'crowsnest', glowPart, glow, w, h, () => _nest(c, len, st('crowsnest', 6), col, now));
     if (layered) c.restore();
@@ -157,6 +163,7 @@ class HdShip {
     k
       ..blob(c, hull, col.rim, col.rimD)
       ..blob(c, deck, col.deck, col.deckD, gloss: false, line: 0.5);
+    _grain(c, len, hw, rimW, col);
     // 판자 줄
     final iw = k.ink.strokeWidth;
     k.ink
@@ -193,6 +200,8 @@ class HdShip {
         c.drawRect(Rect.fromCenter(center: Offset(x * hw, len * 0.36), width: hw * 0.14, height: len * 0.05), k.fill);
       }
     }
-    k.shine(c, hull.getBounds());
+    k
+      ..rim(c, hull, Color.lerp(col.rim, const Color(0xFFFFFFFF), 0.6)!.withValues(alpha: 0.6), width: 0.6)
+      ..shine2(c, hull.getBounds());
   }
 }

@@ -50,6 +50,8 @@ class _Sheet extends CustomPainter {
           },
           HdShip.tierColors(tier),
           rainbow: i == stages.length,
+          tier: tier,
+          now: 300,
         );
         canvas.restore();
       }
