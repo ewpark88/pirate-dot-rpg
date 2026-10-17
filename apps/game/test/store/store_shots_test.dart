@@ -44,7 +44,7 @@ void main() {
   final tables = GameTables.load();
   SpriteBank? bank;
   late final _Run mid;
-  late final _Run ult;
+  late final _Run strike;
   late final _Run boss;
   // 탭 화면: 후반 샘플(전 선원 신화·큰 배)을 해역마다 옮겨 하늘·바다 색이 장마다 다르게. 필요할 때 만든다(메모리).
   final lateRuns = <int, _Run>{};
@@ -75,11 +75,11 @@ void main() {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
       },
     );
-    // 궁극기: 같은 산호해 44 장면을 함성 게이지 0.95에서 시작 → 무리가 화면에 찬 채로 궁극기.
-    // (폭풍해 51은 중반 함대가 거의 못 잡아 게이지가 안 차 궁극기가 안 난다 — 2026-10-15 확인)
-    ult = _Run(
+    // 피버 첫 일격(2026-10-17 궁극기 제거 → 피버 시작 틱에 선장 계열 화면 전체 일격): 같은 산호해 44 장면을
+    // 피버 게이지 0.95에서 시작 → 무리가 화면에 찬 채로 피버가 켜지며 첫 일격.
+    strike = _Run(
       tables,
-      _fixture('stage37_midgame', rage: 0.95, skin: 'storm'),
+      _fixture('stage37_midgame', fever: 0.95, skin: 'storm'),
       ticks: 600,
       commands: {
         0: [const OpSetInvincible(on: true), const OpJumpStage(44), const OpSetWave(count: 40)],
@@ -130,8 +130,8 @@ void main() {
       await shot(tester, '01_multikill', mid.best((e) => e is MultiKill && e.count >= 3, ticks: 3));
     });
 
-    testWidgets('02 궁극기', (tester) async {
-      await shot(tester, '02_ultimate', ult.best((e) => e is UltimateCast, ticks: 12));
+    testWidgets('02 피버 첫 일격', (tester) async {
+      await shot(tester, '02_fever_strike', strike.best((e) => e is UltimateCast, ticks: 12));
     });
 
     testWidgets('03 배 탭', (tester) async {
@@ -253,10 +253,10 @@ const _devices = {
 const _sea = Color(0xFF1B4F72); // BattleGame.backgroundColor와 같게
 final GlobalKey _shotKey = GlobalKey();
 
-/// [rage]: 함성 게이지를 미리 채워 둔다(궁극기 장면용 — 실제 스테이지에선 게이지가 차는 데 몇 분 걸린다).
-GameState _fixture(String name, {double? rage, String? skin}) {
+/// [fever]: 피버 게이지를 미리 채워 둔다(피버 첫 일격 장면용 — 실제로는 처치로 차는 데 시간이 걸린다).
+GameState _fixture(String name, {double? fever, String? skin}) {
   final json = jsonDecode(File('../../fixtures/states/$name.json').readAsStringSync()) as Map<String, dynamic>;
-  if (rage != null) (json['progress'] as Map<String, dynamic>)['rage'] = rage;
+  if (fever != null) (json['progress'] as Map<String, dynamic>)['fever'] = fever;
   final s = GameState.fromJson(json).copyWith(clearTutorial: true);
   if (skin == null) return s;
   // 환생 스킨(산호·폭풍·황금·유령)을 입혀 장마다 배 색이 다르게 — 스킨은 환생 보상이라 '보물지도' 장면과 맞다.
