@@ -24,7 +24,7 @@ sealed class Command {
             ? UpgradePart.max(j['part'] as String)
             : UpgradePart(j['part'] as String, times: j['times'] as int? ?? 1),
       'summon' => Summon(count: j['count'] as int? ?? 1),
-      'mergeAllCards' => const MergeAllCards(),
+      'mergeAllCards' => MergeAllCards(crewId: j['crewId'] as String?),
       'promoteCrew' => PromoteCrew(j['crewId'] as String),
       'challengeBoss' => const ChallengeBoss(),
       'triggerUltimate' => const TriggerUltimate(),
@@ -108,12 +108,16 @@ class Summon extends Command {
   Json _fields() => {'count': count};
 }
 
-/// 모든 해적의 합칠 수 있는 카드를 한 번에 합친다.
+/// 모든 해적의 합칠 수 있는 카드를 한 번에 합친다. [crewId]가 있으면 그 해적만(선원 상세 '지금 합치기').
 class MergeAllCards extends Command {
-  const MergeAllCards();
+  const MergeAllCards({this.crewId});
+  final String? crewId;
 
   @override
   String get type => 'mergeAllCards';
+
+  @override
+  Json _fields() => {if (crewId != null) 'crewId': crewId};
 }
 
 /// 출전 칸 [slot](0부터)에 선원을 넣는다. [crewId]가 null이면 비운다 (수동 편성, ADR-0010).
