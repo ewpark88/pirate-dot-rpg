@@ -16,7 +16,7 @@
 ## 규칙 (표 키)
 
 - `waves.boss.bars` {byStage: 1~29 3층 · 30~79 4층 · 80+ 5층, staggerSec 1, staggerDamageMul 1.3}: 층이 깨지면 1초 비틀(기절 = 공격 멈춤 + 받는 피해 × 1.3). 기존 브레이크(skills.bossBreak, 피해 × 3)와 별개이고, 비틀 동안은 브레이크 게이지가 안 쌓인다.
-- `meta.captainSkill` {killGain 0.004, bossDamageGain 1.2, rushSec 3, attackSpeedMul 2}: 처치 1마리 +0.004, 보스 HP 100% 깎을 때 +1.2. 가득이면 선장 궁극기 효과(피버 첫 일격과 같은 castUltimate) + 함대 3초 폭주(공격 속도 × 2). 폭주 중엔 게이지가 안 찬다. 피버 첫 일격은 그대로(게이지와 별개).
+- `meta.captainSkill` {killGain 0.001, bossDamageGain 1.2, rushSec 3, attackSpeedMul 2}: 처치 1마리 +0.001(화면 밀도로 0.004면 250마리마다 폭주 → 잡몹 진행까지 당김), 보스 HP 100% 깎을 때 +1.2. 가득이면 선장 궁극기 효과(피버 첫 일격과 같은 castUltimate) + 함대 3초 폭주(공격 속도 × 2). 폭주 중엔 게이지가 안 찬다. 피버 첫 일격은 그대로(게이지와 별개).
 - 관통(S1 설계 '공속 ×2·관통')은 1차에 빠짐 — 공속만. 탄 관통은 계열마다 탄 구조가 달라 다음 단계.
 - 보스 처치 시간은 바꾸기 전 ±10%(3자 균형 guard) — BALANCE.md 기록.
 
