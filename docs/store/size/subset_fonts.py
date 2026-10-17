@@ -5,7 +5,7 @@
 
 '쓰는 글자' = apps/game/lib/l10n/merged/*.arb 값 + packages/game_data/tables/*.json + apps/game/lib/**/*.dart(그리는 기호 문자열).
 --check는 새 문구가 서브셋 밖 글자를 쓰면 종료 1과 그 글자 목록 — 그때 원본에서 다시 서브셋한다(원본은 S3가 tools/art/fonts_src/에 보관).
-도구: fontTools(무료, `pip install fonttools`). 종료 코드: 0 통과 · 1 빠진 글자 있음.
+도구: fontTools(무료, `pip install fonttools`). 종료 코드: 0 통과 · 1 빠진 글자 있음 · 3 fontTools 없음(검사 건너뜀 — tool/check가 통과로 본다).
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ def keep_set(root: Path = ROOT) -> set[str]:
 
 
 def missing(font: Path, chars: set[str]) -> list[str]:
-    from fontTools.ttLib import TTFont
+    from fontTools.ttLib import TTFont  # noqa: PLC0415 — check에서만 필요(없으면 main이 건너뜀)
 
     cmap = TTFont(str(font)).getBestCmap()
     return sorted(c for c in chars if ord(c) not in cmap and not c.isspace() and not _emoji(c))
@@ -71,11 +71,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args(argv)
     if a.check:
+        try:
+            import fontTools  # noqa: F401, PLC0415
+        except ImportError:
+            print("fontTools 없음 — 폰트 글자 검사 건너뜀(pip install fonttools)")
+            return 3
         used = used_chars()
         bad = {name: missing(a.out / name, used) for name in FONTS[:1]}  # 본문 글꼴(Galmuri11)이 다 덮어야 한다
         holes = [c for cs in bad.values() for c in cs]
         if holes:
-            print(f"서브셋 밖 글자 {len(holes)}개: {''.join(holes[:80])}")
+            print(f"폰트에 없는 글자: {''.join(holes[:80])} ({len(holes)}개) — 원본에서 다시 서브셋: "
+                  "python -I -B docs/store/size/subset_fonts.py --src tools/art/fonts_src --out apps/game/assets/fonts")
             return 1
         print(f"쓰는 글자 {len(used)}개 모두 있음")
         return 0
