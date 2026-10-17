@@ -13,7 +13,7 @@ export 'src/economy/crew_stats.dart';
 export 'src/economy/daily.dart'
     show AttendanceView, QuestView, addQuestProgress, attendance, canClaimDaily, dailyQuests;
 export 'src/economy/dungeon.dart'
-    show canStartDungeon, dungeonCrews, dungeonGroupById, dungeonGroupOn, dungeonToday; // 던전 카드(UI)
+    show canStartDungeon, dungeonCrews, dungeonFamilyCrews, dungeonGroupById, dungeonGroupOn, dungeonToday; // 던전 카드(UI)
 export 'src/economy/formation.dart' show activeFleet, emptySlotCount, fleetSlots;
 export 'src/economy/iap.dart' show canClaimGemSub, entitlementActive, purchasedSpeed;
 export 'src/economy/meta_views.dart' show CollectionBonus, GoalKind, NextGoal, collectionBonus, nextGoal;
