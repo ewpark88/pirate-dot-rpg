@@ -145,7 +145,7 @@ class BattleSystem implements GameSystem {
     final w = ctx.tables.waves;
     final fast = p.rebirths > 0 && p.stage <= (p.bestStage * fastSailFraction(s, ctx.tables)).ceil();
     if (!p.farming && p.wave >= (fast ? w.rebirthSkip.waves : w.wavesPerStage)) {
-      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx), extraSec: bossExtraSec(s, ctx.tables));
+      startBoss(f, p.stage, ctx, hpScale: tutorialBossScale(s, ctx.tables), extraSec: bossExtraSec(s, ctx.tables));
     } else {
       spawnWave(f, p.stage, ctx);
     }

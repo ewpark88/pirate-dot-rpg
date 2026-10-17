@@ -20,13 +20,15 @@ double feverDamageBonus(GameState s, GameTables t) =>
 double feverGoldMultiplier(GameState s, GameTables t) =>
     feverOn(s) ? t.meta.raw.obj('fever').number('goldMultiplier') : 1;
 
-/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16: 시간이 아니라 처치 500~1000).
-/// = killsBase × (그 스테이지 탑다운 무리 수 ÷ 기본 무리 수), killsMax 상한 — 무리가 커져도 체감 간격이 비슷하게.
+/// 피버까지 필요한 처치 수 (사용자 결정 2026-10-16 처치 수 기준, 피드백 #2 2026-10-17 '초반 200 → 점점 늘려 최대 1000').
+/// 스테이지 1에서 killsStart, killsRampStage까지 곧게 늘어 killsMax. 환생하면 스테이지를 따라 다시 짧아진다.
 int feverKillsAt(GameTables t, int stage) {
   final f = t.meta.raw.obj('fever');
-  final base = t.waves.raw.obj('top').obj('mobCount').integer('base');
-  final n = (f.integer('killsBase') * t.waves.topMobCountAt(stage) / base).round();
-  return n < f.integer('killsMax') ? n : f.integer('killsMax');
+  final start = f.integer('killsStart');
+  final max = f.integer('killsMax');
+  final ramp = f.integer('killsRampStage');
+  final k = stage >= ramp ? 1.0 : (stage - 1) / (ramp - 1);
+  return (start + (max - start) * k).round();
 }
 
 /// 피버 서포트 선원(개성 v2 7.3, legends `fever`)의 합: 출전 중인 선원의 그 등급 능력(특징 배율 포함).

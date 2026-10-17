@@ -49,9 +49,14 @@ class _IdleGateState extends ConsumerState<IdleGate> {
   void _tick() {
     if (!mounted) return;
     final now = ref.read(clockProvider).now();
-    // 설정 '절전 모드'가 켜져 있을 때만 절전 화면(끄면 idle 신호만). 시간은 S2 설정 키(autoSleepMin)가 오면 그 값.
-    final powerSave = ref.read(gameStateProvider).settings.powerSave;
-    ref.read(idleLevelProvider.notifier).evaluate(now, sleepAfter: powerSave ? sleepAfterDefault : null);
+    // 설정 '절전 모드'가 켜져 있고 '절전 화면까지'가 끔(0)이 아닐 때만 절전 화면(아니면 idle 신호만).
+    final set = ref.read(gameStateProvider).settings;
+    ref
+        .read(idleLevelProvider.notifier)
+        .evaluate(
+          now,
+          sleepAfter: sleepAfterOf(powerSave: set.powerSave, sec: set.sleepAfterSec),
+        );
     // 미세 이동: 2분마다 정해진 8방향 중 다음 자리(최대 2dp).
     if (now.difference(_lastShift) >= _shiftEvery) {
       _lastShift = now;

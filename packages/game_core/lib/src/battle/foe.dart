@@ -78,6 +78,7 @@ class Foe {
   double breakPull = 0;
   double breakGauge = 0;
   int brokenUntil = 0;
+  int breakCooldownUntil = 0; // 일어난 뒤 이 틱까지 게이지가 안 쌓인다(bossBreak.cooldownSec)
 
   /// 돌격대(waves.top.vanguard, S1·S2): 넉백·기절·끌기 면역, 무리 사이를 뚫고 배로 곧장 — EnemyView.vanguard.
   bool vanguard = false;

@@ -6,7 +6,7 @@ import 'package:game_core/src/engine/events.dart';
 import 'package:game_core/src/engine/game_engine.dart';
 import 'package:game_core/src/engine/game_state.dart';
 import 'package:game_core/src/engine/units.dart';
-import 'package:game_data/game_data.dart' show BossDef, WavesTable;
+import 'package:game_data/game_data.dart' show BossDef, GameTables, WavesTable;
 
 /// 스테이지 곡선: `base × growth^(stage-1)`.
 BigNum stageCurve(double base, double growth, int stage) => BigNum.powOf(growth, stage - 1).times(base);
@@ -81,15 +81,9 @@ void startBoss(
     layer: 'surface',
     x: x ?? 0,
     y: y ?? 0,
-    maxHp:
-        maxHp ??
-        stageCurve(
-          w.hpBase,
-          w.hpGrowth,
-          stage,
-        ).times(w.bossHpMultiplier * def.hpMultiplier * hpScale * f.enemyHpScale * wallBossScale(w, stage)),
+    maxHp: maxHp ?? bossMaxHp(t, stage, def: def, hpScale: hpScale * f.enemyHpScale),
     speed: w.bossSpeed,
-    attack: stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier),
+    attack: bossAttack(w, stage),
     gold: gold ? stageCurve(w.goldBase, w.goldGrowth, stage).times(w.bossGoldMultiplier) : BigNum.zero,
     boss: true,
     bossDef: def,
@@ -133,14 +127,29 @@ void startBoss(
   if (emit) ctx.emit(BossSpawned(ctx.tick, kind: def.id, timeLimitTicks: f.bossTicksLeft));
 }
 
+/// 보스 최대 HP = 단일 HP × `boss.hpMultiplier` × 보스별 배율 × 벽 배율 × [hpScale](튜토리얼·보물 바다). 전투와 bossPreview(UI)가 같이 쓴다.
+BigNum bossMaxHp(GameTables t, int stage, {BossDef? def, double hpScale = 1}) {
+  final w = t.waves;
+  final d = def ?? t.regions.bossAt(stage);
+  return stageCurve(
+    w.hpBase,
+    w.hpGrowth,
+    stage,
+  ).times(w.bossHpMultiplier * d.hpMultiplier * hpScale * wallBossScale(w, stage));
+}
+
+/// 보스 한 대 공격력 = 단일 공격 × `boss.attackMultiplier`.
+BigNum bossAttack(WavesTable w, int stage) =>
+    stageCurve(w.attackBase, w.attackGrowth, stage).times(w.bossAttackMultiplier);
+
 /// 보스 제한 시간(초) → 틱.
 /// [extraSec]는 보물지도 상점 bossTime.
 int bossTimeLimitTicks(SystemContext ctx, {double extraSec = 0}) =>
     ((ctx.tables.waves.bossTimeLimitSec + extraSec) / (ctx.tables.waves.tickMs * secondsPerMillisecond)).round();
 
 /// 첫 회차 초반 보스는 시작 편성으로 잡히게 약하게, 튜토리얼 3단계 첫 보스는 일부러 못 잡게 (설계서 4.12). 재도전은 보통 보스.
-double tutorialBossScale(GameState s, SystemContext ctx) {
-  final w = ctx.tables.waves;
+double tutorialBossScale(GameState s, GameTables t) {
+  final w = t.waves;
   final early = s.progress.rebirths == 0 && s.progress.stage <= w.earlyStageMax ? w.earlyHpMultiplier : 1.0;
   final fail = s.tutorialStep == w.tutorialFailStage && s.progress.stage == w.tutorialFailStage
       ? w.tutorialFailHpMultiplier

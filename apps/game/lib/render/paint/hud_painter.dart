@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/render/layout.dart';
+import 'package:pirate_dot/render/paint/combo_banner.dart';
 import 'package:pirate_dot/render/paint/pixel_font.dart';
 import 'package:pirate_dot/render/paint/slot_skin_painter.dart';
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
@@ -25,7 +26,7 @@ class HudPainter {
 
   final _stage = PixelText();
   final _timer = PixelText();
-  final _combo = PixelText();
+  final _banner = ComboBanner();
   int _stageShown = -1;
   int _waveShown = -1;
   int _timerShown = -1;
@@ -131,11 +132,22 @@ class HudPainter {
   static const _topComboAt = 0.18;
 
   void _comboAt(Canvas c, double y) {
-    final combo = scene.combo.count(scene.clockMs);
-    if (combo < _fx.combo.integer('minKills')) return;
-    _combo
-      ..set('x$combo COMBO', _comboColor, _fx.combo.integer('scale'))
-      ..draw(c, _fx.combo.number('x'), y);
+    final v = scene.layout.viewDots;
+    final now = scene.clockMs;
+    _banner.paint(
+      c,
+      (v.left + v.width / 2).floorToDouble(),
+      y,
+      scene.combo.count(now),
+      now,
+      scene.combo.lastAddMs,
+      minKills: _fx.combo.integer('minKills'),
+      baseColor: _comboColor,
+      onMilestone: (_) {
+        scene.shake.trigger(scene.juice.shake['aoe']!);
+        scene.sound.sfx('multiKill', clockMs: now);
+      },
+    );
   }
 
   static double? _bossRatio(BattleView f) {

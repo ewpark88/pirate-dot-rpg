@@ -9,10 +9,15 @@ import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_frame.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/text/table_text.dart';
 
 // 바다 괴물 도감 화면 골격 (S1 2026-10-16): 항해 탭 '보물지도' 옆 카드 → 시트(해역마다 잡몹·보스 칸).
 // 만난 적은 실루엣, 처치하면 모습·이름 공개, 처치 수 · 첫 처치 보상 젬.
+
+/// 도감 시트 열기 (항해 탭 카드·첫 처치 토스트의 '도감').
+Future<void> showMonsterDex(BuildContext context) =>
+    showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const MonsterDexSheet());
 
 /// 항해 탭 카드: 제목 · n/m · 진행 막대 → 누르면 도감 시트.
 class MonsterDexCard extends ConsumerWidget {
@@ -27,7 +32,7 @@ class MonsterDexCard extends ConsumerWidget {
     return GestureDetector(
       key: const Key('dex.card'),
       behavior: HitTestBehavior.opaque,
-      onTap: () => unawaited(showPixelSheet<void>(context, maxHeight: 0.85, builder: (_) => const MonsterDexSheet())),
+      onTap: () => unawaited(showMonsterDex(context)),
       child: PixelFrame(
         padding: 6,
         child: Row(
@@ -194,7 +199,9 @@ class _DexTile extends ConsumerWidget {
             style: Skin.text(12, color: known ? Skin.ink : Skin.sub),
           ),
           Text(
-            known ? (kills == null ? '' : l10n.uiDexKills(kills)) : l10n.uiDexFirstKill(dexFirstKillGemsPlaceholder),
+            known
+                ? l10n.uiDexKills(kills)
+                : l10n.uiDexFirstKill(dexFirstKillGems(ref.watch(tablesProvider), boss: e.boss)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Skin.text(10, color: known ? Skin.sub : Skin.primaryEdge),

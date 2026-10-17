@@ -49,6 +49,19 @@ class CancelAutoUpgrade extends Command {
   String get type => 'cancelAutoUpgrade';
 }
 
+/// 안내 다시 보기(가이드 v2, S4): Settings.hints에서 [prefix]로 시작하는 id를 지운다. 빈 prefix = 전부.
+class ClearHints extends Command {
+  const ClearHints(this.prefix);
+
+  final String prefix;
+
+  @override
+  String get type => 'clearHints';
+
+  @override
+  Json _fields() => {'prefix': prefix};
+}
+
 /// 안내(말풍선) [id]를 본 것으로 저장 — 이미 있으면 그대로(S4 '처음 1회 안내').
 class MarkHint extends Command {
   const MarkHint(this.id);

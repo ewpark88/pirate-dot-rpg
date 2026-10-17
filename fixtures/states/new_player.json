@@ -42,11 +42,6 @@
       "level": 1,
       "exp": 0,
       "cards": 0
-    },
-    "turtle": {
-      "level": 1,
-      "exp": 0,
-      "cards": 0
     }
   },
   "fleet": [],
@@ -71,8 +66,7 @@
     "attendanceClaimed": false
   },
   "collection": [
-    "octo",
-    "turtle"
+    "octo"
   ],
   "settings": {
     "lang": "system",
@@ -187,12 +181,6 @@
     "fleet": [
       {
         "crewId": "octo",
-        "cooldown": 0.3,
-        "skillCooldown": 0.0,
-        "rarity": 0
-      },
-      {
-        "crewId": "turtle",
         "cooldown": 0.3,
         "skillCooldown": 0.0,
         "rarity": 0

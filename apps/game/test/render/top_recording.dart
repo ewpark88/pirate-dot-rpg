@@ -290,3 +290,29 @@ List<RecordedTick> withBossKill(List<RecordedTick> rec, {required int at, int ge
         ),
   ];
 }
+
+/// 보물상자를 [at] 틱 전 40틱 동안 배 오른쪽 앞에 띄우고 [at] 틱에 연다(피드백 #15 — ChestOpened, 탭·광고 같음).
+/// [adAt]이 있으면 그 틱에 광고 보상(SaveRequested adReward — 순풍 등 배 버프).
+List<RecordedTick> withChestOpen(List<RecordedTick> rec, {required int at, int? adAt, int gold = 8000}) {
+  final f = rec[at].frame;
+  final x = (f.shipX ?? 135) + 40;
+  final y = (f.shipY ?? 240) - 70;
+  return [
+    for (var i = 0; i < rec.length; i++)
+      if (i >= at - 40 && i < at)
+        RecordedTick(
+          rec[i].frame.copyWith(
+            chest: ChestView(x: x, y: y, ticksLeft: 200),
+          ),
+          rec[i].events,
+        )
+      else if (i == at || i == adAt)
+        RecordedTick(rec[i].frame, [
+          ...rec[i].events,
+          if (i == at) ChestOpened(rec[i].frame.tick, gold: BigNum.from(gold)),
+          if (i == adAt) SaveRequested(rec[i].frame.tick, reason: 'adReward'),
+        ])
+      else
+        rec[i],
+  ];
+}
