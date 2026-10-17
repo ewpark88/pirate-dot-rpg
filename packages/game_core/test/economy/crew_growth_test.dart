@@ -30,4 +30,15 @@ void main() {
     expect(atGate.levelsToPromote, 0);
     expect(crewGrowth(with_(const CrewState()), t, 'nobody'), isNull);
   });
+
+  test('교체 비교(#34): 혼자 초당 피해와 비율 — 레벨이 높은 쪽으로 바꾸면 1보다 크다', () {
+    final s = GameState.newGame(playerId: 'g', seed: 1, now: start).copyWith(
+      crews: const {'octo': CrewState(level: 5), 'pang': CrewState(level: 40)},
+      fleet: const ['octo'],
+    );
+    final up = swapCompare(s, t, 'octo', 'pang');
+    expect(up.ratio, greaterThan(1));
+    expect(up.ratio, closeTo((up.dpsIn / up.dpsOut).toDouble(), 1e-9));
+    expect(swapCompare(s, t, 'pang', 'octo').ratio, lessThan(1));
+  });
 }

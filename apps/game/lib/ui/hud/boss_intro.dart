@@ -8,6 +8,7 @@ import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
+import 'package:pirate_dot/ui/hud/boss_weakness.dart' show WeakChips;
 import 'package:pirate_dot/ui/hud/fever_drama.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -144,6 +145,16 @@ class _BossIntroState extends ConsumerState<BossIntro> with SingleTickerProvider
                     ),
                     // 보스 특성 아이콘 + 한 줄 (#25).
                     if (t.regions.bosses[id] case final def?) BossTraitLine(boss: def, tables: t),
+                    // 약점 계열 칩도 이름표 안에(사용자 피드백 #9 C — 보스전 내내 덮던 약점 띠를 줄임).
+                    if (t.regions.bosses[id] case final def? when bossCounters(def).isNotEmpty)
+                      Padding(
+                        key: const Key('boss.intro.weak'),
+                        padding: const EdgeInsets.only(top: 2),
+                        child: WeakChips(
+                          boss: def,
+                          labelStyle: Skin.text(13, color: Colors.white70),
+                        ),
+                      ),
                   ],
                 ),
               ),

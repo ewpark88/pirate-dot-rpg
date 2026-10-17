@@ -18,7 +18,7 @@
           "lead": true,
           "hitRadius": 20
         },
-        "powerScale": 0.8434,
+        "powerScale": 0.7203,
         "reach": 155,
         "rare": {
           "reach": 159
@@ -46,7 +46,7 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 3.0,
-        "powerScale": 1,
+        "powerScale": 1.426,
         "reach": 160,
         "rare": {
           "reach": 164
@@ -80,7 +80,7 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 2.9279,
+        "powerScale": 3.1356,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -110,7 +110,7 @@
       "aim": {
         "targets": "random",
         "intervalSec": 1.8,
-        "powerScale": 1,
+        "powerScale": 0.9721,
         "reach": 110,
         "rare": {
           "reach": 114
@@ -138,7 +138,7 @@
       "aim": {
         "targets": "farthest",
         "intervalSec": 3.6,
-        "powerScale": 1,
+        "powerScale": 1.5269,
         "reach": 165,
         "rare": {
           "reach": 169
@@ -171,7 +171,7 @@
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 1.1149,
+        "powerScale": 1.4798,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -201,7 +201,7 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 1.7,
-        "powerScale": 0.8559,
+        "powerScale": 1.5402,
         "projectile": {
           "speed": 320,
           "lead": true,
@@ -241,7 +241,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 1.0376,
+        "powerScale": 1.4149,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -276,7 +276,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 0.8596,
+        "powerScale": 1.5093,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -338,7 +338,7 @@
       "aim": {
         "targets": "nearest",
         "intervalSec": 1.4,
-        "powerScale": 1.0165,
+        "powerScale": 0.647,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -366,23 +366,24 @@
       "portrait": "crews/nar.png",
       "nameKey": "crewNarName",
       "aim": {
-        "targets": "farthest",
-        "intervalSec": 3.4,
-        "powerScale": 0.9729,
-        "reach": 170,
-        "rare": {
-          "reach": 174
-        },
-        "hero": {
-          "reach": 178
-        },
-        "legend": {
-          "reach": 182
-        },
-        "mythic": {
-          "reach": 186
+          "targets": "farthest",
+          "intervalSec": 3.4,
+          "powerScale": 1.3873,
+          "reach": 170,
+          "rare": {
+            "reach": 174,
+            "powerScale": 0.861
+          },
+          "hero": {
+            "reach": 178
+          },
+          "legend": {
+            "reach": 182
+          },
+          "mythic": {
+            "reach": 186
+          }
         }
-      }
     },
     {
       "id": "walrus",
@@ -396,7 +397,7 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 2.5,
-        "powerScale": 0.9283,
+        "powerScale": 0.8636,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -426,7 +427,7 @@
       "aim": {
         "targets": "cluster",
         "intervalSec": 2.0,
-        "powerScale": 0.9988,
+        "powerScale": 0.6075,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -456,7 +457,7 @@
       "aim": {
         "targets": "boss",
         "intervalSec": 3.6,
-        "powerScale": 0.949,
+        "powerScale": 0.853,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -492,7 +493,7 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 1.4664,
+        "powerScale": 1.4164,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -531,7 +532,7 @@
           "lead": false,
           "hitRadius": 8
         },
-        "powerScale": 1.0626,
+        "powerScale": 1.0104,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -566,7 +567,7 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.0516,
+        "powerScale": 0.9761,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -637,7 +638,7 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 0.7504,
+        "powerScale": 0.72,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -667,7 +668,7 @@
       "aim": {
         "targets": "nearest",
         "intervalSec": 2.6,
-        "powerScale": 1,
+        "powerScale": 1.0381,
         "reach": 80,
         "rare": {
           "reach": 84
@@ -701,7 +702,7 @@
           "lead": true,
           "hitRadius": 34
         },
-        "powerScale": 1.0102,
+        "powerScale": 0.8291,
         "reach": 110,
         "rare": {
           "reach": 114
@@ -735,7 +736,7 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.9091,
+        "powerScale": 2.6315,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -771,7 +772,7 @@
           "lead": true,
           "hitRadius": 8
         },
-        "powerScale": 1.6395,
+        "powerScale": 2.4902,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -807,7 +808,7 @@
           "lead": true,
           "hitRadius": 44
         },
-        "powerScale": 0.7638,
+        "powerScale": 0.6803,
         "reach": 110,
         "rare": {
           "reach": 114
@@ -841,7 +842,7 @@
           "lead": false,
           "hitRadius": 7
         },
-        "powerScale": 2.8822,
+        "powerScale": 2.3747,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -881,7 +882,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 3.2217,
+        "powerScale": 2.2583,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -918,7 +919,7 @@
           "delaySec": 0.4,
           "hitRadius": 22
         },
-        "powerScale": 0.6111,
+        "powerScale": 0.4584,
         "behavior": {
           "kind": "lightning"
         },
@@ -955,7 +956,7 @@
           "lead": true,
           "hitRadius": 7
         },
-        "powerScale": 1.7191,
+        "powerScale": 2.4061,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -993,7 +994,7 @@
           "lead": true,
           "hitRadius": 26
         },
-        "powerScale": 0.6471,
+        "powerScale": 0.453,
         "reach": 110,
         "rare": {
           "reach": 114
@@ -1022,7 +1023,7 @@
         "targets": "nearest",
         "intervalSec": 2.0,
         "shape": "single",
-        "powerScale": 4.4708,
+        "powerScale": 4.717,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -1080,7 +1081,7 @@
       "aim": {
         "targets": "strongest",
         "intervalSec": 5.2,
-        "powerScale": 0.8884,
+        "powerScale": 0.9397,
         "reach": 22,
         "rare": {
           "reach": 24
@@ -1108,7 +1109,7 @@
       "aim": {
         "targets": "cluster",
         "intervalSec": 3.5,
-        "powerScale": 1.0334,
+        "powerScale": 0.7491,
         "reach": 22,
         "rare": {
           "reach": 24
@@ -1138,7 +1139,7 @@
         "intervalSec": 7.8,
         "angleDeg": 90,
         "range": 50,
-        "powerScale": 0.87,
+        "powerScale": 0.8318,
         "reach": 22,
         "rare": {
           "reach": 24
@@ -1165,7 +1166,7 @@
       "nameKey": "crewTurtleName",
       "aim": {
         "intervalSec": 2.5,
-        "powerScale": 0.8332,
+        "powerScale": 0.9616,
         "reach": 76,
         "rare": {
           "reach": 80
@@ -1193,7 +1194,7 @@
       "aim": {
         "intervalSec": 3.6,
         "range": 75,
-        "powerScale": 1.1193,
+        "powerScale": 1.0667,
         "reach": 80,
         "rare": {
           "reach": 84
@@ -1220,22 +1221,23 @@
       "nameKey": "crewCookName",
       "skill": "support_rally",
       "aim": {
-        "intervalSec": 3.6,
-        "powerScale": 0.9375,
-        "reach": 74,
-        "rare": {
-          "reach": 78
-        },
-        "hero": {
-          "reach": 82
-        },
-        "legend": {
-          "reach": 86
-        },
-        "mythic": {
-          "reach": 90
+          "intervalSec": 3.6,
+          "powerScale": 0.8608,
+          "reach": 74,
+          "rare": {
+            "reach": 78,
+            "powerScale": 1.114
+          },
+          "hero": {
+            "reach": 82
+          },
+          "legend": {
+            "reach": 86
+          },
+          "mythic": {
+            "reach": 90
+          }
         }
-      }
     },
     {
       "id": "corey",
@@ -1250,7 +1252,7 @@
         "intervalSec": 1.7,
         "shape": "single",
         "targets": "nearest",
-        "powerScale": 5.04,
+        "powerScale": 8.2067,
         "mythic": {
           "splashRadius": 14,
           "splashRatio": 0.5,
@@ -1279,23 +1281,25 @@
       "nameKey": "crewLampName",
       "skill": "support_rally",
       "aim": {
-        "targets": "nearest",
-        "intervalSec": 2.8,
-        "powerScale": 0.48,
-        "reach": 160,
-        "rare": {
-          "reach": 164
-        },
-        "hero": {
-          "reach": 168
-        },
-        "legend": {
-          "reach": 172
-        },
-        "mythic": {
-          "reach": 176
+          "targets": "nearest",
+          "intervalSec": 2.8,
+          "powerScale": 1.049,
+          "reach": 160,
+          "rare": {
+            "reach": 164,
+            "powerScale": 0.828
+          },
+          "hero": {
+            "reach": 168,
+            "powerScale": 0.8842
+          },
+          "legend": {
+            "reach": 172
+          },
+          "mythic": {
+            "reach": 176
+          }
         }
-      }
     }
   ]
 }

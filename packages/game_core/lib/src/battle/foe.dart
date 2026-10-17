@@ -107,6 +107,9 @@ class Foe {
 
   bool revived = false; // 부활을 이미 썼다
 
+  /// 물기 속박(bara, crew_traits2.dart) 남은 초 — 그동안 움직이지 않는다(공격은 한다).
+  double rootTimer = 0;
+
   /// 감속(이동 × (1 − slow))과 남은 초.
   double slow = 0;
   double _slowTimer = 0;
@@ -153,6 +156,7 @@ class Foe {
     breakRatio: boss ? breakGauge : 0,
     broken: brokenUntil > 0,
     breakCooldown: boss ? breakCooldownRatio : 0,
+    rooted: rootTimer > 0,
     eventKind: eventKind,
   );
 }

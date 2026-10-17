@@ -8,6 +8,7 @@ import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/crew/crew_filter.dart';
 import 'package:pirate_dot/ui/crew/crew_filter_bar.dart';
 import 'package:pirate_dot/ui/crew/crew_identity.dart';
+import 'package:pirate_dot/ui/crew/swap_compare.dart';
 import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
@@ -82,8 +83,13 @@ class _FleetPicker extends ConsumerWidget {
       ...queried.where((c) => !slots.contains(c.id)),
       ...queried.where((c) => slots.contains(c.id)),
     ];
-    void pick(String? id) {
+    Future<void> pick(String? id) async {
       final swap = id != null && slots.contains(id) && slots.indexOf(id) != slot;
+      // 찬 칸을 쉬는 선원으로 바꿀 때는 먼저 비교 창(사용자 피드백 #34) — 취소면 그대로.
+      final current = slot < slots.length ? slots[slot] : null;
+      if (id != null && current != null && current != id && !slots.contains(id)) {
+        if (!await showSwapCompare(context, current, id) || !context.mounted) return;
+      }
       ref.read(fleetCommandsProvider).setSlot(slot, id);
       Navigator.of(context).pop();
       if (swap) showSkinToast(context, l10n.uiFleetSwapped);
@@ -147,7 +153,9 @@ class _SwapPicker extends ConsumerWidget {
               def: tables.crews.byId(id),
               level: levels[id] ?? 1,
               deployed: true,
-              onTap: () {
+              onTap: () async {
+                // 이 칸 선원 → 새 선원 비교(#34) — 취소면 그대로.
+                if (!await showSwapCompare(context, id, crewId) || !context.mounted) return;
                 ref.read(fleetCommandsProvider).setSlot(i, crewId);
                 Navigator.of(context).pop();
               },

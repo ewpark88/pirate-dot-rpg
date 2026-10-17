@@ -12,9 +12,17 @@ void main() {
     expect(find.descendant(of: find.byType(TopBar), matching: find.text('1.25M')), findsOneWidget);
     expect(find.descendant(of: find.byType(TopBar), matching: find.text('140')), findsOneWidget);
     final area = tester.getRect(find.byKey(const Key('battle.area')));
-    for (final key in ['top.gold', 'top.gems', 'hud.settings', 'daily.icon']) {
+    for (final key in ['top.gold', 'top.gems', 'hud.settings']) {
       expect(tester.getRect(find.byKey(Key(key))).bottom, lessThanOrEqualTo(area.top + 0.5), reason: key);
     }
+    // #9 A: 퀘스트는 상단이 아니라 도크 첫 칸(엄지 자리) — 전장 아래, 항해는 도크 끝.
+    final quest = tester.getRect(find.byKey(const Key('daily.icon')));
+    expect(quest.top, greaterThanOrEqualTo(area.bottom - 0.5));
+    final tabs = [
+      for (final i in [1, 2, 3, 0]) tester.getRect(find.byKey(Key('tab.$i'))).left,
+    ];
+    expect(quest.left, lessThan(tabs.first));
+    expect(tabs, orderedEquals([...tabs]..sort()), reason: '[퀘스트][배][선원][소환][항해]');
   });
 
   // 사용자 결정 2026-10-17: 궁극기 버튼 제거(피버 첫 일격) — 선원 줄 오른쪽에는 보스 도전만.

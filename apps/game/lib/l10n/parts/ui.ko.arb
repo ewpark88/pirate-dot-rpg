@@ -642,6 +642,9 @@
       }
     }
   },
+  "uiTabQuest": "퀘스트",
+  "uiGaugeOpenVoyage": "항해 지도 열기",
+  "uiBossChallengeShort": "도전!",
   "uiUpgradeAll": "모두 강화",
   "uiUpgradeAllPart": "{part} +{n}",
   "@uiUpgradeAllPart": {
@@ -847,6 +850,102 @@
     "placeholders": {
       "kills": {
         "type": "int"
+      }
+    }
+  },
+  "uiSwapTitle": "선원 바꾸기",
+  "uiSwapDps": "초당 공격력 {delta}",
+  "@uiSwapDps": {
+    "placeholders": {
+      "delta": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAim": "조준: {from} → {to}",
+  "@uiSwapAim": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapArea": "공격: {from} → {to}",
+  "@uiSwapArea": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapRange": "사거리: {from} → {to}",
+  "@uiSwapRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "uiSwapAreaWide": "범위",
+  "uiSwapAreaSingle": "단일",
+  "uiSwapBetter": "추천",
+  "uiSwapSimilar": "비슷",
+  "uiSwapWorse": "비추천",
+  "uiSwapMobStrong": "무리 처리 강함",
+  "uiSwapMobWeak": "무리 처리 약함",
+  "uiSwapBossStrong": "보스전 강함",
+  "uiSwapBossWeak": "보스전 약함",
+  "uiSwapConfirm": "교체",
+  "uiSwapDpsUp": "공격력 높음",
+  "uiSwapDpsDown": "공격력 낮음",
+  "uiPreviewTitle": "공격 미리보기",
+  "uiPreviewNow": "지금",
+  "uiLegendPierceRamp": "관통 가속: 꿰뚫을 때마다 피해 +{percent}",
+  "@uiLegendPierceRamp": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBoomerang": "부메랑: 돌아오며 한 번 더 ({percent})",
+  "@uiLegendBoomerang": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendBind": "물기 속박: 문 적은 {sec}초 동안 못 움직임",
+  "@uiLegendBind": {
+    "placeholders": {
+      "sec": {
+        "type": "String"
+      }
+    }
+  },
+  "uiLegendSweep": "휩쓸기: 앞쪽 {deg}° 안 적을 모두 벤다",
+  "@uiLegendSweep": {
+    "placeholders": {
+      "deg": {
+        "type": "int"
+      }
+    }
+  },
+  "uiLegendBossBonus": "해적왕 강타: 보스 피해 +{percent}",
+  "@uiLegendBossBonus": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
       }
     }
   },

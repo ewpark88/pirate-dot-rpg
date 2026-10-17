@@ -7,6 +7,7 @@ import 'package:pirate_dot/engine_host.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/app.dart';
+import 'package:pirate_dot/ui/crew/crew_preview.dart';
 import 'package:pirate_dot/ui/state/battle_providers.dart';
 import 'package:pirate_dot/ui/state/clock_provider.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -34,6 +35,7 @@ Future<(EngineHost, List<RecordedTick>)> _pumpReal(WidgetTester tester, GameStat
       battleFeedProvider.overrideWithValue(host.ticks),
       clockProvider.overrideWithValue(clock),
       battleViewBuilderProvider.overrideWithValue((_) => const ColoredBox(color: Colors.blueGrey)),
+      crewPreviewPlayProvider.overrideWithValue(false),
     ],
   );
   addTearDown(container.dispose);
@@ -92,6 +94,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(Key('fleet.swap.$out')));
     await tester.pumpAndSettle();
+    // 비교 창(#34)에서 교체.
+    expect(find.byKey(const Key('swap.compare')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('swap.confirm')));
+    await tester.pumpAndSettle();
 
     await _run(tester, host, 2);
     expect(host.state.fleet, contains('starry'), reason: 'fleet ${host.state.fleet}');
@@ -149,6 +155,8 @@ void main() {
       final rows = find.byWidgetPredicate((w) => '${w.key}'.contains('fleet.pick.'));
       expect('${tester.widget(rows.first).key}', contains('starry'));
       await tester.tap(find.byKey(const Key('fleet.pick.starry')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('swap.confirm'))); // 비교 창(#34)
       await tester.pumpAndSettle();
 
       await _run(tester, host, 2);

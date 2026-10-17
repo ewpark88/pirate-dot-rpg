@@ -23,6 +23,7 @@ class EnemyView {
     this.breakRatio = 0,
     this.broken = false,
     this.breakCooldown = 0,
+    this.rooted = false,
     this.heading = sideHeading,
     this.eventKind,
   });
@@ -46,6 +47,7 @@ class EnemyView {
     breakRatio: (j['breakRatio'] as num?)?.toDouble() ?? 0,
     broken: j['broken'] as bool? ?? false,
     breakCooldown: (j['breakCooldown'] as num?)?.toDouble() ?? 0,
+    rooted: j['rooted'] as bool? ?? false,
     heading: (j['heading'] as num?)?.toDouble() ?? sideHeading,
     eventKind: j['eventKind'] as String?,
   );
@@ -93,6 +95,9 @@ class EnemyView {
   /// 일어난 뒤 쿨다운(bossBreak.cooldownSec) 남은 비율 1 → 0. 그동안 게이지가 안 쌓인다(S4: 회색·자물쇠·차오르는 시계). 선택 키.
   final double breakCooldown;
 
+  /// 물기 속박 중(bara, 요청서 platform-enemy-rooted — S3 지속 표시). 선택 키.
+  final bool rooted;
+
   /// 이동 방향(라디안, atan2(dy, dx)). 탑다운 렌더가 도트를 돌린다. 옆모습은 [sideHeading].
   final double heading;
 
@@ -118,6 +123,7 @@ class EnemyView {
     if (breakRatio > 0) 'breakRatio': breakRatio,
     if (broken) 'broken': true,
     if (breakCooldown > 0) 'breakCooldown': breakCooldown,
+    if (rooted) 'rooted': true,
     if (heading != sideHeading) 'heading': heading,
     if (eventKind != null) 'eventKind': eventKind,
   };
