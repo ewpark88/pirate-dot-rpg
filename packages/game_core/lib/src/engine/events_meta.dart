@@ -27,7 +27,11 @@ GameEvent _metaEventFromJson(int t, Json j) {
     'chestSpawned' => ChestSpawned(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'chestOpened' => ChestOpened(t, gold: big('gold')),
     'offlineReward' => OfflineReward(t, gold: big('gold'), cards: j['cards'] as int, seconds: j['seconds'] as int),
-    'rebirthDone' || 'rebirthUpgradeBought' || 'skinUnlocked' || 'contentUnlocked' => _rebirthEventFromJson(t, j),
+    'rebirthDone' ||
+    'rebirthUpgradeBought' ||
+    'skinUnlocked' ||
+    'contentUnlocked' ||
+    'collectionRewardClaimed' => _rebirthEventFromJson(t, j),
     'bossFired' => BossFired(t, x: (j['x'] as num).toDouble(), y: (j['y'] as num).toDouble()),
     'shipLookChanged' => ShipLookChanged(t, part: j['part'] as String, stage: j['stage'] as int),
     'fleetRejected' => FleetRejected(

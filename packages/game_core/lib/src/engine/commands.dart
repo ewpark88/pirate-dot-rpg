@@ -55,6 +55,7 @@ sealed class Command {
       'retreatBounty' => const RetreatBounty(),
       'cancelAutoUpgrade' => const CancelAutoUpgrade(),
       'markHint' => MarkHint(j['id'] as String),
+      'claimCollectionReward' => ClaimCollectionReward(j['at'] as int),
       'clearHints' => ClearHints(j['prefix'] as String? ?? ''),
       'skipFastSail' => const SkipFastSail(),
       'startVoyage' => const StartVoyage(),

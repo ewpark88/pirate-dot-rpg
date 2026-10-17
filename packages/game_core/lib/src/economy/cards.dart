@@ -15,6 +15,8 @@ export 'package:game_core/src/economy/bonuses.dart' show damageBonus, ownedBonus
 export 'package:game_core/src/economy/boss_preview.dart';
 export 'package:game_core/src/economy/bounty.dart';
 export 'package:game_core/src/economy/bounty_flow.dart' show bountyActive;
+export 'package:game_core/src/economy/collection_reward.dart'
+    show CollectionRewardView, collectionRewards, collectionRewardsReady;
 export 'package:game_core/src/economy/crew_attack.dart';
 export 'package:game_core/src/economy/crew_growth.dart';
 export 'package:game_core/src/economy/dex.dart';

@@ -26,15 +26,12 @@ cd ..\..
 - `--boss-ad` — 보스 실패 때 함포 지원 광고를 보고 바로 재도전(하루 한도까지).
 - `--out report.json` — 플레이어별 값·회차별 카드 수입 JSON.
 
-## 오늘 밤 실행 (2026-10-17, S1 시작 신호 뒤 — 사용자 '퇴근')
-- 기준: **main 최신**(미커밋 수치로는 안 돌린다, S1 결정). 그때 main에 bossBreak 수치가 있으면 넣은 상태, 없으면 뺀 상태다.
-- 어디서: S2 워크트리 `D:\Projects\pde-economy`에서 `git merge main`(작업 트리를 깨끗하게 — 미커밋은 패치로 빼 둠) → 아래.
-- 순서(한 번에 하나, 잠금 파일이 있으면 시작 안 함):
-  1. `python -I -B tool/nightly_sim.py` — 100명 × 30일 daily → `docs/balance/nightly-30d.md` (약 수십 분, 메모리 부족이면 자동으로 50명)
-  2. (시간 남으면) 위협·보스 후보 확정 5명 × 3시간 continuous, 시드 1, 후보마다 하나씩:
-     `%TEMP%\game_cli.exe sim --players 5 --hours 3 --set waves.monster.attackBase=9 --set waves.top.vanguard.attackMul=60 --set waves.top.vanguard.hpMul=10 --set waves.boss.attackMultiplier=35 --set waves.boss.hpMultiplier=40 --set waves.monster.goldBase=3.5 --set waves.boss.wallHpMultiplier=2.6 --out build/nightly/c5.json`
-     (C3 · C5 · hull base 900/1200 변형 — 결과 표는 docs/progress/economy.md)
-  0. (맨 위) 보스 시간 제한 없음(review/boss-untimed) 기준으로 보스 HP·공격·goldBase 확정: 목표 처치 20~40초·침몰까지 15~30초·보통 첫 도전 70~85%·벽 ~50%·보스전 피해 25~45%·스테이지 40 45~55분. 후보 = 출발값(HP ×160·공격 ×35·벽 ×2.0·gold 3.0) ± (HP 140/180, 공격 30/45, gold 2.9/3.1).
-     같은 slot에서 balance crews로 crew-traits-2 5명·강습 5명·공중 4명 powerScale 재적합.
-  3. C8 뒤 남은 것: 보스 공격 ×120(보스전 피해 25%), goldGrowth 1.135(강화 간격 35~45 → 120초), crew-traits-2 5명(sword·saw·bara·lobster·davy) powerScale 재적합(balance crews), 금고 가득 지표를 구간 평균으로 바꾼 뒤 재측정.
-- 끝나면: 리포트 커밋(lane/economy) → S1에 '벗어남' 목록 + 전/후 표 보고, 잠금 파일이 지워졌는지 확인.
+## 오늘 밤 실행 (2026-10-17, S1 시작 신호 뒤 — 사용자 '퇴근') — 최종 목록
+- 기준: **main 최신**(미커밋 수치로는 안 돌린다). 어디서: `D:\Projects\pde-economy`에서 `git merge main` → 작업 트리 깨끗한지 확인 → 아래 순서, 한 번에 하나(잠금 파일 있으면 기다림).
+1. **보스 무제한 확정**(5명 × 3시간 continuous, 후보마다 하나씩): 출발값 보스 HP ×160·공격 ×35·벽 ×2.0·goldBase 3.0 ± (HP 140/180 · 공격 30/45 · gold 2.9/3.1).
+   목표: 처치 20~40초 · 침몰까지 15~30초 · 보통 첫 도전 70~85% · 벽 ~50% · 보스전 피해 25~45% · 스테이지 40 45~55분. 같이 봄: 강화 간격 35~45(→ 120초 이하, 안 되면 goldGrowth 1.135), 금고 가득 시간(초반 8~10분).
+2. **balance crews 재적합**(같은 slot): 2차 특성 5명(sword·saw·bara·lobster·davy) · 강습 5(shark·crabby·king·lobster·davy — 배 지킴이) · 공중 4(polly·gull·alba·manta — 일반 탄). 5레벨 ±10%, `docs/balance/` fit 절차(aim → 전설 → 신화 powerScale).
+3. **보스 특성 hpFactor 확인**: 재생 0.8·호위 0.85(추정)를 1의 확정값으로 5명 × 3시간 — 특성 보스(중간 25단위·대보스 10단위)의 bossKillSec가 특성 없는 보스와 ±10%면 OK.
+4. **100명 × 30일**: `python -I -B tool/nightly_sim.py` → `docs/balance/nightly-30d.md` — 첫 전설(1~4일)·첫 신화(28~56일)·수집 보상 영향·피버 간격(200킬 고정).
+- 끝나면: 수치 커밋(lane/economy) + BALANCE.md 변경 기록 + S1에 '벗어남' 목록·전/후 표, 잠금 파일 지워졌는지 확인.
+
