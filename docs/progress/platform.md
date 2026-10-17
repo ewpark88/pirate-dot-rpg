@@ -1,5 +1,12 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-17 밤(이어서) · S5 · 탑 몰림·배 순항·반사 상한·메모리 감시
+- **현재 위치**: 머지 대기 — review/ship-motion ac2a98c5(장면 수치·시나리오·탑 몰림·배 순항·반사 상한 전부), review/exit-save 81c9992c, review/save-transfer f71b9e5d, review/device-watch 305dd2f6. 모두 빠른 check 통과.
+- 한 일: 탑·던전 무리 출현을 카메라 테두리 밖으로(46/82마리가 화면 안에서 생기던 것), 크라켄 촉수 카메라 안(배가 비켜 있을 때도), 배 순항(waves.top.cruise — 8자 순항·빽빽한 무리 돌진·큰 호·피버 가속·벽 앞 감속), 보스 처치 때 배 순간이동 고침, 반사 상한 0.04/초 + 러시 1.6, 던전 0.6·1.6, exitSaveProvider 배선, 감시 도구 meminfo 항목별·누수 경고.
+- 남은 문제: 폰 PSS 30분 635 → 1274MB(엔진은 평평 → 앱·렌더 쪽, S3 확인 중). 회피 대시는 꺼 둠(S2 boss-feel 뒤). 렌더 골든 대부분 바뀜(A줄 일괄).
+- 다음: 폰 다시 켜지면 항목별 메모리 30분 → S3. S2 smoke 결과 반영. user-feedback 남은 내 몫.
+- 배운 것: 시험이 우연히 통과하지 않게 '옛 코드로 되돌리면 실패하는가'를 늘 확인 — 크라켄 시험은 무적이면 배가 안 비켜 옛 배치도 통과했다.
+
 ## 2026-10-17 밤 · S5 · 장면 수치·크라켄 버그·시나리오 3종·기기 감시
 - **현재 위치**: 머지 대기 3개(모두 빠른 check 통과) — review/save-transfer f71b9e5d(세이브 옮기기), review/scene-scenarios cebc8b9e(scene-balance bcd42c3d 포함 — S2 확정 장면 수치·DPS 상한 HP·크라켄 촉수 호·던전 파 한 파 몫·시나리오 3종), review/device-watch 84f8a6f0(읽기 전용 기기 감시).
 - 한 일: 크라켄 촉수가 카메라 밖에 놓여 보호막이 영영 안 꺼지던 버그(러시·평소 크라켄전) → armsArcDeg 100 + 시험(옛 배치면 실패 확인). 던전 파 n배 HP·공격 → scenePooled. 러시 0.7·던전 0.75·+5·보스 0.3. scenarios scene_tower·scene_rush·scene_dungeon. device_watch.py(맨 앞일 때만 프레임·온도·CPU·PSS·크래시 → build/device/watch). 동시 적 260·330마리 틱 0.5ms.
