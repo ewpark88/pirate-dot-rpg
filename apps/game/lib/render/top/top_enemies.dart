@@ -39,10 +39,19 @@ class TopEnemies {
   /// 적 그림 반지름(단위) — 상태 아이콘·보호막 고리 자리.
   double radiusOf(EnemyPose e) {
     final key = (e.boss ? _bossKeys : _enemyKeys)[e.kind] ??= _keyFor(e.kind, boss: e.boss);
-    return (sprites.sheet(key)?.frameW ?? 12) /
-        2 *
-        (!e.boss && hdEnemies.containsKey(e.kind) ? HdSheets.enemyBoost : 1);
+    return (sprites.sheet(key)?.frameW ?? 12) / 2 * _boost(e.kind, boss: e.boss);
   }
+
+  /// 그리는 배율(맞는 자리는 엔진 그대로): HD 잡몹 1.3, 보스는 핵앤슬래시 존재감(S1) — 대보스 1.8·해역 1.4·순환·중간 1.2.
+  double _boost(String kind, {required bool boss}) =>
+      boss ? (_bossBoost[kind] ?? 1.2) : (hdEnemies.containsKey(kind) ? HdSheets.enemyBoost : 1);
+  late final Map<String, double> _bossBoost = {
+    for (final r in scene.tables.regions.regions) ...{
+      for (final b in [r.boss, r.midBoss, ...r.bossRotation]) b: 1.2,
+      r.regionBoss: 1.4,
+      if (r.wallBoss != null) r.wallBoss!: 1.8,
+    },
+  };
 
   /// 그림(종류)별로 묶어 drawAtlas 한 번씩(150마리 60fps), 맞은 적은 흰 실루엣 묶음·물속은 반투명 붓.
   void paint(Canvas c, {required bool under, required Rect cull}) {
@@ -57,7 +66,10 @@ class TopEnemies {
       ..plan(
         scene.frame.stage,
         scene.tables.regions,
-        (k, {required boss}) => sprites.sheet(_keyFor(k, boss: boss))?.frameW,
+        (k, {required boss}) => switch (sprites.sheet(_keyFor(k, boss: boss))?.frameW) {
+          null => null,
+          final f => f * (boss ? _boost(k, boss: true) : 1),
+        },
       )
       ..step(snap);
     // poseCount까지만 — 그 뒤는 지난 파의 옛 자리(사용자 버그 '몬스터가 다가오다 전부 멈춘다': 파가 끝나 적이 0이 돼도 옛 적을 그렸다).
@@ -72,7 +84,7 @@ class TopEnemies {
           ? hdSheets.sheet(
               e.kind,
               boss: e.boss,
-              world: HdSheets.drawWorld(sheet.frameW, boss: e.boss),
+              world: sheet.frameW * _boost(e.kind, boss: e.boss),
               density: snap,
             )
           : null;
@@ -104,7 +116,13 @@ class TopEnemies {
       final _Spr spr;
       if (hd != null) {
         final f = ((clock + e.id * 37) / (HdKit.loopMs / HdKit.frames)).floor() % HdKit.frames;
-        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading)), scale: hd.scale, hd: true);
+        // HD v2 표정: 쓰러짐(브레이크) > 공격 예고(EnemyWindup) > 평소.
+        final mood = !hd.moods
+            ? HdMood.idle
+            : (scene.topHits.breaks.isDown(e.id, clock)
+                  ? HdMood.down
+                  : (scene.topHits.muzzle.charging(e.id, clock) ? HdMood.windup : HdMood.idle));
+        spr = (image: hd.image, src: hd.src(f, right: _facing(e.id, e.heading), mood: mood), scale: hd.scale, hd: true);
       } else {
         spr = (image: sheet.image, src: _cell(sheet, frame), scale: 1.0, hd: false);
       }
@@ -135,7 +153,10 @@ class TopEnemies {
       // 헤엄 흔들림(실제 시간): 엔진 히트스톱으로 자리가 멈춘 틱에도 살아 있어 보이게(S1 — 엔진 무관).
       final xf = RSTransform.fromComponents(
         rotation: rotation,
-        scale: (key == _merchant ? _merchantScale : breathe) * spr.scale,
+        scale:
+            (key == _merchant ? _merchantScale : breathe) *
+            spr.scale *
+            (hd == null && e.boss ? _boost(e.kind, boss: true) : 1),
         anchorX: spr.src.width / 2,
         anchorY: spr.src.height / 2,
         translateX: tx,

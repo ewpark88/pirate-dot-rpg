@@ -218,6 +218,11 @@ class RegionsTable {
       midBossEvery = j.integer('midBossEvery'),
       wallEvery = j.intOrNull('wallEvery') ?? 0,
       rotationFromStage = j.intOrNull('rotationFromStage') ?? 0,
+      _unlockSteps = [
+        if (j.has('speciesUnlock'))
+          for (final s in j.obj('speciesUnlock').objs('steps')) (at: s.integer('at'), count: s.integer('count')),
+      ],
+      _unlockPerRebirth = j.has('speciesUnlock') ? j.obj('speciesUnlock').integer('perRebirth') : 0,
       loopStages = j.integer('loopStages'),
       maxLoopTier = j.integer('maxLoopTier'),
       regions = j.objs('regions').map(RegionDef.fromJson).toList(),
@@ -250,6 +255,24 @@ class RegionsTable {
     if (regions.any((r) => r.wallBoss == id)) return 'wall';
     if (regions.any((r) => r.regionBoss == id)) return 'region';
     return 'other';
+  }
+
+  // 종 해금(사용자 2026-10-18 '초반에는 1~2종만, 환생·스테이지가 높아질수록 다양하게'): 해역 안 스테이지(1~stagesPerRegion)가
+  // steps의 at 이상이면 count종, 환생마다 perRebirth종 더. 해역 적 목록 앞에서부터 연다(쉬운 종이 앞). 표에 없으면 전부.
+  final List<({int at, int count})> _unlockSteps;
+  final int _unlockPerRebirth;
+
+  /// [stage]에서 나오는 무리 종(해역 목록 앞에서부터 해금된 만큼, 최소 1).
+  List<String> enemiesAt(int stage, {int rebirths = 0}) {
+    final all = regionAt(stage).enemies;
+    if (_unlockSteps.isEmpty) return all;
+    final inRegion = ((stage - 1) % loopStages) % stagesPerRegion + 1;
+    var n = 1;
+    for (final s in _unlockSteps) {
+      if (inRegion >= s.at) n = s.count;
+    }
+    n += rebirths * _unlockPerRebirth;
+    return all.sublist(0, n.clamp(1, all.length));
   }
 
   /// 무한 항해를 반영한 해역 (301 → 1의 해역).

@@ -9,8 +9,7 @@ void main() {
   test('지금 표: 소품 꺼짐(enabled false) — 다시 켜면 생긴다', () {
     final sea = tables.fxMap.raw.obj('topSea');
     expect(TopSeaProps.of(sea), isNull);
-    final on = Map<String, dynamic>.of(sea.raw)
-      ..['props'] = {...sea.obj('props').raw, 'enabled': true};
+    final on = Map<String, dynamic>.of(sea.raw)..['props'] = {...sea.obj('props').raw, 'enabled': true};
     expect(TopSeaProps.of(JsonReader(on, 'topSea')), isNotNull);
   });
 
