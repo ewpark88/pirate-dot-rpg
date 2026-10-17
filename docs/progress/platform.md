@@ -1,5 +1,11 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤(이어서 5) · S5 · release_check·피버 무리·밀도 지원·피버 버그
+- **현재 위치**: release_check(main f6dc2ecc) 통과 — BILLING 권한·결제 클래스 OK. swarm-perf(피버 고리 카메라 기준·접근 1.8·spawnFromView·inCamera)·store-iap-docs main 머지 중. review/screen-density-s5 0c104770(S2 밀도 위: 피버 중 보스 처치 시 피버 끊김 버그·피버 첫 틱 고리 즉시·scatterSpanSec·시험) → S2가 보정 후 올림.
+- 탐침: 던전·러시는 신화 함대엔 너무 쉬움(던전 단계 4~18초·러시 0~27초), 중반 함대는 계열 선원 없는 날 던전 입장 불가 → S2 수치·입장 조건.
+- 다음: S2 수치 오면 반영, 안전 영역(S3·S4) 질문 지원.
+- 배운 것: 시험이 우연히 통과하던 경우(예전 걸러내기·타이밍)는 진행 속도가 바뀌면 드러난다 — 실패를 '수정 되돌리면 실패하는가'로 꼭 확인.
+
 ## 2026-10-18 밤(이어서 4) · S5 · 요일 던전 엔진·결제 배선
 - **현재 위치**: 머지 대기 2개 — review/weekday-dungeon 15bf64b8(탑+러시+던전, S2 확정 수치 전부), review/iap-wiring 780abc0e(결제 SDK·흉내·배선 + S2 iap-contract). 둘 다 빠른 check 통과.
 - 한 일: 요일 던전(장면 모드 네 번째, 전장 임시 출전 armField 공용화, 묶음 패턴·적 층·약점 보스·hpMul), 탑 최종 수치(층 가중 10층부터 4·45초·보스 0.5 → 신화 8.1분), PurchaseBridge(지급 → 저장 → complete)·EntitledAds·main.dart 결제.
