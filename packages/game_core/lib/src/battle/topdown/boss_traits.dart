@@ -33,8 +33,20 @@ extension BossTraits on Round {
     }
     final rf = def.trait('reflect');
     if (rf != null && ctx.tick < (e.traitTicks['reflectUntil'] ?? 0) && !rf.cfg.strs('bypass').contains(family)) {
-      if (!invincible) {
-        final hurt = field.hurtShip(amount.times(rf.cfg.number('ratio')), w.raw.number('shipHitCap'));
+      // 상한(maxShipHpPerSec, S2 2026-10-17): 초당 배 최대 체력의 그 비율까지 — 강한 함대가 한 틱에 여러 번 때려 8%씩 몰리던 것.
+      var dmg = amount.times(rf.cfg.number('ratio'));
+      final cap = rf.cfg.numberOr('maxShipHpPerSec', 0);
+      if (cap > 0) {
+        if (field.reflectTick != ctx.tick) {
+          field
+            ..reflectTick = ctx.tick
+            ..reflected = BigNum.zero;
+        }
+        dmg = BigNum.min(dmg, BigNum.max(BigNum.zero, field.shipHpMax.times(cap * dt) - field.reflected));
+        field.reflected = field.reflected + dmg;
+      }
+      if (!invincible && !dmg.isZero) {
+        final hurt = field.hurtShip(dmg, w.raw.number('shipHitCap'));
         ctx.emit(
           ShipDamaged(
             ctx.tick,

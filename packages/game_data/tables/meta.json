@@ -66,7 +66,7 @@
       {"id": "sat", "hpMul": 1.0, "weekday": 6, "families": ["assault"], "pattern": "swarm"},
       {"id": "sun", "hpMul": 1.0, "weekday": 7, "families": [], "pattern": "swarm"}
     ]},
-  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 0.8, "rushBossSec": 15, "perBossGems": 3,
+  "rush": {"weeklyTickets": 7, "lineup": ["rotation", "rotation", "region", "region", "wall"], "stageRatio": 0.7, "hpMultiplier": 4, "dpsHpRatio": 1.6, "rushBossSec": 15, "perBossGems": 3,
     "brackets": [{"sec": 300, "gems": 10}, {"sec": 180, "gems": 25, "pieces": 3}, {"sec": 120, "gems": 45, "pieces": 6}]},
   "tower": {"unlockStage": 60, "unlockRebirths": 1, "ticketsPerDay": 1, "maxTickets": 3, "wavesPerFloor": 3, "baseCount": 20, "countGrowth": 1.08, "maxCount": 200, "stageRatio": 0.7, "floorStageFrom": 10, "floorStageMul": 4, "floorTimeLimitSec": 45, "bossEvery": 5, "bossHpMul": 0.5, "healRatio": 0.2, "sweepRatio": 0.8, "firstGems": 5, "cardEvery": 5,
     "chest": [{"floor": 1, "gems": 10}, {"floor": 10, "gems": 20, "cards": 1}, {"floor": 20, "gems": 35, "cards": 2}, {"floor": 30, "gems": 50, "cards": 3}]},
