@@ -171,6 +171,6 @@ void main() {
   test('표: 약점 표시용 counterFamilies는 특성의 카운터 합', () {
     final croc = t.regions.bosses['sea_croc']!;
     expect(croc.traits.map((x) => x.type), ['armor', 'enrage']);
-    expect(croc.counterFamilies, containsAll(['pierce', 'laser', 'shock']));
+    expect(croc.counterFamilies, containsAll(['assault', 'laser', 'shock']));
   });
 }
