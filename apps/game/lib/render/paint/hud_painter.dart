@@ -79,7 +79,12 @@ class HudPainter {
     final layer = scene.numbers
       ..tall = (digits != null ? 2.3 : 1) * scale * grow
       ..wide = (digits != null ? 1.5 : 1) * scale * grow;
-    for (final n in layer.active) {
+    // 큰 숫자가 앞(S1 피버 가독성): 보통 → 자릿수 많은 것 → 치명 순으로 그린다.
+    _order
+      ..clear()
+      ..addAll(layer.active)
+      ..sort((a, b) => _rank(a).compareTo(_rank(b)));
+    for (final n in _order) {
       if (!cull.contains(Offset(n.x, n.y))) continue;
       final text = (n.cache ??= _NumberText()) as _NumberText;
       final t = n.kind == DamageKind.normal ? tier : 0;
@@ -105,6 +110,9 @@ class HudPainter {
       c.restore();
     }
   }
+
+  final List<DamageNumber> _order = [];
+  static int _rank(DamageNumber n) => (n.kind == DamageKind.crit ? 100 : 0) + n.text.length;
 
   static const _comboTint = [0xFFFFF1A8, 0xFFFFB347, 0xFFFF7AC8];
 
