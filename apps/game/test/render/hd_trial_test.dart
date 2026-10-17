@@ -1,7 +1,8 @@
 import 'package:flame/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pirate_dot/render/hd/hd_cartoon.dart';
+import 'package:pirate_dot/render/hd/hd_kit.dart';
+import 'package:pirate_dot/render/hd/hd_species.dart';
 import 'package:pirate_dot/render/sprites/sprite_bank.dart';
 
 import 'helpers.dart';
@@ -40,7 +41,7 @@ class _Sheet extends CustomPainter {
   _Sheet(this.bank, this.keys);
   final SpriteBank bank;
   final Map<String, String> keys;
-  final _hd = HdCartoon();
+  final _k = HdKit();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -48,7 +49,7 @@ class _Sheet extends CustomPainter {
     final cell = size.width / 8;
     for (var row = 0; row < 2; row++) {
       canvas.drawRect(Rect.fromLTWH(0, row * size.height / 2, size.width, size.height / 2), Paint()..color = bgs[row]);
-      for (final (i, kind) in HdCartoon.kinds.indexed) {
+      for (final (i, kind) in _kinds.indexed) {
         final boss = kind == 'kraken';
         final cx = cell * (i * 2 + 0.5);
         final cy = row * size.height / 2 + size.height / 4;
@@ -67,7 +68,7 @@ class _Sheet extends CustomPainter {
         canvas
           ..save()
           ..translate(cx + cell, cy);
-        _hd.paint(canvas, kind, boss ? 70 : 46, 400);
+        _paintHd(_k, canvas, kind, boss ? 70 : 46, 400);
         canvas.restore();
       }
     }
@@ -75,4 +76,15 @@ class _Sheet extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+const _kinds = ['crab', 'jelly', 'piranha', 'kraken'];
+
+/// 종 하나(그림자 포함) — 굽기(HdSheets.bake)와 같은 순서.
+void _paintHd(HdKit k, Canvas c, String kind, double r, double t) {
+  final sp = hdEnemies[kind] ?? hdBosses[kind]!;
+  k
+    ..begin(r)
+    ..shadow(c, r, sp.ground);
+  sp.draw(k, c, r, t);
 }
