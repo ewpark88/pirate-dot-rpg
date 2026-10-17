@@ -1319,17 +1319,6 @@
       }
     }
   },
-  "uiTowerSwept": "{n}층 소탕 · {reward}",
-  "@uiTowerSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiRushTitle": "보스 러시",
   "uiRushWeek": "이번 주 보스 5마리를 빨리 잡아라",
   "uiRushBest": "최고 {time}",
@@ -1620,17 +1609,6 @@
   },
   "uiDungeonTicketBack": "도전권은 돌려받았어요",
   "uiDungeonTimeout": "시간 초과",
-  "uiDungeonSwept": "{n}단계 소탕 · {reward}",
-  "@uiDungeonSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiWeekday1": "월요일",
   "uiWeekday2": "화요일",
   "uiWeekday3": "수요일",
@@ -1794,6 +1772,14 @@
       },
       "target": {
         "type": "String"
+      }
+    }
+  },
+  "uiPassLevelUp": "항해 패스 {n}단계!",
+  "@uiPassLevelUp": {
+    "placeholders": {
+      "n": {
+        "type": "int"
       }
     }
   }

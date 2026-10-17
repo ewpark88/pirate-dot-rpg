@@ -4,6 +4,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/ship/ship_look.dart';
 import 'package:pirate_dot/ui/shop/iap_text.dart';
 import 'package:pirate_dot/ui/shop/shop_data.dart';
 import 'package:pirate_dot/ui/shop/shop_sheet.dart';
@@ -122,16 +123,67 @@ class StarterPackDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final offer = ref.watch(shopOffersProvider)[ShopSection.starter]?.firstOrNull;
+    final p = offer?.product;
+    final ends = starterEnds(ref.watch(gameStateProvider));
+    final left = ends?.difference(ref.watch(clockProvider).now());
+    // 구성 칸(S1 2026-10-18 '화려하게'): HD 배 스킨 미리보기 · 영웅 카드 · 젬 더미 — 각 칸 아래 이름·수량.
+    Widget cell(Widget art, String label, Color color) => Expanded(
+      child: Column(
+        children: [
+          IconCell(color: color, size: 76, child: art),
+          const SizedBox(height: 4),
+          Text(label, textAlign: TextAlign.center, maxLines: 2, style: Skin.bold(13)),
+        ],
+      ),
+    );
     return PixelDialog(
       key: const Key('shop.starterDialog'),
-      title: offer == null ? l10n.uiShopTitle : iapName(l10n, offer.product.nameKey),
+      title: p == null ? l10n.uiShopTitle : iapName(l10n, p.nameKey),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(l10n.uiShopStarterAsk, textAlign: TextAlign.center, style: Skin.text(16)),
           const SizedBox(height: 12),
-          const StarterOffer(),
-          const SizedBox(height: 8),
+          if (p != null)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (p.skins.isNotEmpty)
+                  cell(
+                    ShipLookPreview(key: const Key('shop.starter.skin'), size: 70, skin: p.skins.first, useSkin: true),
+                    l10n.uiShopSkinN(p.skins.length),
+                    partCellColors[0],
+                  ),
+                if (p.heroCards > 0)
+                  cell(
+                    const SkinIcon(UiSprites.cardBack, size: 52),
+                    l10n.uiShopHeroCards(p.heroCards),
+                    const Color(0xFFB06BFF),
+                  ),
+                if (p.gems > 0)
+                  cell(const SkinIcon(UiSprites.gem, size: 52), l10n.uiShopGemsN(p.gems), partCellColors[1]),
+              ],
+            ),
+          if (left != null && !left.isNegative) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.uiShopEndsIn(left.inDays, left.inHours % 24),
+              key: const Key('shop.starter.ends'),
+              style: Skin.bold(14, color: Skin.danger),
+            ),
+          ],
+          const SizedBox(height: 10),
+          if (offer != null)
+            SizedBox(
+              width: double.infinity,
+              child: SkinButton(
+                key: const Key('shop.buy.starter_pack'),
+                tone: SkinTone.gold,
+                height: 56,
+                onPressed: offer.owned ? null : () => buyProduct(ref, offer.product.id),
+                child: Text(offer.owned ? l10n.uiShopOwned : l10n.uiShopBuy(offer.price)),
+              ),
+            ),
           TextButton(
             key: const Key('shop.starter.later'),
             onPressed: () => Navigator.of(context).pop(),

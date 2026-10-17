@@ -1740,17 +1740,6 @@
       }
     }
   },
-  "uiTowerSwept": "Swept F{n} · {reward}",
-  "@uiTowerSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiRushTitle": "Boss Rush",
   "uiRushWeek": "Beat this week's 5 bosses, fast",
   "uiRushBest": "Best {time}",
@@ -2041,17 +2030,6 @@
   },
   "uiDungeonTicketBack": "Your ticket was returned",
   "uiDungeonTimeout": "Time's up",
-  "uiDungeonSwept": "Swept step {n} · {reward}",
-  "@uiDungeonSwept": {
-    "placeholders": {
-      "n": {
-        "type": "int"
-      },
-      "reward": {
-        "type": "String"
-      }
-    }
-  },
   "uiWeekday1": "Monday",
   "uiWeekday2": "Tuesday",
   "uiWeekday3": "Wednesday",
@@ -2215,6 +2193,14 @@
       },
       "target": {
         "type": "String"
+      }
+    }
+  },
+  "uiPassLevelUp": "Voyage Pass level {n}!",
+  "@uiPassLevelUp": {
+    "placeholders": {
+      "n": {
+        "type": "int"
       }
     }
   }

@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/adapters/power/power_channel.dart';
+import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/power_policy.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/widgets/reward_burst.dart';
 
@@ -75,11 +77,74 @@ class _RewardGateState extends ConsumerState<RewardGate> {
               source: UiSprites.book,
               tier: RewardTier.values[i],
             );
+          // 모든 '받기'를 같은 터짐으로(S1 2026-10-18): 패스 보상 · 구매 지급 · 탑·던전 소탕.
+          case PassRewardClaimed(:final gems, :final paid) when gems > 0:
+            _later(
+              Duration.zero,
+              [_gems(gems)],
+              source: UiSprites.trophy,
+              tier: paid ? RewardTier.purple : RewardTier.blue,
+            );
+          case PurchaseGranted(:final gems, :final summons, :final heroCards):
+            _later(
+              Duration.zero,
+              [
+                if (gems > 0) _gems(gems),
+                if (summons > 0) (icon: UiSprites.tabSummon, label: '$summons', tier: RewardTier.purple),
+                if (heroCards > 0) (icon: UiSprites.cardBack, label: '$heroCards', tier: RewardTier.purple),
+              ],
+              source: UiSprites.shop,
+              tier: RewardTier.gold,
+            );
+          case TowerSwept(:final chestGems, :final chestCards):
+            _later(
+              Duration.zero,
+              [
+                if (chestGems > 0) _gems(chestGems),
+                if (chestCards > 0) (icon: UiSprites.cardBack, label: '$chestCards', tier: RewardTier.purple),
+              ],
+              source: UiSprites.chest,
+              opened: UiSprites.chestOpen,
+              tier: RewardTier.blue,
+            );
+          case DungeonCleared(swept: true, :final gems, :final cards):
+            _later(
+              Duration.zero,
+              [
+                if (gems > 0) _gems(gems),
+                if (cards.isNotEmpty) (icon: UiSprites.cardBack, label: '${cards.length}', tier: RewardTier.purple),
+              ],
+              source: UiSprites.chest,
+              opened: UiSprites.chestOpen,
+              tier: RewardTier.blue,
+            );
+          // 일일 퀘스트·출석·월간 젬은 이벤트 없이 저장 이유만 온다 → 이번 틱에 늘어난 젬으로.
+          case SaveRequested(:final reason) when _gemClaims.contains(reason):
+            final now = ref.read(gameStateProvider).wallet.gems;
+            final got = now - _gemsSeen;
+            if (got > 0) _later(Duration.zero, [_gems(got)], source: UiSprites.quest, tier: RewardTier.blue);
           default:
         }
       }
+      _gemsSeen = ref.read(gameStateProvider).wallet.gems;
+    });
+    _gemsSeen = ref.read(gameStateProvider).wallet.gems;
+    // 항해 패스 단계가 오르면 작은 토스트(S1 2026-10-18).
+    final t = ref.read(tablesProvider);
+    ref.listenManual(gameStateProvider.select((s) => passLevel(s, t)), (was, now) {
+      if (was == null || now <= was || !mounted) return;
+      showSkinToast(context, AppLocalizations.of(context).uiPassLevelUp(now));
     });
   }
+
+  /// 젬 칸 하나.
+  static RewardItem _gems(int n) => (icon: UiSprites.gem, label: '$n', tier: RewardTier.blue);
+
+  /// 젬만 주고 이벤트가 없는 받기(저장 이유).
+  static const _gemClaims = {'claimDaily', 'claimAttendance', 'claimGemSub'};
+
+  /// 지난 틱 끝의 젬(이번 틱에 받은 양 = 지금 − 이것).
+  int _gemsSeen = 0;
 
   void _later(
     Duration wait,
