@@ -127,4 +127,14 @@ void main() {
     final [b, n] = nums.active;
     expect(nums.scaleOf(b), closeTo(nums.scaleOf(n) * 1.35, 1e-9));
   });
+
+  test('보스에 뜬 작은 숫자(가장 큰 타격의 1% 미만)는 생략', () {
+    final boss = EnemyPose()
+      ..id = 5
+      ..boss = true;
+    final nums = fresh()
+      ..add(BigNum.from(10000), 0, 0, DamageKind.crit, key: 5, on: boss)
+      ..add(BigNum.from(57), 0, 0, DamageKind.normal, key: 5, on: boss);
+    expect(nums.active, hasLength(1));
+  });
 }
