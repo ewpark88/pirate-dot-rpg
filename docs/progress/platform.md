@@ -1,5 +1,12 @@
 # 진척: platform 레인 (S5, worktree pde-platform, 브랜치 lane/platform)
 
+## 2026-10-18 밤(이어서 4) · S5 · 요일 던전 엔진·결제 배선
+- **현재 위치**: 머지 대기 2개 — review/weekday-dungeon 15bf64b8(탑+러시+던전, S2 확정 수치 전부), review/iap-wiring 780abc0e(결제 SDK·흉내·배선 + S2 iap-contract). 둘 다 빠른 check 통과.
+- 한 일: 요일 던전(장면 모드 네 번째, 전장 임시 출전 armField 공용화, 묶음 패턴·적 층·약점 보스·hpMul), 탑 최종 수치(층 가중 10층부터 4·45초·보스 0.5 → 신화 8.1분), PurchaseBridge(지급 → 저장 → complete)·EntitledAds·main.dart 결제.
+- 다음: A줄 오면 release_check(BILLING 권한 aab) / S4 상점·운영자 '결제' 묶음 / 실기기 결제 확인(사람 — 라이선스 테스트 계정).
+- 남은 문제: 폰 입력·설치 권한(사용자 허락). docs/PROGRESS.md는 S1 몫.
+- 배운 것: 결제 '완료'는 저장이 디스크에 남은 뒤에만 — 엔진 이벤트가 아니라 상태(purchaseTokens)에 토큰이 들어온 걸 보고 저장 → 완료.
+
 ## 2026-10-18 밤(이어서 3) · S5 · 보스 러시 엔진·탑 수치·결제 2단계·요일 던전 메모
 - **현재 위치**: review/boss-rush 984ade0e(탑 3a218b18 위 — 탑+러시, 빠른 check 통과, S3 lane/render에 b26400d4 머지됨 → A줄 일괄로 main). review/iap ec454d9b(SDK 연결·구매 흉내·출시 문서). review/weekday-dungeon 634cb93a(설계 메모, S1 승인 대기).
 - 한 일: 러시(주간 5보스·기록·구간 보상·주 7회), 탑 S2 수치·층 가중 2·층 시간 제한 90초·가장자리 출현, battle_view fromJson 분리(300줄), in_app_purchase 3.3.1 PlayBillingSdk·SimBillingSdk, 데이터 보안 '구매 내역'·콘텐츠 등급 무작위 아이템 = 예.
