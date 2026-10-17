@@ -28,6 +28,11 @@ const _rateLabelWidth = 72.0;
 /// 확률 줄 퍼센트 칸 폭.
 const _ratePercentWidth = 56.0;
 
+/// 첫 무료 10연을 아직 안 받았다 (S2 발견 2026-10-17: 무료 10연은 summonsTotal == 0일 때만이라, 그 전에 1회·광고 소환을 하면 사라진다).
+/// 이 동안 소환 탭은 10연만 — 1회·무료 광고 소환은 잠근다(세이브 변경 없는 UI 잠금).
+bool firstTenPending(GameState s, GameTables t) =>
+    t.meta.raw.obj('tutorial').boolean('firstTenSummonFree') && s.summonsTotal == 0;
+
 /// 소환 탭: 1회·10회 버튼(젬 비용), 천장 진행 막대, 등급 확률표 (설계서 4.3, 9.3 확률 공개).
 // TODO(ui): 증표 상점 — 다음 계획.
 class SummonTab extends ConsumerWidget {
@@ -39,7 +44,7 @@ class SummonTab extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final tables = ref.watch(tablesProvider);
     // 비용은 상태에 따라 달라진다 (첫 10연 무료) — 경제 summonCostFor로만 구한다.
-    final (costOne, costTen, canOne, canTen, pity) = ref.watch(
+    final (costOne, costTen, canOne, canTen, pity, pending, freeNow) = ref.watch(
       gameStateProvider.select(
         (s) => (
           summonCostFor(s, tables, 1),
@@ -47,8 +52,14 @@ class SummonTab extends ConsumerWidget {
           canSummon(s, tables, 1),
           canSummon(s, tables, _summonTen),
           s.pityCount,
+          firstTenPending(s, tables),
+          isFreeFirstTen(s, tables, _summonTen),
         ),
       ),
+    );
+    final guarantee = tables.rarities.rarities.firstWhere(
+      (r) => r.id == tables.meta.raw.obj('tutorial').str('firstTenGuarantee'),
+      orElse: () => tables.rarities.rarities.last,
     );
     final rarities = tables.rarities;
     final pityRarity = rarities.rarities.firstWhere((r) => r.id == rarities.pityMinRarity);
@@ -77,7 +88,10 @@ class SummonTab extends ConsumerWidget {
                           buttonKey: Key(key),
                           label: label,
                           cost: count == 1 ? costOne : costTen,
-                          onPressed: (count == 1 ? canOne : canTen) ? () => _summon(ref, count) : null,
+                          // 첫 무료 10연 전: 1회는 잠금, 10연은 무료일 때만(튜토리얼 보스 전엔 잠금).
+                          onPressed: (count == 1 ? canOne && !pending : canTen && (!pending || freeNow))
+                              ? () => _summon(ref, count)
+                              : null,
                         ),
                       ),
                     ),
@@ -85,8 +99,28 @@ class SummonTab extends ConsumerWidget {
                   ],
                 ],
               ),
-              // 광고가 없으면 자리도 차지하지 않는다.
-              const FreeSummonAdButton(),
+              if (pending)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    key: const Key('summon.firstTenLock'),
+                    children: [
+                      const Icon(Icons.lock_rounded, size: 18, color: Skin.sub),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          freeNow
+                              ? l10n.uiSummonFirstTenFirst(tableText(l10n, guarantee.nameKey))
+                              : l10n.uiSummonFirstTenLater(tableText(l10n, guarantee.nameKey)),
+                          style: Skin.text(15),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              // 광고가 없으면 자리도 차지하지 않는다. 첫 무료 10연 전엔 숨긴다(광고 소환도 무료 10연을 없앤다).
+              else
+                const FreeSummonAdButton(),
             ],
           ),
         ),

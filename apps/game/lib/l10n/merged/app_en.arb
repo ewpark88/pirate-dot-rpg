@@ -770,5 +770,21 @@
   "uiGuideSkipKeep": "Keep it",
   "uiGuideTapHere": "Tap here",
   "uiSettingsGuideReplay": "Show tips again",
-  "uiSettingsGuideReplayDone": "First-time tips will show again"
+  "uiSettingsGuideReplayDone": "First-time tips will show again",
+  "uiSummonFirstTenFirst": "Claim your free 10-pull ({rarity} guaranteed) first",
+  "uiSummonFirstTenLater": "Beat the tutorial boss for a free 10-pull ({rarity} guaranteed)!",
+  "@uiSummonFirstTenFirst": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiSummonFirstTenLater": {
+    "placeholders": {
+      "rarity": {
+        "type": "String"
+      }
+    }
+  }
 }
