@@ -354,7 +354,7 @@
   "uiHitLead": "예측 사격",
   "uiHitFree": "빗나갈 수 있음",
   "uiRebirthReadyPill": "환생 가능!",
-  "uiRebirthReadyBubble": "보물지도를 펼칠 수 있어요! 지금 환생하면 조각 +{count} — 영구 공격·골드 {mult}. 더 가면 조각이 늘어요",
+  "uiRebirthReadyBubble": "지금 환생하면 조각 +{count} · 영구 공격·골드 {mult}",
   "uiRebirthWhyGain": "얻는 것",
   "uiRebirthWhyLose": "잃는 것",
   "uiRebirthWhyKeep": "그대로",

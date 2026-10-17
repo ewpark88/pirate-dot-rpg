@@ -570,7 +570,7 @@
   "uiHitLead": "Leads shots",
   "uiHitFree": "Can miss",
   "uiRebirthReadyPill": "Rebirth ready!",
-  "uiRebirthReadyBubble": "You can rebirth! Now: +{count} map pieces — permanent attack & gold {mult}. Go further for more",
+  "uiRebirthReadyBubble": "Rebirth now: +{count} pieces · permanent {mult}",
   "uiRebirthWhyGain": "You get",
   "uiRebirthWhyLose": "You lose",
   "uiRebirthWhyKeep": "You keep",
