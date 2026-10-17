@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart' show LinearGradient;
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
 import 'package:pirate_dot/render/top/top_label.dart';
+import 'package:pirate_dot/render/top/top_ultimate.dart';
 
 /// 피버 첫 일격 (사용자 결정 2026-10-17 — 궁극기 대신 피버가 시작되는 순간의 한 방, UltimateCast):
 /// 화면: 선장 초상이 금빛 비스듬한 띠와 함께 왼쪽에서 확 들어와 0.5초 머물고 오른쪽으로 빠진다.
@@ -28,6 +29,9 @@ class TopFeverStrike {
   static const _maxTargets = 12;
   static const rushMs = 3000.0; // 폭주(S2 선장 필살기 3초) 동안 배 금빛 오라
 
+  /// 계열별 고유 필살기(관통 창 광선·수중 소용돌이·번개 낙뢰 연쇄…) — UltimateCast 선원 계열로.
+  final ultimate = TopUltimate();
+
   /// 선원 이름(UI가 BattleGame.crewNames로 — 렌더엔 번역이 없다). 없으면 이름 없이.
   Map<String, String> names = const {};
 
@@ -47,6 +51,7 @@ class TopFeverStrike {
   bool active(double now) => now - _at < _strikeAtMs + _maxTargets * _gapMs + _boltMs + 400;
 
   void clear() {
+    ultimate.clear();
     _at = -1000000000;
     _targets.clear();
   }
@@ -54,6 +59,7 @@ class TopFeverStrike {
   /// 전장 좌표(적 위 층): 충격파·번개·불꽃.
   void paintWorld(Canvas c, double now, {required bool lite, Offset? ship}) {
     if (ship != null) _rush(c, now, ship);
+    ultimate.paint(c, now, lite: lite);
     final age = now - _at - _strikeAtMs;
     if (age < 0 || !active(now)) return;
     // 충격파: 두꺼운 금빛 고리 + 흰 안쪽 고리

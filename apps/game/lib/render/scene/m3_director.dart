@@ -95,9 +95,14 @@ class M3Director {
       for (var k = 0; k < scene.poseCount; k++)
         if (_onScreen(scene.poses[k].x)) Offset(scene.poses[k].drawX, scene.poses[k].drawY),
     ]..sort((a, b) => (a - ship).distanceSquared.compareTo((b - ship).distanceSquared));
-    scene.topHits.feverStrike.start(scene.clockMs, e.crewId, ship, near);
+    scene.topHits.feverStrike
+      ..start(scene.clockMs, e.crewId, ship, near)
+      ..ultimate.start(_familyOf(e.crewId), ship, scene.clockMs, rarity: _rarityOf(e.crewId)); // 계열별 고유 필살기
     if (scene.slowMoMs <= 0) scene.slowMoMs = 300;
   }
+
+  String _familyOf(String id) => scene.tables.crews.crews.where((c) => c.id == id).firstOrNull?.family ?? 'lob';
+  int _rarityOf(String id) => scene.frame.fleet.where((f) => f.crewId == id).firstOrNull?.rarity ?? 0;
 
   /// 궁극기 순간 화면 흰 번쩍임 (기준 장면 15fps 3프레임).
   static const _ultimateFlashMs = 200.0;
