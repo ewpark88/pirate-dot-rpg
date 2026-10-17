@@ -7,7 +7,7 @@ import 'package:pirate_dot/render/hd/hd_species.dart';
 /// HD v2 보스(사용자 '보스 퀄리티 한 단계 더'): 표정 보스(hdMoodSpecies)마다 한 줄 — 평소·공격 예고·쓰러짐·게임 안 크기(약 1/3).
 void main() {
   testWidgets('HD v2 대보스 시안(바다 악어)', (tester) async {
-    final size = Size(1200, 320.0 * hdMoodSpecies.length);
+    final size = Size(1200, 400.0 * hdMoodSpecies.length);
     tester.view
       ..physicalSize = size
       ..devicePixelRatio = 1;
@@ -38,7 +38,7 @@ class _Sheet extends CustomPainter {
       void one(double x, double r, double t, HdMood mood) {
         canvas
           ..save()
-          ..translate(x, 160 + row * 320.0);
+          ..translate(x, 200 + row * 400.0);
         k
           ..mood = mood
           ..begin(r)
