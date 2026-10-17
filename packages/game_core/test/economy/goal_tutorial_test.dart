@@ -70,15 +70,15 @@ void main() {
       expect(sys.handle(step(5), const MergeAllCards(), h.ctx)!.tutorialStep, 6);
     });
 
-    test('환영 선원(피드백 #21): 첫 강화 단계를 넘는 틱에 bones 희귀 1명 + 빈 출전 칸 + CrewSummoned, 한 번만', () {
+    test('환영 선원(피드백 #21): 첫 강화 단계를 넘는 틱에 bones 희귀 1명 + 빈 출전 칸 + CardGranted(starter), 한 번만', () {
       final w = t.meta.raw.obj('tutorial').obj('welcomeCrew');
       final id = w.str('crewId');
       final s2 = h.newGame().copyWith(tutorialStep: 2, ship: const ShipState().withLevel('cannon', 3));
       final s = sys.update(s2, h.ctx);
       expect(s.crews[id]!.level, t.rarities.byId(w.str('rarity')).levelMin);
       expect(s.fleet, contains(id));
-      final got = h.of<CrewSummoned>().single.results.single;
-      expect((got.crewId, got.rarity), (id, w.str('rarity')));
+      final got = h.of<CardGranted>().single;
+      expect((got.crewId, got.rarity, got.source, got.isNew), (id, w.str('rarity'), 'starter', true));
       expect(t.crews.byId(id).family, 'direct', reason: '연사(직사) 계열');
       expect(sys.update(s.copyWith(tutorialStep: 2), h.ctx).crews[id], s.crews[id], reason: '이미 있으면 안 준다');
     });

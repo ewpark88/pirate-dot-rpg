@@ -24,9 +24,10 @@ void main() {
     );
   });
 
-  test('탑다운 마리 = 무리 습격: 초반 30~40, 중반 50~100, 상한 150', () {
-    expect(w.topMobCountAt(1), inInclusiveRange(30, 40));
-    expect(w.topMobCountAt(10), inInclusiveRange(30, 40));
+  test('탑다운 마리 = 무리 습격: 초반 핵앤슬래시 55~65(피드백 #4) → 스테이지 20에 30~45, 중반 50~100, 상한 150', () {
+    expect(w.topMobCountAt(1), inInclusiveRange(55, 65));
+    expect(w.topMobCountAt(10), greaterThan(w.topMobCountAt(19)));
+    expect(w.topMobCountAt(20), inInclusiveRange(30, 45));
     expect(w.topMobCountAt(60), inInclusiveRange(50, 100));
     expect(w.topMobCountAt(100), inInclusiveRange(60, 100));
     expect(w.topMobCountAt(9999), 150);
