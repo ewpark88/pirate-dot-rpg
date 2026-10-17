@@ -51,7 +51,7 @@ void main() {
       }
       final lob = _hex(tables.fxMap.familyColors.str('lob'));
       expect(await _rgb(img, x0 + border, top + border), lob, reason: '계열 표식');
-      // 빈 칸(3~6번째)은 빈 슬롯 테두리, 오른쪽 끝은 궁극기 버튼 테두리.
+      // 빈 칸(3~6번째)은 빈 슬롯 테두리. 궁극기 버튼은 없앴다(피버 첫 일격으로 대체, S4 0a9836e4).
       final empty = f.slotAt(2);
       expect(
         await _rgb(img, empty.dx.toInt(), empty.dy.toInt() + 12),
@@ -64,8 +64,8 @@ void main() {
       final u = f.ultimateDots;
       expect(
         await _rgb(img, u.left.toInt(), u.top.toInt() + 5),
-        _hex(tables.fxMap.hud.str('goldColor')),
-        reason: '궁극기 금 테두리',
+        isNot(_hex(tables.fxMap.hud.str('goldColor'))),
+        reason: '궁극기 버튼을 그리지 않는다',
       );
     });
   });

@@ -19,7 +19,24 @@ class TopImpact {
     _hits.add(_Hit(x, y, radius, color, atMs, water: water, rainbow: rainbow));
   }
 
-  void clear() => _hits.clear();
+  double _chainNow = -1;
+  int _chainN = 0;
+
+  /// 연쇄 폭발(피드백 #4 핵앤슬래시): 같은 프레임 처치가 3마리째부터 그 자리에 작은 폭발이 45ms씩 늦게 이어 터진다(프레임당 6개).
+  void chainKill(double x, double y, double now) {
+    if (now != _chainNow) {
+      _chainNow = now;
+      _chainN = 0;
+    }
+    _chainN++;
+    if (_chainN < 3 || _chainN > 8) return;
+    add(x, y, 10 + (_chainN % 3) * 3.0, 0xFFFF8A2A, now + (_chainN - 2) * 45);
+  }
+
+  void clear() {
+    _hits.clear();
+    _chainN = 0;
+  }
 
   static double _ease(double t) => 1 - (1 - t) * (1 - t) * (1 - t);
 

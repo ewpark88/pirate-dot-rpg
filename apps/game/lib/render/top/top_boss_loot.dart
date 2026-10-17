@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:pirate_dot/render/paint/sprite_draw.dart';
+import 'package:pirate_dot/render/top/top_loot_bits.dart';
 
 /// 보스 처치 보상 연출 (사용자 피드백 #18 '보스 처치 보상이 확실히 보이게', 2026-10-17):
 /// 보스 자리에서 연쇄 폭발·빛줄기·충격파 → 금화·젬·카드가 크게 튀어나와 잠깐 떠 있다가 배로 빨려 들어간다(도착마다 배 둘레 반짝).
@@ -22,9 +23,22 @@ class TopBossLoot {
   static const totalMs = 2600.0;
 
   /// 보스가 ([at])에서 쓰러졌다. [lite]면 조각 절반(절전·시트가 가림).
-  void burst(double now, Offset at, {required bool lite, double size = 1.7}) {
+  void burst(double now, Offset at, {required bool lite, double size = 1.7}) =>
+      _add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+
+  /// 보물상자가 열렸다(피드백 #15, 탭·광고 둘 다 ChestOpened): 폭발 대신 하늘로 솟는 금빛 기둥 + 금화(또는 젬) 분수.
+  void chest(double now, Offset at, {required bool lite, bool gems = false}) {
+    final b = _Burst(now, at, gems ? 0 : (lite ? 10 : 20), 0, 1.3, style: LootStyle.chest);
+    if (gems) b.gems = 5;
+    _add(b);
+  }
+
+  /// 광고 보상을 받았다(순풍·자동 강화·오프라인 ×2 등 — 배에 버프): 배에서 금빛 고리·별가루가 솟는다.
+  void reward(double now, Offset ship) => _add(_Burst(now, ship, 0, 0, 1.2, style: LootStyle.reward));
+
+  void _add(_Burst b) {
     if (_bursts.length >= _maxBursts) _bursts.removeAt(0);
-    _bursts.add(_Burst(now, at, lite ? 14 : 28, lite ? 5 : 9, size.clamp(1.0, 2.2)));
+    _bursts.add(b);
   }
 
   /// 젬 [n]개를 가장 최근 터짐에 더한다(BossCleared·DexFirstKill). 터짐이 없으면 무시.
@@ -50,6 +64,7 @@ class TopBossLoot {
     ..style = PaintingStyle.stroke
     ..isAntiAlias = false;
   final _ray = Path();
+  final _bits = LootBits();
 
   /// 전장 좌표로 그린다(적 위 층). [ship] = 배 중심.
   void paint(Canvas c, double now, Offset ship, SpriteDraw? sprites, {required bool flash}) {
@@ -57,6 +72,8 @@ class TopBossLoot {
     for (final b in _bursts) {
       final age = now - b.ms;
       if (age < 0) continue;
+      if (b.style != LootStyle.boss) _bits.pillar(c, b.at, age, wide: b.style == LootStyle.reward);
+      if (b.style == LootStyle.reward) _bits.stars(c, b.at, age);
       _rays(c, b, age);
       if (flash && age < 160) {
         _paint.color = Color.fromRGBO(255, 248, 210, 0.85 * (1 - age / 160));
@@ -196,49 +213,12 @@ class TopBossLoot {
           ..save()
           ..translate(p.dx, p.dy)
           ..scale(1.6);
-        _gem(c, Offset.zero, age);
+        _bits.gem(c, Offset.zero, age);
         c.restore();
       default:
-        _card(c, p, b.cards[i], age, sprites);
+        _bits.card(c, p, b.cards[i], age, sprites);
     }
     return 0;
-  }
-
-  /// 젬: 분홍·하늘 마름모(테두리·하이라이트) + 반짝.
-  void _gem(Canvas c, Offset p, double age) {
-    final x = p.dx.roundToDouble();
-    final y = p.dy.roundToDouble();
-    _ray
-      ..reset()
-      ..moveTo(x, y - 7)
-      ..lineTo(x + 5, y - 1)
-      ..lineTo(x, y + 6)
-      ..lineTo(x - 5, y - 1)
-      ..close();
-    _paint.color = const Color(0xFF1B1726);
-    c.drawPath(_ray.shift(const Offset(0, 1)), _paint);
-    _paint.color = const Color(0xFFE0479E);
-    c.drawPath(_ray, _paint);
-    _paint.color = const Color(0xFFFF9AD5);
-    c.drawRect(Rect.fromLTWH(x - 3, y - 2, 3, 2), _paint);
-    _paint.color = const Color(0xFFFFFFFF);
-    c.drawRect(Rect.fromLTWH(x - 2, y - 4, 1, 2), _paint);
-    if ((age / 120).floor().isEven) c.drawRect(Rect.fromLTWH(x + 3, y - 7, 1, 1), _paint);
-  }
-
-  /// 카드: 등급 색 테두리 + 선원 초상, 가로로 뒤집히며 돈다.
-  void _card(Canvas c, Offset p, (String, int) card, double age, SpriteDraw? sprites) {
-    final flip = math.cos(age / 140).abs().clamp(0.25, 1.0);
-    final w = 12 * flip;
-    const h = 16.0;
-    final r = Rect.fromCenter(center: p, width: w + 2, height: h + 2);
-    _paint.color = const Color(0xFF1B1726);
-    c.drawRect(r, _paint);
-    _paint.color = Color(card.$2);
-    c.drawRect(r.deflate(1), _paint);
-    _paint.color = const Color(0xFFF6EBD0);
-    c.drawRect(r.deflate(2.5), _paint);
-    sprites?.drawSmooth(c, 'crew:${card.$1}', p.dx, p.dy, w - 3, w - 3);
   }
 
   /// 배 둘레 흡수 반짝(이번 프레임 도착 수만큼 굵게).
@@ -250,8 +230,12 @@ class TopBossLoot {
   }
 }
 
+/// 터짐 종류: 보스 처치(연쇄 폭발) · 보물상자(금빛 기둥) · 광고 보상(배에서 고리·별가루).
+enum LootStyle { boss, chest, reward }
+
 class _Burst {
-  _Burst(this.ms, this.at, this.coins, this.blasts, this.size);
+  _Burst(this.ms, this.at, this.coins, this.blasts, this.size, {this.style = LootStyle.boss});
+  final LootStyle style;
   final double ms;
   final Offset at;
   final int coins;

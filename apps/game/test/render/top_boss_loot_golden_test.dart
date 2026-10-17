@@ -72,4 +72,44 @@ void main() {
       await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_boss_loot_${name}_s24.png'));
     });
   }
+
+  // 보물상자 열림·광고 보상(피드백 #15): 금빛 기둥 + 금화 분수 / 배에서 고리·별가루.
+  for (final (name, ms, ad) in const [('chest', 500.0, false), ('ad', 350.0, true)]) {
+    testWidgets('보상 임팩트 골든 s24 $name', (tester) async {
+      const dpr = 2.8125;
+      final bank = (await tester.runAsync(() => SpriteBank.load(Images(prefix: 'assets/'), tables)))!;
+      const box = Size(384, 832 - 48 - 24 - 76);
+      const at = 120;
+      final rec = withChestOpen(topRecording(tables, ticks: 200), at: ad ? 60 : at, adAt: ad ? at : null);
+      final scene = BattleScene(tables, rec, loop: false)..layout = battleFrameFor(box, dpr);
+      final painter = ScenePainter(scene)..sprites = bank;
+      final frame = topFrameFor(box, dpr);
+      final warm = Canvas(PictureRecorder());
+      while (scene.player.position < at + 1) {
+        scene.update(kFrameMs);
+        painter.paintTop(warm, frame);
+      }
+      final start = scene.clockMs;
+      while (scene.clockMs - start < ms) {
+        scene.update(kFrameMs);
+        painter.paintTop(warm, frame);
+      }
+      tester.view
+        ..physicalSize = Size((box.width * dpr).roundToDouble(), (box.height * dpr).roundToDouble())
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        Center(
+          child: RepaintBoundary(
+            child: SizedBox(
+              width: (box.width * dpr).roundToDouble(),
+              height: (box.height * dpr).roundToDouble(),
+              child: CustomPaint(painter: _Painter(painter, frame, dpr)),
+            ),
+          ),
+        ),
+      );
+      await expectLater(find.byType(RepaintBoundary).first, matchesGoldenFile('goldens/top_reward_${name}_s24.png'));
+    });
+  }
 }

@@ -1407,6 +1407,14 @@ const Map<String, String> rawTables = {
     "seaEventStarted": {
       "fx": null,
       "sfx": "combo"
+    },
+    "chestOpened": {
+      "fx": null,
+      "sfx": "fanfare_small"
+    },
+    "adReward": {
+      "fx": null,
+      "sfx": "promote"
     }
   },
   "projectiles": {
@@ -2058,11 +2066,9 @@ const Map<String, String> rawTables = {
     "shock": "#6EBE5A"
   },
   "combo": {
-    "minKills": 4,
-    "windowMs": 600,
-    "x": 150,
+    "minKills": 5,
+    "windowMs": 1000,
     "y": 34,
-    "scale": 2,
     "color": "#FFD23F"
   },
   "hud": {

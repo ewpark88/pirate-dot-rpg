@@ -38,6 +38,16 @@ bool funEvent(BattleScene s, GameEvent e) {
       _sfx(s, 'bossFailed', e);
     case BombletBurst(:final x, :final y, :final radius):
       s.topHits.impact.add(x, y, radius, 0xFFFF8A2A, s.clockMs);
+    // 보물상자 열림·광고 보상(피드백 #15): 전장에서 보상이 튀어나오는 임팩트.
+    case ChestOpened(:final gold) when s.isTop:
+      final at = Offset(s.chest.x, s.chest.y);
+      s.topHits.loot.chest(s.clockMs, at, lite: s.topHits.lite || s.settings.powerSave, gems: gold.isZero);
+      if (!gold.isZero) s.numbers.add(gold, at.dx, at.dy - 16, DamageKind.crit);
+      s.haptic(HapticLevel.light);
+      _sfx(s, 'chestOpened', e);
+    case SaveRequested(reason: 'adReward') when s.isTop:
+      s.topHits.loot.reward(s.clockMs, s.topShip);
+      _sfx(s, 'adReward', e);
     case GoldOverflow():
       s.topHits.crew.spill(s.clockMs);
     case AttackMissed(:final x, :final y):
