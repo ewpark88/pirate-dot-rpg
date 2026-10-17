@@ -20,7 +20,7 @@ class HdImpact {
     ..strokeCap = StrokeCap.round
     ..strokeJoin = StrokeJoin.round;
   static const _lifeMs = 520.0;
-  final _veil = Paint()..color = const Color(0x73FFFFFF); // 배 위 착탄 45%
+  final _veil = Paint()..color = const Color(0x59FFFFFF); // 배 위 착탄 35%(배를 덮지 않게)
   static const _upright = {'underwater', 'laser', 'skip'};
   static const _max = 14;
 

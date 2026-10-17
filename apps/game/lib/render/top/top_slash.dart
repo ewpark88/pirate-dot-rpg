@@ -16,7 +16,7 @@ class TopSlash {
   static const _spinMs = 280.0;
   static const _comboGapMs = 70.0;
   static const _markMs = 400.0;
-  static const _max = 24;
+  static const _max = 8; // 붐빌 때 초승달이 배 위에 겹겹이 쌓여 회색 덩어리로 보이던 것(탑 실기기)
   static const _rainbow = [0xFFFF5A5A, 0xFFFFB347, 0xFFFFF15A, 0xFF7CF06A, 0xFF5FD8FF, 0xFFB98CFF];
 
   /// 배([shipX],[shipY])에서 대상([x],[y]) 쪽으로 [atMs]에 휘두름. [color] = 등급 색, [rarity] = 등급 칸(0 일반~4 신화).

@@ -100,7 +100,7 @@ class TopAtmosphere {
     }
     phaseId = k < 0.5 ? a.id : b.id;
     tint = Color.lerp(a.tintColor, b.tintColor, k)!;
-    dim = _lerp(a.dim, b.dim, k) + (region == 'abyss' ? 0.3 : 0);
+    dim = _lerp(a.dim, b.dim, k) + (region == 'abyss' ? 0.1 : 0);
     stars = _lerp(a.stars, b.stars, k);
     // 날씨: 시간대 하나에 한 번 굴림(같은 바퀴·같은 단계면 같은 결과).
     final roll = lap * 8 + i;

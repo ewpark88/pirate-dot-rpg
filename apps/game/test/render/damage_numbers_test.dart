@@ -78,9 +78,7 @@ void main() {
       ..boss = true
       ..drawX = 100
       ..drawY = 50;
-    nums
-      ..add(BigNum.from(999), 100, 40, DamageKind.crit, key: 7, on: boss)
-      ..add(BigNum.from(5), 100, 40, DamageKind.normal, key: 7, on: boss); // 쌓기 줄도 대상 기준
+    nums.add(BigNum.from(999), 100, 40, DamageKind.crit, key: 7, on: boss);
     final rel = [for (final n in nums.active) (n.x - boss.drawX, n.y - boss.drawY)];
     EnemyPose? at(int id) => id == 7 ? boss : null;
     for (var i = 0; i < 20; i++) {
@@ -97,5 +95,25 @@ void main() {
     boss.drawX += 50;
     nums.update(16, at);
     expect([for (final n in nums.active) (n.x, n.y)], last);
+  });
+
+  test('따라가다 서로 겹치면 나중 숫자를 위 줄로 비킨다(탑 실기기 87.1.65K)', () {
+    final nums = fresh();
+    final a = EnemyPose()
+      ..id = 1
+      ..drawX = 0
+      ..drawY = 0;
+    final b = EnemyPose()
+      ..id = 2
+      ..drawX = 200
+      ..drawY = 0;
+    nums
+      ..add(BigNum.from(87), 0, -10, DamageKind.normal, key: 1, on: a)
+      ..add(BigNum.from(1650), 200, -10, DamageKind.normal, key: 2, on: b);
+    b.drawX = 4; // 두 적이 한자리로 모임
+    nums.update(16, (id) => id == 1 ? a : b);
+    final [n1, n2] = nums.active;
+    final line = DamageNumbers.lineHeight(nums.scaleOf(n2)) * nums.tall;
+    expect(((n1.y - nums.riseOf(n1)) - (n2.y - nums.riseOf(n2))).abs(), greaterThanOrEqualTo(line - 1e-6));
   });
 }
