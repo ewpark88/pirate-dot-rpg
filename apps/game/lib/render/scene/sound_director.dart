@@ -51,6 +51,7 @@ class SoundDirector {
   /// 타격감 v3 저음 '쿵' 층: 치명 타격음을 피치를 낮춰(0.55, 큰 것 0.42) 겹친다 — 무료 효과음 그대로. 120ms에 한 번.
   void thud(double clockMs, {required bool big}) {
     final a = audio;
+    if (clockMs < _lastThud) _lastThud = -1000000000; // 장면 시계가 뒤로 갔다(S3 제안)
     if (a == null || clockMs - _lastThud < 120) return;
     _lastThud = clockMs;
     a.playSfx('hit_crit', pitch: big ? 0.42 : 0.55);
