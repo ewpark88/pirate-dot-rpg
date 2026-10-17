@@ -15,6 +15,12 @@ GameEvent _rebirthEventFromJson(int t, Json j) => switch (j['type'] as String) {
   ),
   'rebirthUpgradeBought' => RebirthUpgradeBought(t, id: j['id'] as String, level: j['level'] as int),
   'skinUnlocked' => SkinUnlocked(t, id: j['id'] as String),
+  'collectionRewardClaimed' => CollectionRewardClaimed(
+    t,
+    at: j['at'] as int,
+    gems: j['gems'] as int? ?? 0,
+    summons: j['summons'] as int? ?? 0,
+  ),
   _ => ContentUnlocked(t, kind: j['kind'] as String, value: j['value'] as int),
 };
 
@@ -93,4 +99,19 @@ class ContentUnlocked extends GameEvent {
 
   @override
   Json _fields() => {'kind': kind, 'value': value};
+}
+
+/// 도감 수집 보상을 받았다: 보유 선원 [at]명 칸 — 젬 [gems], 무료 소환 [summons]장(카드는 CrewSummoned로 따로).
+class CollectionRewardClaimed extends GameEvent {
+  const CollectionRewardClaimed(super.tick, {required this.at, this.gems = 0, this.summons = 0});
+
+  final int at;
+  final int gems;
+  final int summons;
+
+  @override
+  String get type => 'collectionRewardClaimed';
+
+  @override
+  Json _fields() => {'at': at, if (gems != 0) 'gems': gems, if (summons != 0) 'summons': summons};
 }

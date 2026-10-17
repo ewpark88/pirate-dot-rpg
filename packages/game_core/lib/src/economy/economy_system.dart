@@ -2,6 +2,7 @@ import 'package:game_core/src/economy/ads.dart';
 import 'package:game_core/src/economy/auto_upgrade.dart' show autoUpgradeStep;
 import 'package:game_core/src/economy/bounty_flow.dart';
 import 'package:game_core/src/economy/chest.dart';
+import 'package:game_core/src/economy/collection_reward.dart' show claimCollectionReward;
 import 'package:game_core/src/economy/daily.dart';
 import 'package:game_core/src/economy/formation.dart';
 import 'package:game_core/src/economy/merge.dart';
@@ -59,6 +60,7 @@ class EconomySystem implements GameSystem {
     final PickBottle c => pickBottle(state, c, ctx),
     CancelAutoUpgrade() => state.copyWith(buffs: state.buffs.copyWith(clearAutoUpgrade: true)),
     final BuySkin c => buySkin(state, c, ctx),
+    final ClaimCollectionReward c => claimCollectionReward(state, c, ctx),
     ClearHints(:final prefix) => state.copyWith(settings: state.settings.withoutHints(prefix)),
     MarkHint(:final id) =>
       state.settings.hints.contains(id) ? null : state.copyWith(settings: state.settings.withHint(id)),

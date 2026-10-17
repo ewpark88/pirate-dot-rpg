@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:game_core/game_core.dart';
 
 /// 보간된 적 한 마리. 매 프레임 다시 채우므로 객체를 재사용한다.
@@ -39,7 +41,7 @@ class EnemyPose {
   /// 보스 브레이크 게이지 0~1(EnemyView.breakRatio) — 체력 막대 아래 노란 막대.
   double breakRatio = 0;
 
-  void _set(EnemyView v, double nx, double ny) {
+  void _set(EnemyView v, double nx, double ny, double nh) {
     id = v.id;
     kind = v.kind;
     layer = v.layer;
@@ -51,7 +53,7 @@ class EnemyPose {
     slowed = v.slowed;
     burning = v.burning;
     vulnerable = v.vulnerable;
-    heading = v.heading;
+    heading = nh;
     emerging = v.emerging;
     vanguard = v.vanguard;
     breakRatio = v.breakRatio;
@@ -164,6 +166,16 @@ class RecordingPlayer {
 
   bool _hasNext(int i) => _has(i) && _has(i + 1);
 
+  /// 보간용 다음 틱 프레임(없거나 처음으로 돌아가는 자리면 null) — 배 자리·방향을 틱 사이에서 잇는다(모션 v1).
+  BattleView? get nextFrame {
+    final i = _position.floor();
+    final wraps = !live && loop && (i + 1) % _ticks.length == 0;
+    return _hasNext(i) && !wraps ? entryAt(i + 1).frame : null;
+  }
+
+  /// 지금 틱 안 진행률 0~1.
+  double get fraction => _position - _position.floor();
+
   /// [a]~[b] 사이에서 멈추지 않은 구간 길이 (발사체 진행률 계산용).
   double motionBetween(double a, double b) {
     var sum = 0.0;
@@ -244,7 +256,7 @@ class RecordingPlayer {
     for (final e in a) {
       final n = _find(b, e.id) ?? e;
       if (poses.length <= poseCount) poses.add(EnemyPose());
-      poses[poseCount++]._set(e, e.x + (n.x - e.x) * t, e.y + (n.y - e.y) * t);
+      poses[poseCount++]._set(e, e.x + (n.x - e.x) * t, e.y + (n.y - e.y) * t, lerpAngle(e.heading, n.heading, t));
     }
   }
 
@@ -264,4 +276,11 @@ class RecordingPlayer {
 
   /// 틱 [index] 프레임에서 적 [id]의 위치 (발사체 목표·숫자 위치). 범위 밖이면 null.
   EnemyView? enemyAt(int index, int id) => _has(index) ? _find(entryAt(index).frame.enemies, id) : null;
+}
+
+/// 각도 [a]→[b]를 가까운 쪽으로 [t]만큼(라디안) — 틱 사이 방향 보간.
+double lerpAngle(double a, double b, double t) {
+  var d = (b - a) % (2 * math.pi);
+  if (d > math.pi) d -= 2 * math.pi;
+  return a + d * t;
 }

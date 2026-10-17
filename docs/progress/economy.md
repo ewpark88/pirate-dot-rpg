@@ -5,10 +5,23 @@
 | --- | --- |
 | 마일스톤 | M1 EconomySystem |
 | 스펙·계획 | `docs/specs/economy-m1.md` · 완료 `docs/plans/done/economy-m1.md` · 진행 `docs/plans/active/economy-balance-m1.md` |
-| 바로 다음 할 일 | bossBreak 마무리(king·walrus 게이지, balance crews ±10%) → 선체 즉시 반영 재측정 → 보스 HP·첫 도전·환생 지표 → 도감 v2 수치 → 야간 리포트 |
+| 바로 다음 할 일 | 쿵푸할매 스타일 디자인 개편 지원(사용자 최우선, docs/plans/active/design-kungfu-style.md): PB UI 키트 에셋 등록(review/ui-kit) → 화면 목록표 · 밤 sim(README '오늘 밤') |
 | 막힌 것 | 없음 |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-17 저녁 · S2 · 재개 지점(디자인 개편으로 멈춤)
+- 배 스킨: review/ship-skins 41ae5de7 커밋(표·자동 해금·BuySkin·shipSkinsView·이름 ko/en·시험 4, check 통과) — S1 머지 대기. **재개할 것**: 화면(S4 '새 배 스킨!'·입어 보기)·팔레트(S3)가 붙으면 스킨 목록 UI가 shipSkinsView를 쓰는지 확인, 환생 4종(meta.rebirth.skins)도 shipSkins로 합칠지 결정(지금은 따로).
+- 그 밖 오늘 저녁: balance crews 재적합 15e6b03e(0.908~1.099, crew-traits-2 포함 — S5 통합 run으로 main), 도감 수집 보상 e0d80c84, 보스 무제한·철갑판(main), 배 지킴이(main), 배 스킨 경제안.
+- 실수 기록: `check | tail && commit`처럼 이으면 check가 빨강이어도 커밋된다(5529821a) → check 결과 파일을 grep으로 확인한 뒤 커밋.
+
+### 2026-10-17 오후 · S2 · C8·특성 정리·보스 특성
+- C8(5edda672, main 8afa8ee9): 보스 HP ×80·공격 ×100·벽 ×2.3·초반 HP ×0.028·공격 ×0.02(새 키 earlyAttackMultiplier), bossDuel 켬, attackBase 7·goldBase 2.7, 돌격대 ×100·HP ×10, 선체 900, 화물칸 120·costRatio 0.2, 브레이크 수치, 선원 15명 powerScale(balance crews 0.91~1.085).
+  sim 5명×3시간: 스테이지 40 51.4분, 10단위 첫 도전 50%, 환생 첫 벽 0.82, 돌파 31분, 파밍 15% OK / 보스전 피해 19.5%·보통 첫 도전 85.4%·벽 침몰 41초·강화 간격 35~45 192초는 밤에.
+- 특성 중복 정리 1(crew-traits, main e820b80c): 연쇄 번개 pelly·처형 bones·충전 사격 volt·추적 깃털 polly. 정리 2(S5 crew-traits-2, 검토 OK, 재적합은 밤).
+- 보스 특성 7개(review/boss-traits bc033482·48524e7b·c0c96701): 엔진·표·hpFactor(회피 0.75·장갑 0.6·재생 0.8·반사막 0.78·분노 1·호위 0.85·가속 0.91), 장갑은 발사 간격 기준으로 재정의. sim --boss-trait.
+- 그 밖: 첫 무료 10연 = 영웅 1 + 희귀 이하 9, 피버 무리(review/fever-swarm, main), break-view, 현상금 CardGranted, bestUpgradePlan·금고 가득 지표, BALANCE.md.
+- 실수 기록: 미검증 bossBreak 수치를 첫 10연 커밋에 섞음(9caf3e18로 되돌림), 패키지 해석 안 된 worktree에서 dart format이 80칸으로 10개 파일을 바꿈(되돌림 — 새 worktree는 pub get 먼저), crews.json을 json.dumps로 한 줄로 만듦(되돌리고 값만 바꿈).
 
 ### 2026-10-17 · S2 · 피드백 P0·계약 2건·bossPreview
 - 커밋: 0504818a 분노 정리(레인 안)+sim --boss-break, ac6cca60·d64bf3ca·9e62fdba 환영 선원 bones(첫 강화 단계 넘는 틱·건너뛰기도, CardGranted starter, 0.17분)·startingCrews octo 하나·튜토리얼 보스 ×5·피버 처치 200 → 스테이지 40에 1000,

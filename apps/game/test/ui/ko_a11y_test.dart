@@ -82,8 +82,11 @@ void main() {
         size: size,
         keepTutorial: true,
       );
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(seconds: 1));
       expect(find.byKey(const Key('guide.skip')), findsOneWidget);
-      expect(find.byKey(const Key('guide.card')), findsOneWidget);
+      expect(find.byKey(const Key('talk')), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
     });
 
     testWidgets('ko $tag: 항해 탭(해역·오프라인·순풍·환생)', (tester) async {

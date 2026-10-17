@@ -78,8 +78,9 @@ void main() {
             dpr: dpr,
             locale: locale,
           );
-          await tester.pump(const Duration(milliseconds: 300));
-          expect(find.byKey(const Key('guide.card')), findsOneWidget, reason: 'step $step');
+          await tester.pump(const Duration(milliseconds: 100));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.byKey(const Key('talk')), findsOneWidget, reason: 'step $step');
           expect(tester.takeException(), isNull, reason: 'step $step');
           await tester.pump(const Duration(seconds: 3));
         }
@@ -95,8 +96,9 @@ void main() {
         ];
         for (final (id, s) in cases) {
           await pumpGame(tester, _only(s, {id}), openTab: false, guides: true, size: size, dpr: dpr, locale: locale);
-          await tester.pump(const Duration(milliseconds: 300));
-          expect(find.byKey(const Key('guide.card')), findsOneWidget, reason: id);
+          await tester.pump(const Duration(milliseconds: 100));
+          await tester.pump(const Duration(seconds: 1));
+          expect(find.byKey(const Key('talk')), findsOneWidget, reason: id);
           expect(tester.takeException(), isNull, reason: id);
           await tester.pump(const Duration(seconds: 4));
         }

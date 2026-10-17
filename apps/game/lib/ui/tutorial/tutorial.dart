@@ -11,7 +11,7 @@ const Map<int, Set<String>> tutorialSpots = {
   1: {},
   // 2단계: 도크의 빠른 강화(‘여기를 눌러 배를 강화해요’)와 배 패널의 대포 강화.
   2: {'tab.ship', 'ship.upgrade.cannon', 'quick.upgrade'},
-  3: {'ship.upgrade.cannon', 'boss.challenge'},
+  3: {'quick.upgrade', 'ship.upgrade.cannon', 'boss.challenge'},
   4: {'tab.summon', 'summon.ten'},
   5: {'tab.crew', 'crew.mergeAll'},
   6: {'goal'},

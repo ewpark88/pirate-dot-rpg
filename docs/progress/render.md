@@ -14,6 +14,11 @@
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-17 밤 · S3 · 모션 v1·배 스킨 v2/v3 → (멈춤: 쿵푸할매 스타일 디자인 개편 최우선)
+- 모션 v1: a58cfa0 틱 사이 배 자리·방향 보간·적 방향 보간·기기 픽셀 격자, 449537d 등장 팝인·사망 찌그러짐, 3225c7e 2프레임 넘김 섞기 + 4기기 띠 골든 top_motion_strip_*. 배 위아래 출렁·기울기·돛 은은한 펄럭은 TopShipPainter(now) — 이번 커밋.
+- 배 스킨: 3384a4b v2 색·무늬 7종(king·ghostship·frost·lava·fairy·festival·abyss — S1 승인, S2 meta.shipSkins), v3 장식(SkinDecor: 금관·해골 깃발·유령불·쇄빙 날·고드름·철갑 테·굴뚝 불꽃·나비 날개·조개 돛·깃발 줄·풍선·돔·잠망경·물방울).
+- 재개 지점(디자인 개편 뒤): ① 스킨별 항적·포구 색 연결(fx_map skinPreview wake·muzzle 값 있음 — TopSeaPainter wake 색·_topMuzzle 색) ② '새 배 스킨!' 0.8초 빛기둥 변신(스킨 id 바뀔 때 loot.reward + 부위 빛) ③ crew-traits-2 rooted 연결(wip/render-traits2) ④ 모션 v1 골든 일괄(slot).
+
 ### 2026-10-17 저녁 · S3 · 골든 일괄 갱신·특성·보스 특성 wip·근접 베기 v2
 - 3b5c900 main 7a4b32b 머지 + render 골든 일괄 갱신(손맛 v4·피버 v2·특성·C8·보스전 비킴). check --full: test/proto fever_motion 4장만 실패(platform 레인 — S1이 main에서 갱신).
 - a3ec94d(lane에 합침) 선원 특성: 연쇄 번개·처형·충전·추적 휨. e1de208 도감 v2 보스 패턴(먹물·삼키기·분열·자폭). 근접 베기 v2(등급별 초승달 궤적·신화 360°). sfx-stuck(S5) 검토 OK.

@@ -49,6 +49,8 @@ flutter:
     - assets/fx/pb/
     - assets/crew_art/
     - assets/ui/cards/
+    - assets/ui/kit/  # PB UI 키트(쿵푸할매 스타일 개편) — 2.0x·3.0x 변형은 Flutter가 고른다
+    - assets/ui/digits/  # 테두리 숫자 아틀라스(tools/art/gen_outline_digits.py)
     - assets/audio/sfx/
     - assets/audio/bgm/
     - assets/fonts/Galmuri-OFL.txt

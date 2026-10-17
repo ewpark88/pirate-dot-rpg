@@ -1404,6 +1404,22 @@
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
     },
+    "ui/digits/2.0x/outline_digits.png": {
+      "source": "Jua(OFL-1.1, assets/fonts) 글리프 → tools/art/gen_outline_digits.py 코드 그림(테두리·그림자·색)",
+      "license": "OWN"
+    },
+    "ui/digits/3.0x/outline_digits.png": {
+      "source": "Jua(OFL-1.1, assets/fonts) 글리프 → tools/art/gen_outline_digits.py 코드 그림(테두리·그림자·색)",
+      "license": "OWN"
+    },
+    "ui/digits/outline_digits.json": {
+      "source": "Jua(OFL-1.1, assets/fonts) 글리프 → tools/art/gen_outline_digits.py 코드 그림(테두리·그림자·색)",
+      "license": "OWN"
+    },
+    "ui/digits/outline_digits.png": {
+      "source": "Jua(OFL-1.1, assets/fonts) 글리프 → tools/art/gen_outline_digits.py 코드 그림(테두리·그림자·색)",
+      "license": "OWN"
+    },
     "ui/farm.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
       "license": "OWN"
@@ -1422,6 +1438,102 @@
     },
     "ui/hand.png": {
       "source": "Pirate Busters v0.24 자체 IP → tools/art/gen_ui_icons.py 픽셀 격자",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/badge_frame.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/button_gold.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/button_primary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/button_secondary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/chip.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/panel.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/tab_active.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/2.0x/tab_idle.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/badge_frame.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/button_gold.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/button_primary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/button_secondary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/chip.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/panel.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/tab_active.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/3.0x/tab_idle.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/badge_frame.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/button_gold.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/button_primary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/button_secondary.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/chip.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/panel.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/tab_active.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
+      "license": "OWN"
+    },
+    "ui/kit/tab_idle.png": {
+      "source": "Pirate Busters v0.24 자체 IP ui/kit SVG → tools/art/gen_ui_kit.py 코드 래스터화",
       "license": "OWN"
     },
     "ui/lock.png": {

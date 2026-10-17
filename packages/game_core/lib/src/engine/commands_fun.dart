@@ -87,3 +87,16 @@ class BuySkin extends Command {
   @override
   Json _fields() => {'id': id};
 }
+
+/// 도감 수집 보상 받기(meta.collectionRewards, S4 '수집의 재미'): 보유 선원이 [at]명 이상이고 아직 안 받았으면 젬·소환.
+class ClaimCollectionReward extends Command {
+  const ClaimCollectionReward(this.at);
+
+  final int at;
+
+  @override
+  String get type => 'claimCollectionReward';
+
+  @override
+  Json _fields() => {'at': at};
+}
