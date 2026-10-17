@@ -64,11 +64,31 @@ class OutlineText extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dpr = MediaQuery.maybeDevicePixelRatioOf(context) ?? 1;
     final atlas = isOutlineDigits(text) ? ref.watch(outlineDigitsProvider(dpr)).value : null;
-    final body = atlas != null ? _AtlasText(text, atlas, size: size, tone: tone) : _strokeText();
+    final body = atlas != null ? _atlas(atlas) : _strokeText(context);
     return fit ? FittedBox(fit: BoxFit.scaleDown, child: body) : body;
   }
 
-  Widget _strokeText() {
+  /// 아틀라스 숫자 + 같은 글의 보이지 않는 Text (화면 낭독·테스트 find.text가 그대로 찾게).
+  Widget _atlas(OutlineDigits atlas) => Stack(
+    alignment: Alignment.center,
+    children: [
+      _AtlasText(text, atlas, size: size, tone: tone),
+      Positioned.fill(
+        child: Opacity(
+          opacity: 0,
+          child: Text(
+            text,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.clip,
+            style: TextStyle(fontSize: size),
+          ),
+        ),
+      ),
+    ],
+  );
+
+  Widget _strokeText(BuildContext context) {
     final w = (stroke ?? size * strokeRatio) * 2; // 테는 글자 선 가운데에 그려지므로 두 배
     final base = TextStyle(
       fontFamily: 'Jua',
@@ -76,19 +96,27 @@ class OutlineText extends ConsumerWidget {
       fontSize: size,
       height: 1.2,
     );
+    // 테 층은 RichText(낭독 제외) — find.text·화면 낭독은 채움 층 Text 하나만 본다.
     return Stack(
       children: [
-        Text(
-          text,
-          textAlign: align,
-          maxLines: maxLines,
-          style: base.copyWith(
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = w
-              ..strokeJoin = StrokeJoin.round
-              ..color = outlineInk,
-            shadows: [Shadow(color: const Color(0x78000000), offset: Offset(0, size * _shadowRatio), blurRadius: 1)],
+        ExcludeSemantics(
+          child: RichText(
+            textAlign: align,
+            maxLines: maxLines,
+            textScaler: MediaQuery.textScalerOf(context),
+            text: TextSpan(
+              text: text,
+              style: base.copyWith(
+                foreground: Paint()
+                  ..style = PaintingStyle.stroke
+                  ..strokeWidth = w
+                  ..strokeJoin = StrokeJoin.round
+                  ..color = outlineInk,
+                shadows: [
+                  Shadow(color: const Color(0x78000000), offset: Offset(0, size * _shadowRatio), blurRadius: 1),
+                ],
+              ),
+            ),
           ),
         ),
         Text(

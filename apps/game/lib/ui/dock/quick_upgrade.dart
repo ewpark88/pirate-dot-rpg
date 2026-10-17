@@ -173,7 +173,7 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
                       end: Alignment.bottomCenter,
                       colors: enabled ? const [Skin.goldTop, Skin.goldBottom] : const [Skin.disabled, Skin.disabled],
                     ),
-                    border: Border.all(color: Colors.white, width: 3),
+                    border: Border.all(color: Skin.outline, width: 3),
                     boxShadow: Skin.shadow,
                   ),
                   alignment: Alignment.center,
@@ -204,11 +204,11 @@ class _QuickUpgradeButtonState extends ConsumerState<QuickUpgradeButton> with Si
                       decoration: BoxDecoration(
                         color: target.short == null ? Skin.ink : const Color(0xFF8A8F99),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white, width: 1.5),
+                        border: Border.all(color: Skin.outline, width: 1.5),
                       ),
                       child: Text(
                         target.short == null ? target.cost.format() : l10n.uiQuickUpgradeShort(target.short!.format()),
-                        style: Skin.text(10, color: Colors.white),
+                        style: Skin.outlined(10),
                       ),
                     ),
                   ),

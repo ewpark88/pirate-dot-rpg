@@ -89,7 +89,7 @@ class UpgradeAllPill extends ConsumerWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(colors: [Skin.goldTop, Skin.goldBottom]),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white, width: 2),
+            border: Border.all(color: Skin.outline, width: 2),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

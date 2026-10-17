@@ -31,7 +31,7 @@ class PowerBadge extends ConsumerWidget {
         children: [
           SkinIcon(UiSprites.part('cannon'), size: 16),
           const SizedBox(width: 3),
-          Text(power.format(), key: const Key('hud.power.value'), style: Skin.text(15)),
+          Text(power.format(), key: const Key('hud.power.value'), style: Skin.outlined(15)),
         ],
       ),
     );

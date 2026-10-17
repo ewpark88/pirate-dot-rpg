@@ -1,42 +1,58 @@
 import 'package:flutter/material.dart';
 
-/// 스킨 r1 (docs/specs/ui-skin-r1.md, 사용자 승인 2026-10-15): 바다 파스텔 바탕 + 선명한 강조, 둥근 모서리·부드러운 그림자.
-/// UI의 색·모양·글꼴은 모두 여기서. (전장 도트는 렌더 몫이라 그대로.)
+/// 스킨 k1 (디자인 개편 ①, docs/plans/active/design-kungfu-style.md — 쿵푸할매 서바이버 스타일): 진한 남색·보라 바탕 +
+/// 연보라 판에 굵은 검정 외곽선, 입체(베벨·광택) 노랑·초록 버튼, 흰 글씨 + 검은 테두리(외곽선 글자).
+/// (r1 파스텔에서 바꿈 — 이름은 그대로 두어 화면 코드가 한 번에 따라온다.) UI의 색·모양·글꼴은 모두 여기서.
 abstract final class Skin {
   // ── 바탕·판 ──
-  static const sky = Color(0xFFDDF2FF);
-  static const skyDeep = Color(0xFFB9E3FF);
-  static const card = Color(0xFFFFFFFF);
-  static const cream = Color(0xFFFFFAF0);
-  static const track = Color(0xFFE3ECF7);
+  /// 화면 바탕 — 진한 남보라.
+  static const sky = Color(0xFF30346B);
+  static const skyDeep = Color(0xFF24285A);
+
+  /// 판(카드·창) — 연보라. 진한 글자가 그대로 읽힌다.
+  static const card = Color(0xFFDCDCF8);
+  static const cream = Color(0xFFE9E7FC);
+  static const track = Color(0xFF3B3F74);
+
+  /// 크롬(위 막대·아래 탭·알약) — 짙은 남색 판.
+  static const navyPanel = Color(0xFF262A52);
+  static const navyPanelTop = Color(0xFF353A70);
+
+  /// 굵은 외곽선 (판·버튼·리본 공통).
+  static const outline = Color(0xFF15172E);
+  static const outlineWidth = 2.5;
+
+  /// 노란 리본 제목 띠.
+  static const ribbonTop = Color(0xFFFFE45C);
+  static const ribbonBottom = Color(0xFFFFB80F);
 
   // ── 글자 ── (흰·크림·하늘 바탕 모두 대비 4.5:1 이상, WCAG)
-  static const ink = Color(0xFF2B3A55);
-  static const sub = Color(0xFF56657F);
+  static const ink = Color(0xFF1B1D3A);
+  static const sub = Color(0xFF474B7C);
 
-  // ── 주 버튼 (파랑) ── 흰 글자가 위쪽 밝은 곳에서도 4.5:1 이상.
-  static const primaryTop = Color(0xFF1E6FD6);
-  static const primaryBottom = Color(0xFF1460C4);
-  static const primaryEdge = Color(0xFF0D4A9E);
+  // ── 주 버튼 (초록) ── 흰 외곽선 글자.
+  static const primaryTop = Color(0xFF7FD94A);
+  static const primaryBottom = Color(0xFF34A52A);
+  static const primaryEdge = Color(0xFF1C6516);
 
   // ── 보상 버튼 (금색) ──
-  static const goldTop = Color(0xFFFFE27A);
-  static const goldBottom = Color(0xFFFFB31F);
-  static const goldEdge = Color(0xFFD98A00);
-  static const goldInk = Color(0xFF6A3C00);
+  static const goldTop = Color(0xFFFFE45C);
+  static const goldBottom = Color(0xFFFFB30F);
+  static const goldEdge = Color(0xFFB36B00);
+  static const goldInk = Color(0xFF3B2300);
 
   // ── 보조 버튼 (흰) ──
-  static const plainTop = Color(0xFFFFFFFF);
-  static const plainBottom = Color(0xFFEAF3FC);
-  static const plainEdge = Color(0xFFB9C6DA);
+  static const plainTop = Color(0xFFF1F0FF);
+  static const plainBottom = Color(0xFFC9C7F2);
+  static const plainEdge = Color(0xFF6C6EA8);
 
   // ── 상태 ──
   static const danger = Color(0xFFFF5A6E);
   static const mint = Color(0xFF3CCB8A);
 
   /// 민트 판 위 글자(순풍·출전) — 대비 4.5:1 이상.
-  static const mintInk = Color(0xFF146A43);
-  static const disabled = Color(0xFFC9D3E2);
+  static const mintInk = Color(0xFF0F5A37);
+  static const disabled = Color(0xFF9C9EC4);
 
   /// 연출 바탕(소환 등)의 짙은 남색.
   static const night = Color(0xFF141A33);
@@ -45,27 +61,40 @@ abstract final class Skin {
   static const radiusCard = 16.0;
   static const radiusButton = 14.0;
 
-  /// 통통한 버튼의 아래 테두리 두께.
-  static const buttonEdge = 4.0;
+  /// 통통한 버튼의 아래 테두리 두께 (k2: 입체감 한 단계 더).
+  static const buttonEdge = 6.0;
 
-  static const shadowColor = Color(0x2E1E3C78);
+  static const shadowColor = Color(0x5510122A);
   static const List<BoxShadow> shadow = [BoxShadow(color: shadowColor, blurRadius: 10, offset: Offset(0, 3))];
   static const List<BoxShadow> shadowSmall = [BoxShadow(color: shadowColor, blurRadius: 6, offset: Offset(0, 2))];
 
   // ── 스킨 r2 깊이감 (docs/specs/ui-skin-r2.md ①) ──
   /// 판 위→아래 그라데이션 아래쪽 색(흰 판), 판 아래 진한 테두리, 안쪽 위 하이라이트.
-  static const cardBottom = Color(0xFFF3F8FF);
-  static const cardEdge = Color(0xFFD3E1F3);
-  static const cardHighlight = Color(0xCCFFFFFF);
+  static const cardBottom = Color(0xFFC6C7EF);
+  static const Color cardEdge = outline;
+  static const Color cardHighlight = outline;
 
   /// 판 아래 테두리 두께(떠 있는 판).
   static const cardEdgeWidth = 3.0;
 
   /// 두 겹 그림자: 넓게 흐린 것 + 바로 아래 진한 것.
   static const List<BoxShadow> shadowDepth = [
-    BoxShadow(color: Color(0x241E3C78), blurRadius: 18, offset: Offset(0, 6)),
-    BoxShadow(color: Color(0x141E3C78), blurRadius: 3, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x4010122A), blurRadius: 14, offset: Offset(0, 5)),
   ];
+
+  /// 창 안쪽 판 (k2): 연보라 + 굵은 외곽선 + 위쪽 안쪽 그림자(위가 살짝 진한 그라데이션).
+  static const insetFill = Color(0xFFE7E6FC);
+
+  static BoxDecoration inset({Color fill = insetFill, Color border = outline, double radius = 12}) => BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color.lerp(fill, outline, 0.16)!, fill, fill],
+      stops: const [0, 0.14, 1],
+    ),
+    borderRadius: BorderRadius.circular(radius),
+    border: Border.all(color: border, width: 2.2),
+  );
 
   // ── 글꼴 ── Jua(OFL) + Jua에 없는 기호(· × → … 등)는 Gowun Dodum 서브셋(OFL).
   static const font = 'Jua';
@@ -80,6 +109,28 @@ abstract final class Skin {
     fontWeight: weight,
     height: 1.2,
   );
+
+  /// 외곽선 글자 (흰 글씨 + 두꺼운 검은 테, k2): 여덟 방향 그림자로 테를 그리고, 같은 색 그림자로 획을 굵게 한다.
+  static TextStyle outlined(double size, {Color color = Colors.white, double? stroke}) {
+    final s = stroke ?? (size * 0.11).clamp(1.4, 2.6);
+    return text(size, color: color).copyWith(shadows: [...outlineShadows(s), ..._thicken(color, size)]);
+  }
+
+  /// 굵은 글자 (진한 글씨, 테 없음) — Jua는 굵기가 하나라 같은 색 그림자로 획을 굵게 한다(버튼 글자).
+  static TextStyle bold(double size, {Color color = ink}) =>
+      text(size, color: color).copyWith(shadows: _thicken(color, size));
+
+  static List<Shadow> outlineShadows(double stroke) => [
+    for (final (dx, dy) in _ring) Shadow(color: outline, offset: Offset(dx * stroke, dy * stroke)),
+    Shadow(color: outline, offset: Offset(0, stroke + 1)),
+  ];
+
+  static List<Shadow> _thicken(Color color, double size) {
+    final w = (size * 0.03).clamp(0.4, 0.8);
+    return [for (final (dx, dy) in _ring) Shadow(color: color, offset: Offset(dx * w, dy * w))];
+  }
+
+  static const _ring = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)];
 }
 
 /// 흰/크림 판 카드 (스킨 r2 깊이감 — [SkinDepth]).
@@ -129,7 +180,11 @@ class SkinDepth extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [fill, bottom]),
             borderRadius: BorderRadius.circular(radius),
-            border: Border.all(color: border ?? Skin.cardHighlight, width: border == null ? 1.5 : borderWidth),
+            // k1: 굵은 검정 외곽선 (색 테두리를 주면 그 색).
+            border: Border.all(
+              color: border ?? Skin.outline,
+              width: border == null ? Skin.outlineWidth : borderWidth + 1,
+            ),
           ),
           child: Padding(padding: padding, child: child),
         ),
@@ -138,7 +193,7 @@ class SkinDepth extends StatelessWidget {
   }
 }
 
-/// 둥근 알약 진행 막대 (채움은 같은 색 밝기 그라데이션).
+/// 둥근 알약 진행 막대 (k1: 짙은 홈 + 굵은 외곽선, 채움은 같은 색 밝기 그라데이션 + 위 광택).
 class SkinBar extends StatelessWidget {
   const SkinBar({required this.value, this.color = Skin.mint, this.height = 10, super.key});
 
@@ -149,14 +204,22 @@ class SkinBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     height: height,
-    decoration: BoxDecoration(color: Skin.track, borderRadius: BorderRadius.circular(height)),
+    decoration: BoxDecoration(
+      color: Skin.track,
+      borderRadius: BorderRadius.circular(height),
+      border: Border.all(color: Skin.outline, width: height >= 8 ? 2 : 1.2),
+    ),
     alignment: Alignment.centerLeft,
     child: FractionallySizedBox(
       widthFactor: value.clamp(0, 1).toDouble(),
       heightFactor: 1,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [Color.lerp(color, Colors.white, 0.3)!, color]),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color.lerp(color, Colors.white, 0.45)!, color, Color.lerp(color, Skin.outline, 0.15)!],
+          ),
           borderRadius: BorderRadius.circular(height),
         ),
       ),

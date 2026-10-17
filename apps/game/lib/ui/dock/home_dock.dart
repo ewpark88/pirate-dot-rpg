@@ -8,7 +8,9 @@ import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_ready.dart';
 import 'package:pirate_dot/ui/rebirth/rebirth_v2.dart';
+import 'package:pirate_dot/ui/skin/outline_text.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
+import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/badge_providers.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
@@ -72,8 +74,15 @@ class HomeDock extends ConsumerWidget {
       );
     }
 
-    return SizedBox(
+    // k1: 짙은 남색 띠 + 위 굵은 외곽선.
+    return Container(
       height: kDockHeight,
+      decoration: const BoxDecoration(
+        color: Skin.navyPanel,
+        border: Border(
+          top: BorderSide(color: Skin.outline, width: Skin.outlineWidth),
+        ),
+      ),
       child: LayoutBuilder(
         builder: (context, box) {
           // 칸 5개 + 빠른 강화(60) 사이 간격 — 넓으면 62, 좁으면 줄인다(하한 52 — 원 48 + 테두리).
@@ -145,7 +154,8 @@ class _DockIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget icon = PixelSprite(asset, dots: 16);
+    // HD 아이콘은 칸의 약 80% (S5 합의 — 칸이 정해진 곳은 크기를 준다).
+    Widget icon = SkinIcon(asset, size: selected ? 44 : 38);
     if (spot case final id?) icon = TutorialSpot(id: id, force: guide, child: icon);
     return Semantics(
       button: true,
@@ -165,17 +175,24 @@ class _DockIcon extends StatelessWidget {
                 show: badge,
                 dotKey: dotKey,
                 count: count,
+                // k1: 네모 칸 — 고른 칸만 노랗게 크게.
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOutBack,
-                  width: (selected ? 54.0 : 50.0).clamp(0, slot - 2),
-                  height: (selected ? 54.0 : 50.0).clamp(0, slot - 2),
+                  width: (selected ? 58.0 : 48.0).clamp(0, slot),
+                  height: (selected ? 52.0 : 46.0).clamp(0, slot - 2),
                   decoration: BoxDecoration(
-                    color: selected ? Skin.skyDeep : Skin.card,
-                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: selected
+                          ? const [Skin.ribbonTop, Skin.goldBottom]
+                          : const [Skin.navyPanelTop, Skin.skyDeep],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: glow != null ? Skin.goldBottom : (selected ? Skin.primaryBottom : Colors.white),
-                      width: glow != null ? 3 : 2.5,
+                      color: glow != null ? Skin.goldBottom : Skin.outline,
+                      width: glow != null ? 3 : Skin.outlineWidth,
                     ),
                     boxShadow: switch (glow) {
                       null => Skin.shadow,
@@ -192,7 +209,7 @@ class _DockIcon extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 1),
-              Text(label, maxLines: 1, style: Skin.text(12, color: selected ? Skin.primaryEdge : Skin.ink)),
+              OutlineText(label, size: 14),
             ],
           ),
         ),

@@ -18,7 +18,8 @@ class PixelSprite extends StatelessWidget {
     final side = dots * pixelUnit(context) * scale;
     // HD 아이콘(디자인 개편 ②): 한 장·정사각, 부드럽게 줄인다(도트처럼 최근접 확대하지 않음). 화면 배율 그림은 Flutter가 고른다.
     if (asset.startsWith(UiSprites.hdDir)) {
-      return Image.asset(asset, width: side, height: side);
+      // fit이 없으면 원본(1x 32px)보다 크게 그리지 않는다(scaleDown) — 도크처럼 큰 칸에서 작아 보이던 것(S4).
+      return Image.asset(asset, width: side, height: side, fit: BoxFit.contain);
     }
     final image = Image.asset(
       asset,

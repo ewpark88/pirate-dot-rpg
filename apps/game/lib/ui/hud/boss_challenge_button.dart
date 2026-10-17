@@ -131,7 +131,7 @@ class _BossChallengeButtonState extends ConsumerState<BossChallengeButton> {
                               child: Text(
                                 l10n.uiBossChallengeShort,
                                 maxLines: 1,
-                                style: Skin.text(14, color: Colors.white, weight: FontWeight.bold),
+                                style: Skin.outlined(14),
                               ),
                             ),
                           ),

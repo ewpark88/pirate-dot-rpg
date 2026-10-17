@@ -83,7 +83,7 @@ class BossCompare extends ConsumerWidget {
               l10n.uiBossCompare(v.killSec, v.hitPct),
               key: const Key('boss.compare'),
               maxLines: 1,
-              style: Skin.text(13, color: Colors.white),
+              style: Skin.outlined(13),
             ),
           ),
         ),

@@ -11,6 +11,7 @@ import 'package:pirate_dot/ui/pixel/pixel_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_icon_button.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/skin/ribbon.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/build_counter.dart';
@@ -103,7 +104,7 @@ class _Quests extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.uiQuestTitle, style: Theme.of(context).textTheme.titleMedium),
+        SubRibbon(l10n.uiQuestTitle),
         for (final q in quests)
           // 퀘스트 한 줄: 체크 · 이름/진행 · 받기 (ListTile 대신).
           Padding(
@@ -186,7 +187,7 @@ class _Attendance extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.uiAttendanceTitle, style: Theme.of(context).textTheme.titleMedium),
+        SubRibbon(l10n.uiAttendanceTitle),
         const SizedBox(height: 8),
         // 두 줄 (스킨 r2 다듬기): 1~4일 · 5~6일 + 7일(두 칸 폭, 큰 보상). 좁은 폰에서도 글이 한 줄에 들어간다.
         for (final row in _rows(view.rewards.length)) ...[

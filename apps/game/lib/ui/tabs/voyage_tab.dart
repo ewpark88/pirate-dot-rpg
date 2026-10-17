@@ -6,6 +6,7 @@ import 'package:pirate_dot/ui/ads/ad_buttons.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/bounty/bounty_card.dart';
 import 'package:pirate_dot/ui/dex/monster_dex.dart';
+import 'package:pirate_dot/ui/hud/boss_traits.dart';
 import 'package:pirate_dot/ui/hud/boss_weakness.dart';
 import 'package:pirate_dot/ui/meta/rebirth.dart';
 import 'package:pirate_dot/ui/pixel/palette.dart';
@@ -104,9 +105,10 @@ class _RegionCard extends ConsumerWidget {
               spacing: 8,
               children: [
                 Text(tableText(l10n, boss.nameKey), style: const TextStyle(fontWeight: FontWeight.bold)),
-                if (boss.weakFamilies.isNotEmpty) WeakChips(boss: boss),
+                if (bossCounters(boss).isNotEmpty) WeakChips(boss: boss),
               ],
             ),
+            BossTraitLine(boss: boss, tables: ref.read(tablesProvider), color: Skin.ink),
             Text(l10n.uiNextRegion(tableText(l10n, next.nameKey)), style: Theme.of(context).textTheme.bodySmall),
             Text(l10n.uiBestStage(best), style: const TextStyle(color: PixelPalette.textDim)),
           ],

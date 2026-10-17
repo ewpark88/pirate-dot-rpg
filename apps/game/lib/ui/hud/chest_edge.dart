@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/ui/ads/ad_providers.dart';
 import 'package:pirate_dot/ui/meta/meta_providers.dart';
+import 'package:pirate_dot/ui/pixel/pixel_dialog.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
@@ -54,8 +55,8 @@ void showChestChoices(BuildContext context) {
     return;
   }
   unawaited(
-    showDialog<void>(
-      context: context,
+    showSkinDialog<void>(
+      context,
       barrierColor: const Color(0x66000000),
       builder: (_) => const ChestChoicesSheet(),
     ),
@@ -116,11 +117,11 @@ class ChestChoicesSheet extends ConsumerWidget {
     );
     return Dialog(
       backgroundColor: Skin.card,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: popupInset,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ConstrainedBox(
         key: const Key('chest.sheet'),
-        constraints: const BoxConstraints(maxWidth: 340),
+        constraints: popupConstraints(context),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           child: Column(
