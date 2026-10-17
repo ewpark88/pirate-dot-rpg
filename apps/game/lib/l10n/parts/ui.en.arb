@@ -2032,5 +2032,31 @@
         "type": "String"
       }
     }
+  },
+  "uiNewRecord": "NEW RECORD!",
+  "uiSceneSoClose": "So close! Try a weak-spot lineup next",
+  "uiTowerFloorBig": "Floor {n}",
+  "@uiTowerFloorBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPrevRecord": "Previous {v}",
+  "@uiPrevRecord": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonStepBig": "Step {n}",
+  "@uiDungeonStepBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

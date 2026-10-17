@@ -2032,5 +2032,31 @@
         "type": "String"
       }
     }
+  },
+  "uiNewRecord": "NEW RECORD!",
+  "uiSceneSoClose": "아깝다! 다음엔 약점 편성으로",
+  "uiTowerFloorBig": "{n}층",
+  "@uiTowerFloorBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "uiPrevRecord": "이전 기록 {v}",
+  "@uiPrevRecord": {
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "uiDungeonStepBig": "{n}단계",
+  "@uiDungeonStepBig": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }
