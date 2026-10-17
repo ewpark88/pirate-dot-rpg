@@ -25,7 +25,7 @@ void main() {
       ..enqueue(const OpSetInvincible(on: true))
       ..enqueue(const OpJumpStage(37));
     var fever = false;
-    var prev = 0;
+    var prev = <int>{};
     List<EnemyView>? ring;
     double? sx;
     double? sy;
@@ -36,12 +36,15 @@ void main() {
       final mobs = v.enemies.where((m) => !m.boss).toList();
       if (fever &&
           v.feverTicksLeft > 0 &&
-          mobs.length - prev >= t.meta.raw.obj('fever').obj('swarm').integer('max') ~/ 4) {
-        ring = mobs;
+          mobs.where((m) => !prev.contains(m.id)).length >= t.meta.raw.obj('fever').obj('swarm').integer('max') ~/ 4) {
+        ring = [
+          for (final m in mobs)
+            if (!prev.contains(m.id)) m,
+        ]; // 이번 틱에 나온 고리만(남은 평소 무리는 뺌)
         sx = v.shipX ?? top.number('shipX');
         sy = v.shipY ?? top.number('shipY');
       }
-      prev = mobs.length;
+      prev = {for (final m in mobs) m.id};
     }
     expect(ring, isNotNull, reason: '피버 중 고리 파가 나왔다');
     final halfDiag = math.sqrt(math.pow(top.number('viewWidth') / 2, 2) + math.pow(top.number('viewHeight') / 2, 2));

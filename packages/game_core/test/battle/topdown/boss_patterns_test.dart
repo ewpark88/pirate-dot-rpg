@@ -157,6 +157,20 @@ void main() {
         }
       }
       raw['meta'] = jsonEncode(meta);
+      // 무리 밀도는 옛 값으로 고정 — 이 시험은 바다 괴물 패턴만 본다(빽빽한 무리가 배를 둘러싸면 '붙기'가 막힌다).
+      final waves = jsonDecode(raw['waves']!) as Map<String, dynamic>;
+      final top = waves['top'] as Map<String, dynamic>;
+      (top['mobCount'] as Map<String, dynamic>)
+        ..['base'] = 32
+        ..['earlyExtra'] = 12;
+      top
+        ..remove('horde') // 대군 습격 끔
+        ..['spawnFromView'] = false
+        ..['scatterSpanSec'] = 0;
+      (top['nearSpawn'] as Map<String, dynamic>)['ratio'] = 0.15;
+      top['refill'] = {'belowRatio': 0, 'min': 0}; // 보충 파 끔
+      waves['travelSec'] = 1.5;
+      raw['waves'] = jsonEncode(waves);
       return GameTables.load(raw);
     }
 

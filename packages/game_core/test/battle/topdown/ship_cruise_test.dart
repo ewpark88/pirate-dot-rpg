@@ -42,15 +42,49 @@ void main() {
   final path = sail(180); // 보스 4번·피버 2번이 낀다
   final dash = c.number('speed') * c.number('dashSpeedMul') * c.number('feverSpeedMul');
 
-  test('파밍 중 배가 바다를 돌아다니고(가로 80 이상), rect 밖으로 나가지 않는다', () {
-    final free = path.where((p) => !p.boss).toList();
-    final xs = free.map((p) => p.x);
-    expect(xs.reduce(math.max) - xs.reduce(math.min), greaterThan(80));
+  test('feverOnly: 피버 중에만 돌아다니고(가로 40 이상), 평소엔 제자리 0 — 피버가 끝나면 몇 초 안에 감속하며 0으로', () {
+    expect(c.raw['feverOnly'], isTrue);
+    final fever = path.where((p) => p.fever && !p.boss).toList();
+    expect(fever, isNotEmpty);
+    final xs = fever.map((p) => p.x);
+    expect(xs.reduce(math.max) - xs.reduce(math.min), greaterThan(40));
     final r = c.obj('rect');
-    for (final p in free) {
+    for (final p in fever) {
       expect(p.x.abs(), lessThanOrEqualTo(r.number('x') + 1e-6));
       expect(p.y, inInclusiveRange(-r.number('up') - 1e-6, r.number('down') + 1e-6));
     }
+    // 평소(피버·보스 아님): 피버·보스전이 끝난 뒤 복귀 몇 초를 빼면 정확히 제자리.
+    final settle = (4 / dt).round(); // 복귀 여유 4초
+    var sinceFever = settle;
+    var resting = 0;
+    for (final p in path) {
+      sinceFever = p.fever || p.boss ? 0 : sinceFever + 1; // 보스전 뒤 복귀는 결투 비켜서기(예전 동작)
+      if (p.boss || p.fever || sinceFever < settle) continue;
+      resting++;
+      expect((p.x, p.y), (0, 0), reason: '평소는 제자리');
+    }
+    expect(resting, greaterThan(0));
+    var after = 0;
+    for (var i = 1; i < path.length; i++) {
+      if (path[i - 1].fever && !path[i].fever && !path[i].boss) {
+        // 피버 끝: settle 안에 (보스가 끼지 않으면) 0에 닿는다
+        var j = i;
+        while (j < path.length && j < i + settle && !path[j].boss && (path[j].x != 0 || path[j].y != 0)) {
+          j++;
+        }
+        if (j < path.length && !path[j].boss) {
+          expect(path[j].x, 0, reason: '피버 끝 $i → $j');
+          after++;
+        }
+      }
+    }
+    expect(after, greaterThan(0), reason: '피버 끝 복귀를 한 번은 봤다');
+  });
+
+  test('평소 파밍(피버 전 첫 무리): 배는 정확히 0, 머리 0 — 순항 전과 같은 화면', () {
+    final calm = path.takeWhile((p) => !p.fever && !p.boss).toList();
+    expect(calm.length, greaterThan(20));
+    expect(calm.every((p) => p.x == 0 && p.y == 0 && p.h == 0), isTrue);
   });
 
   test('속력 상한(돌진 × 피버까지)·순간이동 없음(보스 처치 → 다음 스테이지에도 자리 이어 받음)', () {
@@ -63,40 +97,25 @@ void main() {
     expect(fastest, greaterThan(c.number('speed') * 1.2), reason: '돌진이 한 번은 있다');
   });
 
-  test('큰 호: 움직이는 동안 진행 방향은 초당 turnDegPerSec까지만 꺾이고, 머리는 ±maxTiltDeg', () {
-    final turn = c.number('turnDegPerSec') * math.pi / 180;
-    final r = c.obj('rect');
-    // 벽(rect)에 닿아 멈췄다 떠나는 틱은 뺀다(벽 앞에선 속력만 줄여 멈춘다).
-    bool wall(({double x, double y, double h, bool boss, bool fever}) p) =>
-        p.x.abs() >= r.number('x') - 2 || p.y <= -r.number('up') + 2 || p.y >= r.number('down') - 2;
+  test('일직선(mode line): 보스전이 아니면 머리는 늘 0(회전 없음), 진행 방향이 꺾이는 틱은 다리 끝뿐(움직인 틱의 10% 미만)', () {
+    expect(c.raw['mode'], 'line');
+    var moving = 0;
+    var bends = 0;
     for (var i = 2; i < path.length; i++) {
       final a = path[i - 2];
       final b = path[i - 1];
       final d = path[i];
-      if (a.boss || b.boss || d.boss || wall(a) || wall(b) || wall(d)) continue;
+      if (a.boss || b.boss || d.boss) continue;
+      expect(d.h, 0, reason: 'tick $i 머리');
       final v1 = (x: b.x - a.x, y: b.y - a.y);
       final v2 = (x: d.x - b.x, y: d.y - b.y);
-      final s1 = math.sqrt(v1.x * v1.x + v1.y * v1.y) / dt;
-      final s2 = math.sqrt(v2.x * v2.x + v2.y * v2.y) / dt;
-      if (s1 < 10 || s2 < 10) continue; // 거의 멈춤
+      if (v1.x == 0 && v1.y == 0 || v2.x == 0 && v2.y == 0) continue;
+      moving++;
       var da = math.atan2(v2.y, v2.x) - math.atan2(v1.y, v1.x);
       da = math.atan2(math.sin(da), math.cos(da));
-      expect(da.abs(), lessThanOrEqualTo(turn * dt + 1e-3), reason: 'tick $i');
+      if (da.abs() > 1e-6) bends++;
     }
-    final tilt = c.number('maxTiltDeg') * math.pi / 180;
-    expect(path.where((p) => !p.boss).every((p) => p.h.abs() <= tilt + 1e-6), isTrue);
-  });
-
-  test('피버 때 더 빠르다', () {
-    double avg({required bool fever}) {
-      final ps = [
-        for (var i = 1; i < path.length; i++)
-          if (!path[i].boss && !path[i - 1].boss && path[i].fever == fever)
-            math.sqrt(math.pow(path[i].x - path[i - 1].x, 2) + math.pow(path[i].y - path[i - 1].y, 2)) / dt,
-      ];
-      return ps.reduce((a, b) => a + b) / ps.length;
-    }
-
-    expect(avg(fever: true), greaterThan(avg(fever: false)));
+    expect(moving, greaterThan(50));
+    expect(bends / moving, lessThan(0.1), reason: '$bends / $moving');
   });
 }

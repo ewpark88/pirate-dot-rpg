@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:game_data/game_data.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
-import 'package:pirate_dot/ui/hud/boss_traits.dart';
+import 'package:pirate_dot/ui/hud/captain_skill_button.dart' show captainSkillReady;
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/table_text.dart';
 import 'package:pirate_dot/ui/tutorial/tutorial.dart';
 
 // 가이드 v3 (S1 승인 2026-10-17, 스토리보드 docs/specs/ui-guide-v3/): 옥토 선장이 말풍선으로 한 마디씩 — 짧은 해요체 대화.
@@ -30,6 +29,7 @@ const guideIds = [
   'guide.collect',
   'guide.shipSkin',
   'guide.scenes', 'guide.pass', // 탑·러시·던전 열림 · 패스 첫 단계
+  'guide.ult', // 선장 필살기 게이지가 처음 가득
 ];
 
 /// 예전 말풍선의 본 기록 → 같은 안내로 본다(옛 세이브에서 다시 뜨지 않게).
@@ -53,10 +53,11 @@ const guideSpots = {
   'guide.shipSkin': ['tab.ship', 'ship.skin'],
   'guide.scenes': ['tab.voyage', 'tower.card'],
   'guide.pass': ['tab.voyage', 'pass.card'],
+  'guide.ult': ['captain.skill'],
 };
 
 /// 전투 중에 뜨는 안내 — 어둡게 하지 않고 손가락 없이 말만, 3초 뒤 초상만 남게 접힌다. 그 상황이 끝나면 닫힌다.
-const battleGuideIds = {'guide.boss', 'guide.bossTrait', 'guide.fever'};
+const battleGuideIds = {'guide.boss', 'guide.bossTrait', 'guide.fever', 'guide.ult'};
 
 /// '안내 다시 보기'(ClearHints 접두어).
 const guideHintPrefix = 'guide.';
@@ -68,7 +69,7 @@ List<String> activeGuides(GameState s, GameTables t) {
   return [
     if (p.sailHold) 'guide.sail',
     if (b?.bossActive ?? false) 'guide.boss',
-    if (_traitBoss(s, t) != null) 'guide.bossTrait',
+    if (traitBoss(s, t) != null) 'guide.bossTrait',
     if ((b?.feverTicksLeft ?? 0) > 0) 'guide.fever',
     if (b?.chest != null) 'guide.chest',
     if (p.farming && !(b?.bossActive ?? false)) 'guide.bossRetry',
@@ -82,26 +83,17 @@ List<String> activeGuides(GameState s, GameTables t) {
     if (s.ship.skinsOwned.isNotEmpty) 'guide.shipSkin',
     if (s.tower != null) 'guide.scenes', // 탑·러시·던전은 함께 열린다(환생 1 또는 스테이지 60)
     if (passLevel(s, t) > 0) 'guide.pass',
+    if (captainSkillReady(s)) 'guide.ult',
   ];
 }
 
 /// 지금 싸우는 보스가 특성 보스면 그 보스 (보스 특성 #25 — 처음 만날 때 옥토 한 마디).
-BossDef? _traitBoss(GameState s, GameTables t) {
+BossDef? traitBoss(GameState s, GameTables t) {
   final b = s.battle;
   if (b == null || !b.bossActive) return null;
   final kind = b.enemies.where((e) => e.boss).firstOrNull?.kind;
   final def = kind == null ? null : t.regions.bosses[kind];
   return def != null && def.traits.isNotEmpty ? def : null;
-}
-
-/// 특성 보스 한 마디 ('이 보스는 회피 25%! 투척·집속 선원이 잘 통해요.'). 특성 보스가 아니면 null.
-String? bossTraitTalk(AppLocalizations l, WidgetRef ref) {
-  final t = ref.watch(tablesProvider);
-  final kind = ref.watch(gameStateProvider.select((s) => _traitBoss(s, t)?.id));
-  final def = kind == null ? null : t.regions.bosses[kind];
-  if (def == null) return null;
-  final counters = def.counterFamilies.take(3).map((f) => tableText(l, t.skills.byId(f).nameKey)).join('·');
-  return l.uiTalkBossTrait(def.traits.map((tr) => traitName(l, tr)).join(' · '), counters);
 }
 
 bool _rebirthReady(GameState s, GameTables t) {
@@ -244,6 +236,7 @@ GuideTalk? guideTalkFor(AppLocalizations l, {required GuideScene scene, int? ste
     'guide.shipSkin' => l.uiTalkShipSkin,
     'guide.scenes' => l.uiTalkScenes,
     'guide.pass' => l.uiTalkPass,
+    'guide.ult' => l.uiTalkUlt,
     'guide.fever' => l.uiTalkFever,
     'guide.chest' => l.uiTalkChest,
     'guide.bossRetry' => l.uiTalkBossRetry,

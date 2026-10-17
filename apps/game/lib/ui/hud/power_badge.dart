@@ -66,20 +66,40 @@ class _PowerBadgeState extends ConsumerState<PowerBadge> {
         children: [
           SkinIcon(UiSprites.part('cannon'), size: 16),
           const SizedBox(width: 3),
-          RollingText(
-            power.format(),
-            textKey: const Key('hud.power.value'),
-            style: Skin.outlined(15),
-            duration: powerRollFor,
+          // 숫자 위로 '+1.07K'가 떠오르며 사라진다(S1 실기기 2026-10-18 — 옆에 붙으면 숫자와 뭉쳐 보였다).
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              RollingText(
+                power.format(),
+                textKey: const Key('hud.power.value'),
+                style: Skin.outlined(15),
+                duration: powerRollFor,
+              ),
+              if (_gain case final g?)
+                Positioned(
+                  left: 0,
+                  bottom: 12,
+                  child: IgnorePointer(
+                    child: TweenAnimationBuilder<double>(
+                      key: ValueKey(g),
+                      tween: Tween(begin: 0, end: 1),
+                      duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : powerGainFor,
+                      builder: (_, t, child) => Transform.translate(
+                        offset: Offset(0, -12 * t),
+                        child: Opacity(opacity: (1 - t * t).clamp(0, 1).toDouble(), child: child),
+                      ),
+                      child: Text(
+                        g,
+                        key: const Key('hud.power.gain'),
+                        softWrap: false,
+                        style: Skin.outlined(12, color: const Color(0xFF8CF5B8)),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          if (_gain case final g?) ...[
-            const SizedBox(width: 3),
-            Text(
-              g,
-              key: const Key('hud.power.gain'),
-              style: Skin.outlined(13, color: const Color(0xFF8CF5B8)),
-            ),
-          ],
         ],
       ),
     );

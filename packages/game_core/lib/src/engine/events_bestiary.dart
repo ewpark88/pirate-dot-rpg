@@ -30,6 +30,7 @@ GameEvent _bestiaryEventFromJson(int t, Json j) => switch (j['type'] as String) 
     trait: j['trait'] as String,
     ticks: j['ticks'] as int? ?? 0,
   ),
+  'hordeIncoming' => HordeIncoming(t, stage: j['stage'] as int, count: j['count'] as int),
   'bossBroken' => BossBroken(
     t,
     enemyId: j['enemyId'] as int,
@@ -124,6 +125,21 @@ class BomberBlast extends GameEvent {
 
   @override
   Json _fields() => {'enemyId': enemyId, 'x': x, 'y': y, 'radius': radius, 'onShip': onShip};
+}
+
+/// 대군 습격(사용자 2026-10-17 '스테이지를 넘어갈 때마다 많이 몰려들게'): 스테이지 첫 파로 [count]마리가 사방에서 한꺼번에
+/// 온다(waves.top.horde). 렌더·UI는 배너('대군 습격!')·화면 흔들림 등으로 알린다.
+class HordeIncoming extends GameEvent {
+  const HordeIncoming(super.tick, {required this.stage, required this.count});
+
+  final int stage;
+  final int count;
+
+  @override
+  String get type => 'hordeIncoming';
+
+  @override
+  Json _fields() => {'stage': stage, 'count': count};
 }
 
 /// 보스 브레이크(사용자 결정 2026-10-17): 게이지가 가득 차 보스가 [ticks] 동안 쓰러졌다 — 그동안 받는 피해 × damageMul.

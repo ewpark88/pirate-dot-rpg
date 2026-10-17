@@ -98,7 +98,8 @@ abstract final class Skin {
 
   // ── 글꼴 ── Jua(OFL) + Jua에 없는 기호(· × → … 등)는 Gowun Dodum 서브셋(OFL).
   static const font = 'Jua';
-  static const fontFallback = ['GowunDodumSymbols'];
+  // Jua에 없는 기호: GowunDodumSymbols, 그래도 없는 '₩'(스토어 가격 글) 등은 Galmuri11(S1 2026-10-18).
+  static const fontFallback = ['GowunDodumSymbols', 'Galmuri11'];
 
   /// 본문 16, 작은 설명 14, 제목 20, 큰 숫자 22+.
   static TextStyle text(double size, {Color color = ink, FontWeight weight = FontWeight.normal}) => TextStyle(

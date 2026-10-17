@@ -66,13 +66,13 @@ void main() {
     }
   });
 
-  test('#2 피버 필요 처치: 스테이지 1 = 200, 점점 늘어 스테이지 40부터 1000', () {
-    expect(feverKillsAt(t, 1), 200);
+  test('#2 피버 필요 처치: 스테이지 1 = 260, 점점 늘어 스테이지 40부터 1300(200 → 1000 × 1.3 — 2026-10-17 사용자 변경, 몬스터 ×1.3에 맞춤)', () {
+    expect(feverKillsAt(t, 1), 260);
     for (var s = 2; s <= 40; s++) {
       expect(feverKillsAt(t, s), greaterThanOrEqualTo(feverKillsAt(t, s - 1)), reason: 'stage $s');
     }
-    expect(feverKillsAt(t, 40), 1000);
-    expect(feverKillsAt(t, 500), 1000);
+    expect(feverKillsAt(t, 40), 1300);
+    expect(feverKillsAt(t, 500), 1300);
   });
 
   test('#8 첫 배 외형 변화는 1분 안', () {
@@ -81,8 +81,8 @@ void main() {
     }
   });
 
-  test('#4 초반 핵앤슬래시: 스테이지 1 무리 60마리, 덤은 스테이지 20까지 줄어든다', () {
-    expect(t.waves.topMobCountAt(1), 60);
+  test('#4 초반 핵앤슬래시: 스테이지 1 무리 78마리(60 × 1.3 — 사용자 지시 몬스터 1.3배, 2026-10-17), 덤은 스테이지 20까지 줄어든다', () {
+    expect(t.waves.topMobCountAt(1), 78);
     expect(t.waves.topMobCountAt(1), greaterThan(t.waves.topMobCountAt(20)));
   });
 

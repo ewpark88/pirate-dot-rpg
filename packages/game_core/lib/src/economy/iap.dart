@@ -118,6 +118,14 @@ GameState claimGemSub(GameState s, SystemContext ctx) {
   );
 }
 
+/// 유료 2배속 중 적 HP 배율(공격은 그 역수): 화면은 speedMultiplier배로 빠르지만 실제 시간당 처치·골드·위험은
+/// speedProgressMul배(사용자 결정 2026-10-17). 순풍(광고 2배속 — 진행도 2배)이 켜져 있으면 1.
+double purchasedSpeedHpMul(GameState s, GameTables t, DateTime now) {
+  final tail = s.buffs.tailwindUntil;
+  if (purchasedSpeed(s, t, now) == null || (tail != null && tail.isAfter(now))) return 1;
+  return t.iap.speedMultiplier / t.iap.speedProgressMul;
+}
+
 /// 2배속 권리가 켜져 있으면 배속(iap.speedMultiplier), 아니면 null.
 int? purchasedSpeed(GameState s, GameTables t, DateTime now) =>
     entitlementActive(s, 'speed', now) ? t.iap.speedMultiplier : null;
