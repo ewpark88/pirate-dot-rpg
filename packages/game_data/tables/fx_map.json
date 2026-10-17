@@ -1164,7 +1164,12 @@
       "lava": {"stripe": ["#FF6A20"], "hull": ["#2A2426", "#1A1416", "#4A4044", "#5E5256", "#3A3034"], "sail": ["#3A2A26", "#261A18", "#5A4038"], "flag": ["#FF7A2A"], "speckle": [{"on": "hull", "color": "#FF8A2A", "every": 5}, {"on": "sail", "color": "#FFB040", "every": 11}], "wake": "#FFB060", "muzzle": "#FF6A20"},
       "fairy": {"stripe": ["#FFE27A"], "hull": ["#E07A9A", "#B85A7A", "#FFD0DC", "#FFE2EA", "#F0A8BC"], "sail": ["#C8F4FF", "#9ADCF0", "#F0FCFF"], "flag": ["#FFE27A"], "speckle": [{"on": "sail", "color": "#FF9ACF", "every": 8}], "wake": "#FFC8E6", "muzzle": "#FF9ACF"},
       "festival": {"stripe": ["#FFFFFF"], "hull": ["#3A5CC8", "#2A44A0", "#F4E6C8", "#FFF2DC", "#D8C8A8"], "sail": ["#F0E8D2", "#CEC2A4", "#FCF8EC"], "flag": ["#FF5A5A"], "rainbowSail": true, "wake": "rainbow", "muzzle": "rainbow"},
-      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"}
+      "abyss": {"stripe": ["#3AF0FF"], "hull": ["#1A2A44", "#101C30", "#2E4A6A", "#3A5A7E", "#223A56"], "sail": ["#24405E", "#162C44", "#3A6488"], "flag": ["#3AF0FF"], "speckle": [{"on": "hull", "color": "#6AF8FF", "every": 9}], "glow": true, "wake": "#6AF0FF", "muzzle": "#3AF0FF"},
+      "pass_s1": {"stripe": ["#FFD45A"], "hull": ["#4A3A9A", "#2A1E5A", "#C8B8F0", "#E0D8FF", "#8A7AD0"], "sail": ["#B8A8FF", "#7A68D8", "#E8E0FF"], "flag": ["#FFD45A"], "speckle": [{"on": "sail", "color": "#FFE89A", "every": 10}], "wake": "#C8B8FF", "muzzle": "#B45AFF"},
+      "sprout": {"stripe": ["#FF8AB0"], "hull": ["#6AB84A", "#3A7A2A", "#D8F0B8", "#EAF8D8", "#9AD07A"], "sail": ["#F4FFE8", "#C8E8A8", "#FFFFFF"], "flag": ["#FF8AB0"], "wake": "#C8FFB0", "muzzle": "#8AE85A"},
+      "golden_galleon": {"stripe": ["#FFFFFF"], "hull": ["#E8B830", "#A87410", "#FFF0A8", "#FFF8D0", "#F0D060"], "sail": ["#FFFAE8", "#F0D890", "#FFFFFF"], "flag": ["#E83A3A"], "speckle": [{"on": "hull", "color": "#FFFFFF", "every": 11}], "glow": true, "wake": "#FFE07A", "muzzle": "#FFD45A"},
+      "jolly_flag": {"stripe": ["#E83A3A"], "hull": ["#3A2A30", "#1A1018", "#8A7A80", "#A89AA0", "#5A4A50"], "sail": ["#3A3440", "#1E1A24", "#5A5460"], "flag": ["#1B1726"], "wake": "#FF6A6A", "muzzle": "#FF3A3A"},
+      "coral_yacht": {"stripe": ["#5AD8E8"], "hull": ["#FFF4F0", "#E8B0A8", "#FFFFFF", "#FFFFFF", "#FFD8D0"], "sail": ["#FF8A7A", "#E05A4A", "#FFC8B8"], "flag": ["#5AD8E8"], "speckle": [{"on": "sail", "color": "#FFFFFF", "every": 12}], "wake": "#FFC8D0", "muzzle": "#FF8A7A"}
     }
   },
   "topSea": {
