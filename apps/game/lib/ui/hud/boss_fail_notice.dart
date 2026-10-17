@@ -5,20 +5,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
-import 'package:pirate_dot/ui/dock/quick_upgrade.dart';
+import 'package:pirate_dot/ui/dock/dock_request.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_button.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
-import 'package:pirate_dot/ui/text/table_text.dart';
 
 /// 안내가 저절로 사라지는 시간 — 처음(자세히)은 길게, 이후(짧게)는 짧게 (피로 원칙).
 const _firstShow = Duration(seconds: 8);
 const _laterShow = Duration(seconds: 4);
 
 /// 보스 실패 직후 짧은 안내 (사용자 질문 "지는 판단이 뭐냐" → 규칙을 보인다).
-/// 처음: '보스를 놓쳤어요' + 규칙 한 줄 + [추천 부품 바로 강화] [보스 도전]. 이후: 한 줄 + [보스 도전].
+/// 처음: '보스를 놓쳤어요' + '배를 강화하거나 선원 레벨을 올린 뒤 다시 도전' + [배 강화] [선원] 바로 가기 + [보스 도전].
+/// 이후: 한 줄 + 같은 세 버튼(작게).
 /// 보스에 다시 도전하거나(파밍 끝) 시간이 지나면 사라진다. 전장 위쪽에 얹고 빈 곳은 눌림을 통과시킨다.
 class BossFailNotice extends ConsumerStatefulWidget {
   const BossFailNotice({super.key});
@@ -89,8 +89,19 @@ class _Card extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final tables = ref.watch(tablesProvider);
-    final part = ref.watch(quickUpgradeProvider);
+    // 바로 가기: 그 탭 시트를 열고 안내는 닫는다(사용자 피드백 #1 '어떻게 하면 이기는지 + 바로 가기').
+    Widget go(String key, String label, int tab, SkinTone tone) => Expanded(
+      child: SkinButton(
+        key: Key(key),
+        tone: tone,
+        height: 44,
+        onPressed: () {
+          ref.read(dockTabRequestProvider.notifier).open(tab);
+          onClose();
+        },
+        child: FittedBox(fit: BoxFit.scaleDown, child: Text(label, maxLines: 1)),
+      ),
+    );
     final challenge = SkinButton(
       key: const Key('bossFail.challenge'),
       height: 44,
@@ -98,15 +109,17 @@ class _Card extends ConsumerWidget {
         ref.read(commandSinkProvider).send(const ChallengeBoss());
         onClose();
       },
-      child: Text(l10n.uiBossChallenge),
+      child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.uiBossChallenge, maxLines: 1)),
     );
+    final ship = go('bossFail.ship', l10n.uiBossFailShip, shipTabIndex, SkinTone.gold);
+    final crew = go('bossFail.crew', l10n.uiBossFailCrew, crewTabIndex, SkinTone.gold);
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 0),
       child: Align(
         alignment: Alignment.centerLeft,
-        // 전폭으로 펴지 않는다(전장 가리기 금지, 사용자 지시 2026-10-16) — 왼쪽 위 작은 판.
+        // 전폭으로 펴지 않는다(전장 가리기 금지, 사용자 지시 2026-10-16) — 왼쪽 위 판.
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 300),
+          constraints: const BoxConstraints(maxWidth: 340),
           child: Container(
             key: Key(detailed ? 'bossFail.detailed' : 'bossFail.short'),
             padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
@@ -116,64 +129,45 @@ class _Card extends ConsumerWidget {
               border: Border.all(color: Skin.danger, width: 2),
               boxShadow: Skin.shadow,
             ),
-            child: detailed
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const SkinIcon(UiSprites.flag, size: 22),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        detailed ? l10n.uiBossFailTitle : l10n.uiBossFailShort,
+                        style: Skin.text(detailed ? 18 : 16),
+                      ),
+                    ),
+                    _CloseX(onTap: onClose),
+                  ],
+                ),
+                // 처음: 왜 졌는지 + 무엇을 하면 되는지 (큰 글씨 한 문단).
+                if (detailed) ...[
+                  const SizedBox(height: 4),
+                  Text(l10n.uiBossFailRule, style: Skin.text(15, color: Skin.sub)),
+                ],
+                const SizedBox(height: 8),
+                if (detailed) ...[
+                  Row(children: [ship, const SizedBox(width: 8), crew]),
+                  const SizedBox(height: 8),
+                  SizedBox(width: double.infinity, child: challenge),
+                ] else
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          const SkinIcon(UiSprites.flag, size: 22),
-                          const SizedBox(width: 6),
-                          Expanded(child: Text(l10n.uiBossFailTitle, style: Skin.text(18))),
-                          _CloseX(onTap: onClose),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(l10n.uiBossFailRule, style: Skin.text(14, color: Skin.sub)),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          if (part != null) ...[
-                            Expanded(
-                              child: SkinButton(
-                                key: const Key('bossFail.upgrade'),
-                                tone: SkinTone.gold,
-                                height: 44,
-                                onPressed: () => ref.read(commandSinkProvider).send(UpgradePart(part)),
-                                child: Text(
-                                  l10n.uiBossFailUpgrade(tableText(l10n, tables.shipParts.byId(part).nameKey)),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          Expanded(child: challenge),
-                        ],
-                      ),
-                    ],
-                  )
-                : Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SkinIcon(UiSprites.flag, size: 20),
-                          const SizedBox(width: 6),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 160),
-                            child: Text(l10n.uiBossFailShort, style: Skin.text(14)),
-                          ),
-                        ],
-                      ),
-                      challenge,
+                      ship,
+                      const SizedBox(width: 6),
+                      crew,
+                      const SizedBox(width: 6),
+                      Expanded(child: challenge),
                     ],
                   ),
+              ],
+            ),
           ),
         ),
       ),

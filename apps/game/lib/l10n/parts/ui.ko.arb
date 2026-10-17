@@ -215,9 +215,8 @@
   "uiShopFxSlots": "+{n}칸",
   "uiShopFxPercent": "+{n}%",
   "uiBossFailTitle": "보스를 놓쳤어요",
-  "uiBossFailRule": "보스는 제한 시간 안에 쓰러뜨려야 해요. 지금은 이 스테이지에서 골드를 모으는 중 — 배를 강화하고 다시 도전해요!",
+  "uiBossFailRule": "배를 강화하거나 선원 레벨을 올린 뒤 다시 보스에 도전하세요. 그동안 이 스테이지에서 골드를 모아요.",
   "uiBossFailShort": "보스를 놓쳤어요 — 강화하고 다시 도전!",
-  "uiBossFailUpgrade": "{part} 강화",
   "uiFarmingRetry": "파밍 중 · 보스 재도전 가능",
   "uiPower": "초당 공격력",
   "uiGaugeStage": "{stage}-{wave}",
@@ -490,5 +489,7 @@
         "type": "int"
       }
     }
-  }
+  },
+  "uiBossFailShip": "배 강화",
+  "uiBossFailCrew": "선원 레벨업"
 }
