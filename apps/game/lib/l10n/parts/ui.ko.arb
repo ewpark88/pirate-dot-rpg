@@ -1995,8 +1995,7 @@
   "uiHelpUltimate": "선장 필살기",
   "uiHelpUltimateBody": "싸우면 필살기 게이지가 차요. 가득 차면 오른쪽 아래 버튼으로 화면 전체를 쓸어 버려요.",
   "uiHelpFever": "피버",
-<<<<<<< HEAD
-  "uiHelpFeverBody": "적을 잡으면 피버 게이지가 차요. 가득 차면 잠깐 동안 공격이 세지고 적이 우르르 몰려와요.",
+  "uiHelpFeverBody": "적을 잡으면 피버 게이지가 차요. 가득 차면 잠깐 동안 공격과 골드가 늘고 적이 우르르 몰려와요.",
   "uiBossDexAtFirst": "처음 등장 때: 체력 {hp} · 공격 {atk}",
   "@uiBossDexAtFirst": {
     "placeholders": {
@@ -2008,7 +2007,4 @@
       }
     }
   }
-=======
-  "uiHelpFeverBody": "적을 잡으면 피버 게이지가 차요. 가득 차면 잠깐 동안 공격과 골드가 늘고 적이 우르르 몰려와요."
->>>>>>> origin/main
 }
