@@ -15,6 +15,7 @@ import 'package:pirate_dot/render/top/top_fever_strike.dart';
 import 'package:pirate_dot/render/top/top_impact.dart';
 import 'package:pirate_dot/render/top/top_juice.dart';
 import 'package:pirate_dot/render/top/top_muzzle.dart';
+import 'package:pirate_dot/render/top/top_resupply.dart';
 import 'package:pirate_dot/render/top/top_shots.dart';
 import 'package:pirate_dot/render/top/top_slash.dart';
 
@@ -29,6 +30,9 @@ class TopHits {
 
   /// 보스 행동 v2 예고·동작.
   final boss = TopBossPattern();
+
+  /// 빠른 항해 보급 상자(ShipResupplied).
+  final resupply = TopResupply();
 
   /// 피버 첫 일격(UltimateCast).
   final feverStrike = TopFeverStrike();
@@ -246,6 +250,7 @@ class TopHits {
       ..paint(c, now, ship, shipR, view.shipShield, s.poses, s.poseCount, flash: flash);
     loot.paint(c, now, ship, sprites, flash: flash);
     feverStrike.paintWorld(c, now, lite: lite);
+    resupply.paint(c, now, ship);
   }
 
   /// 화면 좌표 덮개: 빠른 항해 띠·현상금 포스터·피버 첫 일격 컷인.
@@ -267,6 +272,7 @@ class TopHits {
     loot.clear();
     breaks.clear();
     feverStrike.clear();
+    resupply.clear();
     slash.clear();
     _emerges.clear();
     upgradeAt = -1000000000;

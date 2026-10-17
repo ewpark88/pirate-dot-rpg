@@ -53,6 +53,15 @@ bool funEvent(BattleScene s, GameEvent e) {
     case MultiKill(:final count) when s.isTop && count >= 5:
       if (s.settings.flash && s.screenFlashMs <= 0) s.screenFlashMs = 140;
       s.shake.trigger(s.juice.shake['aoe']!);
+    // 빠른 항해 보급: 오른 부위마다 낙하산 상자가 배로 — 닿으면 그 부위가 빛난다(문구는 UI 요약 창).
+    case ShipResupplied(:final before, :final after) when s.isTop:
+      s.topHits.resupply
+        ..onLand = s.moments.onPartUp
+        ..start(s.clockMs, [
+          for (final p in after.keys)
+            if ((after[p] ?? 0) > (before[p] ?? 0)) p,
+        ]);
+      _sfx(s, 'shipLookChanged', e);
     // 보스 브레이크(사용자 '잘 안 보여'): 충격파·조각·'BREAK!' 도장·기우뚱·별, 짧은 슬로모션·흔들림.
     case BossBroken(:final enemyId, :final ticks, :final x, :final y) when s.isTop:
       s.topHits.breaks.broken(enemyId, x, y, ticks * s.player.tickMs, s.clockMs);
