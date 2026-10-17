@@ -178,10 +178,13 @@ class HdCartoon {
       ..quadraticBezierTo(r * 0.5, r * 0.4, 0, r * 0.28)
       ..quadraticBezierTo(-r * 0.5, r * 0.4, -r * 0.95 * pulse, r * 0.25)
       ..close();
-    _fill.shader = const RadialGradient(
-      center: Alignment(-0.3, -0.5),
-      colors: [Color(0xF0FFD6FA), Color(0xE0F08AE8), Color(0xD0B04ADC)],
-    ).createShader(dome.getBounds());
+    _fill
+      ..color =
+          const Color(0xFFFFFFFF) // 셰이더 출력에 앞의 반투명 색 알파가 곱해지지 않게
+      ..shader = const RadialGradient(
+        center: Alignment(-0.3, -0.5),
+        colors: [Color(0xF0FFD6FA), Color(0xE0F08AE8), Color(0xD0B04ADC)],
+      ).createShader(dome.getBounds());
     c.drawPath(dome, _fill);
     _fill.shader = null;
     c.drawPath(dome, _ink);
