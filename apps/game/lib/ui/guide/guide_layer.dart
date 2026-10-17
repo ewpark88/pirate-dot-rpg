@@ -47,8 +47,7 @@ class _GuideLayerState extends ConsumerState<GuideLayer> {
   /// 가리킬 수 있는 id → 지금 화면 자리(층 좌표).
   Map<String, List<Rect>> _rects = const {};
 
-  /// 지금 보이는 말의 key (쉼이 끝나야 채워진다).
-  String? _shown;
+  String? _shown; // 지금 보이는 말의 key (쉼이 끝나야 채워진다)
   String? _pending;
   String? _reaction;
   int _taps = 0;

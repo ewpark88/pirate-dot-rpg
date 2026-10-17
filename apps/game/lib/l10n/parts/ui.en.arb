@@ -792,5 +792,54 @@
         "type": "int"
       }
     }
+  },
+  "uiRoleGuard": "Ship guard",
+  "uiRoleBoss": "Boss killer",
+  "uiRoleMob": "Crowd clearer",
+  "uiRoleControl": "Control",
+  "uiRoleSupport": "Support",
+  "uiNewMateHow": "How they fight: {how}",
+  "uiNewMateDeploy": "Deploy",
+  "uiNewMateDetail": "Details",
+  "uiNewMateLater": "Later",
+  "uiNewMateDex": "Log {owned}/{total} · next reward in {left}",
+  "uiNewMateDexAll": "Log {owned}/{total}",
+  "uiNewMateDeployed": "{name} deployed!",
+  "@uiNewMateHow": {
+    "placeholders": {
+      "how": {
+        "type": "String"
+      }
+    }
+  },
+  "@uiNewMateDex": {
+    "placeholders": {
+      "owned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiNewMateDexAll": {
+    "placeholders": {
+      "owned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@uiNewMateDeployed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }
