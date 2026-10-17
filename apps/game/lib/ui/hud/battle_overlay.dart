@@ -14,6 +14,7 @@ import 'package:pirate_dot/ui/hud/boss_challenge_button.dart';
 import 'package:pirate_dot/ui/hud/boss_cutin_name.dart';
 import 'package:pirate_dot/ui/hud/hp_bars.dart';
 import 'package:pirate_dot/ui/pixel/pixel_button.dart';
+import 'package:pirate_dot/ui/scene/scene_battle.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_toast.dart';
 import 'package:pirate_dot/ui/state/fleet_providers.dart';
@@ -71,6 +72,8 @@ class BattleButtons extends ConsumerWidget {
             ),
             // 현상금 전투 중에는 같은 자리에 후퇴 버튼 (보스 도전은 파밍 중에만이라 겹치지 않는다).
             Positioned.fromRect(rect: hit(f.bossRect), child: const BountyRetreatButton()),
+            // 탑·러시 중에도 같은 자리에 후퇴.
+            Positioned.fromRect(rect: hit(f.bossRect), child: const SceneRetreatButton()),
           ],
         );
       },

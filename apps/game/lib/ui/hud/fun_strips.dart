@@ -6,6 +6,7 @@ import 'package:game_core/game_core.dart';
 import 'package:pirate_dot/l10n/gen/app_localizations.dart';
 import 'package:pirate_dot/render/battle_feed.dart';
 import 'package:pirate_dot/ui/pixel/pixel_sprite.dart';
+import 'package:pirate_dot/ui/scene/scene_vm.dart';
 import 'package:pirate_dot/ui/skin/skin.dart';
 import 'package:pirate_dot/ui/skin/skin_icon.dart';
 import 'package:pirate_dot/ui/state/game_providers.dart';
@@ -208,6 +209,8 @@ class _FeverMeterState extends ConsumerState<FeverMeter> {
   @override
   Widget build(BuildContext context) {
     final t = ref.watch(tablesProvider);
+    // 탑·러시 중엔 피버가 멈추므로 숨긴다(S5 계약).
+    if (ref.watch(sceneActiveProvider)) return const SizedBox.shrink();
     // 피버까지 남은 처치 수(사용자 '피버 언제 오나') — 게이지 0~1 × 경제 feverKillsAt(스테이지). 수가 바뀔 때만 다시 그린다.
     final (fever, left, kills) = ref.watch(
       gameStateProvider.select((s) {
