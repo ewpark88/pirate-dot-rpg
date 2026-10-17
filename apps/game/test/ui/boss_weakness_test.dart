@@ -25,7 +25,11 @@ void main() {
 
   test('보스 nameKey와 약점 계열 nameKey는 모두 문구가 있다 (table_text 연결)', () {
     for (final b in tables.regions.bosses.values) {
-      expect(b.nameKey, startsWith('battleBoss'), reason: b.id);
+      expect(
+        b.nameKey,
+        anyOf(startsWith('battleBoss'), startsWith('econBoss')),
+        reason: b.id,
+      ); // 순환 보스 +18은 econ 문구(2026-10-18)
       for (final f in b.weakFamilies) {
         expect(tables.skills.byId(f).nameKey, isNotEmpty, reason: '${b.id}/$f');
       }
