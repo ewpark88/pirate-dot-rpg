@@ -1901,15 +1901,6 @@
       }
     }
   },
-  "uiWonSign": "₩",
-  "uiWonPrice": "{n} KRW",
-  "@uiWonPrice": {
-    "placeholders": {
-      "n": {
-        "type": "String"
-      }
-    }
-  },
   "uiPassTitle": "Voyage Pass",
   "uiPassLevel": "Level {n}/{max}",
   "@uiPassLevel": {
